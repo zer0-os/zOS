@@ -43,7 +43,7 @@ describe('Message Menu', () => {
       expect(deleteItem).toBeDefined();
     });
 
-    it('should publish onDelete when delete button is clicked', () => {
+    it('should call onDelete when delete button is clicked', () => {
       const onDelete = jest.fn();
       const wrapper = subject({ canDelete: true, onDelete });
 

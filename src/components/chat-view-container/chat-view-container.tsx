@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { RootState } from '../../store/reducer';
 
 import { connectContainer } from '../../store/redux-container';
-import { fetch as fetchMessages, deleteMessage, editMessage, Message, EditMessageOptions } from '../../store/messages';
+import { fetch as fetchMessages, editMessage, Message, EditMessageOptions } from '../../store/messages';
 import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
@@ -11,12 +11,12 @@ import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messag
 import { openBackupDialog } from '../../store/matrix';
 import { ParentMessage } from '../../lib/chat/types';
 import { compareDatesAsc } from '../../lib/date';
+import { openDeleteMessage } from '../../store/dialogs';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
-  deleteMessage: (payload: PayloadFetchMessages) => void;
   editMessage: (payload: EditPayload) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
   openBackupDialog: () => void;
@@ -25,6 +25,7 @@ export interface Properties extends PublicProperties {
     isAuthenticated: boolean;
   };
   isSecondarySidekickOpen: boolean;
+  openDeleteMessage: (messageId: number) => void;
 }
 
 interface PublicProperties {
@@ -61,10 +62,10 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchMessages,
-      deleteMessage,
       editMessage,
       onReply,
       openBackupDialog,
+      openDeleteMessage,
     };
   }
 
@@ -117,7 +118,7 @@ export class Container extends React.Component<Properties> {
   handleDeleteMessage = (messageId: number): void => {
     const { channelId } = this.props;
     if (channelId && messageId) {
-      this.props.deleteMessage({ channelId, messageId });
+      this.props.openDeleteMessage(messageId);
     }
   };
 

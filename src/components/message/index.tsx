@@ -12,10 +12,9 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle, IconXClose } from '@zero-tech/zui/icons';
-import { Avatar, IconButton, Modal } from '@zero-tech/zui/components';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { Avatar } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
-import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
@@ -57,7 +56,6 @@ export interface State {
   isDropdownMenuOpen: boolean;
   menuX: number;
   menuY: number;
-  deleteDialogIsOpen: boolean;
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -68,7 +66,6 @@ export class Message extends React.Component<Properties, State> {
     isDropdownMenuOpen: false,
     menuX: 0,
     menuY: 0,
-    deleteDialogIsOpen: false,
   } as State;
 
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -272,7 +269,7 @@ export class Message extends React.Component<Properties, State> {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
-      onDelete: this.toggleDeleteDialog,
+      onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
       isMediaMessage: this.isMediaMessage(),
@@ -304,7 +301,7 @@ export class Message extends React.Component<Properties, State> {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
-      onDelete: this.toggleDeleteDialog,
+      onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
       isMediaMessage: this.isMediaMessage(),
@@ -376,46 +373,6 @@ export class Message extends React.Component<Properties, State> {
     );
   }
 
-  handleDeleteMessage = () => {
-    this.setState({
-      deleteDialogIsOpen: false,
-    });
-    this.props.onDelete(this.props.messageId);
-  };
-
-  toggleDeleteDialog = () => {
-    this.setState({
-      deleteDialogIsOpen: !this.state.deleteDialogIsOpen,
-    });
-  };
-
-  get showDeleteModal(): boolean {
-    return this.state.deleteDialogIsOpen;
-  }
-
-  renderDeleteModal() {
-    return (
-      <Modal className='delete-message-modal' open={this.showDeleteModal} onOpenChange={this.toggleDeleteDialog}>
-        <div className='delete-message-modal__header'>
-          <h2>Delete message</h2>
-          <IconButton Icon={IconXClose} size='large' onClick={this.toggleDeleteDialog} />
-        </div>
-        <div className='delete-message-text-content'>
-          Are you sure you want to delete this message? This cannot be undone.
-        </div>
-        <div className='delete-message-modal__footer'>
-          <Button variant={ButtonVariant.Secondary} color={ButtonColor.Greyscale} onPress={this.toggleDeleteDialog}>
-            Cancel
-          </Button>
-
-          <Button color={ButtonColor.Red} onPress={this.handleDeleteMessage}>
-            Delete message
-          </Button>
-        </div>
-      </Modal>
-    );
-  }
-
   render() {
     const { message, media, preview, sender, isOwner } = this.props;
     return (
@@ -464,7 +421,6 @@ export class Message extends React.Component<Properties, State> {
         </div>
         {this.renderMenu()}
         {this.renderFloatMenu()}
-        {this.renderDeleteModal()}
       </div>
     );
   }

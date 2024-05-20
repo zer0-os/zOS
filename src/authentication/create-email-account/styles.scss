@@ -7,7 +7,11 @@
   @include base();
 
   &__form {
-    @include form();
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin: 0 auto;
   }
 
   &__input-container {
@@ -22,7 +26,7 @@
   }
 
   &__input-alert {
-    font-size: 14px;
+    font-size: 12px;
     margin-top: 4px;
     padding: 4px 8px;
     line-height: 17px;
@@ -41,7 +45,7 @@
 
   &__error {
     padding: 4px 8px;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 17px;
   }
 }

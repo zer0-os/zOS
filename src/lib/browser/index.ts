@@ -9,7 +9,9 @@ export const send = (options: { body; heading; tag }) => {
   const { body, heading, tag } = options;
 
   new Notification(heading, {
-    tag: tag,
+    // it appears on desktop (Windows) a long tag prevents the notification
+    // from triggering so we disable it on Electron
+    tag: !isElectron() ? tag : undefined,
     body,
     icon: getProvider().getSource({ src: '', local: false, options: {} }),
   });

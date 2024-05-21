@@ -5,16 +5,19 @@ import { shallow } from 'enzyme';
 import { MemberManagementDialog, Properties } from '.';
 import { bem } from '../../../lib/bem';
 import { Alert, ModalConfirmation } from '@zero-tech/zui/components';
-import { MemberManagementAction } from '../../../store/group-management';
 
 const c = bem('.remove-member-dialog');
+
+const mockConfirmitionDefinition = {
+  getProgressMessage: () => 'Removing Johnny Cash from the group.',
+  getTitle: () => 'Remove Member',
+  getMessage: () => <></>,
+};
 
 describe(MemberManagementDialog, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      type: MemberManagementAction.None,
-      userName: 'StubUser',
-      roomName: 'StubRoom',
+      definition: mockConfirmitionDefinition,
       inProgress: false,
       error: '',
       onClose: () => {},
@@ -25,20 +28,19 @@ describe(MemberManagementDialog, () => {
     return shallow(<MemberManagementDialog {...allProps} />);
   };
 
-  describe('remove member', () => {
-    it('renders the message with NO room name', function () {
-      const wrapper = subject({ userName: 'Johnny Cash', roomName: '', type: MemberManagementAction.RemoveMember });
-
-      expect(wrapper.find(c('')).text()).toEqual(
-        'Are you sure you want to remove Johnny Cash from the group?Johnny Cash will lose access to the conversation and its history.'
-      );
-    });
-
-    it('renders the message with a room name', function () {
+  describe('confirmition definition (remove member)', () => {
+    it('renders the message', function () {
       const wrapper = subject({
-        userName: 'Johnny Cash',
-        roomName: 'Fun Room',
-        type: MemberManagementAction.RemoveMember,
+        definition: {
+          ...mockConfirmitionDefinition,
+          getMessage: () => (
+            <>
+              Are you sure you want to remove Johnny Cash from Fun Room?
+              <br />
+              Johnny Cash will lose access to the conversation and its history.
+            </>
+          ),
+        },
       });
 
       expect(wrapper.find(c('')).text()).toEqual(
@@ -46,78 +48,27 @@ describe(MemberManagementDialog, () => {
       );
     });
 
-    it('renders loading text when isInProgress with NO room name', () => {
+    it('renders progress message', () => {
       const wrapper = subject({
         inProgress: true,
-        userName: 'Johnny Cash',
-        roomName: '',
-        type: MemberManagementAction.RemoveMember,
+        definition: {
+          ...mockConfirmitionDefinition,
+          getProgressMessage: () => 'Removing Johnny Cash from the group.',
+        },
       });
 
       expect(wrapper.find(c('')).text()).toEqual('Removing Johnny Cash from the group.');
     });
 
-    it('renders loading text when isInProgress with room name', () => {
+    it('renders title', () => {
       const wrapper = subject({
-        inProgress: true,
-        userName: 'Johnny Cash',
-        roomName: 'Fun Room',
-        type: MemberManagementAction.RemoveMember,
+        definition: {
+          ...mockConfirmitionDefinition,
+          getTitle: () => 'Remove Member',
+        },
       });
 
-      expect(wrapper.find(c('')).text()).toEqual('Removing Johnny Cash from Fun Room.');
-    });
-
-    it('renders confirmation message when NOT isInProgress', () => {
-      const wrapper = subject({ inProgress: false, type: MemberManagementAction.RemoveMember });
-
-      expect(wrapper.find(ModalConfirmation).prop('confirmationLabel')).toEqual('Remove Member');
-    });
-  });
-
-  describe('make moderator', () => {
-    it('renders the message with NO room name', function () {
-      const wrapper = subject({ userName: 'Johnny Cash', roomName: '', type: MemberManagementAction.MakeModerator });
-
-      expect(wrapper.find(c('')).text()).toEqual('Are you sure you want to make Johnny Cash moderator of the group?');
-    });
-
-    it('renders the message with a room name', function () {
-      const wrapper = subject({
-        userName: 'Johnny Cash',
-        roomName: 'Fun Room',
-        type: MemberManagementAction.MakeModerator,
-      });
-
-      expect(wrapper.find(c('')).text()).toEqual('Are you sure you want to make Johnny Cash moderator of Fun Room?');
-    });
-
-    it('renders loading text when isInProgress with NO room name', () => {
-      const wrapper = subject({
-        inProgress: true,
-        userName: 'Johnny Cash',
-        roomName: '',
-        type: MemberManagementAction.MakeModerator,
-      });
-
-      expect(wrapper.find(c('')).text()).toEqual('Making Johnny Cash moderator of the group.');
-    });
-
-    it('renders loading text when isInProgress with room name', () => {
-      const wrapper = subject({
-        inProgress: true,
-        userName: 'Johnny Cash',
-        roomName: 'Fun Room',
-        type: MemberManagementAction.MakeModerator,
-      });
-
-      expect(wrapper.find(c('')).text()).toEqual('Making Johnny Cash moderator of Fun Room.');
-    });
-
-    it('renders confirmation message when NOT isInProgress', () => {
-      const wrapper = subject({ inProgress: false, type: MemberManagementAction.MakeModerator });
-
-      expect(wrapper.find(ModalConfirmation).prop('confirmationLabel')).toEqual('Make Mod');
+      expect(wrapper.find(ModalConfirmation).prop('title')).toEqual('Remove Member');
     });
   });
 

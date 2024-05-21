@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
-import { MemberManagementDialog } from '.';
+import { ConfirmationDefinition, MemberManagementDialog } from '.';
 import { denormalize as denormalizeUser } from '../../../store/users';
 import { displayName } from '../../../lib/user';
 import { denormalize as denormalizeChannel } from '../../../store/channels';
@@ -57,6 +57,10 @@ export class Container extends React.Component<Properties> {
     };
   }
 
+  get roomLabel() {
+    return this.props.roomName ? `${this.props.roomName}` : 'the group';
+  }
+
   onConfirm = (): void => {
     if (this.props.type === MemberManagementAction.RemoveMember) {
       this.props.remove(this.props.userId, this.props.roomId);
@@ -72,17 +76,66 @@ export class Container extends React.Component<Properties> {
       return null;
     }
 
+    const confirmationDefinition = getMemberManagementHandler(this.props.type, this.props.userName, this.roomLabel);
     return (
       <MemberManagementDialog
-        type={this.props.type}
-        userName={this.props.userName}
-        roomName={this.props.roomName}
         inProgress={this.props.stage === MemberManagementDialogStage.IN_PROGRESS}
         error={this.props.error}
         onClose={this.props.cancel}
         onConfirm={this.onConfirm}
+        definition={confirmationDefinition}
       />
     );
   }
 }
 export const MemberManagementDialogContainer = connectContainer<PublicProperties>(Container);
+
+export class RemoveMember implements ConfirmationDefinition {
+  constructor(private userName, private roomLabel) {}
+
+  getProgressMessage = () => `Removing ${this.userName} from ${this.roomLabel}.`;
+  getTitle = () => 'Remove Member';
+  getMessage() {
+    return (
+      <>
+        Are you sure you want to remove {this.userName} from {this.roomLabel}?<br />
+        {this.userName} will lose access to the conversation and its history.
+      </>
+    );
+  }
+}
+
+class MakeModerator implements ConfirmationDefinition {
+  constructor(private userName, private roomLabel) {}
+
+  getProgressMessage = () => `Making ${this.userName} moderator of ${this.roomLabel}.`;
+  getTitle = () => 'Make Mod';
+  getMessage() {
+    return (
+      <>
+        Are you sure you want to make <b>{this.userName}</b> moderator of <i>{this.roomLabel}</i>?
+      </>
+    );
+  }
+}
+
+class Default implements ConfirmationDefinition {
+  constructor(private userName, private roomLabel) {}
+
+  getProgressMessage = () => 'In Progress';
+  getTitle = () => 'Member Management';
+  getMessage = () => <>Are you sure you want to perform this action?</>;
+}
+
+function getMemberManagementHandler(type: MemberManagementAction, userName: string, roomLabel: string) {
+  let handlerClass;
+  if (type === MemberManagementAction.RemoveMember) {
+    handlerClass = RemoveMember;
+  } else if (type === MemberManagementAction.MakeModerator) {
+    handlerClass = MakeModerator;
+  } else {
+    handlerClass = Default;
+  }
+
+  return new handlerClass(userName, roomLabel);
+}

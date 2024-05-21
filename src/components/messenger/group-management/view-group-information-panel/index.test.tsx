@@ -19,6 +19,7 @@ describe(ViewGroupInformationPanel, () => {
       currentUser: { userId: 'current-user' } as User,
       otherMembers: [],
       conversationAdminIds: [],
+      conversationModeratorIds: [],
       canAddMembers: false,
       canEditGroup: false,
       canLeaveGroup: false,
@@ -198,6 +199,22 @@ describe(ViewGroupInformationPanel, () => {
 
     expect(wrapper.find(CitizenListItem).at(0)).toHaveProp('tag', null);
     expect(wrapper.find(CitizenListItem).at(1)).toHaveProp('tag', 'Admin');
+    expect(wrapper.find(CitizenListItem).at(2)).toHaveProp('tag', null);
+  });
+
+  it('assigns moderator tag to the user that is the conversation moderator', () => {
+    const wrapper = subject({
+      currentUser: { userId: 'currentUser', matrixId: 'matrix-id-current' } as User,
+      otherMembers: [
+        { userId: 'otherUser1', matrixId: 'matrix-id-1' },
+        { userId: 'otherUser2', matrixId: 'matrix-id-2' },
+      ] as User[],
+      conversationAdminIds: [],
+      conversationModeratorIds: ['otherUser1'],
+    });
+
+    expect(wrapper.find(CitizenListItem).at(0)).toHaveProp('tag', null); // current user is displayed at top
+    expect(wrapper.find(CitizenListItem).at(1)).toHaveProp('tag', 'Mod');
     expect(wrapper.find(CitizenListItem).at(2)).toHaveProp('tag', null);
   });
 });

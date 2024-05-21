@@ -379,6 +379,8 @@ export class MatrixClient implements IChatClient {
           return mapEventToAdminMessage(event);
         }
         return null;
+      case EventType.RoomPowerLevels:
+        return mapEventToAdminMessage(event);
       default:
         return null;
     }
@@ -1147,6 +1149,9 @@ export class MatrixClient implements IChatClient {
       .getLiveTimeline()
       .getEvents()
       .map((event) => event.getEffectiveEvent());
+
+    console.log('ALL ROOM EVENTS :: ', events);
+
     return await this.processRawEventsToMessages(events);
   }
 

@@ -3,6 +3,7 @@ import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-s
 import { decryptFile } from './media';
 import { AdminMessageType, Message, MessageSendStatus } from '../../../store/messages';
 import { parsePlainBody } from './utils';
+import { PowerLevels } from '../types';
 
 async function parseMediaData(matrixMessage) {
   const { content } = matrixMessage;
@@ -81,9 +82,9 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
 }
 
 export function mapEventToAdminMessage(matrixMessage): Message {
-  const { event_id, content, origin_server_ts, sender, type, state_key: targetUserId } = matrixMessage;
+  const { event_id, content, origin_server_ts, sender, type, state_key: targetUserId, unsigned } = matrixMessage;
 
-  const adminData = getAdminDataFromEventType(type, content, sender, targetUserId);
+  const adminData = getAdminDataFromEventType(type, content, sender, targetUserId, unsigned?.prev_content);
 
   if (!adminData) {
     return null;
@@ -105,7 +106,7 @@ export function mapEventToAdminMessage(matrixMessage): Message {
   };
 }
 
-function getAdminDataFromEventType(type, content, sender, targetUserId) {
+function getAdminDataFromEventType(type, content, sender, targetUserId, previousContent) {
   switch (type) {
     case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       return { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
@@ -113,6 +114,8 @@ function getAdminDataFromEventType(type, content, sender, targetUserId) {
       return getRoomMemberAdminData(content, targetUserId);
     case EventType.RoomCreate:
       return { type: AdminMessageType.CONVERSATION_STARTED, userId: sender };
+    case EventType.RoomPowerLevels:
+      return getRoomPowerLevelsChangedAdminData(content, previousContent);
     default:
       return null;
   }
@@ -127,6 +130,50 @@ function getRoomMemberAdminData(content, targetUserId) {
     default:
       return null;
   }
+}
+
+export function getRoomPowerLevelsChangedAdminData(content, previousContent) {
+  if (!previousContent) {
+    return null;
+  }
+
+  // we need to find the user who's power level has changed
+  const usersCurrentPowerLevels: { [userId: string]: number } = content.users;
+  const usersPreviousPowerLevels: { [userId: string]: number } = previousContent.users;
+  const changedUserIds = Object.keys(usersCurrentPowerLevels).filter(
+    (userId) => usersCurrentPowerLevels[userId] !== usersPreviousPowerLevels[userId]
+  );
+
+  if (changedUserIds.length !== 1) {
+    return null;
+  }
+
+  const userId = changedUserIds[0];
+  const previousPowerLevel = usersPreviousPowerLevels[userId];
+  const currentPowerLevel = usersCurrentPowerLevels[userId];
+
+  // Define power level changes to be checked
+  const powerLevelChanges = [
+    {
+      from: PowerLevels.Viewer,
+      to: PowerLevels.Moderator,
+      type: AdminMessageType.MEMBER_SET_AS_MODERATOR,
+    },
+    {
+      from: PowerLevels.Moderator,
+      to: PowerLevels.Viewer,
+      type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR,
+    },
+  ];
+
+  // Check if the power level change matches any defined changes
+  for (const { from, to, type } of powerLevelChanges) {
+    if (previousPowerLevel === from && currentPowerLevel === to) {
+      return { type, userId };
+    }
+  }
+
+  return null;
 }
 
 export function mapToLiveRoomEvent(liveEvent) {

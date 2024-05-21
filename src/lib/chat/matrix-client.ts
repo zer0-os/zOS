@@ -712,7 +712,7 @@ export class MatrixClient implements IChatClient {
 
   async setUserAsModerator(roomId: string, user): Promise<void> {
     await this.waitForConnection();
-    await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Moderator);
+    await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Viewer);
   }
 
   async removeUserAsModerator(roomId: string, user): Promise<void> {
@@ -1038,8 +1038,13 @@ export class MatrixClient implements IChatClient {
     this.events.roomMemberTyping(member.roomId, content.user_ids || []);
   };
 
-  private publishRoomMemberPowerLevelsChanged = (_event: MatrixEvent, member: RoomMember) => {
+  private publishRoomMemberPowerLevelsChanged = (event: MatrixEvent, member: RoomMember) => {
     this.events.roomMemberPowerLevelChanged(member.roomId, member.userId, member.powerLevel);
+
+    const message = mapEventToAdminMessage(event.event);
+    if (message) {
+      this.events.receiveNewMessage(member.roomId, message);
+    }
   };
 
   private publishMembershipChange = async (event) => {
@@ -1067,7 +1072,7 @@ export class MatrixClient implements IChatClient {
       }
     }
 
-    const message = await mapEventToAdminMessage(event);
+    const message = mapEventToAdminMessage(event);
     if (message) {
       this.events.receiveNewMessage(roomId, message);
     }
@@ -1149,8 +1154,6 @@ export class MatrixClient implements IChatClient {
       .getLiveTimeline()
       .getEvents()
       .map((event) => event.getEffectiveEvent());
-
-    console.log('ALL ROOM EVENTS :: ', events);
 
     return await this.processRawEventsToMessages(events);
   }

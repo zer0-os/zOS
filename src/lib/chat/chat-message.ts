@@ -76,6 +76,11 @@ export function adminMessageText(message: Message, state: RootState) {
       return translateMemberLeftGroup(message.admin, state) ?? text;
     case AdminMessageType.MEMBER_ADDED_TO_CONVERSATION:
       return translateMemberAddedToGroup(message.admin, state) ?? text;
+    case AdminMessageType.MEMBER_SET_AS_MODERATOR:
+      return translateMemberSetAsModerator(message.admin, state) ?? text;
+    case AdminMessageType.MEMBER_REMOVED_AS_MODERATOR:
+      return translateMemberRemovedAsModerator(message.admin, state) ?? text;
+
     default:
       return text;
   }
@@ -109,4 +114,14 @@ function translateMemberLeftGroup(admin: { userId?: string }, state: RootState) 
 function translateMemberAddedToGroup(admin: { userId?: string }, state: RootState) {
   const user = denormalizeUser(admin.userId, state);
   return user?.firstName ? `${user.firstName} was added to the conversation` : null;
+}
+
+function translateMemberSetAsModerator(admin: { userId?: string }, state: RootState) {
+  const user = denormalizeUser(admin.userId, state);
+  return user?.firstName ? `${user.firstName} was set as moderator by admin` : null;
+}
+
+function translateMemberRemovedAsModerator(admin: { userId?: string }, state: RootState) {
+  const user = denormalizeUser(admin.userId, state);
+  return user?.firstName ? `${user.firstName} was removed as moderator by admin` : null;
 }

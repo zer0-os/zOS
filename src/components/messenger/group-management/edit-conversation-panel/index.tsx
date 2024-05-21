@@ -133,8 +133,8 @@ export class EditConversationPanel extends React.Component<Properties, State> {
   };
 
   renderMembers = () => {
-    const { conversationAdminIds, otherMembers } = this.props;
-    const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds);
+    const { conversationAdminIds, otherMembers, conversationModeratorIds } = this.props;
+    const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds, conversationModeratorIds);
 
     return (
       <div {...cn('members')}>

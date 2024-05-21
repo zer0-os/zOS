@@ -76,6 +76,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             canEditGroup={this.props.canEditGroup}
             canLeaveGroup={this.props.canLeaveGroup}
             conversationAdminIds={this.props.conversationAdminIds}
+            conversationModeratorIds={this.props.conversationModeratorIds}
             onAdd={this.props.startAddGroupMember}
             onLeave={this.props.setLeaveGroupStatus}
             onEdit={this.props.startEditConversation}
@@ -91,6 +92,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             otherMembers={this.props.otherMembers}
             canAddMembers={this.props.canAddMembers}
             conversationAdminIds={this.props.conversationAdminIds}
+            conversationModeratorIds={this.props.conversationModeratorIds}
             onAdd={this.props.startAddGroupMember}
             onMemberSelected={this.props.onMemberClick}
             openUserProfile={this.props.openUserProfile}

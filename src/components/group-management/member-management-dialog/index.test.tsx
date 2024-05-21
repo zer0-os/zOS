@@ -33,19 +33,11 @@ describe(MemberManagementDialog, () => {
       const wrapper = subject({
         definition: {
           ...mockConfirmitionDefinition,
-          getMessage: () => (
-            <>
-              Are you sure you want to remove Johnny Cash from Fun Room?
-              <br />
-              Johnny Cash will lose access to the conversation and its history.
-            </>
-          ),
+          getMessage: () => <>Test Message</>,
         },
       });
 
-      expect(wrapper.find(c('')).text()).toEqual(
-        'Are you sure you want to remove Johnny Cash from Fun Room?Johnny Cash will lose access to the conversation and its history.'
-      );
+      expect(wrapper.find(c('')).text()).toEqual('Test Message');
     });
 
     it('renders progress message', () => {

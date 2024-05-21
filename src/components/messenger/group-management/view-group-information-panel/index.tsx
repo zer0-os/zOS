@@ -9,7 +9,7 @@ import { bemClassName } from '../../../../lib/bem';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { LeaveGroupDialogStatus } from '../../../../store/group-management';
-import { isUserAdmin, sortMembers } from '../../list/utils/utils';
+import { getTagForUser, sortMembers } from '../../list/utils/utils';
 
 import './styles.scss';
 
@@ -24,6 +24,7 @@ export interface Properties {
   canEditGroup: boolean;
   canLeaveGroup: boolean;
   conversationAdminIds: string[];
+  conversationModeratorIds: string[];
 
   onAdd: () => void;
   onLeave: (status: LeaveGroupDialogStatus) => void;
@@ -34,8 +35,8 @@ export interface Properties {
 }
 
 export class ViewGroupInformationPanel extends React.Component<Properties> {
-  getTagForUser(user: User) {
-    return isUserAdmin(user, this.props.conversationAdminIds) ? 'Admin' : null;
+  getTag(user: User) {
+    return getTagForUser(user, this.props.conversationAdminIds, this.props.conversationModeratorIds);
   }
 
   navigateBack = () => {
@@ -87,8 +88,8 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
   };
 
   renderMembers = () => {
-    const { otherMembers, conversationAdminIds } = this.props;
-    const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds);
+    const { otherMembers, conversationAdminIds, conversationModeratorIds } = this.props;
+    const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds, conversationModeratorIds);
 
     return (
       <div {...cn('members')}>
@@ -105,14 +106,14 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
           <ScrollbarContainer>
             <CitizenListItem
               user={this.props.currentUser}
-              tag={this.getTagForUser(this.props.currentUser)}
+              tag={this.getTag(this.props.currentUser)}
               onSelected={this.openProfile}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem
                 key={u.userId}
                 user={u}
-                tag={this.getTagForUser(u)}
+                tag={this.getTag(u)}
                 onSelected={this.memberSelected}
               ></CitizenListItem>
             ))}

@@ -17,7 +17,11 @@ export function isUserAdmin(user: User, adminIds: string[]) {
   return adminIds?.includes(user.matrixId);
 }
 
-export function sortMembers(members: User[], adminIds: string[]) {
+export function isUserModerator(user: User, moderatorIds: string[]) {
+  return moderatorIds?.includes(user.userId);
+}
+
+export function sortMembers(members: User[], adminIds: string[], conversationModeratorIds: string[]) {
   return members.sort((a, b) => {
     const aIsAdmin = isUserAdmin(a, adminIds);
     const bIsAdmin = isUserAdmin(b, adminIds);
@@ -26,6 +30,13 @@ export function sortMembers(members: User[], adminIds: string[]) {
     if (aIsAdmin && !bIsAdmin) return -1;
     if (!aIsAdmin && bIsAdmin) return 1;
 
+    // Sort moderators next
+    const aIsModerator = isUserModerator(a, conversationModeratorIds);
+    const bIsModerator = isUserModerator(b, conversationModeratorIds);
+
+    if (aIsModerator && !bIsModerator) return -1;
+    if (!aIsModerator && bIsModerator) return 1;
+
     // Then sort by online status
     if (a.isOnline && !b.isOnline) return -1;
     if (!a.isOnline && b.isOnline) return 1;
@@ -33,4 +44,16 @@ export function sortMembers(members: User[], adminIds: string[]) {
     // Finally sort alphabetically by firstName
     return a.firstName!.localeCompare(b.firstName);
   });
+}
+
+export function getTagForUser(user: User, conversationAdminIds: string[], conversationModeratorIds: string[] = []) {
+  let tag = null;
+  if (isUserAdmin(user, conversationAdminIds)) {
+    tag = 'Admin';
+  }
+  if (isUserModerator(user, conversationModeratorIds)) {
+    tag = 'Mod';
+  }
+
+  return tag;
 }

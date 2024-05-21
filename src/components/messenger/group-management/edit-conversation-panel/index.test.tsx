@@ -137,15 +137,17 @@ describe(EditConversationPanel, () => {
           { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
           { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
           { userId: 'otherMember3', matrixId: 'matrix-id-3', firstName: 'Eve' },
+          { userId: 'otherMember4', matrixId: 'matrix-id-4', firstName: 'Frank' },
         ] as User[],
         conversationAdminIds: ['currentUser'],
-        conversationModeratorIds: ['otherMember2'],
+        conversationModeratorIds: ['otherMember2', 'otherMember4'],
       });
 
       expect(wrapper.find(CitizenListItem).map((c) => c.prop('tag'))).toEqual([
         'Admin',
-        '',
         'Mod',
+        'Mod',
+        '',
         '',
       ]);
     });

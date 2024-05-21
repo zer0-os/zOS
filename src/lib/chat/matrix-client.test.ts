@@ -1,4 +1,4 @@
-import { EventType, GuestAccess, Preset, Visibility } from 'matrix-js-sdk';
+import { EventType, GuestAccess, Preset, ReceiptType, Visibility } from 'matrix-js-sdk';
 import { MatrixClient } from './matrix-client';
 import { setAsDM } from './matrix/utils';
 import { uploadImage as _uploadImage } from '../../store/channels-list/api';
@@ -828,7 +828,7 @@ describe('matrix client', () => {
       await client.connect(null, 'token');
       await client.markRoomAsRead(roomId);
 
-      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent);
+      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.ReadPrivate);
       expect(setRoomReadMarkers).toHaveBeenCalledWith(roomId, latestEventId);
     });
   });

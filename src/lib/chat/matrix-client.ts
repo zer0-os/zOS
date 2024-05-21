@@ -18,6 +18,7 @@ import {
   NotificationCountType,
   IRoomTimelineData,
   RoomMember,
+  ReceiptType,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
@@ -689,7 +690,7 @@ export class MatrixClient implements IChatClient {
       return;
     }
 
-    await this.matrix.sendReadReceipt(latestEvent);
+    await this.matrix.sendReadReceipt(latestEvent, ReceiptType.ReadPrivate);
     await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
   }
 

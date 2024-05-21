@@ -6,7 +6,7 @@ import { User } from '../../../../store/channels';
 import { bemClassName } from '../../../../lib/bem';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
-import { isUserAdmin, sortMembers } from '../../list/utils/utils';
+import { getTagForUser, sortMembers } from '../../list/utils/utils';
 
 import './styles.scss';
 
@@ -18,6 +18,7 @@ export interface Properties {
   otherMembers: User[];
   canAddMembers: boolean;
   conversationAdminIds: string[];
+  conversationModeratorIds: string[];
 
   onAdd: () => void;
   onMemberSelected: (userId: string) => void;
@@ -25,9 +26,10 @@ export interface Properties {
 }
 
 export class ViewMembersPanel extends React.Component<Properties> {
-  getTagForUser(user: User) {
+  getTag(user: User) {
     if (this.props.isOneOnOne) return null;
-    return isUserAdmin(user, this.props.conversationAdminIds) ? 'Admin' : null;
+
+    return getTagForUser(user, this.props.conversationAdminIds, this.props.conversationModeratorIds);
   }
 
   addMember = () => {
@@ -43,8 +45,8 @@ export class ViewMembersPanel extends React.Component<Properties> {
   };
 
   renderMembers = () => {
-    const { otherMembers, conversationAdminIds } = this.props;
-    const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds);
+    const { otherMembers, conversationAdminIds, conversationModeratorIds } = this.props;
+    const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds, conversationModeratorIds);
 
     return (
       <div {...cn('members')}>
@@ -61,14 +63,14 @@ export class ViewMembersPanel extends React.Component<Properties> {
           <ScrollbarContainer>
             <CitizenListItem
               user={this.props.currentUser}
-              tag={this.getTagForUser(this.props.currentUser)}
+              tag={this.getTag(this.props.currentUser)}
               onSelected={this.openProfile}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem
                 key={u.userId}
                 user={u}
-                tag={this.getTagForUser(u)}
+                tag={this.getTag(u)}
                 onSelected={this.memberSelected}
               ></CitizenListItem>
             ))}

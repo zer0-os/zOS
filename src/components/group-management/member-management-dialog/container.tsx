@@ -12,6 +12,7 @@ import {
   MemberManagementDialogStage,
   MemberManagementAction,
   setMemberAsModerator,
+  removeMemberAsModerator,
 } from '../../../store/group-management';
 
 export interface PublicProperties {}
@@ -28,6 +29,7 @@ export interface Properties extends PublicProperties {
   cancel: () => void;
   remove: (userId: string, roomId: string) => void;
   setAsMod: (userId: string, roomId: string) => void;
+  removeAsMod: (userId: string, roomId: string) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -54,6 +56,7 @@ export class Container extends React.Component<Properties> {
       cancel: cancelMemberManagement,
       remove: (userId, roomId) => removeMember({ userId, roomId }),
       setAsMod: (userId, roomId) => setMemberAsModerator({ userId, roomId }),
+      removeAsMod: (userId, roomId) => removeMemberAsModerator({ userId, roomId }),
     };
   }
 
@@ -68,6 +71,10 @@ export class Container extends React.Component<Properties> {
 
     if (this.props.type === MemberManagementAction.MakeModerator) {
       this.props.setAsMod(this.props.userId, this.props.roomId);
+    }
+
+    if (this.props.type === MemberManagementAction.RemoveModertor) {
+      this.props.removeAsMod(this.props.userId, this.props.roomId);
     }
   };
 
@@ -119,6 +126,20 @@ class MakeModerator implements ConfirmationDefinition {
   }
 }
 
+class RemoveModertor implements ConfirmationDefinition {
+  constructor(private userName, private roomLabel) {}
+
+  getProgressMessage = () => `Removing ${this.userName} as moderator of ${this.roomLabel}.`;
+  getTitle = () => 'Remove Mod';
+  getMessage() {
+    return (
+      <>
+        Are you sure you want to remove <b>{this.userName}</b> as moderator of <i>{this.roomLabel}</i>?
+      </>
+    );
+  }
+}
+
 class Default implements ConfirmationDefinition {
   constructor(private userName, private roomLabel) {}
 
@@ -129,12 +150,18 @@ class Default implements ConfirmationDefinition {
 
 function getMemberManagementHandler(type: MemberManagementAction, userName: string, roomLabel: string) {
   let handlerClass;
-  if (type === MemberManagementAction.RemoveMember) {
-    handlerClass = RemoveMember;
-  } else if (type === MemberManagementAction.MakeModerator) {
-    handlerClass = MakeModerator;
-  } else {
-    handlerClass = Default;
+  switch (type) {
+    case MemberManagementAction.RemoveMember:
+      handlerClass = RemoveMember;
+      break;
+    case MemberManagementAction.MakeModerator:
+      handlerClass = MakeModerator;
+      break;
+    case MemberManagementAction.RemoveModertor:
+      handlerClass = RemoveModertor;
+      break;
+    default:
+      handlerClass = Default;
   }
 
   return new handlerClass(userName, roomLabel);

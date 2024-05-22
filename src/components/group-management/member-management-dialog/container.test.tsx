@@ -63,7 +63,7 @@ describe(Container, () => {
         cancel: jest.fn(),
         remove: jest.fn(),
         setAsMod: jest.fn(),
-
+        removeAsMod: jest.fn(),
         ...props,
       };
 

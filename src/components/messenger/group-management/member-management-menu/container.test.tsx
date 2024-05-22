@@ -8,5 +8,16 @@ describe(Container, () => {
 
       expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ activeConversationId: 'id' }));
     });
+
+    test('gets conversationModeratorIds', () => {
+      const state = new StoreBuilder().withActiveConversation({
+        id: 'id',
+        moderatorIds: ['moderator-id-1', 'moderator-id-2'],
+      });
+
+      expect(Container.mapState(state.build())).toEqual(
+        expect.objectContaining({ conversationModeratorIds: ['moderator-id-1', 'moderator-id-2'] })
+      );
+    });
   });
 });

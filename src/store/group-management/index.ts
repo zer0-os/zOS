@@ -23,6 +23,7 @@ export enum SagaActionTypes {
   CancelMemberManageMent = 'group-management/cancel-member-management',
   RemoveMember = 'group-management/remove-member',
   SetMemberAsModerator = 'group-management/set-member-as-moderator',
+  RemoveMemberAsModerator = 'group-management/remove-member-as-moderator',
   EditConversationNameAndIcon = 'group-management/edit-conversation-name-and-icon',
   OpenViewGroupInformation = 'group-management/open-view-group-information',
   ToggleSecondarySidekick = 'group-management/toggle-secondary-sidekick',
@@ -66,6 +67,9 @@ export const cancelMemberManagement = createAction(SagaActionTypes.CancelMemberM
 export const removeMember = createAction<{ roomId: string; userId: string }>(SagaActionTypes.RemoveMember);
 export const setMemberAsModerator = createAction<{ roomId: string; userId: string }>(
   SagaActionTypes.SetMemberAsModerator
+);
+export const removeMemberAsModerator = createAction<{ roomId: string; userId: string }>(
+  SagaActionTypes.RemoveMemberAsModerator
 );
 export const viewGroupInformation = createAction(SagaActionTypes.OpenViewGroupInformation);
 export const editConversationNameAndIcon = createAction<EditConversationPayload>(

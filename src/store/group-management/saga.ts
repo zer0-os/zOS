@@ -1,5 +1,10 @@
 import { call, fork, put, take, select, takeLatest } from 'redux-saga/effects';
-import { Chat, chat, setUserAsModerator as matrixSetUserAsModerator } from '../../lib/chat';
+import {
+  Chat,
+  chat,
+  setUserAsModerator as matrixSetUserAsModerator,
+  removeUserAsModerator as matrixRemoveUserAsModerator,
+} from '../../lib/chat';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalize as denormalizeUsers } from '../users';
 import { currentUserSelector } from '../authentication/saga';
@@ -47,6 +52,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.CancelMemberManageMent, cancelMemberManageMent);
   yield takeLatest(SagaActionTypes.RemoveMember, removeMember);
   yield takeLatest(SagaActionTypes.SetMemberAsModerator, setMemberAsModerator);
+  yield takeLatest(SagaActionTypes.RemoveMemberAsModerator, removeMemberAsModerator);
   yield takeLatest(SagaActionTypes.OpenViewGroupInformation, openViewGroupInformation);
   yield takeLatest(SagaActionTypes.ToggleSecondarySidekick, toggleIsSecondarySidekick);
 }
@@ -184,6 +190,25 @@ export function* setMemberAsModerator(action) {
     yield resetMemberManagement();
   } catch (e) {
     yield put(setMemberManagementError('Failed to set member as moderator, please try again'));
+    yield put(setMemberManagementStage(MemberManagementDialogStage.OPEN));
+  }
+}
+
+export function* removeMemberAsModerator(action) {
+  const { userId, roomId } = action.payload;
+
+  yield put(setMemberManagementStage(MemberManagementDialogStage.IN_PROGRESS));
+
+  try {
+    const user = yield select((state) => denormalizeUsers(userId, state));
+    if (!user) {
+      return;
+    }
+
+    yield call(matrixRemoveUserAsModerator, roomId, user);
+    yield resetMemberManagement();
+  } catch (e) {
+    yield put(setMemberManagementError('Failed to remove member as moderator, please try again'));
     yield put(setMemberManagementStage(MemberManagementDialogStage.OPEN));
   }
 }

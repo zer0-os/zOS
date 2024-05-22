@@ -322,3 +322,7 @@ export async function sendTypingEvent(roomId: string, isTyping: boolean) {
 export async function setUserAsModerator(roomId: string, userId: string) {
   return await chat.get().matrix.setUserAsModerator(roomId, userId);
 }
+
+export async function removeUserAsModerator(roomId: string, userId: string) {
+  return await chat.get().matrix.removeUserAsModerator(roomId, userId);
+}

@@ -3,11 +3,13 @@ import * as React from 'react';
 import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { MemberManagementAction, openMemberManagement } from '../../../../store/group-management';
+import { User, denormalize as denormalizeChannel } from '../../../../store/channels';
 
 import { MemberManagementMenu } from '.';
+import { isUserModerator } from '../../list/utils/utils';
 
 export interface PublicProperties {
-  user?: any;
+  user?: User;
   canRemove?: boolean;
 
   onOpenChange: (isOpen: boolean) => void;
@@ -15,6 +17,7 @@ export interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   activeConversationId: string;
+  conversationModeratorIds: string[];
 
   openMemberManagement: (params: { type: MemberManagementAction; roomId: string; userId: string }) => void;
 }
@@ -25,8 +28,12 @@ export class Container extends React.Component<Properties> {
       chat: { activeConversationId },
     } = state;
 
+    const conversation = denormalizeChannel(activeConversationId, state);
+    const conversationModeratorIds = conversation?.moderatorIds;
+
     return {
       activeConversationId,
+      conversationModeratorIds,
     };
   }
 
@@ -45,6 +52,7 @@ export class Container extends React.Component<Properties> {
         onOpenMemberManagement={this.openMemberManagement}
         onOpenChange={this.props.onOpenChange}
         canRemove={this.props.canRemove}
+        isUserModerator={isUserModerator(this.props.user, this.props.conversationModeratorIds)}
       />
     );
   }

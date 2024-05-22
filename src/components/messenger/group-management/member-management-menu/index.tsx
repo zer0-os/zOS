@@ -9,6 +9,8 @@ import { featureFlags } from '../../../../lib/feature-flags';
 
 export interface Properties {
   canRemove?: boolean;
+  isUserModerator?: boolean;
+
   onOpenChange: (isOpen: boolean) => void;
 
   onOpenMemberManagement: (type: MemberManagementAction) => void;
@@ -27,6 +29,10 @@ export class MemberManagementMenu extends React.Component<Properties> {
     this.props.onOpenMemberManagement(MemberManagementAction.MakeModerator);
   };
 
+  onRemoveMod = () => {
+    this.props.onOpenMemberManagement(MemberManagementAction.RemoveModertor);
+  };
+
   renderMenuItem(icon, label) {
     return (
       <div className={'menu-item'}>
@@ -39,12 +45,21 @@ export class MemberManagementMenu extends React.Component<Properties> {
     const menuItems = [];
 
     if (featureFlags.allowModeratorActions) {
-      menuItems.push({
-        id: 'make-mod',
-        className: 'make-mod',
-        label: this.renderMenuItem(<IconUserCheck1 size={20} />, 'Make Mod'),
-        onSelect: this.onMakeMod,
-      });
+      if (this.props.isUserModerator) {
+        menuItems.push({
+          id: 'remove-mod',
+          className: 'remove-mod',
+          label: this.renderMenuItem(<IconUserX1 size={20} />, 'Remove Mod'),
+          onSelect: this.onRemoveMod,
+        });
+      } else {
+        menuItems.push({
+          id: 'make-mod',
+          className: 'make-mod',
+          label: this.renderMenuItem(<IconUserCheck1 size={20} />, 'Make Mod'),
+          onSelect: this.onMakeMod,
+        });
+      }
     }
 
     if (this.props.canRemove) {

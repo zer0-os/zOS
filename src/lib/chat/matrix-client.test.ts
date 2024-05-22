@@ -106,8 +106,10 @@ function resolveWith<T>(valueToResolve: T) {
   return { resolve: theResolve, mock: () => promise };
 }
 
+const featureFlags = { enableReadReceiptPreferences: false };
+
 jest.mock('../../lib/feature-flags', () => ({
-  featureFlags: { verboseLogging: false },
+  featureFlags,
 }));
 
 describe('matrix client', () => {
@@ -886,6 +888,38 @@ describe('matrix client', () => {
 
   describe('markRoomAsRead', () => {
     it('marks room as read successfully', async () => {
+      featureFlags.enableReadReceiptPreferences = true;
+
+      const roomId = '!testRoomId';
+      const latestEventId = 'latest-event-id';
+      const latestEvent = {
+        event: { event_id: latestEventId },
+      };
+
+      const sendReadReceipt = jest.fn().mockResolvedValue(undefined);
+      const setRoomReadMarkers = jest.fn().mockResolvedValue(undefined);
+      const getLiveTimelineEvents = jest.fn().mockReturnValue([latestEvent]);
+      const getRoom = jest.fn().mockReturnValue(
+        stubRoom({
+          getLiveTimeline: jest.fn().mockReturnValue(stubTimeline({ getEvents: getLiveTimelineEvents })),
+        })
+      );
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ sendReadReceipt, setRoomReadMarkers, getRoom })),
+      });
+
+      await client.connect(null, 'token');
+      await client.markRoomAsRead(roomId);
+
+      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.Read);
+      expect(setRoomReadMarkers).toHaveBeenCalledWith(roomId, latestEventId);
+    });
+
+    // temporary test
+    it('read receipt is private if feature flag is not enabled', async () => {
+      featureFlags.enableReadReceiptPreferences = false;
+
       const roomId = '!testRoomId';
       const latestEventId = 'latest-event-id';
       const latestEvent = {
@@ -909,7 +943,6 @@ describe('matrix client', () => {
       await client.markRoomAsRead(roomId);
 
       expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.ReadPrivate);
-      expect(setRoomReadMarkers).toHaveBeenCalledWith(roomId, latestEventId);
     });
   });
 

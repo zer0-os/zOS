@@ -36,6 +36,7 @@ import {
   IN_ROOM_MEMBERSHIP_STATES,
   MatrixConstants,
   MembershipStateType,
+  ReadReceiptPreferenceType,
 } from './matrix/types';
 import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
@@ -678,6 +679,20 @@ export class MatrixClient implements IChatClient {
     }
   }
 
+  async setReadReceiptPreference(preference: ReadReceiptPreferenceType) {
+    await this.matrix.setAccountData(MatrixConstants.READ_RECEIPT_PREFERENCE, { readReceipts: preference });
+  }
+
+  async getReadReceiptPreference() {
+    try {
+      const accountData = this.matrix.getAccountData(MatrixConstants.READ_RECEIPT_PREFERENCE);
+      return accountData?.getContent().readReceipts || ReadReceiptPreferenceType.Public;
+    } catch (err) {
+      console.error('Error getting read receipt preference', err);
+      return ReadReceiptPreferenceType.Public;
+    }
+  }
+
   async markRoomAsRead(roomId: string): Promise<void> {
     const room = this.matrix.getRoom(roomId);
 
@@ -692,7 +707,14 @@ export class MatrixClient implements IChatClient {
       return;
     }
 
-    await this.matrix.sendReadReceipt(latestEvent, ReceiptType.ReadPrivate);
+    const userReceiptPreference = await this.getReadReceiptPreference();
+
+    const receiptType =
+      featureFlags.enableReadReceiptPreferences && userReceiptPreference === ReadReceiptPreferenceType.Public
+        ? ReceiptType.Read
+        : ReceiptType.ReadPrivate;
+
+    await this.matrix.sendReadReceipt(latestEvent, receiptType);
     await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
   }
 

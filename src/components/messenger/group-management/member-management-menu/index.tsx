@@ -30,7 +30,7 @@ export class MemberManagementMenu extends React.Component<Properties> {
   };
 
   onRemoveMod = () => {
-    this.props.onOpenMemberManagement(MemberManagementAction.RemoveModertor);
+    this.props.onOpenMemberManagement(MemberManagementAction.RemoveModerator);
   };
 
   renderMenuItem(icon, label) {

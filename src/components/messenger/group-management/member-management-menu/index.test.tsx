@@ -59,7 +59,7 @@ describe(MemberManagementMenu, () => {
 
       selectItem(wrapper, 'remove-mod');
 
-      expect(onOpenMemberManagement).toBeCalledWith(MemberManagementAction.RemoveModertor);
+      expect(onOpenMemberManagement).toBeCalledWith(MemberManagementAction.RemoveModerator);
     });
   });
 });

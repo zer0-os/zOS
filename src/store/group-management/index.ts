@@ -52,7 +52,7 @@ export enum MemberManagementAction {
   None = 'none',
   RemoveMember = 'remove_member',
   MakeModerator = 'make_moderator',
-  RemoveModertor = 'remove_moderator',
+  RemoveModerator = 'remove_moderator',
 }
 
 export const leaveGroup = createAction<{ roomId: string }>(SagaActionTypes.LeaveGroup);

@@ -6,6 +6,7 @@ import {
   roomMembersSelected,
   toggleIsSecondarySidekick,
   setMemberAsModerator,
+  removeMemberAsModerator,
 } from './saga';
 import { StoreBuilder } from '../test/store';
 import {
@@ -20,7 +21,7 @@ import {
 } from '.';
 import { expectSaga } from '../../test/saga';
 import { rootReducer } from '../reducer';
-import { chat, setUserAsModerator } from '../../lib/chat';
+import { chat, removeUserAsModerator, setUserAsModerator } from '../../lib/chat';
 import { denormalize as denormalizeUsers } from '../users';
 import { EditConversationState } from './types';
 import { uploadImage } from '../registration/api';
@@ -251,6 +252,57 @@ describe('Group Management Saga', () => {
 
       expect(storeState.groupManagement.memberManagement.error).toEqual(
         'Failed to set member as moderator, please try again'
+      );
+      expect(storeState.groupManagement.memberManagement.stage).toEqual(MemberManagementDialogStage.OPEN);
+    });
+  });
+
+  describe(removeMemberAsModerator, () => {
+    const chatClient = { removeUser: jest.fn() };
+    function subject(...args: Parameters<typeof expectSaga>) {
+      return expectSaga(...args).provide([
+        [matchers.call.fn(chat.get), chatClient],
+      ]);
+    }
+
+    it('removes a user as moderator', async () => {
+      const user = { userId: 'user-1', matrixId: 'matrix-1' };
+      const initialState = new StoreBuilder().withUsers(user);
+      await subject(removeMemberAsModerator, { payload: { userId: 'user-1', roomId: 'room-1' } })
+        .withReducer(rootReducer, initialState.build())
+        .call.like({
+          fn: removeUserAsModerator,
+          args: ['room-1', user],
+        })
+        .run();
+    });
+
+    it('closes the dialog when successful', async () => {
+      const user = { userId: 'user-1', matrixId: 'matrix-1' };
+      const initialState = new StoreBuilder().withUsers(user);
+      const { storeState } = await subject(removeMemberAsModerator, { payload: { userId: 'user-1', roomId: 'room-1' } })
+        .withReducer(rootReducer, initialState.build())
+        .provide([[matchers.call.fn(removeUserAsModerator), {}]])
+        .run();
+
+      expect(storeState.groupManagement.memberManagement.stage).toEqual(MemberManagementDialogStage.CLOSED);
+    });
+
+    it('sets error message and keeps the dialog open when error occurs', async () => {
+      const user = { userId: 'user-1', matrixId: 'matrix-1' };
+      const initialState = new StoreBuilder().withUsers(user);
+      const { storeState } = await subject(removeMemberAsModerator, { payload: { userId: 'user-1', roomId: 'room-1' } })
+        .provide([
+          [
+            matchers.call.fn(removeUserAsModerator),
+            throwError(new Error('Simulated: Failed to remove user as moderator')),
+          ],
+        ])
+        .withReducer(rootReducer, initialState.build())
+        .run();
+
+      expect(storeState.groupManagement.memberManagement.error).toEqual(
+        'Failed to remove member as moderator, please try again'
       );
       expect(storeState.groupManagement.memberManagement.stage).toEqual(MemberManagementDialogStage.OPEN);
     });

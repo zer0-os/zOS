@@ -73,7 +73,7 @@ export class Container extends React.Component<Properties> {
       this.props.setAsMod(this.props.userId, this.props.roomId);
     }
 
-    if (this.props.type === MemberManagementAction.RemoveModertor) {
+    if (this.props.type === MemberManagementAction.RemoveModerator) {
       this.props.removeAsMod(this.props.userId, this.props.roomId);
     }
   };
@@ -126,7 +126,7 @@ class MakeModerator implements ConfirmationDefinition {
   }
 }
 
-class RemoveModertor implements ConfirmationDefinition {
+class RemoveModerator implements ConfirmationDefinition {
   constructor(private userName, private roomLabel) {}
 
   getProgressMessage = () => `Removing ${this.userName} as moderator of ${this.roomLabel}.`;
@@ -157,8 +157,8 @@ function getMemberManagementHandler(type: MemberManagementAction, userName: stri
     case MemberManagementAction.MakeModerator:
       handlerClass = MakeModerator;
       break;
-    case MemberManagementAction.RemoveModertor:
-      handlerClass = RemoveModertor;
+    case MemberManagementAction.RemoveModerator:
+      handlerClass = RemoveModerator;
       break;
     default:
       handlerClass = Default;

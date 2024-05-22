@@ -379,6 +379,8 @@ export class MatrixClient implements IChatClient {
           return mapEventToAdminMessage(event);
         }
         return null;
+      case EventType.RoomPowerLevels:
+        return mapEventToAdminMessage(event);
       default:
         return null;
     }
@@ -1036,8 +1038,13 @@ export class MatrixClient implements IChatClient {
     this.events.roomMemberTyping(member.roomId, content.user_ids || []);
   };
 
-  private publishRoomMemberPowerLevelsChanged = (_event: MatrixEvent, member: RoomMember) => {
+  private publishRoomMemberPowerLevelsChanged = (event: MatrixEvent, member: RoomMember) => {
     this.events.roomMemberPowerLevelChanged(member.roomId, member.userId, member.powerLevel);
+
+    const message = mapEventToAdminMessage(event.event);
+    if (message) {
+      this.events.receiveNewMessage(member.roomId, message);
+    }
   };
 
   private publishMembershipChange = async (event) => {
@@ -1065,7 +1072,7 @@ export class MatrixClient implements IChatClient {
       }
     }
 
-    const message = await mapEventToAdminMessage(event);
+    const message = mapEventToAdminMessage(event);
     if (message) {
       this.events.receiveNewMessage(roomId, message);
     }
@@ -1147,6 +1154,7 @@ export class MatrixClient implements IChatClient {
       .getLiveTimeline()
       .getEvents()
       .map((event) => event.getEffectiveEvent());
+
     return await this.processRawEventsToMessages(events);
   }
 

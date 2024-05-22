@@ -164,6 +164,64 @@ describe(adminMessageText, () => {
       expect(adminText).toEqual('Courtney was added to the conversation');
     });
   });
+
+  describe(AdminMessageType.MEMBER_SET_AS_MODERATOR, () => {
+    it('returns default message if admin user id not found', () => {
+      const state = getState('current-user', {});
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
+
+      expect(adminText).toEqual('some message');
+    });
+
+    it('translates message if admin user id is found', () => {
+      const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId: 'admin-user-id' },
+      } as Message;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Courtney was set as moderator by admin');
+    });
+  });
+
+  describe(AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, () => {
+    it('returns default message if admin user id not found', () => {
+      const state = getState('current-user', {});
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
+
+      expect(adminText).toEqual('some message');
+    });
+
+    it('translates message if admin user id is found', () => {
+      const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId: 'admin-user-id' },
+      } as Message;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Courtney was removed as moderator by admin');
+    });
+  });
 });
 
 describe(getMessagePreview, () => {

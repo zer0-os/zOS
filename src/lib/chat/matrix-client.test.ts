@@ -5,6 +5,7 @@ import { uploadImage as _uploadImage } from '../../store/channels-list/api';
 import { when } from 'jest-when';
 import { config } from '../../config';
 import { PowerLevels } from './types';
+import { MatrixConstants, ReadReceiptPreferenceType } from './matrix/types';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
@@ -64,6 +65,7 @@ const getSdkClient = (sdkClient = {}) => ({
   getRooms: jest.fn(),
   getRoom: jest.fn().mockReturnValue(stubRoom()),
   getUser: jest.fn(),
+  getAccountData: jest.fn(),
   setGlobalErrorOnUnknownDevices: () => undefined,
   fetchRoomEvent: jest.fn(),
   paginateEventTimeline: () => true,
@@ -801,6 +803,84 @@ describe('matrix client', () => {
         id: 'new-message-id',
         optimisticId,
       });
+    });
+  });
+
+  describe('setReadReceiptPreference', () => {
+    it('sets read receipt preference successfully', async () => {
+      const setAccountData = jest.fn().mockResolvedValue(undefined);
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ setAccountData })),
+      });
+
+      await client.connect(null, 'token');
+      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Private);
+
+      expect(setAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE, {
+        readReceipts: ReadReceiptPreferenceType.Private,
+      });
+    });
+  });
+
+  describe('getReadReceiptPreference', () => {
+    it('gets read receipt preference successfully', async () => {
+      const setAccountData = jest.fn().mockResolvedValue(undefined);
+
+      const getAccountData = jest.fn().mockResolvedValue({
+        event: { content: { readReceipts: ReadReceiptPreferenceType.Private } },
+      });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ setAccountData, getAccountData })),
+      });
+
+      await client.connect(null, 'token');
+      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Private);
+
+      const preference = await client.getReadReceiptPreference();
+      expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
+      expect(preference).toBe(ReadReceiptPreferenceType.Private);
+    });
+
+    it('returns default public preference on error', async () => {
+      const getAccountData = jest.fn().mockRejectedValue({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getAccountData })),
+      });
+
+      await client.connect(null, 'token');
+
+      // prevents error logging in output
+      const originalConsoleError = console.error;
+      console.error = jest.fn();
+
+      const preference = await client.getReadReceiptPreference();
+
+      console.error = originalConsoleError;
+
+      expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
+      expect(preference).toBe(ReadReceiptPreferenceType.Public);
+    });
+
+    it('returns default public preference if not set', async () => {
+      const setAccountData = jest.fn().mockResolvedValue(undefined);
+
+      const getAccountData = jest.fn().mockResolvedValue({
+        event: { content: {} },
+      });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ setAccountData, getAccountData })),
+      });
+
+      await client.connect(null, 'token');
+      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Private);
+      const preference = await client.getReadReceiptPreference();
+
+      expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
+      expect(preference).toBe(ReadReceiptPreferenceType.Public);
     });
   });
 

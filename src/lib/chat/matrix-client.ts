@@ -712,7 +712,7 @@ export class MatrixClient implements IChatClient {
 
   async setUserAsModerator(roomId: string, user): Promise<void> {
     await this.waitForConnection();
-    await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Viewer);
+    await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Moderator);
   }
 
   async removeUserAsModerator(roomId: string, user): Promise<void> {

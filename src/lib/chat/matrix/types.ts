@@ -21,6 +21,7 @@ export enum MatrixConstants {
   REPLACE = 'm.replace',
   BAD_ENCRYPTED_MSGTYPE = 'm.bad.encrypted',
   FAVORITE = 'm.favorite',
+  READ_RECEIPT_PREFERENCE = 'm.read_receipt_preference',
 }
 
 export enum CustomEventType {
@@ -33,4 +34,9 @@ export enum DecryptErrorConstants {
 
 export enum NotifiableEventType {
   RoomMessage = 'RoomMessage',
+}
+
+export enum ReadReceiptPreferenceType {
+  Public = 'public',
+  Private = 'private',
 }

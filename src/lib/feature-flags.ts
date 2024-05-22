@@ -89,6 +89,14 @@ export class FeatureFlags {
   set allowModeratorActions(value: boolean) {
     this._setBoolean('allowModeratorActions', value);
   }
+
+  get enableReadReceiptPreferences() {
+    return this._getBoolean('enableReadReceiptPreferences', false);
+  }
+
+  set enableReadReceiptPreferences(value: boolean) {
+    this._setBoolean('enableReadReceiptPreferences', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

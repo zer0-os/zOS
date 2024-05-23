@@ -7,6 +7,7 @@ import { User, denormalize as denormalizeChannel } from '../../../../store/chann
 
 import { MemberManagementMenu } from '.';
 import { isUserModerator } from '../../list/utils/utils';
+import { currentUserSelector } from '../../../../store/authentication/selectors';
 
 export interface PublicProperties {
   user?: User;
@@ -18,6 +19,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   activeConversationId: string;
   conversationModeratorIds: string[];
+  allowModeratorManagement: boolean;
 
   openMemberManagement: (params: { type: MemberManagementAction; roomId: string; userId: string }) => void;
 }
@@ -31,9 +33,13 @@ export class Container extends React.Component<Properties> {
     const conversation = denormalizeChannel(activeConversationId, state);
     const conversationModeratorIds = conversation?.moderatorIds;
 
+    const currentUser = currentUserSelector(state);
+    const isCurrentUserRoomAdmin = conversation?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
+
     return {
       activeConversationId,
       conversationModeratorIds,
+      allowModeratorManagement: isCurrentUserRoomAdmin,
     };
   }
 
@@ -53,6 +59,7 @@ export class Container extends React.Component<Properties> {
         onOpenChange={this.props.onOpenChange}
         canRemove={this.props.canRemove}
         isUserModerator={isUserModerator(this.props.user, this.props.conversationModeratorIds)}
+        allowModeratorManagement={this.props.allowModeratorManagement}
       />
     );
   }

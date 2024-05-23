@@ -10,6 +10,7 @@ import { featureFlags } from '../../../../lib/feature-flags';
 export interface Properties {
   canRemove?: boolean;
   isUserModerator?: boolean;
+  allowModeratorManagement: boolean;
 
   onOpenChange: (isOpen: boolean) => void;
 
@@ -44,7 +45,7 @@ export class MemberManagementMenu extends React.Component<Properties> {
   get dropdownMenuItems() {
     const menuItems = [];
 
-    if (featureFlags.allowModeratorActions) {
+    if (featureFlags.allowModeratorActions && this.props.allowModeratorManagement) {
       if (this.props.isUserModerator) {
         menuItems.push({
           id: 'remove-mod',

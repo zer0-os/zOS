@@ -16,6 +16,7 @@ describe(MemberManagementMenu, () => {
       canRemove: true,
       onOpenChange: () => {},
       onOpenMemberManagement: () => {},
+      allowModeratorManagement: true,
       ...props,
     };
 
@@ -32,6 +33,13 @@ describe(MemberManagementMenu, () => {
     const wrapper = subject({ isUserModerator: true });
     expect(menuItem(wrapper, 'remove-mod')).toBeDefined();
     expect(menuItem(wrapper, 'make-mod')).toBeUndefined();
+  });
+
+  it('does not render Make/Remove Mod menu item when moderator actions are not allowed', () => {
+    featureFlags.allowModeratorActions = false;
+    const wrapper = subject({ allowModeratorManagement: false });
+    expect(menuItem(wrapper, 'make-mod')).toBeUndefined();
+    expect(menuItem(wrapper, 'remove-mod')).toBeUndefined();
   });
 
   describe('Member Management Actions', () => {

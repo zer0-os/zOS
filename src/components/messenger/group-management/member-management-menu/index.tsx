@@ -50,7 +50,7 @@ export class MemberManagementMenu extends React.Component<Properties> {
         menuItems.push({
           id: 'remove-mod',
           className: 'remove-mod',
-          label: this.renderMenuItem(<IconUserX1 size={20} />, 'Remove Mod'),
+          label: this.renderMenuItem(<IconUserX1 size={20} />, 'Remove As Mod'),
           onSelect: this.onRemoveMod,
         });
       } else {
@@ -67,7 +67,7 @@ export class MemberManagementMenu extends React.Component<Properties> {
       menuItems.push({
         id: 'remove-member',
         className: 'remove-member',
-        label: this.renderMenuItem(<IconUserX1 size={20} />, 'Remove'),
+        label: this.renderMenuItem(<IconUserX1 size={20} />, 'Remove Member'),
         onSelect: this.onRemoveMember,
       });
     }

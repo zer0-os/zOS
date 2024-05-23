@@ -53,6 +53,8 @@ describe(MemberManagementMenu, () => {
     });
 
     it('publishes onMakeMod event when Make Mod is clicked', () => {
+      featureFlags.allowModeratorActions = true;
+
       const onOpenMemberManagement = jest.fn();
       const wrapper = subject({ onOpenMemberManagement });
 

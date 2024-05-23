@@ -83,7 +83,7 @@ export class FeatureFlags {
   }
 
   get allowModeratorActions() {
-    return this._getBoolean('allowModeratorActions', false);
+    return this._getBoolean('allowModeratorActions', true);
   }
 
   set allowModeratorActions(value: boolean) {

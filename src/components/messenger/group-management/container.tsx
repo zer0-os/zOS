@@ -76,6 +76,7 @@ export class Container extends React.Component<Properties> {
     const conversationAdminIds = conversation?.adminMatrixIds;
     const conversationModeratorIds = conversation?.moderatorIds;
     const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
+    const isCurrentUserRoomModerator = conversationModeratorIds?.includes(currentUser?.id) ?? false;
     const existingConversations = denormalizeConversations(state);
 
     return {
@@ -98,8 +99,8 @@ export class Container extends React.Component<Properties> {
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,
-      canAddMembers: isCurrentUserRoomAdmin && !conversation?.isOneOnOne,
-      canEditGroup: isCurrentUserRoomAdmin,
+      canAddMembers: (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !conversation?.isOneOnOne,
+      canEditGroup: isCurrentUserRoomAdmin || isCurrentUserRoomModerator,
       canLeaveGroup: !isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1,
       conversationAdminIds,
       conversationModeratorIds,

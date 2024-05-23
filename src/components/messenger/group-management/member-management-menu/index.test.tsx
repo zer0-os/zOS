@@ -16,6 +16,7 @@ describe(MemberManagementMenu, () => {
       canRemove: true,
       onOpenChange: () => {},
       onOpenMemberManagement: () => {},
+      allowModeratorManagement: true,
       ...props,
     };
 
@@ -34,6 +35,13 @@ describe(MemberManagementMenu, () => {
     expect(menuItem(wrapper, 'make-mod')).toBeUndefined();
   });
 
+  it('does not render Make/Remove Mod menu item when moderator actions are not allowed', () => {
+    featureFlags.allowModeratorActions = false;
+    const wrapper = subject({ allowModeratorManagement: false });
+    expect(menuItem(wrapper, 'make-mod')).toBeUndefined();
+    expect(menuItem(wrapper, 'remove-mod')).toBeUndefined();
+  });
+
   describe('Member Management Actions', () => {
     it('publishes onRemoveMember event when Remove member is clicked', () => {
       const onOpenMemberManagement = jest.fn();
@@ -45,6 +53,8 @@ describe(MemberManagementMenu, () => {
     });
 
     it('publishes onMakeMod event when Make Mod is clicked', () => {
+      featureFlags.allowModeratorActions = true;
+
       const onOpenMemberManagement = jest.fn();
       const wrapper = subject({ onOpenMemberManagement });
 

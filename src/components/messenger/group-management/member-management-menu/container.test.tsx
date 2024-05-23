@@ -19,5 +19,14 @@ describe(Container, () => {
         expect.objectContaining({ conversationModeratorIds: ['moderator-id-1', 'moderator-id-2'] })
       );
     });
+
+    test('gets allowModeratorManagement', () => {
+      const state = new StoreBuilder().withCurrentUser({ matrixId: 'admin-id' }).withActiveConversation({
+        id: 'id',
+        adminMatrixIds: ['admin-id'],
+      });
+
+      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ allowModeratorManagement: true }));
+    });
   });
 });

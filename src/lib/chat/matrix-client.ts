@@ -693,6 +693,25 @@ export class MatrixClient implements IChatClient {
     }
   }
 
+  async getMessageReadReceipts(
+    roomId: string,
+    messageId: string
+  ): Promise<{ userId: string; eventId: string; ts: number }[]> {
+    await this.waitForConnection();
+    const room = this.matrix.getRoom(roomId);
+
+    if (room) {
+      const event = room.findEventById(messageId);
+
+      if (event) {
+        const latestReadReceipts = this.getLatestRoomReadReceipts(room);
+        return latestReadReceipts.filter((receipt) => receipt.ts >= event.getTs());
+      }
+    }
+
+    return [];
+  }
+
   async markRoomAsRead(roomId: string): Promise<void> {
     const room = this.matrix.getRoom(roomId);
 
@@ -1217,6 +1236,22 @@ export class MatrixClient implements IChatClient {
 
   private getLatestEvent(room: Room, type: EventType) {
     return room.getLiveTimeline().getState(EventTimeline.FORWARDS).getStateEvents(type, '');
+  }
+
+  private getLatestRoomReadReceipts(room: Room): { userId: string; eventId: string; ts: number }[] {
+    const latestReadReceipts: { userId: string; eventId: string; ts: number }[] = [];
+
+    const events = room.getLiveTimeline().getEvents();
+    events.forEach((event) => {
+      const receipts = room.getReceiptsForEvent(event);
+      receipts.forEach((receipt) => {
+        if (receipt.type === ReceiptType.Read) {
+          latestReadReceipts.push({ userId: receipt.userId, eventId: event.getId(), ts: receipt.data.ts });
+        }
+      });
+    });
+
+    return latestReadReceipts;
   }
 
   private getSecretStorageKey = async ({ keys: keyInfos }) => {

@@ -886,6 +886,79 @@ describe('matrix client', () => {
     });
   });
 
+  describe('getMessageReadReceipts', () => {
+    it('returns read receipts successfully for a specific message', async () => {
+      const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
+      const getEvents = jest.fn().mockReturnValue([
+        {
+          getId: jest.fn().mockReturnValue('event1'),
+          getTs: jest.fn().mockReturnValue(1620000000000),
+        },
+        {
+          getId: jest.fn().mockReturnValue('event2'),
+          getTs: jest.fn().mockReturnValue(1620000001000),
+        },
+      ]);
+
+      const eventReceiptsMap = new Map([
+        ['event1', [{ userId: 'user1', type: 'm.read', data: { ts: 1620000000000 } }]],
+        ['event2', [{ userId: 'user2', type: 'm.read', data: { ts: 1620000001000 } }]],
+      ]);
+
+      const getReceiptsForEvent = jest.fn((event) => eventReceiptsMap.get(event.getId()));
+
+      const findEventById = jest.fn(() => ({
+        getTs: jest.fn().mockReturnValue(1620000000000),
+      }));
+
+      const getRoom = jest.fn().mockReturnValue(
+        stubRoom({
+          getLiveTimeline: () => stubTimeline({ getEvents }),
+          getReceiptsForEvent,
+          findEventById,
+        })
+      );
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getUser, getRoom })) });
+
+      await client.connect(null, 'token');
+      const receipts = await client.getMessageReadReceipts('roomId', 'event2');
+
+      expect(findEventById).toHaveBeenCalledWith('event2');
+      expect(receipts).toEqual([
+        { userId: 'user1', eventId: 'event1', ts: 1620000000000 },
+        { userId: 'user2', eventId: 'event2', ts: 1620000001000 },
+      ]);
+    });
+
+    it('returns an empty array if the room is not found', async () => {
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRoom: jest.fn().mockReturnValue(null) })),
+      });
+
+      await client.connect(null, 'token');
+      const receipts = await client.getMessageReadReceipts('roomId', 'event2');
+
+      expect(receipts).toEqual([]);
+    });
+
+    it('returns an empty array if the event is not found', async () => {
+      const getRoom = jest.fn().mockReturnValue(
+        stubRoom({
+          findEventById: jest.fn().mockReturnValue(null),
+        })
+      );
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom })) });
+
+      await client.connect(null, 'token');
+      const receipts = await client.getMessageReadReceipts('roomId', 'event2');
+
+      expect(getRoom().findEventById).toHaveBeenCalledWith('event2');
+      expect(receipts).toEqual([]);
+    });
+  });
+
   describe('markRoomAsRead', () => {
     it('marks room as read successfully', async () => {
       featureFlags.enableReadReceiptPreferences = true;

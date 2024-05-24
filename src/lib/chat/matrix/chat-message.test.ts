@@ -28,7 +28,7 @@ describe(getRoomPowerLevelsChangedAdminData, () => {
     expect(result).toBeNull();
   });
 
-  it('returns MEMBER_SET_AS_MODERATOR if user is promoted to moderator', () => {
+  it('returns MEMBER_SET_AS_MODERATOR if user is promoted to moderator (from 0 prev_content)', () => {
     const result = getRoomPowerLevelsChangedAdminData(
       {
         users: {
@@ -46,12 +46,46 @@ describe(getRoomPowerLevelsChangedAdminData, () => {
     expect(result).toEqual({ type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId: 'user-matrix-id' });
   });
 
-  it('returns MEMBER_REMOVED_AS_MODERATOR if user is demoted from moderator', () => {
+  it('returns MEMBER_SET_AS_MODERATOR if user is promoted to moderator (from empty prev_content)', () => {
+    const result = getRoomPowerLevelsChangedAdminData(
+      {
+        users: {
+          'admin-matrix-user-id': PowerLevels.Owner,
+          'user-matrix-id': PowerLevels.Moderator,
+        },
+      },
+      {
+        users: {
+          'admin-matrix-user-id': PowerLevels.Owner,
+        },
+      }
+    );
+    expect(result).toEqual({ type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId: 'user-matrix-id' });
+  });
+
+  it('returns MEMBER_REMOVED_AS_MODERATOR if user is demoted from moderator (to 0 power_level)', () => {
     const result = getRoomPowerLevelsChangedAdminData(
       {
         users: {
           'admin-matrix-user-id': PowerLevels.Owner,
           'user-matrix-id': PowerLevels.Viewer,
+        },
+      },
+      {
+        users: {
+          'admin-matrix-user-id': PowerLevels.Owner,
+          'user-matrix-id': PowerLevels.Moderator,
+        },
+      }
+    );
+    expect(result).toEqual({ type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId: 'user-matrix-id' });
+  });
+
+  it('returns MEMBER_REMOVED_AS_MODERATOR if user is demoted from moderator (to empty power_level)', () => {
+    const result = getRoomPowerLevelsChangedAdminData(
+      {
+        users: {
+          'admin-matrix-user-id': PowerLevels.Owner,
         },
       },
       {

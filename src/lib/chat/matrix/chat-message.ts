@@ -2,7 +2,7 @@ import { CustomEventType, MatrixConstants, MembershipStateType, NotifiableEventT
 import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
 import { decryptFile } from './media';
 import { AdminMessageType, Message, MessageSendStatus } from '../../../store/messages';
-import { parsePlainBody } from './utils';
+import { getObjectDiff, parsePlainBody } from './utils';
 import { PowerLevels } from '../types';
 
 async function parseMediaData(matrixMessage) {
@@ -140,9 +140,7 @@ export function getRoomPowerLevelsChangedAdminData(content, previousContent) {
   // we need to find the user who's power level has changed
   const usersCurrentPowerLevels: { [userId: string]: number } = content.users;
   const usersPreviousPowerLevels: { [userId: string]: number } = previousContent.users;
-  const changedUserIds = Object.keys(usersCurrentPowerLevels).filter(
-    (userId) => usersCurrentPowerLevels[userId] !== usersPreviousPowerLevels[userId]
-  );
+  const changedUserIds = getObjectDiff(usersCurrentPowerLevels, usersPreviousPowerLevels);
 
   if (changedUserIds.length !== 1) {
     return null;
@@ -151,6 +149,20 @@ export function getRoomPowerLevelsChangedAdminData(content, previousContent) {
   const userId = changedUserIds[0];
   const previousPowerLevel = usersPreviousPowerLevels[userId];
   const currentPowerLevel = usersCurrentPowerLevels[userId];
+
+  if (
+    (!previousPowerLevel || previousPowerLevel === PowerLevels.Viewer) &&
+    currentPowerLevel === PowerLevels.Moderator
+  ) {
+    return { type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId };
+  }
+
+  if (
+    previousPowerLevel === PowerLevels.Moderator &&
+    (currentPowerLevel === PowerLevels.Viewer || !currentPowerLevel)
+  ) {
+    return { type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId };
+  }
 
   // Define power level changes to be checked
   const powerLevelChanges = [

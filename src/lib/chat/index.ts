@@ -331,3 +331,7 @@ export async function removeUserAsModerator(roomId: string, userId: string) {
 export async function setReadReceiptPreference(preference: ReadReceiptPreferenceType) {
   return await chat.get().matrix.setReadReceiptPreference(preference);
 }
+
+export async function getMessageReadReceipts(roomId: string, messageId: string) {
+  return await chat.get().matrix.getMessageReadReceipts(roomId, messageId);
+}

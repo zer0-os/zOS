@@ -1,7 +1,8 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
 .remove-member-dialog {
-  width: 528px;
+  width: 586px;
+  line-height: 22px;
 
   & > *:last-child {
     margin-top: 24px;

@@ -19,6 +19,7 @@ import { saga as requestPasswordReset } from './request-password-reset/saga';
 import { saga as confirmPasswordReset } from './confirm-password-reset/saga';
 import { saga as matrix } from './matrix/saga';
 import { saga as groupManagement } from './group-management/saga';
+import { saga as messageInfo } from './message-info/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -41,6 +42,7 @@ export function* rootSaga() {
     confirmPasswordReset,
     matrix,
     groupManagement,
+    messageInfo,
   };
 
   yield all(

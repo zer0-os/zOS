@@ -500,6 +500,23 @@ export function* sendBrowserNotification(eventData) {
   }
 }
 
+export function* updateReadByUsers(messageId, receipts) {
+  const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
+
+  const selectedMessage = yield select(messageSelector(messageId));
+  const filteredReceipts = receipts.filter((receipt) => receipt.ts >= selectedMessage?.createdAt);
+
+  const currentUser = yield select(currentUserSelector());
+
+  const readByUsers = filteredReceipts
+    .map((receipt) => {
+      return Object.values(zeroUsersMap).find((user) => user.matrixId === receipt.userId);
+    })
+    .filter((user) => user && user.userId !== currentUser.id);
+
+  yield put(receiveMessage({ id: messageId, readBy: readByUsers }));
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetch);
   yield takeLatest(SagaActionTypes.Send, send);

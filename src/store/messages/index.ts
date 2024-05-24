@@ -5,6 +5,7 @@ import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { LinkPreview } from '../../lib/link-preview';
 import { ParentMessage } from '../../lib/chat/types';
+import { User } from '../authentication/types';
 
 export interface AttachmentUploadResult {
   name: string;
@@ -84,6 +85,7 @@ export interface Message {
   optimisticId?: string;
   rootMessageId?: string;
   sendStatus: MessageSendStatus;
+  readBy?: User[];
 }
 
 export interface EditMessageOptions {

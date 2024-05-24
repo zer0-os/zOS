@@ -18,6 +18,7 @@ import { reducer as confirmPasswordReset } from './confirm-password-reset';
 import { reducer as matrix } from './matrix';
 import { reducer as groupManagement } from './group-management';
 import { reducer as dialogs } from './dialogs';
+import { reducer as messageInfo } from './message-info';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -38,6 +39,7 @@ export const rootReducer = combineReducers({
   matrix,
   groupManagement,
   dialogs,
+  messageInfo,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

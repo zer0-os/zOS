@@ -238,6 +238,14 @@ describe(DirectMessageChat, () => {
 
         expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: true }));
       });
+
+      it('is true when current user is room moderator', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(stubConversation({ isOneOnOne: false, moderatorIds: ['current-user-id'] }))
+          .withCurrentUser(stubAuthenticatedUser({ id: 'current-user-id' }));
+
+        expect(DirectMessageChat.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: true }));
+      });
     });
 
     describe('canAddMembers', () => {

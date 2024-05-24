@@ -120,7 +120,7 @@ class MakeModerator implements ConfirmationDefinition {
   getMessage() {
     return (
       <>
-        Are you sure you want to make <b>{this.userName}</b> moderator of <i>{this.roomLabel}</i>?
+        Are you sure you want to make <b>{this.userName}</b> moderator of <i>{this.roomLabel}</i> ?
       </>
     );
   }
@@ -134,7 +134,7 @@ class RemoveModerator implements ConfirmationDefinition {
   getMessage() {
     return (
       <>
-        Are you sure you want to remove <b>{this.userName}</b> as moderator of <i>{this.roomLabel}</i>?
+        Are you sure you want to remove <b>{this.userName}</b> as moderator of <i>{this.roomLabel}</i> ?
       </>
     );
   }

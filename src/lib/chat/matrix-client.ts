@@ -748,6 +748,8 @@ export class MatrixClient implements IChatClient {
 
   async removeUser(roomId, user): Promise<void> {
     await this.waitForConnection();
+
+    await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Viewer); // reset user power_level first
     await this.matrix.kick(roomId, user.matrixId);
   }
 

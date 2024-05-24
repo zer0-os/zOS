@@ -63,5 +63,63 @@ describe(Container, () => {
         expect.objectContaining({ conversationModeratorIds: ['user-id'] })
       );
     });
+
+    describe('canAddMembers', () => {
+      test('gets true when user is admin', () => {
+        const state = new StoreBuilder()
+          .managingGroup({})
+          .withCurrentUser({ matrixId: 'user-id' })
+          .withActiveConversation({ id: 'user-id', adminMatrixIds: ['user-id'] });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: true }));
+      });
+
+      test('gets true when user is moderator', () => {
+        const state = new StoreBuilder()
+          .managingGroup({})
+          .withCurrentUser({ id: 'user-id' })
+          .withActiveConversation({ id: 'user-id', moderatorIds: ['user-id'] });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: true }));
+      });
+
+      test('gets false when user is not admin or moderator', () => {
+        const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'user-id' });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
+      });
+
+      test('gets false when conversation is one on one', () => {
+        const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'user-id', isOneOnOne: true });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
+      });
+    });
+
+    describe('canEditGroup', () => {
+      test('gets true when user is admin', () => {
+        const state = new StoreBuilder()
+          .managingGroup({})
+          .withCurrentUser({ matrixId: 'user-id' })
+          .withActiveConversation({ id: 'user-id', adminMatrixIds: ['user-id'] });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canEditGroup: true }));
+      });
+
+      test('gets true when user is moderator', () => {
+        const state = new StoreBuilder()
+          .managingGroup({})
+          .withCurrentUser({ id: 'user-id' })
+          .withActiveConversation({ id: 'user-id', moderatorIds: ['user-id'] });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canEditGroup: true }));
+      });
+
+      test('gets false when user is not admin or moderator', () => {
+        const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'user-id' });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canEditGroup: false }));
+      });
+    });
   });
 });

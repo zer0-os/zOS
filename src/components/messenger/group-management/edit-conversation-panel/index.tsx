@@ -10,7 +10,7 @@ import { User } from '../../../../store/channels';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { EditConversationErrors, EditConversationState } from '../../../../store/group-management/types';
-import { sortMembers } from '../../list/utils/utils';
+import { getTagForUser, isUserAdmin, isUserModerator, sortMembers } from '../../list/utils/utils';
 
 import './styles.scss';
 
@@ -71,6 +71,20 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     return this.props.otherMembers.length > 1;
   }
 
+  get isCurrentUserAdmin() {
+    return isUserAdmin(this.props.currentUser, this.props.conversationAdminIds);
+  }
+
+  showMemberManagementMenuForMember = (user: User) => {
+    const { conversationAdminIds, conversationModeratorIds } = this.props;
+    if (this.isCurrentUserAdmin) {
+      return true;
+    } else {
+      // since current user is a moderator, they can only manage members who are neither admins or moderators
+      return !isUserModerator(user, conversationModeratorIds) && !isUserAdmin(user, conversationAdminIds);
+    }
+  };
+
   memberSelected = (userId: string) => {
     this.props.onMemberSelected(userId);
   };
@@ -80,6 +94,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
   };
 
   renderEditImageAndIcon = () => {
+    if (!this.isCurrentUserAdmin) {
+      return null;
+    }
+
     return (
       <div {...cn('details')}>
         <div {...cn('image-upload')}>
@@ -125,11 +143,8 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     );
   };
 
-  getMemberTag = (userId: string) => {
-    if (this.props.conversationModeratorIds.includes(userId)) {
-      return 'Mod';
-    }
-    return '';
+  getMemberTag = (user: User) => {
+    return getTagForUser(user, this.props.conversationAdminIds, this.props.conversationModeratorIds);
   };
 
   renderMembers = () => {
@@ -143,15 +158,19 @@ export class EditConversationPanel extends React.Component<Properties, State> {
         </div>
         <div {...cn('member-list')}>
           <ScrollbarContainer>
-            <CitizenListItem user={this.props.currentUser} tag='Admin' onSelected={this.openProfile}></CitizenListItem>
+            <CitizenListItem
+              user={this.props.currentUser}
+              tag={this.getMemberTag(this.props.currentUser)}
+              onSelected={this.openProfile}
+            ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem
                 key={u.userId}
                 user={u}
                 canRemove={this.canRemoveMembers}
                 onSelected={this.memberSelected}
-                tag={this.getMemberTag(u.userId)}
-                showMemberManagementMenu
+                tag={this.getMemberTag(u)}
+                showMemberManagementMenu={this.showMemberManagementMenuForMember(u)}
               ></CitizenListItem>
             ))}
           </ScrollbarContainer>

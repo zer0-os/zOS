@@ -191,7 +191,7 @@ export class MatrixClient implements IChatClient {
         }
 
         // just to be safe, above we check if the user is the creator of the room
-        // but also check if this users has a power level of 100,
+        // but we also check if *this* user has a power level of 100,
         // otherwise sendStateEvent will fail
         const users = powerLevelsContent.users || {};
         if (users[this.userId] !== PowerLevels.Owner) {
@@ -736,6 +736,8 @@ export class MatrixClient implements IChatClient {
 
   async setUserAsModerator(roomId: string, user): Promise<void> {
     await this.waitForConnection();
+
+    this.lowerMinimumInviteAndKickLevels([this.matrix.getRoom(roomId)]);
     await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Moderator);
   }
 

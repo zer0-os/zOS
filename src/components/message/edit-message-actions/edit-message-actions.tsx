@@ -1,9 +1,8 @@
 import React from 'react';
 
 import { bemClassName } from '../../../lib/bem';
-
-import { IconCheck, IconXClose } from '@zero-tech/zui/icons';
-import { IconButton, Tooltip } from '@zero-tech/zui/components';
+import { Button, Color, Size, Variant } from '@zero-tech/zui/components/Button';
+import { Tooltip } from '@zero-tech/zui/components';
 
 import './styles.scss';
 
@@ -56,21 +55,31 @@ export default class EditMessageActions extends React.Component<Properties> {
     return (
       <div {...cn()} ref={this.editMessageActionRef}>
         <Tooltip content={this.props.secondaryTooltipText}>
-          <IconButton {...cn('icon')} onClick={this.props.onCancel} Icon={IconXClose} isFilled size='small' />
+          <Button
+            {...cn('icon')}
+            color={Color.Greyscale}
+            onPress={this.props.onCancel}
+            size={Size.Small}
+            variant={Variant.Secondary}
+          >
+            Cancel
+          </Button>
         </Tooltip>
         <Tooltip
           content={this.props.primaryTooltipText}
           open={this.state.tooltipOpen}
           onOpenChange={this.handleTooltipChange}
         >
-          <IconButton
+          <Button
             {...cn('icon', isDisabled && 'disabled')}
-            onClick={this.props.onEdit}
-            Icon={IconCheck}
+            color={Color.Highlight}
             isDisabled={isDisabled}
-            isFilled
-            size='small'
-          />
+            onPress={this.props.onEdit}
+            size={Size.Small}
+            variant={Variant.Secondary}
+          >
+            Send
+          </Button>
         </Tooltip>
       </div>
     );

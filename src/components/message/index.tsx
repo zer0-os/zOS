@@ -78,7 +78,10 @@ export class Message extends React.Component<Properties, State> {
       }
     }
 
-    if (event.button === 2) {
+    const hoveringNode = (event.target as HTMLElement).nodeName.toLowerCase();
+    const isHoveringTextArea = hoveringNode === 'textarea';
+
+    if (!isHoveringTextArea && event.button === 2) {
       event.preventDefault();
       event.stopPropagation();
       const { pageX, pageY } = event;

@@ -55,13 +55,7 @@ export default class EditMessageActions extends React.Component<Properties> {
     return (
       <div {...cn()} ref={this.editMessageActionRef}>
         <Tooltip content={this.props.secondaryTooltipText}>
-          <Button
-            {...cn('icon')}
-            color={Color.Greyscale}
-            onPress={this.props.onCancel}
-            size={Size.Small}
-            variant={Variant.Secondary}
-          >
+          <Button color={Color.Greyscale} onPress={this.props.onCancel} size={Size.Small} variant={Variant.Secondary}>
             Cancel
           </Button>
         </Tooltip>
@@ -71,7 +65,6 @@ export default class EditMessageActions extends React.Component<Properties> {
           onOpenChange={this.handleTooltipChange}
         >
           <Button
-            {...cn('icon', isDisabled && 'disabled')}
             color={Color.Highlight}
             isDisabled={isDisabled}
             onPress={this.props.onEdit}

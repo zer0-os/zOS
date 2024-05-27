@@ -5,17 +5,4 @@
   justify-content: flex-end;
   gap: 8px;
   padding: 8px 0px 0px;
-
-  &__icon {
-    color: theme.$color-greyscale-12;
-
-    &--disabled {
-      color: theme.$color-greyscale-9;
-      cursor: not-allowed;
-
-      &:hover {
-        background-color: unset;
-      }
-    }
-  }
 }

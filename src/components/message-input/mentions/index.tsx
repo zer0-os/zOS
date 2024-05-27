@@ -45,6 +45,12 @@ export class Mentions extends React.Component<Properties> {
     return highlightFilter(text, currentMentionsText);
   }
 
+  handleOnContextMenu(event: MouseEvent) {
+    // Prevent the custom context menu from appearing, but still
+    // allow the default browser context menu to appear
+    event.stopPropagation();
+  }
+
   renderMentionTypes() {
     const mentions = [
       <Mention
@@ -81,6 +87,7 @@ export class Mentions extends React.Component<Properties> {
         value={this.props.value}
         allowSuggestionsAboveCursor
         suggestionsPortalHost={document.body}
+        onContextMenu={this.handleOnContextMenu}
       >
         {this.renderMentionTypes()}
       </MentionsInput>

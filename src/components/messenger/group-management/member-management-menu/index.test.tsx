@@ -4,12 +4,6 @@ import { Properties, MemberManagementMenu } from '.';
 import { DropdownMenu } from '@zero-tech/zui/components';
 import { MemberManagementAction } from '../../../../store/group-management';
 
-const featureFlags = { allowModeratorActions: true };
-
-jest.mock('../../../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 describe(MemberManagementMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -36,7 +30,6 @@ describe(MemberManagementMenu, () => {
   });
 
   it('does not render Make/Remove Mod menu item when moderator actions are not allowed', () => {
-    featureFlags.allowModeratorActions = false;
     const wrapper = subject({ allowModeratorManagement: false });
     expect(menuItem(wrapper, 'make-mod')).toBeUndefined();
     expect(menuItem(wrapper, 'remove-mod')).toBeUndefined();
@@ -53,8 +46,6 @@ describe(MemberManagementMenu, () => {
     });
 
     it('publishes onMakeMod event when Make Mod is clicked', () => {
-      featureFlags.allowModeratorActions = true;
-
       const onOpenMemberManagement = jest.fn();
       const wrapper = subject({ onOpenMemberManagement });
 

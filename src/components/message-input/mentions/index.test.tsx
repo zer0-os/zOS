@@ -47,6 +47,15 @@ describe(Mentions, () => {
       { display: '3--dale', id: 'd-3', profileImage: 'http://example.com/3', primaryZID: '0://d-3:dale' },
     ]);
   });
+
+  it('should prevent stop propagation of contextmenu events', function () {
+    const wrapper = subject({});
+    const event = { stopPropagation: jest.fn() } as unknown as MouseEvent;
+
+    wrapper.simulate('contextmenu', event);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+  });
 });
 
 async function userSearch(wrapper, search) {

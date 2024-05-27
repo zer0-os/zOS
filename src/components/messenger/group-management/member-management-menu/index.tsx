@@ -5,7 +5,6 @@ import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
 import { MemberManagementAction } from '../../../../store/group-management';
-import { featureFlags } from '../../../../lib/feature-flags';
 
 export interface Properties {
   canRemove?: boolean;
@@ -45,7 +44,7 @@ export class MemberManagementMenu extends React.Component<Properties> {
   get dropdownMenuItems() {
     const menuItems = [];
 
-    if (featureFlags.allowModeratorActions && this.props.allowModeratorManagement) {
+    if (this.props.allowModeratorManagement) {
       if (this.props.isUserModerator) {
         menuItems.push({
           id: 'remove-mod',

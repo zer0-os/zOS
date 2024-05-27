@@ -82,14 +82,6 @@ export class FeatureFlags {
     this._setBoolean('allowEditPrimaryZID', value);
   }
 
-  get allowModeratorActions() {
-    return this._getBoolean('allowModeratorActions', true);
-  }
-
-  set allowModeratorActions(value: boolean) {
-    this._setBoolean('allowModeratorActions', value);
-  }
-
   get enableReadReceiptPreferences() {
     return this._getBoolean('enableReadReceiptPreferences', false);
   }

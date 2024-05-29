@@ -198,10 +198,10 @@ describe('messenger-list', () => {
     expect(closeConversationErrorDialog).toHaveBeenCalledOnce();
   });
 
-  it('renders footer mask when stage is None', function () {
+  it('renders footer button when stage is None', function () {
     const wrapper = subject({ stage: Stage.None });
 
-    expect(wrapper.find(c('footer-mask'))).toExist();
+    expect(wrapper.find(c('footer-button'))).toExist();
   });
 
   it('does not render footer mask when stage is not None', function () {

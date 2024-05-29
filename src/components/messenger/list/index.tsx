@@ -36,10 +36,10 @@ import { closeRewardsDialog, totalRewardsViewed } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { openUserProfile } from '../../../store/edit-profile';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
+import { IconPlus } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
-import { IconPlus } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('direct-message-members');
 

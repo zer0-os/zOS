@@ -15,30 +15,10 @@ $side-padding: 16px;
   /* Enable pointer events for click event */
   pointer-events: auto;
 
-  &__footer-mask {
+  &__footer-button {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 73px;
-    border-radius: 0px 0px 16px 16px;
-
-    // custom colour and opacity to have a better contrast
-    background-image: linear-gradient(0deg, rgba(167, 163, 163, 0), rgba(167, 163, 163, 0.08)),
-      url(cloudAsset('FooterMask.png'));
-    background-repeat: no-repeat;
-    background-size: contain;
-  }
-
-  &__footer-text {
-    font-size: 12px;
-    font-weight: 500;
-    font-family: 'Roboto Mono';
-    align-self: flex-end;
-
+    align-self: center;
     margin-bottom: 16px;
-
-    @include glass-text-primary-color;
   }
 }
 

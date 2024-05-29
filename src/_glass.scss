@@ -61,20 +61,22 @@
     // Our solution is to use a div with a full background and then mask out the inside
     // of it so that you only see approximately 1 px of it
     //
-    background-image: linear-gradient(
-      153.33deg,
-      rgba(255, 255, 255, 0.25) 0%,
-      rgba(255, 255, 255, 0) 24.43%,
-      rgba(255, 255, 255, 0.01) 79.12%,
-      rgba(255, 255, 255, 0.05) 100%
-    );
-    mask: linear-gradient(black, black) center / 100% 100% no-repeat exclude,
-      radial-gradient(circle 16px at 17px 17px, black 99%, transparent),
-      radial-gradient(circle 16px at 17px calc(100% - 17px), black 99%, transparent),
-      radial-gradient(circle 16px at calc(100% - 17px) 17px, black 99%, transparent),
-      radial-gradient(circle 16px at calc(100% - 17px) calc(100% - 17px), black 99%, transparent),
-      linear-gradient(black, black) center / calc(100% - 2px) calc(100% - 26px) no-repeat,
-      linear-gradient(black, black) center / calc(100% - 26px) calc(100% - 2px) no-repeat;
+
+    // Temporary removing background and mask as a fix for cross-browser / cross device compatibility
+    // background-image: linear-gradient(
+    //   153.33deg,
+    //   rgba(255, 255, 255, 0.25) 0%,
+    //   rgba(255, 255, 255, 0) 24.43%,
+    //   rgba(255, 255, 255, 0.01) 79.12%,
+    //   rgba(255, 255, 255, 0.05) 100%
+    // );
+    // mask: linear-gradient(black, black) center / 100% 100% no-repeat exclude,
+    //   radial-gradient(circle 16px at 17px 17px, black 99%, transparent),
+    //   radial-gradient(circle 16px at 17px calc(100% - 17px), black 99%, transparent),
+    //   radial-gradient(circle 16px at calc(100% - 17px) 17px, black 99%, transparent),
+    //   radial-gradient(circle 16px at calc(100% - 17px) calc(100% - 17px), black 99%, transparent),
+    //   linear-gradient(black, black) center / calc(100% - 2px) calc(100% - 26px) no-repeat,
+    //   linear-gradient(black, black) center / calc(100% - 26px) calc(100% - 2px) no-repeat;
   }
 
   // Override for ToDesktop styling (disable mask property)

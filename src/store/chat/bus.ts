@@ -22,6 +22,7 @@ export enum Events {
   RoomUnfavorited = 'chat/channel/roomUnfavorited',
   RoomMemberTyping = 'chat/channel/roomMemberTyping',
   RoomMemberPowerLevelChanged = 'chat/channel/roomMemberPowerLevelChanged',
+  ReadReceiptReceived = 'chat/message/readReceiptReceived',
 }
 
 let theBus;
@@ -92,6 +93,8 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
     const roomMemberTyping = (roomId, userIds) => emit({ type: Events.RoomMemberTyping, payload: { roomId, userIds } });
     const roomMemberPowerLevelChanged = (roomId, matrixId, powerLevel) =>
       emit({ type: Events.RoomMemberPowerLevelChanged, payload: { roomId, matrixId, powerLevel } });
+    const readReceiptReceived = (messageId, userId) =>
+      emit({ type: Events.ReadReceiptReceived, payload: { messageId, userId } });
 
     chatClient.initChat({
       receiveNewMessage,
@@ -110,6 +113,7 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       roomUnfavorited,
       roomMemberTyping,
       roomMemberPowerLevelChanged,
+      readReceiptReceived,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

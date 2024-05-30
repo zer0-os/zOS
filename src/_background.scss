@@ -20,9 +20,15 @@
 }
 
 @mixin main-background {
+  background-image: url(cloudAsset('AbstractBGwithoutShine.jpg'));
   background-color: #0a0a0a;
+  background-image: transparent;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
 
-  transition: background-color animation.$animation-duration-double ease-out;
+  transition: background-color animation.$animation-duration-double ease-out,
+    background-image animation.$animation-duration-double ease-out;
 
   --animation-duration-double: #{animation.$animation-duration-double};
 

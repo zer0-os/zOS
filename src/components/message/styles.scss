@@ -38,6 +38,9 @@
 
       &--edit {
         border-radius: 8px 2px 0px 8px;
+        // stretch the edit block to 100% width
+        width: 100vw;
+        max-width: 100%;
       }
     }
 

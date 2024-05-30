@@ -18,20 +18,20 @@ describe('EditMessageActions', () => {
     return shallow(<EditMessageActions {...allProps} />);
   };
 
-  it('should call onCancel when Discard Changes icon is clicked', () => {
+  it('should call onCancel when Discard Changes icon is pressed', () => {
     const onCancel = jest.fn();
     const wrapper = subject({ onCancel });
 
-    wrapper.find('.edit-message-actions__icon').first().simulate('click');
+    wrapper.find('Button').first().simulate('press');
 
     expect(onCancel).toHaveBeenCalled();
   });
 
-  it('should call onEdit when Save Changes icon is clicked', () => {
+  it('should call onEdit when Save Changes icon is pressed', () => {
     const onEdit = jest.fn();
     const wrapper = subject({ onEdit });
 
-    wrapper.find('.edit-message-actions__icon').at(1).simulate('click');
+    wrapper.find('Button').at(1).simulate('press');
 
     expect(onEdit).toHaveBeenCalled();
   });
@@ -39,14 +39,14 @@ describe('EditMessageActions', () => {
   it('should disable Save Changes icon when value is empty', () => {
     const wrapper = subject({ value: '' });
 
-    const isDisabled = wrapper.find('.edit-message-actions__icon').at(1).prop('isDisabled');
+    const isDisabled = wrapper.find('Button').at(1).prop('isDisabled');
     expect(isDisabled).toBe(true);
   });
 
   it('should enable Save Changes icon when value is not empty', () => {
     const wrapper = subject({ value: 'not empty' });
 
-    const isDisabled = wrapper.find('.edit-message-actions__icon').at(1).prop('isDisabled');
+    const isDisabled = wrapper.find('Button').at(1).prop('isDisabled');
     expect(isDisabled).toBe(false);
   });
 

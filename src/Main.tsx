@@ -12,7 +12,6 @@ import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
 import { AppBar } from './components/app-bar';
 import { DialogManager } from './components/dialog-manager/container';
-import { config } from './config';
 
 export interface Properties {
   context: {
@@ -39,10 +38,6 @@ export class Container extends React.Component<Properties> {
       <div className={mainClassName}>
         {this.props.context.isAuthenticated && (
           <>
-            <video className='background-video' autoPlay loop muted>
-              <source src={`${config.videoAssetsPath}BlackParticlesBG.mp4`} type='video/mp4' />
-              Your browser does not support the video tag.
-            </video>
             <DialogManager />
             <AppBar />
             <Sidekick />

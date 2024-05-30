@@ -54,6 +54,7 @@ describe(OverviewPanel, () => {
 
     expect(wrapper.find(cn('section'))).toHaveLength(1);
     expect(wrapper.find(cn('section-title')).at(0)).toHaveText('Sent To');
+    expect(wrapper.find(CitizenListItem)).toHaveLength(1);
   });
 
   it('does not render sentTo section if sentTo is empty', () => {

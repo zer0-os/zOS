@@ -528,8 +528,28 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, ChatEvents.MessageUpdated, receiveUpdateMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageDeleted, receiveDelete);
   yield takeEveryFromBus(chatBus, ChatEvents.LiveRoomEventReceived, receiveLiveRoomEventAction);
+  yield takeEveryFromBus(chatBus, ChatEvents.ReadReceiptReceived, readReceiptReceived);
 }
 
 function* receiveLiveRoomEventAction({ payload }) {
   yield sendBrowserNotification(payload.eventData);
+}
+
+function* readReceiptReceived({ payload }) {
+  const { messageId, userId } = payload;
+
+  const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
+  const currentUser = yield select(currentUserSelector);
+
+  const readByUser = Object.values(zeroUsersMap).find((user) => user.matrixId === userId);
+
+  if (readByUser && readByUser.userId !== currentUser.id) {
+    const selectedMessage = yield select(messageSelector(messageId));
+
+    if (selectedMessage) {
+      const updatedReadBy = [...(selectedMessage.readBy || []), readByUser];
+
+      yield put(receiveMessage({ id: messageId, readBy: updatedReadBy }));
+    }
+  }
 }

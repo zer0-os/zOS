@@ -1,0 +1,32 @@
+@import '../../../../glass';
+
+.message-info-overview-panel {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  &__body {
+    margin: 0 16px 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  &__section-title {
+    @include glass-text-secondary-color;
+
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+}

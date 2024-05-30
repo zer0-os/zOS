@@ -749,8 +749,7 @@ export class MatrixClient implements IChatClient {
   async removeUser(roomId, user): Promise<void> {
     await this.waitForConnection();
 
-    const isRoomAdmin = await this.isCurrentUserRoomAdmin(roomId);
-    if (isRoomAdmin) {
+    if (this.isCurrentUserRoomAdmin(roomId)) {
       await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Viewer); // reset user power_level first
     }
     await this.matrix.kick(roomId, user.matrixId);
@@ -768,7 +767,7 @@ export class MatrixClient implements IChatClient {
     await this.matrix.setPowerLevel(roomId, user.matrixId, PowerLevels.Viewer);
   }
 
-  private async isCurrentUserRoomAdmin(roomId: string): Promise<boolean> {
+  private isCurrentUserRoomAdmin(roomId: string): boolean {
     const room = this.matrix.getRoom(roomId);
     const [admins, _mods] = this.getRoomAdminsAndMods(room);
     return admins.includes(this.userId);

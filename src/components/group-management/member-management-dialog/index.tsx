@@ -6,7 +6,7 @@ import './styles.scss';
 
 import { bemClassName } from '../../../lib/bem';
 
-const cn = bemClassName('remove-member-dialog');
+const cn = bemClassName('member-management-dialog');
 
 export interface Properties {
   inProgress: boolean;

@@ -6,7 +6,7 @@ import { MemberManagementDialog, Properties } from '.';
 import { bem } from '../../../lib/bem';
 import { Alert, ModalConfirmation } from '@zero-tech/zui/components';
 
-const c = bem('.remove-member-dialog');
+const c = bem('.member-management-dialog');
 
 const mockConfirmitionDefinition = {
   getProgressMessage: () => 'Removing Johnny Cash from the group.',

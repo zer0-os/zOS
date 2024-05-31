@@ -28,7 +28,6 @@ export interface Properties {
 
   onBack: () => void;
   onEdit: (name: string, image: File | null) => void;
-  onMemberSelected: (userId: string) => void;
   openUserProfile: () => void;
 }
 
@@ -83,10 +82,6 @@ export class EditConversationPanel extends React.Component<Properties, State> {
       // since current user is a moderator, they can only manage members who are neither admins or moderators
       return !isUserModerator(user, conversationModeratorIds) && !isUserAdmin(user, conversationAdminIds);
     }
-  };
-
-  memberSelected = (userId: string) => {
-    this.props.onMemberSelected(userId);
   };
 
   openProfile = () => {
@@ -161,14 +156,12 @@ export class EditConversationPanel extends React.Component<Properties, State> {
             <CitizenListItem
               user={this.props.currentUser}
               tag={this.getMemberTag(this.props.currentUser)}
-              onSelected={this.openProfile}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem
                 key={u.userId}
                 user={u}
                 canRemove={this.canRemoveMembers}
-                onSelected={this.memberSelected}
                 tag={this.getMemberTag(u)}
                 showMemberManagementMenu={this.showMemberManagementMenuForMember(u)}
               ></CitizenListItem>

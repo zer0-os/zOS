@@ -21,7 +21,6 @@ describe(EditConversationPanel, () => {
       icon: '',
       conversationAdminIds: [],
       conversationModeratorIds: [],
-      onMemberSelected: () => null,
       openUserProfile: () => null,
       ...props,
     };

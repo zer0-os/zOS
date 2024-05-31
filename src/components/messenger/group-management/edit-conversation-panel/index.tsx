@@ -28,7 +28,6 @@ export interface Properties {
 
   onBack: () => void;
   onEdit: (name: string, image: File | null) => void;
-  onMemberSelected: (userId: string) => void;
   openUserProfile: () => void;
 }
 
@@ -83,10 +82,6 @@ export class EditConversationPanel extends React.Component<Properties, State> {
       // since current user is a moderator, they can only manage members who are neither admins or moderators
       return !isUserModerator(user, conversationModeratorIds) && !isUserAdmin(user, conversationAdminIds);
     }
-  };
-
-  memberSelected = (userId: string) => {
-    this.props.onMemberSelected(userId);
   };
 
   openProfile = () => {

@@ -161,14 +161,12 @@ export class EditConversationPanel extends React.Component<Properties, State> {
             <CitizenListItem
               user={this.props.currentUser}
               tag={this.getMemberTag(this.props.currentUser)}
-              onSelected={this.openProfile}
             ></CitizenListItem>
             {sortedOtherMembers.map((u) => (
               <CitizenListItem
                 key={u.userId}
                 user={u}
                 canRemove={this.canRemoveMembers}
-                onSelected={this.memberSelected}
                 tag={this.getMemberTag(u)}
                 showMemberManagementMenu={this.showMemberManagementMenuForMember(u)}
               ></CitizenListItem>

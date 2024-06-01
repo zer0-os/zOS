@@ -202,6 +202,8 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                   onCreate={this.createNewConversation}
                 />
               )}
+
+              <div {...cn('buffer')} />
             </div>
           </ScrollbarContainer>
         </div>

@@ -5,19 +5,30 @@
 $side-padding: 16px;
 
 .direct-message-members {
+  position: relative;
   flex-grow: 99;
   display: flex;
   flex-direction: column;
-  padding-bottom: 16px;
 
   /* Prevent text highlighting */
   user-select: none;
   /* Enable pointer events for click event */
   pointer-events: auto;
 
-  &__footer-button {
+  &__footer-button-container {
     display: flex;
-    align-self: center;
+    justify-content: center;
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    background: linear-gradient(to bottom, transparent, #0f0f0f 100%);
+    border-radius: 0 0 16px 16px;
+  }
+
+  &__footer-button {
     margin-bottom: 16px;
   }
 }

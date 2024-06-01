@@ -35,7 +35,7 @@ import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog, totalRewardsViewed } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { openUserProfile } from '../../../store/edit-profile';
-import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
+import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../lib/bem';
@@ -282,14 +282,15 @@ export class Container extends React.Component<Properties, State> {
 
   renderFooterButton() {
     return (
-      <Button
-        {...cn('footer-button')}
-        variant={ButtonVariant.Secondary}
-        onPress={this.openInviteDialog}
-        startEnhancer={<IconPlus size={20} isFilled />}
-      >
-        Invite Friends
-      </Button>
+      <div {...cn('footer-button-container')}>
+        <Button
+          {...cn('footer-button')}
+          onPress={this.openInviteDialog}
+          startEnhancer={<IconPlus size={20} isFilled />}
+        >
+          Invite Friends
+        </Button>
+      </div>
     );
   }
 

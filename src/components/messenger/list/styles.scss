@@ -31,6 +31,15 @@ $side-padding: 16px;
 
   &__footer-button {
     margin-bottom: 16px;
+    background: #181818;
+
+    &:hover {
+      background: #181818;
+    }
+
+    &:active {
+      background: #141414;
+    }
   }
 }
 

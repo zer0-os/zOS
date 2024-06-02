@@ -5,7 +5,7 @@ import { bemClassName } from '../../../../lib/bem';
 import { PanelHeader } from '../../list/panel-header';
 import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
-import { IconCurrencyEthereum, IconLock1, IconLogOut3, IconPlus, IconUser1 } from '@zero-tech/zui/icons';
+import { IconCurrencyEthereum, IconLock1, IconLogOut3, IconPlus, IconSettings2, IconUser1 } from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { RewardsItemContainer } from './rewards-item/container';
 import { featureFlags } from '../../../../lib/feature-flags';
@@ -24,6 +24,7 @@ export interface Properties {
   onOpenBackupDialog: () => void;
   onOpenEditProfile: () => void;
   onOpenRewards: () => void;
+  onOpenSettings: () => void;
 }
 
 interface State {
@@ -69,6 +70,10 @@ export class OverviewPanel extends React.Component<Properties, State> {
 
   openRewards = () => {
     this.props.onOpenRewards();
+  };
+
+  openSettings = () => {
+    this.props.onOpenSettings();
   };
 
   renderDetails = () => {
@@ -123,6 +128,18 @@ export class OverviewPanel extends React.Component<Properties, State> {
         >
           Account Backup
         </Button>
+
+        {featureFlags.enableUserSettings && (
+          <Button
+            {...cn('action-button')}
+            variant={ButtonVariant.Secondary}
+            onPress={this.openSettings}
+            startEnhancer={<IconSettings2 size={20} />}
+            color={ButtonColor.Greyscale}
+          >
+            Settings
+          </Button>
+        )}
       </div>
     );
   }

@@ -12,32 +12,52 @@ import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
 import { AppBar } from './components/app-bar';
 import { DialogManager } from './components/dialog-manager/container';
+import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
 
 export interface Properties {
   context: {
     isAuthenticated: boolean;
   };
+  selectedMainBackground: string;
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(_state: RootState): Partial<Properties> {
-    return {};
+  static mapState(state: RootState): Partial<Properties> {
+    const {
+      background: { selectedMainBackground },
+    } = state;
+
+    return { selectedMainBackground };
   }
 
   static mapActions(_state: RootState): Partial<Properties> {
     return {};
   }
 
+  renderAnimatedBackground(src) {
+    return (
+      <video key={src} className='main-background-video' autoPlay loop muted>
+        <source src={src} type='video/mp4' />
+        Your browser does not support the video tag.
+      </video>
+    );
+  }
+
   render() {
-    const mainClassName = classNames('main', 'messenger-full-screen', {
+    const videoSrc = getMainBackgroundVideoSrc(this.props.selectedMainBackground);
+    const backgroundClass = getMainBackgroundClass(this.props.selectedMainBackground);
+
+    const mainClassName = classNames('main', 'messenger-full-screen', backgroundClass, {
       'sidekick-panel-open': this.props.context.isAuthenticated,
-      'display-app-background': this.props.context.isAuthenticated,
+      background: this.props.context.isAuthenticated,
     });
 
     return (
       <div className={mainClassName}>
         {this.props.context.isAuthenticated && (
           <>
+            {videoSrc && this.renderAnimatedBackground(videoSrc)}
+
             <DialogManager />
             <AppBar />
             <Sidekick />

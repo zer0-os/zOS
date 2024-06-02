@@ -89,6 +89,14 @@ export class FeatureFlags {
   set enableReadReceiptPreferences(value: boolean) {
     this._setBoolean('enableReadReceiptPreferences', value);
   }
+
+  get enableUserSettings() {
+    return this._getBoolean('enableUserSettings', false);
+  }
+
+  set enableUserSettings(value: boolean) {
+    this._setBoolean('enableUserSettings', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

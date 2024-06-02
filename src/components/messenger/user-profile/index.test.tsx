@@ -4,6 +4,7 @@ import { UserProfile, Properties } from '.';
 import { Stage } from '../../../store/user-profile';
 import { OverviewPanel } from './overview-panel';
 import { EditProfileContainer } from '../../edit-profile/container';
+import { SettingsPanel } from './settings-panel';
 
 describe(UserProfile, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -19,6 +20,7 @@ describe(UserProfile, () => {
       onEdit: () => {},
       onBackToOverview: () => {},
       onRewards: () => {},
+      onSettings: () => {},
 
       ...props,
     };
@@ -36,6 +38,12 @@ describe(UserProfile, () => {
     const wrapper = subject({ stage: Stage.EditProfile });
 
     expect(wrapper).toHaveElement(EditProfileContainer);
+  });
+
+  it('renders Settings Panel when stage is Settings', () => {
+    const wrapper = subject({ stage: Stage.Settings });
+
+    expect(wrapper).toHaveElement(SettingsPanel);
   });
 
   it('renders nothing when stage None', () => {

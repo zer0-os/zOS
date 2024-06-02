@@ -3,6 +3,7 @@ import * as React from 'react';
 import { OverviewPanel } from './overview-panel';
 import { Stage } from '../../../store/user-profile';
 import { EditProfileContainer } from '../../edit-profile/container';
+import { SettingsPanel } from './settings-panel';
 
 export interface Properties {
   stage: Stage;
@@ -16,6 +17,7 @@ export interface Properties {
   onEdit: () => void;
   onBackToOverview: () => void;
   onRewards: () => void;
+  onSettings: () => void;
 }
 
 export class UserProfile extends React.Component<Properties> {
@@ -32,10 +34,12 @@ export class UserProfile extends React.Component<Properties> {
             onOpenBackupDialog={this.props.onBackup}
             onOpenEditProfile={this.props.onEdit}
             onOpenRewards={this.props.onRewards}
+            onOpenSettings={this.props.onSettings}
           />
         )}
 
         {this.props.stage === Stage.EditProfile && <EditProfileContainer onClose={this.props.onBackToOverview} />}
+        {this.props.stage === Stage.Settings && <SettingsPanel onBack={this.props.onBackToOverview} />}
       </>
     );
   }

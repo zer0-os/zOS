@@ -14,7 +14,7 @@ describe(SettingsPanel, () => {
     return shallow(<SettingsPanel {...allProps} />);
   };
 
-  it('publishes onClose event', () => {
+  it('publishes onBack event', () => {
     const onBack = jest.fn();
     const wrapper = subject({ onBack });
 

@@ -62,7 +62,6 @@ export class GroupManagement extends React.PureComponent<Properties> {
             onBack={this.props.onBack}
             onEdit={this.props.onEditConversation}
             state={this.props.editConversationState}
-            openUserProfile={this.props.openUserProfile}
           />
         )}
         {this.props.stage === Stage.ViewGroupInformation && (

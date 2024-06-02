@@ -33,7 +33,7 @@ import { Connectors } from '../../lib/web3';
 import { completePendingUserProfile } from '../registration/saga';
 import { StoreBuilder } from '../test/store';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { closeUserProfile } from '../edit-profile/saga';
+import { closeUserProfile } from '../user-profile/saga';
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';

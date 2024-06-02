@@ -6,7 +6,7 @@ import { MessengerList } from '../messenger/list';
 import { Stage as GroupManagementStage } from '../../store/group-management';
 import { UserProfileContainer } from '../messenger/user-profile/container';
 import { GroupManagementContainer } from '../messenger/group-management/container';
-import { Stage as ProfileStage } from '../../store/edit-profile';
+import { Stage as ProfileStage } from '../../store/user-profile';
 
 describe('Sidekick', () => {
   const subject = (props: Partial<Properties> = {}) => {

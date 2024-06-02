@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 
 import { UserProfile, Properties } from '.';
-import { Stage } from '../../../store/edit-profile';
+import { Stage } from '../../../store/user-profile';
 import { OverviewPanel } from './overview-panel';
 import { EditProfileContainer } from '../../edit-profile/container';
 

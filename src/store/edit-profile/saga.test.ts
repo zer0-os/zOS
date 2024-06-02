@@ -1,16 +1,9 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import {
-  editProfile as editProfileSaga,
-  updateUserProfile,
-  fetchOwnedZIDs,
-  openUserProfile,
-  closeUserProfile,
-  openEditProfile,
-} from './saga';
+import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs } from './saga';
 import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
 import { uploadImage } from '../registration/api';
-import { EditProfileState, State, initialState as initialEditProfileState, Stage, setStage, setLoadingZIDs } from '.';
+import { EditProfileState, State, initialState as initialEditProfileState, setLoadingZIDs } from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
 import { ProfileDetailsErrors } from '../registration';
@@ -160,47 +153,6 @@ describe('fetchOwnedZIDs', () => {
 
     expect(editProfile.ownedZIDs).toEqual(ownedZIDs);
     expect(editProfile.loadingZIDs).toEqual(false);
-  });
-});
-
-describe('openUserProfile', () => {
-  it('should set stage to Overview', async () => {
-    const { storeState } = await expectSaga(openUserProfile)
-      .withReducer(rootReducer, initialState())
-      .put(setStage(Stage.Overview))
-      .run();
-
-    expect(storeState.editProfile.stage).toEqual(Stage.Overview);
-  });
-});
-
-describe('openEditProfile', () => {
-  it('should set stage to EditProfile', async () => {
-    const { storeState } = await expectSaga(openEditProfile)
-      .withReducer(rootReducer, initialState())
-      .put(setStage(Stage.EditProfile))
-      .run();
-
-    expect(storeState.editProfile.stage).toEqual(Stage.EditProfile);
-  });
-});
-
-describe('closeUserProfile', () => {
-  it('should set stage to None', async () => {
-    const initialStateWithOpenProfile = {
-      ...initialState(),
-      editProfile: {
-        ...initialState().editProfile,
-        stage: Stage.EditProfile,
-      },
-    };
-
-    const { storeState } = await expectSaga(closeUserProfile)
-      .withReducer(rootReducer, initialStateWithOpenProfile)
-      .put(setStage(Stage.None))
-      .run();
-
-    expect(storeState.editProfile.stage).toEqual(Stage.None);
   });
 });
 

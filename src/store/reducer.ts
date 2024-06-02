@@ -19,6 +19,7 @@ import { reducer as matrix } from './matrix';
 import { reducer as groupManagement } from './group-management';
 import { reducer as dialogs } from './dialogs';
 import { reducer as messageInfo } from './message-info';
+import { reducer as userProfile } from './user-profile';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -40,6 +41,7 @@ export const rootReducer = combineReducers({
   groupManagement,
   dialogs,
   messageInfo,
+  userProfile,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

@@ -21,6 +21,7 @@ import { saga as matrix } from './matrix/saga';
 import { saga as groupManagement } from './group-management/saga';
 import { saga as messageInfo } from './message-info/saga';
 import { saga as userProfile } from './user-profile/saga';
+import { saga as background } from './background/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -45,6 +46,7 @@ export function* rootSaga() {
     groupManagement,
     messageInfo,
     userProfile,
+    background,
   };
 
   yield all(

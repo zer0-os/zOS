@@ -20,6 +20,7 @@ import { reducer as groupManagement } from './group-management';
 import { reducer as dialogs } from './dialogs';
 import { reducer as messageInfo } from './message-info';
 import { reducer as userProfile } from './user-profile';
+import { reducer as background } from './background';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -42,6 +43,7 @@ export const rootReducer = combineReducers({
   dialogs,
   messageInfo,
   userProfile,
+  background,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

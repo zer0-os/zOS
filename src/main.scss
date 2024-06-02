@@ -47,8 +47,27 @@ $border-color-hover: theme-zui.$color-primary-7;
     }
   }
 
-  &.display-app-background {
+  &.background {
     @include main-background;
+
+    &.static-green-particles {
+      background-image: url(cloudAsset('AbstractBGwithoutShine.jpg'));
+    }
+
+    &.animated {
+      position: relative;
+
+      video.main-background-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        animation: fadeIn 1s ease-in-out;
+      }
+    }
   }
 }
 

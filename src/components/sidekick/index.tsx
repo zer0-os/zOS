@@ -5,7 +5,7 @@ import { IfAuthenticated } from '../authentication/if-authenticated';
 import { MessengerList } from '../messenger/list';
 import { GroupManagementContainer } from '../messenger/group-management/container';
 import { UserProfileContainer } from '../messenger/user-profile/container';
-import { Stage as ProfileStage } from '../../store/edit-profile';
+import { Stage as ProfileStage } from '../../store/user-profile';
 
 import classNames from 'classnames';
 import { bemClassName } from '../../lib/bem';
@@ -30,10 +30,10 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { groupManagement, editProfile } = state;
+    const { groupManagement, userProfile } = state;
 
     return {
-      profileStage: editProfile.stage,
+      profileStage: userProfile.stage,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { OverviewPanel } from './overview-panel';
-import { Stage } from '../../../store/edit-profile';
+import { Stage } from '../../../store/user-profile';
 import { EditProfileContainer } from '../../edit-profile/container';
 
 export interface Properties {

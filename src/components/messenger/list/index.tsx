@@ -34,7 +34,7 @@ import { VerifyIdDialog } from '../../verify-id-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog, totalRewardsViewed } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { openUserProfile } from '../../../store/edit-profile';
+import { openUserProfile } from '../../../store/user-profile';
 import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 

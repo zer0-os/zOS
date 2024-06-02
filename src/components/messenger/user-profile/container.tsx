@@ -7,7 +7,7 @@ import { User } from '../../../store/channels';
 import { RootState } from '../../../store/reducer';
 import { getUserSubHandle } from '../../../lib/user';
 import { currentUserSelector } from '../../../store/authentication/selectors';
-import { Stage, closeUserProfile, openEditProfile, openUserProfile } from '../../../store/edit-profile';
+import { Stage, closeUserProfile, openEditProfile, openUserProfile } from '../../../store/user-profile';
 import { logout } from '../../../store/authentication';
 import { openBackupDialog } from '../../../store/matrix';
 import { openRewardsDialog } from '../../../store/rewards';
@@ -28,7 +28,7 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { editProfile } = state;
+    const { userProfile } = state;
     const currentUser = currentUserSelector(state);
 
     return {
@@ -37,7 +37,7 @@ export class Container extends React.Component<Properties> {
         profileImage: currentUser?.profileSummary.profileImage,
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
       } as User,
-      stage: editProfile.stage,
+      stage: userProfile.stage,
     };
   }
 

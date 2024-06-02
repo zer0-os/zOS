@@ -28,7 +28,7 @@ import { receiveSearchResults } from '../../../store/users';
 import { denormalizeConversations } from '../../../store/channels-list';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { createConversation } from '../../../store/create-conversation';
-import { openUserProfile } from '../../../store/edit-profile';
+import { openUserProfile } from '../../../store/user-profile';
 
 export interface PublicProperties {}
 

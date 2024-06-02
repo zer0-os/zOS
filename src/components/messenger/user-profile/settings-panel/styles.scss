@@ -1,4 +1,4 @@
-@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../glass';
 
 .settings-panel {
   flex-grow: 1;
@@ -18,5 +18,13 @@
 
     justify-content: space-between;
     margin: 16px 16px 0 16px;
+  }
+
+  &__select-input-container {
+    > *:last-child {
+      > div {
+        min-width: 236px;
+      }
+    }
   }
 }

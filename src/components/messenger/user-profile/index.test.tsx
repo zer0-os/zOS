@@ -4,7 +4,7 @@ import { UserProfile, Properties } from '.';
 import { Stage } from '../../../store/user-profile';
 import { OverviewPanel } from './overview-panel';
 import { EditProfileContainer } from '../../edit-profile/container';
-import { SettingsPanel } from './settings-panel';
+import { SettingsPanelContainer } from './settings-panel/container';
 
 describe(UserProfile, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -40,10 +40,10 @@ describe(UserProfile, () => {
     expect(wrapper).toHaveElement(EditProfileContainer);
   });
 
-  it('renders Settings Panel when stage is Settings', () => {
+  it('renders Settings Panel Container when stage is Settings', () => {
     const wrapper = subject({ stage: Stage.Settings });
 
-    expect(wrapper).toHaveElement(SettingsPanel);
+    expect(wrapper).toHaveElement(SettingsPanelContainer);
   });
 
   it('renders nothing when stage None', () => {

@@ -91,7 +91,7 @@ export class FeatureFlags {
   }
 
   get enableUserSettings() {
-    return this._getBoolean('enableUserSettings', false);
+    return this._getBoolean('enableUserSettings', true);
   }
 
   set enableUserSettings(value: boolean) {

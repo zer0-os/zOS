@@ -166,7 +166,7 @@ Adding comments where needed to clarify the purpose of certain styles.
 The project leverages a set of pre-defined styles, animations, layout settings, variables and utility functions to ensure a consistent and easily maintainable codebase. At the start of our SCSS stylesheets, you will often see these common imports:
 
 ```
-@use '~@zero-tech/zui/styles/theme' as theme;
+@use '@zero-tech/zui/styles/theme' as theme;
 @import '../../functions';
 @import '../../animation';
 @import '../../layout';

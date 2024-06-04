@@ -5,6 +5,7 @@ import { PanelHeader } from '../../list/panel-header';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { User } from '../../../../store/channels';
+import { ContentHighlighter } from '../../../content-highlighter';
 
 import './styles.scss';
 import moment from 'moment';
@@ -35,7 +36,9 @@ export class OverviewPanel extends React.Component<Properties> {
       <div {...cn('message-container')}>
         {this.props.message && (
           <div {...cn('message-content-container')}>
-            <div {...cn('message-content')}>{this.props.message}</div>
+            <div {...cn('message-content')}>
+              <ContentHighlighter message={this.props.message} />
+            </div>
           </div>
         )}
         {this.renderTime()}

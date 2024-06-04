@@ -6,6 +6,7 @@ import { translateBackgroundValue } from './utils';
 
 import { PanelHeader } from '../../list/panel-header';
 import { SelectInput } from '@zero-tech/zui/components';
+import { IconCheck, IconLock1, IconPalette } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 
@@ -13,9 +14,12 @@ const cn = bemClassName('settings-panel');
 
 export interface Properties {
   selectedMainBackground: MainBackground;
+  isPublicReadReceipts: boolean;
 
   onBack: () => void;
   onSetMainBackground: (payload: { selectedBackground: MainBackground }) => void;
+  onPrivateReadReceipts: () => void;
+  onPublicReadReceipts: () => void;
 }
 
 export class SettingsPanel extends React.Component<Properties> {
@@ -27,9 +31,25 @@ export class SettingsPanel extends React.Component<Properties> {
     this.props.onSetMainBackground(background);
   };
 
+  privateReadReceipts = () => {
+    this.props.onPrivateReadReceipts();
+  };
+
+  publicReadReceipts = () => {
+    this.props.onPublicReadReceipts();
+  };
+
   renderSelectInputLabel(label) {
     return <div>{label}</div>;
   }
+
+  toggleReadReceipts = () => {
+    if (this.props.isPublicReadReceipts) {
+      this.props.onPrivateReadReceipts();
+    } else {
+      this.props.onPublicReadReceipts();
+    }
+  };
 
   get getMainBackgroundItems() {
     const mainBackgroundItems = [];
@@ -66,14 +86,40 @@ export class SettingsPanel extends React.Component<Properties> {
         </div>
 
         <div {...cn('body')}>
-          <div {...cn('select-input-container')}>
-            <SelectInput
-              items={mainBackgroundItems}
-              label='Select Background'
-              placeholder='Select Background'
-              value={selectedBackgroundLabel}
-              itemSize='compact'
-            />
+          <div>
+            <div {...cn('section-header')}>
+              <IconLock1 {...cn('section-icon')} size={24} />
+              <h4 {...cn('section-title')}>Privacy</h4>
+            </div>
+            <div {...cn('checkbox-container')}>
+              Messaging
+              <label {...cn('checkbox-label-wrapper')}>
+                <input
+                  {...cn('checkbox')}
+                  type='checkbox'
+                  checked={this.props.isPublicReadReceipts}
+                  onChange={this.toggleReadReceipts}
+                />
+                {this.props.isPublicReadReceipts && <IconCheck {...cn('checkbox-icon')} size={14} isFilled />}
+                Read Receipts
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <div {...cn('section-header')}>
+              <IconPalette {...cn('section-icon')} size={24} />
+              <h4 {...cn('section-title')}>Appearance</h4>
+            </div>
+            <div {...cn('select-input-container')}>
+              <SelectInput
+                items={mainBackgroundItems}
+                label='Select Background'
+                placeholder='Select Background'
+                value={selectedBackgroundLabel}
+                itemSize='compact'
+              />
+            </div>
           </div>
         </div>
       </div>

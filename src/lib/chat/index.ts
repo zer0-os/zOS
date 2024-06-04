@@ -4,7 +4,6 @@ import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
 import { MemberNetworks } from '../../store/users/types';
-import { ReadReceiptPreferenceType } from './matrix/types';
 
 export interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message) => void;
@@ -329,7 +328,7 @@ export async function removeUserAsModerator(roomId: string, userId: string) {
   return await chat.get().matrix.removeUserAsModerator(roomId, userId);
 }
 
-export async function setReadReceiptPreference(preference: ReadReceiptPreferenceType) {
+export async function setReadReceiptPreference(preference: string) {
   return await chat.get().matrix.setReadReceiptPreference(preference);
 }
 

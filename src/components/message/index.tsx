@@ -268,9 +268,7 @@ export class Message extends React.Component<Properties, State> {
 
   canViewInfo = (): boolean => {
     return (
-      this.props.isOwner &&
-      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
-      this.props.sendStatus !== MessageSendStatus.FAILED
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS && this.props.sendStatus !== MessageSendStatus.FAILED
     );
   };
 

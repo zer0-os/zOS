@@ -14,7 +14,7 @@ import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
-import { chat, getMessageReadReceipts } from '../../lib/chat';
+import { chat } from '../../lib/chat';
 import { User } from '../channels';
 import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
@@ -155,10 +155,6 @@ export function* fetch(action) {
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
-
-    for (const message of messages) {
-      yield call(mapMessageReadByUsers, message.id, channelId);
-    }
   } catch (error) {
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
   }
@@ -504,22 +500,21 @@ export function* sendBrowserNotification(eventData) {
   }
 }
 
-export function* mapMessageReadByUsers(messageId, channelId) {
-  const receipts = yield call(getMessageReadReceipts, channelId, messageId);
-  if (receipts) {
-    const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
+export function* updateReadByUsers(messageId, receipts) {
+  const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
 
-    const selectedMessage = yield select(messageSelector(messageId));
-    const filteredReceipts = receipts.filter((receipt) => receipt.ts >= selectedMessage?.createdAt);
+  const selectedMessage = yield select(messageSelector(messageId));
+  const filteredReceipts = receipts.filter((receipt) => receipt.ts >= selectedMessage?.createdAt);
 
-    const readByUsers = filteredReceipts
-      .map((receipt) => {
-        return Object.values(zeroUsersMap).find((user) => user.matrixId === receipt.userId);
-      })
-      .filter((user) => user && user.userId !== selectedMessage?.sender?.userId);
+  const currentUser = yield select(currentUserSelector());
 
-    yield put(receiveMessage({ id: messageId, readBy: readByUsers }));
-  }
+  const readByUsers = filteredReceipts
+    .map((receipt) => {
+      return Object.values(zeroUsersMap).find((user) => user.matrixId === receipt.userId);
+    })
+    .filter((user) => user && user.userId !== currentUser.id);
+
+  yield put(receiveMessage({ id: messageId, readBy: readByUsers }));
 }
 
 export function* saga() {

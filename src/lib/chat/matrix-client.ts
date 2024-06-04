@@ -679,7 +679,7 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  async setReadReceiptPreference(preference: ReadReceiptPreferenceType) {
+  async setReadReceiptPreference(preference: string) {
     await this.matrix.setAccountData(MatrixConstants.READ_RECEIPT_PREFERENCE, { readReceipts: preference });
   }
 
@@ -729,9 +729,7 @@ export class MatrixClient implements IChatClient {
     const userReceiptPreference = await this.getReadReceiptPreference();
 
     const receiptType =
-      featureFlags.enableReadReceiptPreferences && userReceiptPreference === ReadReceiptPreferenceType.Public
-        ? ReceiptType.Read
-        : ReceiptType.ReadPrivate;
+      userReceiptPreference === ReadReceiptPreferenceType.Public ? ReceiptType.Read : ReceiptType.ReadPrivate;
 
     await this.matrix.sendReadReceipt(latestEvent, receiptType);
     await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);

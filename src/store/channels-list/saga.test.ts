@@ -28,6 +28,7 @@ import { expectSaga } from '../../test/saga';
 import { getZEROUsers } from './api';
 import { mapAdminUserIdToZeroUserId, mapChannelMembers } from './utils';
 import { openFirstConversation } from '../channels/saga';
+import { getUserReadReceiptPreference } from '../user-profile/saga';
 
 const mockConversation = (id: string) => ({
   id: `conversation_${id}`,
@@ -56,6 +57,7 @@ describe('channels list saga', () => {
         [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         [matchers.call.fn(mapToZeroUsers), null],
         [matchers.fork.fn(fetchUserPresence), null],
+        [matchers.call.fn(getUserReadReceiptPreference), null],
       ]);
     }
 
@@ -64,6 +66,7 @@ describe('channels list saga', () => {
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+          [matchers.call.fn(getUserReadReceiptPreference), null],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
@@ -76,6 +79,7 @@ describe('channels list saga', () => {
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+          [matchers.call.fn(getUserReadReceiptPreference), null],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .call(chat.get)
@@ -95,6 +99,7 @@ describe('channels list saga', () => {
           [matchers.call.fn(fetchUserPresence), null],
           [matchers.call.fn(mapAdminUserIdToZeroUserId), null],
           [matchers.call.fn(getConversationsBus), conversationsChannelStub],
+          [matchers.call.fn(getUserReadReceiptPreference), null],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .put(conversationsChannelStub, { type: ConversationEvents.ConversationsLoaded })

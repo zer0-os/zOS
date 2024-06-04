@@ -7,13 +7,15 @@ import { bem } from '../../../../lib/bem';
 
 import { stubUser } from '../../../../store/test/store';
 
-const cn = bem('.message-info-overview-panel');
+const c = bem('.message-info-overview-panel');
 
 describe(OverviewPanel, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       readBy: [],
       sentTo: [],
+      message: '',
+      messageCreatedAt: '',
 
       closeMessageInfo: () => {},
       ...props,
@@ -35,8 +37,8 @@ describe(OverviewPanel, () => {
     const readBy: User[] = [stubUser({ userId: '1' })];
     const wrapper = subject({ readBy });
 
-    expect(wrapper.find(cn('section'))).toHaveLength(1);
-    expect(wrapper.find(cn('section-title')).at(0)).toHaveText('Read By');
+    expect(wrapper.find(c('section'))).toHaveLength(1);
+    expect(wrapper.find(c('section-title')).at(0)).toHaveText('Read By');
     expect(wrapper.find(CitizenListItem)).toHaveLength(1);
   });
 
@@ -44,16 +46,16 @@ describe(OverviewPanel, () => {
     const sentTo: User[] = [stubUser({ userId: '1' })];
     const wrapper = subject({ readBy: [], sentTo });
 
-    expect(wrapper.find(cn('section'))).toHaveLength(1);
-    expect(wrapper.find(cn('section-title')).at(0)).toHaveText('Sent To');
+    expect(wrapper.find(c('section'))).toHaveLength(1);
+    expect(wrapper.find(c('section-title')).at(0)).toHaveText('Sent To');
   });
 
   it('renders sentTo section', () => {
     const sentTo: User[] = [stubUser({ userId: '1' })];
     const wrapper = subject({ sentTo });
 
-    expect(wrapper.find(cn('section'))).toHaveLength(1);
-    expect(wrapper.find(cn('section-title')).at(0)).toHaveText('Sent To');
+    expect(wrapper.find(c('section'))).toHaveLength(1);
+    expect(wrapper.find(c('section-title')).at(0)).toHaveText('Sent To');
     expect(wrapper.find(CitizenListItem)).toHaveLength(1);
   });
 
@@ -61,7 +63,20 @@ describe(OverviewPanel, () => {
     const readBy: User[] = [stubUser({ userId: '1' })];
     const wrapper = subject({ readBy, sentTo: [] });
 
-    expect(wrapper.find(cn('section'))).toHaveLength(1);
-    expect(wrapper.find(cn('section-title')).at(0)).toHaveText('Read By');
+    expect(wrapper.find(c('section'))).toHaveLength(1);
+    expect(wrapper.find(c('section-title')).at(0)).toHaveText('Read By');
+  });
+
+  it('renders message if message is not empty', () => {
+    const message = 'Test message';
+    const wrapper = subject({ message });
+
+    expect(wrapper.find(c('message-content-container'))).toExist();
+  });
+
+  it('does not render message if message is empty', () => {
+    const wrapper = subject({ message: '' });
+
+    expect(wrapper.find(c('message-content-container'))).not.toExist();
   });
 });

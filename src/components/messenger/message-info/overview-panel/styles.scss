@@ -4,6 +4,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  height: 1px;
 
   &__body {
     margin: 0 16px 16px;
@@ -28,5 +29,51 @@
     line-height: 14px;
     text-transform: uppercase;
     margin-bottom: 2px;
+  }
+
+  &__message-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  &__message-content-container {
+    @include glass-input-inset-default;
+
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+    width: fit-content;
+    padding: 8px;
+    overflow: hidden;
+    z-index: 1;
+
+    border-radius: 8px 8px 2px 8px;
+  }
+
+  &__message-content {
+    @include glass-text-primary-color;
+
+    display: flex;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 19px;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  &__message-timestamp {
+    @include glass-text-secondary-color;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 4px;
+
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
   }
 }

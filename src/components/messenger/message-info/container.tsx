@@ -1,16 +1,18 @@
 import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
-import { MessageInfo } from '.';
 import { RootState } from '../../../store/reducer';
 import { closeMessageInfo } from '../../../store/message-info';
 import { denormalize as denormalizeChannel } from '../../../store/channels';
 import { User } from '../../../store/channels';
+import { OverviewPanel } from './overview-panel';
 
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   readBy: User[];
   sentTo: User[];
+  message: string;
+  messageCreatedAt: string;
 
   closeMessageInfo: () => void;
 }
@@ -34,6 +36,8 @@ export class Container extends React.Component<Properties> {
     return {
       readBy,
       sentTo,
+      message: selectedMessage.message,
+      messageCreatedAt: selectedMessage.createdAt,
     };
   }
 
@@ -41,12 +45,18 @@ export class Container extends React.Component<Properties> {
     return { closeMessageInfo };
   }
 
+  close = () => {
+    this.props.closeMessageInfo();
+  };
+
   render() {
     return (
-      <MessageInfo
+      <OverviewPanel
+        message={this.props.message}
+        messageCreatedAt={this.props.messageCreatedAt}
         readBy={this.props.readBy}
         sentTo={this.props.sentTo}
-        closeMessageInfo={this.props.closeMessageInfo}
+        closeMessageInfo={this.close}
       />
     );
   }

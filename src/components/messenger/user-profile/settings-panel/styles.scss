@@ -1,3 +1,4 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../../glass';
 
 .settings-panel {
@@ -15,9 +16,23 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    gap: 24px;
 
-    justify-content: space-between;
-    margin: 16px 16px 0 16px;
+    margin: 0 16px 16px 16px;
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__section-icon {
+    @include glass-text-secondary-color;
+  }
+
+  &__section-title {
+    @include glass-text-secondary-color;
   }
 
   &__select-input-container {
@@ -27,5 +42,55 @@
         gap: 8px;
       }
     }
+  }
+
+  &__checkbox-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__checkbox-label-wrapper {
+    @include glass-input-inset-default;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 9px 8px 17px;
+    position: relative;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+    line-height: 24px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__checkbox {
+    position: relative;
+    background-color: rgba(163, 162, 163, 0.1);
+    border: 1px solid rgba(163, 162, 163, 0.1);
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+
+    appearance: none;
+
+    &:checked {
+      border: 1px solid theme.$color-secondary-11;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__checkbox-icon {
+    position: absolute;
+    top: 10px;
+    left: 18px;
+    color: theme.$color-secondary-11;
   }
 }

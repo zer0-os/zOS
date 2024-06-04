@@ -21,6 +21,8 @@ import { getHistory } from './lib/browser';
 import { ElectronTitlebar } from './components/electron-titlebar';
 import { desktopInit } from './lib/desktop';
 
+console.log('env', import.meta.env);
+
 desktopInit();
 runSagas();
 

@@ -46,4 +46,4 @@ A high level overview of the Component, Connected Component, Redux Saga, Normali
 
 #### Matrix
 
-For local development you can test against the development home server or run our matrix server locally: [https://github.com/zer0-os/zOS-chat-server](https://github.com/zer0-os/zOS-chat-server). If you want to run against your local home server set the env var and restart zOS: `REACT_APP_MATRIX_HOME_SERVER_URL=http://localhost:8008`
+For local development you can test against the development home server or run our matrix server locally: [https://github.com/zer0-os/zOS-chat-server](https://github.com/zer0-os/zOS-chat-server). If you want to run against your local home server set the env var and restart zOS: `VITE_MATRIX_HOME_SERVER_URL=http://localhost:8008`

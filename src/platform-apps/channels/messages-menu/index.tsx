@@ -2,7 +2,7 @@ import React, { createRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { DropdownMenu } from '@zero-tech/zui/components';
-import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconTrash4 } from '@zero-tech/zui/icons';
+import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconInfoCircle, IconTrash4 } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
 import './styles.scss';
@@ -12,6 +12,7 @@ export interface Properties {
   canEdit: boolean;
   canDelete: boolean;
   canReply?: boolean;
+  canViewInfo?: boolean;
   isMediaMessage?: boolean;
   isMenuOpen?: boolean;
   isMenuFlying?: boolean;
@@ -21,6 +22,7 @@ export interface Properties {
   onDelete?: () => void;
   onEdit?: () => void;
   onReply?: () => void;
+  onInfo?: () => void;
 }
 
 export class MessageMenu extends React.Component<Properties> {
@@ -41,8 +43,20 @@ export class MessageMenu extends React.Component<Properties> {
   onEdit = () => this.delayEvent(this.props.onEdit);
   onReply = () => this.delayEvent(this.props.onReply);
 
+  onInfo = () => {
+    this.props.onInfo();
+  };
+
   renderItems = () => {
     const menuItems = [];
+
+    if (this.props.onInfo && this.props.canViewInfo) {
+      menuItems.push({
+        id: 'info',
+        label: this.renderMenuOption(<IconInfoCircle size={20} />, 'Info'),
+        onSelect: this.onInfo,
+      });
+    }
     if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
       menuItems.push({
         id: 'edit',

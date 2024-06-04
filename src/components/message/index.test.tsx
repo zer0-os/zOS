@@ -164,6 +164,7 @@ describe('message', () => {
     expect(messageMenuProps.canEdit).toBe(false);
     expect(messageMenuProps.canReply).toBe(false);
     expect(messageMenuProps.canDelete).toBe(false);
+    expect(messageMenuProps.canViewInfo).toBe(false);
   });
 
   it('allows reply when parent message is set', () => {
@@ -196,6 +197,7 @@ describe('message', () => {
     const messageMenuProps = wrapper.find(MessageMenu).first().props();
     expect(messageMenuProps.canEdit).toBe(false);
     expect(messageMenuProps.canReply).toBe(false);
+    expect(messageMenuProps.canViewInfo).toBe(false);
     expect(messageMenuProps.canDelete).toBe(true);
   });
 

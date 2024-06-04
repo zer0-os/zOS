@@ -33,6 +33,7 @@ interface Properties extends MessageModel {
     mentionedUserIds: User['userId'][],
     data?: Partial<EditMessageOptions>
   ) => void;
+  onInfo: (messageId: number) => void;
   onReply: ({ reply }: { reply: ParentMessageType }) => void;
   isOwner?: boolean;
   messageId?: number;
@@ -265,6 +266,18 @@ export class Message extends React.Component<Properties, State> {
     );
   };
 
+  canViewInfo = (): boolean => {
+    return (
+      this.props.isOwner &&
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
+      this.props.sendStatus !== MessageSendStatus.FAILED
+    );
+  };
+
+  onInfo = () => {
+    this.props.onInfo(this.props.messageId);
+  };
+
   isMenuTriggerAlwaysVisible = () => {
     return this.props.sendStatus === MessageSendStatus.FAILED;
   };
@@ -276,9 +289,11 @@ export class Message extends React.Component<Properties, State> {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
+      canViewInfo: this.canViewInfo(),
       onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
+      onInfo: this.onInfo,
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isMessageMenuOpen,
       onOpenChange: this.handleOpenMenu,
@@ -308,9 +323,11 @@ export class Message extends React.Component<Properties, State> {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
+      canViewInfo: this.canViewInfo(),
       onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
+      onInfo: this.onInfo,
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isDropdownMenuOpen,
       onOpenChange: this.handleOpenMenu,

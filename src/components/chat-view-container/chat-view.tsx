@@ -50,6 +50,8 @@ export interface Properties {
   isOneOnOne: boolean;
   conversationErrorMessage: string;
   isSecondarySidekickOpen: boolean;
+  toggleSecondarySidekick: () => void;
+  openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
 }
 
 export interface State {
@@ -106,6 +108,14 @@ export class ChatView extends React.Component<Properties, State> {
     this.setState({ isLightboxOpen: false });
   };
 
+  openMessageInfo = (messageId: number) => {
+    this.props.openMessageInfo({ roomId: this.props.id, messageId });
+
+    if (!this.props.isSecondarySidekickOpen) {
+      this.props.toggleSecondarySidekick();
+    }
+  };
+
   formatDayHeader(dateString: string): string {
     const date = moment(dateString);
     const today = moment().startOf('day');
@@ -158,6 +168,7 @@ export class ChatView extends React.Component<Properties, State> {
                 onDelete={this.props.deleteMessage}
                 onEdit={this.props.editMessage}
                 onReply={this.props.onReply}
+                onInfo={this.openMessageInfo}
                 parentMessageText={message.parentMessageText}
                 parentSenderIsCurrentUser={this.isUserOwnerOfMessage(message.parentMessage)}
                 parentSenderFirstName={message.parentMessage?.sender?.firstName}

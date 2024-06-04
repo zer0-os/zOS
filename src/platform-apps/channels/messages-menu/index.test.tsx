@@ -9,11 +9,13 @@ describe('Message Menu', () => {
       canEdit: false,
       canDelete: false,
       canReply: false,
+      canViewInfo: false,
       isMediaMessage: false,
       isMenuOpen: false,
       onDelete: undefined,
       onEdit: undefined,
       onReply: undefined,
+      onInfo: undefined,
       onOpenChange: undefined,
       onCloseMenu: undefined,
       ...props,
@@ -111,6 +113,32 @@ describe('Message Menu', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(onReply).toHaveBeenCalled();
+    });
+  });
+
+  describe('Info Button', () => {
+    it('should render when canViewInfo is true and onInfo is provided', () => {
+      const onInfo = jest.fn();
+      const wrapper = subject({ canViewInfo: true, onInfo }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const infoItem = items.find((item) => item.id === 'info');
+
+      expect(infoItem).toBeDefined();
+    });
+
+    it('should call onInfo when info button is clicked', () => {
+      const onInfo = jest.fn();
+      const wrapper = subject({ canViewInfo: true, onInfo }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const infoItem = items.find((item) => item.id === 'info');
+
+      infoItem.onSelect();
+
+      expect(onInfo).toHaveBeenCalled();
     });
   });
 });

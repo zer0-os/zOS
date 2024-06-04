@@ -1,8 +1,17 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { openUserProfile, closeUserProfile, openEditProfile, openSettings } from './saga';
-import { UserProfileState, initialState as initialUserProfileState, Stage, setStage } from '.';
+import * as matchers from 'redux-saga-test-plan/matchers';
+import {
+  openUserProfile,
+  closeUserProfile,
+  openEditProfile,
+  openSettings,
+  onPrivateReadReceipts,
+  onPublicReadReceipts,
+} from './saga';
+import { UserProfileState, initialState as initialUserProfileState, Stage, setStage, setPublicReadReceipts } from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
+import { setReadReceiptPreference } from '../../lib/chat';
 
 describe('openUserProfile', () => {
   it('should set stage to Overview', async () => {
@@ -53,6 +62,44 @@ describe('openSettings', () => {
       .run();
 
     expect(storeState.userProfile.stage).toEqual(Stage.Settings);
+  });
+});
+
+describe('onPrivateReadReceipts', () => {
+  it('should set read receipt preference to private and dispatch setPublicReadReceipts(false)', async () => {
+    await expectSaga(onPrivateReadReceipts)
+      .withReducer(rootReducer, initialState())
+      .provide([
+        [
+          matchers.call.fn(setReadReceiptPreference),
+          'private',
+        ],
+      ])
+      .put(setPublicReadReceipts(false))
+      .run();
+  });
+});
+
+describe('onPublicReadReceipts', () => {
+  it('should set read receipt preference to public and dispatch setPublicReadReceipts(true)', async () => {
+    const initialStateWithPrivateReadReceipts = {
+      ...initialState(),
+      userProfile: {
+        ...initialState().userProfile,
+        isPublicReadReceipt: false,
+      },
+    };
+
+    await expectSaga(onPublicReadReceipts)
+      .withReducer(rootReducer, initialStateWithPrivateReadReceipts)
+      .provide([
+        [
+          matchers.call.fn(setReadReceiptPreference),
+          'public',
+        ],
+      ])
+      .put(setPublicReadReceipts(true))
+      .run();
   });
 });
 

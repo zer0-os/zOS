@@ -1,10 +1,11 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { call } from 'redux-saga/effects';
+import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { openOverview, closeOverview } from './saga';
-import { setSelectedMessageId } from './index';
+import { Stage, setSelectedMessageId, setStage } from './index';
 import { getMessageReadReceipts } from '../../lib/chat';
 import { updateReadByUsers } from '../messages/saga';
+import { resetConversationManagement } from '../group-management/saga';
 
 describe('message-info saga', () => {
   const roomId = 'room-id';
@@ -20,9 +21,11 @@ describe('message-info saga', () => {
     it('sets the selected message ID and updates the message readBy', async () => {
       await expectSaga(openOverview, { payload: { roomId, messageId } })
         .provide([
-          [call(getMessageReadReceipts, roomId, messageId), receipts],
-          [call(updateReadByUsers, messageId, receipts), undefined],
+          [matchers.call.fn(resetConversationManagement), undefined],
+          [matchers.call.fn(getMessageReadReceipts), receipts],
+          [matchers.call.fn(updateReadByUsers), undefined],
         ])
+        .put(setStage(Stage.Overview))
         .put(setSelectedMessageId(messageId))
         .call(getMessageReadReceipts, roomId, messageId)
         .call(updateReadByUsers, messageId, receipts)
@@ -32,7 +35,7 @@ describe('message-info saga', () => {
 
   describe('closeOverview', () => {
     it('clears the selected message ID', async () => {
-      await expectSaga(closeOverview).put(setSelectedMessageId('')).run();
+      await expectSaga(closeOverview).put(setStage(Stage.None)).put(setSelectedMessageId('')).run();
     });
   });
 });

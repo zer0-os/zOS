@@ -9,7 +9,6 @@ import {
   removeRoomFromFavorites,
   chat,
   sendTypingEvent as matrixSendUserTypingEvent,
-  setReadReceiptPreference,
 } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
@@ -221,15 +220,6 @@ export function* receivedRoomMemberPowerLevelChanged(action) {
   yield call(receiveChannel, { id: roomId, moderatorIds });
 }
 
-export function* onSetReadReceiptPreference(action) {
-  const { preference } = action.payload;
-  try {
-    yield call(setReadReceiptPreference, preference);
-  } catch (error) {
-    console.error('Failed to set read receipt preference:', error);
-  }
-}
-
 export function* saga() {
   yield spawn(listenForMessageSent);
   yield leadingDebounce(4000, SagaActionTypes.UserTypingInRoom, publishUserTypingEvent);
@@ -239,7 +229,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
   yield takeLatest(SagaActionTypes.OnFavoriteRoom, onFavoriteRoom);
   yield takeLatest(SagaActionTypes.OnUnfavoriteRoom, onUnfavoriteRoom);
-  yield takeLatest(SagaActionTypes.OnSetReadReceiptPreference, onSetReadReceiptPreference);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomFavorited, roomFavorited);

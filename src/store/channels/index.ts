@@ -6,7 +6,6 @@ import { createAction } from '@reduxjs/toolkit';
 import { UnreadCountUpdatedPayload } from './types';
 import { ParentMessage } from '../../lib/chat/types';
 import { Wallet } from '../authentication/types';
-import { ReadReceiptPreferenceType } from '../../lib/chat/matrix/types';
 
 export interface User {
   userId: string;
@@ -88,7 +87,6 @@ export enum SagaActionTypes {
   OnFavoriteRoom = 'channels/saga/onFavoriteRoom',
   OnUnfavoriteRoom = 'channels/saga/onUnfavoriteRoom',
   UserTypingInRoom = 'channels/saga/userTypingInRoom',
-  OnSetReadReceiptPreference = 'channels/saga/onSetReadReceiptPreference',
 }
 
 const openConversation = createAction<{ conversationId: string }>(SagaActionTypes.OpenConversation);
@@ -98,9 +96,6 @@ const onRemoveReply = createAction(SagaActionTypes.OnRemoveReply);
 const onFavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnFavoriteRoom);
 const onUnfavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnfavoriteRoom);
 const userTypingInRoom = createAction<{ roomId: string }>(SagaActionTypes.UserTypingInRoom);
-const onSetReadReceiptPreference = createAction<{ preference: ReadReceiptPreferenceType }>(
-  SagaActionTypes.OnSetReadReceiptPreference
-);
 
 const slice = createNormalizedSlice({
   name: 'channels',
@@ -122,5 +117,4 @@ export {
   onFavoriteRoom,
   onUnfavoriteRoom,
   userTypingInRoom,
-  onSetReadReceiptPreference,
 };

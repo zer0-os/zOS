@@ -29,7 +29,7 @@ export interface Properties extends PublicProperties {
   isSecondarySidekickOpen: boolean;
   openDeleteMessage: (messageId: number) => void;
   toggleSecondarySidekick: () => void;
-  openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
+  openMessageInfo: (payload: { messageId: number }) => void;
 }
 
 interface PublicProperties {

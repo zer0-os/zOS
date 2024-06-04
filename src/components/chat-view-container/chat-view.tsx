@@ -51,7 +51,7 @@ export interface Properties {
   conversationErrorMessage: string;
   isSecondarySidekickOpen: boolean;
   toggleSecondarySidekick: () => void;
-  openMessageInfo: (payload: { messageId: number }) => void;
+  openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
 }
 
 export interface State {
@@ -109,7 +109,7 @@ export class ChatView extends React.Component<Properties, State> {
   };
 
   openMessageInfo = (messageId: number) => {
-    this.props.openMessageInfo({ messageId });
+    this.props.openMessageInfo({ roomId: this.props.id, messageId });
 
     if (!this.props.isSecondarySidekickOpen) {
       this.props.toggleSecondarySidekick();
@@ -135,10 +135,6 @@ export class ChatView extends React.Component<Properties, State> {
   isUserOwnerOfMessage(message: MessageModel) {
     // eslint-disable-next-line eqeqeq
     return this.props.user && message?.sender && this.props.user.id == message.sender.userId;
-  }
-
-  isRead(message: MessageModel) {
-    return message?.readBy && message?.readBy?.length === this.props?.otherMembers?.length;
   }
 
   renderMessageGroup(groupMessages) {
@@ -182,7 +178,6 @@ export class ChatView extends React.Component<Properties, State> {
                 showTimestamp={messageRenderProps.showTimestamp}
                 showAuthorName={messageRenderProps.showAuthorName}
                 onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
-                isMessageReadByAllMembers={this.isRead(message)}
                 {...message}
               />
             </div>

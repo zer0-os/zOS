@@ -4,6 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { openOverview, closeOverview } from './saga';
 import { Stage, setSelectedMessageId, setStage } from './index';
 import { getMessageReadReceipts } from '../../lib/chat';
+import { updateReadByUsers } from '../messages/saga';
 import { resetConversationManagement } from '../group-management/saga';
 
 describe('message-info saga', () => {
@@ -17,14 +18,17 @@ describe('message-info saga', () => {
       { userId: '@current-user-id:matrix.org', eventId: 'event-3', ts: 1620000002000 },
     ];
 
-    it('sets the selected message ID', async () => {
+    it('sets the selected message ID and updates the message readBy', async () => {
       await expectSaga(openOverview, { payload: { roomId, messageId } })
         .provide([
           [matchers.call.fn(resetConversationManagement), undefined],
           [matchers.call.fn(getMessageReadReceipts), receipts],
+          [matchers.call.fn(updateReadByUsers), undefined],
         ])
         .put(setStage(Stage.Overview))
         .put(setSelectedMessageId(messageId))
+        .call(getMessageReadReceipts, roomId, messageId)
+        .call(updateReadByUsers, messageId, receipts)
         .run();
     });
   });

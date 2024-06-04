@@ -29,10 +29,9 @@ export class Container extends React.Component<Properties> {
     const selectedMessage = messages.find((msg) => msg.id === selectedMessageId) || {};
 
     const readBy = selectedMessage.readBy || [];
-
-    const sentTo = (channel.otherMembers || [])
-      .filter((user) => !readBy.some((readUser) => readUser.userId === user.userId))
-      .filter((user) => user.userId !== selectedMessage.sender?.userId);
+    const sentTo = (channel.otherMembers || []).filter(
+      (user) => !readBy.some((readUser) => readUser.userId === user.userId)
+    );
 
     return {
       readBy,

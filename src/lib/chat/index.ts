@@ -332,6 +332,10 @@ export async function setReadReceiptPreference(preference: string) {
   return await chat.get().matrix.setReadReceiptPreference(preference);
 }
 
+export async function getReadReceiptPreference() {
+  return await chat.get().matrix.getReadReceiptPreference();
+}
+
 export async function getMessageReadReceipts(roomId: string, messageId: string) {
   return await chat.get().matrix.getMessageReadReceipts(roomId, messageId);
 }

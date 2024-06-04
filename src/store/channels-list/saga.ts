@@ -24,6 +24,7 @@ import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
 import { channelListStatus, rawConversationsList } from './selectors';
 import { setIsConversationsLoaded } from '../chat';
+import { getUserReadReceiptPreference } from '../user-profile/saga';
 
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
@@ -80,6 +81,7 @@ export function* fetchConversations() {
 
   const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
   yield fork(fetchUserPresence, otherMembersOfConversations);
+  yield call(getUserReadReceiptPreference);
 
   const existingConversationList = yield select(denormalizeConversations);
   const optimisticConversationIds = existingConversationList

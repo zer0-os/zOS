@@ -1,6 +1,6 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setStage, setPublicReadReceipts } from '.';
-import { setReadReceiptPreference } from '../../lib/chat';
+import { getReadReceiptPreference, setReadReceiptPreference } from '../../lib/chat';
 
 export function* openUserProfile() {
   yield put(setStage(Stage.Overview));
@@ -33,6 +33,16 @@ export function* onPublicReadReceipts() {
     yield put(setPublicReadReceipts(true));
   } catch (error) {
     console.error('Failed to set read receipt preference:', error);
+  }
+}
+
+export function* getUserReadReceiptPreference() {
+  const preference = yield call(getReadReceiptPreference);
+
+  if (preference === 'public') {
+    yield put(setPublicReadReceipts(true));
+  } else {
+    yield put(setPublicReadReceipts(false));
   }
 }
 

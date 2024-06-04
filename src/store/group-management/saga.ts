@@ -29,6 +29,7 @@ import {
 import { EditConversationState } from './types';
 import { uploadImage } from '../registration/api';
 import { isSecondarySidekickOpenSelector } from './selectors';
+import { closeOverview as closeMessageInfo } from '../message-info/saga';
 
 export function* reset() {
   yield put(setStage(Stage.None));
@@ -37,6 +38,8 @@ export function* reset() {
   yield put(setEditConversationState(EditConversationState.NONE));
   yield put(setEditConversationImageError(''));
   yield put(setEditConversationGeneralError(''));
+
+  yield call(closeMessageInfo);
 }
 
 export function* saga() {

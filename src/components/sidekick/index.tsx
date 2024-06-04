@@ -6,6 +6,9 @@ import { MessengerList } from '../messenger/list';
 import { GroupManagementContainer } from '../messenger/group-management/container';
 import { UserProfileContainer } from '../messenger/user-profile/container';
 import { Stage as ProfileStage } from '../../store/user-profile';
+import { Stage as MessageInfoStage } from '../../store/message-info';
+import { Stage as GroupManagementStage } from '../../store/group-management';
+import { MessageInfoContainer } from '../messenger/message-info/container';
 
 import classNames from 'classnames';
 import { bemClassName } from '../../lib/bem';
@@ -26,14 +29,18 @@ interface PublicProperties {
 export interface Properties extends PublicProperties {
   isSecondarySidekickOpen: boolean;
   profileStage: ProfileStage;
+  messageInfoStage: MessageInfoStage;
+  groupManagementStage: GroupManagementStage;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { groupManagement, userProfile } = state;
+    const { groupManagement, userProfile, messageInfo } = state;
 
     return {
       profileStage: userProfile.stage,
+      messageInfoStage: messageInfo.stage,
+      groupManagementStage: groupManagement.stage,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }
@@ -46,12 +53,25 @@ export class Container extends React.Component<Properties> {
     return this.props.variant === SidekickVariant.Secondary;
   }
 
-  renderContent() {
-    if (this.isSecondary) {
-      return <GroupManagementContainer />;
-    } else {
-      return this.props.profileStage !== ProfileStage.None ? <UserProfileContainer /> : <MessengerList />;
+  renderSecondarySidekickContent() {
+    if (
+      this.props.messageInfoStage !== MessageInfoStage.None &&
+      this.props.groupManagementStage === GroupManagementStage.None
+    ) {
+      return <MessageInfoContainer />;
     }
+    return <GroupManagementContainer />;
+  }
+
+  renderPrimarySidekickContent() {
+    if (this.props.profileStage !== ProfileStage.None) {
+      return <UserProfileContainer />;
+    }
+    return <MessengerList />;
+  }
+
+  renderContent() {
+    return this.isSecondary ? this.renderSecondarySidekickContent() : this.renderPrimarySidekickContent();
   }
 
   render() {

@@ -7,6 +7,8 @@ import { Stage as GroupManagementStage } from '../../store/group-management';
 import { UserProfileContainer } from '../messenger/user-profile/container';
 import { GroupManagementContainer } from '../messenger/group-management/container';
 import { Stage as ProfileStage } from '../../store/user-profile';
+import { Stage as MessageInfoStage } from '../../store/message-info';
+import { MessageInfoContainer } from '../messenger/message-info/container';
 
 describe('Sidekick', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -16,6 +18,7 @@ describe('Sidekick', () => {
       groupManagementStage: GroupManagementStage.None,
       isSecondarySidekickOpen: false,
       profileStage: ProfileStage.None,
+      messageInfoStage: MessageInfoStage.None,
 
       ...props,
     };
@@ -49,6 +52,19 @@ describe('Sidekick', () => {
     const wrapper = subject({ variant: SidekickVariant.Secondary });
 
     expect(wrapper.find(GroupManagementContainer)).toExist();
+    expect(wrapper.find(MessengerList)).not.toExist();
+    expect(wrapper.find(UserProfileContainer)).not.toExist();
+  });
+
+  it('renders MessageInfoContainer when variant is secondary, message info stage is not None and group stage is None', () => {
+    const wrapper = subject({
+      variant: SidekickVariant.Secondary,
+      messageInfoStage: MessageInfoStage.Overview,
+      groupManagementStage: GroupManagementStage.None,
+    });
+
+    expect(wrapper.find(MessageInfoContainer)).toExist();
+    expect(wrapper.find(GroupManagementContainer)).not.toExist();
     expect(wrapper.find(MessengerList)).not.toExist();
     expect(wrapper.find(UserProfileContainer)).not.toExist();
   });

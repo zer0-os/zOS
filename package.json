@@ -68,6 +68,8 @@
     "web3-utils": "^4.1.1"
   },
   "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "start:legacy": "NODE_OPTIONS='--openssl-legacy-provider' DISABLE_ESLINT_PLUGIN=true craco start",

@@ -64,18 +64,18 @@ export class MessageMenu extends React.Component<Properties> {
         onSelect: this.onReply,
       });
     }
-    if (this.props.onDelete && this.props.canDelete) {
-      menuItems.push({
-        id: 'delete',
-        label: this.renderMenuOption(<IconTrash4 size={20} />, 'Delete'),
-        onSelect: this.props.onDelete,
-      });
-    }
     if (this.props.onInfo && this.props.canViewInfo) {
       menuItems.push({
         id: 'info',
         label: this.renderMenuOption(<IconInfoCircle size={20} />, 'Info'),
         onSelect: this.onInfo,
+      });
+    }
+    if (this.props.onDelete && this.props.canDelete) {
+      menuItems.push({
+        id: 'delete',
+        label: this.renderMenuOption(<IconTrash4 size={20} />, 'Delete'),
+        onSelect: this.props.onDelete,
       });
     }
 

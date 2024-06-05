@@ -811,10 +811,10 @@ describe('matrix client', () => {
       });
 
       await client.connect(null, 'token');
-      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Private);
+      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Public);
 
       expect(setAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE, {
-        readReceipts: ReadReceiptPreferenceType.Private,
+        readReceipts: ReadReceiptPreferenceType.Public,
       });
     });
   });
@@ -824,7 +824,7 @@ describe('matrix client', () => {
       const setAccountData = jest.fn().mockResolvedValue(undefined);
 
       const getAccountData = jest.fn().mockResolvedValue({
-        event: { content: { readReceipts: ReadReceiptPreferenceType.Private } },
+        event: { content: { readReceipts: ReadReceiptPreferenceType.Public } },
       });
 
       const client = subject({
@@ -832,14 +832,14 @@ describe('matrix client', () => {
       });
 
       await client.connect(null, 'token');
-      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Private);
+      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Public);
 
       const preference = await client.getReadReceiptPreference();
       expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
-      expect(preference).toBe(ReadReceiptPreferenceType.Private);
+      expect(preference).toBe(ReadReceiptPreferenceType.Public);
     });
 
-    it('returns default public preference on error', async () => {
+    it('returns default private preference on error', async () => {
       const getAccountData = jest.fn().mockRejectedValue({});
 
       const client = subject({
@@ -857,26 +857,23 @@ describe('matrix client', () => {
       console.error = originalConsoleError;
 
       expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
-      expect(preference).toBe(ReadReceiptPreferenceType.Public);
+      expect(preference).toBe(ReadReceiptPreferenceType.Private);
     });
 
-    it('returns default public preference if not set', async () => {
-      const setAccountData = jest.fn().mockResolvedValue(undefined);
-
+    it('returns default private preference if not set', async () => {
       const getAccountData = jest.fn().mockResolvedValue({
         event: { content: {} },
       });
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ setAccountData, getAccountData })),
+        createClient: jest.fn(() => getSdkClient({ getAccountData })),
       });
 
       await client.connect(null, 'token');
-      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Private);
       const preference = await client.getReadReceiptPreference();
 
       expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
-      expect(preference).toBe(ReadReceiptPreferenceType.Public);
+      expect(preference).toBe(ReadReceiptPreferenceType.Private);
     });
   });
 
@@ -977,7 +974,7 @@ describe('matrix client', () => {
       await client.connect(null, 'token');
       await client.markRoomAsRead(roomId);
 
-      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.Read);
+      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.ReadPrivate);
       expect(setRoomReadMarkers).toHaveBeenCalledWith(roomId, latestEventId);
     });
   });

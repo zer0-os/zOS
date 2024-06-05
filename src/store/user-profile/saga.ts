@@ -18,6 +18,10 @@ export function* openSettings() {
   yield put(setStage(Stage.Settings));
 }
 
+export function* openWallets() {
+  yield put(setStage(Stage.Wallets));
+}
+
 export function* onPrivateReadReceipts() {
   try {
     yield call(setReadReceiptPreference, 'private');
@@ -51,6 +55,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.CloseUserProfile, closeUserProfile);
   yield takeLatest(SagaActionTypes.OpenEditProfile, openEditProfile);
   yield takeLatest(SagaActionTypes.OpenSettings, openSettings);
+  yield takeLatest(SagaActionTypes.OpenWallets, openWallets);
+
   yield takeLatest(SagaActionTypes.PrivateReadReceipts, onPrivateReadReceipts);
   yield takeLatest(SagaActionTypes.PublicReadReceipts, onPublicReadReceipts);
 }

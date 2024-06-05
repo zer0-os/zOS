@@ -25,6 +25,7 @@ export interface Properties {
   onOpenEditProfile: () => void;
   onOpenRewards: () => void;
   onOpenSettings: () => void;
+  onOpenWallets: () => void;
 }
 
 interface State {
@@ -76,6 +77,10 @@ export class OverviewPanel extends React.Component<Properties, State> {
     this.props.onOpenSettings();
   };
 
+  openWallets = () => {
+    this.props.onOpenWallets();
+  };
+
   renderDetails = () => {
     return (
       <div {...cn('details')}>
@@ -118,6 +123,18 @@ export class OverviewPanel extends React.Component<Properties, State> {
         >
           Edit Profile
         </Button>
+
+        {featureFlags.allowWallets && (
+          <Button
+            {...cn('action-button')}
+            variant={ButtonVariant.Secondary}
+            onPress={this.openWallets}
+            startEnhancer={<IconCurrencyEthereum size={20} />}
+            color={ButtonColor.Greyscale}
+          >
+            Wallets
+          </Button>
+        )}
 
         <Button
           {...cn('action-button')}

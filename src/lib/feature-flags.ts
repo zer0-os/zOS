@@ -97,6 +97,14 @@ export class FeatureFlags {
   set enableUserSettings(value: boolean) {
     this._setBoolean('enableUserSettings', value);
   }
+
+  get allowWallets() {
+    return this._getBoolean('allowWallets', false);
+  }
+
+  set allowWallets(value: boolean) {
+    this._setBoolean('allowWallets', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

@@ -5,7 +5,15 @@ import { bemClassName } from '../../../../lib/bem';
 import { PanelHeader } from '../../list/panel-header';
 import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
-import { IconCurrencyEthereum, IconLock1, IconLogOut3, IconPlus, IconSettings2, IconUser1 } from '@zero-tech/zui/icons';
+import {
+  IconCurrencyEthereum,
+  IconLock1,
+  IconLogOut3,
+  IconPlus,
+  IconSettings2,
+  IconUser1,
+  IconWallet3,
+} from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { RewardsItemContainer } from './rewards-item/container';
 import { featureFlags } from '../../../../lib/feature-flags';
@@ -129,7 +137,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
             {...cn('action-button')}
             variant={ButtonVariant.Secondary}
             onPress={this.openWallets}
-            startEnhancer={<IconCurrencyEthereum size={20} />}
+            startEnhancer={<IconWallet3 size={20} />}
             color={ButtonColor.Greyscale}
           >
             Wallets

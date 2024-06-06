@@ -48,7 +48,8 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
-  isMessageReadByAllMembers: boolean;
+  isMessageRead: boolean;
+  isLastMessage: boolean;
 }
 
 export interface State {
@@ -171,9 +172,9 @@ export class Message extends React.Component<Properties, State> {
         </div>
       );
     }
-    if (this.props.isOwner) {
+    if (this.props.isOwner && this.props.isLastMessage) {
       footerElements.push(
-        this.props.isMessageReadByAllMembers ? (
+        this.props.isMessageRead ? (
           <IconCheckDouble {...cn('read-icon')} size={14} />
         ) : (
           <IconCheck {...cn('unread-icon')} size={14} />

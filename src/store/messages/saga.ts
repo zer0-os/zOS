@@ -156,8 +156,9 @@ export function* fetch(action) {
       messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
 
-    for (const message of messages) {
-      yield call(mapMessageReadByUsers, message.id, channelId);
+    if (yield select(_isActive(channelId))) {
+      const latestMessage = messages[messages.length - 1];
+      yield call(mapMessageReadByUsers, latestMessage.id, channelId);
     }
   } catch (error) {
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
@@ -511,12 +512,13 @@ export function* mapMessageReadByUsers(messageId, channelId) {
 
     const selectedMessage = yield select(messageSelector(messageId));
     const filteredReceipts = receipts.filter((receipt) => receipt.ts >= selectedMessage?.createdAt);
+    const currentUser = yield select(currentUserSelector());
 
     const readByUsers = filteredReceipts
       .map((receipt) => {
         return Object.values(zeroUsersMap).find((user) => user.matrixId === receipt.userId);
       })
-      .filter((user) => user && user.userId !== selectedMessage?.sender?.userId);
+      .filter((user) => user && user.userId !== selectedMessage?.sender?.userId && user.userId !== currentUser.id);
 
     yield put(receiveMessage({ id: messageId, readBy: readByUsers }));
   }
@@ -544,7 +546,7 @@ function* readReceiptReceived({ payload }) {
   const { messageId, userId } = payload;
 
   const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
-  const currentUser = yield select(currentUserSelector);
+  const currentUser = yield select(currentUserSelector());
 
   const readByUser = Object.values(zeroUsersMap).find((user) => user.matrixId === userId);
 

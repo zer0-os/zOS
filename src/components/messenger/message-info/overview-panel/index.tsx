@@ -15,6 +15,7 @@ const cn = bemClassName('message-info-overview-panel');
 export interface Properties {
   readBy: User[];
   sentTo: User[];
+  sentBy: User;
   message: string;
   messageCreatedAt: string;
 
@@ -47,10 +48,17 @@ export class OverviewPanel extends React.Component<Properties> {
   };
 
   renderMembers = () => {
-    const { readBy, sentTo } = this.props;
+    const { readBy, sentTo, sentBy } = this.props;
 
     return (
       <div>
+        {sentBy && (
+          <div {...cn('section')}>
+            <div {...cn('section-title')}>From</div>
+
+            <CitizenListItem key={sentBy.userId} user={sentBy}></CitizenListItem>
+          </div>
+        )}
         {readBy.length > 0 && (
           <div {...cn('section')}>
             <div {...cn('section-title')}>Read By</div>

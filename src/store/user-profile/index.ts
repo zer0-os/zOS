@@ -5,6 +5,7 @@ export enum SagaActionTypes {
   CloseUserProfile = 'user-profile/closeUserProfile',
   OpenEditProfile = 'user-profile/openEditProfile',
   OpenSettings = 'user-profile/openSettings',
+  OpenWallets = 'user-profile/openWallets',
   PrivateReadReceipts = 'user-profile/privateReadReceipts',
   PublicReadReceipts = 'user-profile/publicReadReceipts',
 }
@@ -14,6 +15,7 @@ export enum Stage {
   Overview = 'overview',
   EditProfile = 'edit_profile',
   Settings = 'settings',
+  Wallets = 'wallets',
 }
 
 export type UserProfileState = {
@@ -30,6 +32,7 @@ export const openUserProfile = createAction(SagaActionTypes.OpenUserProfile);
 export const closeUserProfile = createAction(SagaActionTypes.CloseUserProfile);
 export const openEditProfile = createAction(SagaActionTypes.OpenEditProfile);
 export const openSettings = createAction(SagaActionTypes.OpenSettings);
+export const openWallets = createAction(SagaActionTypes.OpenWallets);
 export const privateReadReceipts = createAction(SagaActionTypes.PrivateReadReceipts);
 export const publicReadReceipts = createAction(SagaActionTypes.PublicReadReceipts);
 

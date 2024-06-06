@@ -36,8 +36,6 @@ export class Container extends React.Component<Properties> {
         !readBy.some((readUser) => readUser.userId === user.userId) && user.userId !== selectedMessage.sender?.userId
     );
 
-    console.log('XXXREADBY', readBy);
-
     return {
       readBy,
       sentTo,

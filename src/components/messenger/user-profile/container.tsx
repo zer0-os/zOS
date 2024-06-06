@@ -7,7 +7,14 @@ import { User } from '../../../store/channels';
 import { RootState } from '../../../store/reducer';
 import { getUserSubHandle } from '../../../lib/user';
 import { currentUserSelector } from '../../../store/authentication/selectors';
-import { Stage, closeUserProfile, openEditProfile, openUserProfile, openSettings } from '../../../store/user-profile';
+import {
+  Stage,
+  closeUserProfile,
+  openEditProfile,
+  openUserProfile,
+  openSettings,
+  openWallets,
+} from '../../../store/user-profile';
 import { logout } from '../../../store/authentication';
 import { openBackupDialog } from '../../../store/matrix';
 import { openRewardsDialog } from '../../../store/rewards';
@@ -25,6 +32,7 @@ export interface Properties extends PublicProperties {
   openEditProfile: () => void;
   openRewardsDialog: () => void;
   openSettings: () => void;
+  openWallets: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -51,6 +59,7 @@ export class Container extends React.Component<Properties> {
       openEditProfile,
       openRewardsDialog,
       openSettings,
+      openWallets,
     };
   }
 
@@ -68,6 +77,7 @@ export class Container extends React.Component<Properties> {
         onBackToOverview={this.props.openUserProfile}
         onRewards={this.props.openRewardsDialog}
         onSettings={this.props.openSettings}
+        onWallets={this.props.openWallets}
       />
     );
   }

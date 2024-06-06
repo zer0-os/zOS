@@ -686,10 +686,10 @@ export class MatrixClient implements IChatClient {
   async getReadReceiptPreference() {
     try {
       const accountData = await this.matrix.getAccountData(MatrixConstants.READ_RECEIPT_PREFERENCE);
-      return accountData?.event?.content?.readReceipts || ReadReceiptPreferenceType.Public;
+      return accountData?.event?.content?.readReceipts || ReadReceiptPreferenceType.Private;
     } catch (err) {
       console.error('Error getting read receipt preference', err);
-      return ReadReceiptPreferenceType.Public;
+      return ReadReceiptPreferenceType.Private;
     }
   }
 

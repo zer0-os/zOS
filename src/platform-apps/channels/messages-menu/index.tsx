@@ -50,13 +50,6 @@ export class MessageMenu extends React.Component<Properties> {
   renderItems = () => {
     const menuItems = [];
 
-    if (this.props.onInfo && this.props.canViewInfo) {
-      menuItems.push({
-        id: 'info',
-        label: this.renderMenuOption(<IconInfoCircle size={20} />, 'Info'),
-        onSelect: this.onInfo,
-      });
-    }
     if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
       menuItems.push({
         id: 'edit',
@@ -69,6 +62,13 @@ export class MessageMenu extends React.Component<Properties> {
         id: 'reply',
         label: this.renderMenuOption(<IconFlipBackward size={20} />, 'Reply'),
         onSelect: this.onReply,
+      });
+    }
+    if (this.props.onInfo && this.props.canViewInfo) {
+      menuItems.push({
+        id: 'info',
+        label: this.renderMenuOption(<IconInfoCircle size={20} />, 'Info'),
+        onSelect: this.onInfo,
       });
     }
     if (this.props.onDelete && this.props.canDelete) {

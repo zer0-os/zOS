@@ -25,6 +25,17 @@ describe('openUserProfile', () => {
   });
 });
 
+describe('openWallets', () => {
+  it('should set stage to Wallets', async () => {
+    const { storeState } = await expectSaga(openSettings)
+      .withReducer(rootReducer, initialState())
+      .put(setStage(Stage.Settings))
+      .run();
+
+    expect(storeState.userProfile.stage).toEqual(Stage.Settings);
+  });
+});
+
 describe('openEditProfile', () => {
   it('should set stage to EditProfile', async () => {
     const { storeState } = await expectSaga(openEditProfile)

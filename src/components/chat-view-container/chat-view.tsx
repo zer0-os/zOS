@@ -137,7 +137,25 @@ export class ChatView extends React.Component<Properties, State> {
     return this.props.user && message?.sender && this.props.user.id == message.sender.userId;
   }
 
+  isRead() {
+    const lastMessage = this.props?.messages[this.props?.messages.length - 1];
+    if (!lastMessage) return;
+    return lastMessage?.readBy && lastMessage.readBy.length > 0;
+  }
+
+  getLastNonAdminMessage() {
+    const { messages } = this.props;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (!messages[i].isAdmin) {
+        return messages[i];
+      }
+    }
+    return null;
+  }
+
   renderMessageGroup(groupMessages) {
+    const lastNonAdminMessage = this.getLastNonAdminMessage();
+
     return groupMessages.map((message, index) => {
       if (message.isAdmin) {
         return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;
@@ -178,6 +196,8 @@ export class ChatView extends React.Component<Properties, State> {
                 showTimestamp={messageRenderProps.showTimestamp}
                 showAuthorName={messageRenderProps.showAuthorName}
                 onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
+                isMessageRead={this.isRead()}
+                isLastMessage={message.id === lastNonAdminMessage?.id}
                 {...message}
               />
             </div>

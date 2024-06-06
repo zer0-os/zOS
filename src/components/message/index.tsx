@@ -12,7 +12,7 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconCheck, IconCheckDouble } from '@zero-tech/zui/icons';
 import { Avatar } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
@@ -48,6 +48,8 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
+  isMessageRead: boolean;
+  isLastMessage: boolean;
 }
 
 export interface State {
@@ -168,6 +170,15 @@ export class Message extends React.Component<Properties, State> {
           Failed to send&nbsp;
           <IconAlertCircle size={16} />
         </div>
+      );
+    }
+    if (this.props.isOwner && this.props.isLastMessage) {
+      footerElements.push(
+        this.props.isMessageRead ? (
+          <IconCheckDouble {...cn('read-icon')} size={14} />
+        ) : (
+          <IconCheck {...cn('unread-icon')} size={14} />
+        )
       );
     }
 

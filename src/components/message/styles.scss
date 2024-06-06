@@ -201,4 +201,12 @@
     margin-top: 0.8px;
     display: inline-block;
   }
+
+  &__unread-icon {
+    @include glass-text-secondary-color;
+  }
+
+  &__read-icon {
+    color: theme.$color-secondary-11;
+  }
 }

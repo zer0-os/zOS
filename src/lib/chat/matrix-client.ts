@@ -731,8 +731,22 @@ export class MatrixClient implements IChatClient {
     const receiptType =
       userReceiptPreference === ReadReceiptPreferenceType.Public ? ReceiptType.Read : ReceiptType.ReadPrivate;
 
-    await this.matrix.sendReadReceipt(latestEvent, receiptType);
+    await this.processSendReadReceipt(room, latestEvent, receiptType);
     await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
+  }
+
+  async processSendReadReceipt(room: Room, latestEvent: MatrixEvent, receiptType: ReceiptType): Promise<void> {
+    const editedEvent = latestEvent?.event?.content?.['m.relates_to'];
+
+    if (editedEvent && editedEvent.rel_type === 'm.replace' && editedEvent.event_id) {
+      const originalEvent = room.findEventById(editedEvent.event_id);
+      if (originalEvent) {
+        await this.matrix.sendReadReceipt(originalEvent, receiptType);
+        return;
+      }
+    }
+
+    await this.matrix.sendReadReceipt(latestEvent, receiptType);
   }
 
   async leaveRoom(roomId: string, userId: string): Promise<void> {

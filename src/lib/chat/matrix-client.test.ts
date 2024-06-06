@@ -979,6 +979,74 @@ describe('matrix client', () => {
     });
   });
 
+  describe('processSendReadReceipt', () => {
+    let client;
+    let room;
+    let latestEvent;
+    let sendReadReceipt;
+    let getRoom;
+    let getLiveTimelineEvents;
+
+    beforeEach(async () => {
+      const latestEventId = 'latest-event-id';
+
+      latestEvent = {
+        event: {
+          event_id: latestEventId,
+          content: {},
+        },
+      };
+
+      sendReadReceipt = jest.fn().mockResolvedValue(undefined);
+      getLiveTimelineEvents = jest.fn().mockReturnValue([latestEvent]);
+      room = stubRoom({
+        getLiveTimeline: jest.fn().mockReturnValue(stubTimeline({ getEvents: getLiveTimelineEvents })),
+        findEventById: jest.fn(),
+      });
+
+      getRoom = jest.fn().mockReturnValue(room);
+
+      client = subject({
+        createClient: jest.fn(() => getSdkClient({ sendReadReceipt, getRoom })),
+      });
+
+      await client.connect(null, 'token');
+    });
+
+    it('sends read receipt for non-edited event', async () => {
+      await client.processSendReadReceipt(room, latestEvent, ReceiptType.ReadPrivate);
+
+      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.ReadPrivate);
+    });
+
+    it('sends read receipt for original event if latest event is an edit', async () => {
+      const originalEventId = 'original-event-id';
+      const originalEvent = { event_id: originalEventId };
+      latestEvent.event.content['m.relates_to'] = {
+        rel_type: 'm.replace',
+        event_id: originalEventId,
+      };
+      room.findEventById.mockReturnValue(originalEvent);
+
+      await client.processSendReadReceipt(room, latestEvent, ReceiptType.ReadPrivate);
+
+      expect(room.findEventById).toHaveBeenCalledWith(originalEventId);
+      expect(sendReadReceipt).toHaveBeenCalledWith(originalEvent, ReceiptType.ReadPrivate);
+    });
+
+    it('sends read receipt for latest event if original event is not found', async () => {
+      latestEvent.event.content['m.relates_to'] = {
+        rel_type: 'm.replace',
+        event_id: 'non-existent-event-id',
+      };
+      room.findEventById.mockReturnValue(null);
+
+      await client.processSendReadReceipt(room, latestEvent, ReceiptType.ReadPrivate);
+
+      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.ReadPrivate);
+    });
+  });
+
   describe('getRoomIdForAlias', () => {
     it('returns room ID for alias', async () => {
       const roomId = '!heExvpcoNDAMAPMsRd:zos-dev.zero.io';

@@ -150,6 +150,21 @@ export class Message extends React.Component<Properties, State> {
     return '';
   }
 
+  getReceiptIcon() {
+    const { sendStatus, isMessageRead } = this.props;
+
+    if (sendStatus === MessageSendStatus.IN_PROGRESS) {
+      return <IconCheck {...cn('sent-icon')} size={14} />;
+    }
+
+    if (sendStatus === MessageSendStatus.SUCCESS || sendStatus === undefined) {
+      const iconClass = isMessageRead ? 'read' : 'delivered';
+      return <IconCheckDouble {...cn('read-icon', `${iconClass}`)} size={14} />;
+    }
+
+    return null;
+  }
+
   renderFooter() {
     if (this.state.isEditing) {
       return;
@@ -173,13 +188,8 @@ export class Message extends React.Component<Properties, State> {
       );
     }
     if (this.props.isOwner && this.props.isLastMessage) {
-      footerElements.push(
-        this.props.isMessageRead ? (
-          <IconCheckDouble {...cn('read-icon')} size={14} />
-        ) : (
-          <IconCheck {...cn('unread-icon')} size={14} />
-        )
-      );
+      const icon = this.getReceiptIcon();
+      icon && footerElements.push(icon);
     }
 
     if (footerElements.length === 0) {

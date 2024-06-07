@@ -157,8 +157,22 @@ export function* fetch(action) {
     });
 
     if (yield select(_isActive(channelId))) {
-      const latestMessage = messages[messages.length - 1];
-      yield call(mapMessageReadByUsers, latestMessage.id, channelId);
+      const currentUser = yield select(currentUserSelector());
+
+      let latestUserMessage = null;
+      for (let i = messages?.length - 1; i >= 0; i--) {
+        const msg = messages[i];
+
+        if (msg?.sender?.userId === currentUser?.id) {
+          latestUserMessage = msg;
+
+          break;
+        }
+      }
+
+      if (latestUserMessage) {
+        yield call(mapMessageReadByUsers, latestUserMessage.id, channelId);
+      }
     }
   } catch (error) {
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
@@ -518,7 +532,7 @@ export function* mapMessageReadByUsers(messageId, channelId) {
       .map((receipt) => {
         return Object.values(zeroUsersMap).find((user) => user.matrixId === receipt.userId);
       })
-      .filter((user) => user && user.userId !== selectedMessage?.sender?.userId && user.userId !== currentUser.id);
+      .filter((user) => user && user.userId !== currentUser.id);
 
     yield put(receiveMessage({ id: messageId, readBy: readByUsers }));
   }

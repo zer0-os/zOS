@@ -55,8 +55,8 @@ export class Container extends React.Component<Properties> {
         error={this.props.error}
         isModalOpen={this.props.isModalOpen}
         onSelect={this.connectorSelected}
-        onOpenModal={this.props.openWalletSelectModal}
-        onCloseModal={this.props.closeWalletSelectModal}
+        onOpenModal={() => this.props.openWalletSelectModal()}
+        onCloseModal={() => this.props.closeWalletSelectModal()}
         onBack={this.props.onClose}
       />
     );

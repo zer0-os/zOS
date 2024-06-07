@@ -202,11 +202,19 @@
     display: inline-block;
   }
 
-  &__unread-icon {
+  &__sent-icon {
     @include glass-text-secondary-color;
   }
 
   &__read-icon {
     color: theme.$color-secondary-11;
+
+    &--read {
+      color: theme.$color-secondary-11;
+    }
+
+    &--delivered {
+      @include glass-text-secondary-color;
+    }
   }
 }

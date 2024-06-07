@@ -139,14 +139,15 @@ export class ChatView extends React.Component<Properties, State> {
 
   isRead() {
     const lastMessage = this.getUsersLastNonAdminMessage();
-    if (!lastMessage) return;
+    if (!lastMessage) return false;
     return lastMessage?.readBy && lastMessage.readBy.length > 0;
   }
 
   getUsersLastNonAdminMessage() {
     const { messages } = this.props;
+    const currentUser = this.props.user;
     for (let i = messages.length - 1; i >= 0; i--) {
-      if (!messages[i].isAdmin && this.isUserOwnerOfMessage(messages[i])) {
+      if (!messages[i].isAdmin && messages[i].sender?.userId === currentUser?.id) {
         return messages[i];
       }
     }

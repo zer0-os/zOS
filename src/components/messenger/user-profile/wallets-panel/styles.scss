@@ -11,4 +11,23 @@
     display: flex;
     width: 235px;
   }
+
+  &__content {
+    margin: 16px 16px 0 16px;
+  }
+
+  &__wallet-select-modal {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  &__alert-text {
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  &__footer {
+    margin: 8px 0;
+  }
 }

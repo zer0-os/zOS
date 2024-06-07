@@ -158,9 +158,17 @@ export function* fetch(action) {
 
     if (yield select(_isActive(channelId))) {
       const currentUser = yield select(currentUserSelector());
-      const latestUserMessage = messages.reduceRight((found, msg) => {
-        return found || (msg.sender.userId === currentUser.id ? msg : null);
-      }, null);
+
+      let latestUserMessage = null;
+      for (let i = messages?.length - 1; i >= 0; i--) {
+        const msg = messages[i];
+
+        if (msg?.sender?.userId === currentUser?.id) {
+          latestUserMessage = msg;
+
+          break;
+        }
+      }
 
       if (latestUserMessage) {
         yield call(mapMessageReadByUsers, latestUserMessage.id, channelId);

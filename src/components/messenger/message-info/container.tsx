@@ -29,8 +29,8 @@ export class Container extends React.Component<Properties> {
     const channel = denormalizeChannel(activeConversationId, state) || {};
     const messages = channel.messages || [];
     const selectedMessage = messages.find((msg) => msg.id === selectedMessageId) || {};
+    const readBy = selectedMessage.readBy || [];
     const sentBy = selectedMessage?.sender?.userId !== user.data?.id ? selectedMessage?.sender : null;
-    const readBy = (selectedMessage.readBy || []).filter((user) => user.userId !== selectedMessage?.sender?.userId);
     const sentTo = (channel.otherMembers || []).filter(
       (user) =>
         !readBy.some((readUser) => readUser.userId === user.userId) && user.userId !== selectedMessage.sender?.userId

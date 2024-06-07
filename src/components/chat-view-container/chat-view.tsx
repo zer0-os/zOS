@@ -147,7 +147,7 @@ export class ChatView extends React.Component<Properties, State> {
     const { messages } = this.props;
     const currentUser = this.props.user;
     for (let i = messages.length - 1; i >= 0; i--) {
-      if (!messages[i].isAdmin && messages[i].sender.userId === currentUser.id) {
+      if (!messages[i].isAdmin && messages[i].sender?.userId === currentUser?.id) {
         return messages[i];
       }
     }

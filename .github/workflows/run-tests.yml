@@ -10,7 +10,7 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     env:
-      VITE_INFURA_URL: ${{secrets.INFURA_URL}}
+      REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
     steps:
       - uses: actions/checkout@v4
       - name: Common Setup

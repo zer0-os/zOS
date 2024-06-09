@@ -14,6 +14,7 @@ export default defineConfig({
       },
     }),
   ],
+  envPrefix: 'REACT_APP_',
   resolve: {
     alias: {
       react: resolve('./node_modules/react'),

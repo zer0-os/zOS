@@ -1,5 +1,5 @@
 @use 'shared-components/theme-engine/theme' as theme;
-@use '@zero-tech/zui/styles/theme' as theme-zui;
+@use '~@zero-tech/zui/styles/theme' as theme-zui;
 @use 'modules/animation' as animation;
 
 @import 'variables';

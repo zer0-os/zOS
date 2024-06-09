@@ -1,5 +1,5 @@
-@use '@zero-tech/zui/styles/theme' as theme;
-@use '@zero-tech/zui/styles/colors' as colors;
+@use '~@zero-tech/zui/styles/theme' as theme;
+@use '~@zero-tech/zui/styles/colors' as colors;
 @import '../../glass';
 
 .tooltip-popup {

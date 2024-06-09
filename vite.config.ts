@@ -15,6 +15,21 @@ export default defineConfig({
     }),
   ],
   envPrefix: 'REACT_APP_',
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // @note 06/09/2024
+        // This is a temporary fix to allow for importing SCSS files from node_modules
+        // using the ~ prefix, which is a common convention in sass-loader
+        importer(url) {
+          if (url.startsWith('~')) {
+            return { file: resolve(__dirname, 'node_modules', url.substring(1)) };
+          }
+          return { file: url };
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       react: resolve('./node_modules/react'),

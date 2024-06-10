@@ -50,7 +50,7 @@ export class MessageMenu extends React.Component<Properties> {
   renderItems = () => {
     const menuItems = [];
 
-    if (this.props.onEdit && this.props.canEdit && !this.props.isMediaMessage) {
+    if (this.props.onEdit && this.props.canEdit) {
       menuItems.push({
         id: 'edit',
         label: this.renderMenuOption(<IconEdit5 size={20} />, 'Edit'),

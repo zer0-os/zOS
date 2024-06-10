@@ -223,6 +223,21 @@ describe('message', () => {
     expect(wrapper.find('.message__footer').text()).toEqual('(Edited)');
   });
 
+  it('renders media when editing media message with text', () => {
+    const wrapper = subject({
+      message: 'the message',
+      media: { url: 'https://image.com/image.png', type: MediaType.Image },
+    });
+
+    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+    wrapper.simulate('contextmenu', mockEvent);
+
+    wrapper.find(MessageMenu).props().onEdit();
+
+    expect(wrapper.find(MessageInput)).toExist();
+    expect(wrapper.find('.message__block-image img')).toExist();
+  });
+
   it('renders reply message', () => {
     const parentMessageText = 'the message';
     const wrapper = subject({

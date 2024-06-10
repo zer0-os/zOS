@@ -60,7 +60,7 @@ describe('Message Menu', () => {
   });
 
   describe('Edit Button', () => {
-    it('should render when canEdit is true and isMediaMessage is false', () => {
+    it('should render when canEdit is true', () => {
       const onEdit = jest.fn();
       const wrapper = subject({ canEdit: true, onEdit }) as ShallowWrapper;
 

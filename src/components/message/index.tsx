@@ -220,6 +220,7 @@ export class Message extends React.Component<Properties, State> {
   canEditMessage = (): boolean => {
     return (
       this.props.isOwner &&
+      this.props.message &&
       this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
       this.props.sendStatus !== MessageSendStatus.FAILED
     );
@@ -448,6 +449,8 @@ export class Message extends React.Component<Properties, State> {
 
               {this.state.isEditing && this.props.message && (
                 <>
+                  {media && this.renderMedia(media)}
+
                   <div {...cn('block-edit')}>
                     <MessageInput
                       initialValue={this.props.message}

@@ -13,6 +13,8 @@ export interface Properties {
   senderIsCurrentUser: boolean;
   senderFirstName: string;
   senderLastName: string;
+  mediaUrl: string;
+  mediaName: string;
 
   onRemove?: () => void;
 }
@@ -38,6 +40,13 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
     return (
       <div {...cn()}>
         <IconCornerDownRight size={16} />
+
+        {this.props.mediaUrl && (
+          <div {...cn('media-container')}>
+            <img {...cn('media')} src={this.props.mediaUrl} alt={this.props.mediaName} />
+          </div>
+        )}
+
         <div {...cn('content')}>
           <div {...cn('header')}>{this.name}</div>
           <div {...cn('message')}>

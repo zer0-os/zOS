@@ -271,7 +271,7 @@ export class MessageInput extends React.Component<Properties, State> {
         <div {...cn('addon-row')}>
           {reply && (
             <ReplyCard
-              message={reply.message}
+              message={reply?.message}
               senderIsCurrentUser={this.props.replyIsCurrentUser}
               senderFirstName={reply?.sender?.firstName}
               senderLastName={reply?.sender?.lastName}

@@ -69,11 +69,11 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
+    "test": "craco test --env=node",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "start:legacy": "NODE_OPTIONS='--openssl-legacy-provider' DISABLE_ESLINT_PLUGIN=true craco start",
     "build:legacy": "NODE_OPTIONS='--openssl-legacy-provider --max-old-space-size=4096' craco build",
-    "test:legacy": "craco test --env=node",
     "eject": "react-scripts eject",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",
     "electron:package:publish": "craco build && electron-builder -m -w -c.extraMetadata.main=build/electron.js --config electron/electron-builder-config.js --publish=always",

@@ -28,6 +28,12 @@ describe('ReplyCard', () => {
     expect(wrapper.find(ContentHighlighter).prop('message').trim()).toStrictEqual(message);
   });
 
+  it('does not render reply message if no message is present', function () {
+    const wrapper = subject({});
+
+    expect(wrapper).not.toHaveElement(ContentHighlighter);
+  });
+
   it('call onRemove when close icon is clicked', function () {
     const onRemove = jest.fn();
 

@@ -57,7 +57,7 @@ describe('ReplyCard', () => {
     expect(wrapper.find('.reply-card__header').text()).toEqual('You');
   });
 
-  it('renders media when media url is present', function () {
+  it('renders media when media url is present and NO message', function () {
     const wrapper = subject({
       senderIsCurrentUser: true,
       senderFirstName: 'Jackie',
@@ -67,6 +67,21 @@ describe('ReplyCard', () => {
     });
 
     expect(wrapper).toHaveElement('.reply-card__media-container');
+    expect(wrapper).not.toHaveElement(ContentHighlighter);
+  });
+
+  it('renders media and message when media url and message are present', function () {
+    const wrapper = subject({
+      senderIsCurrentUser: true,
+      senderFirstName: 'Jackie',
+      senderLastName: 'Chan',
+      mediaName: 'test-media-name',
+      mediaUrl: 'test-media-url',
+      message: 'hello',
+    });
+
+    expect(wrapper).toHaveElement('.reply-card__media-container');
+    expect(wrapper).toHaveElement(ContentHighlighter);
   });
 
   it('does not render media when media url is NOT present', function () {
@@ -76,6 +91,7 @@ describe('ReplyCard', () => {
       senderLastName: 'Chan',
       mediaName: '',
       mediaUrl: '',
+      message: 'hello',
     });
 
     expect(wrapper).not.toHaveElement('.reply-card__media-container');

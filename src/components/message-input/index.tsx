@@ -275,6 +275,8 @@ export class MessageInput extends React.Component<Properties, State> {
               senderIsCurrentUser={this.props.replyIsCurrentUser}
               senderFirstName={reply?.sender?.firstName}
               senderLastName={reply?.sender?.lastName}
+              mediaUrl={reply?.media?.url}
+              mediaName={reply?.media?.name}
               onRemove={this.props.onRemoveReply}
             />
           )}

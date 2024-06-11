@@ -257,6 +257,7 @@ export class Message extends React.Component<Properties, State> {
       admin: this.props.admin,
       optimisticId: this.props.optimisticId,
       rootMessageId: this.props.rootMessageId,
+      media: this.props?.media,
     };
 
     this.props.onReply({ reply });

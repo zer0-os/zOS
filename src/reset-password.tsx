@@ -5,7 +5,7 @@ import { connectContainer } from './store/redux-container';
 import { RequestPasswordResetContainer } from './authentication/request-password-reset/container';
 import { ConfirmPasswordResetContainer } from './authentication/confirm-password-reset/container';
 
-import ZeroLogo from './zero-logo.svg?react';
+import ZeroLogo from './zero-logo.svg';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 
 import { bemClassName } from './lib/bem';

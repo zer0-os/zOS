@@ -12,7 +12,7 @@ import { AndroidDownload } from './authentication/android-download';
 import { config } from './config';
 import { setShowAndroidDownload } from './store/page-load';
 
-import ZeroLogo from './zero-logo.svg?react';
+import ZeroLogo from './zero-logo.svg';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 
 import { bemClassName } from './lib/bem';

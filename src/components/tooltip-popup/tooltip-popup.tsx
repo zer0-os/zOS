@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
-import TooltipHead from '../../tooltip-head.svg?react';
+import TooltipHead from '../../tooltip-head.svg';
 
 const c = bem('tooltip-popup');
 

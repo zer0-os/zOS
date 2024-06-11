@@ -31,11 +31,11 @@ jobs:
               await github.rest.repos.createRelease({
                 draft: true,
                 generate_release_notes: true,
-                name: import.meta.env.RELEASE_TAG,
+                name: process.env.RELEASE_TAG,
                 owner: context.repo.owner,
                 prerelease: false,
                 repo: context.repo.repo,
-                tag_name: import.meta.env.RELEASE_TAG,
+                tag_name: process.env.RELEASE_TAG,
               });
             } catch (error) {
               core.setFailed(error.message);

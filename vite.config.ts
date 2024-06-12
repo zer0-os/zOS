@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       svgr({
-        include: '**/*.svg',
+        include: '**/*.svg?react',
       }),
     ],
     envPrefix: 'REACT_APP_',

@@ -44,6 +44,7 @@ export default defineConfig(({ mode }) => {
     test: {
       // Only run test files that match `vitest.test`
       include: ['**/*.vitest.ts'],
+      globals: true,
     },
   };
 });

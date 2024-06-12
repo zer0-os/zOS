@@ -70,6 +70,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "test": "craco test --env=node",
+    "test:vitest": "vitest",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "start:legacy": "NODE_OPTIONS='--openssl-legacy-provider' DISABLE_ESLINT_PLUGIN=true craco start",

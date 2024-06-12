@@ -41,5 +41,9 @@ export default defineConfig(({ mode }) => {
         '@zer0-os/zos-component-library': resolve('./node_modules/@zer0-os/zos-component-library'),
       },
     },
+    test: {
+      // Only run test files that match `vitest.test`
+      include: ['**/*.vitest.ts'],
+    },
   };
 });

@@ -1,7 +1,7 @@
 import { expectSaga } from '../../test/saga';
 import { openWalletSelectModal, closeWalletSelectModal, linkNewWalletToZEROAccount } from './saga';
 
-import { WalletsState, initialState as initialWalletsState, setWalletSelectModalStatus } from '.';
+import { AccountManagementState, initialState as initialWalletsState, setWalletSelectModalStatus } from '.';
 import { rootReducer } from '../reducer';
 
 describe('openWalletSelectModal', () => {
@@ -11,7 +11,7 @@ describe('openWalletSelectModal', () => {
       .put(setWalletSelectModalStatus(true))
       .run();
 
-    expect(storeState.wallets.isWalletSelectModalOpen).toEqual(true);
+    expect(storeState.accountManagement.isWalletSelectModalOpen).toEqual(true);
   });
 });
 
@@ -22,7 +22,7 @@ describe('closeWalletSelectModal', () => {
       .put(setWalletSelectModalStatus(false))
       .run();
 
-    expect(storeState.wallets.isWalletSelectModalOpen).toEqual(false);
+    expect(storeState.accountManagement.isWalletSelectModalOpen).toEqual(false);
   });
 });
 
@@ -35,11 +35,11 @@ describe('linkNewWalletToZEROAccount', () => {
       .withReducer(rootReducer, initialState({ isWalletSelectModalOpen: true }))
       .run();
 
-    expect(storeState.wallets.isWalletSelectModalOpen).toEqual(false);
+    expect(storeState.accountManagement.isWalletSelectModalOpen).toEqual(false);
   });
 });
 
-function initialState(attrs: Partial<WalletsState> = {}) {
+function initialState(attrs: Partial<AccountManagementState> = {}) {
   return {
     registration: {
       ...initialWalletsState,

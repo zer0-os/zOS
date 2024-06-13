@@ -21,7 +21,7 @@ import { reducer as dialogs } from './dialogs';
 import { reducer as messageInfo } from './message-info';
 import { reducer as userProfile } from './user-profile';
 import { reducer as background } from './background';
-import { reducer as wallets } from './wallets';
+import { reducer as accountManagement } from './account-management';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -45,7 +45,7 @@ export const rootReducer = combineReducers({
   messageInfo,
   userProfile,
   background,
-  wallets,
+  accountManagement,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

@@ -3,9 +3,14 @@ import * as React from 'react';
 import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 
-import { WalletsPanel } from './index';
+import { AccountManagementPanel } from './index';
 import { Connectors } from '../../../../lib/web3';
-import { addNewWallet, openWalletSelectModal, closeWalletSelectModal, Errors } from '../../../../store/wallets';
+import {
+  addNewWallet,
+  openWalletSelectModal,
+  closeWalletSelectModal,
+  Errors,
+} from '../../../../store/account-management';
 
 export interface PublicProperties {
   onClose?: () => void;
@@ -22,11 +27,11 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { wallets } = state;
+    const { accountManagement } = state;
 
     return {
-      error: Container.mapErrors(wallets.errors),
-      isModalOpen: wallets.isWalletSelectModalOpen,
+      error: Container.mapErrors(accountManagement.errors),
+      isModalOpen: accountManagement.isWalletSelectModalOpen,
     };
   }
 
@@ -51,7 +56,7 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <WalletsPanel
+      <AccountManagementPanel
         error={this.props.error}
         isModalOpen={this.props.isModalOpen}
         onSelect={this.connectorSelected}
@@ -63,4 +68,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const WalletsPanelContainer = connectContainer<PublicProperties>(Container);
+export const AccountManagementContainer = connectContainer<PublicProperties>(Container);

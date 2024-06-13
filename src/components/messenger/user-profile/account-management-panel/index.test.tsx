@@ -1,9 +1,9 @@
 import { shallow } from 'enzyme';
 
-import { Properties, WalletsPanel } from '.';
+import { Properties, AccountManagementPanel } from '.';
 import { PanelHeader } from '../../list/panel-header';
 
-describe(WalletsPanel, () => {
+describe(AccountManagementPanel, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       error: '',
@@ -16,7 +16,7 @@ describe(WalletsPanel, () => {
       ...props,
     };
 
-    return shallow(<WalletsPanel {...allProps} />);
+    return shallow(<AccountManagementPanel {...allProps} />);
   };
 
   it('publishes onBack event', () => {
@@ -73,6 +73,6 @@ describe(WalletsPanel, () => {
     expect(wrapper.find('Alert').prop('isFilled')).toEqual(true);
 
     const props = wrapper.find('Alert').prop('children');
-    expect(props).toEqual(<div className='wallets-panel__alert-text'>An error occurred</div>);
+    expect(props).toEqual(<div className='account-management-panel__alert-text'>An error occurred</div>);
   });
 });

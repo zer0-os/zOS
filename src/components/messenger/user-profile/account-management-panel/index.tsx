@@ -9,7 +9,7 @@ import { IconPlus } from '@zero-tech/zui/icons';
 import './styles.scss';
 import { WalletSelect } from '../../../wallet-select';
 
-const cn = bemClassName('wallets-panel');
+const cn = bemClassName('account-management-panel');
 
 export interface Properties {
   isModalOpen: boolean;
@@ -21,7 +21,7 @@ export interface Properties {
   onSelect: (connector: any) => void;
 }
 
-export class WalletsPanel extends React.Component<Properties> {
+export class AccountManagementPanel extends React.Component<Properties> {
   back = () => {
     this.props.onBack();
   };
@@ -45,7 +45,7 @@ export class WalletsPanel extends React.Component<Properties> {
     return (
       <div {...cn()}>
         <div {...cn('header-container')}>
-          <PanelHeader title={'Wallets'} onBack={this.back} />
+          <PanelHeader title={'Accounts'} onBack={this.back} />
         </div>
 
         <div {...cn('content')}>

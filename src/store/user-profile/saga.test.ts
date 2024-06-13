@@ -8,6 +8,7 @@ import {
   onPrivateReadReceipts,
   onPublicReadReceipts,
   getUserReadReceiptPreference,
+  openAccountManagement,
 } from './saga';
 import { UserProfileState, initialState as initialUserProfileState, Stage, setStage, setPublicReadReceipts } from '.';
 import { rootReducer } from '../reducer';
@@ -25,14 +26,14 @@ describe('openUserProfile', () => {
   });
 });
 
-describe('openWallets', () => {
+describe('openAccountManagement', () => {
   it('should set stage to Wallets', async () => {
-    const { storeState } = await expectSaga(openSettings)
+    const { storeState } = await expectSaga(openAccountManagement)
       .withReducer(rootReducer, initialState())
       .put(setStage(Stage.Settings))
       .run();
 
-    expect(storeState.userProfile.stage).toEqual(Stage.Settings);
+    expect(storeState.userProfile.stage).toEqual(Stage.AccountManagement);
   });
 });
 

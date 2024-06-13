@@ -30,7 +30,7 @@ describe(OverviewPanel, () => {
       onOpenEditProfile: () => {},
       onOpenRewards: () => {},
       onOpenSettings: () => {},
-      onOpenWallets: () => {},
+      onOpenAccountManagement: () => {},
 
       ...props,
     };
@@ -96,15 +96,15 @@ describe(OverviewPanel, () => {
     expect(onOpenSettings).toHaveBeenCalled();
   });
 
-  it('publishes onOpenWallets event', () => {
+  it('publishes openAccountManagement event', () => {
     featureFlags.allowMultipleAccounts = true;
 
-    const onOpenWallets = jest.fn();
-    const wrapper = subject({ onOpenWallets });
+    const onOpenAccountManagement = jest.fn();
+    const wrapper = subject({ onOpenAccountManagement });
 
     wrapper.find(Button).at(2).simulate('press');
 
-    expect(onOpenWallets).toHaveBeenCalled();
+    expect(onOpenAccountManagement).toHaveBeenCalled();
   });
 
   it('opens the invite dialog', () => {

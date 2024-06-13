@@ -21,7 +21,7 @@ export interface Properties {
   onSelect: (connector: any) => void;
 }
 
-export class WalletsPanel extends React.Component<Properties> {
+export class AccountManagementPanel extends React.Component<Properties> {
   back = () => {
     this.props.onBack();
   };

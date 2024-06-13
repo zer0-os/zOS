@@ -33,7 +33,7 @@ export interface Properties {
   onOpenEditProfile: () => void;
   onOpenRewards: () => void;
   onOpenSettings: () => void;
-  onOpenWallets: () => void;
+  onOpenAccountManagement: () => void;
 }
 
 interface State {
@@ -85,8 +85,8 @@ export class OverviewPanel extends React.Component<Properties, State> {
     this.props.onOpenSettings();
   };
 
-  openWallets = () => {
-    this.props.onOpenWallets();
+  onManageAccounts = () => {
+    this.props.onOpenAccountManagement();
   };
 
   renderDetails = () => {
@@ -136,11 +136,11 @@ export class OverviewPanel extends React.Component<Properties, State> {
           <Button
             {...cn('action-button')}
             variant={ButtonVariant.Secondary}
-            onPress={this.openWallets}
+            onPress={this.onManageAccounts}
             startEnhancer={<IconWallet3 size={20} />}
             color={ButtonColor.Greyscale}
           >
-            Wallets
+            Manage Accounts
           </Button>
         )}
 

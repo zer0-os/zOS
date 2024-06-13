@@ -1,9 +1,9 @@
 import { shallow } from 'enzyme';
 
-import { Properties, WalletsPanel } from '.';
+import { Properties, AccountManagementPanel } from '.';
 import { PanelHeader } from '../../list/panel-header';
 
-describe(WalletsPanel, () => {
+describe(AccountManagementPanel, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       error: '',
@@ -16,7 +16,7 @@ describe(WalletsPanel, () => {
       ...props,
     };
 
-    return shallow(<WalletsPanel {...allProps} />);
+    return shallow(<AccountManagementPanel {...allProps} />);
   };
 
   it('publishes onBack event', () => {

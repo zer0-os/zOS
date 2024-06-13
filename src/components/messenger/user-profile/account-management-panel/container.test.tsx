@@ -1,5 +1,5 @@
 import { Container } from './container';
-import { Errors, WalletsState } from '../../../../store/wallets';
+import { Errors, WalletsState } from '../../../../store/account-management';
 import { RootState } from '../../../../store/reducer';
 
 describe('Container', () => {

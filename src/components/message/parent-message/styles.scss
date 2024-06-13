@@ -1,29 +1,67 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../glass';
 
-.parent-message {
+.parent-message-container {
   display: flex;
-  align-items: center;
-  padding: 8px 8px 8px 16px;
+  padding: 8px 8px 0px 8px;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 
-  font-weight: 400;
-  font-size: 12px;
-  font-style: normal;
-  line-height: 15px;
+  &__parent-message {
+    display: flex;
+    padding: 8px;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    flex: 1 0 0;
+    border-radius: 4px;
+    overflow: hidden;
 
-  @include glass-text-secondary-color;
-  @include glass-state-active-stroke;
+    @include glass-state-hover-color;
+    @include glass-text-secondary-color;
+  }
 
   &__content {
-    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
     overflow: hidden;
     white-space: nowrap;
   }
 
   &__header {
-    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 15px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include glass-text-primary-color;
+  }
+
+  &__message {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 15px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include glass-text-tertiary-color;
+  }
+
+  &__media {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__media {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
   }
 }

@@ -42,6 +42,8 @@ interface Properties extends MessageModel {
   parentSenderIsCurrentUser?: boolean;
   parentSenderFirstName?: string;
   parentSenderLastName?: string;
+  parentMessageMediaUrl?: string;
+  parentMessageMediaName?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   showSenderAvatar?: boolean;
   showTimestamp: boolean;
@@ -414,6 +416,8 @@ export class Message extends React.Component<Properties, State> {
         senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
         senderFirstName={this.props.parentSenderFirstName}
         senderLastName={this.props.parentSenderLastName}
+        mediaUrl={this.props.parentMessageMediaUrl}
+        mediaName={this.props.parentMessageMediaName}
       />
     );
   }

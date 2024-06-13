@@ -105,6 +105,7 @@ export function* getLocalZeroUsersMap() {
 export function* mapMessagesAndPreview(messages, channelId) {
   const zeroUsersMap = yield call(mapMessageSenders, messages, channelId);
   yield call(mapAdminUserIdToZeroUserId, [{ messages }], zeroUsersMap);
+
   for (const message of messages) {
     if (message.isHidden) {
       message.message = 'Message hidden';
@@ -117,6 +118,10 @@ export function* mapMessagesAndPreview(messages, channelId) {
   }
 
   return messages;
+}
+
+function getPreviousMessage(messages, index) {
+  return index > 0 ? messages[index - 1] : null;
 }
 
 export function* fetch(action) {
@@ -140,8 +145,33 @@ export function* fetch(action) {
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
     }
 
-    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
     const existingMessages = yield select(rawMessagesSelector(channelId));
+    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
+
+    // Create a map for quick lookup of messages by ID
+    const messageMap = new Map(messagesResponse.messages.map((msg) => [msg.id, msg]));
+
+    // Process parent messages
+    messagesResponse.messages.forEach((message, index) => {
+      if (message.parentMessageId) {
+        const prevMessage = getPreviousMessage(messagesResponse.messages, index);
+        if (prevMessage && prevMessage.media) {
+          message.parentMessage.media = prevMessage.media;
+        }
+      }
+      messageMap.set(message.id, message);
+    });
+
+    // // Integrate the logic to handle previous messages
+    // for (let i = 0; i < messagesResponse.messages.length; i++) {
+    //   const message = messagesResponse.messages[i];
+    //   if (message.parentMessageId) {
+    //     const prevMessage = getPreviousMessage(messagesResponse.messages, i);
+    //     if (prevMessage && prevMessage.media) {
+    //       message.parentMessage.media = prevMessage.media;
+    //     }
+    //   }
+    // }
 
     // we prefer this order (new messages first), so that if any new message has an updated property
     // (eg. parentMessage), then it gets written to state
@@ -286,7 +316,16 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
     null,
     optimisticId
   );
-  return yield sendMessage(messageCall, channelId, optimisticId);
+
+  const result = yield sendMessage(messageCall, channelId, optimisticId);
+
+  // Ensure media data is preserved in the sent message
+  if (result && parentMessage) {
+    result.media = parentMessage.media;
+  }
+
+  console.log('xxxperformsend', result);
+  return result;
 }
 
 // note: we're not replacing the optimistic message with the real message here anymore
@@ -459,6 +498,7 @@ function* receiveBatchedMessages(channelId, messages) {
 
 export function* replaceOptimisticMessage(currentMessages, message) {
   const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
+
   if (messageIndex < 0) {
     return null;
   }
@@ -466,6 +506,14 @@ export function* replaceOptimisticMessage(currentMessages, message) {
   const optimisticMessage = yield select(messageSelector(message.optimisticId));
   if (!optimisticMessage) {
     return null; // This shouldn't happen because we'd have bailed above, but just in case.
+  }
+
+  if (optimisticMessage.parentMessage) {
+    message.parentMessage = {
+      ...optimisticMessage.parentMessage,
+      media: optimisticMessage.parentMessage.media,
+    };
+    console.log('xxxoptimisticMessage.parentMessag', message.parentMessage);
   }
 
   const messages = [...currentMessages];

@@ -42,6 +42,9 @@ module.exports = {
         transformIgnorePatterns: [
           '/node_modules/@cloudinary/url-gen/\\.(js|ts|tsx)$',
         ],
+        moduleNameMapper: {
+          '\\.svg\\?react$': '<rootDir>/src/svgr-mock.ts',
+        },
       };
     },
   },

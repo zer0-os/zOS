@@ -24,6 +24,6 @@ module.exports = function () {
 };
 
 function environmentalize(prefix, separator) {
-  const nodeEnv = import.meta.env.NODE_ENV;
+  const nodeEnv = process.env.NODE_ENV;
   return `${prefix}${separator}${nodeEnv}`;
 }

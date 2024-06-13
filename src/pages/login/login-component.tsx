@@ -87,7 +87,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
         <div {...cn('')}>
           <main {...cn('content')}>
             <div {...cn('logo-container')}>
-              <ZeroLogo />
+              <ZeroLogo className={'hlelo'} />
             </div>
             <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
               <h3 {...cn('header')}>Log In</h3>

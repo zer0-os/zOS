@@ -141,8 +141,8 @@ export function* fetch(action) {
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
     }
 
-    const existingMessages = yield select(rawMessagesSelector(channelId));
     messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
+    const existingMessages = yield select(rawMessagesSelector(channelId));
 
     // we prefer this order (new messages first), so that if any new message has an updated property
     // (eg. parentMessage), then it gets written to state
@@ -292,10 +292,9 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
 
   // Ensure media data is preserved in the sent message
   if (result && parentMessage) {
-    result.media = parentMessage.media;
+    result.parentMessageMedia = parentMessage.media;
   }
 
-  console.log('xxxperformsend', result);
   return result;
 }
 
@@ -480,11 +479,7 @@ export function* replaceOptimisticMessage(currentMessages, message) {
   }
 
   if (optimisticMessage.parentMessage) {
-    message.parentMessage = {
-      ...optimisticMessage.parentMessage,
-      media: optimisticMessage.parentMessage.media,
-    };
-    console.log('xxxoptimisticMessage.parentMessag', message.parentMessage);
+    message.parentMessageMedia = optimisticMessage.parentMessage.media;
   }
 
   const messages = [...currentMessages];

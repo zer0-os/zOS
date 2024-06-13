@@ -132,7 +132,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
           Edit Profile
         </Button>
 
-        {featureFlags.allowWallets && (
+        {featureFlags.allowMultipleAccounts && (
           <Button
             {...cn('action-button')}
             variant={ButtonVariant.Secondary}

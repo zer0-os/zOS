@@ -11,7 +11,7 @@ import { bem } from '../../../../lib/bem';
 
 const c = bem('.overview-panel');
 
-const featureFlags = { enableRewards: false, enableUserSettings: false, allowWallets: false };
+const featureFlags = { enableRewards: false, enableUserSettings: false, allowMultipleAccounts: false };
 
 jest.mock('../../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
@@ -97,7 +97,7 @@ describe(OverviewPanel, () => {
   });
 
   it('publishes onOpenWallets event', () => {
-    featureFlags.allowWallets = true;
+    featureFlags.allowMultipleAccounts = true;
 
     const onOpenWallets = jest.fn();
     const wrapper = subject({ onOpenWallets });

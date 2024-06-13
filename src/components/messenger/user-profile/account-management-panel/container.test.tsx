@@ -8,7 +8,7 @@ describe('Container', () => {
       const state = {
         authentication: { user: {} },
         web3: { value: {} },
-        wallets: {},
+        accountManagement: { errors: [], isWalletSelectModalOpen: false },
         ...inputState,
       } as RootState;
       return Container.mapState(state);
@@ -17,7 +17,7 @@ describe('Container', () => {
     describe('errors', () => {
       test('wallets error: unknown error', () => {
         const props = subject({
-          wallets: { errors: [Errors.UNKNOWN_ERROR] } as WalletsState,
+          accountManagement: { errors: [Errors.UNKNOWN_ERROR] } as WalletsState,
         });
 
         expect(props.error).toEqual('An unknown error occurred. Please try again');
@@ -25,7 +25,7 @@ describe('Container', () => {
 
       test('no error', () => {
         const props = subject({
-          wallets: { errors: [] } as WalletsState,
+          accountManagement: { errors: [] } as WalletsState,
         });
 
         expect(props.error).toEqual('');
@@ -35,7 +35,7 @@ describe('Container', () => {
     describe('isModalOpen', () => {
       it('is true when wallet select modal is open', () => {
         const props = subject({
-          wallets: { isWalletSelectModalOpen: true } as WalletsState,
+          accountManagement: { isWalletSelectModalOpen: true } as WalletsState,
         });
 
         expect(props.isModalOpen).toEqual(true);

@@ -45,7 +45,7 @@ export class AccountManagementPanel extends React.Component<Properties> {
     return (
       <div {...cn()}>
         <div {...cn('header-container')}>
-          <PanelHeader title={'Wallets'} onBack={this.back} />
+          <PanelHeader title={'Accounts'} onBack={this.back} />
         </div>
 
         <div {...cn('content')}>

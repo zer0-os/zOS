@@ -27,10 +27,10 @@ describe('openUserProfile', () => {
 });
 
 describe('openAccountManagement', () => {
-  it('should set stage to Wallets', async () => {
+  it('should set stage to openAccountManagement', async () => {
     const { storeState } = await expectSaga(openAccountManagement)
       .withReducer(rootReducer, initialState())
-      .put(setStage(Stage.Settings))
+      .put(setStage(Stage.AccountManagement))
       .run();
 
     expect(storeState.userProfile.stage).toEqual(Stage.AccountManagement);

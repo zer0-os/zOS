@@ -9,7 +9,7 @@ import { IconPlus } from '@zero-tech/zui/icons';
 import './styles.scss';
 import { WalletSelect } from '../../../wallet-select';
 
-const cn = bemClassName('wallets-panel');
+const cn = bemClassName('account-management-panel');
 
 export interface Properties {
   isModalOpen: boolean;

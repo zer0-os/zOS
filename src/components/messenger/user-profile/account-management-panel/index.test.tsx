@@ -73,6 +73,6 @@ describe(AccountManagementPanel, () => {
     expect(wrapper.find('Alert').prop('isFilled')).toEqual(true);
 
     const props = wrapper.find('Alert').prop('children');
-    expect(props).toEqual(<div className='wallets-panel__alert-text'>An error occurred</div>);
+    expect(props).toEqual(<div className='account-management-panel__alert-text'>An error occurred</div>);
   });
 });

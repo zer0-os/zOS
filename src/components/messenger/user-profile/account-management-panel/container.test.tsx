@@ -1,5 +1,5 @@
 import { Container } from './container';
-import { Errors, WalletsState } from '../../../../store/account-management';
+import { Errors, AccountManagementState } from '../../../../store/account-management';
 import { RootState } from '../../../../store/reducer';
 
 describe('Container', () => {
@@ -17,7 +17,7 @@ describe('Container', () => {
     describe('errors', () => {
       test('wallets error: unknown error', () => {
         const props = subject({
-          accountManagement: { errors: [Errors.UNKNOWN_ERROR] } as WalletsState,
+          accountManagement: { errors: [Errors.UNKNOWN_ERROR] } as AccountManagementState,
         });
 
         expect(props.error).toEqual('An unknown error occurred. Please try again');
@@ -25,7 +25,7 @@ describe('Container', () => {
 
       test('no error', () => {
         const props = subject({
-          accountManagement: { errors: [] } as WalletsState,
+          accountManagement: { errors: [] } as AccountManagementState,
         });
 
         expect(props.error).toEqual('');
@@ -35,7 +35,7 @@ describe('Container', () => {
     describe('isModalOpen', () => {
       it('is true when wallet select modal is open', () => {
         const props = subject({
-          accountManagement: { isWalletSelectModalOpen: true } as WalletsState,
+          accountManagement: { isWalletSelectModalOpen: true } as AccountManagementState,
         });
 
         expect(props.isModalOpen).toEqual(true);

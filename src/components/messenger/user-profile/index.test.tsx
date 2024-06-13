@@ -22,7 +22,7 @@ describe(UserProfile, () => {
       onBackToOverview: () => {},
       onRewards: () => {},
       onSettings: () => {},
-      onAccountManagement: () => {},
+      onManageAccounts: () => {},
       ...props,
     };
 

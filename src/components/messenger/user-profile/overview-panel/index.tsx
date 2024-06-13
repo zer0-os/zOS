@@ -33,7 +33,7 @@ export interface Properties {
   onOpenEditProfile: () => void;
   onOpenRewards: () => void;
   onOpenSettings: () => void;
-  onOpenAccountManagement: () => void;
+  onManageAccounts: () => void;
 }
 
 interface State {
@@ -86,7 +86,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
   };
 
   onManageAccounts = () => {
-    this.props.onOpenAccountManagement();
+    this.props.onManageAccounts();
   };
 
   renderDetails = () => {

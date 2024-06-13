@@ -30,7 +30,7 @@ describe(OverviewPanel, () => {
       onOpenEditProfile: () => {},
       onOpenRewards: () => {},
       onOpenSettings: () => {},
-      onOpenAccountManagement: () => {},
+      onManageAccounts: () => {},
 
       ...props,
     };
@@ -100,7 +100,7 @@ describe(OverviewPanel, () => {
     featureFlags.allowMultipleAccounts = true;
 
     const onOpenAccountManagement = jest.fn();
-    const wrapper = subject({ onOpenAccountManagement });
+    const wrapper = subject({ onManageAccounts: onOpenAccountManagement });
 
     wrapper.find(Button).at(2).simulate('press');
 

@@ -59,7 +59,7 @@ export class Container extends React.Component<Properties> {
       openEditProfile,
       openRewardsDialog,
       openSettings,
-      openAccountManagement: openAccountManagement,
+      openAccountManagement,
     };
   }
 
@@ -77,7 +77,7 @@ export class Container extends React.Component<Properties> {
         onBackToOverview={this.props.openUserProfile}
         onRewards={this.props.openRewardsDialog}
         onSettings={this.props.openSettings}
-        onAccountManagement={this.props.openAccountManagement}
+        onManageAccounts={this.props.openAccountManagement}
       />
     );
   }

@@ -19,7 +19,7 @@ export interface Properties {
   onBackToOverview: () => void;
   onRewards: () => void;
   onSettings: () => void;
-  onAccountManagement: () => void;
+  onManageAccounts: () => void;
 }
 
 export class UserProfile extends React.Component<Properties> {
@@ -37,7 +37,7 @@ export class UserProfile extends React.Component<Properties> {
             onOpenEditProfile={this.props.onEdit}
             onOpenRewards={this.props.onRewards}
             onOpenSettings={this.props.onSettings}
-            onOpenAccountManagement={this.props.onAccountManagement}
+            onManageAccounts={this.props.onManageAccounts}
           />
         )}
 

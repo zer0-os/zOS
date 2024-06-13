@@ -43,8 +43,10 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       // Only run test files that match `vitest.test`
-      include: ['**/*.vitest.ts'],
+      include: ['**/*.vitest.*'],
       globals: true,
+      environment: 'jsdom',
+      setupFiles: ['./setupVitest.ts'],
     },
   };
 });

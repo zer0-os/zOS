@@ -120,10 +120,6 @@ export function* mapMessagesAndPreview(messages, channelId) {
   return messages;
 }
 
-function getPreviousMessage(messages, index) {
-  return index > 0 ? messages[index - 1] : null;
-}
-
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;
   const channel = yield select(rawChannelSelector(channelId));
@@ -147,31 +143,6 @@ export function* fetch(action) {
 
     const existingMessages = yield select(rawMessagesSelector(channelId));
     messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
-
-    // Create a map for quick lookup of messages by ID
-    const messageMap = new Map(messagesResponse.messages.map((msg) => [msg.id, msg]));
-
-    // Process parent messages
-    messagesResponse.messages.forEach((message, index) => {
-      if (message.parentMessageId) {
-        const prevMessage = getPreviousMessage(messagesResponse.messages, index);
-        if (prevMessage && prevMessage.media) {
-          message.parentMessage.media = prevMessage.media;
-        }
-      }
-      messageMap.set(message.id, message);
-    });
-
-    // // Integrate the logic to handle previous messages
-    // for (let i = 0; i < messagesResponse.messages.length; i++) {
-    //   const message = messagesResponse.messages[i];
-    //   if (message.parentMessageId) {
-    //     const prevMessage = getPreviousMessage(messagesResponse.messages, i);
-    //     if (prevMessage && prevMessage.media) {
-    //       message.parentMessage.media = prevMessage.media;
-    //     }
-    //   }
-    // }
 
     // we prefer this order (new messages first), so that if any new message has an updated property
     // (eg. parentMessage), then it gets written to state

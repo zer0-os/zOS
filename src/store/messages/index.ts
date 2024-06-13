@@ -67,6 +67,7 @@ export interface Message {
   id: number;
   message?: string;
   parentMessageText?: string;
+  parentMessageMedia?: Media;
   parentMessage?: ParentMessage;
   isAdmin: boolean;
   createdAt: number;

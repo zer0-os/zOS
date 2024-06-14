@@ -13,7 +13,6 @@ export interface Properties {
   canDelete: boolean;
   canReply?: boolean;
   canViewInfo?: boolean;
-  isMediaMessage?: boolean;
   isMenuOpen?: boolean;
   isMenuFlying?: boolean;
 
@@ -57,7 +56,7 @@ export class MessageMenu extends React.Component<Properties> {
         onSelect: this.onEdit,
       });
     }
-    if (this.props.onReply && this.props.canReply && !this.props.isMediaMessage) {
+    if (this.props.onReply && this.props.canReply) {
       menuItems.push({
         id: 'reply',
         label: this.renderMenuOption(<IconFlipBackward size={20} />, 'Reply'),

@@ -10,7 +10,6 @@ describe('Message Menu', () => {
       canDelete: false,
       canReply: false,
       canViewInfo: false,
-      isMediaMessage: false,
       isMenuOpen: false,
       onDelete: undefined,
       onEdit: undefined,
@@ -89,7 +88,7 @@ describe('Message Menu', () => {
   });
 
   describe('Reply Button', () => {
-    it('should render when canReply is true and isMediaMessage is false', () => {
+    it('should render when canReply is true', () => {
       const onReply = jest.fn();
       const wrapper = subject({ canReply: true, onReply }) as ShallowWrapper;
 

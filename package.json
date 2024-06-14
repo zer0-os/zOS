@@ -103,6 +103,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@testing-library/dom": "^10.1.0",
     "@testing-library/react": "^12.1.5",
     "@types/enzyme": "^3.10.10",

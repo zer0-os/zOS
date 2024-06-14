@@ -10,7 +10,7 @@ export enum SagaActionTypes {
   CloseMessageInfo = 'message-info/close-message-info',
 }
 
-export const openMessageInfo = createAction<{ roomId: string; messageId: number }>(SagaActionTypes.OpenMessageInfo);
+export const openMessageInfo = createAction<{ messageId: number }>(SagaActionTypes.OpenMessageInfo);
 export const closeMessageInfo = createAction(SagaActionTypes.CloseMessageInfo);
 
 export type MessageInfoState = {

@@ -97,6 +97,14 @@ export class FeatureFlags {
   set enableUserSettings(value: boolean) {
     this._setBoolean('enableUserSettings', value);
   }
+
+  get allowMultipleAccounts() {
+    return this._getBoolean('allowMultipleAccounts', false);
+  }
+
+  set allowMultipleAccounts(value: boolean) {
+    this._setBoolean('allowMultipleAccounts', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

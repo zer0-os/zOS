@@ -7,11 +7,13 @@ import {
   openSettings,
   onPrivateReadReceipts,
   onPublicReadReceipts,
+  getUserReadReceiptPreference,
+  openAccountManagement,
 } from './saga';
 import { UserProfileState, initialState as initialUserProfileState, Stage, setStage, setPublicReadReceipts } from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
-import { setReadReceiptPreference } from '../../lib/chat';
+import { getReadReceiptPreference, setReadReceiptPreference } from '../../lib/chat';
 
 describe('openUserProfile', () => {
   it('should set stage to Overview', async () => {
@@ -21,6 +23,17 @@ describe('openUserProfile', () => {
       .run();
 
     expect(storeState.userProfile.stage).toEqual(Stage.Overview);
+  });
+});
+
+describe('openAccountManagement', () => {
+  it('should set stage to openAccountManagement', async () => {
+    const { storeState } = await expectSaga(openAccountManagement)
+      .withReducer(rootReducer, initialState())
+      .put(setStage(Stage.AccountManagement))
+      .run();
+
+    expect(storeState.userProfile.stage).toEqual(Stage.AccountManagement);
   });
 });
 
@@ -86,7 +99,7 @@ describe('onPublicReadReceipts', () => {
       ...initialState(),
       userProfile: {
         ...initialState().userProfile,
-        isPublicReadReceipt: false,
+        isPublicReadReceipts: false,
       },
     };
 
@@ -100,6 +113,54 @@ describe('onPublicReadReceipts', () => {
       ])
       .put(setPublicReadReceipts(true))
       .run();
+  });
+});
+
+describe('getUserReadReceiptPreference', () => {
+  it('should set isPublicReadReceipts to true when preference is public', async () => {
+    const initialStateWithPrivateReadReceipts = {
+      ...initialState(),
+      userProfile: {
+        ...initialState().userProfile,
+        isPublicReadReceipts: false,
+      },
+    };
+
+    const { storeState } = await expectSaga(getUserReadReceiptPreference)
+      .withReducer(rootReducer, initialStateWithPrivateReadReceipts)
+      .provide([
+        [
+          matchers.call.fn(getReadReceiptPreference),
+          'public',
+        ],
+      ])
+      .put(setPublicReadReceipts(true))
+      .run();
+
+    expect(storeState.userProfile.isPublicReadReceipts).toEqual(true);
+  });
+
+  it('should set isPublicReadReceipts to false when preference is private', async () => {
+    const initialStateWithPublicReadReceipts = {
+      ...initialState(),
+      userProfile: {
+        ...initialState().userProfile,
+        isPublicReadReceipts: true,
+      },
+    };
+
+    const { storeState } = await expectSaga(getUserReadReceiptPreference)
+      .withReducer(rootReducer, initialStateWithPublicReadReceipts)
+      .provide([
+        [
+          matchers.call.fn(getReadReceiptPreference),
+          'private',
+        ],
+      ])
+      .put(setPublicReadReceipts(false))
+      .run();
+
+    expect(storeState.userProfile.isPublicReadReceipts).toEqual(false);
   });
 });
 

@@ -12,7 +12,7 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconCheck } from '@zero-tech/zui/icons';
 import { Avatar } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
@@ -33,6 +33,7 @@ interface Properties extends MessageModel {
     mentionedUserIds: User['userId'][],
     data?: Partial<EditMessageOptions>
   ) => void;
+  onInfo: (messageId: number) => void;
   onReply: ({ reply }: { reply: ParentMessageType }) => void;
   isOwner?: boolean;
   messageId?: number;
@@ -47,6 +48,8 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
+  isMessageRead: boolean;
+  isLastMessage: boolean;
 }
 
 export interface State {
@@ -147,6 +150,26 @@ export class Message extends React.Component<Properties, State> {
     return '';
   }
 
+  getReceiptIcon() {
+    const { sendStatus, isMessageRead } = this.props;
+
+    if (sendStatus === MessageSendStatus.IN_PROGRESS) {
+      return <IconCheck {...cn('sent-icon')} size={14} />;
+    }
+
+    if (sendStatus === MessageSendStatus.SUCCESS || sendStatus === undefined) {
+      const iconClass = isMessageRead ? 'read' : 'delivered';
+      return (
+        <div {...cn('read-icon-container')}>
+          <IconCheck {...cn('read-icon', `${iconClass}`)} size={12} />
+          <IconCheck {...cn('read-icon', `${iconClass}`)} size={12} />
+        </div>
+      );
+    }
+
+    return null;
+  }
+
   renderFooter() {
     if (this.state.isEditing) {
       return;
@@ -168,6 +191,10 @@ export class Message extends React.Component<Properties, State> {
           <IconAlertCircle size={16} />
         </div>
       );
+    }
+    if (this.props.isOwner && this.props.isLastMessage) {
+      const icon = this.getReceiptIcon();
+      icon && footerElements.push(icon);
     }
 
     if (footerElements.length === 0) {
@@ -198,6 +225,7 @@ export class Message extends React.Component<Properties, State> {
   canEditMessage = (): boolean => {
     return (
       this.props.isOwner &&
+      this.props.message &&
       this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
       this.props.sendStatus !== MessageSendStatus.FAILED
     );
@@ -265,6 +293,16 @@ export class Message extends React.Component<Properties, State> {
     );
   };
 
+  canViewInfo = (): boolean => {
+    return (
+      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS && this.props.sendStatus !== MessageSendStatus.FAILED
+    );
+  };
+
+  onInfo = () => {
+    this.props.onInfo(this.props.messageId);
+  };
+
   isMenuTriggerAlwaysVisible = () => {
     return this.props.sendStatus === MessageSendStatus.FAILED;
   };
@@ -276,9 +314,11 @@ export class Message extends React.Component<Properties, State> {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
+      canViewInfo: this.canViewInfo(),
       onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
+      onInfo: this.onInfo,
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isMessageMenuOpen,
       onOpenChange: this.handleOpenMenu,
@@ -308,9 +348,11 @@ export class Message extends React.Component<Properties, State> {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
+      canViewInfo: this.canViewInfo(),
       onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
+      onInfo: this.onInfo,
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isDropdownMenuOpen,
       onOpenChange: this.handleOpenMenu,
@@ -412,6 +454,8 @@ export class Message extends React.Component<Properties, State> {
 
               {this.state.isEditing && this.props.message && (
                 <>
+                  {media && this.renderMedia(media)}
+
                   <div {...cn('block-edit')}>
                     <MessageInput
                       initialValue={this.props.message}

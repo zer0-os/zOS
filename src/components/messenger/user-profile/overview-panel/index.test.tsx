@@ -11,7 +11,7 @@ import { bem } from '../../../../lib/bem';
 
 const c = bem('.overview-panel');
 
-const featureFlags = { enableRewards: false, enableUserSettings: false };
+const featureFlags = { enableRewards: false, enableUserSettings: false, allowMultipleAccounts: false };
 
 jest.mock('../../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
@@ -30,6 +30,7 @@ describe(OverviewPanel, () => {
       onOpenEditProfile: () => {},
       onOpenRewards: () => {},
       onOpenSettings: () => {},
+      onManageAccounts: () => {},
 
       ...props,
     };
@@ -93,6 +94,17 @@ describe(OverviewPanel, () => {
     wrapper.find(Button).at(3).simulate('press');
 
     expect(onOpenSettings).toHaveBeenCalled();
+  });
+
+  it('publishes openAccountManagement event', () => {
+    featureFlags.allowMultipleAccounts = true;
+
+    const onOpenAccountManagement = jest.fn();
+    const wrapper = subject({ onManageAccounts: onOpenAccountManagement });
+
+    wrapper.find(Button).at(2).simulate('press');
+
+    expect(onOpenAccountManagement).toHaveBeenCalled();
   });
 
   it('opens the invite dialog', () => {

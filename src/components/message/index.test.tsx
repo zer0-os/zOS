@@ -164,6 +164,7 @@ describe('message', () => {
     expect(messageMenuProps.canEdit).toBe(false);
     expect(messageMenuProps.canReply).toBe(false);
     expect(messageMenuProps.canDelete).toBe(false);
+    expect(messageMenuProps.canViewInfo).toBe(false);
   });
 
   it('allows reply when parent message is set', () => {
@@ -196,6 +197,7 @@ describe('message', () => {
     const messageMenuProps = wrapper.find(MessageMenu).first().props();
     expect(messageMenuProps.canEdit).toBe(false);
     expect(messageMenuProps.canReply).toBe(false);
+    expect(messageMenuProps.canViewInfo).toBe(false);
     expect(messageMenuProps.canDelete).toBe(true);
   });
 
@@ -219,6 +221,21 @@ describe('message', () => {
     });
 
     expect(wrapper.find('.message__footer').text()).toEqual('(Edited)');
+  });
+
+  it('renders media when editing media message with text', () => {
+    const wrapper = subject({
+      message: 'the message',
+      media: { url: 'https://image.com/image.png', type: MediaType.Image },
+    });
+
+    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+    wrapper.simulate('contextmenu', mockEvent);
+
+    wrapper.find(MessageMenu).props().onEdit();
+
+    expect(wrapper.find(MessageInput)).toExist();
+    expect(wrapper.find('.message__block-image img')).toExist();
   });
 
   it('renders reply message', () => {
@@ -452,6 +469,66 @@ describe('message', () => {
       wrapper.find('[className$="-audio"]').simulate('click');
 
       expect(onImageClick).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getReceiptIcon', () => {
+    it('renders IconCheck for in-progress messages', () => {
+      const wrapper = subject({
+        message: 'text',
+        sendStatus: MessageSendStatus.IN_PROGRESS,
+        isOwner: true,
+        isLastMessage: true,
+      });
+
+      expect(wrapper.find('.message__sent-icon')).toExist();
+    });
+
+    it('renders IconCheckDouble with "read" class for read messages', () => {
+      const wrapper = subject({
+        message: 'text',
+        sendStatus: MessageSendStatus.SUCCESS,
+        isOwner: true,
+        isLastMessage: true,
+        isMessageRead: true,
+      });
+
+      expect(wrapper.find('.message__read-icon--read')).toExist();
+    });
+
+    it('renders IconCheckDouble with "delivered" class for delivered messages', () => {
+      const wrapper = subject({
+        message: 'text',
+        sendStatus: MessageSendStatus.SUCCESS,
+        isOwner: true,
+        isLastMessage: true,
+        isMessageRead: false,
+      });
+
+      expect(wrapper.find('.message__read-icon--delivered')).toExist();
+    });
+
+    it('renders IconCheckDouble with "delivered" class when sendStatus is undefined', () => {
+      const wrapper = subject({
+        message: 'text',
+        sendStatus: undefined,
+        isOwner: true,
+        isLastMessage: true,
+      });
+
+      expect(wrapper.find('.message__read-icon--delivered')).toExist();
+    });
+
+    it('renders nothing for failed messages', () => {
+      const wrapper = subject({
+        message: 'text',
+        sendStatus: MessageSendStatus.FAILED,
+        isOwner: true,
+        isLastMessage: true,
+      });
+
+      expect(wrapper.find('.message__read-icon')).not.toExist();
+      expect(wrapper.find('.message__sent-icon')).not.toExist();
     });
   });
 });

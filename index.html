@@ -8,14 +8,14 @@
     <meta name="description" content="ZERO" />
     <!-- added unsafe-eval here, but we should restrict this to *just* the Olm module, rather than for all self  -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
     <meta name="apple-itunes-app" content="app-id=1261522628" />
     <script src="/olm.js"></script>
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -32,6 +32,7 @@
     <div id="root">
       <div id="platform"></div>
     </div>
+    <script type="module" src="/src/index.tsx"></script>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

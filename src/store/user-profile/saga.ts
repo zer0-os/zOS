@@ -1,6 +1,6 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setStage, setPublicReadReceipts } from '.';
-import { setReadReceiptPreference } from '../../lib/chat';
+import { getReadReceiptPreference, setReadReceiptPreference } from '../../lib/chat';
 
 export function* openUserProfile() {
   yield put(setStage(Stage.Overview));
@@ -16,6 +16,10 @@ export function* openEditProfile() {
 
 export function* openSettings() {
   yield put(setStage(Stage.Settings));
+}
+
+export function* openAccountManagement() {
+  yield put(setStage(Stage.AccountManagement));
 }
 
 export function* onPrivateReadReceipts() {
@@ -36,11 +40,23 @@ export function* onPublicReadReceipts() {
   }
 }
 
+export function* getUserReadReceiptPreference() {
+  const preference = yield call(getReadReceiptPreference);
+
+  if (preference === 'public') {
+    yield put(setPublicReadReceipts(true));
+  } else {
+    yield put(setPublicReadReceipts(false));
+  }
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.OpenUserProfile, openUserProfile);
   yield takeLatest(SagaActionTypes.CloseUserProfile, closeUserProfile);
   yield takeLatest(SagaActionTypes.OpenEditProfile, openEditProfile);
   yield takeLatest(SagaActionTypes.OpenSettings, openSettings);
+  yield takeLatest(SagaActionTypes.OpenAccountManagement, openAccountManagement);
+
   yield takeLatest(SagaActionTypes.PrivateReadReceipts, onPrivateReadReceipts);
   yield takeLatest(SagaActionTypes.PublicReadReceipts, onPublicReadReceipts);
 }

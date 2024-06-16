@@ -12,6 +12,8 @@ import { openBackupDialog } from '../../store/matrix';
 import { ParentMessage } from '../../lib/chat/types';
 import { compareDatesAsc } from '../../lib/date';
 import { openDeleteMessage } from '../../store/dialogs';
+import { openMessageInfo } from '../../store/message-info';
+import { toggleSecondarySidekick } from '../../store/group-management';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -26,6 +28,8 @@ export interface Properties extends PublicProperties {
   };
   isSecondarySidekickOpen: boolean;
   openDeleteMessage: (messageId: number) => void;
+  toggleSecondarySidekick: () => void;
+  openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
 }
 
 interface PublicProperties {
@@ -66,6 +70,8 @@ export class Container extends React.Component<Properties> {
       onReply,
       openBackupDialog,
       openDeleteMessage,
+      openMessageInfo,
+      toggleSecondarySidekick,
     };
   }
 
@@ -216,6 +222,8 @@ export class Container extends React.Component<Properties> {
           onHiddenMessageInfoClick={this.props.openBackupDialog}
           ref={this.chatViewRef}
           isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
+          toggleSecondarySidekick={this.props.toggleSecondarySidekick}
+          openMessageInfo={this.props.openMessageInfo}
         />
       </>
     );

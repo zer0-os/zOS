@@ -16,10 +16,42 @@
     margin: 16px 16px 0 16px;
   }
 
+  &__wallets-header {
+    @include glass-text-secondary-color;
+    height: 24px;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+  }
+
+  &__email-container {
+    margin-top: 50px;
+  }
+
+  &__email-header {
+    @include glass-text-secondary-color;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    height: 24px;
+  }
+
   &__wallet-select-modal {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+  }
+
+  &__alert-small {
+    display: flex;
+    justify-content: center;
+    padding: 4px 8px 4px 0px;
+  }
+
+  &__alert-info-text {
+    font-size: 14px;
+    line-height: 20px;
   }
 
   &__alert-text {
@@ -27,7 +59,7 @@
     line-height: 17px;
   }
 
-  &__footer {
+  &__add-wallet {
     margin: 8px 0;
   }
 }

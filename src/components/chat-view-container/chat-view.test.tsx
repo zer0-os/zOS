@@ -288,14 +288,15 @@ describe('ChatView', () => {
     });
 
     it('returns the formatted date for the same year', () => {
-      const currentYearDate = moment('2024-05-11'); // Example date within the same year
-
+      // setting the date here is not ideal as at some point this will fail
+      const currentYearDate = moment('2024-12-11'); // Example date within the same year
+      
       const messages = [
         { id: 111, message: 'what', createdAt: currentYearDate.valueOf() } as MessageModel,
       ];
 
       const wrapper = subject({ messages });
-      expect(wrapper.find('.message__header-date').text()).toEqual('Sat, May 11');
+      expect(wrapper.find('.message__header-date').text()).toEqual('Wed, Dec 11');
     });
 
     it('returns the formatted date for previous years', () => {

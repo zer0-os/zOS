@@ -1,0 +1,50 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
+
+.wallet-list-item {
+  box-sizing: border-box;
+  height: 48px;
+  padding: 8px;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  overflow: hidden;
+  outline: none;
+
+  &:hover {
+    @include glass-state-hover-color;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  &__text-container {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  &__wallet {
+    font-size: 14px;
+    line-height: 20px;
+    flex-grow: 1;
+
+    @include glass-text-primary-color;
+  }
+
+  &__tag {
+    @include glass-text-secondary-color;
+
+    font-size: 12px;
+    line-height: 15px;
+    padding-left: 4px;
+  }
+}

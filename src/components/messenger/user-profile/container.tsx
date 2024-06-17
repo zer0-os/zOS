@@ -13,7 +13,7 @@ import {
   openEditProfile,
   openUserProfile,
   openSettings,
-  openWallets,
+  openAccountManagement,
 } from '../../../store/user-profile';
 import { logout } from '../../../store/authentication';
 import { openBackupDialog } from '../../../store/matrix';
@@ -32,7 +32,7 @@ export interface Properties extends PublicProperties {
   openEditProfile: () => void;
   openRewardsDialog: () => void;
   openSettings: () => void;
-  openWallets: () => void;
+  openAccountManagement: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -59,7 +59,7 @@ export class Container extends React.Component<Properties> {
       openEditProfile,
       openRewardsDialog,
       openSettings,
-      openWallets,
+      openAccountManagement,
     };
   }
 
@@ -77,7 +77,7 @@ export class Container extends React.Component<Properties> {
         onBackToOverview={this.props.openUserProfile}
         onRewards={this.props.openRewardsDialog}
         onSettings={this.props.openSettings}
-        onWallets={this.props.openWallets}
+        onManageAccounts={this.props.openAccountManagement}
       />
     );
   }

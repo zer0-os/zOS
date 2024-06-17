@@ -7,12 +7,12 @@ export enum SagaActionTypes {
   CloseWalletSelectModal = 'Wallets/closeWalletSelectModal',
 }
 
-export type WalletsState = {
+export type AccountManagementState = {
   errors: string[];
   isWalletSelectModalOpen: boolean;
 };
 
-export const initialState: WalletsState = {
+export const initialState: AccountManagementState = {
   errors: [],
   isWalletSelectModalOpen: false,
 };
@@ -26,13 +26,13 @@ export const openWalletSelectModal = createAction(SagaActionTypes.OpenWalletSele
 export const closeWalletSelectModal = createAction(SagaActionTypes.CloseWalletSelectModal);
 
 const slice = createSlice({
-  name: 'wallets',
+  name: 'accountManagement',
   initialState,
   reducers: {
-    setErrors: (state, action: PayloadAction<WalletsState['errors']>) => {
+    setErrors: (state, action: PayloadAction<AccountManagementState['errors']>) => {
       state.errors = action.payload;
     },
-    setWalletSelectModalStatus: (state, action: PayloadAction<WalletsState['isWalletSelectModalOpen']>) => {
+    setWalletSelectModalStatus: (state, action: PayloadAction<AccountManagementState['isWalletSelectModalOpen']>) => {
       state.isWalletSelectModalOpen = action.payload;
     },
   },

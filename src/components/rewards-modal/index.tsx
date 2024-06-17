@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { IconButton, Modal } from '@zero-tech/zui/components';
 import { IconArrowRight, IconXClose } from '@zero-tech/zui/icons';
-import { ReactComponent as ZeroSymbol } from '../../zero-symbol.svg';
+import ZeroSymbol from '../../zero-symbol.svg?react';
 
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';

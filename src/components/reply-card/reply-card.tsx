@@ -4,7 +4,7 @@ import { bemClassName } from '../../lib/bem';
 import { IconCornerDownRight, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
 
-require('./styles.scss');
+import './styles.scss';
 
 const cn = bemClassName('reply-card');
 

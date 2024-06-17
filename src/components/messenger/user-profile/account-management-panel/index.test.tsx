@@ -12,6 +12,7 @@ describe(AccountManagementPanel, () => {
     const allProps: Properties = {
       error: '',
       isModalOpen: false,
+      isAddEmailModalOpen: false,
       currentUser: {},
       canAddEmail: false,
 
@@ -19,6 +20,8 @@ describe(AccountManagementPanel, () => {
       onSelect: () => {},
       onOpenModal: () => {},
       onCloseModal: () => {},
+      onOpenAddEmailModal: () => {},
+      onCloseAddEmailModal: () => {},
       ...props,
     };
 
@@ -37,20 +40,20 @@ describe(AccountManagementPanel, () => {
   it('renders wallet select modal if isModalOpen is true', () => {
     const wrapper = subject({ isModalOpen: true });
 
-    expect(wrapper.find('Modal').prop('open')).toEqual(true);
+    expect(wrapper.find('Modal').at(0).prop('open')).toEqual(true);
   });
 
   it('does not render wallet select modal if isModalOpen is false', () => {
     const wrapper = subject({ isModalOpen: false });
 
-    expect(wrapper.find('Modal').prop('open')).toEqual(false);
+    expect(wrapper.find('Modal').at(0).prop('open')).toEqual(false);
   });
 
   it('publishes onOpenModal event when modal is opened', () => {
     const onOpenModal = jest.fn();
     const wrapper = subject({ onOpenModal, isModalOpen: false });
 
-    wrapper.find('Modal').simulate('openChange', true);
+    wrapper.find('Modal').at(0).simulate('openChange', true);
 
     expect(onOpenModal).toHaveBeenCalled();
   });
@@ -59,7 +62,7 @@ describe(AccountManagementPanel, () => {
     const onCloseModal = jest.fn();
     const wrapper = subject({ onCloseModal, isModalOpen: true });
 
-    wrapper.find('Modal').simulate('openChange', false);
+    wrapper.find('Modal').at(0).simulate('openChange', false);
 
     expect(onCloseModal).toHaveBeenCalled();
   });
@@ -166,6 +169,48 @@ describe(AccountManagementPanel, () => {
       const wrapper = subject({ currentUser: { primaryEmail: 'test@zero.tech' }, canAddEmail: false });
 
       expect(wrapper.find(Button).exists()).toEqual(false);
+    });
+  });
+
+  describe('add email modal', () => {
+    it('renders add email modal if isAddEmailModalOpen is true', () => {
+      const wrapper = subject({ isAddEmailModalOpen: true });
+
+      expect(wrapper.find('Modal').at(1).prop('open')).toEqual(true);
+      expect(wrapper.find(c('add-email-title')).text()).toEqual('Add Email');
+    });
+
+    it('does not render add email modal if isAddEmailModalOpen is false', () => {
+      const wrapper = subject({ isAddEmailModalOpen: false });
+
+      expect(wrapper.find('Modal').at(1).prop('open')).toEqual(false);
+    });
+
+    it('publishes onOpenAddEmailModal when add email is clicked', () => {
+      const onOpenAddEmailModal = jest.fn();
+      const wrapper = subject({ onOpenAddEmailModal, currentUser: { primaryEmail: null }, canAddEmail: true });
+
+      wrapper.find(Button).simulate('press');
+
+      expect(onOpenAddEmailModal).toHaveBeenCalled();
+    });
+
+    it('publishes onCloseAddEmailModal event when modal is closed via onOpenChange', () => {
+      const onCloseAddEmailModal = jest.fn();
+      const wrapper = subject({ onCloseAddEmailModal, isAddEmailModalOpen: true });
+
+      wrapper.find('Modal').at(1).simulate('openChange', false);
+
+      expect(onCloseAddEmailModal).toHaveBeenCalled();
+    });
+
+    it('publishes onCloseAddEmailModal event when modal is closed via Close IconButton click', () => {
+      const onCloseAddEmailModal = jest.fn();
+      const wrapper = subject({ onCloseAddEmailModal, isAddEmailModalOpen: true });
+
+      wrapper.find('IconButton').simulate('click');
+
+      expect(onCloseAddEmailModal).toHaveBeenCalled();
     });
   });
 });

@@ -192,6 +192,8 @@ export class ChatView extends React.Component<Properties, State> {
                 parentSenderIsCurrentUser={this.isUserOwnerOfMessage(message.parentMessage)}
                 parentSenderFirstName={message.parentMessage?.sender?.firstName}
                 parentSenderLastName={message.parentMessage?.sender?.lastName}
+                parentMessageMediaUrl={message?.parentMessageMedia?.url}
+                parentMessageMediaName={message.parentMessageMedia?.name}
                 getUsersForMentions={this.searchMentionableUsers}
                 showSenderAvatar={this.props.showSenderAvatar}
                 showTimestamp={messageRenderProps.showTimestamp}

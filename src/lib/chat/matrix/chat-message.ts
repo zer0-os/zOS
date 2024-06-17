@@ -75,10 +75,10 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
       image: null,
     },
     parentMessageText: '',
+    parentMessageMedia: null,
     parentMessageId: parent ? parent['m.in_reply_to']?.event_id : null,
     isHidden: content?.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE,
     ...(await parseMediaData(matrixMessage)),
-    // readBy: [],
   };
 }
 

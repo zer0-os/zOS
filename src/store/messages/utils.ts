@@ -47,6 +47,7 @@ export function createOptimisticMessageObject(
     isAdmin: false,
     parentMessageText: parentMessage ? parentMessage.message : '',
     parentMessage,
+    parentMessageMedia: parentMessage ? parentMessage.media : null,
     sender: {
       userId: user.id,
       firstName: user.profileSummary.firstName,

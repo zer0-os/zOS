@@ -11,9 +11,16 @@ function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
     messagesById[m.id] = m;
   });
 
+  const messagesByRootId = {};
+
   for (const message of messages) {
+    if (message.rootMessageId && !messagesByRootId[message.rootMessageId]) {
+      messagesByRootId[message.rootMessageId] = message;
+    }
+
     if (message.parentMessageId) {
       let parentMessage = messagesById[message.parentMessageId];
+
       if (!parentMessage) {
         // Check the state for the message
         parentMessage = yield select(messageSelector(message.parentMessageId));
@@ -28,6 +35,7 @@ function* mapParentForMessages(messages, channelId: string, zeroUsersMap) {
 
       message.parentMessage = parentMessage;
       message.parentMessageText = parentMessage.isHidden ? 'Message hidden' : parentMessage.message;
+      message.parentMessageMedia = messagesByRootId[parentMessage?.id]?.media ?? parentMessage?.media;
     }
   }
 }

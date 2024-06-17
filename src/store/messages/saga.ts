@@ -105,6 +105,7 @@ export function* getLocalZeroUsersMap() {
 export function* mapMessagesAndPreview(messages, channelId) {
   const zeroUsersMap = yield call(mapMessageSenders, messages, channelId);
   yield call(mapAdminUserIdToZeroUserId, [{ messages }], zeroUsersMap);
+
   for (const message of messages) {
     if (message.isHidden) {
       message.message = 'Message hidden';
@@ -286,7 +287,15 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
     null,
     optimisticId
   );
-  return yield sendMessage(messageCall, channelId, optimisticId);
+
+  const result = yield sendMessage(messageCall, channelId, optimisticId);
+
+  // Ensure media data is preserved in the sent message
+  if (result && parentMessage) {
+    result.parentMessageMedia = parentMessage.media;
+  }
+
+  return result;
 }
 
 // note: we're not replacing the optimistic message with the real message here anymore
@@ -459,6 +468,7 @@ function* receiveBatchedMessages(channelId, messages) {
 
 export function* replaceOptimisticMessage(currentMessages, message) {
   const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
+
   if (messageIndex < 0) {
     return null;
   }
@@ -466,6 +476,10 @@ export function* replaceOptimisticMessage(currentMessages, message) {
   const optimisticMessage = yield select(messageSelector(message.optimisticId));
   if (!optimisticMessage) {
     return null; // This shouldn't happen because we'd have bailed above, but just in case.
+  }
+
+  if (optimisticMessage.parentMessage) {
+    message.parentMessageMedia = optimisticMessage.parentMessage.media;
   }
 
   const messages = [...currentMessages];

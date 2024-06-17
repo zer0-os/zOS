@@ -98,12 +98,12 @@ export class FeatureFlags {
     this._setBoolean('enableUserSettings', value);
   }
 
-  get allowWallets() {
-    return this._getBoolean('allowWallets', false);
+  get allowMultipleAccounts() {
+    return this._getBoolean('allowMultipleAccounts', false);
   }
 
-  set allowWallets(value: boolean) {
-    this._setBoolean('allowWallets', value);
+  set allowMultipleAccounts(value: boolean) {
+    this._setBoolean('allowMultipleAccounts', value);
   }
 }
 

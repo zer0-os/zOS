@@ -8,7 +8,8 @@ import { IconButton } from '@zero-tech/zui/components';
 import { IconLink1, IconXClose } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../lib/bem';
 
-require('./styles.scss');
+import './styles.scss';
+
 const cn = bemClassName('link-preview');
 
 export interface Properties {

@@ -444,7 +444,16 @@ export class Message extends React.Component<Properties, State> {
             </div>
           </div>
         )}
-        <div {...cn('block', this.state.isEditing && 'edit')}>
+
+        <div
+          {...cn(
+            'block',
+            classNames({
+              edit: this.state.isEditing,
+              reply: this.props.parentMessageText || this.props.parentMessageMediaUrl,
+            })
+          )}
+        >
           {(message || media || preview) && (
             <>
               {!this.state.isEditing && (

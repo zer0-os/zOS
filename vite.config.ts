@@ -8,6 +8,9 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 export default defineConfig(({ mode }) => {
   return {
     base: '/',
+    build: {
+      outDir: 'build',
+    },
     plugins: [
       react(),
       svgr({

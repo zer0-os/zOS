@@ -3,18 +3,21 @@ import * as React from 'react';
 import { bemClassName } from '../../../../lib/bem';
 import { PanelHeader } from '../../list/panel-header';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
-import { Alert, Modal } from '@zero-tech/zui/components';
+import { Alert, Modal, IconButton } from '@zero-tech/zui/components';
 
 import { IconPlus } from '@zero-tech/zui/icons';
 import './styles.scss';
 import { WalletSelect } from '../../../wallet-select';
 import { WalletListItem } from '../../../wallet-list-item';
 import { CitizenListItem } from '../../../citizen-list-item';
+import { IconXClose } from '@zero-tech/zui/icons';
+import { CreateEmailAccountContainer } from '../../../../authentication/create-email-account/container';
 
 const cn = bemClassName('account-management-panel');
 
 export interface Properties {
   isModalOpen: boolean;
+  isAddEmailModalOpen: boolean;
   error: string;
   currentUser: any;
   canAddEmail: boolean;
@@ -22,6 +25,8 @@ export interface Properties {
   onBack: () => void;
   onOpenModal: () => void;
   onCloseModal: () => void;
+  onOpenAddEmailModal: () => void;
+  onCloseAddEmailModal: () => void;
   onSelect: (connector: any) => void;
 }
 
@@ -109,7 +114,7 @@ export class AccountManagementPanel extends React.Component<Properties> {
           <div>
             <Button
               variant={ButtonVariant.Secondary}
-              onPress={() => {}}
+              onPress={this.props.onOpenAddEmailModal}
               startEnhancer={<IconPlus size={20} isFilled />}
             >
               Add email
@@ -117,6 +122,32 @@ export class AccountManagementPanel extends React.Component<Properties> {
           </div>
         )}
       </div>
+    );
+  };
+
+  renderAddEmailAccountModal = () => {
+    return (
+      <Modal
+        open={this.props.isAddEmailModalOpen}
+        onOpenChange={(isOpen) => {
+          isOpen ? this.props.onOpenAddEmailModal() : this.props.onCloseAddEmailModal();
+        }}
+        {...cn('add-email-modal')}
+      >
+        <div {...cn('add-email-body')}>
+          <div {...cn('add-email-title-bar')}>
+            <h3 {...cn('add-email-title')}>Add Email</h3>
+            <IconButton
+              {...cn('add-email-close')}
+              size='large'
+              Icon={IconXClose}
+              onClick={this.props.onCloseAddEmailModal}
+            />
+          </div>
+
+          <CreateEmailAccountContainer addAccount />
+        </div>
+      </Modal>
     );
   };
 
@@ -139,6 +170,7 @@ export class AccountManagementPanel extends React.Component<Properties> {
         </div>
 
         {this.renderWalletSelectModal()}
+        {this.renderAddEmailAccountModal()}
       </div>
     );
   }

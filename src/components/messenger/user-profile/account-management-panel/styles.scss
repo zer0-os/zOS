@@ -62,4 +62,50 @@
   &__add-wallet {
     margin: 8px 0;
   }
+
+  &__add-email-modal {
+    padding-bottom: 0px;
+  }
+
+  &__add-email-body {
+    width: 300px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    overflow: hidden;
+    padding: calc(40px - 24px);
+    box-sizing: border-box;
+    max-height: calc(100vh - 54px);
+    min-height: 250px;
+    padding-bottom: 0px;
+  }
+
+  &__add-email-title-bar {
+    display: flex;
+    height: 43px;
+    @include glass-text-primary-color;
+    border-bottom: 1px solid $glass-separator-secondary-color;
+
+    > *:first-child {
+      flex-grow: 1;
+    }
+
+    > *:last-child {
+      flex-grow: 0;
+    }
+  }
+
+  &__add-email-title {
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 29px;
+    margin: 0px;
+  }
+
+  &__add-email-close {
+    &:focus-visible {
+      outline: none;
+    }
+  }
 }

@@ -5,7 +5,7 @@ import { Stage } from '../../../store/user-profile';
 import { OverviewPanel } from './overview-panel';
 import { EditProfileContainer } from '../../edit-profile/container';
 import { SettingsPanelContainer } from './settings-panel/container';
-import { WalletsPanelContainer } from './wallets-panel/container';
+import { AccountManagementContainer } from './account-management-panel/container';
 
 describe(UserProfile, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -22,7 +22,7 @@ describe(UserProfile, () => {
       onBackToOverview: () => {},
       onRewards: () => {},
       onSettings: () => {},
-      onWallets: () => {},
+      onManageAccounts: () => {},
       ...props,
     };
 
@@ -48,9 +48,9 @@ describe(UserProfile, () => {
   });
 
   it('renders Wallets Panel Container when stage is Wallets', () => {
-    const wrapper = subject({ stage: Stage.Wallets });
+    const wrapper = subject({ stage: Stage.AccountManagement });
 
-    expect(wrapper).toHaveElement(WalletsPanelContainer);
+    expect(wrapper).toHaveElement(AccountManagementContainer);
   });
 
   it('renders nothing when stage None', () => {

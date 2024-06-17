@@ -5,7 +5,7 @@ import { LoginStage } from '../../store/login';
 import { Web3LoginContainer } from '../../authentication/web3-login/container';
 import { EmailLoginContainer } from '../../authentication/email-login/container';
 
-import { ReactComponent as ZeroLogo } from '../../zero-logo.svg';
+import ZeroLogo from '../../zero-logo.svg?react';
 import { ToggleGroup } from '@zero-tech/zui/components';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 

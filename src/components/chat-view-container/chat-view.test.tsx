@@ -290,6 +290,7 @@ describe('ChatView', () => {
     it('returns the formatted date for the same year', () => {
       // setting the date here is not ideal as at some point this will fail
       const currentYearDate = moment('2024-12-11'); // Example date within the same year
+      
       const messages = [
         { id: 111, message: 'what', createdAt: currentYearDate.valueOf() } as MessageModel,
       ];

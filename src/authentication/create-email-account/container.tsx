@@ -3,9 +3,12 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { CreateEmailAccount } from '.';
 import { AccountCreationErrors, createAccount } from '../../store/registration';
+import { addEmailAccount } from '../../store/account-management';
 import { passwordRulesDescription } from '../../lib/password';
 
-export interface PublicProperties {}
+export interface PublicProperties {
+  addAccount?: boolean;
+}
 
 export interface Properties extends PublicProperties {
   isLoading: boolean;
@@ -15,6 +18,7 @@ export interface Properties extends PublicProperties {
     general?: string;
   };
   createAccount: (data: { email: string; password: string }) => void;
+  addEmailAccount: (data: { email: string; password: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -65,14 +69,22 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions() {
-    return { createAccount };
+    return { createAccount, addEmailAccount };
   }
+
+  addOrCreateAccount = async (data) => {
+    if (this.props.addAccount) {
+      this.props.addEmailAccount(data);
+    } else {
+      this.props.createAccount(data);
+    }
+  };
 
   render() {
     return (
       <CreateEmailAccount
         isLoading={this.props.isLoading}
-        onNext={this.props.createAccount}
+        onNext={this.addOrCreateAccount}
         errors={this.props.errors}
       />
     );

@@ -1,35 +1,61 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@use '../../shared-components/theme-engine/theme' as themeDeprecated;
-@use '../../modules/animation' as animation;
-
-@import '../../variables';
-@import '../../animation';
 @import '../../glass';
 
 .reply-card {
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 8px 8px 16px;
+  padding: 0px 8px 0px 16px;
   border-radius: 4px;
+  background: theme.$color-greyscale-transparency-2;
+  color: theme.$color-greyscale-11;
+  box-sizing: border-box;
 
-  font-weight: 400;
-  font-size: 12px;
-  font-style: normal;
-  line-height: 15px;
+  height: 56px;
 
-  @include glass-text-secondary-color;
   @include glass-state-active-stroke;
 
   &__content {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
     overflow: hidden;
     white-space: nowrap;
+    gap: 4px;
   }
 
   &__header {
-    margin-bottom: 4px;
+    height: 15px;
+
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 15px;
+    color: theme.$color-greyscale-12;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__message {
+    height: 15px;
+
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: theme.$color-greyscale-11;
+  }
+
+  &__media {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__media {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
   }
 
   &__media {

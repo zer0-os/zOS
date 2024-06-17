@@ -14,6 +14,14 @@ describe('Container', () => {
       return Container.mapState(state);
     };
 
+    it('isAddEmailModalOpen', () => {
+      const props = subject({
+        accountManagement: { isAddEmailAccountModalOpen: true } as AccountManagementState,
+      });
+
+      expect(props.isAddEmailModalOpen).toEqual(true);
+    });
+
     describe('errors', () => {
       test('wallets error: unknown error', () => {
         const props = subject({

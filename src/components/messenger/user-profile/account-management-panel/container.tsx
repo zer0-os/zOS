@@ -9,6 +9,8 @@ import {
   addNewWallet,
   openWalletSelectModal,
   closeWalletSelectModal,
+  openAddEmailAccountModal,
+  closeAddEmailAccountModal,
   Errors,
 } from '../../../../store/account-management';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
@@ -19,6 +21,7 @@ export interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   isModalOpen: boolean;
+  isAddEmailModalOpen: boolean;
   error: string;
   currentUser: any;
   canAddEmail: boolean;
@@ -26,6 +29,8 @@ export interface Properties extends PublicProperties {
   addNewWallet: (payload: { connector: Connectors }) => void;
   openWalletSelectModal: () => void;
   closeWalletSelectModal: () => void;
+  openAddEmailAccountModal: () => void;
+  closeAddEmailAccountModal: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -38,6 +43,7 @@ export class Container extends React.Component<Properties> {
     return {
       error: Container.mapErrors(accountManagement.errors),
       isModalOpen: accountManagement.isWalletSelectModalOpen,
+      isAddEmailModalOpen: accountManagement.isAddEmailAccountModalOpen,
       currentUser: {
         userId: currentUser?.id,
         firstName: currentUser?.profileSummary.firstName,
@@ -51,7 +57,13 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { addNewWallet, openWalletSelectModal, closeWalletSelectModal };
+    return {
+      addNewWallet,
+      openWalletSelectModal,
+      closeWalletSelectModal,
+      openAddEmailAccountModal,
+      closeAddEmailAccountModal,
+    };
   }
 
   static mapErrors(errors: string[]) {
@@ -74,11 +86,14 @@ export class Container extends React.Component<Properties> {
       <AccountManagementPanel
         error={this.props.error}
         isModalOpen={this.props.isModalOpen}
+        isAddEmailModalOpen={this.props.isAddEmailModalOpen}
         currentUser={this.props.currentUser}
         canAddEmail={this.props.canAddEmail}
         onSelect={this.connectorSelected}
         onOpenModal={() => this.props.openWalletSelectModal()}
         onCloseModal={() => this.props.closeWalletSelectModal()}
+        onOpenAddEmailModal={() => this.props.openAddEmailAccountModal()}
+        onCloseAddEmailModal={() => this.props.closeAddEmailAccountModal()}
         onBack={this.props.onClose}
       />
     );

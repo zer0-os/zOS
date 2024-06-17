@@ -7,7 +7,6 @@ import { Alert, Modal, IconButton } from '@zero-tech/zui/components';
 
 import { IconPlus } from '@zero-tech/zui/icons';
 import './styles.scss';
-import { WalletSelect } from '../../../wallet-select';
 import { WalletListItem } from '../../../wallet-list-item';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { IconXClose } from '@zero-tech/zui/icons';
@@ -16,18 +15,14 @@ import { CreateEmailAccountContainer } from '../../../../authentication/create-e
 const cn = bemClassName('account-management-panel');
 
 export interface Properties {
-  isModalOpen: boolean;
   isAddEmailModalOpen: boolean;
   error: string;
   currentUser: any;
   canAddEmail: boolean;
 
   onBack: () => void;
-  onOpenModal: () => void;
-  onCloseModal: () => void;
   onOpenAddEmailModal: () => void;
   onCloseAddEmailModal: () => void;
-  onSelect: (connector: any) => void;
 }
 
 export class AccountManagementPanel extends React.Component<Properties> {
@@ -35,30 +30,11 @@ export class AccountManagementPanel extends React.Component<Properties> {
     this.props.onBack();
   };
 
-  renderWalletSelectModal = () => {
-    return (
-      <Modal
-        open={this.props.isModalOpen}
-        onOpenChange={(isOpen) => {
-          isOpen ? this.props.onOpenModal() : this.props.onCloseModal();
-        }}
-      >
-        <div {...cn('wallet-select-modal')}>
-          <WalletSelect isConnecting={false} onSelect={this.props.onSelect} />
-        </div>
-      </Modal>
-    );
-  };
-
   // note: hiding this for now
   renderAddNewWalletButton = () => {
     return (
       <div {...cn('add-wallet')}>
-        <Button
-          variant={ButtonVariant.Secondary}
-          onPress={this.props.onOpenModal}
-          startEnhancer={<IconPlus size={20} isFilled />}
-        >
+        <Button variant={ButtonVariant.Secondary} onPress={() => {}} startEnhancer={<IconPlus size={20} isFilled />}>
           Add new wallet
         </Button>
       </div>
@@ -169,7 +145,6 @@ export class AccountManagementPanel extends React.Component<Properties> {
           )}
         </div>
 
-        {this.renderWalletSelectModal()}
         {this.renderAddEmailAccountModal()}
       </div>
     );

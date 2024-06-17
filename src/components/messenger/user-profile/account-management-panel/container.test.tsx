@@ -40,16 +40,6 @@ describe('Container', () => {
       });
     });
 
-    describe('isModalOpen', () => {
-      it('is true when wallet select modal is open', () => {
-        const props = subject({
-          accountManagement: { isWalletSelectModalOpen: true } as AccountManagementState,
-        });
-
-        expect(props.isModalOpen).toEqual(true);
-      });
-    });
-
     describe('currentUser', () => {
       test('currentUser', () => {
         const props = subject({

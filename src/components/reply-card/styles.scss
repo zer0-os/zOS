@@ -57,4 +57,16 @@
     height: 48px;
     border-radius: 4px;
   }
+
+  &__media {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__media {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+  }
 }

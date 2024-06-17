@@ -203,11 +203,20 @@
   }
 
   &__sent-icon {
+    padding: 0 2px;
+
     @include glass-text-secondary-color;
   }
 
+  &__read-icon-container {
+    position: relative;
+    display: inline-block;
+    width: 18px;
+    height: 14px;
+  }
+
   &__read-icon {
-    color: theme.$color-secondary-11;
+    position: absolute;
 
     &--read {
       color: theme.$color-secondary-11;
@@ -215,6 +224,14 @@
 
     &--delivered {
       @include glass-text-secondary-color;
+    }
+
+    &:first-child {
+      left: 0;
+    }
+
+    &:last-child {
+      left: 7px;
     }
   }
 }

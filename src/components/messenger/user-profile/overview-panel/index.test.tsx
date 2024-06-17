@@ -11,7 +11,7 @@ import { bem } from '../../../../lib/bem';
 
 const c = bem('.overview-panel');
 
-const featureFlags = { enableRewards: false, enableUserSettings: false, allowWallets: false };
+const featureFlags = { enableRewards: false, enableUserSettings: false, allowMultipleAccounts: false };
 
 jest.mock('../../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
@@ -30,7 +30,7 @@ describe(OverviewPanel, () => {
       onOpenEditProfile: () => {},
       onOpenRewards: () => {},
       onOpenSettings: () => {},
-      onOpenWallets: () => {},
+      onManageAccounts: () => {},
 
       ...props,
     };
@@ -96,15 +96,15 @@ describe(OverviewPanel, () => {
     expect(onOpenSettings).toHaveBeenCalled();
   });
 
-  it('publishes onOpenWallets event', () => {
-    featureFlags.allowWallets = true;
+  it('publishes openAccountManagement event', () => {
+    featureFlags.allowMultipleAccounts = true;
 
-    const onOpenWallets = jest.fn();
-    const wrapper = subject({ onOpenWallets });
+    const onOpenAccountManagement = jest.fn();
+    const wrapper = subject({ onManageAccounts: onOpenAccountManagement });
 
     wrapper.find(Button).at(2).simulate('press');
 
-    expect(onOpenWallets).toHaveBeenCalled();
+    expect(onOpenAccountManagement).toHaveBeenCalled();
   });
 
   it('opens the invite dialog', () => {

@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/actions/common
 
       - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
-      - run: npm install
+      - run: npm install --legacy-peer-deps
       - run: npm run lint
       - run: npx tsc
       - run: npm run test

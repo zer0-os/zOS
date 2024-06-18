@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@craco/craco": "^7.1.0",
+    "@emotion/react": "^11.9.3",
     "@ethersproject/bytes": "^5.4.0",
     "@giphy/js-fetch-api": "^4.7.1",
     "@giphy/react-components": "^6.5.2",

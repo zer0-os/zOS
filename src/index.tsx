@@ -9,7 +9,7 @@ import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
 import { Router, Redirect, Route, Switch } from 'react-router-dom';
 import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
-import { showReleaseVersionInConsole, initializeErrorBoundary, isElectron } from './utils';
+import { showReleaseVersionInConsole, initializeErrorBoundary, isElectron, isMobile } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
 import '@zer0-os/zos-component-library/dist/index.css';
@@ -21,6 +21,7 @@ import { Web3Connect } from './components/web3-connect';
 import { getHistory } from './lib/browser';
 import { ElectronTitlebar } from './components/electron-titlebar';
 import { desktopInit } from './lib/desktop';
+import { Restricted } from './restricted';
 
 desktopInit();
 runSagas();
@@ -43,12 +44,18 @@ ReactDOM.render(
               <Web3Connect>
                 {isElectron() && <ElectronTitlebar />}
                 <Switch>
-                  <Route path='/get-access' exact component={Invite} />
-                  <Route path='/login' exact component={LoginPage} />
-                  <Route path='/reset-password' exact component={ResetPassword} />
-                  <Route path='/conversation/:conversationId' exact component={MessengerMain} />
-                  <Route path='/' exact component={MessengerMain} />
-                  <Route component={redirectToRoot} />
+                  {isMobile() ? (
+                    <Route path='/' component={Restricted} />
+                  ) : (
+                    <>
+                      <Route path='/get-access' exact component={Invite} />
+                      <Route path='/login' exact component={LoginPage} />
+                      <Route path='/reset-password' exact component={ResetPassword} />
+                      <Route path='/conversation/:conversationId' exact component={MessengerMain} />
+                      <Route path='/' exact component={MessengerMain} />
+                      <Route component={redirectToRoot} />
+                    </>
+                  )}
                 </Switch>
               </Web3Connect>
             </Web3ReactContextProvider>

@@ -73,6 +73,7 @@
     "test:vitest": "vitest",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "peer-deps": "npx check-peer-dependencies --findSolutions --npm",
     "start:legacy": "NODE_OPTIONS='--openssl-legacy-provider' DISABLE_ESLINT_PLUGIN=true craco start",
     "build:legacy": "NODE_OPTIONS='--openssl-legacy-provider --max-old-space-size=4096' craco build",
     "eject": "react-scripts eject",

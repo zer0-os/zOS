@@ -1,0 +1,21 @@
+name: check-peer-deps
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Common Setup
+        uses: ./.github/actions/common
+
+      - name: Run peer-deps
+        run: npm run peer-deps

@@ -36,3 +36,7 @@ export function getMainBackgroundVideoSrc(selectedMainBackground) {
       return '';
   }
 }
+
+export const isMobile = () => {
+  return /Mobi|Android/i.test(navigator.userAgent);
+};

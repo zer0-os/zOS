@@ -117,6 +117,21 @@ describe('page-load saga', () => {
     expect(history.replace).not.toHaveBeenCalled();
   });
 
+  it('redirects to /restricted if on mobile', async () => {
+    const initialState = { pageload: { isComplete: false } };
+
+    history = new StubHistory('/');
+    const { storeState } = await subject(saga)
+      .provide([
+        [call(getNavigator), stubNavigator('Mobi')],
+      ])
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/restricted' });
+    expect(storeState.pageload.isComplete).toBe(true);
+  });
+
   describe('showAndroidDownload', () => {
     function subject(path: string, userAgent: string) {
       const initialState = { pageload: { showAndroidDownload: false } };

@@ -17,6 +17,8 @@ export function* saga() {
 
   if (isMobileDevice) {
     history.replace({ pathname: '/restricted' });
+    yield put(setIsComplete(true));
+    return;
   }
 
   const success = yield call(getCurrentUser);

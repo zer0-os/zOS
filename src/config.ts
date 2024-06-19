@@ -22,4 +22,6 @@ export const config = {
   },
   androidStorePath: process.env.REACT_APP_ANDROID_STORE_PATH,
   znsExplorerUrl: process.env.REACT_APP_ZNS_EXPLORER_URL,
+  appleAppStorePath: process.env.REACT_APP_APPLE_APP_STORE_PATH,
+  googlePlayStorePath: process.env.REACT_APP_GOOGLE_PLAY_STORE_PATH,
 };

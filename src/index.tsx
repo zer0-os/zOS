@@ -44,12 +44,18 @@ ReactDOM.render(
               <Web3Connect>
                 {isElectron() && <ElectronTitlebar />}
                 <Switch>
-                  <Route path='/get-access' exact component={Invite} />
-                  <Route path='/login' exact component={LoginPage} />
-                  <Route path='/reset-password' exact component={ResetPassword} />
-                  <Route path='/conversation/:conversationId' exact component={MessengerMain} />
-                  <Route path='/' exact component={isMobile() ? Restricted : MessengerMain} />
-                  <Route component={redirectToRoot} />
+                  {isMobile() ? (
+                    <Route path='/' component={Restricted} />
+                  ) : (
+                    <>
+                      <Route path='/get-access' exact component={Invite} />
+                      <Route path='/login' exact component={LoginPage} />
+                      <Route path='/reset-password' exact component={ResetPassword} />
+                      <Route path='/conversation/:conversationId' exact component={MessengerMain} />
+                      <Route path='/' exact component={MessengerMain} />
+                      <Route component={redirectToRoot} />
+                    </>
+                  )}
                 </Switch>
               </Web3Connect>
             </Web3ReactContextProvider>

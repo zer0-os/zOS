@@ -4,7 +4,7 @@ import { getLocalZeroUsersMap } from './saga';
 
 // takes in a list of messages, and maps the sender to a ZERO user for each message
 // this is used to display the sender's name and profile image
-export function* mapMessageSenders(messages, channelId) {
+export function* mapMessageSenders(messages, _channelId) {
   const localUsersMap = yield call(getLocalZeroUsersMap);
 
   const matrixIds = [];

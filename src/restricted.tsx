@@ -31,23 +31,11 @@ export class Container extends React.Component {
             <p>Please accept your ZERO invite on a desktop browser, such as Chrome or Brave.</p>
             <p>
               Once you have registered you can use ZERO on your phone, by downloading from the
-              <a
-                {...cn('link')}
-                href={config.appleAppStorePath}
-                // href='https://apps.apple.com/gb/app/zero-messenger/id6476882926'
-                target='_blank'
-                rel='noopener noreferrer'
-              >
+              <a {...cn('link')} href={config.appleAppStorePath} target='_blank' rel='noopener noreferrer'>
                 {' Apple App Store '}
               </a>
               or
-              <a
-                {...cn('link')}
-                href={config.googlePlayStorePath}
-                // href='https://play.google.com/store/apps/details?id=com.zero.android.messenger'
-                target='_blank'
-                rel='noopener noreferrer'
-              >
+              <a {...cn('link')} href={config.googlePlayStorePath} target='_blank' rel='noopener noreferrer'>
                 {' Google Play Store'}
               </a>
               .

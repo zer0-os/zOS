@@ -73,3 +73,67 @@ export function filterAdminMessages(messagesByDay) {
 
   return filteredMessagesByDay;
 }
+
+export function mapMessagesById(channelMessages) {
+  const messagesById = {};
+  channelMessages.forEach((m) => {
+    messagesById[m.id.toString()] = m;
+    if (m.id.toString() !== m.optimisticId) {
+      messagesById[m.optimisticId] = m;
+    }
+  });
+  return messagesById;
+}
+
+export function mapMessagesByRootId(channelMessages) {
+  const messagesByRootId = {};
+  channelMessages.forEach((m) => {
+    if (m.rootMessageId) {
+      messagesByRootId[m.rootMessageId] = m;
+    }
+  });
+  return messagesByRootId;
+}
+
+export function linkMessages(channelMessages, messagesById, messagesByRootId) {
+  const messages = [];
+  const mediaMessages = [];
+
+  channelMessages.forEach((m) => {
+    if (m.parentMessageId) {
+      linkParentMessage(m, messagesById, messagesByRootId);
+      messages.push(m);
+    } else if (m.rootMessageId) {
+      linkMediaMessage(m, messagesById, mediaMessages, messages);
+    } else {
+      messages.push(m);
+    }
+  });
+
+  return messages;
+}
+
+export function linkParentMessage(message, messagesById, messagesByRootId) {
+  const parentMessage = messagesById[message.parentMessageId];
+
+  if (parentMessage) {
+    message.parentMessage = parentMessage;
+    message.parentMessageText = parentMessage.isHidden ? 'Message hidden' : parentMessage.message;
+    message.parentMessageMedia = parentMessage.media;
+
+    const rootMessage = messagesByRootId[parentMessage.id];
+    if (rootMessage) {
+      message.parentMessageMedia = rootMessage.media || message.parentMessageMedia;
+    }
+  }
+}
+
+export function linkMediaMessage(message, messagesById, mediaMessages, messages) {
+  const rootMessage = messagesById[message.rootMessageId];
+  if (rootMessage) {
+    rootMessage.media = message.media;
+    mediaMessages.push(message);
+  } else {
+    messages.push(message);
+  }
+}

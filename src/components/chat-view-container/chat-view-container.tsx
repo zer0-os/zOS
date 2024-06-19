@@ -14,6 +14,7 @@ import { compareDatesAsc } from '../../lib/date';
 import { openDeleteMessage } from '../../store/dialogs';
 import { openMessageInfo } from '../../store/message-info';
 import { toggleSecondarySidekick } from '../../store/group-management';
+import { linkMessages, mapMessagesById, mapMessagesByRootId } from './utils';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -141,22 +142,9 @@ export class Container extends React.Component<Properties> {
   };
 
   get messages() {
-    const messagesById = {};
-    const messages = [];
-    // Assumption is that messages are already ordered by date and that
-    // the "child" message will always come after the "parent" message.
-    (this.channel?.messages || []).forEach((m) => {
-      if (m.rootMessageId && messagesById[m.rootMessageId]) {
-        messagesById[m.rootMessageId].media = m.media;
-      } else {
-        // Hmm... not sure how we ended up with integers as our message ids. For now, just cast to a string.
-        messagesById[m.id.toString()] = m;
-        if (m.id.toString() !== m.optimisticId) {
-          messagesById[m.optimisticId] = m;
-        }
-        messages.push(m);
-      }
-    });
+    const messagesById = mapMessagesById(this.channel?.messages || []);
+    const messagesByRootId = mapMessagesByRootId(this.channel?.messages || []);
+    const messages = linkMessages(this.channel?.messages || [], messagesById, messagesByRootId);
 
     return messages.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt));
   }

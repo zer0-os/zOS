@@ -14,12 +14,14 @@ export type AccountManagementState = {
   errors: string[];
   isWalletSelectModalOpen: boolean;
   isAddEmailAccountModalOpen: boolean;
+  successMessage: string;
 };
 
 export const initialState: AccountManagementState = {
   errors: [],
   isWalletSelectModalOpen: false,
   isAddEmailAccountModalOpen: false,
+  successMessage: '',
 };
 
 export enum Errors {
@@ -49,8 +51,12 @@ const slice = createSlice({
     ) => {
       state.isAddEmailAccountModalOpen = action.payload;
     },
+    setSuccessMessage: (state, action: PayloadAction<AccountManagementState['successMessage']>) => {
+      state.successMessage = action.payload;
+    },
   },
 });
 
-export const { setErrors, setWalletSelectModalStatus, setAddEmailAccountModalStatus } = slice.actions;
+export const { setErrors, setWalletSelectModalStatus, setAddEmailAccountModalStatus, setSuccessMessage } =
+  slice.actions;
 export const { reducer } = slice;

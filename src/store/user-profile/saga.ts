@@ -1,6 +1,7 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setStage, setPublicReadReceipts } from '.';
 import { getReadReceiptPreference, setReadReceiptPreference } from '../../lib/chat';
+import { reset as resetAccountManagementState } from '../account-management/saga';
 
 export function* openUserProfile() {
   yield put(setStage(Stage.Overview));
@@ -19,6 +20,7 @@ export function* openSettings() {
 }
 
 export function* openAccountManagement() {
+  yield call(resetAccountManagementState);
   yield put(setStage(Stage.AccountManagement));
 }
 

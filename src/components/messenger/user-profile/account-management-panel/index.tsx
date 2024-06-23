@@ -17,6 +17,7 @@ const cn = bemClassName('account-management-panel');
 export interface Properties {
   isAddEmailModalOpen: boolean;
   error: string;
+  successMessage: string;
   currentUser: any;
   canAddEmail: boolean;
 
@@ -141,6 +142,12 @@ export class AccountManagementPanel extends React.Component<Properties> {
           {this.props.error && (
             <Alert variant='error' isFilled>
               <div {...cn('alert-text')}>{this.props.error}</div>
+            </Alert>
+          )}
+
+          {this.props.successMessage && (
+            <Alert variant='success' isFilled>
+              <div {...cn('alert-text')}>{this.props.successMessage}</div>
             </Alert>
           )}
         </div>

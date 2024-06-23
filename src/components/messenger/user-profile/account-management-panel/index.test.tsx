@@ -11,6 +11,7 @@ describe(AccountManagementPanel, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       error: '',
+      successMessage: '',
       isAddEmailModalOpen: false,
       currentUser: {},
       canAddEmail: false,
@@ -39,8 +40,18 @@ describe(AccountManagementPanel, () => {
     expect(wrapper.find('Alert[variant="error"]').exists()).toEqual(true);
     expect(wrapper.find('Alert[variant="error"]').prop('isFilled')).toEqual(true);
 
-    const props = wrapper.find('Alert[variant="error"]').prop('children');
-    expect(props).toEqual(<div className='account-management-panel__alert-text'>An error occurred</div>);
+    const props = wrapper.find(c('alert-text'));
+    expect(props.text()).toEqual('An error occurred');
+  });
+
+  it('renders success alert if successMessage is present', () => {
+    const wrapper = subject({ successMessage: 'Email added successfully' });
+
+    expect(wrapper.find('Alert[variant="success"]').exists()).toEqual(true);
+    expect(wrapper.find('Alert[variant="success"]').prop('isFilled')).toEqual(true);
+
+    const props = wrapper.find(c('alert-text'));
+    expect(props.text()).toEqual('Email added successfully');
   });
 
   describe('wallets section', () => {

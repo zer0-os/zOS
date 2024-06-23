@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@craco/craco": "^7.1.0",
+    "@emotion/react": "^11.9.3",
     "@ethersproject/bytes": "^5.4.0",
     "@giphy/js-fetch-api": "^4.7.1",
     "@giphy/react-components": "^6.5.2",
@@ -60,7 +61,7 @@
     "sass": "^1.49.7",
     "stream-browserify": "^3.0.0",
     "superagent": "^6.1.0",
-    "typescript": "^4.1.6",
+    "typescript": "^5.0.4",
     "util": "^0.12.5",
     "vite": "^5.2.12",
     "vite-tsconfig-paths": "^4.3.2",

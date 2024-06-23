@@ -14,6 +14,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   isAddEmailModalOpen: boolean;
   error: string;
+  successMessage: string;
   currentUser: any;
   canAddEmail: boolean;
 
@@ -30,6 +31,7 @@ export class Container extends React.Component<Properties> {
 
     return {
       error: Container.mapErrors(accountManagement.errors),
+      successMessage: accountManagement.successMessage,
       isAddEmailModalOpen: accountManagement.isAddEmailAccountModalOpen,
       currentUser: {
         userId: currentUser?.id,
@@ -65,6 +67,7 @@ export class Container extends React.Component<Properties> {
     return (
       <AccountManagementPanel
         error={this.props.error}
+        successMessage={this.props.successMessage}
         isAddEmailModalOpen={this.props.isAddEmailModalOpen}
         currentUser={this.props.currentUser}
         canAddEmail={this.props.canAddEmail}

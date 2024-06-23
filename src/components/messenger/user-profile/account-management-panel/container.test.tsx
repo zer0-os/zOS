@@ -22,6 +22,14 @@ describe('Container', () => {
       expect(props.isAddEmailModalOpen).toEqual(true);
     });
 
+    it('successMessage', () => {
+      const props = subject({
+        accountManagement: { successMessage: 'success' } as AccountManagementState,
+      });
+
+      expect(props.successMessage).toEqual('success');
+    });
+
     describe('errors', () => {
       test('wallets error: unknown error', () => {
         const props = subject({

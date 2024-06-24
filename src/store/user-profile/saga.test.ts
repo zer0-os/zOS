@@ -14,6 +14,7 @@ import { UserProfileState, initialState as initialUserProfileState, Stage, setSt
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
 import { getReadReceiptPreference, setReadReceiptPreference } from '../../lib/chat';
+import { reset } from '../account-management/saga';
 
 describe('openUserProfile', () => {
   it('should set stage to Overview', async () => {
@@ -27,9 +28,10 @@ describe('openUserProfile', () => {
 });
 
 describe('openAccountManagement', () => {
-  it('should set stage to openAccountManagement', async () => {
+  it('should reset state & set stage to openAccountManagement', async () => {
     const { storeState } = await expectSaga(openAccountManagement)
       .withReducer(rootReducer, initialState())
+      .call(reset)
       .put(setStage(Stage.AccountManagement))
       .run();
 

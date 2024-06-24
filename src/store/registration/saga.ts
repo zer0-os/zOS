@@ -18,6 +18,7 @@ import {
   createAccount as apiCreateAccount,
   createWeb3Account as apiCreateWeb3Account,
   completeAccount as apiCompleteAccount,
+  addEmailAccount as apiAddEmailAccount,
   uploadImage,
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
@@ -259,4 +260,33 @@ export function* createWelcomeConversation(userId: string, inviter: { id: string
     const chatClient = yield call(chat.get);
     yield call([chatClient, chatClient.userJoinedInviterOnZero], createdConversationId, inviterUser.userId, userId);
   } catch (error) {}
+}
+
+export function* addEmailAccount({ email, password }: { email: string; password: string }) {
+  yield put(setLoading(true));
+  try {
+    const validationErrors = yield call(validateAccountInfo, { email, password });
+    if (validationErrors.length) {
+      yield put(setErrors(validationErrors));
+      return false;
+    }
+
+    const result = yield call(apiAddEmailAccount, {
+      email: email.trim(),
+      password,
+    });
+
+    if (result.success) {
+      yield put(setErrors([]));
+      return result;
+    } else {
+      yield put(setErrors([result.response]));
+    }
+  } catch (e) {
+    yield put(setErrors([AccountCreationErrors.UNKNOWN_ERROR]));
+  } finally {
+    yield put(setLoading(false));
+  }
+
+  return false;
 }

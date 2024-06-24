@@ -2,6 +2,7 @@ import { expectSaga } from '../../test/saga';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import {
+  addEmailAccount,
   authorizeAndCreateWeb3Account,
   clearRegistrationStateOnLogout,
   createAccount,
@@ -15,6 +16,7 @@ import {
   createAccount as apiCreateAccount,
   createWeb3Account as apiCreateWeb3Account,
   completeAccount as apiCompleteAccount,
+  addEmailAccount as apiAddEmailAccount,
   uploadImage,
 } from './api';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
@@ -565,6 +567,97 @@ describe(createWelcomeConversation, () => {
 
     const savedUser = denormalizeUser('inviter-id', storeState);
     expect(savedUser).toEqual(expect.objectContaining({ userId: 'inviter-id', firstName: 'The inviter' }));
+  });
+});
+
+describe(addEmailAccount, () => {
+  const email = 'john@example.com';
+  const password = VALID_PASSWORD;
+
+  it('adds a new email account with email and password & returns with OK message', async () => {
+    const { returnValue } = await expectSaga(addEmailAccount, { email, password })
+      .provide([
+        [
+          call(apiAddEmailAccount, { email, password }),
+          { success: true, response: { message: 'OK' } },
+        ],
+      ])
+      .withReducer(rootReducer, initialState({}))
+      .run();
+
+    expect(returnValue).toEqual({ success: true, response: { message: 'OK' } });
+  });
+
+  it('sets error state if validation fails', async () => {
+    const email = 'any';
+    const password = 'any';
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(addEmailAccount, { email, password })
+      .provide([
+        [
+          call(validateAccountInfo, { email, password }),
+          [AccountCreationErrors.EMAIL_REQUIRED],
+        ],
+      ])
+      .withReducer(rootReducer, initialState({}))
+      .run();
+
+    expect(registration.errors).toEqual([AccountCreationErrors.EMAIL_REQUIRED]);
+    expect(returnValue).toEqual(false);
+  });
+
+  it('sets error state from api call', async () => {
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(addEmailAccount, { email, password })
+      .provide([
+        [
+          call(apiAddEmailAccount, { email, password }),
+          { success: false, response: 'EMAIL_INVALID' },
+        ],
+      ])
+      .withReducer(rootReducer, initialState())
+      .run();
+
+    expect(registration.errors).toEqual(['EMAIL_INVALID']);
+    expect(returnValue).toEqual(false);
+  });
+
+  it('sets error state if api call throws an exception', async () => {
+    const {
+      returnValue,
+      storeState: { registration },
+    } = await expectSaga(addEmailAccount, { email, password })
+      .provide([
+        [
+          call(apiAddEmailAccount, { email, password }),
+          throwError(new Error('Stub api error')),
+        ],
+      ])
+      .withReducer(rootReducer, initialState({}))
+      .run();
+
+    expect(registration.errors).toEqual([AccountCreationErrors.UNKNOWN_ERROR]);
+    expect(returnValue).toEqual(false);
+  });
+
+  it('clears errors on success', async () => {
+    const {
+      storeState: { registration },
+    } = await expectSaga(addEmailAccount, { email, password })
+      .provide([
+        [
+          call(apiAddEmailAccount, { email, password }),
+          { success: true, response: { message: 'OK' } },
+        ],
+      ])
+      .withReducer(rootReducer, initialState({}))
+      .run();
+
+    expect(registration.errors).toEqual([]);
   });
 });
 

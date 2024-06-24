@@ -7,6 +7,7 @@ import { initialState as initialGroupManagementState } from '../group-management
 import { ChatState } from '../chat/types';
 import { initialState as authenticationInitialState } from '../authentication';
 import { MatrixState, initialState as initialMatrixState } from '../matrix';
+import { AccountManagementState, initialState as initialAccountManagementState } from '../account-management';
 import { initialState as initialLoginState } from '../login';
 
 type RecursivePartial<T> = {
@@ -25,6 +26,7 @@ export class StoreBuilder {
   chatState: Partial<ChatState> = {};
   activeConversationId: string = '';
   matrix: MatrixState = { ...initialMatrixState };
+  accountManagement: AccountManagementState = { ...initialAccountManagementState };
 
   withActiveConversation(conversation: Partial<Channel>) {
     this.activeConversation = conversation;
@@ -90,6 +92,11 @@ export class StoreBuilder {
     return this;
   }
 
+  withAccountManagement(data: Partial<AccountManagementState>) {
+    this.accountManagement = { ...initialAccountManagementState, ...data };
+    return this;
+  }
+
   build() {
     const { result: channelsList, entities: channelEntitities } = normalizeChannel(
       [
@@ -122,6 +129,7 @@ export class StoreBuilder {
         user: { data: this.currentUser },
       },
       groupManagement: this.groupManagement,
+      accountManagement: this.accountManagement,
       matrix: {
         ...this.matrix,
       },

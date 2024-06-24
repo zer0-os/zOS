@@ -11,7 +11,7 @@ import { bem } from '../../../../lib/bem';
 
 const c = bem('.overview-panel');
 
-const featureFlags = { enableRewards: false, enableUserSettings: false, allowMultipleAccounts: false };
+const featureFlags = { enableRewards: false, enableUserSettings: false };
 
 jest.mock('../../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
@@ -69,7 +69,7 @@ describe(OverviewPanel, () => {
     const onOpenBackupDialog = jest.fn();
     const wrapper = subject({ onOpenBackupDialog });
 
-    wrapper.find(Button).at(2).simulate('press');
+    wrapper.find(Button).at(3).simulate('press');
 
     expect(onOpenBackupDialog).toHaveBeenCalled();
   });
@@ -91,14 +91,12 @@ describe(OverviewPanel, () => {
     const onOpenSettings = jest.fn();
     const wrapper = subject({ onOpenSettings });
 
-    wrapper.find(Button).at(3).simulate('press');
+    wrapper.find(Button).at(4).simulate('press');
 
     expect(onOpenSettings).toHaveBeenCalled();
   });
 
   it('publishes openAccountManagement event', () => {
-    featureFlags.allowMultipleAccounts = true;
-
     const onOpenAccountManagement = jest.fn();
     const wrapper = subject({ onManageAccounts: onOpenAccountManagement });
 

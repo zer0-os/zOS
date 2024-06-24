@@ -74,11 +74,7 @@ export class AccountManagementPanel extends React.Component<Properties> {
         </div>
 
         {currentUser?.primaryEmail ? (
-          <CitizenListItem
-            user={{ ...currentUser, firstName: currentUser.primaryEmail }}
-            tag={''}
-            onSelected={() => {}}
-          />
+          <CitizenListItem user={{ ...currentUser, firstName: currentUser.primaryEmail }} tag={''} />
         ) : (
           <div {...cn('alert-small')}>
             <Alert variant='info'>

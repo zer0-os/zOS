@@ -132,17 +132,15 @@ export class OverviewPanel extends React.Component<Properties, State> {
           Edit Profile
         </Button>
 
-        {featureFlags.allowMultipleAccounts && (
-          <Button
-            {...cn('action-button')}
-            variant={ButtonVariant.Secondary}
-            onPress={this.onManageAccounts}
-            startEnhancer={<IconWallet3 size={20} />}
-            color={ButtonColor.Greyscale}
-          >
-            Manage Accounts
-          </Button>
-        )}
+        <Button
+          {...cn('action-button')}
+          variant={ButtonVariant.Secondary}
+          onPress={this.onManageAccounts}
+          startEnhancer={<IconWallet3 size={20} />}
+          color={ButtonColor.Greyscale}
+        >
+          Manage Accounts
+        </Button>
 
         <Button
           {...cn('action-button')}

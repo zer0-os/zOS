@@ -50,6 +50,8 @@ export class LogoutConfirmationModal extends React.Component<Properties> {
 
   render() {
     return (
+      // See: ZOS-115
+      // @ts-ignore
       <Modal
         title='Are you sure?'
         primaryText='Log Out'

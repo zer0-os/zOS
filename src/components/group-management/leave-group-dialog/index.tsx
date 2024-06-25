@@ -21,6 +21,8 @@ interface State {}
 export class LeaveGroupDialog extends React.Component<Properties, State> {
   render() {
     return (
+      // See: ZOS-115
+      // @ts-ignore
       <Modal
         title='Leave Group?'
         primaryText='Leave Group'

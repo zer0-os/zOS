@@ -213,6 +213,8 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
       this.configForStage();
 
     return (
+      // See: ZOS-115
+      // @ts-ignore
       <Modal
         title={this.title}
         primaryText={primaryText}

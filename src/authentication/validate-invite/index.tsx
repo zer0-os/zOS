@@ -31,7 +31,7 @@ export class Invite extends React.Component<Properties, State> {
   };
 
   onInviteCodeChanged = (code: string) => {
-    this.setState({ inviteCode: code });
+    this.setState({ inviteCode: code.trim() });
   };
 
   submitForm = async (e) => {

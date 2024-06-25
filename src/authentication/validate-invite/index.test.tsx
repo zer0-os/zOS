@@ -98,4 +98,15 @@ describe('Invite', () => {
 
     expect(wrapper.find('Button').prop('isDisabled')).toEqual(false);
   });
+
+  it('trims input', function () {
+    const validateInvite = jest.fn();
+    const code = '  123456  ';
+    const wrapper = subject({ validateInvite });
+
+    wrapper.find('Input').simulate('change', code);
+    wrapper.find('form').simulate('submit', inputEvent());
+
+    expect(validateInvite).toHaveBeenCalledWith({ code: '123456' });
+  });
 });

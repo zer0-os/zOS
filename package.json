@@ -104,8 +104,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@testing-library/dom": "^10.1.0",
-    "@testing-library/react": "^12.1.5",
+    "@testing-library/dom": "^10.2.0",
+    "@testing-library/react": "^16.0.0",
     "@types/enzyme": "^3.10.10",
     "@types/jest-when": "^3.5.2",
     "@types/react-portal": "^4.0.4",

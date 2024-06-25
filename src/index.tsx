@@ -39,30 +39,30 @@ const container = document.getElementById('platform');
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
 
 root.render(
-  // <React.StrictMode>
-  <ErrorBoundary boundary={'core'}>
-    <Provider store={store}>
-      <EscapeManagerProvider>
-        <Router history={history}>
-          <Web3ReactContextProvider>
-            <Web3Connect>
-              {isElectron() && <ElectronTitlebar />}
-              <Switch>
-                <Route path='/restricted' exact component={Restricted} />
-                <Route path='/get-access' exact component={Invite} />
-                <Route path='/login' exact component={LoginPage} />
-                <Route path='/reset-password' exact component={ResetPassword} />
-                <Route path='/conversation/:conversationId' exact component={MessengerMain} />
-                <Route path='/' exact component={MessengerMain} />
-                <Route component={redirectToRoot} />
-              </Switch>
-            </Web3Connect>
-          </Web3ReactContextProvider>
-        </Router>
-      </EscapeManagerProvider>
-    </Provider>
-  </ErrorBoundary>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <ErrorBoundary boundary={'core'}>
+      <Provider store={store}>
+        <EscapeManagerProvider>
+          <Router history={history}>
+            <Web3ReactContextProvider>
+              <Web3Connect>
+                {isElectron() && <ElectronTitlebar />}
+                <Switch>
+                  <Route path='/restricted' exact component={Restricted} />
+                  <Route path='/get-access' exact component={Invite} />
+                  <Route path='/login' exact component={LoginPage} />
+                  <Route path='/reset-password' exact component={ResetPassword} />
+                  <Route path='/conversation/:conversationId' exact component={MessengerMain} />
+                  <Route path='/' exact component={MessengerMain} />
+                  <Route component={redirectToRoot} />
+                </Switch>
+              </Web3Connect>
+            </Web3ReactContextProvider>
+          </Router>
+        </EscapeManagerProvider>
+      </Provider>
+    </ErrorBoundary>
+  </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change

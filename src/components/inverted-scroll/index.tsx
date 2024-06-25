@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 import { bemClassName } from '../../lib/bem';
@@ -7,6 +7,7 @@ import { Waypoint } from 'react-waypoint';
 const cn = bemClassName('inverted-scroll');
 
 export interface Properties {
+  children?: ReactNode;
   className?: string;
   isScrollbarHidden?: boolean;
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { providers } from 'ethers';
@@ -9,6 +9,7 @@ import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
 import { setChain, setAddress, setConnectionStatus, updateConnector, setConnectionError } from '../../store/web3';
 
 export interface Properties {
+  children?: ReactNode;
   connectionStatus: ConnectionStatus;
   setConnectionStatus: (status: ConnectionStatus) => void;
   setAddress: (address: string) => void;

@@ -10,6 +10,7 @@ import TooltipHead from '../../tooltip-head.svg?react';
 const c = bem('tooltip-popup');
 
 export interface Properties {
+  children?: ReactNode;
   open?: TooltipPrimitive.TooltipProps['open'];
   onOpenChange?: TooltipPrimitive.TooltipProps['onOpenChange'];
   side?: TooltipPrimitive.TooltipContentProps['side'];

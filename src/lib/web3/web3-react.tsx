@@ -8,14 +8,18 @@
  * here until we have the time to replace it.
  **/
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import { Web3ReactProvider, getWeb3ReactContext } from '@web3-react/core';
 import { providers } from 'ethers';
 
 import { get as getConnector } from './connectors';
 
-export class ContextProvider extends React.Component {
+interface Properties {
+  children?: ReactNode;
+}
+
+export class ContextProvider extends React.Component<Properties> {
   getLibrary = (provider) => new providers.Web3Provider(provider);
 
   render() {

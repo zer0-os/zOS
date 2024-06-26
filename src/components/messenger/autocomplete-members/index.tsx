@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import { Item, Option } from '../lib/types';
 import { Avatar, Input } from '@zero-tech/zui/components';
@@ -9,6 +9,7 @@ import '../list/styles.scss';
 import { highlightFilter, itemToOption } from '../lib/utils';
 import classNames from 'classnames';
 export interface Properties {
+  children?: ReactNode;
   inputRef?: React.RefObject<HTMLInputElement>;
   search: (query: string) => Promise<Item[]>;
   selectedOptions?: Option[];

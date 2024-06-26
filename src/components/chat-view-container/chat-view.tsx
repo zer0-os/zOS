@@ -274,8 +274,6 @@ export class ChatView extends React.Component<Properties, State> {
             onClose={this.closeLightBox}
           />
         )}
-        {/* See: ZOS-115
-         * @ts-ignore */}
         <InvertedScroll
           className='channel-view__inverted-scroll'
           isScrollbarHidden={this.props.isSecondarySidekickOpen}

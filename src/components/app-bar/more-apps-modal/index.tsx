@@ -36,8 +36,6 @@ export class MoreAppsModal extends React.Component<Properties> {
 
   render() {
     return (
-      // See: ZOS-115
-      // @ts-ignore
       <Modal title='Explore ZERO Apps' onClose={this.close}>
         <div {...cn()}>
           <div {...cn('header')}>Explore ZERO's suite of dApps, soon to be unified into the ZERO Operating System:</div>

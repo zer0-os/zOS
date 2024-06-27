@@ -1,7 +1,7 @@
 import './init';
 import React from 'react';
 
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { MessengerMain } from './messenger-main';
 import { store, runSagas } from './store';
 import { Provider } from 'react-redux';
@@ -34,7 +34,11 @@ export const history = getHistory();
 
 const redirectToRoot = () => <Redirect to={'/'} />;
 
-ReactDOM.render(
+const container = document.getElementById('platform');
+
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+
+root.render(
   <React.StrictMode>
     <ErrorBoundary boundary={'core'}>
       <Provider store={store}>
@@ -58,8 +62,7 @@ ReactDOM.render(
         </EscapeManagerProvider>
       </Provider>
     </ErrorBoundary>
-  </React.StrictMode>,
-  document.getElementById('platform')
+  </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change

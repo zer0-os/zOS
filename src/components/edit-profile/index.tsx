@@ -96,6 +96,8 @@ export class EditProfile extends React.Component<Properties, State> {
   renderZeroIDLabel = (): JSX.Element => (
     <div className={c('primary-zid-lable')}>
       Primary ZERO ID
+      {/* See: ZOS-115
+       * @ts-ignore */}
       <Tooltip content='Your primary ZERO ID is displayed with your username and other members can find you by searching for it.'>
         <div className={c('info-tooltip')}>
           <IconHelpCircle size={16} />

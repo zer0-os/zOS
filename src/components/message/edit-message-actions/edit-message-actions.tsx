@@ -54,11 +54,15 @@ export default class EditMessageActions extends React.Component<Properties> {
 
     return (
       <div {...cn()} ref={this.editMessageActionRef}>
+        {/* See: ZOS-115
+         * @ts-ignore */}
         <Tooltip content={this.props.secondaryTooltipText}>
           <Button color={Color.Greyscale} onPress={this.props.onCancel} size={Size.Small} variant={Variant.Secondary}>
             Cancel
           </Button>
         </Tooltip>
+        {/* See: ZOS-115
+         * @ts-ignore */}
         <Tooltip
           content={this.props.primaryTooltipText}
           open={this.state.tooltipOpen}

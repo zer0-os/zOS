@@ -21,6 +21,7 @@ export enum Color {
 }
 
 export interface Properties {
+  children?: React.ReactNode;
   title: string;
   primaryText?: string;
   primaryVariant?: Variant;

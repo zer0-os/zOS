@@ -43,7 +43,7 @@ export class FeatureFlags {
   }
 
   get enableRewards() {
-    return this._getBoolean('enableRewards', false);
+    return this._getBoolean('enableRewards', true);
   }
 
   set enableRewards(value: boolean) {

@@ -1,5 +1,5 @@
 import * as Request from 'superagent';
-import { get } from '../../lib/api/rest';
+import { get, post } from '../../lib/api/rest';
 import { User } from '../channels';
 import { rawUserToDomainUser } from './utils';
 
@@ -30,15 +30,18 @@ export async function uploadImage(file: File): Promise<FileResult> {
   return { url };
 }
 
-export async function getZEROUsers(matrixIds: string[]): Promise<[User]> {
-  return await get('/matrix/users/zero', { matrixIds })
-    .catch((_error) => null)
-    .then((response) => {
-      if (!response?.body) {
-        return [];
-      }
-
-      // The api endpoint does not return the standard user object, so we need to map it
-      return response.body.map(rawUserToDomainUser);
+export async function getZEROUsers(matrixIds: string[]): Promise<User[]> {
+  try {
+    const response = await post('/matrix/users/zero').send({
+      matrixIds,
     });
+
+    if (!response?.body) {
+      return [];
+    }
+
+    return response.body.map(rawUserToDomainUser);
+  } catch (error) {
+    return [];
+  }
 }

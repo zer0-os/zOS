@@ -103,8 +103,6 @@ describe(getSignedTokenForConnector, () => {
       .withReducer(rootReducer, { web3Wagmi: { value: { connectorId: 'metamask', address: '' } } } as RootState)
       .run();
 
-    console.log(returnValue);
-
     expect(returnValue.success).toEqual(false);
     expect(returnValue.error).toEqual('an-error-occurred');
   });

@@ -33,10 +33,10 @@ export function* setConnectionError(action) {
 }
 
 export function* getSignedTokenForConnector(connector) {
-  let current = yield select((state) => state.web3.value);
+  let current = yield select((state) => state.web3Wagmi.value);
 
   let address = current.address;
-  if (current.connector !== connector || !current.address) {
+  if (current.connectorId !== connector || !current.address) {
     yield updateConnector({ payload: connector });
     const result = yield race({
       address: call(waitForAddressChange),
@@ -53,7 +53,7 @@ export function* getSignedTokenForConnector(connector) {
 
 export function* getSignedToken(address = null) {
   if (!address) {
-    address = yield select((state) => state.web3.value.address);
+    address = yield select((state) => state.web3Wagmi.value.address);
   }
   const providerService = yield call(getProviderService);
   try {

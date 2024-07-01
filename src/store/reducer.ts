@@ -12,6 +12,7 @@ import { reducer as createConversation } from './create-conversation';
 import { reducer as createInvitation } from './create-invitation';
 import { reducer as registration } from './registration';
 import { reducer as login } from './login';
+import { reducer as loginWagmi } from './login-wagmi';
 import { reducer as rewards } from './rewards';
 import { reducer as editProfile } from './edit-profile';
 import { reducer as requestPasswordReset } from './request-password-reset';
@@ -37,6 +38,7 @@ export const rootReducer = combineReducers({
   createInvitation,
   registration,
   login,
+  loginWagmi,
   rewards,
   editProfile,
   requestPasswordReset,

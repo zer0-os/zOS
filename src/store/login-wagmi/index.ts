@@ -28,6 +28,7 @@ export enum EmailLoginErrors {
 
 export enum Web3LoginErrors {
   PROFILE_NOT_FOUND = 'PROFILE_NOT_FOUND',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
 export const initialState: LoginState = {

@@ -65,7 +65,6 @@ export function* getSignedToken(address = null) {
     const token = yield call(personalSignTokenViem, walletClient, address);
     return { success: true, token };
   } catch (error) {
-    yield updateConnector({ payload: undefined });
     return { success: false, error: 'Wallet connection failed. Please try again.' };
   }
 }

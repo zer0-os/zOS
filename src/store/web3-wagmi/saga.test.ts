@@ -78,29 +78,4 @@ describe(getSignedToken, () => {
         expect(returnValue).toEqual({ success: false, error: 'Wallet connection failed. Please try again.' });
       });
   });
-
-  it('sets connector to undefined if wallet signature fails', () => {
-    return expectSaga(getSignedToken, undefined)
-      .provide([
-        [call(getWagmiConfig), wagmiConfig],
-        [
-          call(getWalletClient, wagmiConfig),
-          { signMessage: jest.fn().mockRejectedValue(new Error('Mock error')) } as any,
-        ],
-      ])
-      .withReducer(rootReducer, {
-        web3Wagmi: {
-          // @ts-ignore
-          value: { connectorId: 'metamask', address: '0x1234' },
-        },
-      })
-      .run()
-      .then(({ storeState }) => {
-        expect(storeState.web3Wagmi).toMatchObject({
-          value: {
-            connectorId: undefined,
-          },
-        });
-      });
-  });
 });

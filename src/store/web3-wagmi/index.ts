@@ -18,14 +18,14 @@ export interface Web3State {
   value: {
     chainId: Chains;
     address: string;
-    connectorId: Connector['id'] | undefined;
+    connectorId: Connector['id'] | '';
     error: string;
   };
 }
 
-const initialState: Web3State = {
+export const initialState: Web3State = {
   status: ConnectionStatus.Disconnected,
-  value: { chainId: null, address: '', connectorId: undefined, error: '' },
+  value: { chainId: 1, address: '', connectorId: '', error: '' },
 };
 
 const slice = createSlice({

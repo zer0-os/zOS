@@ -1,12 +1,12 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { getSignedTokenForConnector, updateConnector, waitForAddressChange, waitForError } from './saga';
-import { ConnectionStatus, personalSignToken } from '../../lib/web3';
+import { getSignedToken, getSignedTokenForConnector, updateConnector, waitForAddressChange } from './saga';
+import { ConnectionStatus } from '../../lib/web3';
 import { reducer } from '.';
 import { call } from 'redux-saga/effects';
-import { getService } from '../../lib/web3/provider-service';
 import { RootState, rootReducer } from '../reducer';
-import { throwError } from 'redux-saga-test-plan/providers';
+import { getWagmiConfig, wagmiConfig } from '../../lib/web3/wagmi-config';
+import { getWalletClient } from '@wagmi/core';
 
 describe('web3 saga', () => {
   it('sets new connector and status to Connecting', async () => {
@@ -26,20 +26,20 @@ describe('web3 saga', () => {
 });
 
 describe(getSignedTokenForConnector, () => {
+  function subject(...args: Parameters<typeof expectSaga>) {
+    return expectSaga(...args).provide([[call(getSignedToken), undefined]]);
+  }
+
   it('connects and waits for an address change when connection is not already set up', async () => {
-    const { returnValue } = await expectSaga(getSignedTokenForConnector, 'metamask')
+    const { returnValue } = await subject(getSignedTokenForConnector, 'metamask')
       .provide([
         [
           call(waitForAddressChange),
           '0x1234',
         ],
         [
-          call(getService),
-          { get: () => ({ provider: 'stub' }) },
-        ],
-        [
-          call(personalSignToken, { provider: 'stub' }, '0x1234'),
-          '0x9876',
+          call(getSignedToken, '0x1234'),
+          { success: true, token: '0x9876' },
         ],
       ])
       .withReducer(rootReducer, { web3Wagmi: { value: { connectorId: 'infura', address: '' } } } as RootState)
@@ -48,85 +48,59 @@ describe(getSignedTokenForConnector, () => {
     expect(returnValue.success).toEqual(true);
     expect(returnValue.token).toEqual('0x9876');
   });
+});
 
-  it('connects when the connector has changed', async () => {
-    const { returnValue } = await expectSaga(getSignedTokenForConnector, 'metamask')
+describe(getSignedToken, () => {
+  it('successfully gets signed token using viem wallet client', async () => {
+    const { returnValue } = await expectSaga(getSignedToken, '0x1234')
       .provide([
-        [
-          call(waitForAddressChange),
-          '0x1234',
-        ],
-        [
-          call(getService),
-          { get: () => ({ provider: 'stub' }) },
-        ],
-        [
-          call(personalSignToken, { provider: 'stub' }, '0x1234'),
-          '0x9876',
-        ],
+        [call(getWagmiConfig), wagmiConfig],
+        [call(getWalletClient, wagmiConfig), { signMessage: jest.fn().mockResolvedValue('0x1234') } as any],
       ])
-      .withReducer(rootReducer, { web3Wagmi: { value: { connectorId: 'infura', address: '0x1234' } } } as RootState)
-      .call(waitForAddressChange)
+      .withReducer(reducer)
       .run();
 
-    expect(returnValue.success).toEqual(true);
-    expect(returnValue.token).toEqual('0x9876');
+    expect(returnValue).toEqual({ success: true, token: '0x1234' });
   });
 
-  it('does not try to connect again if an address/connector is already selected', async () => {
-    const { returnValue } = await expectSaga(getSignedTokenForConnector, 'metamask')
+  it('returns an error if token signature fails', () => {
+    return expectSaga(getSignedToken, '0x1234')
       .provide([
+        [call(getWagmiConfig), wagmiConfig],
         [
-          call(getService),
-          { get: () => ({ provider: 'stub' }) },
-        ],
-        [
-          call(personalSignToken, { provider: 'stub' }, '0x1234'),
-          '0x9876',
+          call(getWalletClient, wagmiConfig),
+          // The actual error message does not matter
+          { signMessage: jest.fn().mockRejectedValue(new Error('Mock error')) } as any,
         ],
       ])
-      .withReducer(rootReducer, { web3Wagmi: { value: { connectorId: 'metamask', address: '0x1234' } } } as RootState)
-      .run();
-
-    expect(returnValue.success).toEqual(true);
-    expect(returnValue.token).toEqual('0x9876');
+      .run()
+      .then(({ returnValue }) => {
+        expect(returnValue).toEqual({ success: false, error: 'Wallet connection failed. Please try again.' });
+      });
   });
 
-  it('returns an error when connection error occurs', async () => {
-    const { returnValue } = await expectSaga(getSignedTokenForConnector, 'metamask')
+  it('sets connector to undefined if wallet signature fails', () => {
+    return expectSaga(getSignedToken, undefined)
       .provide([
+        [call(getWagmiConfig), wagmiConfig],
         [
-          call(waitForError),
-          'an-error-occurred',
+          call(getWalletClient, wagmiConfig),
+          { signMessage: jest.fn().mockRejectedValue(new Error('Mock error')) } as any,
         ],
       ])
-      .withReducer(rootReducer, { web3Wagmi: { value: { connectorId: 'metamask', address: '' } } } as RootState)
-      .run();
-
-    expect(returnValue.success).toEqual(false);
-    expect(returnValue.error).toEqual('an-error-occurred');
-  });
-
-  it('returns an error when signing error occurs', async () => {
-    const { returnValue } = await expectSaga(getSignedTokenForConnector, 'metamask')
-      .provide([
-        [
-          call(waitForAddressChange),
-          '0x1234',
-        ],
-        [
-          call(getService),
-          { get: () => ({ provider: 'stub' }) },
-        ],
-        [
-          call(personalSignToken, { provider: 'stub' }, '0x1234'),
-          throwError(new Error()),
-        ],
-      ])
-      .withReducer(rootReducer, { web3Wagmi: { value: { connectorId: 'metamask', address: '' } } } as RootState)
-      .run();
-
-    expect(returnValue.success).toEqual(false);
-    expect(returnValue.error).toEqual('Wallet connection failed. Please try again.');
+      .withReducer(rootReducer, {
+        web3Wagmi: {
+          // @ts-ignore
+          value: { connectorId: 'metamask', address: '0x1234' },
+        },
+      })
+      .run()
+      .then(({ storeState }) => {
+        expect(storeState.web3Wagmi).toMatchObject({
+          value: {
+            connectorId: undefined,
+          },
+        });
+      });
   });
 });

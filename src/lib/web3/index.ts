@@ -1,5 +1,6 @@
 import { toHex } from 'web3-utils';
 import { config } from '../../config';
+import { WalletClient } from 'viem';
 
 export enum ConnectionStatus {
   Disconnected = 'disconnected',
@@ -49,5 +50,13 @@ export async function personalSignToken(web3Provider, currentAddress): Promise<a
         return resolve(response?.result);
       }
     );
+  });
+}
+
+export async function personalSignTokenViem(walletClient: WalletClient, currentAddress: string): Promise<any> {
+  return await walletClient.signMessage({
+    // @ts-ignore
+    account: currentAddress,
+    message: config.web3AuthenticationMessage,
   });
 }

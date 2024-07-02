@@ -1,9 +1,11 @@
 import { takeLatest, put, takeEvery, call, take, select, race } from 'redux-saga/effects';
 import { SagaActionTypes, setConnectionStatus, setConnector, setWalletAddress, setWalletConnectionError } from '.';
 
-import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3';
+import { ConnectionStatus, personalSignTokenViem } from '../../lib/web3';
 import { Web3Events, web3Channel } from './channels';
-import { getService as getProviderService } from '../../lib/web3/provider-service';
+import { getWagmiConfig } from '../../lib/web3/wagmi-config';
+import { getWalletClient } from '@wagmi/core';
+import { WalletClient } from 'viem';
 
 export function* isWeb3AccountConnected() {
   const state = yield select((state) => state.web3);
@@ -55,12 +57,15 @@ export function* getSignedToken(address = null) {
   if (!address) {
     address = yield select((state) => state.web3Wagmi.value.address);
   }
-  const providerService = yield call(getProviderService);
+
+  const wagmiConfig = yield call(getWagmiConfig);
+  const walletClient: WalletClient = yield call(getWalletClient, wagmiConfig);
+
   try {
-    const token = yield call(personalSignToken, providerService.get(), address);
+    const token = yield call(personalSignTokenViem, walletClient, address);
     return { success: true, token };
   } catch (error) {
-    yield updateConnector({ payload: Connectors.None });
+    yield updateConnector({ payload: undefined });
     return { success: false, error: 'Wallet connection failed. Please try again.' };
   }
 }

@@ -6,3 +6,7 @@ export const wagmiConfig = getDefaultConfig({
   projectId: 'TEMP_ID',
   chains: [mainnet],
 });
+
+export const getWagmiConfig = () => {
+  return wagmiConfig;
+};

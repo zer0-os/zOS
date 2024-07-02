@@ -28,7 +28,7 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
       isLoggingIn: login.loading,
       shouldRender: pageload.isComplete,
       showAndroidDownload: pageload.showAndroidDownload,
-      androidStorePath: config.androidStorePath,
+      androidStorePath: config.googlePlayStorePath,
     };
   }
 

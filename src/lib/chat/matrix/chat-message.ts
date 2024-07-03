@@ -198,6 +198,7 @@ export function mapToLiveRoomEvent(liveEvent) {
     id: event.event_id,
     type: eventType,
     createdAt: event.origin_server_ts,
+    roomId: event.room_id,
     sender: {
       userId: event.sender,
     },

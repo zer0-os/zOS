@@ -13,12 +13,23 @@ import {
   publishUserTypingEvent,
   receivedRoomMembersTyping,
   receivedRoomMemberPowerLevelChanged,
+  roomMuted,
+  onMuteRoom,
+  roomUnmuted,
+  onUnmuteRoom,
 } from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
-import { addRoomToFavorites, chat, removeRoomFromFavorites, sendTypingEvent } from '../../lib/chat';
+import {
+  addRoomToFavorites,
+  addRoomToMuted,
+  chat,
+  removeRoomFromFavorites,
+  removeRoomFromMuted,
+  sendTypingEvent,
+} from '../../lib/chat';
 
 const userId = 'user-id';
 
@@ -177,6 +188,62 @@ describe(onUnfavoriteRoom, () => {
   });
 });
 
+describe(roomMuted, () => {
+  it('updates muted for room', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isMuted: false }).build();
+    const { storeState } = await expectSaga(roomMuted, {
+      payload: { roomId: 'room-id' },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.isMuted).toEqual(true);
+  });
+});
+
+describe(onMuteRoom, () => {
+  it('calls addRoomToMuted when channel is not already muted', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isMuted: false }).build();
+
+    await expectSaga(onMuteRoom, { payload: { roomId: 'room-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(addRoomToMuted), undefined],
+      ])
+      .call(addRoomToMuted, 'room-id')
+      .run();
+  });
+});
+
+describe(roomUnmuted, () => {
+  it('updates unmuted for room', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isMuted: true }).build();
+    const { storeState } = await expectSaga(roomUnmuted, {
+      payload: { roomId: 'room-id' },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.isMuted).toEqual(false);
+  });
+});
+
+describe(onUnmuteRoom, () => {
+  it('calls removeRoomFromMuted when channel is already muted', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', isMuted: true }).build();
+
+    await expectSaga(onUnmuteRoom, { payload: { roomId: 'channel-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(removeRoomFromMuted), undefined],
+      ])
+      .call(removeRoomFromMuted, 'channel-id')
+      .run();
+  });
+});
+
 describe(publishUserTypingEvent, () => {
   it('sends typing event', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'room-id' }).build();
@@ -314,4 +381,5 @@ const CHANNEL_DEFAULTS = {
   moderatorIds: [],
   isFavorite: false,
   otherMembersTyping: [],
+  isMuted: false,
 };

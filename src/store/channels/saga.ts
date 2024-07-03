@@ -9,6 +9,8 @@ import {
   removeRoomFromFavorites,
   chat,
   sendTypingEvent as matrixSendUserTypingEvent,
+  addRoomToMuted,
+  removeRoomFromMuted,
 } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
@@ -147,6 +149,42 @@ export function* roomUnfavorited(action) {
   }
 }
 
+export function* onMuteRoom(action) {
+  const { roomId } = action.payload;
+  try {
+    yield call(addRoomToMuted, roomId);
+  } catch (error) {
+    console.error(`Failed to mute room ${roomId}:`, error);
+  }
+}
+
+export function* onUnmuteRoom(action) {
+  const { roomId } = action.payload;
+  try {
+    yield call(removeRoomFromMuted, roomId);
+  } catch (error) {
+    console.error(`Failed to unmute room ${roomId}:`, error);
+  }
+}
+
+export function* roomMuted(action) {
+  const { roomId } = action.payload;
+  try {
+    yield call(receiveChannel, { id: roomId, isMuted: true });
+  } catch (error) {
+    console.error(`Failed to update mute status for room ${roomId}:`, error);
+  }
+}
+
+export function* roomUnmuted(action) {
+  const { roomId } = action.payload;
+  try {
+    yield call(receiveChannel, { id: roomId, isMuted: false });
+  } catch (error) {
+    console.error(`Failed to update unmute status for room ${roomId}:`, error);
+  }
+}
+
 export function* receivedRoomMembersTyping(action) {
   const { roomId, userIds: matrixIds } = action.payload;
 
@@ -229,10 +267,14 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
   yield takeLatest(SagaActionTypes.OnFavoriteRoom, onFavoriteRoom);
   yield takeLatest(SagaActionTypes.OnUnfavoriteRoom, onUnfavoriteRoom);
+  yield takeLatest(SagaActionTypes.OnMuteRoom, onMuteRoom);
+  yield takeLatest(SagaActionTypes.OnUnmuteRoom, onUnmuteRoom);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomFavorited, roomFavorited);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnfavorited, roomUnfavorited);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMuted, roomMuted);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnmuted, roomUnmuted);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMemberTyping, receivedRoomMembersTyping);
   yield takeEveryFromBus(
     yield call(getChatBus),

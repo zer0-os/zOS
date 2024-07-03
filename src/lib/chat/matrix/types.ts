@@ -21,6 +21,7 @@ export enum MatrixConstants {
   REPLACE = 'm.replace',
   BAD_ENCRYPTED_MSGTYPE = 'm.bad.encrypted',
   FAVORITE = 'm.favorite',
+  MUTE = 'm.mute',
   READ_RECEIPT_PREFERENCE = 'm.read_receipt_preference',
 }
 

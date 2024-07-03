@@ -857,6 +857,25 @@ export class MatrixClient implements IChatClient {
     return !!result.tags?.[MatrixConstants.FAVORITE];
   }
 
+  async addRoomToMuted(roomId) {
+    await this.waitForConnection();
+
+    await this.matrix.setRoomTag(roomId, MatrixConstants.MUTE);
+  }
+
+  async removeRoomFromMuted(roomId) {
+    await this.waitForConnection();
+
+    await this.matrix.deleteRoomTag(roomId, MatrixConstants.MUTE);
+  }
+
+  async isRoomMuted(roomId) {
+    await this.waitForConnection();
+
+    const result = await this.matrix.getRoomTags(roomId);
+    return !!result.tags?.[MatrixConstants.MUTE];
+  }
+
   async sendTypingEvent(roomId: string, isTyping: boolean): Promise<void> {
     await this.waitForConnection();
 
@@ -1149,11 +1168,18 @@ export class MatrixClient implements IChatClient {
 
   private publishRoomTagChange(event, roomId) {
     const isFavoriteTagAdded = !!event.getContent().tags?.[MatrixConstants.FAVORITE];
+    const isMutedTagAdded = !!event.getContent().tags?.[MatrixConstants.MUTE];
 
     if (isFavoriteTagAdded) {
       this.events.roomFavorited(roomId);
     } else {
       this.events.roomUnfavorited(roomId);
+    }
+
+    if (isMutedTagAdded) {
+      this.events.roomMuted(roomId);
+    } else {
+      this.events.roomUnmuted(roomId);
     }
   }
 
@@ -1176,6 +1202,7 @@ export class MatrixClient implements IChatClient {
     const messages = await this.getAllMessagesFromRoom(room);
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
     const isFavorite = await this.isRoomFavorited(room.roomId);
+    const isMuted = await this.isRoomMuted(room.roomId);
     const [admins, mods] = this.getRoomAdminsAndMods(room);
 
     return {
@@ -1195,6 +1222,7 @@ export class MatrixClient implements IChatClient {
       adminMatrixIds: admins,
       moderatorIds: mods,
       isFavorite,
+      isMuted,
     };
   };
 

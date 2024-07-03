@@ -20,6 +20,8 @@ export enum Events {
   ChatConnectionComplete = 'chat/connection/complete',
   RoomFavorited = 'chat/channel/roomFavorited',
   RoomUnfavorited = 'chat/channel/roomUnfavorited',
+  RoomMuted = 'chat/channel/roomMuted',
+  RoomUnmuted = 'chat/channel/roomUnmuted',
   RoomMemberTyping = 'chat/channel/roomMemberTyping',
   RoomMemberPowerLevelChanged = 'chat/channel/roomMemberPowerLevelChanged',
   ReadReceiptReceived = 'chat/message/readReceiptReceived',
@@ -90,6 +92,8 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
     const receiveLiveRoomEvent = (eventData) => emit({ type: Events.LiveRoomEventReceived, payload: { eventData } });
     const roomFavorited = (roomId) => emit({ type: Events.RoomFavorited, payload: { roomId } });
     const roomUnfavorited = (roomId) => emit({ type: Events.RoomUnfavorited, payload: { roomId } });
+    const roomMuted = (roomId) => emit({ type: Events.RoomMuted, payload: { roomId } });
+    const roomUnmuted = (roomId) => emit({ type: Events.RoomUnmuted, payload: { roomId } });
     const roomMemberTyping = (roomId, userIds) => emit({ type: Events.RoomMemberTyping, payload: { roomId, userIds } });
     const roomMemberPowerLevelChanged = (roomId, matrixId, powerLevel) =>
       emit({ type: Events.RoomMemberPowerLevelChanged, payload: { roomId, matrixId, powerLevel } });
@@ -111,6 +115,8 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       receiveLiveRoomEvent,
       roomFavorited,
       roomUnfavorited,
+      roomMuted,
+      roomUnmuted,
       roomMemberTyping,
       roomMemberPowerLevelChanged,
       readReceiptReceived,

@@ -1144,4 +1144,74 @@ describe('matrix client', () => {
       expect(isFavorite).toBe(false);
     });
   });
+
+  describe('addRoomToMuted', () => {
+    it('sets room tag with "m.mute"', async () => {
+      const roomId = '!testRoomId';
+      const setRoomTag = jest.fn().mockResolvedValue({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ setRoomTag })),
+      });
+
+      await client.connect(null, 'token');
+      await client.addRoomToMuted(roomId);
+
+      expect(setRoomTag).toHaveBeenCalledWith(roomId, 'm.mute');
+    });
+  });
+
+  describe('removeRoomFromMuted', () => {
+    it('deletes "m.mute" tag from room', async () => {
+      const roomId = '!testRoomId';
+      const deleteRoomTag = jest.fn().mockResolvedValue({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ deleteRoomTag })),
+      });
+
+      await client.connect(null, 'token');
+      await client.removeRoomFromMuted(roomId);
+
+      expect(deleteRoomTag).toHaveBeenCalledWith(roomId, 'm.mute');
+    });
+  });
+
+  describe('isRoomMuted', () => {
+    it('returns true if "m.mute" tag is present for room', async () => {
+      const roomId = '!testRoomId';
+      const getRoomTags = jest.fn().mockResolvedValue({
+        tags: {
+          'm.mute': {},
+        },
+      });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRoomTags })),
+      });
+
+      await client.connect(null, 'token');
+      const isMuted = await client.isRoomMuted(roomId);
+
+      expect(getRoomTags).toHaveBeenCalledWith(roomId);
+      expect(isMuted).toBe(true);
+    });
+
+    it('returns false if "m.mute" tag is not present for room', async () => {
+      const roomId = '!testRoomId';
+      const getRoomTags = jest.fn().mockResolvedValue({
+        tags: {},
+      });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getRoomTags })),
+      });
+
+      await client.connect(null, 'token');
+      const isMuted = await client.isRoomMuted(roomId);
+
+      expect(getRoomTags).toHaveBeenCalledWith(roomId);
+      expect(isMuted).toBe(false);
+    });
+  });
 });

@@ -150,8 +150,9 @@ export class ConversationItem extends React.Component<Properties, State> {
           <div {...cn('header')}>
             <div {...cn('name')} is-unread={isUnread}>
               {this.highlightedName()}
-              {conversation.isMuted && <IconBellOff1 {...cn('muted-icon')} size={16} />}
             </div>
+            {conversation.isMuted && <IconBellOff1 {...cn('muted-icon')} size={16} />}
+
             <div {...cn('timestamp')}>{previewDisplayDate}</div>
           </div>
           <div {...cn('content')}>

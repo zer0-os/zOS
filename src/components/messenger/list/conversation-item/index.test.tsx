@@ -5,6 +5,7 @@ import { ConversationItem, Properties } from '.';
 import { ContentHighlighter } from '../../../content-highlighter';
 import { Avatar } from '@zero-tech/zui/components';
 import { bem } from '../../../../lib/bem';
+import { IconBellOff1 } from '@zero-tech/zui/icons';
 
 const c = bem('.conversation-item');
 
@@ -60,6 +61,22 @@ describe(ConversationItem, () => {
     });
 
     expect(title(wrapper)).toStrictEqual('My Named Conversation');
+  });
+
+  it('renders muted icon if conversation is muted', function () {
+    const wrapper = subject({
+      conversation: { ...convoWith(), id: 'test-conversation-id', isMuted: true },
+    });
+
+    expect(wrapper).toHaveElement(IconBellOff1);
+  });
+
+  it('does not render muted icon if conversation is not muted', function () {
+    const wrapper = subject({
+      conversation: { ...convoWith(), id: 'test-conversation-id', isMuted: false },
+    });
+
+    expect(wrapper).not.toHaveElement(IconBellOff1);
   });
 
   it('publishes click event', function () {

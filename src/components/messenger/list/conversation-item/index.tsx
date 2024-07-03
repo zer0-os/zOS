@@ -8,6 +8,7 @@ import { MoreMenu } from './more-menu';
 import { Avatar } from '@zero-tech/zui/components';
 
 import { ContentHighlighter } from '../../../content-highlighter';
+import { IconBellOff1 } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-item.scss';
@@ -149,6 +150,7 @@ export class ConversationItem extends React.Component<Properties, State> {
           <div {...cn('header')}>
             <div {...cn('name')} is-unread={isUnread}>
               {this.highlightedName()}
+              {conversation.isMuted && <IconBellOff1 {...cn('muted-icon')} size={16} />}
             </div>
             <div {...cn('timestamp')}>{previewDisplayDate}</div>
           </div>

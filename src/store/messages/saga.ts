@@ -81,6 +81,10 @@ const _isActive = (roomId) => (state) => {
   return roomId === state.chat.activeConversationId;
 };
 
+export const isRoomMutedSelector = (channelId) => (state) => {
+  return getDeepProperty(state, `normalized.channels['${channelId}'].isMuted`, false);
+};
+
 export function* getLocalZeroUsersMap() {
   const users = yield select((state) => state.normalized.users || {});
   const zeroUsersMap: { [matrixId: string]: User } = {};
@@ -527,6 +531,9 @@ export function isOwner(currentUser, entityUserMatrixId) {
 
 export function* sendBrowserNotification(eventData) {
   if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
+
+  const isMuted = yield select(isRoomMutedSelector(eventData?.roomId));
+  if (isMuted) return;
 
   if (eventData.type === NotifiableEventType.RoomMessage) {
     yield call(sendBrowserMessage, mapMessage(eventData));

@@ -90,6 +90,64 @@ describe('messages saga', () => {
       .run();
   });
 
+  it('sends a browser notification when the room is NOT muted', async () => {
+    const eventData = {
+      id: 8667728016,
+      sender: { userId: 'sender-id' },
+      createdAt: 1678861267433,
+      type: NotifiableEventType.RoomMessage,
+      roomId: 'room-id-1',
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          'room-id-1': { isMuted: false },
+        },
+      },
+    };
+
+    await expectSaga(sendBrowserNotification, eventData as any)
+      .provide([
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .call(sendBrowserMessage, mapMessage(eventData as any))
+      .withState(initialState)
+      .run();
+  });
+
+  it('does not send a browser notification when the room is muted', async () => {
+    const eventData = {
+      id: 8667728016,
+      sender: { userId: 'sender-id' },
+      createdAt: 1678861267433,
+      type: NotifiableEventType.RoomMessage,
+      roomId: 'room-id-1',
+    };
+
+    const initialState = {
+      normalized: {
+        channels: {
+          'room-id-1': { isMuted: true },
+        },
+      },
+    };
+
+    await expectSaga(sendBrowserNotification, eventData as any)
+      .provide([
+        [
+          matchers.call.fn(sendBrowserMessage),
+          undefined,
+        ],
+      ])
+      .not.call(sendBrowserMessage, mapMessage(eventData as any))
+      .withState(initialState)
+      .run();
+  });
+
   it('edit message', async () => {
     const channelId = '0x000000000000000000000000000000000000000A';
     const message = 'update message';

@@ -23,11 +23,14 @@ describe(ConversationHeader, () => {
       canEdit: false,
       canViewDetails: false,
       isSecondarySidekickOpen: false,
+      isRoomMuted: false,
       onAddMember: () => null,
       onEdit: () => null,
       onLeaveRoom: () => null,
       onViewDetails: () => null,
       toggleSecondarySidekick: () => null,
+      onMuteRoom: () => null,
+      onUnmuteRoom: () => null,
 
       ...props,
     };
@@ -192,6 +195,22 @@ describe(ConversationHeader, () => {
       subject({ onViewDetails }).find(GroupManagementMenu).simulate('viewGroupInformation');
 
       expect(onViewDetails).toHaveBeenCalledOnce();
+    });
+
+    it('onMuteRoom', function () {
+      const onMuteRoom = jest.fn();
+
+      subject({ onMuteRoom }).find(GroupManagementMenu).simulate('mute');
+
+      expect(onMuteRoom).toHaveBeenCalledOnce();
+    });
+
+    it('onUnmuteRoom', function () {
+      const onUnmuteRoom = jest.fn();
+
+      subject({ onUnmuteRoom }).find(GroupManagementMenu).simulate('unmute');
+
+      expect(onUnmuteRoom).toHaveBeenCalledOnce();
     });
   });
 });

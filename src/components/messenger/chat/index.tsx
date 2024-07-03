@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel, denormalize, onRemoveReply } from '../../../store/channels';
+import { Channel, denormalize, onMuteRoom, onRemoveReply, onUnmuteRoom } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { send as sendMessage } from '../../../store/messages';
@@ -33,6 +33,7 @@ export interface Properties extends PublicProperties {
   directMessage: Channel;
   isCurrentUserRoomAdmin: boolean;
   isJoiningConversation: boolean;
+  isRoomMuted: boolean;
   canLeaveRoom: boolean;
   canEdit: boolean;
   canAddMembers: boolean;
@@ -47,6 +48,8 @@ export interface Properties extends PublicProperties {
   onRemoveReply: () => void;
   viewGroupInformation: () => void;
   toggleSecondarySidekick: () => void;
+  onMuteRoom: (payload: { roomId: string }) => void;
+  onUnmuteRoom: (payload: { roomId: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -97,6 +100,8 @@ export class Container extends React.Component<Properties> {
       sendMessage,
       viewGroupInformation,
       toggleSecondarySidekick,
+      onMuteRoom,
+      onUnmuteRoom,
     };
   }
 
@@ -166,6 +171,14 @@ export class Container extends React.Component<Properties> {
     return <div className='direct-message-chat__typing-indicator'>{text}</div>;
   };
 
+  muteRoom = () => {
+    this.props.onMuteRoom({ roomId: this.props.activeConversationId });
+  };
+
+  unmuteRoom = () => {
+    this.props.onUnmuteRoom({ roomId: this.props.activeConversationId });
+  };
+
   render() {
     if ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) {
       return null;
@@ -192,6 +205,9 @@ export class Container extends React.Component<Properties> {
                 onEdit={this.props.startEditConversation}
                 toggleSecondarySidekick={this.props.toggleSecondarySidekick}
                 isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
+                isRoomMuted={this.props.directMessage.isMuted}
+                onMuteRoom={this.muteRoom}
+                onUnmuteRoom={this.unmuteRoom}
               />
             )}
           </div>

@@ -1,6 +1,14 @@
 import * as React from 'react';
 
-import { IconDotsHorizontal, IconEdit5, IconInfoCircle, IconPlus, IconUserRight1 } from '@zero-tech/zui/icons';
+import {
+  IconBell1,
+  IconBellOff1,
+  IconDotsHorizontal,
+  IconEdit5,
+  IconInfoCircle,
+  IconPlus,
+  IconUserRight1,
+} from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components';
 
 import './styles.scss';
@@ -10,10 +18,14 @@ export interface Properties {
   canLeaveRoom: boolean;
   canEdit: boolean;
   canViewGroupInformation: boolean;
+  isRoomMuted: boolean;
+
   onStartAddMember: () => void;
   onLeave: () => void;
   onEdit: () => void;
   onViewGroupInformation: () => void;
+  onMute: () => void;
+  onUnmute: () => void;
 }
 
 interface State {}
@@ -38,6 +50,14 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     this.props.onViewGroupInformation();
   };
 
+  toggleMuteNotifications = () => {
+    if (this.props.isRoomMuted) {
+      this.props.onUnmute();
+    } else {
+      this.props.onMute();
+    }
+  };
+
   renderMenuItem(icon, label) {
     return (
       <div className={'menu-item'}>
@@ -48,6 +68,15 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
 
   get dropdownMenuItems() {
     const menuItems = [];
+
+    menuItems.push({
+      id: 'mute_notifications',
+      label: this.renderMenuItem(
+        this.props.isRoomMuted ? <IconBellOff1 size={20} /> : <IconBell1 size={20} />,
+        this.props.isRoomMuted ? 'Unmute Notifications' : 'Mute Notifications'
+      ),
+      onSelect: this.toggleMuteNotifications,
+    });
 
     if (this.props.canAddMembers) {
       menuItems.push({

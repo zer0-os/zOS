@@ -23,11 +23,14 @@ export interface Properties {
   canEdit: boolean;
   canViewDetails: boolean;
   isSecondarySidekickOpen: boolean;
+  isRoomMuted: boolean;
   onAddMember: () => void;
   onEdit: () => void;
   onLeaveRoom: () => void;
   onViewDetails: () => void;
   toggleSecondarySidekick: () => void;
+  onMuteRoom: () => void;
+  onUnmuteRoom: () => void;
 }
 
 export class ConversationHeader extends React.Component<Properties> {
@@ -49,6 +52,14 @@ export class ConversationHeader extends React.Component<Properties> {
 
   toggleSidekick = () => {
     this.props.toggleSecondarySidekick();
+  };
+
+  muteRoom = () => {
+    this.props.onMuteRoom();
+  };
+
+  unmuteRoom = () => {
+    this.props.onUnmuteRoom();
   };
 
   isOneOnOne() {
@@ -154,10 +165,13 @@ export class ConversationHeader extends React.Component<Properties> {
             canLeaveRoom={this.props.canLeaveRoom}
             canEdit={this.props.canEdit}
             canViewGroupInformation={this.props.canViewDetails}
+            isRoomMuted={this.props.isRoomMuted}
             onStartAddMember={this.addMember}
             onLeave={this.leaveGroup}
             onEdit={this.editGroup}
             onViewGroupInformation={this.viewGroupInformation}
+            onMute={this.muteRoom}
+            onUnmute={this.unmuteRoom}
           />
 
           <IconButton

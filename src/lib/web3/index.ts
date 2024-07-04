@@ -1,4 +1,3 @@
-import { toHex } from 'web3-utils';
 import { config } from '../../config';
 import { WalletClient } from 'viem';
 
@@ -25,32 +24,6 @@ export enum Chains {
   Kovan = 42,
   Sepolia = 11155111,
   Local = 5777,
-}
-
-export async function personalSignToken(web3Provider, currentAddress): Promise<any> {
-  const method = 'personal_sign';
-  const from = toHex(currentAddress.toLowerCase());
-  const params = [
-    config.web3AuthenticationMessage,
-    from,
-  ];
-
-  return new Promise((resolve, reject) => {
-    web3Provider.provider.sendAsync(
-      {
-        method,
-        params,
-        from,
-      },
-      (error, response) => {
-        if (error) {
-          return reject(error);
-        }
-
-        return resolve(response?.result);
-      }
-    );
-  });
 }
 
 export async function personalSignTokenViem(walletClient: WalletClient, currentAddress: string): Promise<any> {

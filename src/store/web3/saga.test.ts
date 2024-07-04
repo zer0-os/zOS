@@ -42,7 +42,7 @@ describe(getSignedTokenForConnector, () => {
           { success: true, token: '0x9876' },
         ],
       ])
-      .withReducer(rootReducer, { web3Wagmi: { value: { connectorId: 'infura', address: '' } } } as RootState)
+      .withReducer(rootReducer, { web3: { value: { connectorId: 'infura', address: '' } } } as RootState)
       .run();
 
     expect(returnValue.success).toEqual(true);

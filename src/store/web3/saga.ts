@@ -35,7 +35,7 @@ export function* setConnectionError(action) {
 }
 
 export function* getSignedTokenForConnector() {
-  let current = yield select((state) => state.web3Wagmi.value);
+  let current = yield select((state) => state.web3.value);
 
   let address = current.address;
 
@@ -44,7 +44,7 @@ export function* getSignedTokenForConnector() {
 
 export function* getSignedToken(address = null) {
   if (!address) {
-    address = yield select((state) => state.web3Wagmi.value.address);
+    address = yield select((state) => state.web3.value.address);
   }
 
   const wagmiConfig = yield call(getWagmiConfig);

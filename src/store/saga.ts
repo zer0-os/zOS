@@ -1,6 +1,6 @@
 import { all, call, spawn } from 'redux-saga/effects';
 
-import { saga as web3Wagmi } from './web3/saga';
+import { saga as web3 } from './web3/saga';
 import { saga as channelsList } from './channels-list/saga';
 import { saga as messages } from './messages/saga';
 import { saga as channels } from './channels/saga';
@@ -27,7 +27,7 @@ import { saga as accountManagement } from './account-management/saga';
 export function* rootSaga() {
   const allSagas = {
     pageLoad,
-    web3Wagmi,
+    web3,
     channelsList,
     channels,
     messages,

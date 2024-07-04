@@ -15,14 +15,12 @@ export interface Properties extends PublicProperties {
   setAddress: (address: string) => void;
   setChain: (chain: Chains) => void;
   setConnectionStatus: (status: ConnectionStatus) => void;
-  web3Wagmi: any;
   web3: any;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     return {
-      web3Wagmi: state.web3Wagmi,
       web3: state.web3,
     };
   }

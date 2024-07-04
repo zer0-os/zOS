@@ -18,7 +18,7 @@ export class Container extends React.Component<Web3LoginContainerProperties> {
   static mapState(state: RootState): Partial<Web3LoginContainerProperties> {
     const {
       loginWagmi: { errors, loading },
-      web3Wagmi: { status },
+      web3: { status },
     } = state;
 
     return {

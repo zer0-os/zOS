@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 import { reducer as pageload } from './page-load';
 import { reducer as channelsList } from './channels-list';
-import { reducer as web3Wagmi } from './web3';
+import { reducer as web3 } from './web3';
 import { reducer as theme } from './theme';
 import { reducer as normalized } from './normalized';
 import { reducer as authentication } from './authentication';
@@ -26,7 +26,7 @@ import { reducer as accountManagement } from './account-management';
 export const rootReducer = combineReducers({
   pageload,
   channelsList,
-  web3Wagmi,
+  web3,
   theme,
   normalized,
   authentication,

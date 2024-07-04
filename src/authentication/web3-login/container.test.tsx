@@ -8,6 +8,7 @@ describe('Web3LoginContainer', () => {
       error: '',
       isConnecting: false,
       loginByWeb3: () => null,
+      isWalletConnected: false,
       ...props,
     };
 

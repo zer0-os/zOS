@@ -79,8 +79,8 @@ export function* fetchConversations() {
 
   yield call(mapToZeroUsers, conversations);
 
-  const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
-  yield fork(fetchUserPresence, otherMembersOfConversations);
+  // const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
+  // yield fork(fetchUserPresence, otherMembersOfConversations);
   yield call(getUserReadReceiptPreference);
 
   const existingConversationList = yield select(denormalizeConversations);
@@ -317,7 +317,7 @@ function* otherUserLeftChannelAction({ payload }) {
 export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList);
   yield call(mapToZeroUsers, [channel]);
-  yield fork(fetchUserPresence, channel.otherMembers);
+  //yield fork(fetchUserPresence, channel.otherMembers);
   yield fork(fetchRoomName, channel.id);
   yield fork(fetchRoomAvatar, channel.id);
 

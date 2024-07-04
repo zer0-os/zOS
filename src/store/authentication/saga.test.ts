@@ -28,7 +28,7 @@ import { rootReducer } from '../reducer';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearMessages } from '../messages/saga';
 import { clearUsers } from '../users/saga';
-import { updateConnector } from '../web3/saga';
+import { updateConnector } from '../web3-wagmi/saga';
 import { Connectors } from '../../lib/web3';
 import { completePendingUserProfile } from '../registration/saga';
 import { StoreBuilder } from '../test/store';

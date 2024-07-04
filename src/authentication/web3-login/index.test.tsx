@@ -9,6 +9,7 @@ describe('Web3Login', () => {
       isConnecting: false,
       error: '',
       onSelect: () => null,
+      isWalletConnected: false,
       ...props,
     };
 

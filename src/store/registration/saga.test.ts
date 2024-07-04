@@ -509,10 +509,10 @@ describe('authorizeAndCreateWeb3Account', () => {
     const {
       returnValue,
       storeState: { registration },
-    } = await expectSaga(authorizeAndCreateWeb3Account, { payload: { connector: Connectors.Metamask } })
+    } = await expectSaga(authorizeAndCreateWeb3Account)
       .provide([
         [
-          call(getSignedTokenForConnector, Connectors.Metamask),
+          call(getSignedTokenForConnector),
           { success: true, token: signedToken },
         ],
         [

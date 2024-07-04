@@ -95,12 +95,10 @@ export function* createAccount(action) {
   return false;
 }
 
-export function* authorizeAndCreateWeb3Account(action) {
-  const { connector } = action.payload;
-
+export function* authorizeAndCreateWeb3Account() {
   yield put(setLoading(true));
   try {
-    let result = yield call(getSignedTokenForConnector, connector);
+    let result = yield call(getSignedTokenForConnector);
     if (!result.success) {
       yield put(setErrors([result.error]));
       return false;

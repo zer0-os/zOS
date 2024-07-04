@@ -87,7 +87,6 @@ export class ConversationItem extends React.Component<Properties, State> {
       <Avatar
         size={'regular'}
         imageURL={imageUrl}
-        statusType={this.conversationStatus}
         tabIndex={-1}
         isRaised
         isGroup={!this.props.conversation.isOneOnOne}

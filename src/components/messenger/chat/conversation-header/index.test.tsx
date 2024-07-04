@@ -7,8 +7,6 @@ import { GroupManagementMenu } from '../../../group-management-menu';
 import { bem } from '../../../../lib/bem';
 import { stubUser } from '../../../../store/test/store';
 
-import { Avatar } from '@zero-tech/zui/components';
-
 const c = bem('.conversation-header');
 
 describe(ConversationHeader, () => {
@@ -71,39 +69,6 @@ describe(ConversationHeader, () => {
 
       expect(wrapper.find(Tooltip).html()).toContain('Johnny Sanderson');
     });
-
-    it('header renders online status in the subtitle', function () {
-      const wrapper = subject({ otherMembers: [stubUser({ isOnline: true })] });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('Online');
-    });
-
-    it('header renders avatar online status', function () {
-      const wrapper = subject({ otherMembers: [stubUser({ isOnline: true })] });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'active');
-    });
-
-    it('header renders offline status', function () {
-      const wrapper = subject({ otherMembers: [stubUser({ isOnline: false })] });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'offline');
-    });
-
-    it('renders a formatted subtitle', function () {
-      const wrapper = subject({
-        isOneOnOne: true,
-        otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', isOnline: true, lastSeenAt: null })],
-      });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('0://arc:vet | Online');
-    });
-
-    it('renders empty subtitle if no primaryZID, no wallet and no lastSeenAt', function () {
-      const wrapper = subject({ isOneOnOne: true, otherMembers: [stubUser({ displaySubHandle: '' })] });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('');
-    });
   });
 
   describe('one to many chat', function () {
@@ -117,42 +82,6 @@ describe(ConversationHeader, () => {
       });
 
       expect(wrapper.find(Tooltip).html()).toContain('Johnny Sanderson, Jack Black');
-    });
-
-    it('header renders online status in the subtitle if any member is online', function () {
-      const wrapper = subject({
-        isOneOnOne: false,
-        otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })],
-      });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('Online');
-    });
-
-    it('header renders online status if any member is online', function () {
-      const wrapper = subject({
-        isOneOnOne: false,
-        otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })],
-      });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'active');
-    });
-
-    it('header renders offline status', function () {
-      const wrapper = subject({
-        isOneOnOne: false,
-        otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: false })],
-      });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'offline');
-    });
-
-    it('renders online status as subtitle ', function () {
-      const wrapper = subject({
-        isOneOnOne: false,
-        otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', isOnline: false })],
-      });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('Offline');
     });
 
     it('fires toggleSecondarySidekick', function () {

@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 
 import { CitizenListItem, Properties } from '.';
 import { bem } from '../../lib/bem';
-import { Avatar, IconButton } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
 
 const c = bem('.citizen-list-item');
 
@@ -32,14 +32,6 @@ describe(CitizenListItem, () => {
     const handle = wrapper.find(c('handle'));
 
     expect(handle).toHaveText('0://zero:tech');
-  });
-
-  it('renders the user status', function () {
-    const wrapper = subject({ user: { isOnline: false } as any });
-
-    const avatar = wrapper.find(Avatar);
-
-    expect(avatar).toHaveProp('statusType', 'offline');
   });
 
   it('does not render remove icon if no handler provided', function () {

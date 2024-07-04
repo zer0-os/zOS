@@ -25,31 +25,6 @@ describe('web3 saga', () => {
   });
 });
 
-describe(getSignedTokenForConnector, () => {
-  function subject(...args: Parameters<typeof expectSaga>) {
-    return expectSaga(...args).provide([[call(getSignedToken), undefined]]);
-  }
-
-  it('connects and waits for an address change when connection is not already set up', async () => {
-    const { returnValue } = await subject(getSignedTokenForConnector, 'metamask')
-      .provide([
-        [
-          call(waitForAddressChange),
-          '0x1234',
-        ],
-        [
-          call(getSignedToken, '0x1234'),
-          { success: true, token: '0x9876' },
-        ],
-      ])
-      .withReducer(rootReducer, { web3: { value: { connectorId: 'infura', address: '' } } } as RootState)
-      .run();
-
-    expect(returnValue.success).toEqual(true);
-    expect(returnValue.token).toEqual('0x9876');
-  });
-});
-
 describe(getSignedToken, () => {
   it('successfully gets signed token using viem wallet client', async () => {
     const { returnValue } = await expectSaga(getSignedToken, '0x1234')

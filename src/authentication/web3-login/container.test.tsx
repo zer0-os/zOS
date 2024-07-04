@@ -1,3 +1,4 @@
+import { ConnectionStatus } from '../../lib/web3';
 import { Container, Web3LoginContainerProperties } from './container';
 import { shallow } from 'enzyme';
 
@@ -17,11 +18,12 @@ describe('Web3LoginContainer', () => {
     it('should map state to props', () => {
       const state = {
         login: { loading: true, errors: ['error'] },
+        web3: { status: ConnectionStatus.Connected },
       };
 
       const props = Container.mapState(state as any);
 
-      expect(props).toEqual({ error: 'error', isConnecting: true });
+      expect(props).toEqual({ error: 'error', isConnecting: true, isWalletConnected: true });
     });
   });
 

@@ -108,7 +108,7 @@ describe(web3Login, () => {
 
     await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector, connectorId), { success: true, token: signedToken }],
+        [call(getSignedTokenForConnector), { success: true, token: signedToken }],
         [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: undefined }],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
@@ -122,7 +122,7 @@ describe(web3Login, () => {
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector, connectorId), { success: false, error }],
+        [call(getSignedTokenForConnector), { success: false, error }],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
@@ -136,7 +136,7 @@ describe(web3Login, () => {
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector, connectorId), { success: true, token: signedToken }],
+        [call(getSignedTokenForConnector), { success: true, token: signedToken }],
         [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: '123' }],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
@@ -151,7 +151,7 @@ describe(web3Login, () => {
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector, connectorId), { success: true, token: signedToken }],
+        [call(getSignedTokenForConnector), { success: true, token: signedToken }],
         [
           call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }),
           throwError(new Error('API call failed')),
@@ -170,7 +170,7 @@ describe(web3Login, () => {
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector, connectorId), { success: true, token: signedToken }],
+        [call(getSignedTokenForConnector), { success: true, token: signedToken }],
         [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: null }],
         [call(redirectToRoot), undefined],
       ])

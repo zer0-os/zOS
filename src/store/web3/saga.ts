@@ -1,7 +1,7 @@
 import { takeLatest, put, takeEvery, call, take, select, race } from 'redux-saga/effects';
 import { SagaActionTypes, setConnectionStatus, setConnector, setWalletAddress, setWalletConnectionError } from '.';
 
-import { ConnectionStatus, personalSignTokenViem } from '../../lib/web3';
+import { ConnectionStatus, personalSignToken } from '../../lib/web3';
 import { Web3Events, web3Channel } from './channels';
 import { getWagmiConfig } from '../../lib/web3/wagmi-config';
 import { getWalletClient } from '@wagmi/core';
@@ -51,7 +51,7 @@ export function* getSignedToken(address = null) {
   const walletClient: WalletClient = yield call(getWalletClient, wagmiConfig);
 
   try {
-    const token = yield call(personalSignTokenViem, walletClient, address);
+    const token = yield call(personalSignToken, walletClient, address);
     return { success: true, token };
   } catch (error) {
     return { success: false, error: 'Wallet connection failed. Please try again.' };

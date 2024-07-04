@@ -1,7 +1,7 @@
-import { personalSignTokenViem } from '.';
+import { personalSignToken } from '.';
 import { config } from '../../config';
 
-describe(personalSignTokenViem, () => {
+describe(personalSignToken, () => {
   it('signs token using wallet client', async () => {
     const mockAddress = '0x123';
     const mockSignedMessage = '0x12345';
@@ -11,7 +11,7 @@ describe(personalSignTokenViem, () => {
     };
 
     // @ts-ignore
-    const result = await personalSignTokenViem(mockWalletClient, mockAddress);
+    const result = await personalSignToken(mockWalletClient, mockAddress);
 
     expect(mockWalletClient.signMessage).toHaveBeenCalledWith({
       account: mockAddress,

@@ -26,7 +26,7 @@ export enum Chains {
   Local = 5777,
 }
 
-export async function personalSignToken(walletClient: WalletClient, currentAddress: string): Promise<any> {
+export async function personalSignToken(walletClient: WalletClient, currentAddress: string): Promise<`0x${string}`> {
   return await walletClient.signMessage({
     // @ts-ignore
     account: currentAddress,

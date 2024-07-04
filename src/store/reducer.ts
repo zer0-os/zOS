@@ -10,7 +10,7 @@ import { reducer as chat } from './chat';
 import { reducer as createConversation } from './create-conversation';
 import { reducer as createInvitation } from './create-invitation';
 import { reducer as registration } from './registration';
-import { reducer as loginWagmi } from './login';
+import { reducer as login } from './login';
 import { reducer as rewards } from './rewards';
 import { reducer as editProfile } from './edit-profile';
 import { reducer as requestPasswordReset } from './request-password-reset';
@@ -34,7 +34,7 @@ export const rootReducer = combineReducers({
   createConversation,
   createInvitation,
   registration,
-  loginWagmi,
+  login,
   rewards,
   editProfile,
   requestPasswordReset,

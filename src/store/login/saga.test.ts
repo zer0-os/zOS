@@ -38,7 +38,7 @@ describe(emailLogin, () => {
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(storeState.loginWagmi.errors).toEqual([EmailLoginErrors.EMAIL_REQUIRED]);
+    expect(storeState.login.errors).toEqual([EmailLoginErrors.EMAIL_REQUIRED]);
   });
 
   it('sets error state if login fails', async () => {
@@ -52,7 +52,7 @@ describe(emailLogin, () => {
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(storeState.loginWagmi.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
+    expect(storeState.login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
   });
 
   it('sets error state if api call throws an exception', async () => {
@@ -64,20 +64,20 @@ describe(emailLogin, () => {
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(storeState.loginWagmi.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
+    expect(storeState.login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
   });
 
   it('clears errors on success', async () => {
     const email = 'any email';
     const password = 'any password';
-    const state = new StoreBuilder().withOtherState({ loginWagmi: { ...initialState, errors: ['existing_error'] } });
+    const state = new StoreBuilder().withOtherState({ login: { ...initialState, errors: ['existing_error'] } });
 
     const { storeState } = await subject(emailLogin, { payload: { email, password } })
       .provide([[call(authenticateByEmail, email, password), { success: true, response: {} }]])
       .withReducer(rootReducer, state.build())
       .run();
 
-    expect(storeState.loginWagmi.errors).toEqual([]);
+    expect(storeState.login.errors).toEqual([]);
   });
 });
 
@@ -127,7 +127,7 @@ describe(web3Login, () => {
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(storeState.loginWagmi.errors).toEqual([error]);
+    expect(storeState.login.errors).toEqual([error]);
   });
 
   it('sets error state if nonceOrAuthorize returns nonce', async () => {
@@ -142,7 +142,7 @@ describe(web3Login, () => {
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(storeState.loginWagmi.errors).toEqual([Web3LoginErrors.PROFILE_NOT_FOUND]);
+    expect(storeState.login.errors).toEqual([Web3LoginErrors.PROFILE_NOT_FOUND]);
   });
 
   it('sets error state if nonceOrAuthorize API call throws an exception', async () => {
@@ -160,13 +160,13 @@ describe(web3Login, () => {
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(storeState.loginWagmi.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
+    expect(storeState.login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
   });
 
   it('clears errors on success', async () => {
     const connectorId = 'metamask';
     const signedToken = 'signed-token';
-    const state = new StoreBuilder().withOtherState({ loginWagmi: { ...initialState, errors: ['existing_error'] } });
+    const state = new StoreBuilder().withOtherState({ login: { ...initialState, errors: ['existing_error'] } });
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
@@ -177,6 +177,6 @@ describe(web3Login, () => {
       .withReducer(rootReducer, state.build())
       .run();
 
-    expect(storeState.loginWagmi.errors).toEqual([]);
+    expect(storeState.login.errors).toEqual([]);
   });
 });

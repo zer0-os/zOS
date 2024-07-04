@@ -42,7 +42,7 @@ export const loginByWeb3 = createAction<Connector['id']>(SagaActionTypes.Web3Log
 export const switchLoginStage = createAction<LoginStage>(SagaActionTypes.SwitchLoginStage);
 
 const slice = createSlice({
-  name: 'loginWagmi',
+  name: 'login',
   initialState,
   reducers: {
     setStage: (state, action: PayloadAction<LoginState['stage']>) => {

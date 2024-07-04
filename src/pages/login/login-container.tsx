@@ -21,11 +21,11 @@ export interface LoginContainerProperties {
 
 export class LoginContainer extends React.Component<LoginContainerProperties> {
   static mapState(state: RootState): Partial<LoginContainerProperties> {
-    const { loginWagmi, pageload } = state;
+    const { login, pageload } = state;
 
     return {
-      stage: loginWagmi.stage,
-      isLoggingIn: loginWagmi.loading,
+      stage: login.stage,
+      isLoggingIn: login.loading,
       shouldRender: pageload.isComplete,
       showAndroidDownload: pageload.showAndroidDownload,
       androidStorePath: config.androidStorePath,

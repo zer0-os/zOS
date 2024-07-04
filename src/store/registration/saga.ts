@@ -24,7 +24,7 @@ import {
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { isPasswordValid } from '../../lib/password';
-import { getSignedTokenForConnector } from '../web3/saga';
+import { getSignedTokenForConnector } from '../web3-wagmi/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { completeUserLogin } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';

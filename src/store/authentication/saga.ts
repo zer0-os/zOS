@@ -10,7 +10,7 @@ import {
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
-import { updateConnector } from '../web3/saga';
+import { updateConnector } from '../web3-wagmi/saga';
 import { Connectors } from '../../lib/web3';
 import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';

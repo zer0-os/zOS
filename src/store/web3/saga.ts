@@ -1,4 +1,4 @@
-import { takeLatest, put, takeEvery, call, take, select, race } from 'redux-saga/effects';
+import { takeLatest, put, takeEvery, call, take, select } from 'redux-saga/effects';
 import { SagaActionTypes, setConnectionStatus, setConnector, setWalletAddress, setWalletConnectionError } from '.';
 
 import { ConnectionStatus, personalSignToken } from '../../lib/web3';

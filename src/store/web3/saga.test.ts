@@ -1,10 +1,9 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { getSignedToken, getSignedTokenForConnector, updateConnector, waitForAddressChange } from './saga';
+import { getSignedToken, updateConnector } from './saga';
 import { ConnectionStatus } from '../../lib/web3';
 import { reducer } from '.';
 import { call } from 'redux-saga/effects';
-import { RootState, rootReducer } from '../reducer';
 import { getWagmiConfig, wagmiConfig } from '../../lib/web3/wagmi-config';
 import { getWalletClient } from '@wagmi/core';
 

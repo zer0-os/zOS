@@ -33,7 +33,6 @@ import { rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { Connectors } from '../../lib/web3';
 import { getSignedTokenForConnector } from '../web3/saga';
 import { completeUserLogin } from '../authentication/saga';
 import { createConversation } from '../channels-list/saga';

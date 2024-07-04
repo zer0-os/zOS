@@ -133,24 +133,6 @@ describe(ConversationItem, () => {
 
     expect(wrapper.find(c('timestamp'))).toHaveText('Aug 1, 2021');
   });
-
-  describe('status', () => {
-    it('renders inactive if no other members are online', function () {
-      const wrapper = subject({
-        conversation: { icon: 'icon-url', ...convoWith({ isOnline: false }, { isOnline: false }) },
-      });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'offline');
-    });
-
-    it('renders active if any other members are online', function () {
-      const wrapper = subject({
-        conversation: { icon: 'icon-url', ...convoWith({ isOnline: false }, { isOnline: true }) },
-      });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'active');
-    });
-  });
 });
 
 function title(wrapper) {

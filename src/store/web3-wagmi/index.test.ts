@@ -1,4 +1,4 @@
-import { initialState, reducer, setConnectionStatus, setConnector, setWalletAddress, setChain, Web3State } from '.';
+import { initialState, reducer, setConnectionStatus, setWalletAddress, setChain } from '.';
 import { Chains, ConnectionStatus } from '../../lib/web3';
 
 describe('web3 reducer', () => {
@@ -13,12 +13,6 @@ describe('web3 reducer', () => {
     const actual = reducer(initialState, setConnectionStatus(ConnectionStatus.Connected));
 
     expect(actual.status).toEqual(ConnectionStatus.Connected);
-  });
-
-  it('should replace existing state with new connector', () => {
-    const actual = reducer(initialState, setConnector('coinbase'));
-
-    expect(actual.value.connectorId).toEqual('coinbase');
   });
 
   it('should replace existing state with new address', () => {

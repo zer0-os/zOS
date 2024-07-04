@@ -34,21 +34,10 @@ export function* setConnectionError(action) {
   }
 }
 
-export function* getSignedTokenForConnector(connector) {
+export function* getSignedTokenForConnector() {
   let current = yield select((state) => state.web3Wagmi.value);
 
   let address = current.address;
-  if (current.connectorId !== connector || !current.address) {
-    yield updateConnector({ payload: connector });
-    const result = yield race({
-      address: call(waitForAddressChange),
-      error: call(waitForError),
-    });
-    if (result.error) {
-      return { success: false, error: result.error };
-    }
-    address = result.address;
-  }
 
   return yield call(getSignedToken, address);
 }

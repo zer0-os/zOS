@@ -4,9 +4,9 @@ import { WalletType } from '@zer0-os/zos-component-library';
 import { Connector } from 'wagmi';
 
 export enum SagaActionTypes {
-  UpdateConnector = 'web3/saga/updateConnector',
-  SetAddress = 'web3/saga/setAddress',
-  SetConnectionError = 'web3/saga/setConnectionError',
+  UpdateConnector = 'web3Wagmi/saga/updateConnector',
+  SetAddress = 'web3Wagmi/saga/setAddress',
+  SetConnectionError = 'web3Wagmi/saga/setConnectionError',
 }
 
 export const updateConnector = createAction<Connectors | WalletType>(SagaActionTypes.UpdateConnector);

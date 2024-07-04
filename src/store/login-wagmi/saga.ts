@@ -46,13 +46,11 @@ export function validateEmailLogin({ email, password }) {
   return validationErrors;
 }
 
-export function* web3Login(action) {
-  const connectorId = action.payload;
-
+export function* web3Login() {
   yield put(setLoading(true));
   yield put(setErrors([]));
   try {
-    let result = yield call(getSignedTokenForConnector, connectorId);
+    let result = yield call(getSignedTokenForConnector);
     if (!result.success) {
       yield put(setErrors([result.error]));
       return;

@@ -1,4 +1,5 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { Config } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 
 export const wagmiConfig = getDefaultConfig({
@@ -7,6 +8,6 @@ export const wagmiConfig = getDefaultConfig({
   chains: [mainnet],
 });
 
-export const getWagmiConfig = () => {
+export const getWagmiConfig = (): Config => {
   return wagmiConfig;
 };

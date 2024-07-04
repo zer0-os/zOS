@@ -1,6 +1,5 @@
 import { all, call, spawn } from 'redux-saga/effects';
 
-import { saga as web3 } from './web3/saga';
 import { saga as web3Wagmi } from './web3-wagmi/saga';
 import { saga as channelsList } from './channels-list/saga';
 import { saga as messages } from './messages/saga';
@@ -11,7 +10,6 @@ import { saga as theme } from './theme/saga';
 import { saga as createConversation } from './create-conversation/saga';
 import { saga as createInvitation } from './create-invitation/saga';
 import { saga as registration } from './registration/saga';
-import { saga as login } from './login/saga';
 import { saga as loginWagmi } from './login-wagmi/saga';
 import { saga as rewards } from './rewards/saga';
 import { saga as pageLoad } from './page-load/saga';
@@ -29,7 +27,6 @@ import { saga as accountManagement } from './account-management/saga';
 export function* rootSaga() {
   const allSagas = {
     pageLoad,
-    web3,
     web3Wagmi,
     channelsList,
     channels,
@@ -40,7 +37,6 @@ export function* rootSaga() {
     createConversation,
     createInvitation,
     registration,
-    login,
     loginWagmi,
     rewards,
     editProfile,

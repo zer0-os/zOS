@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 
 import { LoginContainer } from './login-container';
 import { LoginComponent } from './login-component';
-import { LoginStage } from '../../store/login';
+import { LoginStage } from '../../store/login-wagmi';
 
 describe('Login Container', () => {
   const subject = (props: any = {}) => {

@@ -8,7 +8,7 @@ import { ChatState } from '../chat/types';
 import { initialState as authenticationInitialState } from '../authentication';
 import { MatrixState, initialState as initialMatrixState } from '../matrix';
 import { AccountManagementState, initialState as initialAccountManagementState } from '../account-management';
-import { initialState as initialLoginState } from '../login';
+import { initialState as initialLoginState } from '../login-wagmi';
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;

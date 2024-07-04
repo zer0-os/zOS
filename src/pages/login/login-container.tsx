@@ -2,7 +2,7 @@ import React from 'react';
 
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { LoginStage, switchLoginStage } from '../../store/login';
+import { LoginStage, switchLoginStage } from '../../store/login-wagmi';
 
 import { LoginComponent } from './login-component';
 import { AndroidDownload } from '../../authentication/android-download';
@@ -21,11 +21,11 @@ export interface LoginContainerProperties {
 
 export class LoginContainer extends React.Component<LoginContainerProperties> {
   static mapState(state: RootState): Partial<LoginContainerProperties> {
-    const { login, pageload } = state;
+    const { loginWagmi, pageload } = state;
 
     return {
-      stage: login.stage,
-      isLoggingIn: login.loading,
+      stage: loginWagmi.stage,
+      isLoggingIn: loginWagmi.loading,
       shouldRender: pageload.isComplete,
       showAndroidDownload: pageload.showAndroidDownload,
       androidStorePath: config.androidStorePath,

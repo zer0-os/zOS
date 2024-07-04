@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { EmailLoginErrors, loginByEmail } from '../../store/login';
+import { EmailLoginErrors, loginByEmail } from '../../store/login-wagmi';
 
 import { EmailLogin } from '.';
 

@@ -2,7 +2,6 @@ import { combineReducers } from 'redux';
 
 import { reducer as pageload } from './page-load';
 import { reducer as channelsList } from './channels-list';
-import { reducer as web3 } from './web3';
 import { reducer as web3Wagmi } from './web3-wagmi';
 import { reducer as theme } from './theme';
 import { reducer as normalized } from './normalized';
@@ -11,7 +10,6 @@ import { reducer as chat } from './chat';
 import { reducer as createConversation } from './create-conversation';
 import { reducer as createInvitation } from './create-invitation';
 import { reducer as registration } from './registration';
-import { reducer as login } from './login';
 import { reducer as loginWagmi } from './login-wagmi';
 import { reducer as rewards } from './rewards';
 import { reducer as editProfile } from './edit-profile';
@@ -28,7 +26,6 @@ import { reducer as accountManagement } from './account-management';
 export const rootReducer = combineReducers({
   pageload,
   channelsList,
-  web3,
   web3Wagmi,
   theme,
   normalized,
@@ -37,7 +34,6 @@ export const rootReducer = combineReducers({
   createConversation,
   createInvitation,
   registration,
-  login,
   loginWagmi,
   rewards,
   editProfile,

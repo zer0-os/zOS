@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { EmailLoginErrors, LoginState } from '../../store/login';
+import { EmailLoginErrors, LoginState } from '../../store/login-wagmi';
 import { RootState } from '../../store/reducer';
 
 import { Container, Properties } from './container';

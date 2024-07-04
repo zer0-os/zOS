@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { ConnectionStatus } from '../../lib/web3';
 import { RootState } from '../../store/reducer';
-import { loginByWeb3 } from '../../store/login-wagmi';
+import { loginByWeb3 } from '../../store/login';
 import { connectContainer } from '../../store/redux-container';
 
 import { Web3Login } from '.';

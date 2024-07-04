@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 
 import { Web3Login, Web3LoginProperties } from '.';
-import { Web3LoginErrors } from '../../store/login-wagmi';
+import { Web3LoginErrors } from '../../store/login';
 
 describe('Web3Login', () => {
   const subject = (props: Partial<Web3LoginProperties>) => {

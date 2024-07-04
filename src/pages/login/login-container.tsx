@@ -2,7 +2,7 @@ import React from 'react';
 
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { LoginStage, switchLoginStage } from '../../store/login-wagmi';
+import { LoginStage, switchLoginStage } from '../../store/login';
 
 import { LoginComponent } from './login-component';
 import { AndroidDownload } from '../../authentication/android-download';

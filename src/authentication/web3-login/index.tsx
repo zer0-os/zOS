@@ -5,7 +5,7 @@ import { Button, Variant } from '@zero-tech/zui/components/Button/Button';
 
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
-import { Web3LoginErrors } from '../../store/login-wagmi';
+import { Web3LoginErrors } from '../../store/login';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { IconChevronRight } from '@zero-tech/zui/icons';
 

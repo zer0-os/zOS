@@ -5,7 +5,7 @@ import { connectContainer } from '../../../store/redux-container';
 import { watchAccount } from '@wagmi/core';
 import { getWagmiConfig } from '../wagmi-config';
 import { Chains, ConnectionStatus } from '..';
-import { setAddress, setChain, setConnectionStatus } from '../../../store/web3-wagmi';
+import { setAddress, setChain, setConnectionStatus } from '../../../store/web3';
 
 export interface PublicProperties {
   children?: React.ReactNode;

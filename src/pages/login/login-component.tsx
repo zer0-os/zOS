@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { LoginStage } from '../../store/login-wagmi';
+import { LoginStage } from '../../store/login';
 import { Web3LoginContainer } from '../../authentication/web3-login/container';
 import { EmailLoginContainer } from '../../authentication/email-login/container';
 

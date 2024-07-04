@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { shallow } from 'enzyme';
-import { LoginStage } from '../../store/login-wagmi';
+import { LoginStage } from '../../store/login';
 
 import { LoginComponent } from './login-component';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';

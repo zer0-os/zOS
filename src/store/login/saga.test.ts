@@ -1,7 +1,7 @@
 import { expectSaga } from '../../test/saga';
 
 import { emailLogin, redirectToRoot, validateEmailLogin, web3Login } from './saga';
-import { getSignedTokenForConnector } from '../web3-wagmi/saga';
+import { getSignedTokenForConnector } from '../web3/saga';
 import { nonceOrAuthorize } from '../authentication/saga';
 
 import { call } from 'redux-saga/effects';

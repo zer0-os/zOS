@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 import { reducer as pageload } from './page-load';
 import { reducer as channelsList } from './channels-list';
-import { reducer as web3Wagmi } from './web3-wagmi';
+import { reducer as web3Wagmi } from './web3';
 import { reducer as theme } from './theme';
 import { reducer as normalized } from './normalized';
 import { reducer as authentication } from './authentication';
@@ -10,7 +10,7 @@ import { reducer as chat } from './chat';
 import { reducer as createConversation } from './create-conversation';
 import { reducer as createInvitation } from './create-invitation';
 import { reducer as registration } from './registration';
-import { reducer as loginWagmi } from './login-wagmi';
+import { reducer as loginWagmi } from './login';
 import { reducer as rewards } from './rewards';
 import { reducer as editProfile } from './edit-profile';
 import { reducer as requestPasswordReset } from './request-password-reset';

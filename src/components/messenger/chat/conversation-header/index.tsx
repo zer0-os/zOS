@@ -95,16 +95,7 @@ export class ConversationHeader extends React.Component<Properties> {
   }
 
   renderAvatar() {
-    return (
-      <Avatar
-        size={'medium'}
-        imageURL={this.avatarUrl()}
-        statusType={this.avatarStatus()}
-        tabIndex={-1}
-        isRaised
-        isGroup={!this.isOneOnOne()}
-      />
-    );
+    return <Avatar size={'medium'} imageURL={this.avatarUrl()} tabIndex={-1} isRaised isGroup={!this.isOneOnOne()} />;
   }
 
   renderSubTitle() {
@@ -155,7 +146,6 @@ export class ConversationHeader extends React.Component<Properties> {
 
           <span {...cn('description')}>
             <div {...cn('title')}>{this.renderTitle()}</div>
-            <div {...cn('subtitle')}>{this.renderSubTitle()}</div>
           </span>
         </div>
 

@@ -58,7 +58,7 @@ export class CitizenListItem extends React.Component<Properties, State> {
         tabIndex={0}
       >
         <div {...cn('details')}>
-          <Avatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} statusType={this.statusType} />
+          <Avatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
           <div {...cn('text-container')}>
             <span {...cn('name')}>{displayName(this.props.user)}</span>
             <span {...cn('handle')}>{this.props.user.displaySubHandle}</span>

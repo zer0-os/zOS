@@ -203,7 +203,7 @@ function* createAccountPage() {
     if (email) {
       success = yield call(createAccount, email);
     } else if (web3) {
-      success = yield call(authorizeAndCreateWeb3Account, web3);
+      success = yield call(authorizeAndCreateWeb3Account);
     }
   } while (!success);
 }

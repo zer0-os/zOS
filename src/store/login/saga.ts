@@ -1,7 +1,7 @@
 import { call, put, race, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import { EmailLoginErrors, SagaActionTypes, Web3LoginErrors, reset, setErrors, setLoading, setStage } from '.';
-import { getSignedToken, getSignedTokenForConnector, isWeb3AccountConnected } from '../web3/saga';
+import { getSignedToken, isWeb3AccountConnected } from '../web3/saga';
 import { authenticateByEmail, forceLogout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { Web3Events, getWeb3Channel } from '../web3/channels';
@@ -50,7 +50,7 @@ export function* web3Login() {
   yield put(setLoading(true));
   yield put(setErrors([]));
   try {
-    let result = yield call(getSignedTokenForConnector);
+    let result = yield call(getSignedToken);
     if (!result.success) {
       yield put(setErrors([result.error]));
       return;

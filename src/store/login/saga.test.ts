@@ -1,7 +1,7 @@
 import { expectSaga } from '../../test/saga';
 
 import { emailLogin, redirectToRoot, validateEmailLogin, web3Login } from './saga';
-import { getSignedTokenForConnector } from '../web3/saga';
+import { getSignedToken } from '../web3/saga';
 import { nonceOrAuthorize } from '../authentication/saga';
 
 import { call } from 'redux-saga/effects';
@@ -108,7 +108,7 @@ describe(web3Login, () => {
 
     await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector), { success: true, token: signedToken }],
+        [call(getSignedToken), { success: true, token: signedToken }],
         [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: undefined }],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
@@ -122,7 +122,7 @@ describe(web3Login, () => {
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector), { success: false, error }],
+        [call(getSignedToken), { success: false, error }],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
@@ -136,7 +136,7 @@ describe(web3Login, () => {
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector), { success: true, token: signedToken }],
+        [call(getSignedToken), { success: true, token: signedToken }],
         [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: '123' }],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
@@ -151,7 +151,7 @@ describe(web3Login, () => {
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector), { success: true, token: signedToken }],
+        [call(getSignedToken), { success: true, token: signedToken }],
         [
           call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }),
           throwError(new Error('API call failed')),
@@ -170,7 +170,7 @@ describe(web3Login, () => {
 
     const { storeState } = await subject(web3Login, { payload: connectorId })
       .provide([
-        [call(getSignedTokenForConnector), { success: true, token: signedToken }],
+        [call(getSignedToken), { success: true, token: signedToken }],
         [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: null }],
         [call(redirectToRoot), undefined],
       ])

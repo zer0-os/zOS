@@ -34,14 +34,6 @@ export function* setConnectionError(action) {
   }
 }
 
-export function* getSignedTokenForConnector() {
-  let current = yield select((state) => state.web3.value);
-
-  let address = current.address;
-
-  return yield call(getSignedToken, address);
-}
-
 export function* getSignedToken(address = null) {
   const wagmiConfig = yield call(getWagmiConfig);
   const walletClient: WalletClient = yield call(getWalletClient, wagmiConfig);

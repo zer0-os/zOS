@@ -1,26 +1,31 @@
 import React from 'react';
 
 import { connectContainer } from '../../store/redux-container';
-import { Connectors } from '../../lib/web3';
 import { AccountCreationErrors, createWeb3Account } from '../../store/registration';
 
 import { CreateWalletAccount } from '.';
 import { RootState } from '../../store/reducer';
+import { ConnectionStatus } from '../../lib/web3';
 
 export interface Properties {
   error: string;
   isConnecting: boolean;
+  isWalletConnected: boolean;
 
-  createWeb3Account: (payload: { connector: Connectors }) => void;
+  createWeb3Account: () => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { registration } = state;
+    const {
+      registration,
+      web3: { status },
+    } = state;
 
     return {
       error: Container.mapErrors(registration.errors),
       isConnecting: registration.loading,
+      isWalletConnected: status === ConnectionStatus.Connected,
     };
   }
 
@@ -39,8 +44,8 @@ export class Container extends React.Component<Properties> {
     return error;
   }
 
-  connectorSelected = async (connector) => {
-    this.props.createWeb3Account({ connector });
+  connectorSelected = async () => {
+    this.props.createWeb3Account();
   };
 
   render() {
@@ -49,6 +54,7 @@ export class Container extends React.Component<Properties> {
         onSelect={this.connectorSelected}
         error={this.props.error}
         isConnecting={this.props.isConnecting}
+        isWalletConnected={this.props.isWalletConnected}
       />
     );
   }

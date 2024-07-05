@@ -4,7 +4,6 @@ import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
 import { receive, denormalizeConversations, setStatus } from '.';
 import { chat } from '../../lib/chat';
-import { receive as receiveUser } from '../users';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
@@ -44,19 +43,6 @@ export function* mapToZeroUsers(channels: any[]) {
   return;
 }
 
-export function* fetchUserPresence(users) {
-  const chatClient = yield call(chat.get);
-  const uniqueUsers = uniqBy(users, (u) => u.matrixId);
-  for (let user of uniqueUsers) {
-    const matrixId = user.matrixId;
-    if (!matrixId) continue;
-    const presenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
-    if (!presenceData) continue;
-    const { lastSeenAt, isOnline } = presenceData;
-    yield put(receiveUser({ userId: user.userId, lastSeenAt, isOnline }));
-  }
-}
-
 export function* fetchRoomName(roomId) {
   const chatClient = yield call(chat.get);
   const roomName = yield call([chatClient, chatClient.getRoomNameById], roomId);
@@ -78,9 +64,6 @@ export function* fetchConversations() {
   ]);
 
   yield call(mapToZeroUsers, conversations);
-
-  // const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
-  // yield fork(fetchUserPresence, otherMembersOfConversations);
   yield call(getUserReadReceiptPreference);
 
   const existingConversationList = yield select(denormalizeConversations);
@@ -317,7 +300,6 @@ function* otherUserLeftChannelAction({ payload }) {
 export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList);
   yield call(mapToZeroUsers, [channel]);
-  //yield fork(fetchUserPresence, channel.otherMembers);
   yield fork(fetchRoomName, channel.id);
   yield fork(fetchRoomAvatar, channel.id);
 

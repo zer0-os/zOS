@@ -98,30 +98,6 @@ export class MatrixClient implements IChatClient {
 
   reconnect: () => void;
 
-  async getUserPresence(userId: string) {
-    await this.waitForConnection();
-
-    try {
-      const userPresenceData = await this.matrix.getPresence(userId);
-
-      if (!userPresenceData) {
-        return { lastSeenAt: null, isOnline: false };
-      }
-
-      const { presence, last_active_ago } = userPresenceData;
-      const isOnline = presence === 'online';
-      const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
-
-      return { lastSeenAt, isOnline };
-    } catch (error: any) {
-      if (error.errcode !== 'M_FORBIDDEN') {
-        console.error(error);
-      }
-
-      return { lastSeenAt: null, isOnline: false };
-    }
-  }
-
   async getRoomNameById(roomId: string) {
     await this.waitForConnection();
 
@@ -988,7 +964,6 @@ export class MatrixClient implements IChatClient {
       }
     });
 
-    this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomMemberEvent.Typing, this.publishRoomMemberTyping);
     this.matrix.on(RoomMemberEvent.PowerLevel, this.publishRoomMemberPowerLevelsChanged);
@@ -1101,17 +1076,6 @@ export class MatrixClient implements IChatClient {
   private async publishMessageEvent(event) {
     this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
   }
-
-  private publishUserPresenceChange = (event: MatrixEvent) => {
-    if (event.getType() === EventType.Presence) {
-      const content = event.getContent();
-      this.events.onUserPresenceChanged(
-        event.getSender(),
-        content.presence === 'online',
-        content.last_active_ago ? new Date(Date.now() - content.last_active_ago).toISOString() : ''
-      );
-    }
-  };
 
   private publishRoomNameChange = (room: Room) => {
     this.events.onRoomNameChanged(room.roomId, this.getRoomName(room));

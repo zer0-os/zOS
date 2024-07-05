@@ -19,6 +19,8 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties> {
+  private unwatch: () => void;
+
   static mapState(state: RootState): Partial<Properties> {
     return {
       web3: state.web3,
@@ -30,7 +32,7 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount(): void {
-    watchAccount(getWagmiConfig(), {
+    this.unwatch = watchAccount(getWagmiConfig(), {
       onChange: (account) => {
         this.props.setChain(account.chainId);
         this.props.setAddress(account.address);
@@ -44,6 +46,12 @@ export class Container extends React.Component<Properties> {
         }
       },
     });
+  }
+
+  componentWillUnmount(): void {
+    if (this.unwatch) {
+      this.unwatch();
+    }
   }
 
   render() {

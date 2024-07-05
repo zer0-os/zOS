@@ -35,12 +35,12 @@ export class Container extends React.Component<Properties> {
         this.props.setChain(account.chainId);
         this.props.setAddress(account.address);
 
-        if (account.chainId !== 1) {
+        if (!account.isConnected) {
+          this.props.setConnectionStatus(ConnectionStatus.Disconnected);
+        } else if (account.chainId !== 1) {
           this.props.setConnectionStatus(ConnectionStatus.NetworkNotSupported);
         } else {
-          this.props.setConnectionStatus(
-            account.isConnected ? ConnectionStatus.Connected : ConnectionStatus.Disconnected
-          );
+          this.props.setConnectionStatus(ConnectionStatus.Connected);
         }
       },
     });

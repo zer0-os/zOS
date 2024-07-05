@@ -63,11 +63,6 @@ export class ConversationItem extends React.Component<Properties, State> {
     this.setState({ isContextMenuOpen: false });
   };
 
-  get conversationStatus() {
-    const isAnyUserOnline = this.props.conversation.otherMembers.some((user) => user.isOnline);
-    return isAnyUserOnline ? 'active' : 'offline';
-  }
-
   highlightedName = () => {
     const { filter, conversation } = this.props;
     const name = conversation.name || otherMembersToString(conversation.otherMembers);

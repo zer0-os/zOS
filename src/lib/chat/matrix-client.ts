@@ -929,8 +929,6 @@ export class MatrixClient implements IChatClient {
   };
 
   private async initializeEventHandlers() {
-    const isProduction = config.nodeEnv === 'production';
-
     this.matrix.on('event' as any, async ({ event }) => {
       this.debug('event: ', event);
       if (event.type === EventType.RoomEncryption) {
@@ -973,24 +971,21 @@ export class MatrixClient implements IChatClient {
     //this.matrix.on(RoomStateEvent.Members, this.publishMembershipChange);
     this.matrix.on(RoomEvent.Timeline, this.processRoomTimelineEvent.bind(this));
     // Log events during development to help with understanding which events are happening
-
-    if (!isProduction) {
-      Object.keys(ClientEvent).forEach((key) => {
-        this.matrix.on(ClientEvent[key], this.debugEvent(`ClientEvent.${key}`));
-      });
-      Object.keys(RoomEvent).forEach((key) => {
-        this.matrix.on(RoomEvent[key], this.debugEvent(`RoomEvent.${key}`));
-      });
-      Object.keys(MatrixEventEvent).forEach((key) => {
-        this.matrix.on(MatrixEventEvent[key], this.debugEvent(`MatrixEventEvent.${key}`));
-      });
-      Object.keys(RoomStateEvent).forEach((key) => {
-        this.matrix.on(RoomStateEvent[key], this.debugEvent(`RoomStateEvent.${key}`));
-      });
-      Object.keys(RoomMemberEvent).forEach((key) => {
-        this.matrix.on(RoomMemberEvent[key], this.debugEvent(`RoomMemberEvent.${key}`));
-      });
-    }
+    Object.keys(ClientEvent).forEach((key) => {
+      this.matrix.on(ClientEvent[key], this.debugEvent(`ClientEvent.${key}`));
+    });
+    Object.keys(RoomEvent).forEach((key) => {
+      this.matrix.on(RoomEvent[key], this.debugEvent(`RoomEvent.${key}`));
+    });
+    Object.keys(MatrixEventEvent).forEach((key) => {
+      this.matrix.on(MatrixEventEvent[key], this.debugEvent(`MatrixEventEvent.${key}`));
+    });
+    Object.keys(RoomStateEvent).forEach((key) => {
+      this.matrix.on(RoomStateEvent[key], this.debugEvent(`RoomStateEvent.${key}`));
+    });
+    Object.keys(RoomMemberEvent).forEach((key) => {
+      this.matrix.on(RoomMemberEvent[key], this.debugEvent(`RoomMemberEvent.${key}`));
+    });
   }
 
   private debug(...args) {

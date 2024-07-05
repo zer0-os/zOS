@@ -69,6 +69,15 @@ describe(ConversationHeader, () => {
 
       expect(wrapper.find(Tooltip).html()).toContain('Johnny Sanderson');
     });
+
+    it('renders a formatted subtitle', function () {
+      const wrapper = subject({
+        isOneOnOne: true,
+        otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', lastSeenAt: null })],
+      });
+
+      expect(wrapper.find(c('subtitle'))).toHaveText('0://arc:vet');
+    });
   });
 
   describe('one to many chat', function () {

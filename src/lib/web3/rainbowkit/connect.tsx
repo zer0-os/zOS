@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { watchAccount } from '@wagmi/core';
+import { getAccount, watchAccount } from '@wagmi/core';
 import { getWagmiConfig } from '../wagmi-config';
 import { Chains, ConnectionStatus } from '..';
 import { setAddress, setChain, setConnectionStatus } from '../../../store/web3';
@@ -32,6 +32,10 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount(): void {
+    this.watchConnection();
+  }
+
+  watchConnection() {
     this.unwatch = watchAccount(getWagmiConfig(), {
       onChange: (account) => {
         this.props.setChain(account.chainId);

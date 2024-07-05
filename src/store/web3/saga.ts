@@ -43,12 +43,12 @@ export function* getSignedTokenForConnector() {
 }
 
 export function* getSignedToken(address = null) {
-  if (!address) {
-    address = yield select((state) => state.web3.value.address);
-  }
-
   const wagmiConfig = yield call(getWagmiConfig);
   const walletClient: WalletClient = yield call(getWalletClient, wagmiConfig);
+
+  if (!address) {
+    address = walletClient.account.address;
+  }
 
   try {
     const token = yield call(personalSignToken, walletClient, address);

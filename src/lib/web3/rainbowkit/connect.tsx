@@ -2,10 +2,10 @@ import * as React from 'react';
 
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { getAccount, watchAccount } from '@wagmi/core';
+import { watchAccount } from '@wagmi/core';
 import { getWagmiConfig } from '../wagmi-config';
 import { Chains, ConnectionStatus } from '..';
-import { setAddress, setChain, setConnectionStatus } from '../../../store/web3';
+import { setChain, setConnectionStatus } from '../../../store/web3';
 
 export interface PublicProperties {
   children?: React.ReactNode;
@@ -28,7 +28,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setChain, setAddress, setConnectionStatus };
+    return { setChain, setConnectionStatus };
   }
 
   componentDidMount(): void {
@@ -39,7 +39,6 @@ export class Container extends React.Component<Properties> {
     this.unwatch = watchAccount(getWagmiConfig(), {
       onChange: (account) => {
         this.props.setChain(account.chainId);
-        this.props.setAddress(account.address);
 
         if (!account.isConnected) {
           this.props.setConnectionStatus(ConnectionStatus.Disconnected);

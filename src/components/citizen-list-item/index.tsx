@@ -29,10 +29,6 @@ export class CitizenListItem extends React.Component<Properties, State> {
     isMenuOpen: false,
   };
 
-  get statusType() {
-    return this.props.user.isOnline ? 'active' : 'offline';
-  }
-
   publishMemberClick = () => {
     if (this.props.onSelected) {
       this.props.onSelected(this.props.user.userId);

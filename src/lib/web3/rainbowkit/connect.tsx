@@ -1,3 +1,8 @@
+/**
+ * The purpose of this component is to listen for changes in the user's account,
+ * and update the Redux store accordingly.
+ */
+
 import * as React from 'react';
 
 import { RootState } from '../../../store/reducer';
@@ -35,6 +40,9 @@ export class Container extends React.Component<Properties> {
     this.watchConnection();
   }
 
+  /**
+   * Watch for changes in the user's web3 account.
+   */
   watchConnection() {
     this.unwatch = watchAccount(getWagmiConfig(), {
       onChange: (account) => {

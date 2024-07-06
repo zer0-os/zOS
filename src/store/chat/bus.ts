@@ -94,8 +94,8 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
     const roomMemberTyping = (roomId, userIds) => emit({ type: Events.RoomMemberTyping, payload: { roomId, userIds } });
     const roomMemberPowerLevelChanged = (roomId, matrixId, powerLevel) =>
       emit({ type: Events.RoomMemberPowerLevelChanged, payload: { roomId, matrixId, powerLevel } });
-    const readReceiptReceived = (messageId, userId) =>
-      emit({ type: Events.ReadReceiptReceived, payload: { messageId, userId } });
+    const readReceiptReceived = (messageId, userId, roomId) =>
+      emit({ type: Events.ReadReceiptReceived, payload: { messageId, userId, roomId } });
 
     chatClient.initChat({
       receiveNewMessage,

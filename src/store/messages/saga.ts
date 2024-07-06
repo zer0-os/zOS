@@ -578,20 +578,22 @@ function* receiveLiveRoomEventAction({ payload }) {
 }
 
 function* readReceiptReceived({ payload }) {
-  const { messageId, userId } = payload;
+  const { messageId, userId, roomId } = payload;
 
-  const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
-  const currentUser = yield select(currentUserSelector());
+  if (yield select(_isActive(roomId))) {
+    const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
+    const currentUser = yield select(currentUserSelector());
 
-  const readByUser = Object.values(zeroUsersMap).find((user) => user.matrixId === userId);
+    const readByUser = Object.values(zeroUsersMap).find((user) => user.matrixId === userId);
 
-  if (readByUser && readByUser.userId !== currentUser.id) {
-    const selectedMessage = yield select(messageSelector(messageId));
+    if (readByUser && readByUser.userId !== currentUser.id) {
+      const selectedMessage = yield select(messageSelector(messageId));
 
-    if (selectedMessage) {
-      const updatedReadBy = [...(selectedMessage.readBy || []), readByUser];
+      if (selectedMessage) {
+        const updatedReadBy = [...(selectedMessage.readBy || []), readByUser];
 
-      yield put(receiveMessage({ id: messageId, readBy: updatedReadBy }));
+        yield put(receiveMessage({ id: messageId, readBy: updatedReadBy }));
+      }
     }
   }
 }

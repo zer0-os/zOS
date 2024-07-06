@@ -953,8 +953,8 @@ export class MatrixClient implements IChatClient {
       }
     });
 
-    this.matrix.on(RoomEvent.Receipt, async (event) => {
-      this.publishReceiptEvent(event);
+    this.matrix.on(RoomEvent.Receipt, async (event, room) => {
+      this.publishReceiptEvent(event, room);
     });
 
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
@@ -1147,12 +1147,12 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  private publishReceiptEvent(event: MatrixEvent) {
+  private publishReceiptEvent(event: MatrixEvent, room: Room) {
     const content = event.getContent();
     for (const eventId in content) {
       const receiptData = content[eventId]['m.read'] || {};
       for (const userId in receiptData) {
-        this.events.readReceiptReceived(eventId, userId);
+        this.events.readReceiptReceived(eventId, userId, room.roomId);
       }
     }
   }

@@ -23,7 +23,7 @@ export interface RealtimeChatEvents {
   roomUnmuted: (roomId: string) => void;
   roomMemberTyping: (roomId: string, userIds: string[]) => void;
   roomMemberPowerLevelChanged: (roomId: string, matrixId: string, powerLevel: number) => void;
-  readReceiptReceived: (messageId: string, userId: string) => void;
+  readReceiptReceived: (messageId: string, userId: string, roomId: string) => void;
 }
 
 export interface MatrixKeyBackupInfo {

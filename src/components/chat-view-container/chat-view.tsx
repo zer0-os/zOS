@@ -137,25 +137,25 @@ export class ChatView extends React.Component<Properties, State> {
     return this.props.user && message?.sender && this.props.user.id == message.sender.userId;
   }
 
-  isRead() {
-    const lastMessage = this.getUsersLastNonAdminMessage();
-    if (!lastMessage) return false;
-    return lastMessage?.readBy && lastMessage.readBy.length > 0;
-  }
+  // isRead() {
+  //   const lastMessage = this.getUsersLastNonAdminMessage();
+  //   if (!lastMessage) return false;
+  //   return lastMessage?.readBy && lastMessage.readBy.length > 0;
+  // }
 
-  getUsersLastNonAdminMessage() {
-    const { messages } = this.props;
-    const currentUser = this.props.user;
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (!messages[i].isAdmin && messages[i].sender?.userId === currentUser?.id) {
-        return messages[i];
-      }
-    }
-    return null;
-  }
+  // getUsersLastNonAdminMessage() {
+  //   const { messages } = this.props;
+  //   const currentUser = this.props.user;
+  //   for (let i = messages.length - 1; i >= 0; i--) {
+  //     if (!messages[i].isAdmin && messages[i].sender?.userId === currentUser?.id) {
+  //       return messages[i];
+  //     }
+  //   }
+  //   return null;
+  // }
 
   renderMessageGroup(groupMessages) {
-    const lastMessage = this.getUsersLastNonAdminMessage();
+    // const lastMessage = this.getUsersLastNonAdminMessage();
 
     return groupMessages.map((message, index) => {
       if (message.isAdmin) {
@@ -199,8 +199,8 @@ export class ChatView extends React.Component<Properties, State> {
                 showTimestamp={messageRenderProps.showTimestamp}
                 showAuthorName={messageRenderProps.showAuthorName}
                 onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
-                isMessageRead={this.isRead()}
-                isLastMessage={message.id === lastMessage?.id}
+                // isMessageRead={this.isRead()}
+                // isLastMessage={message.id === lastMessage?.id}
                 {...message}
               />
             </div>

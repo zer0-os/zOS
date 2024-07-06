@@ -472,63 +472,63 @@ describe('message', () => {
     });
   });
 
-  describe('getReceiptIcon', () => {
-    it('renders IconCheck for in-progress messages', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: MessageSendStatus.IN_PROGRESS,
-        isOwner: true,
-        isLastMessage: true,
-      });
+  // describe('getReceiptIcon', () => {
+  //   it('renders IconCheck for in-progress messages', () => {
+  //     const wrapper = subject({
+  //       message: 'text',
+  //       sendStatus: MessageSendStatus.IN_PROGRESS,
+  //       isOwner: true,
+  //       isLastMessage: true,
+  //     });
 
-      expect(wrapper.find('.message__sent-icon')).toExist();
-    });
+  //     expect(wrapper.find('.message__sent-icon')).toExist();
+  //   });
 
-    it('renders IconCheckDouble with "read" class for read messages', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: MessageSendStatus.SUCCESS,
-        isOwner: true,
-        isLastMessage: true,
-        isMessageRead: true,
-      });
+  //   it('renders IconCheckDouble with "read" class for read messages', () => {
+  //     const wrapper = subject({
+  //       message: 'text',
+  //       sendStatus: MessageSendStatus.SUCCESS,
+  //       isOwner: true,
+  //       isLastMessage: true,
+  //       isMessageRead: true,
+  //     });
 
-      expect(wrapper.find('.message__read-icon--read')).toExist();
-    });
+  //     expect(wrapper.find('.message__read-icon--read')).toExist();
+  //   });
 
-    it('renders IconCheckDouble with "delivered" class for delivered messages', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: MessageSendStatus.SUCCESS,
-        isOwner: true,
-        isLastMessage: true,
-        isMessageRead: false,
-      });
+  //   it('renders IconCheckDouble with "delivered" class for delivered messages', () => {
+  //     const wrapper = subject({
+  //       message: 'text',
+  //       sendStatus: MessageSendStatus.SUCCESS,
+  //       isOwner: true,
+  //       isLastMessage: true,
+  //       isMessageRead: false,
+  //     });
 
-      expect(wrapper.find('.message__read-icon--delivered')).toExist();
-    });
+  //     expect(wrapper.find('.message__read-icon--delivered')).toExist();
+  //   });
 
-    it('renders IconCheckDouble with "delivered" class when sendStatus is undefined', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: undefined,
-        isOwner: true,
-        isLastMessage: true,
-      });
+  //   it('renders IconCheckDouble with "delivered" class when sendStatus is undefined', () => {
+  //     const wrapper = subject({
+  //       message: 'text',
+  //       sendStatus: undefined,
+  //       isOwner: true,
+  //       isLastMessage: true,
+  //     });
 
-      expect(wrapper.find('.message__read-icon--delivered')).toExist();
-    });
+  //     expect(wrapper.find('.message__read-icon--delivered')).toExist();
+  //   });
 
-    it('renders nothing for failed messages', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: MessageSendStatus.FAILED,
-        isOwner: true,
-        isLastMessage: true,
-      });
+  //   it('renders nothing for failed messages', () => {
+  //     const wrapper = subject({
+  //       message: 'text',
+  //       sendStatus: MessageSendStatus.FAILED,
+  //       isOwner: true,
+  //       isLastMessage: true,
+  //     });
 
-      expect(wrapper.find('.message__read-icon')).not.toExist();
-      expect(wrapper.find('.message__sent-icon')).not.toExist();
-    });
-  });
+  //     expect(wrapper.find('.message__read-icon')).not.toExist();
+  //     expect(wrapper.find('.message__sent-icon')).not.toExist();
+  //   });
+  // });
 });

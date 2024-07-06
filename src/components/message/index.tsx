@@ -12,7 +12,7 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconCheck } from '@zero-tech/zui/icons';
 import { Avatar } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
@@ -50,8 +50,8 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
-  // isMessageRead: boolean;
-  // isLastMessage: boolean;
+  isMessageRead: boolean;
+  isLastMessage: boolean;
 }
 
 export interface State {
@@ -152,25 +152,25 @@ export class Message extends React.Component<Properties, State> {
     return '';
   }
 
-  // getReceiptIcon() {
-  //   const { sendStatus, isMessageRead } = this.props;
+  getReceiptIcon() {
+    const { sendStatus, isMessageRead } = this.props;
 
-  //   if (sendStatus === MessageSendStatus.IN_PROGRESS) {
-  //     return <IconCheck {...cn('sent-icon')} size={14} />;
-  //   }
+    if (sendStatus === MessageSendStatus.IN_PROGRESS) {
+      return <IconCheck {...cn('sent-icon')} size={14} />;
+    }
 
-  //   if (sendStatus === MessageSendStatus.SUCCESS || sendStatus === undefined) {
-  //     const iconClass = isMessageRead ? 'read' : 'delivered';
-  //     return (
-  //       <div {...cn('read-icon-container')}>
-  //         <IconCheck {...cn('read-icon', `${iconClass}`)} size={12} />
-  //         <IconCheck {...cn('read-icon', `${iconClass}`)} size={12} />
-  //       </div>
-  //     );
-  //   }
+    if (sendStatus === MessageSendStatus.SUCCESS || sendStatus === undefined) {
+      const iconClass = isMessageRead ? 'read' : 'delivered';
+      return (
+        <div {...cn('read-icon-container')}>
+          <IconCheck {...cn('read-icon', `${iconClass}`)} size={12} />
+          <IconCheck {...cn('read-icon', `${iconClass}`)} size={12} />
+        </div>
+      );
+    }
 
-  //   return null;
-  // }
+    return null;
+  }
 
   renderFooter() {
     if (this.state.isEditing) {
@@ -194,10 +194,10 @@ export class Message extends React.Component<Properties, State> {
         </div>
       );
     }
-    // if (this.props.isOwner && this.props.isLastMessage) {
-    //   const icon = this.getReceiptIcon();
-    //   icon && footerElements.push(icon);
-    // }
+    if (this.props.isOwner && this.props.isLastMessage) {
+      const icon = this.getReceiptIcon();
+      icon && footerElements.push(icon);
+    }
 
     if (footerElements.length === 0) {
       return;

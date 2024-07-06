@@ -417,12 +417,14 @@ export function* receiveDelete(action) {
 
 let savedMessages = [];
 export function* receiveNewMessage(action) {
+  const BATCH_INTERVAL = 2000;
+
   savedMessages.push(action.payload);
   if (savedMessages.length > 1) {
     // we already have a leading event that's awaiting the debounce delay
     return;
   }
-  yield delay(500);
+  yield delay(BATCH_INTERVAL);
   // Clone and empty so follow up events can debounce again
   const batchedPayloads = [...savedMessages];
   savedMessages = [];

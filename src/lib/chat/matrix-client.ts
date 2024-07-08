@@ -953,10 +953,6 @@ export class MatrixClient implements IChatClient {
       }
     });
 
-    this.matrix.on(RoomEvent.Receipt, async (event, room) => {
-      this.publishReceiptEvent(event, room);
-    });
-
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
       if (event.type === EventType.RoomMessage) {

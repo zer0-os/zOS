@@ -187,12 +187,17 @@ export class MatrixClient implements IChatClient {
   }
 
   async getConversations() {
+    featureFlags.enableTimerLogs && console.time('xxxgetConversations');
+
     await this.waitForConnection();
     const rooms = await this.getRoomsUserIsIn();
 
     const failedToJoin = [];
     for (const room of rooms) {
+      featureFlags.enableTimerLogs && console.time('xxxdecryptAllEvents');
       await room.decryptAllEvents();
+      featureFlags.enableTimerLogs && console.timeEnd('xxxdecryptAllEvents');
+
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
 
@@ -208,7 +213,13 @@ export class MatrixClient implements IChatClient {
     const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
 
     await this.lowerMinimumInviteAndKickLevels(filteredRooms);
-    return await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
+
+    featureFlags.enableTimerLogs && console.time('xxxmapConversationresult');
+    const result = await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
+    featureFlags.enableTimerLogs && console.timeEnd('xxxmapConversationresult');
+
+    featureFlags.enableTimerLogs && console.timeEnd('xxxgetConversations');
+    return result;
   }
 
   async getSecureBackup() {
@@ -1020,6 +1031,8 @@ export class MatrixClient implements IChatClient {
   }
 
   private async initializeClient(userId: string, ssoToken: string) {
+    featureFlags.enableTimerLogs && console.time('xxxinitializeClient');
+
     if (!this.matrix) {
       const opts: any = {
         baseUrl: config.matrix.homeServerUrl,
@@ -1038,8 +1051,11 @@ export class MatrixClient implements IChatClient {
 
       await this.matrix.startClient();
 
+      featureFlags.enableTimerLogs && console.time('xxxWaitForSync');
       await this.waitForSync();
+      featureFlags.enableTimerLogs && console.timeEnd('xxxWaitForSync');
 
+      featureFlags.enableTimerLogs && console.timeEnd('xxxinitializeClient');
       return opts.userId;
     }
   }
@@ -1154,18 +1170,31 @@ export class MatrixClient implements IChatClient {
   }
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
+    featureFlags.enableTimerLogs && console.time(`xxxmapConversation${room.roomId}`);
+
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
+
+    featureFlags.enableTimerLogs && console.time(`xxxgetAllMessagesFromRoom${room.roomId}`);
     const messages = await this.getAllMessagesFromRoom(room);
+    featureFlags.enableTimerLogs && console.timeEnd(`xxxgetAllMessagesFromRoom${room.roomId}`);
+
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
+
+    featureFlags.enableTimerLogs && console.time(`xxxisRoomFavorited${room.roomId}`);
     const isFavorite = await this.isRoomFavorited(room.roomId);
+    featureFlags.enableTimerLogs && console.timeEnd(`xxxisRoomFavorited${room.roomId}`);
+
+    featureFlags.enableTimerLogs && console.time(`xxxisRoomMuted${room.roomId}`);
     const isMuted = await this.isRoomMuted(room.roomId);
+    featureFlags.enableTimerLogs && console.timeEnd(`xxxisRoomMuted${room.roomId}`);
+
     const [admins, mods] = this.getRoomAdminsAndMods(room);
 
-    return {
+    const result = {
       id: room.roomId,
       name,
       icon: avatarUrl,
@@ -1184,6 +1213,9 @@ export class MatrixClient implements IChatClient {
       isFavorite,
       isMuted,
     };
+
+    featureFlags.enableTimerLogs && console.timeEnd(`xxxmapConversation${room.roomId}`);
+    return result;
   };
 
   private mapUser(matrixId: string): UserModel {

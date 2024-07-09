@@ -24,6 +24,7 @@ import { uniqNormalizedList } from '../utils';
 import { channelListStatus, rawConversationsList } from './selectors';
 import { setIsConversationsLoaded } from '../chat';
 import { getUserReadReceiptPreference } from '../user-profile/saga';
+import { featureFlags } from '../../lib/feature-flags';
 
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
@@ -56,6 +57,8 @@ export function* fetchRoomAvatar(roomId) {
 }
 
 export function* fetchConversations() {
+  featureFlags.enableTimerLogs && console.time('xxxfetchConversations');
+
   yield put(setStatus(AsyncListStatus.Fetching));
   const chatClient = yield call(chat.get);
   const conversations = yield call([
@@ -63,7 +66,11 @@ export function* fetchConversations() {
     chatClient.getConversations,
   ]);
 
+  featureFlags.enableTimerLogs && console.time('xxxmapToZeroUsers');
   yield call(mapToZeroUsers, conversations);
+  featureFlags.enableTimerLogs && console.timeEnd('xxxmapToZeroUsers');
+
+  // Potentially move this to when we load app
   yield call(getUserReadReceiptPreference);
 
   const existingConversationList = yield select(denormalizeConversations);
@@ -89,6 +96,8 @@ export function* fetchConversations() {
 
   const channel = yield call(getConversationsBus);
   yield put(channel, { type: ConversationEvents.ConversationsLoaded });
+
+  featureFlags.enableTimerLogs && console.timeEnd('xxxfetchConversations');
 }
 
 export function userSelector(state, userIds) {

@@ -1,7 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { chat } from '../../lib/chat';
+import { chat, getRoomTags } from '../../lib/chat';
 
 import {
   fetchConversations,
@@ -15,6 +15,7 @@ import {
   roomNameChanged,
   fetchRoomAvatar,
   roomAvatarChanged,
+  loadSecondaryConversationData,
 } from './saga';
 
 import { RootState, rootReducer } from '../reducer';
@@ -54,6 +55,7 @@ describe('channels list saga', () => {
         [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         [matchers.call.fn(mapToZeroUsers), null],
         [matchers.call.fn(getUserReadReceiptPreference), null],
+        [matchers.call.fn(getRoomTags), null],
       ]);
     }
 
@@ -121,6 +123,20 @@ describe('channels list saga', () => {
         'optimistic-id-2',
         'conversation-id',
       ]);
+    });
+
+    it('calls loadSecondaryConversationData', async () => {
+      await subject(fetchConversations)
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+          [matchers.call.fn(mapToZeroUsers), null],
+          [matchers.call.fn(getUserReadReceiptPreference), null],
+          [matchers.call.fn(getRoomTags), null],
+        ])
+        .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
+        .fork(loadSecondaryConversationData, [...MOCK_CONVERSATIONS])
+        .run();
     });
   });
 

@@ -1140,29 +1140,45 @@ describe('matrix client', () => {
   });
 
   describe('getRoomTags', () => {
-    it('returns correct tags for room', async () => {
-      const roomId = '!testRoomId';
-      const getRoomTags = jest.fn().mockResolvedValue({ tags: { 'm.favorite': {}, 'm.mute': {} } });
+    it('returns correct tags for all rooms', async () => {
+      const conversations = [
+        { id: 'room1', isFavorite: false, isMuted: false },
+        { id: 'room2', isFavorite: false, isMuted: false },
+      ];
+
+      const getRoomTags = jest
+        .fn()
+        .mockResolvedValueOnce({ tags: { 'm.favorite': {}, 'm.mute': {} } })
+        .mockResolvedValueOnce({ tags: {} });
 
       const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoomTags })) });
 
       await client.connect(null, 'token');
-      const tags = await client.getRoomTags(roomId);
+      await client.getRoomTags(conversations);
 
-      expect(getRoomTags).toHaveBeenCalledWith(roomId);
-      expect(tags).toEqual({ isFavorite: true, isMuted: true });
+      expect(getRoomTags).toHaveBeenCalledWith('room1');
+      expect(getRoomTags).toHaveBeenCalledWith('room2');
+      expect(conversations).toEqual([
+        { id: 'room1', isFavorite: true, isMuted: true },
+        { id: 'room2', isFavorite: false, isMuted: false },
+      ]);
     });
 
     it('returns false for tags that are not present', async () => {
-      const roomId = '!testRoomId';
+      const conversations = [
+        { id: 'room1', isFavorite: false, isMuted: false },
+      ];
+
       const getRoomTags = jest.fn().mockResolvedValue({ tags: {} });
       const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoomTags })) });
 
       await client.connect(null, 'token');
-      const tags = await client.getRoomTags(roomId);
+      await client.getRoomTags(conversations);
 
-      expect(getRoomTags).toHaveBeenCalledWith(roomId);
-      expect(tags).toEqual({ isFavorite: false, isMuted: false });
+      expect(getRoomTags).toHaveBeenCalledWith('room1');
+      expect(conversations).toEqual([
+        { id: 'room1', isFavorite: false, isMuted: false },
+      ]);
     });
   });
 });

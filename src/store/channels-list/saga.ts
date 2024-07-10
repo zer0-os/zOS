@@ -70,7 +70,6 @@ export function* fetchConversations() {
   yield call(mapToZeroUsers, conversations);
   featureFlags.enableTimerLogs && console.timeEnd('xxxmapToZeroUsers');
 
-  // Potentially move this to when we load app
   yield call(getUserReadReceiptPreference);
 
   const existingConversationList = yield select(denormalizeConversations);

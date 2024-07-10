@@ -1107,44 +1107,6 @@ describe('matrix client', () => {
     });
   });
 
-  describe('isRoomFavorited', () => {
-    it('returns true if "m.favorite" tag is present for room', async () => {
-      const roomId = '!testRoomId';
-      const getRoomTags = jest.fn().mockResolvedValue({
-        tags: {
-          'm.favorite': {},
-        },
-      });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRoomTags })),
-      });
-
-      await client.connect(null, 'token');
-      const isFavorite = await client.isRoomFavorited(roomId);
-
-      expect(getRoomTags).toHaveBeenCalledWith(roomId);
-      expect(isFavorite).toBe(true);
-    });
-
-    it('returns false if "m.favorite" tag is not present for room', async () => {
-      const roomId = '!testRoomId';
-      const getRoomTags = jest.fn().mockResolvedValue({
-        tags: {},
-      });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRoomTags })),
-      });
-
-      await client.connect(null, 'token');
-      const isFavorite = await client.isRoomFavorited(roomId);
-
-      expect(getRoomTags).toHaveBeenCalledWith(roomId);
-      expect(isFavorite).toBe(false);
-    });
-  });
-
   describe('addRoomToMuted', () => {
     it('sets room tag with "m.mute"', async () => {
       const roomId = '!testRoomId';
@@ -1177,41 +1139,30 @@ describe('matrix client', () => {
     });
   });
 
-  describe('isRoomMuted', () => {
-    it('returns true if "m.mute" tag is present for room', async () => {
+  describe('getRoomTags', () => {
+    it('returns correct tags for room', async () => {
       const roomId = '!testRoomId';
-      const getRoomTags = jest.fn().mockResolvedValue({
-        tags: {
-          'm.mute': {},
-        },
-      });
+      const getRoomTags = jest.fn().mockResolvedValue({ tags: { 'm.favorite': {}, 'm.mute': {} } });
 
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRoomTags })),
-      });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoomTags })) });
 
       await client.connect(null, 'token');
-      const isMuted = await client.isRoomMuted(roomId);
+      const tags = await client.getRoomTags(roomId);
 
       expect(getRoomTags).toHaveBeenCalledWith(roomId);
-      expect(isMuted).toBe(true);
+      expect(tags).toEqual({ isFavorite: true, isMuted: true });
     });
 
-    it('returns false if "m.mute" tag is not present for room', async () => {
+    it('returns false for tags that are not present', async () => {
       const roomId = '!testRoomId';
-      const getRoomTags = jest.fn().mockResolvedValue({
-        tags: {},
-      });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRoomTags })),
-      });
+      const getRoomTags = jest.fn().mockResolvedValue({ tags: {} });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoomTags })) });
 
       await client.connect(null, 'token');
-      const isMuted = await client.isRoomMuted(roomId);
+      const tags = await client.getRoomTags(roomId);
 
       expect(getRoomTags).toHaveBeenCalledWith(roomId);
-      expect(isMuted).toBe(false);
+      expect(tags).toEqual({ isFavorite: false, isMuted: false });
     });
   });
 });

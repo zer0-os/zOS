@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { User } from '../../../../store/channels';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
-import Tooltip from '../../../tooltip';
 import { GroupManagementMenu } from '../../../group-management-menu';
 import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
@@ -105,19 +104,9 @@ export class ConversationHeader extends React.Component<Properties> {
     const otherMembersString = otherMembersToString(otherMembers);
 
     return (
-      <Tooltip
-        placement='left'
-        overlay={otherMembersString}
-        align={{
-          offset: [
-            -10,
-            0,
-          ],
-        }}
-        {...cn('user-tooltip')}
-      >
+      <div {...cn('user-tooltip')}>
         <div>{name || otherMembersString}</div>
-      </Tooltip>
+      </div>
     );
   }
 

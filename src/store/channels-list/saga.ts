@@ -97,10 +97,12 @@ export function* fetchConversations() {
   const channel = yield call(getConversationsBus);
   yield put(channel, { type: ConversationEvents.ConversationsLoaded });
 
+  featureFlags.enableTimerLogs && console.timeEnd('xxxfetchConversations');
+
+  featureFlags.enableTimerLogs && console.time('xxxloadSecondaryConversationData');
   const combinedConversations = [...optimisticConversationIds, ...conversations];
   yield fork(loadSecondaryConversationData, combinedConversations);
-
-  featureFlags.enableTimerLogs && console.timeEnd('xxxfetchConversations');
+  featureFlags.enableTimerLogs && console.timeEnd('xxxloadSecondaryConversationData');
 }
 
 export function* loadSecondaryConversationData(conversations) {

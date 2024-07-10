@@ -1,7 +1,6 @@
 import { shallow } from 'enzyme';
 
 import { ConversationHeader, Properties } from '.';
-import Tooltip from '../../../tooltip';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../../group-management-menu';
 import { bem } from '../../../../lib/bem';
@@ -40,22 +39,13 @@ describe(ConversationHeader, () => {
     it('renders channel name as title when name is provided', function () {
       const wrapper = subject({ name: 'this is my channel name' });
 
-      expect(wrapper.find(Tooltip).html()).toContain('this is my channel name');
+      expect(wrapper.find(c('title')).html()).toContain('this is my channel name');
     });
 
     it('renders otherMembers as title when name is NOT provided', function () {
       const wrapper = subject({ otherMembers: [stubUser({ firstName: 'first-name', lastName: 'last-name' })] });
 
-      expect(wrapper.find(Tooltip).html()).toContain(
-        otherMembersToString([stubUser({ firstName: 'first-name', lastName: 'last-name' })])
-      );
-    });
-
-    it('renders otherMembers in tooltip', function () {
-      const wrapper = subject({ otherMembers: [stubUser({ firstName: 'first-name', lastName: 'last-name' })] });
-
-      expect(wrapper.find(Tooltip)).toHaveProp(
-        'overlay',
+      expect(wrapper.find(c('title')).html()).toContain(
         otherMembersToString([stubUser({ firstName: 'first-name', lastName: 'last-name' })])
       );
     });
@@ -67,7 +57,7 @@ describe(ConversationHeader, () => {
         otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })],
       });
 
-      expect(wrapper.find(Tooltip).html()).toContain('Johnny Sanderson');
+      expect(wrapper.find(c('title')).html()).toContain('Johnny Sanderson');
     });
 
     it('renders a formatted subtitle', function () {
@@ -90,7 +80,7 @@ describe(ConversationHeader, () => {
         ],
       });
 
-      expect(wrapper.find(Tooltip).html()).toContain('Johnny Sanderson, Jack Black');
+      expect(wrapper.find(c('title')).html()).toContain('Johnny Sanderson, Jack Black');
     });
 
     it('fires toggleSecondarySidekick', function () {

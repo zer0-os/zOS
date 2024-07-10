@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi, Mock } from 'vitest';
 
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
@@ -34,7 +34,7 @@ describe(Container, () => {
 
     beforeEach(() => {
       mockWatchAccount = vi.fn();
-      (watchAccount as unknown as vi.Mock).mockImplementation((_config, { onChange }) => {
+      (watchAccount as unknown as Mock).mockImplementation((_config, { onChange }) => {
         mockWatchAccount.mockImplementation((account) => onChange(account));
       });
     });

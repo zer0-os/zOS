@@ -23,6 +23,10 @@ export class Web3Login extends React.Component<Web3LoginProperties, Web3LoginSta
   render() {
     const { error, isConnecting, isWalletConnected, onSelect } = this.props;
 
+    const select = () => {
+      onSelect();
+    };
+
     const errorText =
       error === Web3LoginErrors.PROFILE_NOT_FOUND
         ? 'The wallet you connected is not associated with a ZERO account'
@@ -34,7 +38,7 @@ export class Web3Login extends React.Component<Web3LoginProperties, Web3LoginSta
           <>
             <RainbowKitConnectButton isDisabled={isConnecting} />
             {isWalletConnected && (
-              <Button isDisabled={isConnecting} onPress={onSelect}>
+              <Button isDisabled={isConnecting} onPress={select}>
                 Sign In
               </Button>
             )}

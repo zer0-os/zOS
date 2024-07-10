@@ -5,12 +5,12 @@
 
 import * as React from 'react';
 
-import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import { watchAccount } from '@wagmi/core';
 import { getWagmiConfig } from '../wagmi-config';
 import { Chains, ConnectionStatus } from '..';
 import { setChain, setConnectionStatus } from '../../../store/web3';
+import { config } from '../../../config';
 
 export interface PublicProperties {
   children?: React.ReactNode;
@@ -20,16 +20,13 @@ export interface Properties extends PublicProperties {
   setAddress: (address: string) => void;
   setChain: (chain: Chains) => void;
   setConnectionStatus: (status: ConnectionStatus) => void;
-  web3: any;
 }
 
 export class Container extends React.Component<Properties> {
   private unwatch: () => void;
 
-  static mapState(state: RootState): Partial<Properties> {
-    return {
-      web3: state.web3,
-    };
+  static mapState(): Partial<Properties> {
+    return {};
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -50,7 +47,7 @@ export class Container extends React.Component<Properties> {
 
         if (!account.isConnected) {
           this.props.setConnectionStatus(ConnectionStatus.Disconnected);
-        } else if (account.chainId !== 1) {
+        } else if (account.chainId?.toString() !== config.supportedChainId) {
           this.props.setConnectionStatus(ConnectionStatus.NetworkNotSupported);
         } else {
           this.props.setConnectionStatus(ConnectionStatus.Connected);

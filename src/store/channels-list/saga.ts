@@ -3,7 +3,7 @@ import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
 import { receive, denormalizeConversations, setStatus } from '.';
-import { chat } from '../../lib/chat';
+import { chat, getRoomTags } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
@@ -97,7 +97,16 @@ export function* fetchConversations() {
   const channel = yield call(getConversationsBus);
   yield put(channel, { type: ConversationEvents.ConversationsLoaded });
 
+  const combinedConversations = [...optimisticConversationIds, ...conversations];
+  yield fork(loadSecondaryConversationData, combinedConversations);
+
   featureFlags.enableTimerLogs && console.timeEnd('xxxfetchConversations');
+}
+
+export function* loadSecondaryConversationData(conversations) {
+  yield call(getRoomTags, conversations);
+
+  yield put(receive(conversations));
 }
 
 export function userSelector(state, userIds) {

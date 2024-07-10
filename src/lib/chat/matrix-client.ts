@@ -849,14 +849,16 @@ export class MatrixClient implements IChatClient {
     await this.matrix.deleteRoomTag(roomId, MatrixConstants.MUTE);
   }
 
-  async getRoomTags(roomId: string): Promise<{ isFavorite: boolean; isMuted: boolean }> {
-    await this.waitForConnection();
+  async getRoomTags(conversations: Partial<Channel>[]): Promise<void> {
+    const tags = conversations.map(async (conversation) => {
+      featureFlags.enableTimerLogs && console.time(`xxxgetRoomTags${conversation.id}`);
+      const result = await this.matrix.getRoomTags(conversation.id);
+      conversation.isFavorite = !!result.tags?.[MatrixConstants.FAVORITE];
+      conversation.isMuted = !!result.tags?.[MatrixConstants.MUTE];
+      featureFlags.enableTimerLogs && console.timeEnd(`xxxgetRoomTags${conversation.id}`);
+    });
 
-    const result = await this.matrix.getRoomTags(roomId);
-    return {
-      isFavorite: !!result.tags?.[MatrixConstants.FAVORITE],
-      isMuted: !!result.tags?.[MatrixConstants.MUTE],
-    };
+    await Promise.all(tags);
   }
 
   async sendTypingEvent(roomId: string, isTyping: boolean): Promise<void> {
@@ -1180,10 +1182,6 @@ export class MatrixClient implements IChatClient {
 
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
 
-    featureFlags.enableTimerLogs && console.time(`xxxgetRoomTags${room.roomId}`);
-    const { isFavorite, isMuted } = await this.getRoomTags(room.roomId);
-    featureFlags.enableTimerLogs && console.timeEnd(`xxxgetRoomTags${room.roomId}`);
-
     const [admins, mods] = this.getRoomAdminsAndMods(room);
 
     const result = {
@@ -1202,8 +1200,8 @@ export class MatrixClient implements IChatClient {
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: admins,
       moderatorIds: mods,
-      isFavorite,
-      isMuted,
+      isFavorite: false,
+      isMuted: false,
     };
 
     featureFlags.enableTimerLogs && console.timeEnd(`xxxmapConversation${room.roomId}`);

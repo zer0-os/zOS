@@ -343,3 +343,7 @@ export async function getReadReceiptPreference() {
 export async function getMessageReadReceipts(roomId: string, messageId: string) {
   return await chat.get().matrix.getMessageReadReceipts(roomId, messageId);
 }
+
+export async function getRoomTags(conversations: Partial<Channel>[]) {
+  return await chat.get().matrix.getRoomTags(conversations);
+}

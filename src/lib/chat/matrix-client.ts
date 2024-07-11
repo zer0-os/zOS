@@ -1176,9 +1176,9 @@ export class MatrixClient implements IChatClient {
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
 
-    featureFlags.enableTimerLogs && console.time(`xxxgetAllMessagesFromRoom${room.roomId}`);
-    const messages = await this.getAllMessagesFromRoom(room);
-    featureFlags.enableTimerLogs && console.timeEnd(`xxxgetAllMessagesFromRoom${room.roomId}`);
+    featureFlags.enableTimerLogs && console.time(`xxxgetUpToLatestUserMessageFromRoom${room.roomId}`);
+    const messages = await this.getUpToLatestUserMessageFromRoom(room);
+    featureFlags.enableTimerLogs && console.timeEnd(`xxxgetUpToLatestUserMessageFromRoom${room.roomId}`);
 
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
 
@@ -1245,6 +1245,29 @@ export class MatrixClient implements IChatClient {
       .map((event) => event.getEffectiveEvent());
 
     return await this.processRawEventsToMessages(events);
+  }
+
+  // Performance improvement: Fetches only the latest user message to avoid processing large image files and other attachments
+  // that are not needed for the initial loading of the conversation list
+  private async getUpToLatestUserMessageFromRoom(room: Room): Promise<any[]> {
+    let found = false;
+
+    const events = room
+      .getLiveTimeline()
+      .getEvents()
+      .map((event) => event.getEffectiveEvent())
+      .reverse()
+      .filter((event) => {
+        if (found) return false;
+
+        if (event.type === EventType.RoomMessage) {
+          found = true;
+        }
+
+        return true;
+      });
+
+    return await this.processRawEventsToMessages(events.reverse());
   }
 
   private getMemberHistoryFromRoom(room: Room): string[] {

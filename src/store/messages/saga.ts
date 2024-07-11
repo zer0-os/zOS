@@ -417,7 +417,7 @@ export function* receiveDelete(action) {
 
 let savedMessages = [];
 export function* receiveNewMessage(action) {
-  const BATCH_INTERVAL = 2000;
+  const BATCH_INTERVAL = 500;
 
   savedMessages.push(action.payload);
   if (savedMessages.length > 1) {

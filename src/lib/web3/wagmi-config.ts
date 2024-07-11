@@ -16,7 +16,7 @@ if (chainIdAsNumber === 1) {
 
 export const wagmiConfig = getDefaultConfig({
   appName: 'zOS',
-  projectId: config.WALLET_CONNECT_PROJECT_ID,
+  projectId: config.WALLET_CONNECT_PROJECT_ID ?? '',
   chains: [network],
   transports: {
     [network.id]: http(config.INFURA_URL),

@@ -26,11 +26,14 @@ async function parseMediaData(matrixMessage) {
 
 async function buildMediaObject(content) {
   if (content.file && content.info) {
-    const blob = await decryptFile(content.file, content.info);
+    console.log('XXXCONTENT', content);
+    // const blob = await decryptFile(content.file, content.info);
+    // console.log('XXXXBLOBBY', blob);
     return {
-      url: URL.createObjectURL(blob),
+      url: null,
       type: 'image',
-      ...content.info,
+      info: { ...content.info },
+      file: { ...content.file },
     };
   } else if (content.url) {
     return {
@@ -71,7 +74,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
       admin: {},
       mentionedUsers: [],
       hidePreview: false,
-      media: null,
+      // media: null,
       image: null,
     },
     parentMessageText: '',

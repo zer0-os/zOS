@@ -46,8 +46,8 @@ export async function encryptFile(file: File): Promise<{ info: encrypt.IEncrypte
 }
 
 // https://github.com/matrix-org/matrix-react-sdk/blob/develop/src/utils/DecryptFile.ts#L50
-export async function decryptFile(encrypedFile, info): Promise<Blob> {
-  const signedUrl = await getAttachmentUrl({ key: encrypedFile.url });
+export async function decryptFile(encryptedFile, info): Promise<Blob> {
+  const signedUrl = await getAttachmentUrl({ key: encryptedFile.url });
 
   // Download the encrypted file as an array buffer.
   const response = await fetch(signedUrl);
@@ -58,7 +58,7 @@ export async function decryptFile(encrypedFile, info): Promise<Blob> {
 
   try {
     // Decrypt the array buffer using the information taken from the event content.
-    const dataArray = await encrypt.decryptAttachment(responseData, encrypedFile);
+    const dataArray = await encrypt.decryptAttachment(responseData, encryptedFile);
 
     // Turn the array into a Blob and give it the correct MIME-type.
     return new Blob([dataArray], { type: info?.mimetype });

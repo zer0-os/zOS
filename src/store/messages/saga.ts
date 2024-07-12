@@ -21,6 +21,7 @@ import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
+import { decryptFile } from '../../lib/chat/matrix/media';
 
 export interface Payload {
   channelId: string;
@@ -133,7 +134,7 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
-
+  console.log('XXXYOLOLOO HWRER MY GGGG');
   try {
     const chatClient = yield call(chat.get);
 
@@ -150,8 +151,35 @@ export function* fetch(action) {
 
     // we prefer this order (new messages first), so that if any new message has an updated property
     // (eg. parentMessage), then it gets written to state
-    messages = [...messagesResponse.messages, ...existingMessages];
-    messages = uniqBy(messages, (m) => m.id ?? m);
+    // Create a map of existing messages by ID for quick lookup
+    const existingMessagesMap = existingMessages.reduce((acc, msg) => {
+      acc[msg.id] = msg;
+      return acc;
+    }, {});
+
+    // Merge messages and ensure media URLs are not reset if they already exist
+    messages = messagesResponse.messages.map((msg) => {
+      const existingMessage = existingMessagesMap[msg.id];
+      if (existingMessage) {
+        // Preserve the existing media URL if it exists
+        if (existingMessage.media && existingMessage.media.url) {
+          msg.media = { ...msg.media, url: existingMessage.media.url };
+        }
+        // Preserve the existing image URL if it exists
+        if (existingMessage.image && existingMessage.image.url) {
+          msg.image = { ...msg.image, url: existingMessage.image.url };
+        }
+      }
+      return msg;
+    });
+
+    // Add any existing messages that were not in the response
+    const newMessageIds = new Set(messages.map((m) => m.id));
+    existingMessages.forEach((msg) => {
+      if (!newMessageIds.has(msg.id)) {
+        messages.push(msg);
+      }
+    });
 
     yield call(receiveChannel, {
       id: channelId,
@@ -566,6 +594,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
+  yield takeLatest(SagaActionTypes.LoadAttachmentDetails, loadAttachmentDetails);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
@@ -597,5 +626,20 @@ function* readReceiptReceived({ payload }) {
         yield put(receiveMessage({ id: messageId, readBy: updatedReadBy }));
       }
     }
+  }
+}
+
+export function* loadAttachmentDetails(action) {
+  console.log('XXXaction', action);
+  const { media, messageId } = action.payload;
+  // if in progress then don't fetch
+  try {
+    const blob = yield call(decryptFile, media.file, media.info);
+    console.log('XXXblob', blob);
+    const url = URL.createObjectURL(blob);
+    console.log('XXXurl', url);
+    yield put(receiveMessage({ id: messageId, media: { ...media, url } }));
+  } catch (error) {
+    console.error('Failed to download and decrypt image:', error);
   }
 }

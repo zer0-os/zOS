@@ -134,7 +134,7 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
-  console.log('XXXYOLOLOO HWRER MY GGGG');
+  console.log('XXXFetch Messages Hit');
   try {
     const chatClient = yield call(chat.get);
 
@@ -151,35 +151,8 @@ export function* fetch(action) {
 
     // we prefer this order (new messages first), so that if any new message has an updated property
     // (eg. parentMessage), then it gets written to state
-    // Create a map of existing messages by ID for quick lookup
-    const existingMessagesMap = existingMessages.reduce((acc, msg) => {
-      acc[msg.id] = msg;
-      return acc;
-    }, {});
-
-    // Merge messages and ensure media URLs are not reset if they already exist
-    messages = messagesResponse.messages.map((msg) => {
-      const existingMessage = existingMessagesMap[msg.id];
-      if (existingMessage) {
-        // Preserve the existing media URL if it exists
-        if (existingMessage.media && existingMessage.media.url) {
-          msg.media = { ...msg.media, url: existingMessage.media.url };
-        }
-        // Preserve the existing image URL if it exists
-        if (existingMessage.image && existingMessage.image.url) {
-          msg.image = { ...msg.image, url: existingMessage.image.url };
-        }
-      }
-      return msg;
-    });
-
-    // Add any existing messages that were not in the response
-    const newMessageIds = new Set(messages.map((m) => m.id));
-    existingMessages.forEach((msg) => {
-      if (!newMessageIds.has(msg.id)) {
-        messages.push(msg);
-      }
-    });
+    messages = [...messagesResponse.messages, ...existingMessages];
+    messages = uniqBy(messages, (m) => m.id ?? m);
 
     yield call(receiveChannel, {
       id: channelId,

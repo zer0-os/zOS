@@ -110,7 +110,7 @@ describe('ChannelViewContainer', () => {
   it('fetches messages on mount', () => {
     const fetchMessages = jest.fn();
 
-    subject({ fetchMessages, channelId: 'the-channel-id' });
+    subject({ fetchMessages, channelId: 'the-channel-id', channel: { hasLoadedMessages: false } });
 
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });

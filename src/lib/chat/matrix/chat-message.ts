@@ -1,6 +1,5 @@
 import { CustomEventType, MatrixConstants, MembershipStateType, NotifiableEventType } from './types';
 import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
-import { decryptFile } from './media';
 import { AdminMessageType, Message, MessageSendStatus } from '../../../store/messages';
 import { getObjectDiff, parsePlainBody } from './utils';
 import { PowerLevels } from '../types';
@@ -26,9 +25,6 @@ async function parseMediaData(matrixMessage) {
 
 async function buildMediaObject(content) {
   if (content.file && content.info) {
-    console.log('XXXCONTENT', content);
-    // const blob = await decryptFile(content.file, content.info);
-    // console.log('XXXXBLOBBY', blob);
     return {
       url: null,
       type: 'image',
@@ -74,7 +70,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
       admin: {},
       mentionedUsers: [],
       hidePreview: false,
-      // media: null,
+      media: null,
       image: null,
     },
     parentMessageText: '',

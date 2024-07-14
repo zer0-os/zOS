@@ -134,7 +134,6 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
-  console.log('XXXFetch Messages Hit');
   try {
     const chatClient = yield call(chat.get);
 
@@ -603,14 +602,11 @@ function* readReceiptReceived({ payload }) {
 }
 
 export function* loadAttachmentDetails(action) {
-  console.log('XXXaction', action);
   const { media, messageId } = action.payload;
-  // if in progress then don't fetch
+
   try {
     const blob = yield call(decryptFile, media.file, media.info);
-    console.log('XXXblob', blob);
     const url = URL.createObjectURL(blob);
-    console.log('XXXurl', url);
     yield put(receiveMessage({ id: messageId, media: { ...media, url } }));
   } catch (error) {
     console.error('Failed to download and decrypt image:', error);

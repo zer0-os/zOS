@@ -52,7 +52,7 @@ export interface Properties {
   isSecondarySidekickOpen: boolean;
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
+  loadAttachmentDetails: (payload: { media: Media; messageId: number }) => void;
 }
 
 export interface State {

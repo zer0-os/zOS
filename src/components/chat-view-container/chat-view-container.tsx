@@ -38,7 +38,7 @@ export interface Properties extends PublicProperties {
   openDeleteMessage: (messageId: number) => void;
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
+  loadAttachmentDetails: (payload: { media: Media; messageId: number }) => void;
 }
 
 interface PublicProperties {
@@ -86,8 +86,8 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount() {
-    const { channelId } = this.props;
-    if (channelId) {
+    const { channelId, channel } = this.props;
+    if (channelId && !channel.hasLoadedMessages) {
       this.props.fetchMessages({ channelId });
     }
   }

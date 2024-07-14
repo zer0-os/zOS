@@ -106,7 +106,7 @@ const fetch = createAction<Payload>(SagaActionTypes.Fetch);
 const send = createAction<SendPayload>(SagaActionTypes.Send);
 const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
 const editMessage = createAction<EditPayload>(SagaActionTypes.EditMessage);
-const loadAttachmentDetails = createAction<{ media: Media; messageId: string }>(SagaActionTypes.LoadAttachmentDetails);
+const loadAttachmentDetails = createAction<{ media: Media; messageId: number }>(SagaActionTypes.LoadAttachmentDetails);
 
 const slice = createNormalizedSlice({
   name: 'messages',

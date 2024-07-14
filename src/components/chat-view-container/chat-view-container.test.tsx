@@ -21,6 +21,7 @@ describe('ChannelViewContainer', () => {
       sendMessage: () => undefined,
       uploadFileMessage: () => undefined,
       openDeleteMessage: () => undefined,
+      loadAttachmentDetails: () => undefined,
 
       editMessage: () => undefined,
       context: {

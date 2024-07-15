@@ -21,6 +21,7 @@ import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
+import { decryptFile } from '../../lib/chat/matrix/media';
 
 export interface Payload {
   channelId: string;
@@ -133,7 +134,6 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
-
   try {
     const chatClient = yield call(chat.get);
 
@@ -566,6 +566,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
+  yield takeLatest(SagaActionTypes.LoadAttachmentDetails, loadAttachmentDetails);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
@@ -597,5 +598,17 @@ function* readReceiptReceived({ payload }) {
         yield put(receiveMessage({ id: messageId, readBy: updatedReadBy }));
       }
     }
+  }
+}
+
+export function* loadAttachmentDetails(action) {
+  const { media, messageId } = action.payload;
+
+  try {
+    const blob = yield call(decryptFile, media.file, media.info);
+    const url = URL.createObjectURL(blob);
+    yield put(receiveMessage({ id: messageId, media: { ...media, url } }));
+  } catch (error) {
+    console.error('Failed to download and decrypt image:', error);
   }
 }

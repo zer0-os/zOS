@@ -8,7 +8,7 @@ import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
 import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
-import { Media, UserForMention } from '../message-input/utils';
+import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
@@ -50,7 +50,6 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: number }) => void;
 }
 
 export interface State {
@@ -123,13 +122,6 @@ export class Message extends React.Component<Properties, State> {
 
   renderMedia(media) {
     const { type, url, name } = media;
-    const messageId = this.props.messageId;
-
-    if (!url) {
-      this.props.loadAttachmentDetails({ media, messageId });
-      return <div {...cn('image-placeholder')}>Loading...</div>;
-    }
-
     if (MediaType.Image === type) {
       return (
         <div {...cn('block-image')} onClick={this.onImageClick(media)}>

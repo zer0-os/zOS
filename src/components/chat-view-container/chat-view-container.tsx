@@ -3,14 +3,7 @@ import classNames from 'classnames';
 import { RootState } from '../../store/reducer';
 
 import { connectContainer } from '../../store/redux-container';
-import {
-  fetch as fetchMessages,
-  editMessage,
-  Message,
-  EditMessageOptions,
-  loadAttachmentDetails,
-  Media,
-} from '../../store/messages';
+import { fetch as fetchMessages, editMessage, Message, EditMessageOptions } from '../../store/messages';
 import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
@@ -38,7 +31,6 @@ export interface Properties extends PublicProperties {
   openDeleteMessage: (messageId: number) => void;
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: number }) => void;
 }
 
 interface PublicProperties {
@@ -81,13 +73,12 @@ export class Container extends React.Component<Properties> {
       openDeleteMessage,
       openMessageInfo,
       toggleSecondarySidekick,
-      loadAttachmentDetails,
     };
   }
 
   componentDidMount() {
-    const { channelId, channel } = this.props;
-    if (channelId && !channel.hasLoadedMessages) {
+    const { channelId } = this.props;
+    if (channelId) {
       this.props.fetchMessages({ channelId });
     }
   }
@@ -221,7 +212,6 @@ export class Container extends React.Component<Properties> {
           isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
           toggleSecondarySidekick={this.props.toggleSecondarySidekick}
           openMessageInfo={this.props.openMessageInfo}
-          loadAttachmentDetails={this.props.loadAttachmentDetails}
         />
       </>
     );

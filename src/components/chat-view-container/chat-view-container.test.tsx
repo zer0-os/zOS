@@ -21,7 +21,6 @@ describe('ChannelViewContainer', () => {
       sendMessage: () => undefined,
       uploadFileMessage: () => undefined,
       openDeleteMessage: () => undefined,
-      loadAttachmentDetails: () => undefined,
 
       editMessage: () => undefined,
       context: {
@@ -111,7 +110,7 @@ describe('ChannelViewContainer', () => {
   it('fetches messages on mount', () => {
     const fetchMessages = jest.fn();
 
-    subject({ fetchMessages, channelId: 'the-channel-id', channel: { hasLoadedMessages: false } });
+    subject({ fetchMessages, channelId: 'the-channel-id' });
 
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });

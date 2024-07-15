@@ -65,22 +65,6 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image').exists()).toBe(true);
   });
 
-  it('renders image placeholder if no media url', () => {
-    const loadAttachmentDetails = jest.fn();
-
-    const wrapper = subject({ loadAttachmentDetails, media: { url: null, type: MediaType.Image } });
-
-    expect(wrapper.find('.message__image-placeholder').exists()).toBe(true);
-  });
-
-  it('calls loadAttachmentDetails if no media url', () => {
-    const loadAttachmentDetails = jest.fn();
-
-    subject({ messageId: 'test-id', loadAttachmentDetails, media: { url: null, type: MediaType.Image } });
-
-    expect(loadAttachmentDetails).toHaveBeenCalled();
-  });
-
   it('does not renders message text', () => {
     const wrapper = subject({ message: 'the message' });
 

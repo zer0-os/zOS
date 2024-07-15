@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions, Media } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { User } from '../../store/authentication/types';
@@ -52,7 +52,6 @@ export interface Properties {
   isSecondarySidekickOpen: boolean;
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: number }) => void;
 }
 
 export interface State {
@@ -181,7 +180,6 @@ export class ChatView extends React.Component<Properties, State> {
                 showTimestamp={messageRenderProps.showTimestamp}
                 showAuthorName={messageRenderProps.showAuthorName}
                 onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
-                loadAttachmentDetails={this.props.loadAttachmentDetails}
                 {...message}
               />
             </div>

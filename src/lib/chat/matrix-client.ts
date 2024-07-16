@@ -426,7 +426,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const room = this.matrix.getRoom(roomId);
     const liveTimeline = room.getLiveTimeline();
-    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 100 });
+    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
 
     // For now, just return the full list again. Could filter out anything prior to lastCreatedAt
     const messages = await this.getAllMessagesFromRoom(room);

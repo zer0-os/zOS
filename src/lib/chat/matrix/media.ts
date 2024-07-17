@@ -46,23 +46,22 @@ export async function encryptFile(file: File): Promise<{ info: encrypt.IEncrypte
 }
 
 // https://github.com/matrix-org/matrix-react-sdk/blob/develop/src/utils/DecryptFile.ts#L50
-export async function decryptFile(encryptedFile, info): Promise<Blob> {
+export async function decryptFile(encryptedFile, mimetype): Promise<Blob> {
   const signedUrl = await getAttachmentUrl({ key: encryptedFile.url });
 
   // Download the encrypted file as an array buffer.
   const response = await fetch(signedUrl);
   if (!response.ok) {
-    throw new Error(`Error occurred while downloading file ${info.name}: ${await response.text()}`);
+    throw new Error(`Error occurred while downloading file ${encryptedFile.url}: ${await response.text()}`);
   }
   const responseData: ArrayBuffer = await response.arrayBuffer();
 
   try {
     // Decrypt the array buffer using the information taken from the event content.
     const dataArray = await encrypt.decryptAttachment(responseData, encryptedFile);
-
     // Turn the array into a Blob and give it the correct MIME-type.
-    return new Blob([dataArray], { type: info?.mimetype });
+    return new Blob([dataArray], { type: mimetype });
   } catch (e) {
-    throw new Error(`Error occurred while decrypting file ${info.name}: ${e}`);
+    throw new Error(`Error occurred while decrypting file ${encryptedFile.url}: ${e}`);
   }
 }

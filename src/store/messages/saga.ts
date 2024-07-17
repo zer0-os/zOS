@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState } from '../channels';
@@ -566,7 +566,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
-  yield takeLatest(SagaActionTypes.LoadAttachmentDetails, loadAttachmentDetails);
+  yield takeEvery(SagaActionTypes.LoadAttachmentDetails, loadAttachmentDetails);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
@@ -601,14 +601,35 @@ function* readReceiptReceived({ payload }) {
   }
 }
 
+const inProgress = {};
 export function* loadAttachmentDetails(action) {
   const { media, messageId } = action.payload;
 
+  if (inProgress[messageId] || media.url) {
+    return;
+  }
+
+  inProgress[messageId] = true;
+
   try {
-    const blob = yield call(decryptFile, media.file, media.info);
+    const blob = yield call(decryptFile, media.file, media.mimetype);
     const url = URL.createObjectURL(blob);
-    yield put(receiveMessage({ id: messageId, media: { ...media, url } }));
+
+    if (!url) {
+      return;
+    }
+
+    yield put(
+      receiveMessage({
+        id: messageId,
+        media: { ...media, url },
+        image: { ...media, url },
+        rootMessageId: media?.info?.rootMessageId || '',
+      })
+    );
   } catch (error) {
     console.error('Failed to download and decrypt image:', error);
   }
+
+  inProgress[messageId] = false;
 }

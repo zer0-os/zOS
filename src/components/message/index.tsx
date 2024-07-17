@@ -1,14 +1,14 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus, Media } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
 import { User } from '../../store/channels';
 import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
-import { Media, UserForMention } from '../message-input/utils';
+import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
@@ -121,9 +121,8 @@ export class Message extends React.Component<Properties, State> {
     this.handleMediaAspectRatio(width, height);
   };
 
-  renderMedia(media) {
+  renderMedia(media, messageId) {
     const { type, url, name } = media;
-    const messageId = this.props.messageId;
 
     if (!url) {
       this.props.loadAttachmentDetails({ media, messageId });
@@ -410,7 +409,7 @@ export class Message extends React.Component<Properties, State> {
   }
 
   render() {
-    const { message, media, preview, sender, isOwner } = this.props;
+    const { message, media, preview, sender, isOwner, messageId } = this.props;
     return (
       <div
         className={classNames('message', this.props.className, {
@@ -441,7 +440,7 @@ export class Message extends React.Component<Properties, State> {
               {!this.state.isEditing && (
                 <>
                   {this.props.showAuthorName && this.renderAuthorName()}
-                  {media && this.renderMedia(media)}
+                  {media && this.renderMedia(media, messageId)}
                   {this.renderLinkPreview()}
                   {this.renderParentMessage()}
                   {this.renderBody()}
@@ -450,7 +449,7 @@ export class Message extends React.Component<Properties, State> {
 
               {this.state.isEditing && this.props.message && (
                 <>
-                  {media && this.renderMedia(media)}
+                  {media && this.renderMedia(media, messageId)}
 
                   <div {...cn('block-edit')}>
                     <MessageInput

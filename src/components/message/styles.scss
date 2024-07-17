@@ -2,6 +2,15 @@
 @use '../../shared-components/theme-engine/theme' as themeDeprecated;
 @import '../../glass';
 
+@keyframes loadingShimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
 .message {
   display: flex;
   justify-content: flex-start;
@@ -9,6 +18,16 @@
   gap: 8px;
   overflow: hidden;
   width: 100%;
+
+  &__image-placeholder {
+    background-color: theme.$color-greyscale-12;
+
+    width: 300px;
+    height: 200px;
+
+    filter: blur(2px);
+    opacity: 0.2;
+  }
 
   &--owner {
     flex-direction: row-reverse;
@@ -243,7 +262,21 @@
     }
   }
 
+  &__image-placeholder-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 200px;
+    padding: 8px;
+  }
+
   &__image-placeholder {
-    @include glass-text-secondary-color;
+    background-color: theme.$color-greyscale-12;
+    width: 100%;
+    height: 100%;
+    filter: blur(2px);
+    opacity: 0.2;
+    border-radius: 8px;
   }
 }

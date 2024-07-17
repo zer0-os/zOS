@@ -28,7 +28,7 @@ async function buildMediaObject(content) {
     return {
       url: null,
       type: 'image',
-      info: { ...content.info },
+      ...content.info,
       file: { ...content.file },
     };
   } else if (content.url) {

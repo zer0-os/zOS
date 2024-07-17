@@ -602,34 +602,60 @@ function* readReceiptReceived({ payload }) {
 }
 
 const inProgress = {};
+let count = 0;
 export function* loadAttachmentDetails(action) {
   const { media, messageId } = action.payload;
 
-  if (inProgress[messageId] || media.url) {
+  console.log('XXX 1: Get Payload', action.payload);
+
+  count++;
+
+  if (count > 10) {
+    console.log('XXX: Stopping - Counter Limit Reached');
+
     return;
   }
+
+  console.log('XXX 2: Bypass Counter Stop');
+
+  if (inProgress[messageId] || media.url) {
+    console.log('XXX: Stopping - In Progress || Media Url');
+    return;
+  }
+
+  console.log('XXX 3: Bypass In Progress Stop');
 
   inProgress[messageId] = true;
 
   try {
     const blob = yield call(decryptFile, media.file, media.mimetype);
-    const url = URL.createObjectURL(blob);
+    console.log('XXX 4: Blob Success', blob);
 
-    if (!url) {
+    const mediaUrl = URL.createObjectURL(blob);
+    console.log('XXX 5: URL Creation Success', mediaUrl);
+
+    if (!mediaUrl) {
+      console.log('XXX: Stopping - URL Creation Failed');
       return;
     }
+
+    console.log('XXX 6: Bypass URL Creation Stop');
 
     yield put(
       receiveMessage({
         id: messageId,
-        media: { ...media, url },
-        image: { ...media, url },
-        rootMessageId: media?.info?.rootMessageId || '',
+        media: { ...media, url: mediaUrl },
+        image: { ...media, url: mediaUrl },
+        // rootMessageId: media?.rootMessageId || '',
       })
     );
+
+    console.log('XXX 7: Success - Receive Message Success');
   } catch (error) {
     console.error('Failed to download and decrypt image:', error);
   }
+
+  console.log('XXX 8: End');
 
   inProgress[messageId] = false;
 }

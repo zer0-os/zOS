@@ -127,10 +127,8 @@ export class Message extends React.Component<Properties, State> {
     if (!url) {
       this.props.loadAttachmentDetails({ media });
       return (
-        <div {...cn('block-image')}>
-          <div {...cn('image-placeholder-container')}>
-            <div {...cn('image-placeholder')} />
-          </div>
+        <div {...cn('image-placeholder-container')}>
+          <div {...cn('image-placeholder')} />
         </div>
       );
     }

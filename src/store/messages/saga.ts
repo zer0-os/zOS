@@ -492,6 +492,7 @@ export function* replaceOptimisticMessage(currentMessages, message) {
   messages[messageIndex] = {
     ...optimisticMessage,
     ...message,
+    media: optimisticMessage.media,
     sendStatus: MessageSendStatus.SUCCESS,
   };
   return messages;
@@ -603,47 +604,33 @@ function* readReceiptReceived({ payload }) {
 
 const inProgress = {};
 export function* loadAttachmentDetails(action) {
-  const { media } = action.payload;
+  const { media, messageId } = action.payload;
 
-  console.log('XXX 1: Get Payload', action.payload);
-
-  if (inProgress[media.id] || media.url) {
-    console.log('XXX: Stopping - In Progress || Media Url');
+  if (inProgress[messageId] || media.url) {
     return;
   }
 
-  console.log('XXX 2: Bypass In Progress Stop');
-
-  inProgress[media.id] = true;
+  inProgress[messageId] = true;
 
   try {
     const blob = yield call(decryptFile, media.file, media.mimetype);
-    console.log('XXX 3: Blob Success', blob);
 
     const url = URL.createObjectURL(blob);
-    console.log('XXX 4: URL Creation Success', url);
 
     if (!url) {
-      console.log('XXX: Stopping - URL Creation Failed');
       return;
     }
 
-    console.log('XXX 5: Bypass URL Creation Stop');
-
     yield put(
       receiveMessage({
-        id: media.id,
+        id: messageId,
         media: { ...media, url: url },
         image: { ...media, url: url },
       })
     );
-
-    console.log('XXX 6: Success - Receive Message Success');
   } catch (error) {
     console.error('Failed to download and decrypt image:', error);
   }
 
-  console.log('XXX 7: End');
-
-  inProgress[media.id] = false;
+  inProgress[messageId] = false;
 }

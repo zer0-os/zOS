@@ -60,13 +60,13 @@ describe('ChannelViewContainer', () => {
     const messages = [
       { id: 'message-root', rootMessageId: '' },
       { id: 'message-two', rootMessageId: '' },
-      { id: 'message-child', rootMessageId: 'message-root', media: { some: 'media' } },
+      { id: 'message-child', rootMessageId: 'message-root', media: { id: '1', media: 'media' } },
     ];
 
     const wrapper = subject({ channel: { messages } });
 
     expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
-      { ...messages[0], media: { some: 'media' } },
+      { ...messages[0], media: { id: '1', media: 'media' } },
       messages[1],
     ]);
   });
@@ -75,13 +75,13 @@ describe('ChannelViewContainer', () => {
     const messages = [
       { id: 'message-root', optimisticId: 'optimistic-message-root', rootMessageId: '' },
       { id: 'message-two', rootMessageId: '' },
-      { id: 'message-child', rootMessageId: 'optimistic-message-root', media: { some: 'media' } },
+      { id: 'message-child', rootMessageId: 'optimistic-message-root', media: { id: '1', media: 'media' } },
     ];
 
     const wrapper = subject({ channel: { messages } });
 
     expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
-      { ...messages[0], media: { some: 'media' } },
+      { ...messages[0], media: { id: '1', media: 'media' } },
       messages[1],
     ]);
   });

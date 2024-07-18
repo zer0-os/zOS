@@ -68,7 +68,7 @@ describe('message', () => {
   it('renders image placeholder if no media url', () => {
     const loadAttachmentDetails = jest.fn();
 
-    const wrapper = subject({ loadAttachmentDetails, media: { url: null, type: MediaType.Image } });
+    const wrapper = subject({ loadAttachmentDetails, media: { id: '1', url: null, type: MediaType.Image } });
 
     expect(wrapper.find('.message__image-placeholder').exists()).toBe(true);
   });

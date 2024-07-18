@@ -131,7 +131,7 @@ export function linkParentMessage(message, messagesById, messagesByRootId) {
 export function linkMediaMessage(message, messagesById, mediaMessages, messages) {
   const rootMessage = messagesById[message.rootMessageId];
   if (rootMessage) {
-    rootMessage.media = message.media;
+    rootMessage.media = { id: message.id, ...message.media };
     mediaMessages.push(message);
   } else {
     messages.push(message);

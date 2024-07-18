@@ -50,7 +50,7 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
-  loadAttachmentDetails: (payload: { media: Media }) => void;
+  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
 }
 
 export interface State {
@@ -125,7 +125,7 @@ export class Message extends React.Component<Properties, State> {
     const { type, url, name } = media;
 
     if (!url) {
-      this.props.loadAttachmentDetails({ media });
+      this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
       return (
         <div {...cn('image-placeholder-container')}>
           <div {...cn('image-placeholder')} />

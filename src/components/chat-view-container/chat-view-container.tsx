@@ -38,7 +38,7 @@ export interface Properties extends PublicProperties {
   openDeleteMessage: (messageId: number) => void;
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: number }) => void;
+  loadAttachmentDetails: (payload: { media: Media }) => void;
 }
 
 interface PublicProperties {

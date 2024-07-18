@@ -50,7 +50,7 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: number }) => void;
+  loadAttachmentDetails: (payload: { media: Media }) => void;
 }
 
 export interface State {
@@ -121,11 +121,11 @@ export class Message extends React.Component<Properties, State> {
     this.handleMediaAspectRatio(width, height);
   };
 
-  renderMedia(media, messageId) {
+  renderMedia(media) {
     const { type, url, name } = media;
 
     if (!url) {
-      this.props.loadAttachmentDetails({ media, messageId });
+      this.props.loadAttachmentDetails({ media });
       return (
         <div {...cn('block-image')}>
           <div {...cn('image-placeholder-container')}>
@@ -415,7 +415,7 @@ export class Message extends React.Component<Properties, State> {
   }
 
   render() {
-    const { message, media, preview, sender, isOwner, messageId } = this.props;
+    const { message, media, preview, sender, isOwner } = this.props;
     return (
       <div
         className={classNames('message', this.props.className, {
@@ -446,7 +446,7 @@ export class Message extends React.Component<Properties, State> {
               {!this.state.isEditing && (
                 <>
                   {this.props.showAuthorName && this.renderAuthorName()}
-                  {media && this.renderMedia(media, messageId)}
+                  {media && this.renderMedia(media)}
                   {this.renderLinkPreview()}
                   {this.renderParentMessage()}
                   {this.renderBody()}
@@ -455,7 +455,7 @@ export class Message extends React.Component<Properties, State> {
 
               {this.state.isEditing && this.props.message && (
                 <>
-                  {media && this.renderMedia(media, messageId)}
+                  {media && this.renderMedia(media)}
 
                   <div {...cn('block-edit')}>
                     <MessageInput

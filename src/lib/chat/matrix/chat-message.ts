@@ -5,12 +5,12 @@ import { getObjectDiff, parsePlainBody } from './utils';
 import { PowerLevels } from '../types';
 
 async function parseMediaData(matrixMessage) {
-  const { content } = matrixMessage;
+  const { event_id, content } = matrixMessage;
 
   let media = null;
   try {
     if (content?.msgtype === MsgType.Image) {
-      media = await buildMediaObject(content);
+      media = await buildMediaObject(content, event_id);
     }
   } catch (e) {
     console.error('error ocurred while parsing media data: ', e);
@@ -23,13 +23,14 @@ async function parseMediaData(matrixMessage) {
   };
 }
 
-async function buildMediaObject(content) {
+async function buildMediaObject(content, eventId) {
   if (content.file && content.info) {
     return {
+      id: eventId,
       url: null,
       type: 'image',
-      ...content.info,
       file: { ...content.file },
+      ...content.info,
     };
   } else if (content.url) {
     return {

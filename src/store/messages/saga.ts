@@ -602,60 +602,48 @@ function* readReceiptReceived({ payload }) {
 }
 
 const inProgress = {};
-let count = 0;
 export function* loadAttachmentDetails(action) {
-  const { media, messageId } = action.payload;
+  const { media } = action.payload;
 
   console.log('XXX 1: Get Payload', action.payload);
 
-  count++;
-
-  if (count > 10) {
-    console.log('XXX: Stopping - Counter Limit Reached');
-
-    return;
-  }
-
-  console.log('XXX 2: Bypass Counter Stop');
-
-  if (inProgress[messageId] || media.url) {
+  if (inProgress[media.id] || media.url) {
     console.log('XXX: Stopping - In Progress || Media Url');
     return;
   }
 
-  console.log('XXX 3: Bypass In Progress Stop');
+  console.log('XXX 2: Bypass In Progress Stop');
 
-  inProgress[messageId] = true;
+  inProgress[media.id] = true;
 
   try {
     const blob = yield call(decryptFile, media.file, media.mimetype);
-    console.log('XXX 4: Blob Success', blob);
+    console.log('XXX 3: Blob Success', blob);
 
-    const mediaUrl = URL.createObjectURL(blob);
-    console.log('XXX 5: URL Creation Success', mediaUrl);
+    const url = URL.createObjectURL(blob);
+    console.log('XXX 4: URL Creation Success', url);
 
-    if (!mediaUrl) {
+    if (!url) {
       console.log('XXX: Stopping - URL Creation Failed');
       return;
     }
 
-    console.log('XXX 6: Bypass URL Creation Stop');
+    console.log('XXX 5: Bypass URL Creation Stop');
 
     yield put(
       receiveMessage({
-        id: messageId,
-        media: { ...media, url: mediaUrl },
-        image: { ...media, url: mediaUrl },
-        // rootMessageId: media?.rootMessageId || '',
+        id: media.id,
+        media: { ...media, url: url },
+        image: { ...media, url: url },
       })
     );
 
-    console.log('XXX 7: Success - Receive Message Success');
+    console.log('XXX 6: Success - Receive Message Success');
   } catch (error) {
     console.error('Failed to download and decrypt image:', error);
   }
 
-  console.log('XXX 8: End');
+  console.log('XXX 7: End');
 
-  inProgress[messageId] = false;
+  inProgress[media.id] = false;
 }

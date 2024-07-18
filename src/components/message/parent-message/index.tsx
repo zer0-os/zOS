@@ -36,9 +36,10 @@ export class ParentMessage extends React.PureComponent<Properties> {
         <div {...cn('parent-message')}>
           <IconCornerDownRight size={16} />
 
-          {this.props.mediaUrl && (
+          {this.props?.mediaName && (
             <div {...cn('media-container')}>
-              <img {...cn('media')} src={this.props.mediaUrl} alt={this.props.mediaName} />
+              {this.props?.mediaUrl && <img {...cn('media')} src={this.props?.mediaUrl} alt={this.props?.mediaName} />}
+              {!this.props.mediaUrl && <div {...cn('image-placeholder')} />}
             </div>
           )}
 

@@ -296,7 +296,7 @@ describe(linkParentMessage, () => {
 describe(linkMediaMessage, () => {
   it('links a media message to its root message', () => {
     const messages = [
-      { id: '1', rootMessageId: 'root-1', message: 'media message', media: 'media' },
+      { id: '1', rootMessageId: 'root-1', message: 'media message', media: { media: 'media' } },
       { id: 'root-1', message: 'root message' },
     ];
     const messagesById = mapMessagesById(messages);
@@ -305,7 +305,7 @@ describe(linkMediaMessage, () => {
 
     linkMediaMessage(messages[0], messagesById, mediaMessages, result);
 
-    expect(messagesById['root-1'].media).toEqual('media');
+    expect(messagesById['root-1'].media).toEqual({ id: '1', media: 'media' });
     expect(mediaMessages).toEqual([messages[0]]);
     expect(result).toEqual([]);
   });

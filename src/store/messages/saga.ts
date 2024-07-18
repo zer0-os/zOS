@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState } from '../channels';
@@ -21,6 +21,7 @@ import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
+import { decryptFile } from '../../lib/chat/matrix/media';
 
 export interface Payload {
   channelId: string;
@@ -133,7 +134,6 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
-
   try {
     const chatClient = yield call(chat.get);
 
@@ -492,6 +492,7 @@ export function* replaceOptimisticMessage(currentMessages, message) {
   messages[messageIndex] = {
     ...optimisticMessage,
     ...message,
+    media: optimisticMessage.media,
     sendStatus: MessageSendStatus.SUCCESS,
   };
   return messages;
@@ -566,6 +567,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
+  yield takeEvery(SagaActionTypes.LoadAttachmentDetails, loadAttachmentDetails);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
@@ -598,4 +600,37 @@ function* readReceiptReceived({ payload }) {
       }
     }
   }
+}
+
+const inProgress = {};
+export function* loadAttachmentDetails(action) {
+  const { media, messageId } = action.payload;
+
+  if (inProgress[messageId] || media.url) {
+    return;
+  }
+
+  inProgress[messageId] = true;
+
+  try {
+    const blob = yield call(decryptFile, media.file, media.mimetype);
+
+    const url = URL.createObjectURL(blob);
+
+    if (!url) {
+      return;
+    }
+
+    yield put(
+      receiveMessage({
+        id: messageId,
+        media: { ...media, url: url },
+        image: { ...media, url: url },
+      })
+    );
+  } catch (error) {
+    console.error('Failed to download and decrypt image:', error);
+  }
+
+  inProgress[messageId] = false;
 }

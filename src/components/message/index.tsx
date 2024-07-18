@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus, Media } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
@@ -50,6 +50,7 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
+  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
 }
 
 export interface State {
@@ -122,6 +123,16 @@ export class Message extends React.Component<Properties, State> {
 
   renderMedia(media) {
     const { type, url, name } = media;
+
+    if (!url) {
+      this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
+      return (
+        <div {...cn('image-placeholder-container')}>
+          <div {...cn('image-placeholder')} />
+        </div>
+      );
+    }
+
     if (MediaType.Image === type) {
       return (
         <div {...cn('block-image')} onClick={this.onImageClick(media)}>

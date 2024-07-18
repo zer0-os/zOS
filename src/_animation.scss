@@ -15,3 +15,12 @@
     opacity: 0;
   }
 }
+
+@keyframes loadingShimmer {
+  0% {
+    background-position: -320px 0;
+  }
+  100% {
+    background-position: calc(320px + 100%) 0;
+  }
+}

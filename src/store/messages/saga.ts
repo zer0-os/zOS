@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, spawn, takeEvery, all } from 'redux-saga/effects';
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState } from '../channels';
@@ -187,7 +187,8 @@ export function* fetch(action) {
 export function* send(action) {
   const { channelId, message, mentionedUserIds, parentMessage, files = [] } = action.payload;
 
-  const processedFiles: Uploadable[] = files.map(createUploadableFile);
+  // const processedFiles: Uploadable[] = files.map(createUploadableFile);
+  const processedFiles: Uploadable[] = yield all(files.map((file) => call(createUploadableFile, file)));
 
   const { optimisticRootMessage, uploadableFiles } = yield call(
     createOptimisticMessages,

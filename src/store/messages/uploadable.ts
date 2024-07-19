@@ -1,12 +1,14 @@
 import { CallEffect, call } from 'redux-saga/effects';
 
-import { FileType, getFileType } from './utils';
+import { FileType, getFileType, getImageDimensions } from './utils';
 import { Message } from '.';
-import { chat, uploadImageUrl } from '../../lib/chat';
+import { uploadFileMessage, uploadImageUrl } from '../../lib/chat';
 
-export const createUploadableFile = (file): Uploadable => {
+export const createUploadableFile = async (file): Promise<Uploadable> => {
   if (file.nativeFile && getFileType(file.nativeFile) === FileType.Media) {
-    return new UploadableMedia(file);
+    const dimensions = await getImageDimensions(file.nativeFile);
+    console.log('XXXDIMENSIONS', dimensions);
+    return new UploadableMedia(file, dimensions.width, dimensions.height);
   } else if (file.giphy) {
     return new UploadableGiphy(file);
   } else {
@@ -23,19 +25,18 @@ export interface Uploadable {
 export class UploadableMedia implements Uploadable {
   public optimisticMessage: Message;
 
-  constructor(public file) {}
+  constructor(public file, private width: number, private height: number) {}
   *upload(channelId, rootMessageId) {
-    const chatClient = yield call(chat.get);
+    console.log('xxxxdimensdwdwed', this.width, this.height);
 
     return yield call(
-      [
-        chatClient,
-        chatClient.uploadFileMessage,
-      ],
+      uploadFileMessage,
       channelId,
       this.file.nativeFile,
       rootMessageId,
-      this.optimisticMessage?.id?.toString()
+      this.optimisticMessage?.id?.toString(),
+      this.width,
+      this.height
     );
   }
 }

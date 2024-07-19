@@ -531,7 +531,14 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '') {
+  async uploadFileMessage(
+    roomId: string,
+    media: File,
+    rootMessageId: string = '',
+    optimisticId = '',
+    width?: number,
+    height?: number
+  ) {
     if (!this.matrix.isRoomEncrypted(roomId)) {
       console.warn('uploadFileMessage called for non-encrypted room', roomId);
       return;
@@ -556,6 +563,8 @@ export class MatrixClient implements IChatClient {
         name: media.name,
         optimisticId,
         rootMessageId,
+        width,
+        height,
       },
       optimisticId,
     };

@@ -80,3 +80,16 @@ export function getFileType(file: File) {
 
   return FileType.Attachment;
 }
+
+export function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.width, height: img.height });
+    };
+    img.onerror = () => {
+      reject(new Error('Unable to determine image dimensions.'));
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}

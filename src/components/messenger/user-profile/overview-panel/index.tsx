@@ -177,7 +177,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
           startEnhancer={<IconDownload2 size={20} />}
           color={ButtonColor.Greyscale}
         >
-          Downloads
+          Download
         </Button>
       </div>
     );

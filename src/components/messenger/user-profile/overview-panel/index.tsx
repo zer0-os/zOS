@@ -7,6 +7,7 @@ import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import {
   IconCurrencyEthereum,
+  IconDownload2,
   IconLock1,
   IconLogOut3,
   IconPlus,
@@ -33,6 +34,7 @@ export interface Properties {
   onOpenEditProfile: () => void;
   onOpenRewards: () => void;
   onOpenSettings: () => void;
+  onOpenDownloads: () => void;
   onManageAccounts: () => void;
 }
 
@@ -83,6 +85,10 @@ export class OverviewPanel extends React.Component<Properties, State> {
 
   openSettings = () => {
     this.props.onOpenSettings();
+  };
+
+  openDownloads = () => {
+    this.props.onOpenDownloads();
   };
 
   onManageAccounts = () => {
@@ -163,6 +169,16 @@ export class OverviewPanel extends React.Component<Properties, State> {
             Settings
           </Button>
         )}
+
+        <Button
+          {...cn('action-button')}
+          variant={ButtonVariant.Secondary}
+          onPress={this.openDownloads}
+          startEnhancer={<IconDownload2 size={20} />}
+          color={ButtonColor.Greyscale}
+        >
+          Downloads
+        </Button>
       </div>
     );
   }

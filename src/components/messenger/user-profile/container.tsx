@@ -13,6 +13,7 @@ import {
   openEditProfile,
   openUserProfile,
   openSettings,
+  openDownloads,
   openAccountManagement,
 } from '../../../store/user-profile';
 import { logout } from '../../../store/authentication';
@@ -32,6 +33,7 @@ export interface Properties extends PublicProperties {
   openEditProfile: () => void;
   openRewardsDialog: () => void;
   openSettings: () => void;
+  openDownloads: () => void;
   openAccountManagement: () => void;
 }
 
@@ -59,6 +61,7 @@ export class Container extends React.Component<Properties> {
       openEditProfile,
       openRewardsDialog,
       openSettings,
+      openDownloads,
       openAccountManagement,
     };
   }
@@ -77,6 +80,7 @@ export class Container extends React.Component<Properties> {
         onBackToOverview={this.props.openUserProfile}
         onRewards={this.props.openRewardsDialog}
         onSettings={this.props.openSettings}
+        onDownloads={this.props.openDownloads}
         onManageAccounts={this.props.openAccountManagement}
       />
     );

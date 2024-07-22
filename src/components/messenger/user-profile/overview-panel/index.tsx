@@ -18,6 +18,7 @@ import {
 import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { RewardsItemContainer } from './rewards-item/container';
 import { featureFlags } from '../../../../lib/feature-flags';
+import { ScrollbarContainer } from '../../../scrollbar-container';
 
 import './styles.scss';
 
@@ -185,17 +186,19 @@ export class OverviewPanel extends React.Component<Properties, State> {
 
   renderFooter() {
     return (
-      <div {...cn('footer')}>
-        <Button
-          {...cn('footer-button')}
-          variant={ButtonVariant.Secondary}
-          color={ButtonColor.Greyscale}
-          onPress={this.openLogoutDialog}
-          startEnhancer={<IconLogOut3 size={20} />}
-        >
-          Log Out
-        </Button>
-      </div>
+      <>
+        <div {...cn('footer')}>
+          <Button
+            {...cn('footer-button')}
+            variant={ButtonVariant.Secondary}
+            color={ButtonColor.Greyscale}
+            onPress={this.openLogoutDialog}
+            startEnhancer={<IconLogOut3 size={20} />}
+          >
+            Log Out
+          </Button>
+        </div>
+      </>
     );
   }
 
@@ -214,16 +217,21 @@ export class OverviewPanel extends React.Component<Properties, State> {
           <PanelHeader title={'Profile'} onBack={this.navigateBack} />
         </div>
 
-        <div {...cn('body')}>
-          <div {...cn('section')}>
-            {this.renderDetails()}
-            {featureFlags.enableRewards && this.renderRewards()}
+        <ScrollbarContainer variant='on-hover'>
+          <div {...cn('panel-content-wrapper')}>
+            <div {...cn('body')}>
+              <div {...cn('section')}>
+                {this.renderDetails()}
+                {featureFlags.enableRewards && this.renderRewards()}
+              </div>
+
+              {this.renderActions()}
+            </div>
+
+            {this.renderFooter()}
           </div>
+        </ScrollbarContainer>
 
-          {this.renderActions()}
-        </div>
-
-        {this.renderFooter()}
         {this.renderInviteDialog()}
       </div>
     );

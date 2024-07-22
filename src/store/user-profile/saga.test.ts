@@ -9,6 +9,7 @@ import {
   onPublicReadReceipts,
   getUserReadReceiptPreference,
   openAccountManagement,
+  openDownloads,
 } from './saga';
 import { UserProfileState, initialState as initialUserProfileState, Stage, setStage, setPublicReadReceipts } from '.';
 import { rootReducer } from '../reducer';
@@ -77,6 +78,17 @@ describe('openSettings', () => {
       .run();
 
     expect(storeState.userProfile.stage).toEqual(Stage.Settings);
+  });
+});
+
+describe('openDownloads', () => {
+  it('should set stage to Downloads', async () => {
+    const { storeState } = await expectSaga(openDownloads)
+      .withReducer(rootReducer, initialState())
+      .put(setStage(Stage.Downloads))
+      .run();
+
+    expect(storeState.userProfile.stage).toEqual(Stage.Downloads);
   });
 });
 

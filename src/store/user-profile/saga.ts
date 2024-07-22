@@ -19,6 +19,10 @@ export function* openSettings() {
   yield put(setStage(Stage.Settings));
 }
 
+export function* openDownloads() {
+  yield put(setStage(Stage.Downloads));
+}
+
 export function* openAccountManagement() {
   yield call(resetAccountManagementState);
   yield put(setStage(Stage.AccountManagement));
@@ -57,6 +61,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.CloseUserProfile, closeUserProfile);
   yield takeLatest(SagaActionTypes.OpenEditProfile, openEditProfile);
   yield takeLatest(SagaActionTypes.OpenSettings, openSettings);
+  yield takeLatest(SagaActionTypes.OpenDownloads, openDownloads);
   yield takeLatest(SagaActionTypes.OpenAccountManagement, openAccountManagement);
 
   yield takeLatest(SagaActionTypes.PrivateReadReceipts, onPrivateReadReceipts);

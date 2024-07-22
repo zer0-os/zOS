@@ -11,6 +11,7 @@ import { WalletListItem } from '../../../wallet-list-item';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { CreateEmailAccountContainer } from '../../../../authentication/create-email-account/container';
+import { ScrollbarContainer } from '../../../scrollbar-container';
 
 const cn = bemClassName('account-management-panel');
 
@@ -131,24 +132,28 @@ export class AccountManagementPanel extends React.Component<Properties> {
           <PanelHeader title={'Accounts'} onBack={this.back} />
         </div>
 
-        <div {...cn('content')}>
-          {this.renderWalletsSection()}
-          {this.renderEmailSection()}
+        <ScrollbarContainer variant='on-hover'>
+          <div {...cn('panel-content-wrapper')}>
+            <div {...cn('content')}>
+              {this.renderWalletsSection()}
+              {this.renderEmailSection()}
 
-          {this.props.error && (
-            <Alert variant='error' isFilled>
-              <div {...cn('alert-text')}>{this.props.error}</div>
-            </Alert>
-          )}
+              {this.props.error && (
+                <Alert variant='error' isFilled>
+                  <div {...cn('alert-text')}>{this.props.error}</div>
+                </Alert>
+              )}
 
-          {this.props.successMessage && (
-            <Alert variant='success' isFilled>
-              <div {...cn('alert-text')}>{this.props.successMessage}</div>
-            </Alert>
-          )}
-        </div>
+              {this.props.successMessage && (
+                <Alert variant='success' isFilled>
+                  <div {...cn('alert-text')}>{this.props.successMessage}</div>
+                </Alert>
+              )}
+            </div>
 
-        {this.renderAddEmailAccountModal()}
+            {this.renderAddEmailAccountModal()}
+          </div>
+        </ScrollbarContainer>
       </div>
     );
   }

@@ -5,6 +5,7 @@ import { bemClassName } from '../../../../lib/bem';
 
 import { PanelHeader } from '../../list/panel-header';
 import { IconLaptop1, IconPhone } from '@zero-tech/zui/icons';
+import { ScrollbarContainer } from '../../../scrollbar-container';
 
 import './styles.scss';
 
@@ -54,23 +55,25 @@ export class DownloadsPanel extends React.Component<Properties> {
           <PanelHeader title={'Download'} onBack={this.back} />
         </div>
 
-        <div {...cn('body')}>
-          <div>
-            <div {...cn('section-header')}>
-              <IconLaptop1 {...cn('section-icon')} size={24} />
-              <h4 {...cn('section-title')}>Desktop</h4>
+        <ScrollbarContainer variant='on-hover'>
+          <div {...cn('body')}>
+            <div>
+              <div {...cn('section-header')}>
+                <IconLaptop1 {...cn('section-icon')} size={24} />
+                <h4 {...cn('section-title')}>Desktop</h4>
+              </div>
+              {this.renderDownloadLinks(desktopLinks, true)}
             </div>
-            {this.renderDownloadLinks(desktopLinks, true)}
-          </div>
 
-          <div>
-            <div {...cn('section-header')}>
-              <IconPhone {...cn('section-icon')} size={24} />
-              <h4 {...cn('section-title')}>Mobile</h4>
+            <div>
+              <div {...cn('section-header')}>
+                <IconPhone {...cn('section-icon')} size={24} />
+                <h4 {...cn('section-title')}>Mobile</h4>
+              </div>
+              {this.renderDownloadLinks(mobileLinks)}
             </div>
-            {this.renderDownloadLinks(mobileLinks)}
           </div>
-        </div>
+        </ScrollbarContainer>
       </div>
     );
   }

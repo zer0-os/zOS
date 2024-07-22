@@ -8,7 +8,7 @@ describe(UploadableMedia, () => {
   it('uploads the media file', async () => {
     const channelId = 'channel-id';
     const imageFile = { nativeFile: { type: 'image/png' } } as any;
-    const uploadable = new UploadableMedia(imageFile, 500, 300);
+    const uploadable = new UploadableMedia(imageFile);
     uploadable.optimisticMessage = { id: 'optimistic-id' } as any;
 
     const { returnValue } = await expectSaga(() => uploadable.upload(channelId, 'root-id'))
@@ -16,8 +16,6 @@ describe(UploadableMedia, () => {
         [matchers.call.fn(uploadFileMessage), { id: 'uploaded-id' }],
       ])
       .run();
-
-    console.log(returnValue);
 
     expect(returnValue).toEqual({ id: 'uploaded-id' });
   });

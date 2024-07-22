@@ -15,8 +15,12 @@ jest.mock('../../store/channels-list/api', () => {
 });
 
 const mockEncryptFile = jest.fn();
+const mockGetImageDimensions = jest.fn();
 jest.mock('./matrix/media', () => {
-  return { encryptFile: (...args) => mockEncryptFile(...args) };
+  return {
+    encryptFile: (...args) => mockEncryptFile(...args),
+    getImageDimensions: (...args) => mockGetImageDimensions(...args),
+  };
 });
 
 const mockUploadAttachment = jest.fn();
@@ -674,6 +678,8 @@ describe('matrix client', () => {
         type: 'image/png',
       };
 
+      when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
+
       when(mockEncryptFile)
         .calledWith(expect.anything())
         .mockResolvedValue({
@@ -724,6 +730,8 @@ describe('matrix client', () => {
             name: 'test-file',
             optimisticId: 'optimistic-id',
             rootMessageId: 'root-message-id',
+            width: 800,
+            height: 600,
           },
           optimisticId: 'optimistic-id',
         })

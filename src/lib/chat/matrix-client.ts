@@ -41,7 +41,7 @@ import {
 import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
-import { encryptFile } from './matrix/media';
+import { encryptFile, getImageDimensions } from './matrix/media';
 import { uploadAttachment } from '../../store/messages/api';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
@@ -531,19 +531,13 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  async uploadFileMessage(
-    roomId: string,
-    media: File,
-    rootMessageId: string = '',
-    optimisticId = '',
-    width?: number,
-    height?: number
-  ) {
+  async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '') {
     if (!this.matrix.isRoomEncrypted(roomId)) {
       console.warn('uploadFileMessage called for non-encrypted room', roomId);
       return;
     }
 
+    const { width, height } = await getImageDimensions(media);
     const encrypedFileInfo = await encryptFile(media);
     const uploadedFile = await uploadAttachment(encrypedFileInfo.file);
 

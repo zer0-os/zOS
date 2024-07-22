@@ -124,8 +124,6 @@ export class Message extends React.Component<Properties, State> {
   renderMedia(media) {
     const { type, url, name } = media;
 
-    console.log('XXXTHIS MEDIA', media);
-
     if (!url) {
       this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
       return (

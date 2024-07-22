@@ -338,13 +338,6 @@ export async function getRoomTags(conversations: Partial<Channel>[]) {
   return await chat.get().matrix.getRoomTags(conversations);
 }
 
-export async function uploadFileMessage(
-  channelId: string,
-  media: File,
-  rootMessageId: string = '',
-  optimisticId = '',
-  width?: number,
-  height?: number
-) {
-  return chat.get().matrix.uploadFileMessage(channelId, media, rootMessageId, optimisticId, width, height);
+export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
+  return chat.get().matrix.uploadFileMessage(channelId, media, rootMessageId, optimisticId);
 }

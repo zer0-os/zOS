@@ -7,6 +7,7 @@ import { translateBackgroundValue } from './utils';
 import { PanelHeader } from '../../list/panel-header';
 import { SelectInput } from '@zero-tech/zui/components';
 import { IconCheck, IconLock1, IconPalette } from '@zero-tech/zui/icons';
+import { ScrollbarContainer } from '../../../scrollbar-container';
 
 import './styles.scss';
 
@@ -85,43 +86,45 @@ export class SettingsPanel extends React.Component<Properties> {
           <PanelHeader title={'Settings'} onBack={this.back} />
         </div>
 
-        <div {...cn('body')}>
-          <div>
-            <div {...cn('section-header')}>
-              <IconLock1 {...cn('section-icon')} size={24} />
-              <h4 {...cn('section-title')}>Privacy</h4>
+        <ScrollbarContainer variant='on-hover'>
+          <div {...cn('body')}>
+            <div>
+              <div {...cn('section-header')}>
+                <IconLock1 {...cn('section-icon')} size={24} />
+                <h4 {...cn('section-title')}>Privacy</h4>
+              </div>
+              <div {...cn('checkbox-container')}>
+                Messaging
+                <label {...cn('checkbox-label-wrapper')}>
+                  <input
+                    {...cn('checkbox')}
+                    type='checkbox'
+                    checked={this.props.isPublicReadReceipts}
+                    onChange={this.toggleReadReceipts}
+                  />
+                  {this.props.isPublicReadReceipts && <IconCheck {...cn('checkbox-icon')} size={14} isFilled />}
+                  Read Receipts
+                </label>
+              </div>
             </div>
-            <div {...cn('checkbox-container')}>
-              Messaging
-              <label {...cn('checkbox-label-wrapper')}>
-                <input
-                  {...cn('checkbox')}
-                  type='checkbox'
-                  checked={this.props.isPublicReadReceipts}
-                  onChange={this.toggleReadReceipts}
-                />
-                {this.props.isPublicReadReceipts && <IconCheck {...cn('checkbox-icon')} size={14} isFilled />}
-                Read Receipts
-              </label>
-            </div>
-          </div>
 
-          <div>
-            <div {...cn('section-header')}>
-              <IconPalette {...cn('section-icon')} size={24} />
-              <h4 {...cn('section-title')}>Appearance</h4>
-            </div>
-            <div {...cn('select-input-container')}>
-              <SelectInput
-                items={mainBackgroundItems}
-                label='Select Background'
-                placeholder='Select Background'
-                value={selectedBackgroundLabel}
-                itemSize='compact'
-              />
+            <div>
+              <div {...cn('section-header')}>
+                <IconPalette {...cn('section-icon')} size={24} />
+                <h4 {...cn('section-title')}>Appearance</h4>
+              </div>
+              <div {...cn('select-input-container')}>
+                <SelectInput
+                  items={mainBackgroundItems}
+                  label='Select Background'
+                  placeholder='Select Background'
+                  value={selectedBackgroundLabel}
+                  itemSize='compact'
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </ScrollbarContainer>
       </div>
     );
   }

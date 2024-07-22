@@ -81,6 +81,19 @@ describe('message', () => {
     expect(loadAttachmentDetails).toHaveBeenCalled();
   });
 
+  it('calculates and applies correct dimensions for the placeholder', () => {
+    const loadAttachmentDetails = jest.fn();
+    const media = { id: '1', url: null, width: 1200, height: 1200, type: MediaType.Image };
+    const maxWidthConstraint = 520;
+    const aspectRatioAdjustedHeight = 520;
+
+    const wrapper = subject({ loadAttachmentDetails, media });
+
+    const placeholderContainer = wrapper.find('.message__image-placeholder-container');
+
+    expect(placeholderContainer).toHaveProp('style', { width: maxWidthConstraint, height: aspectRatioAdjustedHeight });
+  });
+
   it('does not renders message text', () => {
     const wrapper = subject({ message: 'the message' });
 

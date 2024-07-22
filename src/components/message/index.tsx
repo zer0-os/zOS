@@ -60,6 +60,7 @@ export interface State {
   isDropdownMenuOpen: boolean;
   menuX: number;
   menuY: number;
+  isLoaded: boolean;
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -70,6 +71,7 @@ export class Message extends React.Component<Properties, State> {
     isDropdownMenuOpen: false,
     menuX: 0,
     menuY: 0,
+    isLoaded: false,
   } as State;
 
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -119,15 +121,53 @@ export class Message extends React.Component<Properties, State> {
   handleImageLoad = (event) => {
     const { naturalWidth: width, naturalHeight: height } = event.target;
     this.handleMediaAspectRatio(width, height);
+    this.setState({ isLoaded: true });
+  };
+
+  handlePlaceholderAspectRatio = (width: number, height: number, maxWidth: number, maxHeight: number) => {
+    const aspectRatio = width / height;
+
+    let finalWidth = width;
+    let finalHeight = height;
+
+    if (height > maxHeight) {
+      finalHeight = maxHeight;
+      finalWidth = maxHeight * aspectRatio;
+    }
+
+    if (finalWidth > maxWidth) {
+      finalWidth = maxWidth;
+      finalHeight = maxWidth / aspectRatio;
+    }
+
+    return { width: finalWidth, height: finalHeight };
+  };
+
+  getPlaceholderDimensions = (w, h) => {
+    const width = w || 300;
+    const height = h || 200;
+
+    const maxWidth = 520;
+    const maxHeight = 640;
+
+    const { width: finalWidth, height: finalHeight } = this.handlePlaceholderAspectRatio(
+      width,
+      height,
+      maxWidth,
+      maxHeight
+    );
+
+    return { width: finalWidth, height: finalHeight };
   };
 
   renderMedia(media) {
     const { type, url, name } = media;
+    const { width, height } = this.getPlaceholderDimensions(media.width, media.height);
 
     if (!url) {
       this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
       return (
-        <div {...cn('image-placeholder-container')}>
+        <div {...cn('image-placeholder-container')} style={{ width, height }}>
           <div {...cn('image-placeholder')} />
         </div>
       );
@@ -136,7 +176,12 @@ export class Message extends React.Component<Properties, State> {
     if (MediaType.Image === type) {
       return (
         <div {...cn('block-image')} onClick={this.onImageClick(media)}>
-          <img src={url} alt={this.props.media.name} onLoad={this.handleImageLoad} />
+          <img
+            src={url}
+            alt={this.props.media.name}
+            onLoad={this.handleImageLoad}
+            style={!this.state.isLoaded ? { width, height } : {}}
+          />
         </div>
       );
     } else if (MediaType.Video === type) {

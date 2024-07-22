@@ -60,7 +60,7 @@ export interface State {
   isDropdownMenuOpen: boolean;
   menuX: number;
   menuY: number;
-  isLoaded: boolean;
+  isImageLoaded: boolean;
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -71,7 +71,7 @@ export class Message extends React.Component<Properties, State> {
     isDropdownMenuOpen: false,
     menuX: 0,
     menuY: 0,
-    isLoaded: false,
+    isImageLoaded: false,
   } as State;
 
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -121,7 +121,7 @@ export class Message extends React.Component<Properties, State> {
   handleImageLoad = (event) => {
     const { naturalWidth: width, naturalHeight: height } = event.target;
     this.handleMediaAspectRatio(width, height);
-    this.setState({ isLoaded: true });
+    this.setState({ isImageLoaded: true });
   };
 
   handlePlaceholderAspectRatio = (width: number, height: number, maxWidth: number, maxHeight: number) => {
@@ -180,7 +180,7 @@ export class Message extends React.Component<Properties, State> {
             src={url}
             alt={this.props.media.name}
             onLoad={this.handleImageLoad}
-            style={!this.state.isLoaded ? { width, height } : {}}
+            style={!this.state.isImageLoaded ? { width, height } : {}}
           />
         </div>
       );

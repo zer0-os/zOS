@@ -30,6 +30,7 @@ describe(OverviewPanel, () => {
       onOpenEditProfile: () => {},
       onOpenRewards: () => {},
       onOpenSettings: () => {},
+      onOpenDownloads: () => {},
       onManageAccounts: () => {},
 
       ...props,
@@ -94,6 +95,17 @@ describe(OverviewPanel, () => {
     wrapper.find(Button).at(4).simulate('press');
 
     expect(onOpenSettings).toHaveBeenCalled();
+  });
+
+  it('publishes onOpenDownloads event', () => {
+    featureFlags.enableUserSettings = true;
+
+    const onOpenDownloads = jest.fn();
+    const wrapper = subject({ onOpenDownloads });
+
+    wrapper.find(Button).at(5).simulate('press');
+
+    expect(onOpenDownloads).toHaveBeenCalled();
   });
 
   it('publishes openAccountManagement event', () => {

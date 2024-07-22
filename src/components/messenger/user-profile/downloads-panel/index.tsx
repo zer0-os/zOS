@@ -51,7 +51,7 @@ export class DownloadsPanel extends React.Component<Properties> {
     return (
       <div {...cn()}>
         <div {...cn('header-container')}>
-          <PanelHeader title={'Downloads'} onBack={this.back} />
+          <PanelHeader title={'Download'} onBack={this.back} />
         </div>
 
         <div {...cn('body')}>

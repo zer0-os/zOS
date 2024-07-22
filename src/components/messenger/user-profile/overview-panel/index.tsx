@@ -186,19 +186,17 @@ export class OverviewPanel extends React.Component<Properties, State> {
 
   renderFooter() {
     return (
-      <>
-        <div {...cn('footer')}>
-          <Button
-            {...cn('footer-button')}
-            variant={ButtonVariant.Secondary}
-            color={ButtonColor.Greyscale}
-            onPress={this.openLogoutDialog}
-            startEnhancer={<IconLogOut3 size={20} />}
-          >
-            Log Out
-          </Button>
-        </div>
-      </>
+      <div {...cn('footer')}>
+        <Button
+          {...cn('footer-button')}
+          variant={ButtonVariant.Secondary}
+          color={ButtonColor.Greyscale}
+          onPress={this.openLogoutDialog}
+          startEnhancer={<IconLogOut3 size={20} />}
+        >
+          Log Out
+        </Button>
+      </div>
     );
   }
 

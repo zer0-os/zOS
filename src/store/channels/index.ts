@@ -56,6 +56,7 @@ export interface Channel {
   reply?: ParentMessage;
   isFavorite: boolean;
   otherMembersTyping: string[];
+  isMuted?: boolean;
 }
 
 export const CHANNEL_DEFAULTS = {
@@ -77,6 +78,7 @@ export const CHANNEL_DEFAULTS = {
   moderatorIds: [],
   isFavorite: false,
   otherMembersTyping: [],
+  isMuted: false,
 };
 
 export enum SagaActionTypes {
@@ -87,6 +89,8 @@ export enum SagaActionTypes {
   OnFavoriteRoom = 'channels/saga/onFavoriteRoom',
   OnUnfavoriteRoom = 'channels/saga/onUnfavoriteRoom',
   UserTypingInRoom = 'channels/saga/userTypingInRoom',
+  OnMuteRoom = 'channels/saga/onMuteRoom',
+  OnUnmuteRoom = 'channels/saga/onUnmuteRoom',
 }
 
 const openConversation = createAction<{ conversationId: string }>(SagaActionTypes.OpenConversation);
@@ -96,6 +100,8 @@ const onRemoveReply = createAction(SagaActionTypes.OnRemoveReply);
 const onFavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnFavoriteRoom);
 const onUnfavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnfavoriteRoom);
 const userTypingInRoom = createAction<{ roomId: string }>(SagaActionTypes.UserTypingInRoom);
+const onMuteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnMuteRoom);
+const onUnmuteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnmuteRoom);
 
 const slice = createNormalizedSlice({
   name: 'channels',
@@ -117,4 +123,6 @@ export {
   onFavoriteRoom,
   onUnfavoriteRoom,
   userTypingInRoom,
+  onMuteRoom,
+  onUnmuteRoom,
 };

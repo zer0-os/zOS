@@ -1,8 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { chat } from '../../lib/chat';
-import { receive as receiveUser } from '../users';
+import { chat, getRoomTags } from '../../lib/chat';
 
 import {
   fetchConversations,
@@ -12,11 +11,11 @@ import {
   otherUserJoinedChannel,
   otherUserLeftChannel,
   mapToZeroUsers,
-  fetchUserPresence,
   fetchRoomName,
   roomNameChanged,
   fetchRoomAvatar,
   roomAvatarChanged,
+  loadSecondaryConversationData,
 } from './saga';
 
 import { RootState, rootReducer } from '../reducer';
@@ -44,7 +43,6 @@ const MOCK_CONVERSATIONS = [mockConversation('0001'), mockConversation('0002')];
 
 const chatClient = {
   getConversations: () => MOCK_CONVERSATIONS,
-  getUserPresence: () => {},
   getRoomNameById: () => {},
   getRoomAvatarById: () => {},
 };
@@ -56,8 +54,8 @@ describe('channels list saga', () => {
         [matchers.call.fn(chat.get), chatClient],
         [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         [matchers.call.fn(mapToZeroUsers), null],
-        [matchers.fork.fn(fetchUserPresence), null],
         [matchers.call.fn(getUserReadReceiptPreference), null],
+        [matchers.call.fn(getRoomTags), null],
       ]);
     }
 
@@ -96,7 +94,6 @@ describe('channels list saga', () => {
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
           [matchers.call.fn(mapToZeroUsers), null],
-          [matchers.call.fn(fetchUserPresence), null],
           [matchers.call.fn(mapAdminUserIdToZeroUserId), null],
           [matchers.call.fn(getConversationsBus), conversationsChannelStub],
           [matchers.call.fn(getUserReadReceiptPreference), null],
@@ -126,6 +123,20 @@ describe('channels list saga', () => {
         'optimistic-id-2',
         'conversation-id',
       ]);
+    });
+
+    it('calls loadSecondaryConversationData', async () => {
+      await subject(fetchConversations)
+        .provide([
+          [matchers.call.fn(chat.get), chatClient],
+          [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
+          [matchers.call.fn(mapToZeroUsers), null],
+          [matchers.call.fn(getUserReadReceiptPreference), null],
+          [matchers.call.fn(getRoomTags), null],
+        ])
+        .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
+        .fork(loadSecondaryConversationData, [...MOCK_CONVERSATIONS])
+        .run();
     });
   });
 
@@ -219,7 +230,6 @@ describe('channels list saga', () => {
     function subject(...args: Parameters<typeof expectSaga>) {
       return expectSaga(...args).provide([
         [matchers.call.fn(mapToZeroUsers), null],
-        [matchers.call.fn(fetchUserPresence), null],
       ]);
     }
 
@@ -498,99 +508,6 @@ describe('channels list saga', () => {
 
       expect(rooms[0].moderatorIds).toIncludeSameMembers(['user-1', 'user-2']);
       expect(rooms[1].moderatorIds).toIncludeSameMembers(['user-3']);
-    });
-  });
-
-  describe(fetchUserPresence, () => {
-    function subject(users, provide = []) {
-      return expectSaga(fetchUserPresence, users).provide([
-        [matchers.call.fn(chat.get), chatClient],
-        ...provide,
-      ]);
-    }
-
-    const mockOtherMembers = [{ matrixId: 'member_001' }, { matrixId: 'member_002' }, { matrixId: 'member_003' }];
-
-    it('fetches and updates user presence data', async () => {
-      const mockPresenceData = {
-        lastSeenAt: '2023-01-01T00:00:00.000Z',
-        isOnline: true,
-      };
-
-      await subject(mockOtherMembers, [
-        [matchers.call([chatClient, chatClient.getUserPresence], 'member_001'), mockPresenceData],
-        [matchers.call([chatClient, chatClient.getUserPresence], 'member_002'), mockPresenceData],
-        [matchers.call([chatClient, chatClient.getUserPresence], 'member_003'), mockPresenceData],
-      ])
-        .call(chat.get)
-        .call([chatClient, chatClient.getUserPresence], 'member_001')
-        .call([chatClient, chatClient.getUserPresence], 'member_002')
-        .call([chatClient, chatClient.getUserPresence], 'member_003')
-        .run();
-    });
-
-    it('does not fail if member does not have matrixId', async () => {
-      const conversationsWithMissingMatrixId = [{ otherMembers: [{ matrixId: null }] }];
-
-      await subject(conversationsWithMissingMatrixId).call(chat.get).not.call(chatClient.getUserPresence).run();
-    });
-
-    it('dispatches receiveUser action with correct data when user is online', () => {
-      const mockUsers = [
-        {
-          userId: 'user_1',
-          matrixId: 'matrix_1',
-          lastSeenAt: '',
-          isOnline: false,
-        },
-      ];
-
-      const mockPresenceData1 = { lastSeenAt: '2023-10-17T10:00:00.000Z', isOnline: true };
-
-      testSaga(fetchUserPresence, mockUsers)
-        .next()
-        .call(chat.get)
-        .next(chatClient)
-        .call([chatClient, chatClient.getUserPresence], 'matrix_1')
-        .next(mockPresenceData1)
-        .put(
-          receiveUser({
-            userId: mockUsers[0].userId,
-            lastSeenAt: mockPresenceData1.lastSeenAt,
-            isOnline: mockPresenceData1.isOnline,
-          })
-        )
-        .next()
-        .isDone();
-    });
-
-    it('dispatches receiveUser action with lastSeenAt null and isOnline false when user is offline', () => {
-      const mockUsers = [
-        {
-          userId: 'user_1',
-          matrixId: 'matrix_1',
-          lastSeenAt: '',
-          isOnline: false,
-        },
-      ];
-
-      const mockPresenceData1 = { lastSeenAt: null, isOnline: false };
-
-      testSaga(fetchUserPresence, mockUsers)
-        .next()
-        .call(chat.get)
-        .next(chatClient)
-        .call([chatClient, chatClient.getUserPresence], 'matrix_1')
-        .next(mockPresenceData1)
-        .put(
-          receiveUser({
-            userId: mockUsers[0].userId,
-            lastSeenAt: mockPresenceData1.lastSeenAt,
-            isOnline: mockPresenceData1.isOnline,
-          })
-        )
-        .next()
-        .isDone();
     });
   });
 

@@ -3,8 +3,7 @@ import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
 import { receive, denormalizeConversations, setStatus } from '.';
-import { chat } from '../../lib/chat';
-import { receive as receiveUser } from '../users';
+import { chat, getRoomTags } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
@@ -25,6 +24,7 @@ import { uniqNormalizedList } from '../utils';
 import { channelListStatus, rawConversationsList } from './selectors';
 import { setIsConversationsLoaded } from '../chat';
 import { getUserReadReceiptPreference } from '../user-profile/saga';
+import { featureFlags } from '../../lib/feature-flags';
 
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
@@ -44,19 +44,6 @@ export function* mapToZeroUsers(channels: any[]) {
   return;
 }
 
-export function* fetchUserPresence(users) {
-  const chatClient = yield call(chat.get);
-  const uniqueUsers = uniqBy(users, (u) => u.matrixId);
-  for (let user of uniqueUsers) {
-    const matrixId = user.matrixId;
-    if (!matrixId) continue;
-    const presenceData = yield call([chatClient, chatClient.getUserPresence], matrixId);
-    if (!presenceData) continue;
-    const { lastSeenAt, isOnline } = presenceData;
-    yield put(receiveUser({ userId: user.userId, lastSeenAt, isOnline }));
-  }
-}
-
 export function* fetchRoomName(roomId) {
   const chatClient = yield call(chat.get);
   const roomName = yield call([chatClient, chatClient.getRoomNameById], roomId);
@@ -70,6 +57,8 @@ export function* fetchRoomAvatar(roomId) {
 }
 
 export function* fetchConversations() {
+  featureFlags.enableTimerLogs && console.time('xxxfetchConversations');
+
   yield put(setStatus(AsyncListStatus.Fetching));
   const chatClient = yield call(chat.get);
   const conversations = yield call([
@@ -77,10 +66,10 @@ export function* fetchConversations() {
     chatClient.getConversations,
   ]);
 
+  featureFlags.enableTimerLogs && console.time('xxxmapToZeroUsers');
   yield call(mapToZeroUsers, conversations);
+  featureFlags.enableTimerLogs && console.timeEnd('xxxmapToZeroUsers');
 
-  const otherMembersOfConversations = conversations.flatMap((c) => c.otherMembers);
-  yield fork(fetchUserPresence, otherMembersOfConversations);
   yield call(getUserReadReceiptPreference);
 
   const existingConversationList = yield select(denormalizeConversations);
@@ -106,6 +95,19 @@ export function* fetchConversations() {
 
   const channel = yield call(getConversationsBus);
   yield put(channel, { type: ConversationEvents.ConversationsLoaded });
+
+  featureFlags.enableTimerLogs && console.timeEnd('xxxfetchConversations');
+
+  featureFlags.enableTimerLogs && console.time('xxxloadSecondaryConversationData');
+  const combinedConversations = [...optimisticConversationIds, ...conversations];
+  yield fork(loadSecondaryConversationData, combinedConversations);
+  featureFlags.enableTimerLogs && console.timeEnd('xxxloadSecondaryConversationData');
+}
+
+export function* loadSecondaryConversationData(conversations) {
+  yield call(getRoomTags, conversations);
+
+  yield put(receive(conversations));
 }
 
 export function userSelector(state, userIds) {
@@ -317,7 +319,6 @@ function* otherUserLeftChannelAction({ payload }) {
 export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList);
   yield call(mapToZeroUsers, [channel]);
-  yield fork(fetchUserPresence, channel.otherMembers);
   yield fork(fetchRoomName, channel.id);
   yield fork(fetchRoomAvatar, channel.id);
 

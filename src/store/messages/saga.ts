@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState } from '../channels';
@@ -21,6 +21,7 @@ import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
+import { decryptFile } from '../../lib/chat/matrix/media';
 
 export interface Payload {
   channelId: string;
@@ -81,6 +82,10 @@ const _isActive = (roomId) => (state) => {
   return roomId === state.chat.activeConversationId;
 };
 
+export const isRoomMutedSelector = (channelId) => (state) => {
+  return getDeepProperty(state, `normalized.channels['${channelId}'].isMuted`, false);
+};
+
 export function* getLocalZeroUsersMap() {
   const users = yield select((state) => state.normalized.users || {});
   const zeroUsersMap: { [matrixId: string]: User } = {};
@@ -129,7 +134,6 @@ export function* fetch(action) {
 
   let messagesResponse: any;
   let messages: any[];
-
   try {
     const chatClient = yield call(chat.get);
 
@@ -413,12 +417,14 @@ export function* receiveDelete(action) {
 
 let savedMessages = [];
 export function* receiveNewMessage(action) {
+  const BATCH_INTERVAL = 500;
+
   savedMessages.push(action.payload);
   if (savedMessages.length > 1) {
     // we already have a leading event that's awaiting the debounce delay
     return;
   }
-  yield delay(500);
+  yield delay(BATCH_INTERVAL);
   // Clone and empty so follow up events can debounce again
   const batchedPayloads = [...savedMessages];
   savedMessages = [];
@@ -486,6 +492,7 @@ export function* replaceOptimisticMessage(currentMessages, message) {
   messages[messageIndex] = {
     ...optimisticMessage,
     ...message,
+    media: optimisticMessage.media,
     sendStatus: MessageSendStatus.SUCCESS,
   };
   return messages;
@@ -528,6 +535,9 @@ export function isOwner(currentUser, entityUserMatrixId) {
 export function* sendBrowserNotification(eventData) {
   if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
 
+  const isMuted = yield select(isRoomMutedSelector(eventData?.roomId));
+  if (isMuted) return;
+
   if (eventData.type === NotifiableEventType.RoomMessage) {
     yield call(sendBrowserMessage, mapMessage(eventData));
   }
@@ -557,6 +567,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
+  yield takeEvery(SagaActionTypes.LoadAttachmentDetails, loadAttachmentDetails);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
@@ -571,20 +582,55 @@ function* receiveLiveRoomEventAction({ payload }) {
 }
 
 function* readReceiptReceived({ payload }) {
-  const { messageId, userId } = payload;
+  const { messageId, userId, roomId } = payload;
 
-  const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
-  const currentUser = yield select(currentUserSelector());
+  if (yield select(_isActive(roomId))) {
+    const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
+    const currentUser = yield select(currentUserSelector());
 
-  const readByUser = Object.values(zeroUsersMap).find((user) => user.matrixId === userId);
+    const readByUser = Object.values(zeroUsersMap).find((user) => user.matrixId === userId);
 
-  if (readByUser && readByUser.userId !== currentUser.id) {
-    const selectedMessage = yield select(messageSelector(messageId));
+    if (readByUser && readByUser.userId !== currentUser.id) {
+      const selectedMessage = yield select(messageSelector(messageId));
 
-    if (selectedMessage) {
-      const updatedReadBy = [...(selectedMessage.readBy || []), readByUser];
+      if (selectedMessage) {
+        const updatedReadBy = [...(selectedMessage.readBy || []), readByUser];
 
-      yield put(receiveMessage({ id: messageId, readBy: updatedReadBy }));
+        yield put(receiveMessage({ id: messageId, readBy: updatedReadBy }));
+      }
     }
   }
+}
+
+const inProgress = {};
+export function* loadAttachmentDetails(action) {
+  const { media, messageId } = action.payload;
+
+  if (inProgress[messageId] || media.url) {
+    return;
+  }
+
+  inProgress[messageId] = true;
+
+  try {
+    const blob = yield call(decryptFile, media.file, media.mimetype);
+
+    const url = URL.createObjectURL(blob);
+
+    if (!url) {
+      return;
+    }
+
+    yield put(
+      receiveMessage({
+        id: messageId,
+        media: { ...media, url: url },
+        image: { ...media, url: url },
+      })
+    );
+  } catch (error) {
+    console.error('Failed to download and decrypt image:', error);
+  }
+
+  inProgress[messageId] = false;
 }

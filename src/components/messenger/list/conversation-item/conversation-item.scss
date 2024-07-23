@@ -55,10 +55,21 @@
 
   &__timestamp {
     @include glass-text-tertiary-color;
+    display: flex;
+    justify-content: flex-end;
+    min-width: 42px;
+
     font-weight: 400;
     font-size: 10px;
     line-height: 15px;
     white-space: nowrap;
+  }
+
+  &__muted-icon {
+    @include glass-text-tertiary-color;
+
+    margin-right: 6px;
+    align-self: center;
   }
 
   &__message {

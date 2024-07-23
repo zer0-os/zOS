@@ -22,6 +22,15 @@
     width: 235px;
   }
 
+  &__panel-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    // Forcing a height here allows the flex-grow to fill the size without growing too big
+    height: 1px;
+  }
+
   &__body {
     margin: 16px 16px 0 16px;
     flex-grow: 1;

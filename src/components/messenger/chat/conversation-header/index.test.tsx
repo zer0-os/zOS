@@ -1,13 +1,10 @@
 import { shallow } from 'enzyme';
 
 import { ConversationHeader, Properties } from '.';
-import Tooltip from '../../../tooltip';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../../group-management-menu';
 import { bem } from '../../../../lib/bem';
 import { stubUser } from '../../../../store/test/store';
-
-import { Avatar } from '@zero-tech/zui/components';
 
 const c = bem('.conversation-header');
 
@@ -23,11 +20,14 @@ describe(ConversationHeader, () => {
       canEdit: false,
       canViewDetails: false,
       isSecondarySidekickOpen: false,
+      isRoomMuted: false,
       onAddMember: () => null,
       onEdit: () => null,
       onLeaveRoom: () => null,
       onViewDetails: () => null,
       toggleSecondarySidekick: () => null,
+      onMuteRoom: () => null,
+      onUnmuteRoom: () => null,
 
       ...props,
     };
@@ -39,22 +39,13 @@ describe(ConversationHeader, () => {
     it('renders channel name as title when name is provided', function () {
       const wrapper = subject({ name: 'this is my channel name' });
 
-      expect(wrapper.find(Tooltip).html()).toContain('this is my channel name');
+      expect(wrapper.find(c('title')).html()).toContain('this is my channel name');
     });
 
     it('renders otherMembers as title when name is NOT provided', function () {
       const wrapper = subject({ otherMembers: [stubUser({ firstName: 'first-name', lastName: 'last-name' })] });
 
-      expect(wrapper.find(Tooltip).html()).toContain(
-        otherMembersToString([stubUser({ firstName: 'first-name', lastName: 'last-name' })])
-      );
-    });
-
-    it('renders otherMembers in tooltip', function () {
-      const wrapper = subject({ otherMembers: [stubUser({ firstName: 'first-name', lastName: 'last-name' })] });
-
-      expect(wrapper.find(Tooltip)).toHaveProp(
-        'overlay',
+      expect(wrapper.find(c('title')).html()).toContain(
         otherMembersToString([stubUser({ firstName: 'first-name', lastName: 'last-name' })])
       );
     });
@@ -66,40 +57,16 @@ describe(ConversationHeader, () => {
         otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })],
       });
 
-      expect(wrapper.find(Tooltip).html()).toContain('Johnny Sanderson');
-    });
-
-    it('header renders online status in the subtitle', function () {
-      const wrapper = subject({ otherMembers: [stubUser({ isOnline: true })] });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('Online');
-    });
-
-    it('header renders avatar online status', function () {
-      const wrapper = subject({ otherMembers: [stubUser({ isOnline: true })] });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'active');
-    });
-
-    it('header renders offline status', function () {
-      const wrapper = subject({ otherMembers: [stubUser({ isOnline: false })] });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'offline');
+      expect(wrapper.find(c('title')).html()).toContain('Johnny Sanderson');
     });
 
     it('renders a formatted subtitle', function () {
       const wrapper = subject({
         isOneOnOne: true,
-        otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', isOnline: true, lastSeenAt: null })],
+        otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', lastSeenAt: null })],
       });
 
-      expect(wrapper.find(c('subtitle'))).toHaveText('0://arc:vet | Online');
-    });
-
-    it('renders empty subtitle if no primaryZID, no wallet and no lastSeenAt', function () {
-      const wrapper = subject({ isOneOnOne: true, otherMembers: [stubUser({ displaySubHandle: '' })] });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('');
+      expect(wrapper.find(c('subtitle'))).toHaveText('0://arc:vet');
     });
   });
 
@@ -113,43 +80,7 @@ describe(ConversationHeader, () => {
         ],
       });
 
-      expect(wrapper.find(Tooltip).html()).toContain('Johnny Sanderson, Jack Black');
-    });
-
-    it('header renders online status in the subtitle if any member is online', function () {
-      const wrapper = subject({
-        isOneOnOne: false,
-        otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })],
-      });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('Online');
-    });
-
-    it('header renders online status if any member is online', function () {
-      const wrapper = subject({
-        isOneOnOne: false,
-        otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: true })],
-      });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'active');
-    });
-
-    it('header renders offline status', function () {
-      const wrapper = subject({
-        isOneOnOne: false,
-        otherMembers: [stubUser({ isOnline: false }), stubUser({ isOnline: false })],
-      });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'offline');
-    });
-
-    it('renders online status as subtitle ', function () {
-      const wrapper = subject({
-        isOneOnOne: false,
-        otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', isOnline: false })],
-      });
-
-      expect(wrapper.find(c('subtitle'))).toHaveText('Offline');
+      expect(wrapper.find(c('title')).html()).toContain('Johnny Sanderson, Jack Black');
     });
 
     it('fires toggleSecondarySidekick', function () {
@@ -192,6 +123,22 @@ describe(ConversationHeader, () => {
       subject({ onViewDetails }).find(GroupManagementMenu).simulate('viewGroupInformation');
 
       expect(onViewDetails).toHaveBeenCalledOnce();
+    });
+
+    it('onMuteRoom', function () {
+      const onMuteRoom = jest.fn();
+
+      subject({ onMuteRoom }).find(GroupManagementMenu).simulate('mute');
+
+      expect(onMuteRoom).toHaveBeenCalledOnce();
+    });
+
+    it('onUnmuteRoom', function () {
+      const onUnmuteRoom = jest.fn();
+
+      subject({ onUnmuteRoom }).find(GroupManagementMenu).simulate('unmute');
+
+      expect(onUnmuteRoom).toHaveBeenCalledOnce();
     });
   });
 });

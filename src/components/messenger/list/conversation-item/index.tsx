@@ -8,6 +8,7 @@ import { MoreMenu } from './more-menu';
 import { Avatar } from '@zero-tech/zui/components';
 
 import { ContentHighlighter } from '../../../content-highlighter';
+import { IconBellOff1 } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-item.scss';
@@ -62,11 +63,6 @@ export class ConversationItem extends React.Component<Properties, State> {
     this.setState({ isContextMenuOpen: false });
   };
 
-  get conversationStatus() {
-    const isAnyUserOnline = this.props.conversation.otherMembers.some((user) => user.isOnline);
-    return isAnyUserOnline ? 'active' : 'offline';
-  }
-
   highlightedName = () => {
     const { filter, conversation } = this.props;
     const name = conversation.name || otherMembersToString(conversation.otherMembers);
@@ -86,7 +82,6 @@ export class ConversationItem extends React.Component<Properties, State> {
       <Avatar
         size={'regular'}
         imageURL={imageUrl}
-        statusType={this.conversationStatus}
         tabIndex={-1}
         isRaised
         isGroup={!this.props.conversation.isOneOnOne}
@@ -150,6 +145,8 @@ export class ConversationItem extends React.Component<Properties, State> {
             <div {...cn('name')} is-unread={isUnread}>
               {this.highlightedName()}
             </div>
+            {conversation.isMuted && <IconBellOff1 {...cn('muted-icon')} size={16} />}
+
             <div {...cn('timestamp')}>{previewDisplayDate}</div>
           </div>
           <div {...cn('content')}>

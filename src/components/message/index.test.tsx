@@ -65,6 +65,35 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image').exists()).toBe(true);
   });
 
+  it('renders image placeholder if no media url', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    const wrapper = subject({ loadAttachmentDetails, media: { id: '1', url: null, type: MediaType.Image } });
+
+    expect(wrapper.find('.message__image-placeholder').exists()).toBe(true);
+  });
+
+  it('calls loadAttachmentDetails if no media url', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    subject({ messageId: 'test-id', loadAttachmentDetails, media: { url: null, type: MediaType.Image } });
+
+    expect(loadAttachmentDetails).toHaveBeenCalled();
+  });
+
+  it('calculates and applies correct dimensions for the placeholder', () => {
+    const loadAttachmentDetails = jest.fn();
+    const media = { id: '1', url: null, width: 1200, height: 1200, type: MediaType.Image };
+    const maxWidthConstraint = 520;
+    const aspectRatioAdjustedHeight = 520;
+
+    const wrapper = subject({ loadAttachmentDetails, media });
+
+    const placeholderContainer = wrapper.find('.message__image-placeholder-container');
+
+    expect(placeholderContainer).toHaveProp('style', { width: maxWidthConstraint, height: aspectRatioAdjustedHeight });
+  });
+
   it('does not renders message text', () => {
     const wrapper = subject({ message: 'the message' });
 
@@ -469,66 +498,6 @@ describe('message', () => {
       wrapper.find('[className$="-audio"]').simulate('click');
 
       expect(onImageClick).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('getReceiptIcon', () => {
-    it('renders IconCheck for in-progress messages', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: MessageSendStatus.IN_PROGRESS,
-        isOwner: true,
-        isLastMessage: true,
-      });
-
-      expect(wrapper.find('.message__sent-icon')).toExist();
-    });
-
-    it('renders IconCheckDouble with "read" class for read messages', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: MessageSendStatus.SUCCESS,
-        isOwner: true,
-        isLastMessage: true,
-        isMessageRead: true,
-      });
-
-      expect(wrapper.find('.message__read-icon--read')).toExist();
-    });
-
-    it('renders IconCheckDouble with "delivered" class for delivered messages', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: MessageSendStatus.SUCCESS,
-        isOwner: true,
-        isLastMessage: true,
-        isMessageRead: false,
-      });
-
-      expect(wrapper.find('.message__read-icon--delivered')).toExist();
-    });
-
-    it('renders IconCheckDouble with "delivered" class when sendStatus is undefined', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: undefined,
-        isOwner: true,
-        isLastMessage: true,
-      });
-
-      expect(wrapper.find('.message__read-icon--delivered')).toExist();
-    });
-
-    it('renders nothing for failed messages', () => {
-      const wrapper = subject({
-        message: 'text',
-        sendStatus: MessageSendStatus.FAILED,
-        isOwner: true,
-        isLastMessage: true,
-      });
-
-      expect(wrapper.find('.message__read-icon')).not.toExist();
-      expect(wrapper.find('.message__sent-icon')).not.toExist();
     });
   });
 });

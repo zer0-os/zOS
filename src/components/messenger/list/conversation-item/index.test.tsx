@@ -5,6 +5,7 @@ import { ConversationItem, Properties } from '.';
 import { ContentHighlighter } from '../../../content-highlighter';
 import { Avatar } from '@zero-tech/zui/components';
 import { bem } from '../../../../lib/bem';
+import { IconBellOff1 } from '@zero-tech/zui/icons';
 
 const c = bem('.conversation-item');
 
@@ -62,6 +63,22 @@ describe(ConversationItem, () => {
     expect(title(wrapper)).toStrictEqual('My Named Conversation');
   });
 
+  it('renders muted icon if conversation is muted', function () {
+    const wrapper = subject({
+      conversation: { ...convoWith(), id: 'test-conversation-id', isMuted: true },
+    });
+
+    expect(wrapper).toHaveElement(IconBellOff1);
+  });
+
+  it('does not render muted icon if conversation is not muted', function () {
+    const wrapper = subject({
+      conversation: { ...convoWith(), id: 'test-conversation-id', isMuted: false },
+    });
+
+    expect(wrapper).not.toHaveElement(IconBellOff1);
+  });
+
   it('publishes click event', function () {
     const onClick = jest.fn();
     const wrapper = subject({ onClick, conversation: { ...convoWith(), id: 'test-conversation-id' } });
@@ -115,24 +132,6 @@ describe(ConversationItem, () => {
     const wrapper = subject({ conversation: { previewDisplayDate: 'Aug 1, 2021', otherMembers: [] } as any });
 
     expect(wrapper.find(c('timestamp'))).toHaveText('Aug 1, 2021');
-  });
-
-  describe('status', () => {
-    it('renders inactive if no other members are online', function () {
-      const wrapper = subject({
-        conversation: { icon: 'icon-url', ...convoWith({ isOnline: false }, { isOnline: false }) },
-      });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'offline');
-    });
-
-    it('renders active if any other members are online', function () {
-      const wrapper = subject({
-        conversation: { icon: 'icon-url', ...convoWith({ isOnline: false }, { isOnline: true }) },
-      });
-
-      expect(wrapper.find(Avatar)).toHaveProp('statusType', 'active');
-    });
   });
 });
 

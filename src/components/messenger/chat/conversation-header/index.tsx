@@ -2,9 +2,7 @@ import * as React from 'react';
 
 import { User } from '../../../../store/channels';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
-import Tooltip from '../../../tooltip';
 import { GroupManagementMenu } from '../../../group-management-menu';
-import { lastSeenText } from '../../list/utils/utils';
 import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../../../lib/bem';
@@ -23,11 +21,14 @@ export interface Properties {
   canEdit: boolean;
   canViewDetails: boolean;
   isSecondarySidekickOpen: boolean;
+  isRoomMuted: boolean;
   onAddMember: () => void;
   onEdit: () => void;
   onLeaveRoom: () => void;
   onViewDetails: () => void;
   toggleSecondarySidekick: () => void;
+  onMuteRoom: () => void;
+  onUnmuteRoom: () => void;
 }
 
 export class ConversationHeader extends React.Component<Properties> {
@@ -51,6 +52,14 @@ export class ConversationHeader extends React.Component<Properties> {
     this.props.toggleSecondarySidekick();
   };
 
+  muteRoom = () => {
+    this.props.onMuteRoom();
+  };
+
+  unmuteRoom = () => {
+    this.props.onUnmuteRoom();
+  };
+
   isOneOnOne() {
     return this.props.isOneOnOne;
   }
@@ -71,29 +80,8 @@ export class ConversationHeader extends React.Component<Properties> {
     return '';
   }
 
-  avatarStatus() {
-    if (!this.props.otherMembers) {
-      return 'offline';
-    }
-
-    return this.anyOthersOnline() ? 'active' : 'offline';
-  }
-
-  anyOthersOnline() {
-    return this.props.otherMembers.some((m) => m.isOnline);
-  }
-
   renderAvatar() {
-    return (
-      <Avatar
-        size={'medium'}
-        imageURL={this.avatarUrl()}
-        statusType={this.avatarStatus()}
-        tabIndex={-1}
-        isRaised
-        isGroup={!this.isOneOnOne()}
-      />
-    );
+    return <Avatar size={'medium'} imageURL={this.avatarUrl()} tabIndex={-1} isRaised isGroup={!this.isOneOnOne()} />;
   }
 
   renderSubTitle() {
@@ -104,11 +92,7 @@ export class ConversationHeader extends React.Component<Properties> {
     const member = this.props.otherMembers[0];
 
     if (this.isOneOnOne() && member) {
-      const lastSeen = lastSeenText(member);
-      const hasDivider = lastSeen && member.displaySubHandle ? ' | ' : '';
-      return `${member.displaySubHandle || ''}${hasDivider}${lastSeen}`.trim();
-    } else {
-      return this.anyOthersOnline() ? 'Online' : 'Offline';
+      return `${member.displaySubHandle || ''}`;
     }
   }
 
@@ -120,19 +104,9 @@ export class ConversationHeader extends React.Component<Properties> {
     const otherMembersString = otherMembersToString(otherMembers);
 
     return (
-      <Tooltip
-        placement='left'
-        overlay={otherMembersString}
-        align={{
-          offset: [
-            -10,
-            0,
-          ],
-        }}
-        {...cn('user-tooltip')}
-      >
+      <div {...cn('user-tooltip')}>
         <div>{name || otherMembersString}</div>
-      </Tooltip>
+      </div>
     );
   }
 
@@ -154,10 +128,13 @@ export class ConversationHeader extends React.Component<Properties> {
             canLeaveRoom={this.props.canLeaveRoom}
             canEdit={this.props.canEdit}
             canViewGroupInformation={this.props.canViewDetails}
+            isRoomMuted={this.props.isRoomMuted}
             onStartAddMember={this.addMember}
             onLeave={this.leaveGroup}
             onEdit={this.editGroup}
             onViewGroupInformation={this.viewGroupInformation}
+            onMute={this.muteRoom}
+            onUnmute={this.unmuteRoom}
           />
 
           <IconButton

@@ -7,6 +7,7 @@ import { State as EditProfileState } from '../../store/edit-profile';
 import { featureFlags } from '../../lib/feature-flags';
 import { PanelHeader } from '../messenger/list/panel-header';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
+import { ScrollbarContainer } from '../scrollbar-container';
 
 import { bem } from '../../lib/bem';
 import './styles.scss';
@@ -175,67 +176,71 @@ export class EditProfile extends React.Component<Properties, State> {
           <PanelHeader title='Edit Profile' onBack={this.props.onClose} />
         </div>
 
-        <div className={c('body')}>
-          <ImageUpload
-            className={c('image-upload')}
-            onChange={this.trackImage}
-            icon={this.renderImageUploadIcon()}
-            uploadText='Select or drag and drop'
-            isError={Boolean(this.props.errors.image)}
-            errorMessage={this.props.errors.image}
-            imageSrc={this.props.currentProfileImage} // to show the existing image
-          />
-          <Input
-            label='Display Name'
-            name='name'
-            value={this.state.name}
-            onChange={this.trackName}
-            error={!!this.nameError}
-            alert={this.nameError}
-            className={c('body-input')}
-          />
-          {featureFlags.allowEditPrimaryZID && (
-            <div className={c('select-input')}>
-              {this.renderZeroIDLabel()}
-              <SelectInput
-                items={this.menuItems}
-                label=''
-                placeholder={this.props.currentPrimaryZID || 'None (wallet address)'}
-                value={this.state.primaryZID}
-                itemSize='spacious'
-                menuClassName={c('zid-select-menu')}
+        <ScrollbarContainer variant='on-hover'>
+          <div className={c('content-wrapper')}>
+            <div className={c('body')}>
+              <ImageUpload
+                className={c('image-upload')}
+                onChange={this.trackImage}
+                icon={this.renderImageUploadIcon()}
+                uploadText='Select or drag and drop'
+                isError={Boolean(this.props.errors.image)}
+                errorMessage={this.props.errors.image}
+                imageSrc={this.props.currentProfileImage} // to show the existing image
               />
+              <Input
+                label='Display Name'
+                name='name'
+                value={this.state.name}
+                onChange={this.trackName}
+                error={!!this.nameError}
+                alert={this.nameError}
+                className={c('body-input')}
+              />
+              {featureFlags.allowEditPrimaryZID && (
+                <div className={c('select-input')}>
+                  {this.renderZeroIDLabel()}
+                  <SelectInput
+                    items={this.menuItems}
+                    label=''
+                    placeholder={this.props.currentPrimaryZID || 'None (wallet address)'}
+                    value={this.state.primaryZID}
+                    itemSize='spacious'
+                    menuClassName={c('zid-select-menu')}
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        {this.imageError && (
-          <Alert className={c('alert-small')} variant='error'>
-            <div className={c('alert-text')}>{this.imageError}</div>
-          </Alert>
-        )}
-        {this.generalError && (
-          <Alert className={c('alert-small')} variant='error'>
-            <div className={c('alert-text')}>{this.generalError}</div>
-          </Alert>
-        )}
+            {this.imageError && (
+              <Alert className={c('alert-small')} variant='error'>
+                <div className={c('alert-text')}>{this.imageError}</div>
+              </Alert>
+            )}
+            {this.generalError && (
+              <Alert className={c('alert-small')} variant='error'>
+                <div className={c('alert-text')}>{this.generalError}</div>
+              </Alert>
+            )}
 
-        {this.changesSaved && (
-          <Alert className={c('alert-small')} variant='success'>
-            <div className={c('alert-text')}>Changes saved successfully</div>
-          </Alert>
-        )}
+            {this.changesSaved && (
+              <Alert className={c('alert-small')} variant='success'>
+                <div className={c('alert-text')}>Changes saved successfully</div>
+              </Alert>
+            )}
 
-        <div className={c('footer')}>
-          <Button
-            isLoading={this.isLoading}
-            isSubmit
-            isDisabled={this.isDisabled}
-            onPress={this.handleEdit}
-            variant={ButtonVariant.Secondary}
-          >
-            Save Changes
-          </Button>
-        </div>
+            <div className={c('footer')}>
+              <Button
+                isLoading={this.isLoading}
+                isSubmit
+                isDisabled={this.isDisabled}
+                onPress={this.handleEdit}
+                variant={ButtonVariant.Secondary}
+              >
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </ScrollbarContainer>
       </div>
     );
   }

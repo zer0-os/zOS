@@ -11,8 +11,22 @@
 }
 
 .edit-profile {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  flex-grow: 1;
+
   &__header-container {
     display: flex;
+  }
+
+  &__content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    // Forcing a height here allows the flex-grow to fill the size without growing too big
+    height: 1px;
   }
 
   &__body {

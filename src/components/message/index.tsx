@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus, Media } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
@@ -12,7 +12,7 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle, IconCheck } from '@zero-tech/zui/icons';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Avatar } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
@@ -50,8 +50,7 @@ interface Properties extends MessageModel {
   showAuthorName: boolean;
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
-  isMessageRead: boolean;
-  isLastMessage: boolean;
+  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
 }
 
 export interface State {
@@ -61,6 +60,7 @@ export interface State {
   isDropdownMenuOpen: boolean;
   menuX: number;
   menuY: number;
+  isImageLoaded: boolean;
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -71,6 +71,7 @@ export class Message extends React.Component<Properties, State> {
     isDropdownMenuOpen: false,
     menuX: 0,
     menuY: 0,
+    isImageLoaded: false,
   } as State;
 
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -120,14 +121,67 @@ export class Message extends React.Component<Properties, State> {
   handleImageLoad = (event) => {
     const { naturalWidth: width, naturalHeight: height } = event.target;
     this.handleMediaAspectRatio(width, height);
+    this.setState({ isImageLoaded: true });
+  };
+
+  handlePlaceholderAspectRatio = (width: number, height: number, maxWidth: number, maxHeight: number) => {
+    const aspectRatio = width / height;
+
+    let finalWidth = width;
+    let finalHeight = height;
+
+    if (height > maxHeight) {
+      finalHeight = maxHeight;
+      finalWidth = maxHeight * aspectRatio;
+    }
+
+    if (finalWidth > maxWidth) {
+      finalWidth = maxWidth;
+      finalHeight = maxWidth / aspectRatio;
+    }
+
+    return { width: finalWidth, height: finalHeight };
+  };
+
+  getPlaceholderDimensions = (w, h) => {
+    const width = w || 300;
+    const height = h || 200;
+
+    const maxWidth = 520;
+    const maxHeight = 640;
+
+    const { width: finalWidth, height: finalHeight } = this.handlePlaceholderAspectRatio(
+      width,
+      height,
+      maxWidth,
+      maxHeight
+    );
+
+    return { width: finalWidth, height: finalHeight };
   };
 
   renderMedia(media) {
     const { type, url, name } = media;
+    const { width, height } = this.getPlaceholderDimensions(media.width, media.height);
+
+    if (!url) {
+      this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
+      return (
+        <div {...cn('image-placeholder-container')} style={{ width, height }}>
+          <div {...cn('image-placeholder')} />
+        </div>
+      );
+    }
+
     if (MediaType.Image === type) {
       return (
         <div {...cn('block-image')} onClick={this.onImageClick(media)}>
-          <img src={url} alt={this.props.media.name} onLoad={this.handleImageLoad} />
+          <img
+            src={url}
+            alt={this.props.media.name}
+            onLoad={this.handleImageLoad}
+            style={!this.state.isImageLoaded ? { width, height } : {}}
+          />
         </div>
       );
     } else if (MediaType.Video === type) {
@@ -152,26 +206,6 @@ export class Message extends React.Component<Properties, State> {
     return '';
   }
 
-  getReceiptIcon() {
-    const { sendStatus, isMessageRead } = this.props;
-
-    if (sendStatus === MessageSendStatus.IN_PROGRESS) {
-      return <IconCheck {...cn('sent-icon')} size={14} />;
-    }
-
-    if (sendStatus === MessageSendStatus.SUCCESS || sendStatus === undefined) {
-      const iconClass = isMessageRead ? 'read' : 'delivered';
-      return (
-        <div {...cn('read-icon-container')}>
-          <IconCheck {...cn('read-icon', `${iconClass}`)} size={12} />
-          <IconCheck {...cn('read-icon', `${iconClass}`)} size={12} />
-        </div>
-      );
-    }
-
-    return null;
-  }
-
   renderFooter() {
     if (this.state.isEditing) {
       return;
@@ -193,10 +227,6 @@ export class Message extends React.Component<Properties, State> {
           <IconAlertCircle size={16} />
         </div>
       );
-    }
-    if (this.props.isOwner && this.props.isLastMessage) {
-      const icon = this.getReceiptIcon();
-      icon && footerElements.push(icon);
     }
 
     if (footerElements.length === 0) {

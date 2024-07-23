@@ -1,12 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { chat, uploadImageUrl } from '../../lib/chat';
+import { uploadImageUrl, uploadFileMessage } from '../../lib/chat';
 
 import { UploadableGiphy, UploadableMedia } from './uploadable';
-
-const chatClient = {
-  uploadFileMessage: () => {},
-};
 
 describe(UploadableMedia, () => {
   it('uploads the media file', async () => {
@@ -17,12 +13,11 @@ describe(UploadableMedia, () => {
 
     const { returnValue } = await expectSaga(() => uploadable.upload(channelId, 'root-id'))
       .provide([
-        [matchers.call.fn(chat.get), chatClient],
-        [matchers.call.fn(chatClient.uploadFileMessage), { id: 'new-id' }],
+        [matchers.call.fn(uploadFileMessage), { id: 'uploaded-id' }],
       ])
       .run();
 
-    expect(returnValue).toEqual({ id: 'new-id' });
+    expect(returnValue).toEqual({ id: 'uploaded-id' });
   });
 });
 

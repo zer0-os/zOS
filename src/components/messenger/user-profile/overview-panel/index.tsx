@@ -7,6 +7,7 @@ import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import {
   IconCurrencyEthereum,
+  IconDownload2,
   IconLock1,
   IconLogOut3,
   IconPlus,
@@ -17,6 +18,7 @@ import {
 import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { RewardsItemContainer } from './rewards-item/container';
 import { featureFlags } from '../../../../lib/feature-flags';
+import { ScrollbarContainer } from '../../../scrollbar-container';
 
 import './styles.scss';
 
@@ -33,6 +35,7 @@ export interface Properties {
   onOpenEditProfile: () => void;
   onOpenRewards: () => void;
   onOpenSettings: () => void;
+  onOpenDownloads: () => void;
   onManageAccounts: () => void;
 }
 
@@ -83,6 +86,10 @@ export class OverviewPanel extends React.Component<Properties, State> {
 
   openSettings = () => {
     this.props.onOpenSettings();
+  };
+
+  openDownloads = () => {
+    this.props.onOpenDownloads();
   };
 
   onManageAccounts = () => {
@@ -163,6 +170,16 @@ export class OverviewPanel extends React.Component<Properties, State> {
             Settings
           </Button>
         )}
+
+        <Button
+          {...cn('action-button')}
+          variant={ButtonVariant.Secondary}
+          onPress={this.openDownloads}
+          startEnhancer={<IconDownload2 size={20} />}
+          color={ButtonColor.Greyscale}
+        >
+          Download
+        </Button>
       </div>
     );
   }
@@ -198,16 +215,21 @@ export class OverviewPanel extends React.Component<Properties, State> {
           <PanelHeader title={'Profile'} onBack={this.navigateBack} />
         </div>
 
-        <div {...cn('body')}>
-          <div {...cn('section')}>
-            {this.renderDetails()}
-            {featureFlags.enableRewards && this.renderRewards()}
+        <ScrollbarContainer variant='on-hover'>
+          <div {...cn('panel-content-wrapper')}>
+            <div {...cn('body')}>
+              <div {...cn('section')}>
+                {this.renderDetails()}
+                {featureFlags.enableRewards && this.renderRewards()}
+              </div>
+
+              {this.renderActions()}
+            </div>
+
+            {this.renderFooter()}
           </div>
+        </ScrollbarContainer>
 
-          {this.renderActions()}
-        </div>
-
-        {this.renderFooter()}
         {this.renderInviteDialog()}
       </div>
     );

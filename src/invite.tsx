@@ -35,7 +35,7 @@ export class Container extends React.Component<Properties> {
       stage: registration.stage,
       shouldRender: pageload.isComplete,
       showAndroidDownload: pageload.showAndroidDownload,
-      androidStorePath: config.androidStorePath,
+      androidStorePath: config.googlePlayStorePath,
     };
   }
 

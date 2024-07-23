@@ -41,7 +41,7 @@ import {
 import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
-import { encryptFile } from './matrix/media';
+import { encryptFile, getImageDimensions } from './matrix/media';
 import { uploadAttachment } from '../../store/messages/api';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
@@ -97,30 +97,6 @@ export class MatrixClient implements IChatClient {
   }
 
   reconnect: () => void;
-
-  async getUserPresence(userId: string) {
-    await this.waitForConnection();
-
-    try {
-      const userPresenceData = await this.matrix.getPresence(userId);
-
-      if (!userPresenceData) {
-        return { lastSeenAt: null, isOnline: false };
-      }
-
-      const { presence, last_active_ago } = userPresenceData;
-      const isOnline = presence === 'online';
-      const lastSeenAt = last_active_ago ? new Date(Date.now() - last_active_ago).toISOString() : null;
-
-      return { lastSeenAt, isOnline };
-    } catch (error: any) {
-      if (error.errcode !== 'M_FORBIDDEN') {
-        console.error(error);
-      }
-
-      return { lastSeenAt: null, isOnline: false };
-    }
-  }
 
   async getRoomNameById(roomId: string) {
     await this.waitForConnection();
@@ -211,12 +187,17 @@ export class MatrixClient implements IChatClient {
   }
 
   async getConversations() {
+    featureFlags.enableTimerLogs && console.time('xxxgetConversations');
+
     await this.waitForConnection();
     const rooms = await this.getRoomsUserIsIn();
 
     const failedToJoin = [];
     for (const room of rooms) {
+      featureFlags.enableTimerLogs && console.time('xxxdecryptAllEvents');
       await room.decryptAllEvents();
+      featureFlags.enableTimerLogs && console.timeEnd('xxxdecryptAllEvents');
+
       await room.loadMembersIfNeeded();
       const membership = room.getMyMembership();
 
@@ -232,7 +213,13 @@ export class MatrixClient implements IChatClient {
     const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
 
     await this.lowerMinimumInviteAndKickLevels(filteredRooms);
-    return await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
+
+    featureFlags.enableTimerLogs && console.time('xxxmapConversationresult');
+    const result = await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
+    featureFlags.enableTimerLogs && console.timeEnd('xxxmapConversationresult');
+
+    featureFlags.enableTimerLogs && console.timeEnd('xxxgetConversations');
+    return result;
   }
 
   async getSecureBackup() {
@@ -439,7 +426,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const room = this.matrix.getRoom(roomId);
     const liveTimeline = room.getLiveTimeline();
-    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 100 });
+    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
 
     // For now, just return the full list again. Could filter out anything prior to lastCreatedAt
     const messages = await this.getAllMessagesFromRoom(room);
@@ -550,6 +537,7 @@ export class MatrixClient implements IChatClient {
       return;
     }
 
+    const { width, height } = await getImageDimensions(media);
     const encrypedFileInfo = await encryptFile(media);
     const uploadedFile = await uploadAttachment(encrypedFileInfo.file);
 
@@ -569,6 +557,8 @@ export class MatrixClient implements IChatClient {
         name: media.name,
         optimisticId,
         rootMessageId,
+        width,
+        height,
       },
       optimisticId,
     };
@@ -850,11 +840,28 @@ export class MatrixClient implements IChatClient {
     await this.matrix.deleteRoomTag(roomId, MatrixConstants.FAVORITE);
   }
 
-  async isRoomFavorited(roomId: string): Promise<boolean> {
+  async addRoomToMuted(roomId) {
     await this.waitForConnection();
 
-    const result = await this.matrix.getRoomTags(roomId);
-    return !!result.tags?.[MatrixConstants.FAVORITE];
+    await this.matrix.setRoomTag(roomId, MatrixConstants.MUTE);
+  }
+
+  async removeRoomFromMuted(roomId) {
+    await this.waitForConnection();
+
+    await this.matrix.deleteRoomTag(roomId, MatrixConstants.MUTE);
+  }
+
+  async getRoomTags(conversations: Partial<Channel>[]): Promise<void> {
+    const tags = conversations.map(async (conversation) => {
+      featureFlags.enableTimerLogs && console.time(`xxxgetRoomTags${conversation.id}`);
+      const result = await this.matrix.getRoomTags(conversation.id);
+      conversation.isFavorite = !!result.tags?.[MatrixConstants.FAVORITE];
+      conversation.isMuted = !!result.tags?.[MatrixConstants.MUTE];
+      featureFlags.enableTimerLogs && console.timeEnd(`xxxgetRoomTags${conversation.id}`);
+    });
+
+    await Promise.all(tags);
   }
 
   async sendTypingEvent(roomId: string, isTyping: boolean): Promise<void> {
@@ -958,10 +965,6 @@ export class MatrixClient implements IChatClient {
       }
     });
 
-    this.matrix.on(RoomEvent.Receipt, async (event) => {
-      this.publishReceiptEvent(event);
-    });
-
     this.matrix.on(MatrixEventEvent.Decrypted, async (decryptedEvent: MatrixEvent) => {
       const event = decryptedEvent.getEffectiveEvent();
       if (event.type === EventType.RoomMessage) {
@@ -969,7 +972,6 @@ export class MatrixClient implements IChatClient {
       }
     });
 
-    this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
     this.matrix.on(RoomMemberEvent.Typing, this.publishRoomMemberTyping);
     this.matrix.on(RoomMemberEvent.PowerLevel, this.publishRoomMemberPowerLevelsChanged);
@@ -1030,6 +1032,8 @@ export class MatrixClient implements IChatClient {
   }
 
   private async initializeClient(userId: string, ssoToken: string) {
+    featureFlags.enableTimerLogs && console.time('xxxinitializeClient');
+
     if (!this.matrix) {
       const opts: any = {
         baseUrl: config.matrix.homeServerUrl,
@@ -1048,8 +1052,11 @@ export class MatrixClient implements IChatClient {
 
       await this.matrix.startClient();
 
+      featureFlags.enableTimerLogs && console.time('xxxWaitForSync');
       await this.waitForSync();
+      featureFlags.enableTimerLogs && console.timeEnd('xxxWaitForSync');
 
+      featureFlags.enableTimerLogs && console.timeEnd('xxxinitializeClient');
       return opts.userId;
     }
   }
@@ -1082,17 +1089,6 @@ export class MatrixClient implements IChatClient {
   private async publishMessageEvent(event) {
     this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
   }
-
-  private publishUserPresenceChange = (event: MatrixEvent) => {
-    if (event.getType() === EventType.Presence) {
-      const content = event.getContent();
-      this.events.onUserPresenceChanged(
-        event.getSender(),
-        content.presence === 'online',
-        content.last_active_ago ? new Date(Date.now() - content.last_active_ago).toISOString() : ''
-      );
-    }
-  };
 
   private publishRoomNameChange = (room: Room) => {
     this.events.onRoomNameChanged(room.roomId, this.getRoomName(room));
@@ -1149,36 +1145,49 @@ export class MatrixClient implements IChatClient {
 
   private publishRoomTagChange(event, roomId) {
     const isFavoriteTagAdded = !!event.getContent().tags?.[MatrixConstants.FAVORITE];
+    const isMutedTagAdded = !!event.getContent().tags?.[MatrixConstants.MUTE];
 
     if (isFavoriteTagAdded) {
       this.events.roomFavorited(roomId);
     } else {
       this.events.roomUnfavorited(roomId);
     }
+
+    if (isMutedTagAdded) {
+      this.events.roomMuted(roomId);
+    } else {
+      this.events.roomUnmuted(roomId);
+    }
   }
 
-  private publishReceiptEvent(event: MatrixEvent) {
+  private publishReceiptEvent(event: MatrixEvent, room: Room) {
     const content = event.getContent();
     for (const eventId in content) {
       const receiptData = content[eventId]['m.read'] || {};
       for (const userId in receiptData) {
-        this.events.readReceiptReceived(eventId, userId);
+        this.events.readReceiptReceived(eventId, userId, room.roomId);
       }
     }
   }
 
   private mapConversation = async (room: Room): Promise<Partial<Channel>> => {
+    featureFlags.enableTimerLogs && console.time(`xxxmapConversation${room.roomId}`);
+
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
-    const messages = await this.getAllMessagesFromRoom(room);
+
+    featureFlags.enableTimerLogs && console.time(`xxxgetUpToLatestUserMessageFromRoom${room.roomId}`);
+    const messages = await this.getUpToLatestUserMessageFromRoom(room);
+    featureFlags.enableTimerLogs && console.timeEnd(`xxxgetUpToLatestUserMessageFromRoom${room.roomId}`);
+
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
-    const isFavorite = await this.isRoomFavorited(room.roomId);
+
     const [admins, mods] = this.getRoomAdminsAndMods(room);
 
-    return {
+    const result = {
       id: room.roomId,
       name,
       icon: avatarUrl,
@@ -1194,8 +1203,12 @@ export class MatrixClient implements IChatClient {
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: admins,
       moderatorIds: mods,
-      isFavorite,
+      isFavorite: false,
+      isMuted: false,
     };
+
+    featureFlags.enableTimerLogs && console.timeEnd(`xxxmapConversation${room.roomId}`);
+    return result;
   };
 
   private mapUser(matrixId: string): UserModel {
@@ -1235,6 +1248,29 @@ export class MatrixClient implements IChatClient {
       .map((event) => event.getEffectiveEvent());
 
     return await this.processRawEventsToMessages(events);
+  }
+
+  // Performance improvement: Fetches only the latest user message to avoid processing large image files and other attachments
+  // that are not needed for the initial loading of the conversation list
+  private async getUpToLatestUserMessageFromRoom(room: Room): Promise<any[]> {
+    let found = false;
+
+    const events = room
+      .getLiveTimeline()
+      .getEvents()
+      .map((event) => event.getEffectiveEvent())
+      .reverse()
+      .filter((event) => {
+        if (found) return false;
+
+        if (event.type === EventType.RoomMessage) {
+          found = true;
+        }
+
+        return true;
+      });
+
+    return await this.processRawEventsToMessages(events.reverse());
   }
 
   private getMemberHistoryFromRoom(room: Room): string[] {

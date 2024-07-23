@@ -15,8 +15,12 @@ jest.mock('../../store/channels-list/api', () => {
 });
 
 const mockEncryptFile = jest.fn();
+const mockGetImageDimensions = jest.fn();
 jest.mock('./matrix/media', () => {
-  return { encryptFile: (...args) => mockEncryptFile(...args) };
+  return {
+    encryptFile: (...args) => mockEncryptFile(...args),
+    getImageDimensions: (...args) => mockGetImageDimensions(...args),
+  };
 });
 
 const mockUploadAttachment = jest.fn();
@@ -674,6 +678,8 @@ describe('matrix client', () => {
         type: 'image/png',
       };
 
+      when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
+
       when(mockEncryptFile)
         .calledWith(expect.anything())
         .mockResolvedValue({
@@ -724,6 +730,8 @@ describe('matrix client', () => {
             name: 'test-file',
             optimisticId: 'optimistic-id',
             rootMessageId: 'root-message-id',
+            width: 800,
+            height: 600,
           },
           optimisticId: 'optimistic-id',
         })
@@ -1107,41 +1115,78 @@ describe('matrix client', () => {
     });
   });
 
-  describe('isRoomFavorited', () => {
-    it('returns true if "m.favorite" tag is present for room', async () => {
+  describe('addRoomToMuted', () => {
+    it('sets room tag with "m.mute"', async () => {
       const roomId = '!testRoomId';
-      const getRoomTags = jest.fn().mockResolvedValue({
-        tags: {
-          'm.favorite': {},
-        },
-      });
+      const setRoomTag = jest.fn().mockResolvedValue({});
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRoomTags })),
+        createClient: jest.fn(() => getSdkClient({ setRoomTag })),
       });
 
       await client.connect(null, 'token');
-      const isFavorite = await client.isRoomFavorited(roomId);
+      await client.addRoomToMuted(roomId);
 
-      expect(getRoomTags).toHaveBeenCalledWith(roomId);
-      expect(isFavorite).toBe(true);
+      expect(setRoomTag).toHaveBeenCalledWith(roomId, 'm.mute');
+    });
+  });
+
+  describe('removeRoomFromMuted', () => {
+    it('deletes "m.mute" tag from room', async () => {
+      const roomId = '!testRoomId';
+      const deleteRoomTag = jest.fn().mockResolvedValue({});
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ deleteRoomTag })),
+      });
+
+      await client.connect(null, 'token');
+      await client.removeRoomFromMuted(roomId);
+
+      expect(deleteRoomTag).toHaveBeenCalledWith(roomId, 'm.mute');
+    });
+  });
+
+  describe('getRoomTags', () => {
+    it('returns correct tags for all rooms', async () => {
+      const conversations = [
+        { id: 'room1', isFavorite: false, isMuted: false },
+        { id: 'room2', isFavorite: false, isMuted: false },
+      ];
+
+      const getRoomTags = jest
+        .fn()
+        .mockResolvedValueOnce({ tags: { 'm.favorite': {}, 'm.mute': {} } })
+        .mockResolvedValueOnce({ tags: {} });
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoomTags })) });
+
+      await client.connect(null, 'token');
+      await client.getRoomTags(conversations);
+
+      expect(getRoomTags).toHaveBeenCalledWith('room1');
+      expect(getRoomTags).toHaveBeenCalledWith('room2');
+      expect(conversations).toEqual([
+        { id: 'room1', isFavorite: true, isMuted: true },
+        { id: 'room2', isFavorite: false, isMuted: false },
+      ]);
     });
 
-    it('returns false if "m.favorite" tag is not present for room', async () => {
-      const roomId = '!testRoomId';
-      const getRoomTags = jest.fn().mockResolvedValue({
-        tags: {},
-      });
+    it('returns false for tags that are not present', async () => {
+      const conversations = [
+        { id: 'room1', isFavorite: false, isMuted: false },
+      ];
 
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getRoomTags })),
-      });
+      const getRoomTags = jest.fn().mockResolvedValue({ tags: {} });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoomTags })) });
 
       await client.connect(null, 'token');
-      const isFavorite = await client.isRoomFavorited(roomId);
+      await client.getRoomTags(conversations);
 
-      expect(getRoomTags).toHaveBeenCalledWith(roomId);
-      expect(isFavorite).toBe(false);
+      expect(getRoomTags).toHaveBeenCalledWith('room1');
+      expect(conversations).toEqual([
+        { id: 'room1', isFavorite: false, isMuted: false },
+      ]);
     });
   });
 });

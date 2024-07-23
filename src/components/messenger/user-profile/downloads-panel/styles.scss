@@ -1,0 +1,50 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../glass';
+
+.downloads-panel {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+
+  &__header-container {
+    display: flex;
+    width: 235px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 24px;
+    margin: 0 16px 16px 16px;
+
+    // Forcing a height here allows the flex-grow to fill the size without growing too big
+    height: 1px;
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__section-icon {
+    @include glass-text-secondary-color;
+  }
+
+  &__section-title {
+    @include glass-text-secondary-color;
+  }
+
+  &__items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__link {
+    color: theme.$color-secondary-11;
+    font-size: 14px;
+  }
+}

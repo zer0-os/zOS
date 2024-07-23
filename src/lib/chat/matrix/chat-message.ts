@@ -1,6 +1,5 @@
 import { CustomEventType, MatrixConstants, MembershipStateType, NotifiableEventType } from './types';
 import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
-import { decryptFile } from './media';
 import { AdminMessageType, Message, MessageSendStatus } from '../../../store/messages';
 import { getObjectDiff, parsePlainBody } from './utils';
 import { PowerLevels } from '../types';
@@ -26,10 +25,10 @@ async function parseMediaData(matrixMessage) {
 
 async function buildMediaObject(content) {
   if (content.file && content.info) {
-    const blob = await decryptFile(content.file, content.info);
     return {
-      url: URL.createObjectURL(blob),
+      url: null,
       type: 'image',
+      file: { ...content.file },
       ...content.info,
     };
   } else if (content.url) {
@@ -198,6 +197,7 @@ export function mapToLiveRoomEvent(liveEvent) {
     id: event.event_id,
     type: eventType,
     createdAt: event.origin_server_ts,
+    roomId: event.room_id,
     sender: {
       userId: event.sender,
     },

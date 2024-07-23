@@ -32,6 +32,8 @@ $recent-indicator-size: 8px;
   }
 
   &__description {
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
   }
 

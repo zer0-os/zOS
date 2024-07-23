@@ -6,6 +6,7 @@ import { OverviewPanel } from './overview-panel';
 import { EditProfileContainer } from '../../edit-profile/container';
 import { SettingsPanelContainer } from './settings-panel/container';
 import { AccountManagementContainer } from './account-management-panel/container';
+import { DownloadsPanel } from './downloads-panel';
 
 describe(UserProfile, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -22,6 +23,7 @@ describe(UserProfile, () => {
       onBackToOverview: () => {},
       onRewards: () => {},
       onSettings: () => {},
+      onDownloads: () => {},
       onManageAccounts: () => {},
       ...props,
     };
@@ -45,6 +47,12 @@ describe(UserProfile, () => {
     const wrapper = subject({ stage: Stage.Settings });
 
     expect(wrapper).toHaveElement(SettingsPanelContainer);
+  });
+
+  it('renders Downloads Panel Container when stage is Downloads', () => {
+    const wrapper = subject({ stage: Stage.Downloads });
+
+    expect(wrapper).toHaveElement(DownloadsPanel);
   });
 
   it('renders Wallets Panel Container when stage is Wallets', () => {

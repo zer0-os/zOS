@@ -1,5 +1,5 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Connectors } from '../../lib/web3';
+import { Connector } from 'wagmi';
 
 export enum SagaActionTypes {
   EmailLogin = 'login/emailLogin',
@@ -28,6 +28,7 @@ export enum EmailLoginErrors {
 
 export enum Web3LoginErrors {
   PROFILE_NOT_FOUND = 'PROFILE_NOT_FOUND',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
 export const initialState: LoginState = {
@@ -37,7 +38,7 @@ export const initialState: LoginState = {
 };
 
 export const loginByEmail = createAction<{ email: string; password: string }>(SagaActionTypes.EmailLogin);
-export const loginByWeb3 = createAction<Connectors>(SagaActionTypes.Web3Login);
+export const loginByWeb3 = createAction<Connector['id']>(SagaActionTypes.Web3Login);
 export const switchLoginStage = createAction<LoginStage>(SagaActionTypes.SwitchLoginStage);
 
 const slice = createSlice({

@@ -8,16 +8,17 @@ describe('CreateWalletAccount', () => {
       isConnecting: false,
       error: '',
       onSelect: () => null,
+      isWalletConnected: false,
       ...props,
     };
 
     return shallow(<CreateWalletAccount {...allProps} />);
   };
 
-  it('renders the wallet select', function () {
+  it('renders the rainbowkit connect button', function () {
     const wrapper = subject({});
 
-    expect(wrapper).toHaveElement('WalletSelect');
+    expect(wrapper).toHaveElement('RainbowKitConnectButton');
   });
 
   it('shows an error', function () {

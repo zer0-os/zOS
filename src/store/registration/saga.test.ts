@@ -33,8 +33,7 @@ import { rootReducer } from '../reducer';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { Connectors } from '../../lib/web3';
-import { getSignedTokenForConnector } from '../web3/saga';
+import { getSignedToken } from '../web3/saga';
 import { completeUserLogin } from '../authentication/saga';
 import { createConversation } from '../channels-list/saga';
 import { denormalize as denormalizeUser } from '../users';
@@ -509,10 +508,10 @@ describe('authorizeAndCreateWeb3Account', () => {
     const {
       returnValue,
       storeState: { registration },
-    } = await expectSaga(authorizeAndCreateWeb3Account, { payload: { connector: Connectors.Metamask } })
+    } = await expectSaga(authorizeAndCreateWeb3Account)
       .provide([
         [
-          call(getSignedTokenForConnector, Connectors.Metamask),
+          call(getSignedToken),
           { success: true, token: signedToken },
         ],
         [

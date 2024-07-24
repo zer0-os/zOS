@@ -1,17 +1,18 @@
 import * as React from 'react';
 
-import { WalletSelect } from '../../components/wallet-select';
-import { Alert } from '@zero-tech/zui/components';
+import { Alert, Button } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
+import { RainbowKitConnectButton } from '../../lib/web3/rainbowkit/button';
 
 const cn = bemClassName('create-wallet-account');
 
 export interface Properties {
   error: string;
   isConnecting: boolean;
-  onSelect: (connector: any) => void;
+  isWalletConnected: boolean;
+  onSelect: () => void;
 }
 
 export class CreateWalletAccount extends React.Component<Properties> {
@@ -23,7 +24,12 @@ export class CreateWalletAccount extends React.Component<Properties> {
     return (
       <div {...cn('')}>
         <div {...cn('main')}>
-          <WalletSelect isConnecting={this.props.isConnecting} onSelect={this.props.onSelect} />
+          <RainbowKitConnectButton isDisabled={this.props.isConnecting} />
+          {this.props.isWalletConnected && (
+            <Button isDisabled={this.props.isConnecting} onPress={this.props.onSelect}>
+              Register
+            </Button>
+          )}
           {this.showError && (
             <Alert {...cn('error')} variant='error' isFilled>
               {this.props.error}

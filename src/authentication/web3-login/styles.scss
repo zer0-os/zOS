@@ -4,16 +4,19 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .web3-login {
-  width: 240px;
-  padding: 8px;
-
+  width: 100%;
+  padding: 24px;
+  gap: 24px;
+  box-sizing: border-box;
   @include flex();
 
   &__login {
     @include flex();
+    gap: inherit;
   }
 
   &__error {

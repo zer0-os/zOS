@@ -1,9 +1,11 @@
-import { takeLatest, put, takeEvery, call, take, select, race } from 'redux-saga/effects';
+import { takeLatest, put, takeEvery, call, take, select } from 'redux-saga/effects';
 import { SagaActionTypes, setConnectionStatus, setConnector, setWalletAddress, setWalletConnectionError } from '.';
 
-import { ConnectionStatus, Connectors, personalSignToken } from '../../lib/web3';
+import { ConnectionStatus, personalSignToken } from '../../lib/web3';
 import { Web3Events, web3Channel } from './channels';
-import { getService as getProviderService } from '../../lib/web3/provider-service';
+import { getWagmiConfig } from '../../lib/web3/wagmi-config';
+import { getWalletClient } from '@wagmi/core';
+import { WalletClient } from 'viem';
 
 export function* isWeb3AccountConnected() {
   const state = yield select((state) => state.web3);
@@ -32,35 +34,18 @@ export function* setConnectionError(action) {
   }
 }
 
-export function* getSignedTokenForConnector(connector) {
-  let current = yield select((state) => state.web3.value);
-
-  let address = current.address;
-  if (current.connector !== connector || !current.address) {
-    yield updateConnector({ payload: connector });
-    const result = yield race({
-      address: call(waitForAddressChange),
-      error: call(waitForError),
-    });
-    if (result.error) {
-      return { success: false, error: result.error };
-    }
-    address = result.address;
-  }
-
-  return yield call(getSignedToken, address);
-}
-
 export function* getSignedToken(address = null) {
+  const wagmiConfig = yield call(getWagmiConfig);
+  const walletClient: WalletClient = yield call(getWalletClient, wagmiConfig);
+
   if (!address) {
-    address = yield select((state) => state.web3.value.address);
+    address = walletClient.account.address;
   }
-  const providerService = yield call(getProviderService);
+
   try {
-    const token = yield call(personalSignToken, providerService.get(), address);
+    const token = yield call(personalSignToken, walletClient, address);
     return { success: true, token };
   } catch (error) {
-    yield updateConnector({ payload: Connectors.None });
     return { success: false, error: 'Wallet connection failed. Please try again.' };
   }
 }

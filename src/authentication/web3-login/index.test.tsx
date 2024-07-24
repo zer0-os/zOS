@@ -9,6 +9,7 @@ describe('Web3Login', () => {
       isConnecting: false,
       error: '',
       onSelect: () => null,
+      isWalletConnected: false,
       ...props,
     };
 
@@ -16,18 +17,10 @@ describe('Web3Login', () => {
   };
 
   describe('wallet selection', () => {
-    it('renders the wallet select', function () {
+    it('renders the RainbowKit connect button', function () {
       const wrapper = subject({});
 
-      expect(wrapper).toHaveElement('WalletSelect');
-    });
-
-    it('fires onSelect when wallet is selected', function () {
-      const onSelect = jest.fn();
-      const wrapper = subject({ onSelect });
-
-      wrapper.find('WalletSelect').simulate('select', 'MetaMask');
-      expect(onSelect).toHaveBeenCalledWith('MetaMask');
+      expect(wrapper).toHaveElement('RainbowKitConnectButton');
     });
   });
 
@@ -61,10 +54,10 @@ describe('Web3Login', () => {
   });
 
   describe('when connecting', () => {
-    it('passes isConnecting to WalletSelect', function () {
+    it('passes isDisabled to RainbowKit button', function () {
       const wrapper = subject({ isConnecting: true });
 
-      expect(wrapper.find('WalletSelect').prop('isConnecting')).toBeTruthy();
+      expect(wrapper.find('RainbowKitConnectButton').prop('isDisabled')).toBeTruthy();
     });
   });
 });

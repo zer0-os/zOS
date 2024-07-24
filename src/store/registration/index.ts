@@ -1,5 +1,4 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Connectors } from '../../lib/web3';
 
 export enum SagaActionTypes {
   ValidateInvite = 'registration/validateInvite',
@@ -70,7 +69,7 @@ export const initialState: RegistrationState = {
 
 export const validateInvite = createAction<{ code: string }>(SagaActionTypes.ValidateInvite);
 export const createAccount = createAction<{ email: string; password: string }>(SagaActionTypes.CreateAccount);
-export const createWeb3Account = createAction<{ connector: Connectors }>(SagaActionTypes.CreateWeb3Account);
+export const createWeb3Account = createAction(SagaActionTypes.CreateWeb3Account);
 export const updateProfile = createAction<{ name: string; image: File | null }>(SagaActionTypes.UpdateProfile);
 
 const slice = createSlice({

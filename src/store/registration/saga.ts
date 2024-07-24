@@ -24,7 +24,7 @@ import {
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
 import { isPasswordValid } from '../../lib/password';
-import { getSignedTokenForConnector } from '../web3/saga';
+import { getSignedToken } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { completeUserLogin } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
@@ -95,12 +95,10 @@ export function* createAccount(action) {
   return false;
 }
 
-export function* authorizeAndCreateWeb3Account(action) {
-  const { connector } = action.payload;
-
+export function* authorizeAndCreateWeb3Account() {
   yield put(setLoading(true));
   try {
-    let result = yield call(getSignedTokenForConnector, connector);
+    let result = yield call(getSignedToken);
     if (!result.success) {
       yield put(setErrors([result.error]));
       return false;
@@ -205,7 +203,7 @@ function* createAccountPage() {
     if (email) {
       success = yield call(createAccount, email);
     } else if (web3) {
-      success = yield call(authorizeAndCreateWeb3Account, web3);
+      success = yield call(authorizeAndCreateWeb3Account);
     }
   } while (!success);
 }

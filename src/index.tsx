@@ -8,7 +8,6 @@ import { Provider } from 'react-redux';
 import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
 import { Router, Redirect, Route, Switch } from 'react-router-dom';
-import { ContextProvider as Web3ReactContextProvider } from './lib/web3/web3-react';
 import { showReleaseVersionInConsole, initializeErrorBoundary, isElectron } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
@@ -17,11 +16,12 @@ import './index.scss';
 import { Invite } from './invite';
 import { ResetPassword } from './reset-password';
 import { LoginPage } from './pages';
-import { Web3Connect } from './components/web3-connect';
 import { getHistory } from './lib/browser';
 import { ElectronTitlebar } from './components/electron-titlebar';
 import { desktopInit } from './lib/desktop';
 import { Restricted } from './restricted';
+import { RainbowKitConnect } from './lib/web3/rainbowkit/connect';
+import { RainbowKitProvider } from './lib/web3/rainbowkit/provider';
 
 desktopInit();
 runSagas();
@@ -44,8 +44,8 @@ root.render(
       <Provider store={store}>
         <EscapeManagerProvider>
           <Router history={history}>
-            <Web3ReactContextProvider>
-              <Web3Connect>
+            <RainbowKitProvider>
+              <RainbowKitConnect>
                 {isElectron() && <ElectronTitlebar />}
                 <Switch>
                   <Route path='/restricted' exact component={Restricted} />
@@ -56,8 +56,8 @@ root.render(
                   <Route path='/' exact component={MessengerMain} />
                   <Route component={redirectToRoot} />
                 </Switch>
-              </Web3Connect>
-            </Web3ReactContextProvider>
+              </RainbowKitConnect>
+            </RainbowKitProvider>
           </Router>
         </EscapeManagerProvider>
       </Provider>

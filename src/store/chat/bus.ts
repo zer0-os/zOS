@@ -17,8 +17,6 @@ export enum Events {
   OtherUserLeftChannel = 'chat/channel/otherUserLeft',
   LiveRoomEventReceived = 'chat/message/liveRoomEventReceived',
   ChatConnectionComplete = 'chat/connection/complete',
-  RoomFavorited = 'chat/channel/roomFavorited',
-  RoomUnfavorited = 'chat/channel/roomUnfavorited',
   RoomMuted = 'chat/channel/roomMuted',
   RoomUnmuted = 'chat/channel/roomUnmuted',
   RoomMemberTyping = 'chat/channel/roomMemberTyping',
@@ -88,8 +86,6 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
     const onOtherUserLeftChannel = (channelId, user) =>
       emit({ type: Events.OtherUserLeftChannel, payload: { channelId, user } });
     const receiveLiveRoomEvent = (eventData) => emit({ type: Events.LiveRoomEventReceived, payload: { eventData } });
-    const roomFavorited = (roomId) => emit({ type: Events.RoomFavorited, payload: { roomId } });
-    const roomUnfavorited = (roomId) => emit({ type: Events.RoomUnfavorited, payload: { roomId } });
     const roomMuted = (roomId) => emit({ type: Events.RoomMuted, payload: { roomId } });
     const roomUnmuted = (roomId) => emit({ type: Events.RoomUnmuted, payload: { roomId } });
     const roomMemberTyping = (roomId, userIds) => emit({ type: Events.RoomMemberTyping, payload: { roomId, userIds } });
@@ -111,8 +107,6 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       onOtherUserJoinedChannel,
       onOtherUserLeftChannel,
       receiveLiveRoomEvent,
-      roomFavorited,
-      roomUnfavorited,
       roomMuted,
       roomUnmuted,
       roomMemberTyping,

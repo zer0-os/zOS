@@ -161,6 +161,24 @@ describe(roomLabelChange, () => {
     const { storeState } = await expectSaga(roomLabelChange, {
       payload: { roomId: 'room-id', labels: [RoomLabels.WORK] },
     })
+
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(addRoomToLabel), undefined],
+      ])
+      .call(addRoomToLabel, 'room-id', RoomLabels.WORK)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.labels).toEqual([RoomLabels.WORK]);
+  });
+
+  it('adds label to room', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', labels: [RoomLabels.WORK] }).build();
+
+    const { storeState } = await expectSaga(roomLabelChange, {
+      payload: { roomId: 'room-id', labels: [RoomLabels.WORK, RoomLabels.FAMILY] },
+    })
       .withReducer(rootReducer, initialState)
       .run();
 

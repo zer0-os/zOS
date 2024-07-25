@@ -40,6 +40,7 @@ export enum RoomLabels {
   FAMILY = 'm.family',
   SOCIAL = 'm.social',
   ARCHIVED = 'm.archived',
+  FAVORITE = 'm.favorite',
 }
 
 export interface Channel {
@@ -61,7 +62,6 @@ export interface Channel {
   adminMatrixIds: string[];
   moderatorIds?: string[];
   reply?: ParentMessage;
-  isFavorite: boolean;
   otherMembersTyping: string[];
   isMuted?: boolean;
   labels?: RoomLabels[];
@@ -84,7 +84,6 @@ export const CHANNEL_DEFAULTS = {
   messagesFetchStatus: null,
   adminMatrixIds: [],
   moderatorIds: [],
-  isFavorite: false,
   otherMembersTyping: [],
   isMuted: false,
   labels: [],

@@ -1,5 +1,5 @@
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
-import { Channel, DefaultRoomLabels, User as UserModel } from '../../store/channels/index';
+import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';

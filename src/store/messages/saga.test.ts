@@ -18,7 +18,7 @@ import { StoreBuilder } from '../test/store';
 import { MessageSendStatus } from '.';
 import { chat } from '../../lib/chat';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
-import { RoomLabels } from '../channels';
+import { DefaultRoomLabels } from '../channels';
 
 const chatClient = {
   editMessage: (_channelId: string, _messageId: string, _message: string, _mentionedUserIds: string[]) => ({}),
@@ -132,7 +132,7 @@ describe('messages saga', () => {
     const initialState = {
       normalized: {
         channels: {
-          'room-id-1': { labels: [RoomLabels.MUTE] },
+          'room-id-1': { labels: [DefaultRoomLabels.MUTE] },
         },
       },
     };

@@ -6,7 +6,7 @@ import { ContentHighlighter } from '../../../content-highlighter';
 import { Avatar } from '@zero-tech/zui/components';
 import { bem } from '../../../../lib/bem';
 import { IconBellOff1 } from '@zero-tech/zui/icons';
-import { RoomLabels } from '../../../../store/channels';
+import { DefaultRoomLabels } from '../../../../store/channels';
 
 const c = bem('.conversation-item');
 
@@ -66,7 +66,7 @@ describe(ConversationItem, () => {
 
   it('renders muted icon if conversation is muted', function () {
     const wrapper = subject({
-      conversation: { ...convoWith(), id: 'test-conversation-id', labels: [RoomLabels.MUTE] },
+      conversation: { ...convoWith(), id: 'test-conversation-id', labels: [DefaultRoomLabels.MUTE] },
     });
 
     expect(wrapper).toHaveElement(IconBellOff1);

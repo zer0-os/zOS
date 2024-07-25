@@ -6,7 +6,7 @@ import { when } from 'jest-when';
 import { config } from '../../config';
 import { PowerLevels } from './types';
 import { MatrixConstants, ReadReceiptPreferenceType } from './matrix/types';
-import { RoomLabels } from '../../store/channels';
+import { DefaultRoomLabels } from '../../store/channels';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
@@ -1093,9 +1093,9 @@ describe('matrix client', () => {
       });
 
       await client.connect(null, 'token');
-      await client.addRoomToLabel('channel-id', RoomLabels.WORK);
+      await client.addRoomToLabel('channel-id', DefaultRoomLabels.WORK);
 
-      expect(setRoomTag).toHaveBeenCalledWith('channel-id', RoomLabels.WORK);
+      expect(setRoomTag).toHaveBeenCalledWith('channel-id', DefaultRoomLabels.WORK);
     });
   });
 
@@ -1108,9 +1108,9 @@ describe('matrix client', () => {
       });
 
       await client.connect(null, 'token');
-      await client.removeRoomFromLabel('channel-id', RoomLabels.WORK);
+      await client.removeRoomFromLabel('channel-id', DefaultRoomLabels.WORK);
 
-      expect(deleteRoomTag).toHaveBeenCalledWith('channel-id', RoomLabels.WORK);
+      expect(deleteRoomTag).toHaveBeenCalledWith('channel-id', DefaultRoomLabels.WORK);
     });
   });
 

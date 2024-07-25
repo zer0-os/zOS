@@ -1,5 +1,5 @@
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
-import { Channel, RoomLabels, User as UserModel } from '../../store/channels/index';
+import { Channel, DefaultRoomLabels, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
@@ -319,11 +319,11 @@ export async function uploadFileMessage(channelId: string, media: File, rootMess
   return chat.get().matrix.uploadFileMessage(channelId, media, rootMessageId, optimisticId);
 }
 
-export async function addRoomToLabel(roomId: string, label: RoomLabels) {
+export async function addRoomToLabel(roomId: string, label: string) {
   return await chat.get().matrix.addRoomToLabel(roomId, label);
 }
 
-export async function removeRoomFromLabel(roomId: string, label: RoomLabels) {
+export async function removeRoomFromLabel(roomId: string, label: string) {
   return await chat.get().matrix.removeRoomFromLabel(roomId, label);
 }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Properties, MoreMenu } from '.';
 import { DropdownMenu } from '@zero-tech/zui/components';
-import { RoomLabels } from '../../../../../store/channels';
+import { DefaultRoomLabels } from '../../../../../store/channels';
 
 describe(MoreMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -23,19 +23,19 @@ describe(MoreMenu, () => {
 
     selectItem(subject({ onAddLabel, labels: [] }), 'favorite');
 
-    expect(onAddLabel).toHaveBeenCalledWith(RoomLabels.FAVORITE);
+    expect(onAddLabel).toHaveBeenCalledWith(DefaultRoomLabels.FAVORITE);
   });
 
   it('fires onRemoveLabel event', function () {
     const onRemoveLabel = jest.fn();
 
-    selectItem(subject({ onRemoveLabel, labels: [RoomLabels.FAVORITE] }), 'unfavorite');
+    selectItem(subject({ onRemoveLabel, labels: [DefaultRoomLabels.FAVORITE] }), 'unfavorite');
 
-    expect(onRemoveLabel).toHaveBeenCalledWith(RoomLabels.FAVORITE);
+    expect(onRemoveLabel).toHaveBeenCalledWith(DefaultRoomLabels.FAVORITE);
   });
 
   it('should display "Unfavorite" label when room has favorite label', () => {
-    const wrapper = subject({ labels: [RoomLabels.FAVORITE] });
+    const wrapper = subject({ labels: [DefaultRoomLabels.FAVORITE] });
 
     const favoriteItem = menuItem(wrapper, 'unfavorite');
 

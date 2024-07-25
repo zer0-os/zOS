@@ -3,7 +3,7 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
-import { ConversationStatus, MessagesFetchState, RoomLabels } from '../channels';
+import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../channels';
 import { markConversationAsRead, rawChannelSelector, receiveChannel } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
@@ -536,7 +536,7 @@ export function* sendBrowserNotification(eventData) {
   if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
 
   const roomLabels = yield select(roomLabelSelector(eventData?.roomId));
-  if (roomLabels?.includes(RoomLabels.MUTE)) return;
+  if (roomLabels?.includes(DefaultRoomLabels.MUTE)) return;
 
   if (eventData.type === NotifiableEventType.RoomMessage) {
     yield call(sendBrowserMessage, mapMessage(eventData));

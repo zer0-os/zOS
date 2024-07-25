@@ -15,7 +15,7 @@ import {
 } from './saga';
 
 import { rootReducer } from '../reducer';
-import { ConversationStatus, RoomLabels, denormalize as denormalizeChannel } from '../channels';
+import { ConversationStatus, DefaultRoomLabels, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { addRoomToLabel, chat, removeRoomFromLabel, sendTypingEvent } from '../../lib/chat';
 
@@ -123,7 +123,7 @@ describe(receiveChannel, () => {
 describe(onAddLabel, () => {
   it('calls addRoomToLabel with the label to be added', async () => {
     const initialState = new StoreBuilder()
-      .withConversationList({ id: 'room-id', labels: [RoomLabels.FAMILY] })
+      .withConversationList({ id: 'room-id', labels: [DefaultRoomLabels.FAMILY] })
       .build();
 
     await expectSaga(onAddLabel, { payload: { roomId: 'room-id', label: 'm.work' } })
@@ -131,7 +131,7 @@ describe(onAddLabel, () => {
       .provide([
         [matchers.call.fn(addRoomToLabel), undefined],
       ])
-      .call(addRoomToLabel, 'room-id', RoomLabels.WORK)
+      .call(addRoomToLabel, 'room-id', DefaultRoomLabels.WORK)
       .run();
   });
 });
@@ -139,15 +139,15 @@ describe(onAddLabel, () => {
 describe(onRemoveLabel, () => {
   it('calls removeRoomFromLabel with the label to be removed', async () => {
     const initialState = new StoreBuilder()
-      .withConversationList({ id: 'room-id', labels: [RoomLabels.WORK, RoomLabels.FAMILY] })
+      .withConversationList({ id: 'room-id', labels: [DefaultRoomLabels.WORK, DefaultRoomLabels.FAMILY] })
       .build();
 
-    await expectSaga(onRemoveLabel, { payload: { roomId: 'room-id', label: 'm.work' } })
+    await expectSaga(onRemoveLabel, { payload: { roomId: 'room-id', label: DefaultRoomLabels.WORK } })
       .withReducer(rootReducer, initialState)
       .provide([
         [matchers.call.fn(removeRoomFromLabel), undefined],
       ])
-      .call(removeRoomFromLabel, 'room-id', RoomLabels.WORK)
+      .call(removeRoomFromLabel, 'room-id', DefaultRoomLabels.WORK)
       .run();
   });
 });
@@ -155,30 +155,32 @@ describe(onRemoveLabel, () => {
 describe(roomLabelChange, () => {
   it('removes label from room', async () => {
     const initialState = new StoreBuilder()
-      .withConversationList({ id: 'room-id', labels: [RoomLabels.WORK, RoomLabels.FAMILY] })
+      .withConversationList({ id: 'room-id', labels: [DefaultRoomLabels.WORK, DefaultRoomLabels.FAMILY] })
       .build();
 
     const { storeState } = await expectSaga(roomLabelChange, {
-      payload: { roomId: 'room-id', labels: [RoomLabels.WORK] },
+      payload: { roomId: 'room-id', labels: [DefaultRoomLabels.WORK] },
     })
       .withReducer(rootReducer, initialState)
       .run();
 
     const channel = denormalizeChannel('room-id', storeState);
-    expect(channel.labels).toEqual([RoomLabels.WORK]);
+    expect(channel.labels).toEqual([DefaultRoomLabels.WORK]);
   });
 
   it('adds label to room', async () => {
-    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', labels: [RoomLabels.WORK] }).build();
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'room-id', labels: [DefaultRoomLabels.WORK] })
+      .build();
 
     const { storeState } = await expectSaga(roomLabelChange, {
-      payload: { roomId: 'room-id', labels: [RoomLabels.WORK, RoomLabels.FAMILY] },
+      payload: { roomId: 'room-id', labels: [DefaultRoomLabels.WORK, DefaultRoomLabels.FAMILY] },
     })
       .withReducer(rootReducer, initialState)
       .run();
 
     const channel = denormalizeChannel('room-id', storeState);
-    expect(channel.labels).toEqual([RoomLabels.WORK, RoomLabels.FAMILY]);
+    expect(channel.labels).toEqual([DefaultRoomLabels.WORK, DefaultRoomLabels.FAMILY]);
   });
 });
 

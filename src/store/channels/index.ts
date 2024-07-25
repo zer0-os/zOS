@@ -35,7 +35,7 @@ export enum ConversationStatus {
   ERROR,
 }
 
-export enum RoomLabels {
+export enum DefaultRoomLabels {
   WORK = 'm.work',
   FAMILY = 'm.family',
   SOCIAL = 'm.social',
@@ -64,7 +64,7 @@ export interface Channel {
   moderatorIds?: string[];
   reply?: ParentMessage;
   otherMembersTyping: string[];
-  labels?: RoomLabels[];
+  labels?: string[];
 }
 
 export const CHANNEL_DEFAULTS = {

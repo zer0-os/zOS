@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { getOtherMembersTypingDisplayText, highlightFilter } from '../../lib/utils';
-import { Channel, RoomLabels } from '../../../../store/channels';
+import { Channel, DefaultRoomLabels } from '../../../../store/channels';
 
 import { MoreMenu } from './more-menu';
 import { Avatar } from '@zero-tech/zui/components';
@@ -23,8 +23,8 @@ export interface Properties {
   activeConversationId: string;
 
   onClick: (conversationId: string) => void;
-  onAddLabel: (roomId: string, label: RoomLabels) => void;
-  onRemoveLabel: (roomId: string, label: RoomLabels) => void;
+  onAddLabel: (roomId: string, label: string) => void;
+  onRemoveLabel: (roomId: string, label: string) => void;
 }
 
 export interface State {
@@ -46,11 +46,11 @@ export class ConversationItem extends React.Component<Properties, State> {
     }
   };
 
-  onAddLabel = (label: RoomLabels) => {
+  onAddLabel = (label) => {
     this.props.onAddLabel(this.props.conversation.id, label);
   };
 
-  onRemoveLabel = (label: RoomLabels) => {
+  onRemoveLabel = (label) => {
     this.props.onRemoveLabel(this.props.conversation.id, label);
   };
 
@@ -145,7 +145,7 @@ export class ConversationItem extends React.Component<Properties, State> {
             <div {...cn('name')} is-unread={isUnread}>
               {this.highlightedName()}
             </div>
-            {conversation.labels?.includes(RoomLabels.MUTE) && <IconBellOff1 {...cn('muted-icon')} size={16} />}
+            {conversation.labels?.includes(DefaultRoomLabels.MUTE) && <IconBellOff1 {...cn('muted-icon')} size={16} />}
 
             <div {...cn('timestamp')}>{previewDisplayDate}</div>
           </div>

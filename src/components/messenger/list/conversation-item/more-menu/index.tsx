@@ -2,25 +2,25 @@ import React from 'react';
 
 import { DropdownMenu } from '@zero-tech/zui/components';
 import { IconBookmark, IconBookmarkX } from '@zero-tech/zui/icons';
-import { RoomLabels } from '../../../../../store/channels';
+import { DefaultRoomLabels } from '../../../../../store/channels';
 
 import './styles.scss';
 
 export interface Properties {
-  labels: RoomLabels[];
+  labels: string[];
   isOpen: boolean;
 
   onClose: (isOpen: boolean) => void;
-  onAddLabel: (label: RoomLabels) => void;
-  onRemoveLabel: (label: RoomLabels) => void;
+  onAddLabel: (label: string) => void;
+  onRemoveLabel: (label: string) => void;
 }
 
 export class MoreMenu extends React.Component<Properties> {
-  addLabel = (label: RoomLabels) => () => {
+  addLabel = (label) => () => {
     this.props.onAddLabel(label);
   };
 
-  removeLabel = (label: RoomLabels) => () => {
+  removeLabel = (label) => () => {
     this.props.onRemoveLabel(label);
   };
 
@@ -41,17 +41,17 @@ export class MoreMenu extends React.Component<Properties> {
   get menuItems() {
     const menuItems = [];
 
-    if (!this.props.labels?.includes(RoomLabels.FAVORITE)) {
+    if (!this.props.labels?.includes(DefaultRoomLabels.FAVORITE)) {
       menuItems.push({
         id: 'favorite',
         label: this.renderMenuOption(<IconBookmark size={20} />, 'Favorite'),
-        onSelect: this.addLabel(RoomLabels.FAVORITE),
+        onSelect: this.addLabel(DefaultRoomLabels.FAVORITE),
       });
     } else {
       menuItems.push({
         id: 'unfavorite',
         label: this.renderMenuOption(<IconBookmarkX size={20} />, 'Unfavorite'),
-        onSelect: this.removeLabel(RoomLabels.FAVORITE),
+        onSelect: this.removeLabel(DefaultRoomLabels.FAVORITE),
       });
     }
 

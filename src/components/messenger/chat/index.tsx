@@ -2,7 +2,14 @@ import React from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel, RoomLabels, denormalize, onAddLabel, onRemoveLabel, onRemoveReply } from '../../../store/channels';
+import {
+  Channel,
+  DefaultRoomLabels,
+  denormalize,
+  onAddLabel,
+  onRemoveLabel,
+  onRemoveReply,
+} from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { send as sendMessage } from '../../../store/messages';
@@ -48,8 +55,8 @@ export interface Properties extends PublicProperties {
   onRemoveReply: () => void;
   viewGroupInformation: () => void;
   toggleSecondarySidekick: () => void;
-  onAddLabel: (payload: { roomId: string; label: RoomLabels }) => void;
-  onRemoveLabel: (payload: { roomId: string; label: RoomLabels }) => void;
+  onAddLabel: (payload: { roomId: string; label: string }) => void;
+  onRemoveLabel: (payload: { roomId: string; label: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -172,15 +179,15 @@ export class Container extends React.Component<Properties> {
   };
 
   muteRoom = () => {
-    this.props.onAddLabel({ roomId: this.props.activeConversationId, label: RoomLabels.MUTE });
+    this.props.onAddLabel({ roomId: this.props.activeConversationId, label: DefaultRoomLabels.MUTE });
   };
 
   unmuteRoom = () => {
-    this.props.onRemoveLabel({ roomId: this.props.activeConversationId, label: RoomLabels.MUTE });
+    this.props.onRemoveLabel({ roomId: this.props.activeConversationId, label: DefaultRoomLabels.MUTE });
   };
 
   get isMuted() {
-    return this.props.directMessage.labels?.includes(RoomLabels.MUTE);
+    return this.props.directMessage.labels?.includes(DefaultRoomLabels.MUTE);
   }
 
   render() {

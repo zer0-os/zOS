@@ -17,8 +17,8 @@ describe(ConversationItem, () => {
       myUserId: '',
       activeConversationId: '',
       onClick: () => null,
-      onFavoriteRoom: () => null,
-      onUnfavoriteRoom: () => null,
+      onAddLabel: () => null,
+      onRemoveLabel: () => null,
       ...props,
     };
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { getOtherMembersTypingDisplayText, highlightFilter } from '../../lib/utils';
-import { Channel } from '../../../../store/channels';
+import { Channel, RoomLabels } from '../../../../store/channels';
 
 import { MoreMenu } from './more-menu';
 import { Avatar } from '@zero-tech/zui/components';
@@ -23,8 +23,8 @@ export interface Properties {
   activeConversationId: string;
 
   onClick: (conversationId: string) => void;
-  onFavoriteRoom: (roomId: string) => void;
-  onUnfavoriteRoom: (roomId: string) => void;
+  onAddLabel: (roomId: string, label: RoomLabels) => void;
+  onRemoveLabel: (roomId: string, label: RoomLabels) => void;
 }
 
 export interface State {
@@ -46,12 +46,12 @@ export class ConversationItem extends React.Component<Properties, State> {
     }
   };
 
-  onFavorite = () => {
-    this.props.onFavoriteRoom(this.props.conversation.id);
+  onAddLabel = (label: RoomLabels) => {
+    this.props.onAddLabel(this.props.conversation.id, label);
   };
 
-  onUnfavorite = () => {
-    this.props.onUnfavoriteRoom(this.props.conversation.id);
+  onRemoveLabel = (label: RoomLabels) => {
+    this.props.onRemoveLabel(this.props.conversation.id, label);
   };
 
   openContextMenu = (e) => {
@@ -97,11 +97,11 @@ export class ConversationItem extends React.Component<Properties, State> {
     return (
       <div onClick={stopPropagation}>
         <MoreMenu
-          isFavorite={this.props.conversation.isFavorite}
-          onFavorite={this.onFavorite}
-          onUnfavorite={this.onUnfavorite}
+          labels={this.props.conversation.labels}
           isOpen={this.state.isContextMenuOpen}
           onClose={this.closeContextMenu}
+          onAddLabel={this.onAddLabel}
+          onRemoveLabel={this.onRemoveLabel}
         />
       </div>
     );

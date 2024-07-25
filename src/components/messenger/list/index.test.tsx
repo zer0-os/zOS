@@ -48,10 +48,10 @@ describe('messenger-list', () => {
       receiveSearchResults: () => null,
       logout: () => null,
       closeRewardsDialog: () => null,
-      onFavoriteRoom: () => null,
-      onUnfavoriteRoom: () => null,
       openUserProfile: () => null,
       totalRewardsViewed: () => null,
+      onAddLabel: () => null,
+      onRemoveLabel: () => null,
 
       ...props,
     };

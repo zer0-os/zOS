@@ -145,7 +145,7 @@ export class ConversationItem extends React.Component<Properties, State> {
             <div {...cn('name')} is-unread={isUnread}>
               {this.highlightedName()}
             </div>
-            {conversation.isMuted && <IconBellOff1 {...cn('muted-icon')} size={16} />}
+            {conversation.labels?.includes(RoomLabels.MUTE) && <IconBellOff1 {...cn('muted-icon')} size={16} />}
 
             <div {...cn('timestamp')}>{previewDisplayDate}</div>
           </div>

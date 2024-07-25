@@ -1084,38 +1084,6 @@ describe('matrix client', () => {
     });
   });
 
-  describe('addRoomToMuted', () => {
-    it('sets room tag with "m.mute"', async () => {
-      const roomId = '!testRoomId';
-      const setRoomTag = jest.fn().mockResolvedValue({});
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ setRoomTag })),
-      });
-
-      await client.connect(null, 'token');
-      await client.addRoomToMuted(roomId);
-
-      expect(setRoomTag).toHaveBeenCalledWith(roomId, 'm.mute');
-    });
-  });
-
-  describe('removeRoomFromMuted', () => {
-    it('deletes "m.mute" tag from room', async () => {
-      const roomId = '!testRoomId';
-      const deleteRoomTag = jest.fn().mockResolvedValue({});
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ deleteRoomTag })),
-      });
-
-      await client.connect(null, 'token');
-      await client.removeRoomFromMuted(roomId);
-
-      expect(deleteRoomTag).toHaveBeenCalledWith(roomId, 'm.mute');
-    });
-  });
-
   describe('addRoomToLabel', () => {
     it('sets room tag with the specified label', async () => {
       const setRoomTag = jest.fn().mockResolvedValue({});
@@ -1149,8 +1117,8 @@ describe('matrix client', () => {
   describe('getRoomTags', () => {
     it('returns correct tags for all rooms', async () => {
       const conversations = [
-        { id: 'room1', isMuted: false, labels: [] },
-        { id: 'room2', isMuted: false, labels: [] },
+        { id: 'room1', labels: [] },
+        { id: 'room2', labels: [] },
       ];
 
       const getRoomTags = jest
@@ -1168,31 +1136,14 @@ describe('matrix client', () => {
       expect(conversations).toEqual([
         {
           id: 'room1',
-          isMuted: true,
           labels: [
             'm.favorite',
+            'm.mute',
             'm.work',
             'm.family',
           ],
         },
-        { id: 'room2', isMuted: false, labels: [] },
-      ]);
-    });
-
-    it('returns false for tags that are not present', async () => {
-      const conversations = [
-        { id: 'room1', isMuted: false, labels: [] },
-      ];
-
-      const getRoomTags = jest.fn().mockResolvedValue({ tags: {} });
-      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoomTags })) });
-
-      await client.connect(null, 'token');
-      await client.getRoomTags(conversations);
-
-      expect(getRoomTags).toHaveBeenCalledWith('room1');
-      expect(conversations).toEqual([
-        { id: 'room1', isMuted: false, labels: [] },
+        { id: 'room2', labels: [] },
       ]);
     });
   });

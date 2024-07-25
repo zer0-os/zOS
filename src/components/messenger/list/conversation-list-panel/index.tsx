@@ -32,7 +32,6 @@ enum Tab {
   Favorites = 'favorites',
   Work = 'work',
   Social = 'social',
-  Archived = 'archived',
   Family = 'family',
 }
 
@@ -80,12 +79,11 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   get filteredConversations() {
     if (!this.state.filter) {
       const tabToConversationsMap = {
-        [Tab.All]: this.props.conversations.filter((c) => !c.labels?.includes(DefaultRoomLabels.ARCHIVED)),
+        [Tab.All]: this.props.conversations,
         [Tab.Favorites]: this.getConversationsByLabel(DefaultRoomLabels.FAVORITE),
         [Tab.Work]: this.getConversationsByLabel(DefaultRoomLabels.WORK),
         [Tab.Social]: this.getConversationsByLabel(DefaultRoomLabels.SOCIAL),
         [Tab.Family]: this.getConversationsByLabel(DefaultRoomLabels.FAMILY),
-        [Tab.Archived]: this.getConversationsByLabel(DefaultRoomLabels.ARCHIVED),
       };
 
       return tabToConversationsMap[this.state.selectedTab];
@@ -147,7 +145,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const work = this.getConversationsByLabel(DefaultRoomLabels.WORK);
     const social = this.getConversationsByLabel(DefaultRoomLabels.SOCIAL);
     const family = this.getConversationsByLabel(DefaultRoomLabels.FAMILY);
-    const archived = this.getConversationsByLabel(DefaultRoomLabels.ARCHIVED);
 
     return (
       <div {...cn('tab-list')}>
@@ -156,7 +153,6 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         {this.renderTab(Tab.Work, 'Work', this.getUnreadCount(work))}
         {this.renderTab(Tab.Social, 'Social', this.getUnreadCount(social))}
         {this.renderTab(Tab.Family, 'Family', this.getUnreadCount(family))}
-        {this.renderTab(Tab.Archived, 'Archived', this.getUnreadCount(archived))}
       </div>
     );
   }

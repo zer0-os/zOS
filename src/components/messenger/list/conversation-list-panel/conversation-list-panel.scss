@@ -3,6 +3,7 @@
 @import '../../../../layout';
 @import '../../../../glass';
 @import '../../../../functions';
+@import '../../../../scrollbar';
 
 @keyframes conversation-slide-in {
   0% {
@@ -28,19 +29,42 @@ $side-padding: 16px;
 
 .messages-list {
   &__tab-list {
+    @include horizontal-scrollbar();
+
     display: flex;
-    justify-content: center;
-    gap: 4px;
+    justify-content: flex-start;
+    gap: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 8px 16px;
+    margin: 0 16px;
+
+    &::-webkit-scrollbar-thumb {
+      display: none;
+    }
+
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        display: block;
+      }
+
+      @include horizontal-scrollbar();
+
+      ~ .scrollbar-container__panel {
+        display: none;
+      }
+    }
   }
 
   &__tab {
+    display: flex;
+    align-items: center;
     position: relative;
     box-sizing: border-box;
-    padding: 8px 16px;
-    border: 1px solid transparent;
+    padding: 8px 4px 2px 4px;
 
     @include glass-text-secondary-color;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
 
     &:hover {
@@ -49,11 +73,11 @@ $side-padding: 16px;
     }
 
     &--active {
-      @include glass-text-primary-color;
-      border-radius: 9999px;
-      border: 1px solid $glass-highlight-color;
+      color: theme.$color-secondary-11;
+      border-bottom: 1px solid $glass-highlight-color;
 
       &:hover {
+        color: theme.$color-secondary-11;
         cursor: auto;
       }
 
@@ -65,7 +89,7 @@ $side-padding: 16px;
 
   &__tab-badge {
     position: absolute;
-    right: -2px;
+    right: -10px;
     top: -2px;
 
     display: flex;
@@ -137,7 +161,7 @@ $side-padding: 16px;
     }
   }
 
-  &__favorites-preview {
+  &__label-preview {
     display: flex;
     flex-direction: column;
     padding: 8px;
@@ -159,7 +183,7 @@ $side-padding: 16px;
     height: 52px;
   }
 
-  &__favorites-preview-image {
+  &__label-preview-image {
     width: 200px;
     height: 89px;
     background: url(cloudAsset('FavoritePreview.png'));

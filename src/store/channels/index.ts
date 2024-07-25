@@ -94,8 +94,6 @@ export enum SagaActionTypes {
   OpenConversation = 'channels/saga/openConversation',
   OnReply = 'channels/saga/onReply',
   OnRemoveReply = 'channels/saga/onRemoveReply',
-  OnFavoriteRoom = 'channels/saga/onFavoriteRoom',
-  OnUnfavoriteRoom = 'channels/saga/onUnfavoriteRoom',
   UserTypingInRoom = 'channels/saga/userTypingInRoom',
   OnMuteRoom = 'channels/saga/onMuteRoom',
   OnUnmuteRoom = 'channels/saga/onUnmuteRoom',
@@ -107,8 +105,6 @@ const openConversation = createAction<{ conversationId: string }>(SagaActionType
 const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTypes.UnreadCountUpdated);
 const onReply = createAction<{ reply: ParentMessage }>(SagaActionTypes.OnReply);
 const onRemoveReply = createAction(SagaActionTypes.OnRemoveReply);
-const onFavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnFavoriteRoom);
-const onUnfavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnfavoriteRoom);
 const userTypingInRoom = createAction<{ roomId: string }>(SagaActionTypes.UserTypingInRoom);
 const onMuteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnMuteRoom);
 const onUnmuteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnmuteRoom);
@@ -132,8 +128,6 @@ export {
   openConversation,
   onReply,
   onRemoveReply,
-  onFavoriteRoom,
-  onUnfavoriteRoom,
   userTypingInRoom,
   onMuteRoom,
   onUnmuteRoom,

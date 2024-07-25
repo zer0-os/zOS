@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Channel, RoomLabels } from '../../../../store/channels';
+import { Channel, DefaultRoomLabels } from '../../../../store/channels';
 import { ConversationItem } from '../conversation-item';
 import { Input } from '@zero-tech/zui/components';
 import { Item, Option } from '../../lib/types';
@@ -23,8 +23,8 @@ export interface Properties {
   search: (input: string) => any;
   onCreateConversation: (userId: string) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
-  onAddLabel: (payload: { roomId: string; label: RoomLabels }) => void;
-  onRemoveLabel: (payload: { roomId: string; label: RoomLabels }) => void;
+  onAddLabel: (payload: { roomId: string; label: string }) => void;
+  onRemoveLabel: (payload: { roomId: string; label: string }) => void;
 }
 
 enum Tab {
@@ -107,16 +107,16 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ selectedTab: Tab.Favorites });
   };
 
-  onAddLabel = (roomId: string, label: RoomLabels) => {
+  onAddLabel = (roomId: string, label) => {
     this.props.onAddLabel({ roomId, label });
   };
 
-  onRemoveLabel = (roomId: string, label: RoomLabels) => {
+  onRemoveLabel = (roomId: string, label) => {
     this.props.onRemoveLabel({ roomId, label });
   };
 
   get favoriteConversations() {
-    return this.props.conversations.filter((c) => c.labels?.includes(RoomLabels.FAVORITE));
+    return this.props.conversations.filter((c) => c.labels?.includes(DefaultRoomLabels.FAVORITE));
   }
 
   get allUnreadCount() {

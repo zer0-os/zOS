@@ -22,7 +22,7 @@ import {
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
-import { ConversationStatus, Channel, User as UserModel, RoomLabels } from '../../store/channels';
+import { ConversationStatus, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, PowerLevels, User } from './types';
@@ -832,19 +832,19 @@ export class MatrixClient implements IChatClient {
     const tags = conversations.map(async (conversation) => {
       featureFlags.enableTimerLogs && console.time(`xxxgetRoomTags${conversation.id}`);
       const result = await this.matrix.getRoomTags(conversation.id);
-      conversation.labels = Object.keys(result.tags) as RoomLabels[];
+      conversation.labels = Object.keys(result.tags);
       featureFlags.enableTimerLogs && console.timeEnd(`xxxgetRoomTags${conversation.id}`);
     });
 
     await Promise.all(tags);
   }
 
-  async addRoomToLabel(roomId: string, label: RoomLabels): Promise<void> {
+  async addRoomToLabel(roomId: string, label: string): Promise<void> {
     await this.waitForConnection();
     await this.matrix.setRoomTag(roomId, label);
   }
 
-  async removeRoomFromLabel(roomId: string, label: RoomLabels): Promise<void> {
+  async removeRoomFromLabel(roomId: string, label: string): Promise<void> {
     await this.waitForConnection();
     await this.matrix.deleteRoomTag(roomId, label);
   }

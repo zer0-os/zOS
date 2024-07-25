@@ -3,7 +3,7 @@ import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
 import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
-import { ConversationStatus, MessagesFetchState } from '../channels';
+import { ConversationStatus, MessagesFetchState, RoomLabels } from '../channels';
 import { markConversationAsRead, rawChannelSelector, receiveChannel } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
@@ -82,8 +82,8 @@ const _isActive = (roomId) => (state) => {
   return roomId === state.chat.activeConversationId;
 };
 
-export const isRoomMutedSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels['${channelId}'].isMuted`, false);
+export const roomLabelSelector = (channelId) => (state) => {
+  return getDeepProperty(state, `normalized.channels['${channelId}'].labels`, []);
 };
 
 export function* getLocalZeroUsersMap() {
@@ -535,8 +535,8 @@ export function isOwner(currentUser, entityUserMatrixId) {
 export function* sendBrowserNotification(eventData) {
   if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
 
-  const isMuted = yield select(isRoomMutedSelector(eventData?.roomId));
-  if (isMuted) return;
+  const roomLabels = yield select(roomLabelSelector(eventData?.roomId));
+  if (roomLabels?.includes(RoomLabels.MUTE)) return;
 
   if (eventData.type === NotifiableEventType.RoomMessage) {
     yield call(sendBrowserMessage, mapMessage(eventData));

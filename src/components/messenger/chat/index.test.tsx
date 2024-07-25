@@ -43,8 +43,8 @@ describe(DirectMessageChat, () => {
       viewGroupInformation: () => null,
       toggleSecondarySidekick: () => null,
       otherMembersTypingInRoom: [],
-      onMuteRoom: () => null,
-      onUnmuteRoom: () => null,
+      onAddLabel: () => null,
+      onRemoveLabel: () => null,
       ...props,
     };
 

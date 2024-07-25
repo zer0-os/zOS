@@ -41,6 +41,7 @@ export enum RoomLabels {
   SOCIAL = 'm.social',
   ARCHIVED = 'm.archived',
   FAVORITE = 'm.favorite',
+  MUTE = 'm.mute',
 }
 
 export interface Channel {
@@ -63,7 +64,6 @@ export interface Channel {
   moderatorIds?: string[];
   reply?: ParentMessage;
   otherMembersTyping: string[];
-  isMuted?: boolean;
   labels?: RoomLabels[];
 }
 
@@ -85,7 +85,6 @@ export const CHANNEL_DEFAULTS = {
   adminMatrixIds: [],
   moderatorIds: [],
   otherMembersTyping: [],
-  isMuted: false,
   labels: [],
 };
 
@@ -95,8 +94,6 @@ export enum SagaActionTypes {
   OnReply = 'channels/saga/onReply',
   OnRemoveReply = 'channels/saga/onRemoveReply',
   UserTypingInRoom = 'channels/saga/userTypingInRoom',
-  OnMuteRoom = 'channels/saga/onMuteRoom',
-  OnUnmuteRoom = 'channels/saga/onUnmuteRoom',
   OnAddLabel = 'channels/saga/onAddLabel',
   OnRemoveLabel = 'channels/saga/onRemoveLabel',
 }
@@ -106,8 +103,6 @@ const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTyp
 const onReply = createAction<{ reply: ParentMessage }>(SagaActionTypes.OnReply);
 const onRemoveReply = createAction(SagaActionTypes.OnRemoveReply);
 const userTypingInRoom = createAction<{ roomId: string }>(SagaActionTypes.UserTypingInRoom);
-const onMuteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnMuteRoom);
-const onUnmuteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnmuteRoom);
 const onAddLabel = createAction<{ roomId: string; label: string }>(SagaActionTypes.OnAddLabel);
 const onRemoveLabel = createAction<{ roomId: string; label: string }>(SagaActionTypes.OnRemoveLabel);
 
@@ -129,8 +124,6 @@ export {
   onReply,
   onRemoveReply,
   userTypingInRoom,
-  onMuteRoom,
-  onUnmuteRoom,
   onAddLabel,
   onRemoveLabel,
 };

@@ -7,8 +7,6 @@ import { currentUserSelector } from '../authentication/saga';
 import {
   chat,
   sendTypingEvent as matrixSendUserTypingEvent,
-  addRoomToMuted,
-  removeRoomFromMuted,
   addRoomToLabel,
   removeRoomFromLabel,
 } from '../../lib/chat';
@@ -111,42 +109,6 @@ export function* receiveChannel(channel: Partial<Channel>) {
   }
 
   yield put(rawReceive(data));
-}
-
-export function* onMuteRoom(action) {
-  const { roomId } = action.payload;
-  try {
-    yield call(addRoomToMuted, roomId);
-  } catch (error) {
-    console.error(`Failed to mute room ${roomId}:`, error);
-  }
-}
-
-export function* onUnmuteRoom(action) {
-  const { roomId } = action.payload;
-  try {
-    yield call(removeRoomFromMuted, roomId);
-  } catch (error) {
-    console.error(`Failed to unmute room ${roomId}:`, error);
-  }
-}
-
-export function* roomMuted(action) {
-  const { roomId } = action.payload;
-  try {
-    yield call(receiveChannel, { id: roomId, isMuted: true });
-  } catch (error) {
-    console.error(`Failed to update mute status for room ${roomId}:`, error);
-  }
-}
-
-export function* roomUnmuted(action) {
-  const { roomId } = action.payload;
-  try {
-    yield call(receiveChannel, { id: roomId, isMuted: false });
-  } catch (error) {
-    console.error(`Failed to update unmute status for room ${roomId}:`, error);
-  }
 }
 
 export function* onAddLabel(action) {
@@ -264,14 +226,10 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
-  yield takeLatest(SagaActionTypes.OnMuteRoom, onMuteRoom);
-  yield takeLatest(SagaActionTypes.OnUnmuteRoom, onUnmuteRoom);
   yield takeLatest(SagaActionTypes.OnAddLabel, onAddLabel);
   yield takeLatest(SagaActionTypes.OnRemoveLabel, onRemoveLabel);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
-  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMuted, roomMuted);
-  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnmuted, roomUnmuted);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMemberTyping, receivedRoomMembersTyping);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomLabelChange, roomLabelChange);
   yield takeEveryFromBus(

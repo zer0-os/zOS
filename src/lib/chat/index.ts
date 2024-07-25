@@ -17,12 +17,10 @@ export interface RealtimeChatEvents {
   onOtherUserJoinedChannel: (channelId: string, user: UserModel) => void;
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
   receiveLiveRoomEvent: (eventData) => void;
-  roomMuted: (roomId: string) => void;
-  roomUnmuted: (roomId: string) => void;
   roomMemberTyping: (roomId: string, userIds: string[]) => void;
   roomMemberPowerLevelChanged: (roomId: string, matrixId: string, powerLevel: number) => void;
   readReceiptReceived: (messageId: string, userId: string, roomId: string) => void;
-  roomLabelChange: (roomId: string, labels: string) => void;
+  roomLabelChange: (roomId: string, labels: string[]) => void;
 }
 
 export interface MatrixKeyBackupInfo {
@@ -279,14 +277,6 @@ export async function isRoomMember(userId: string, roomId: string) {
 
 export async function getSecureBackup() {
   return await chat.get().matrix.getSecureBackup();
-}
-
-export async function addRoomToMuted(roomId: string) {
-  return await chat.get().matrix.addRoomToMuted(roomId);
-}
-
-export async function removeRoomFromMuted(roomId: string) {
-  return await chat.get().matrix.removeRoomFromMuted(roomId);
 }
 
 export async function uploadImageUrl(

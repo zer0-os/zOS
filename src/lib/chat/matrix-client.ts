@@ -828,30 +828,11 @@ export class MatrixClient implements IChatClient {
     return await Promise.all(matches.map((r) => this.mapConversation(r)));
   }
 
-  async addRoomToMuted(roomId) {
-    await this.waitForConnection();
-
-    await this.matrix.setRoomTag(roomId, MatrixConstants.MUTE);
-  }
-
-  async removeRoomFromMuted(roomId) {
-    await this.waitForConnection();
-
-    await this.matrix.deleteRoomTag(roomId, MatrixConstants.MUTE);
-  }
-
   async getRoomTags(conversations: Partial<Channel>[]): Promise<void> {
     const tags = conversations.map(async (conversation) => {
       featureFlags.enableTimerLogs && console.time(`xxxgetRoomTags${conversation.id}`);
       const result = await this.matrix.getRoomTags(conversation.id);
-
-      // should move this to saga level
-      conversation.isMuted = !!result.tags?.[MatrixConstants.MUTE];
-
-      const filteredLabels = Object.keys(result.tags).filter(
-        (tag) => ![MatrixConstants.MUTE].includes(tag as MatrixConstants)
-      );
-      conversation.labels = filteredLabels as RoomLabels[];
+      conversation.labels = Object.keys(result.tags) as RoomLabels[];
       featureFlags.enableTimerLogs && console.timeEnd(`xxxgetRoomTags${conversation.id}`);
     });
 
@@ -1151,23 +1132,7 @@ export class MatrixClient implements IChatClient {
     const tags = event.getContent().tags || {};
     const tagKeys = Object.keys(tags);
 
-    this.mutedTagChange(roomId, tagKeys);
-    this.labelTagChange(roomId, tagKeys);
-  }
-
-  private mutedTagChange(roomId, tagKeys) {
-    const isMutedTagAdded = tagKeys.includes(MatrixConstants.MUTE);
-
-    if (isMutedTagAdded) {
-      this.events.roomMuted(roomId);
-    } else {
-      this.events.roomUnmuted(roomId);
-    }
-  }
-
-  private labelTagChange(roomId, tagKeys) {
-    const labelTags = tagKeys.filter((tag) => ![MatrixConstants.MUTE].includes(tag));
-    this.events.roomLabelChange(roomId, labelTags);
+    this.events.roomLabelChange(roomId, tagKeys);
   }
 
   private publishReceiptEvent(event: MatrixEvent, room: Room) {
@@ -1213,7 +1178,6 @@ export class MatrixClient implements IChatClient {
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: admins,
       moderatorIds: mods,
-      isMuted: false,
       labels: [],
     };
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
-import { Channel } from '../../../store/channels';
-import { openConversation, onFavoriteRoom, onUnfavoriteRoom } from '../../../store/channels';
+import { Channel, onAddLabel, onRemoveLabel, openConversation } from '../../../store/channels';
 import { denormalizeConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
@@ -71,10 +70,10 @@ export interface Properties extends PublicProperties {
   receiveSearchResults: (data) => void;
   closeConversationErrorDialog: () => void;
   closeRewardsDialog: () => void;
-  onFavoriteRoom: (payload: { roomId: string }) => void;
-  onUnfavoriteRoom: (payload: { roomId: string }) => void;
   openUserProfile: () => void;
   totalRewardsViewed: () => void;
+  onAddLabel: () => void;
+  onRemoveLabel: () => void;
 }
 
 interface State {
@@ -124,10 +123,10 @@ export class Container extends React.Component<Properties, State> {
       receiveSearchResults,
       closeConversationErrorDialog,
       closeRewardsDialog,
-      onFavoriteRoom,
-      onUnfavoriteRoom,
       openUserProfile,
       totalRewardsViewed,
+      onAddLabel,
+      onRemoveLabel,
     };
   }
 
@@ -258,8 +257,8 @@ export class Container extends React.Component<Properties, State> {
             onConversationClick={this.props.onConversationClick}
             myUserId={this.props.myUserId}
             activeConversationId={this.props.activeConversationId}
-            onFavoriteRoom={this.props.onFavoriteRoom}
-            onUnfavoriteRoom={this.props.onUnfavoriteRoom}
+            onAddLabel={this.props.onAddLabel}
+            onRemoveLabel={this.props.onRemoveLabel}
           />
         )}
         {this.props.stage === SagaStage.InitiateConversation && (

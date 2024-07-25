@@ -2,14 +2,15 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Properties, MoreMenu } from '.';
 import { DropdownMenu } from '@zero-tech/zui/components';
+import { RoomLabels } from '../../../../../store/channels';
 
 describe(MoreMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
-      isFavorite: false,
+      labels: [],
       isOpen: false,
-      onFavorite: () => {},
-      onUnfavorite: () => {},
+      onAddLabel: () => {},
+      onRemoveLabel: () => {},
       onClose: () => {},
       ...props,
     };
@@ -17,32 +18,32 @@ describe(MoreMenu, () => {
     return shallow(<MoreMenu {...allProps} />);
   };
 
-  it('fires onFavorite event', function () {
-    const onFavorite = jest.fn();
+  it('fires onAddLabel event', function () {
+    const onAddLabel = jest.fn();
 
-    selectItem(subject({ onFavorite, isFavorite: false }), 'favorite');
+    selectItem(subject({ onAddLabel, labels: [] }), 'favorite');
 
-    expect(onFavorite).toHaveBeenCalled();
+    expect(onAddLabel).toHaveBeenCalledWith(RoomLabels.FAVORITE);
   });
 
-  it('fires onUnfavorite event', function () {
-    const onUnfavorite = jest.fn();
+  it('fires onRemoveLabel event', function () {
+    const onRemoveLabel = jest.fn();
 
-    selectItem(subject({ onUnfavorite, isFavorite: true }), 'unfavorite');
+    selectItem(subject({ onRemoveLabel, labels: [RoomLabels.FAVORITE] }), 'unfavorite');
 
-    expect(onUnfavorite).toHaveBeenCalled();
+    expect(onRemoveLabel).toHaveBeenCalledWith(RoomLabels.FAVORITE);
   });
 
-  it('should display "Unfavorite" label when isFavorite is true', () => {
-    const wrapper = subject({ isFavorite: true });
+  it('should display "Unfavorite" label when room has favorite label', () => {
+    const wrapper = subject({ labels: [RoomLabels.FAVORITE] });
 
     const favoriteItem = menuItem(wrapper, 'unfavorite');
 
     expectLabelToContainText(favoriteItem, 'Unfavorite');
   });
 
-  it('should display "Favorite" label when isFavorite is false', () => {
-    const wrapper = subject({ isFavorite: false });
+  it('should display "Favorite" label when room does NOT have favorite label', () => {
+    const wrapper = subject({ labels: [] });
 
     const favoriteItem = menuItem(wrapper, 'favorite');
 

@@ -828,18 +828,6 @@ export class MatrixClient implements IChatClient {
     return await Promise.all(matches.map((r) => this.mapConversation(r)));
   }
 
-  async addRoomToFavorites(roomId: string): Promise<void> {
-    await this.waitForConnection();
-
-    await this.matrix.setRoomTag(roomId, MatrixConstants.FAVORITE);
-  }
-
-  async removeRoomFromFavorites(roomId: string): Promise<void> {
-    await this.waitForConnection();
-
-    await this.matrix.deleteRoomTag(roomId, MatrixConstants.FAVORITE);
-  }
-
   async addRoomToMuted(roomId) {
     await this.waitForConnection();
 
@@ -858,11 +846,10 @@ export class MatrixClient implements IChatClient {
       const result = await this.matrix.getRoomTags(conversation.id);
 
       // should move this to saga level
-      conversation.isFavorite = !!result.tags?.[MatrixConstants.FAVORITE];
       conversation.isMuted = !!result.tags?.[MatrixConstants.MUTE];
 
       const filteredLabels = Object.keys(result.tags).filter(
-        (tag) => ![MatrixConstants.FAVORITE, MatrixConstants.MUTE].includes(tag as MatrixConstants)
+        (tag) => ![MatrixConstants.MUTE].includes(tag as MatrixConstants)
       );
       conversation.labels = filteredLabels as RoomLabels[];
       featureFlags.enableTimerLogs && console.timeEnd(`xxxgetRoomTags${conversation.id}`);
@@ -1164,19 +1151,8 @@ export class MatrixClient implements IChatClient {
     const tags = event.getContent().tags || {};
     const tagKeys = Object.keys(tags);
 
-    this.favoriteTagChange(roomId, tagKeys);
     this.mutedTagChange(roomId, tagKeys);
     this.labelTagChange(roomId, tagKeys);
-  }
-
-  private favoriteTagChange(roomId, tagKeys) {
-    const isFavoriteTagAdded = tagKeys.includes(MatrixConstants.FAVORITE);
-
-    if (isFavoriteTagAdded) {
-      this.events.roomFavorited(roomId);
-    } else {
-      this.events.roomUnfavorited(roomId);
-    }
   }
 
   private mutedTagChange(roomId, tagKeys) {
@@ -1190,7 +1166,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private labelTagChange(roomId, tagKeys) {
-    const labelTags = tagKeys.filter((tag) => ![MatrixConstants.FAVORITE, MatrixConstants.MUTE].includes(tag));
+    const labelTags = tagKeys.filter((tag) => ![MatrixConstants.MUTE].includes(tag));
     this.events.roomLabelChange(roomId, labelTags);
   }
 
@@ -1237,8 +1213,8 @@ export class MatrixClient implements IChatClient {
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: admins,
       moderatorIds: mods,
-      isFavorite: false,
       isMuted: false,
+      labels: [],
     };
 
     featureFlags.enableTimerLogs && console.timeEnd(`xxxmapConversation${room.roomId}`);

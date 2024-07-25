@@ -5,8 +5,6 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
 import {
-  addRoomToFavorites,
-  removeRoomFromFavorites,
   chat,
   sendTypingEvent as matrixSendUserTypingEvent,
   addRoomToMuted,
@@ -113,42 +111,6 @@ export function* receiveChannel(channel: Partial<Channel>) {
   }
 
   yield put(rawReceive(data));
-}
-
-export function* onFavoriteRoom(action) {
-  const { roomId } = action.payload;
-  try {
-    yield call(addRoomToFavorites, roomId);
-  } catch (error) {
-    console.error(`Failed to add room ${roomId} to favorites:`, error);
-  }
-}
-
-export function* onUnfavoriteRoom(action) {
-  const { roomId } = action.payload;
-  try {
-    yield call(removeRoomFromFavorites, roomId);
-  } catch (error) {
-    console.error(`Failed to remove room ${roomId} from favorites:`, error);
-  }
-}
-
-export function* roomFavorited(action) {
-  const { roomId } = action.payload;
-  try {
-    yield call(receiveChannel, { id: roomId, isFavorite: true });
-  } catch (error) {
-    console.error(`Failed to update favorite status for room ${roomId}:`, error);
-  }
-}
-
-export function* roomUnfavorited(action) {
-  const { roomId } = action.payload;
-  try {
-    yield call(receiveChannel, { id: roomId, isFavorite: false });
-  } catch (error) {
-    console.error(`Failed to update unfavorite status for room ${roomId}:`, error);
-  }
 }
 
 export function* onMuteRoom(action) {
@@ -302,16 +264,12 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
-  yield takeLatest(SagaActionTypes.OnFavoriteRoom, onFavoriteRoom);
-  yield takeLatest(SagaActionTypes.OnUnfavoriteRoom, onUnfavoriteRoom);
   yield takeLatest(SagaActionTypes.OnMuteRoom, onMuteRoom);
   yield takeLatest(SagaActionTypes.OnUnmuteRoom, onUnmuteRoom);
   yield takeLatest(SagaActionTypes.OnAddLabel, onAddLabel);
   yield takeLatest(SagaActionTypes.OnRemoveLabel, onRemoveLabel);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
-  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomFavorited, roomFavorited);
-  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnfavorited, roomUnfavorited);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMuted, roomMuted);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnmuted, roomUnmuted);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMemberTyping, receivedRoomMembersTyping);

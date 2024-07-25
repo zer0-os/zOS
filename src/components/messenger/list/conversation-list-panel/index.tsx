@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Channel } from '../../../../store/channels';
+import { Channel, RoomLabels } from '../../../../store/channels';
 import { ConversationItem } from '../conversation-item';
 import { Input } from '@zero-tech/zui/components';
 import { Item, Option } from '../../lib/types';
@@ -23,8 +23,8 @@ export interface Properties {
   search: (input: string) => any;
   onCreateConversation: (userId: string) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
-  onFavoriteRoom: (payload: { roomId: string }) => void;
-  onUnfavoriteRoom: (payload: { roomId: string }) => void;
+  onAddLabel: (payload: { roomId: string; label: RoomLabels }) => void;
+  onRemoveLabel: (payload: { roomId: string; label: RoomLabels }) => void;
 }
 
 enum Tab {
@@ -107,16 +107,16 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ selectedTab: Tab.Favorites });
   };
 
-  onFavoriteRoom = (roomId: string) => {
-    this.props.onFavoriteRoom({ roomId });
+  onAddLabel = (roomId: string, label: RoomLabels) => {
+    this.props.onAddLabel({ roomId, label });
   };
 
-  onUnfavoriteRoom = (roomId: string) => {
-    this.props.onUnfavoriteRoom({ roomId });
+  onRemoveLabel = (roomId: string, label: RoomLabels) => {
+    this.props.onRemoveLabel({ roomId, label });
   };
 
   get favoriteConversations() {
-    return this.props.conversations.filter((c) => c.isFavorite);
+    return this.props.conversations.filter((c) => c.labels?.includes(RoomLabels.FAVORITE));
   }
 
   get allUnreadCount() {
@@ -185,8 +185,8 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                     onClick={this.openExistingConversation}
                     myUserId={this.props.myUserId}
                     activeConversationId={this.props.activeConversationId}
-                    onFavoriteRoom={this.onFavoriteRoom}
-                    onUnfavoriteRoom={this.onUnfavoriteRoom}
+                    onAddLabel={this.onAddLabel}
+                    onRemoveLabel={this.onRemoveLabel}
                   />
                 ))}
               {this.filteredConversations.length === 0 && !this.state.filter && this.renderEmptyConversationList()}

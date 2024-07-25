@@ -17,8 +17,6 @@ export interface RealtimeChatEvents {
   onOtherUserJoinedChannel: (channelId: string, user: UserModel) => void;
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
   receiveLiveRoomEvent: (eventData) => void;
-  roomFavorited: (roomId: string) => void;
-  roomUnfavorited: (roomId: string) => void;
   roomMuted: (roomId: string) => void;
   roomUnmuted: (roomId: string) => void;
   roomMemberTyping: (roomId: string, userIds: string[]) => void;
@@ -281,14 +279,6 @@ export async function isRoomMember(userId: string, roomId: string) {
 
 export async function getSecureBackup() {
   return await chat.get().matrix.getSecureBackup();
-}
-
-export async function addRoomToFavorites(roomId: string) {
-  return await chat.get().matrix.addRoomToFavorites(roomId);
-}
-
-export async function removeRoomFromFavorites(roomId: string) {
-  return await chat.get().matrix.removeRoomFromFavorites(roomId);
 }
 
 export async function addRoomToMuted(roomId: string) {

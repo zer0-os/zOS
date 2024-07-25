@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ConversationListPanel, Properties } from '.';
-import { Channel } from '../../../../store/channels';
+import { Channel, RoomLabels } from '../../../../store/channels';
 import { stubConversation } from '../../../../store/test/store';
 
 describe('ConversationListPanel', () => {
@@ -14,8 +14,8 @@ describe('ConversationListPanel', () => {
       search: () => undefined,
       onConversationClick: () => null,
       onCreateConversation: () => null,
-      onFavoriteRoom: () => null,
-      onUnfavoriteRoom: () => null,
+      onAddLabel: () => null,
+      onRemoveLabel: () => null,
       ...props,
     };
 
@@ -67,8 +67,8 @@ describe('ConversationListPanel', () => {
   it('renders conversations based on selected tab', function () {
     const conversations = [
       stubConversation({ name: 'convo-1' }),
-      stubConversation({ name: 'convo-2', isFavorite: true }),
-      stubConversation({ name: 'convo-3', isFavorite: true }),
+      stubConversation({ name: 'convo-2', labels: [RoomLabels.FAVORITE] }),
+      stubConversation({ name: 'convo-3', labels: [RoomLabels.FAVORITE] }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -91,8 +91,8 @@ describe('ConversationListPanel', () => {
   it('renders tab unread counts', function () {
     const conversations = [
       stubConversation({ name: 'convo-1', unreadCount: 3 }),
-      stubConversation({ name: 'convo-2', unreadCount: 11, isFavorite: true }),
-      stubConversation({ name: 'convo-3', unreadCount: 17, isFavorite: true }),
+      stubConversation({ name: 'convo-2', unreadCount: 11, labels: [RoomLabels.FAVORITE] }),
+      stubConversation({ name: 'convo-3', unreadCount: 17, labels: [RoomLabels.FAVORITE] }),
       stubConversation({ name: 'convo-4', unreadCount: 7 }),
     ];
     const wrapper = subject({ conversations: conversations as any });
@@ -107,7 +107,7 @@ describe('ConversationListPanel', () => {
   it('does not render unread count if count is zero', function () {
     const conversations = [
       stubConversation({ name: 'convo-1', unreadCount: 0 }),
-      stubConversation({ name: 'convo-2', unreadCount: 0, isFavorite: true }),
+      stubConversation({ name: 'convo-2', unreadCount: 0, labels: [RoomLabels.FAVORITE] }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 

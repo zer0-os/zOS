@@ -8,3 +8,14 @@
     border-radius: $radius;
   }
 }
+
+@mixin horizontal-scrollbar($height: 4px, $color: rgba(225, 225, 254, 0.15), $radius: 5px, $opacity: 0.19) {
+  &::-webkit-scrollbar {
+    height: $height;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color;
+    border-radius: $radius;
+  }
+}

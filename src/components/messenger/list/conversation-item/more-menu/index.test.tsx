@@ -49,6 +49,70 @@ describe(MoreMenu, () => {
 
     expectLabelToContainText(favoriteItem, 'Favorite');
   });
+
+  it('should display "Add to Work" label when room does NOT have work label', () => {
+    const wrapper = subject({ labels: [] });
+
+    const workItem = menuItem(wrapper, 'add-m.work');
+
+    expectLabelToContainText(workItem, 'Add to Work');
+  });
+
+  it('should display "Remove from Work" label when room has work label', () => {
+    const wrapper = subject({ labels: [DefaultRoomLabels.WORK] });
+
+    const workItem = menuItem(wrapper, 'remove-m.work');
+
+    expectLabelToContainText(workItem, 'Remove from Work');
+  });
+
+  it('should display "Add to Family" label when room does NOT have family label', () => {
+    const wrapper = subject({ labels: [] });
+
+    const workItem = menuItem(wrapper, 'add-m.family');
+
+    expectLabelToContainText(workItem, 'Add to Family');
+  });
+
+  it('should display "Remove from Family" label when room has family label', () => {
+    const wrapper = subject({ labels: [DefaultRoomLabels.FAMILY] });
+
+    const workItem = menuItem(wrapper, 'remove-m.family');
+
+    expectLabelToContainText(workItem, 'Remove from Family');
+  });
+
+  it('should display "Add to Social" label when room does NOT have social label', () => {
+    const wrapper = subject({ labels: [] });
+
+    const workItem = menuItem(wrapper, 'add-m.social');
+
+    expectLabelToContainText(workItem, 'Add to Social');
+  });
+
+  it('should display "Remove from Social" label when room has family label', () => {
+    const wrapper = subject({ labels: [DefaultRoomLabels.SOCIAL] });
+
+    const workItem = menuItem(wrapper, 'remove-m.social');
+
+    expectLabelToContainText(workItem, 'Remove from Social');
+  });
+
+  it('should display "Add to Archived" label when room does NOT have archived label', () => {
+    const wrapper = subject({ labels: [] });
+
+    const workItem = menuItem(wrapper, 'add-m.archived');
+
+    expectLabelToContainText(workItem, 'Add to Archived');
+  });
+
+  it('should display "Remove from Archived" label when room has archived label', () => {
+    const wrapper = subject({ labels: [DefaultRoomLabels.ARCHIVED] });
+
+    const workItem = menuItem(wrapper, 'remove-m.archived');
+
+    expectLabelToContainText(workItem, 'Remove from Archived');
+  });
 });
 
 function selectItem(wrapper, id) {

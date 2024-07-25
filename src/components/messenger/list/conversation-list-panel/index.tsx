@@ -30,6 +30,10 @@ export interface Properties {
 enum Tab {
   All = 'all',
   Favorites = 'favorites',
+  Work = 'work',
+  Social = 'social',
+  Archived = 'archived',
+  Family = 'family',
 }
 
 interface State {
@@ -75,11 +79,16 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
   get filteredConversations() {
     if (!this.state.filter) {
-      if (this.state.selectedTab === Tab.All) {
-        return this.props.conversations;
-      } else {
-        return this.favoriteConversations;
-      }
+      const tabToConversationsMap = {
+        [Tab.All]: this.props.conversations.filter((c) => !c.labels?.includes(DefaultRoomLabels.ARCHIVED)),
+        [Tab.Favorites]: this.getConversationsByLabel(DefaultRoomLabels.FAVORITE),
+        [Tab.Work]: this.getConversationsByLabel(DefaultRoomLabels.WORK),
+        [Tab.Social]: this.getConversationsByLabel(DefaultRoomLabels.SOCIAL),
+        [Tab.Family]: this.getConversationsByLabel(DefaultRoomLabels.FAMILY),
+        [Tab.Archived]: this.getConversationsByLabel(DefaultRoomLabels.ARCHIVED),
+      };
+
+      return tabToConversationsMap[this.state.selectedTab];
     }
 
     const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
@@ -99,12 +108,8 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ filter: '' });
   };
 
-  selectAll = () => {
-    this.setState({ selectedTab: Tab.All });
-  };
-
-  selectFavorites = () => {
-    this.setState({ selectedTab: Tab.Favorites });
+  selectTab = (tab) => {
+    this.setState({ selectedTab: tab });
   };
 
   onAddLabel = (roomId: string, label) => {
@@ -115,26 +120,53 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.props.onRemoveLabel({ roomId, label });
   };
 
-  get favoriteConversations() {
-    return this.props.conversations.filter((c) => c.labels?.includes(DefaultRoomLabels.FAVORITE));
+  getConversationsByLabel(label) {
+    return this.props.conversations.filter((c) => c.labels?.includes(label));
   }
 
-  get allUnreadCount() {
-    const count = this.props.conversations.reduce((acc, c) => acc + c.unreadCount, 0);
+  getUnreadCount(conversations: Channel[]) {
+    const count = conversations.reduce((acc, c) => acc + c.unreadCount, 0);
     return count < 99 ? count : '99+';
   }
 
-  get favoritesUnreadCount() {
-    const count = this.favoriteConversations.reduce((acc, c) => acc + c.unreadCount, 0);
-    return count < 99 ? count : '99+';
+  renderTab(tab, label, unreadCount) {
+    return (
+      <div {...cn('tab', this.state.selectedTab === tab && 'active')} onClick={() => this.selectTab(tab)}>
+        {label}
+        {!!unreadCount && (
+          <div {...cn('tab-badge')}>
+            <span>{unreadCount}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  renderTabList() {
+    const favorites = this.getConversationsByLabel(DefaultRoomLabels.FAVORITE);
+    const work = this.getConversationsByLabel(DefaultRoomLabels.WORK);
+    const social = this.getConversationsByLabel(DefaultRoomLabels.SOCIAL);
+    const family = this.getConversationsByLabel(DefaultRoomLabels.FAMILY);
+    const archived = this.getConversationsByLabel(DefaultRoomLabels.ARCHIVED);
+
+    return (
+      <div {...cn('tab-list')}>
+        {this.renderTab(Tab.All, 'All', this.getUnreadCount(this.props.conversations))}
+        {this.renderTab(Tab.Favorites, 'Favorites', this.getUnreadCount(favorites))}
+        {this.renderTab(Tab.Work, 'Work', this.getUnreadCount(work))}
+        {this.renderTab(Tab.Social, 'Social', this.getUnreadCount(social))}
+        {this.renderTab(Tab.Family, 'Family', this.getUnreadCount(family))}
+        {this.renderTab(Tab.Archived, 'Archived', this.getUnreadCount(archived))}
+      </div>
+    );
   }
 
   renderEmptyConversationList = () => {
-    if (this.state.selectedTab === Tab.Favorites) {
+    if (this.state.selectedTab !== Tab.All) {
       return (
-        <div {...cn('favorites-preview')}>
-          <span>Right click a conversation to add it to your favorites.</span>
-          <div {...cn('favorites-preview-image')}></div>
+        <div {...cn('label-preview')}>
+          <span>{`Right click a conversation to add it to the ${this.state.selectedTab} label.`}</span>
+          <div {...cn('label-preview-image')}></div>
         </div>
       );
     }
@@ -155,24 +187,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
           </div>
 
-          <div {...cn('tab-list')}>
-            <div {...cn('tab', this.state.selectedTab === Tab.All && 'active')} onClick={this.selectAll}>
-              All
-              {!!this.allUnreadCount && (
-                <div {...cn('tab-badge')}>
-                  <span>{this.allUnreadCount}</span>
-                </div>
-              )}
-            </div>
-            <div {...cn('tab', this.state.selectedTab === Tab.Favorites && 'active')} onClick={this.selectFavorites}>
-              Favorites
-              {!!this.favoritesUnreadCount && (
-                <div {...cn('tab-badge')}>
-                  <span>{this.favoritesUnreadCount}</span>
-                </div>
-              )}
-            </div>
-          </div>
+          {this.renderTabList()}
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>

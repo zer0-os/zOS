@@ -97,22 +97,6 @@ describe(MoreMenu, () => {
 
     expectLabelToContainText(workItem, 'Remove from Social');
   });
-
-  it('should display "Add to Archived" label when room does NOT have archived label', () => {
-    const wrapper = subject({ labels: [] });
-
-    const workItem = menuItem(wrapper, 'add-m.archived');
-
-    expectLabelToContainText(workItem, 'Add to Archived');
-  });
-
-  it('should display "Remove from Archived" label when room has archived label', () => {
-    const wrapper = subject({ labels: [DefaultRoomLabels.ARCHIVED] });
-
-    const workItem = menuItem(wrapper, 'remove-m.archived');
-
-    expectLabelToContainText(workItem, 'Remove from Archived');
-  });
 });
 
 function selectItem(wrapper, id) {

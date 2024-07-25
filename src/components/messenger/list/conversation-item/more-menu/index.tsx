@@ -43,7 +43,6 @@ export class MoreMenu extends React.Component<Properties> {
       [DefaultRoomLabels.WORK]: 'Work',
       [DefaultRoomLabels.FAMILY]: 'Family',
       [DefaultRoomLabels.SOCIAL]: 'Social',
-      [DefaultRoomLabels.ARCHIVED]: 'Archived',
     };
 
     const menuItems = [];

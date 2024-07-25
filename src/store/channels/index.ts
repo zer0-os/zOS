@@ -35,6 +35,13 @@ export enum ConversationStatus {
   ERROR,
 }
 
+export enum RoomLabels {
+  WORK = 'm.work',
+  FAMILY = 'm.family',
+  SOCIAL = 'm.social',
+  ARCHIVED = 'm.archived',
+}
+
 export interface Channel {
   id: string;
   optimisticId?: string;
@@ -57,6 +64,7 @@ export interface Channel {
   isFavorite: boolean;
   otherMembersTyping: string[];
   isMuted?: boolean;
+  labels?: RoomLabels[];
 }
 
 export const CHANNEL_DEFAULTS = {
@@ -79,6 +87,7 @@ export const CHANNEL_DEFAULTS = {
   isFavorite: false,
   otherMembersTyping: [],
   isMuted: false,
+  labels: [],
 };
 
 export enum SagaActionTypes {
@@ -91,6 +100,8 @@ export enum SagaActionTypes {
   UserTypingInRoom = 'channels/saga/userTypingInRoom',
   OnMuteRoom = 'channels/saga/onMuteRoom',
   OnUnmuteRoom = 'channels/saga/onUnmuteRoom',
+  OnAddLabel = 'channels/saga/onAddLabel',
+  OnRemoveLabel = 'channels/saga/onRemoveLabel',
 }
 
 const openConversation = createAction<{ conversationId: string }>(SagaActionTypes.OpenConversation);
@@ -102,6 +113,8 @@ const onUnfavoriteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnfa
 const userTypingInRoom = createAction<{ roomId: string }>(SagaActionTypes.UserTypingInRoom);
 const onMuteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnMuteRoom);
 const onUnmuteRoom = createAction<{ roomId: string }>(SagaActionTypes.OnUnmuteRoom);
+const onAddLabel = createAction<{ roomId: string; label: string }>(SagaActionTypes.OnAddLabel);
+const onRemoveLabel = createAction<{ roomId: string; label: string }>(SagaActionTypes.OnRemoveLabel);
 
 const slice = createNormalizedSlice({
   name: 'channels',
@@ -125,4 +138,6 @@ export {
   userTypingInRoom,
   onMuteRoom,
   onUnmuteRoom,
+  onAddLabel,
+  onRemoveLabel,
 };

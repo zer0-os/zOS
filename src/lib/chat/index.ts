@@ -1,5 +1,5 @@
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
-import { Channel, User as UserModel } from '../../store/channels/index';
+import { Channel, RoomLabels, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, User } from './types';
@@ -24,6 +24,7 @@ export interface RealtimeChatEvents {
   roomMemberTyping: (roomId: string, userIds: string[]) => void;
   roomMemberPowerLevelChanged: (roomId: string, matrixId: string, powerLevel: number) => void;
   readReceiptReceived: (messageId: string, userId: string, roomId: string) => void;
+  roomLabelChange: (roomId: string, labels: string) => void;
 }
 
 export interface MatrixKeyBackupInfo {
@@ -334,10 +335,18 @@ export async function getMessageReadReceipts(roomId: string, messageId: string) 
   return await chat.get().matrix.getMessageReadReceipts(roomId, messageId);
 }
 
-export async function getRoomTags(conversations: Partial<Channel>[]) {
-  return await chat.get().matrix.getRoomTags(conversations);
-}
-
 export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
   return chat.get().matrix.uploadFileMessage(channelId, media, rootMessageId, optimisticId);
+}
+
+export async function addRoomToLabel(roomId: string, label: RoomLabels) {
+  return await chat.get().matrix.addRoomToLabel(roomId, label);
+}
+
+export async function removeRoomFromLabel(roomId: string, label: RoomLabels) {
+  return await chat.get().matrix.removeRoomFromLabel(roomId, label);
+}
+
+export async function getRoomTags(conversations: Partial<Channel>[]) {
+  return await chat.get().matrix.getRoomTags(conversations);
 }

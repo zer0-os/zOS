@@ -17,16 +17,21 @@ import {
   onMuteRoom,
   roomUnmuted,
   onUnmuteRoom,
+  onAddLabel,
+  onRemoveLabel,
+  roomLabelChange,
 } from './saga';
 
 import { rootReducer } from '../reducer';
-import { ConversationStatus, denormalize as denormalizeChannel } from '../channels';
+import { ConversationStatus, RoomLabels, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import {
   addRoomToFavorites,
+  addRoomToLabel,
   addRoomToMuted,
   chat,
   removeRoomFromFavorites,
+  removeRoomFromLabel,
   removeRoomFromMuted,
   sendTypingEvent,
 } from '../../lib/chat';
@@ -244,6 +249,68 @@ describe(onUnmuteRoom, () => {
   });
 });
 
+describe(onAddLabel, () => {
+  it('calls addRoomToLabel with the label to be added', async () => {
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'room-id', labels: [RoomLabels.FAMILY] })
+      .build();
+
+    await expectSaga(onAddLabel, { payload: { roomId: 'room-id', label: 'm.work' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(addRoomToLabel), undefined],
+      ])
+      .call(addRoomToLabel, 'room-id', RoomLabels.WORK)
+      .run();
+  });
+});
+
+describe(onRemoveLabel, () => {
+  it('calls removeRoomFromLabel with the label to be removed', async () => {
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'room-id', labels: [RoomLabels.WORK, RoomLabels.FAMILY] })
+      .build();
+
+    await expectSaga(onRemoveLabel, { payload: { roomId: 'room-id', label: 'm.work' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(removeRoomFromLabel), undefined],
+      ])
+      .call(removeRoomFromLabel, 'room-id', RoomLabels.WORK)
+      .run();
+  });
+});
+
+describe(roomLabelChange, () => {
+  it('removes label from room', async () => {
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: 'room-id', labels: [RoomLabels.WORK, RoomLabels.FAMILY] })
+      .build();
+
+    const { storeState } = await expectSaga(roomLabelChange, {
+      payload: { roomId: 'room-id', labels: [RoomLabels.WORK] },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.labels).toEqual([RoomLabels.WORK]);
+  });
+
+  it('adds label to room', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', labels: [RoomLabels.WORK] }).build();
+
+    const { storeState } = await expectSaga(roomLabelChange, {
+      payload: { roomId: 'room-id', labels: [RoomLabels.WORK, RoomLabels.FAMILY] },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.labels).toEqual([RoomLabels.WORK, RoomLabels.FAMILY]);
+  });
+});
+
 describe(publishUserTypingEvent, () => {
   it('sends typing event', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'room-id' }).build();
@@ -382,4 +449,5 @@ const CHANNEL_DEFAULTS = {
   isFavorite: false,
   otherMembersTyping: [],
   isMuted: false,
+  labels: [],
 };

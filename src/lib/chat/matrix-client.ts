@@ -22,7 +22,7 @@ import {
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
-import { ConversationStatus, Channel, User as UserModel } from '../../store/channels';
+import { ConversationStatus, Channel, User as UserModel, RoomLabels } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ParentMessage, PowerLevels, User } from './types';
@@ -856,12 +856,29 @@ export class MatrixClient implements IChatClient {
     const tags = conversations.map(async (conversation) => {
       featureFlags.enableTimerLogs && console.time(`xxxgetRoomTags${conversation.id}`);
       const result = await this.matrix.getRoomTags(conversation.id);
+
+      // should move this to saga level
       conversation.isFavorite = !!result.tags?.[MatrixConstants.FAVORITE];
       conversation.isMuted = !!result.tags?.[MatrixConstants.MUTE];
+
+      const filteredLabels = Object.keys(result.tags).filter(
+        (tag) => ![MatrixConstants.FAVORITE, MatrixConstants.MUTE].includes(tag as MatrixConstants)
+      );
+      conversation.labels = filteredLabels as RoomLabels[];
       featureFlags.enableTimerLogs && console.timeEnd(`xxxgetRoomTags${conversation.id}`);
     });
 
     await Promise.all(tags);
+  }
+
+  async addRoomToLabel(roomId: string, label: RoomLabels): Promise<void> {
+    await this.waitForConnection();
+    await this.matrix.setRoomTag(roomId, label);
+  }
+
+  async removeRoomFromLabel(roomId: string, label: RoomLabels): Promise<void> {
+    await this.waitForConnection();
+    await this.matrix.deleteRoomTag(roomId, label);
   }
 
   async sendTypingEvent(roomId: string, isTyping: boolean): Promise<void> {
@@ -1144,20 +1161,37 @@ export class MatrixClient implements IChatClient {
   };
 
   private publishRoomTagChange(event, roomId) {
-    const isFavoriteTagAdded = !!event.getContent().tags?.[MatrixConstants.FAVORITE];
-    const isMutedTagAdded = !!event.getContent().tags?.[MatrixConstants.MUTE];
+    const tags = event.getContent().tags || {};
+    const tagKeys = Object.keys(tags);
+
+    this.favoriteTagChange(roomId, tagKeys);
+    this.mutedTagChange(roomId, tagKeys);
+    this.labelTagChange(roomId, tagKeys);
+  }
+
+  private favoriteTagChange(roomId, tagKeys) {
+    const isFavoriteTagAdded = tagKeys.includes(MatrixConstants.FAVORITE);
 
     if (isFavoriteTagAdded) {
       this.events.roomFavorited(roomId);
     } else {
       this.events.roomUnfavorited(roomId);
     }
+  }
+
+  private mutedTagChange(roomId, tagKeys) {
+    const isMutedTagAdded = tagKeys.includes(MatrixConstants.MUTE);
 
     if (isMutedTagAdded) {
       this.events.roomMuted(roomId);
     } else {
       this.events.roomUnmuted(roomId);
     }
+  }
+
+  private labelTagChange(roomId, tagKeys) {
+    const labelTags = tagKeys.filter((tag) => ![MatrixConstants.FAVORITE, MatrixConstants.MUTE].includes(tag));
+    this.events.roomLabelChange(roomId, labelTags);
   }
 
   private publishReceiptEvent(event: MatrixEvent, room: Room) {

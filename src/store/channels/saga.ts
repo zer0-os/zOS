@@ -11,6 +11,8 @@ import {
   sendTypingEvent as matrixSendUserTypingEvent,
   addRoomToMuted,
   removeRoomFromMuted,
+  addRoomToLabel,
+  removeRoomFromLabel,
 } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
@@ -185,6 +187,41 @@ export function* roomUnmuted(action) {
   }
 }
 
+export function* onAddLabel(action) {
+  const { roomId, label } = action.payload;
+  try {
+    yield call(addRoomToLabel, roomId, label);
+  } catch (error) {
+    console.error(`Failed to add label ${label} to room ${roomId}:`, error);
+  }
+}
+
+export function* onRemoveLabel(action) {
+  const { roomId, label } = action.payload;
+  try {
+    yield call(removeRoomFromLabel, roomId, label);
+  } catch (error) {
+    console.error(`Failed to remove label ${label} from room ${roomId}:`, error);
+  }
+}
+
+export function* roomLabelChange(action) {
+  const { roomId, labels } = action.payload;
+  try {
+    const channel = yield select(rawChannelSelector(roomId));
+    const currentLabels = channel?.labels || [];
+
+    const newLabels = labels.filter((label) => !currentLabels?.includes(label));
+    const removedLabels = currentLabels?.filter((label) => !labels.includes(label));
+
+    const updatedLabels = [...currentLabels?.filter((label) => !removedLabels?.includes(label)), ...newLabels];
+
+    yield call(receiveChannel, { id: roomId, labels: updatedLabels });
+  } catch (error) {
+    console.error(`Failed to update label status for room ${roomId}:`, error);
+  }
+}
+
 export function* receivedRoomMembersTyping(action) {
   const { roomId, userIds: matrixIds } = action.payload;
 
@@ -269,6 +306,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OnUnfavoriteRoom, onUnfavoriteRoom);
   yield takeLatest(SagaActionTypes.OnMuteRoom, onMuteRoom);
   yield takeLatest(SagaActionTypes.OnUnmuteRoom, onUnmuteRoom);
+  yield takeLatest(SagaActionTypes.OnAddLabel, onAddLabel);
+  yield takeLatest(SagaActionTypes.OnRemoveLabel, onRemoveLabel);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomFavorited, roomFavorited);
@@ -276,6 +315,7 @@ export function* saga() {
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMuted, roomMuted);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomUnmuted, roomUnmuted);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMemberTyping, receivedRoomMembersTyping);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomLabelChange, roomLabelChange);
   yield takeEveryFromBus(
     yield call(getChatBus),
     ChatEvents.RoomMemberPowerLevelChanged,

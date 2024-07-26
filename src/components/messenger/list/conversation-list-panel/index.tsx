@@ -43,12 +43,33 @@ interface State {
 
 export class ConversationListPanel extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<ScrollbarContainer>;
+  tabListRef: React.RefObject<HTMLDivElement>;
   state = { filter: '', userSearchResults: [], selectedTab: Tab.All };
 
   constructor(props) {
     super(props);
     this.scrollContainerRef = React.createRef();
+    this.tabListRef = React.createRef();
   }
+
+  componentDidMount() {
+    if (this.tabListRef.current) {
+      this.tabListRef.current.addEventListener('wheel', this.horizontalScroll, { passive: false });
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.tabListRef.current) {
+      this.tabListRef.current.removeEventListener('wheel', this.horizontalScroll);
+    }
+  }
+
+  horizontalScroll = (event) => {
+    if (event.deltaY !== 0) {
+      event.preventDefault();
+      this.tabListRef.current.scrollLeft += event.deltaY;
+    }
+  };
 
   scrollToTop = () => {
     if (this.scrollContainerRef.current) {
@@ -147,12 +168,12 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const family = this.getConversationsByLabel(DefaultRoomLabels.FAMILY);
 
     return (
-      <div {...cn('tab-list')}>
+      <div {...cn('tab-list')} ref={this.tabListRef}>
         {this.renderTab(Tab.All, 'All', this.getUnreadCount(this.props.conversations))}
         {this.renderTab(Tab.Favorites, 'Favorites', this.getUnreadCount(favorites))}
         {this.renderTab(Tab.Work, 'Work', this.getUnreadCount(work))}
-        {this.renderTab(Tab.Social, 'Social', this.getUnreadCount(social))}
         {this.renderTab(Tab.Family, 'Family', this.getUnreadCount(family))}
+        {this.renderTab(Tab.Social, 'Social', this.getUnreadCount(social))}
       </div>
     );
   }

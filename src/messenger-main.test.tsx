@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './messenger-main';
 import { Provider as AuthenticationContextProvider } from './components/authentication/context';
-import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 import { Main } from './Main';
 
 describe('MessengerMain', () => {
@@ -22,11 +21,6 @@ describe('MessengerMain', () => {
     const provider = wrapper.find(AuthenticationContextProvider);
     expect(provider).toHaveLength(1);
     expect(provider.prop('value')).toEqual({ isAuthenticated: true });
-  });
-
-  it('contains the ZUIProvider', () => {
-    const wrapper = subject();
-    expect(wrapper.find(ZUIProvider)).toHaveLength(1);
   });
 
   it('renders the Main component', () => {

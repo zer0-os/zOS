@@ -162,6 +162,74 @@ describe('ConversationListPanel', () => {
     expect(tabNamed(wrapper, 'Work')).not.toHaveElement('.messages-list__tab-badge');
   });
 
+  it('does not render unread count if count if conversation is archived', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', unreadCount: 3 }),
+      stubConversation({
+        name: 'convo-2',
+        unreadCount: 5,
+        labels: [DefaultRoomLabels.ARCHIVED, DefaultRoomLabels.WORK],
+      }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    const workTab = tabNamed(wrapper, 'Work');
+    expect(workTab).not.toHaveElement('.messages-list__tab-badge');
+
+    const allTab = tabNamed(wrapper, 'All');
+    expect(allTab.find('.messages-list__tab-badge')).toHaveText('3');
+  });
+
+  it('does not render unread count for archived label', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-2', unreadCount: 5, labels: [DefaultRoomLabels.ARCHIVED] }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    const archivedTab = tabNamed(wrapper, 'Archived');
+    expect(archivedTab).not.toHaveElement('.messages-list__tab-badge');
+  });
+
+  it('does not include archived conversations in All unread count total', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', unreadCount: 3 }),
+      stubConversation({ name: 'convo-2', unreadCount: 5, labels: [DefaultRoomLabels.ARCHIVED] }),
+      stubConversation({ name: 'convo-3', unreadCount: 2, labels: [DefaultRoomLabels.WORK] }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    const allTab = tabNamed(wrapper, 'All');
+    expect(allTab.find('.messages-list__tab-badge')).toHaveText('5');
+
+    const workTab = tabNamed(wrapper, 'Work');
+    expect(workTab.find('.messages-list__tab-badge')).toHaveText('2');
+  });
+
+  it('renders conversations in the archived tab', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.ARCHIVED] }),
+      stubConversation({ name: 'convo-2' }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    selectTab(wrapper, 'Archived');
+    expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-1']);
+  });
+
+  it('does not render archived conversations in other tabs', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.ARCHIVED, DefaultRoomLabels.WORK] }),
+      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.WORK] }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    selectTab(wrapper, 'All');
+    expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-2']);
+
+    selectTab(wrapper, 'Work');
+    expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-2']);
+  });
+
   it('renders conversation group names as well in the filtered conversation list', function () {
     const conversations = [
       { id: 'convo-id-1', name: '', otherMembers: [{ firstName: 'test' }] },

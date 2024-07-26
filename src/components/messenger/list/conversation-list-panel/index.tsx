@@ -34,6 +34,7 @@ enum Tab {
   Work = 'work',
   Social = 'social',
   Family = 'family',
+  Archived = 'archived',
 }
 
 interface State {
@@ -98,17 +99,20 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ userSearchResults: filteredItems?.map(itemToOption) });
   };
 
+  getTabConversations() {
+    return {
+      [Tab.All]: this.props.conversations.filter((c) => !c.labels?.includes(DefaultRoomLabels.ARCHIVED)),
+      [Tab.Favorites]: this.getConversationsByLabel(DefaultRoomLabels.FAVORITE),
+      [Tab.Work]: this.getConversationsByLabel(DefaultRoomLabels.WORK),
+      [Tab.Social]: this.getConversationsByLabel(DefaultRoomLabels.SOCIAL),
+      [Tab.Family]: this.getConversationsByLabel(DefaultRoomLabels.FAMILY),
+      [Tab.Archived]: this.getConversationsByLabel(DefaultRoomLabels.ARCHIVED),
+    };
+  }
+
   get filteredConversations() {
     if (!this.state.filter) {
-      const tabToConversationsMap = {
-        [Tab.All]: this.props.conversations,
-        [Tab.Favorites]: this.getConversationsByLabel(DefaultRoomLabels.FAVORITE),
-        [Tab.Work]: this.getConversationsByLabel(DefaultRoomLabels.WORK),
-        [Tab.Social]: this.getConversationsByLabel(DefaultRoomLabels.SOCIAL),
-        [Tab.Family]: this.getConversationsByLabel(DefaultRoomLabels.FAMILY),
-      };
-
-      return tabToConversationsMap[this.state.selectedTab];
+      return this.getTabConversations()[this.state.selectedTab];
     }
 
     const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
@@ -141,11 +145,17 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   };
 
   getConversationsByLabel(label) {
-    return this.props.conversations.filter((c) => c.labels?.includes(label));
+    return this.props.conversations.filter(
+      (c) =>
+        c.labels?.includes(label) &&
+        (label === DefaultRoomLabels.ARCHIVED || !c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+    );
   }
 
   getUnreadCount(conversations: Channel[]) {
-    const count = conversations.reduce((acc, c) => acc + c.unreadCount, 0);
+    const count = conversations
+      .filter((c) => !c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+      .reduce((acc, c) => acc + c.unreadCount, 0);
     return count < 99 ? count : '99+';
   }
 
@@ -163,22 +173,23 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   }
 
   renderTabList() {
-    const favorites = this.getConversationsByLabel(DefaultRoomLabels.FAVORITE);
-    const work = this.getConversationsByLabel(DefaultRoomLabels.WORK);
-    const social = this.getConversationsByLabel(DefaultRoomLabels.SOCIAL);
-    const family = this.getConversationsByLabel(DefaultRoomLabels.FAMILY);
-
+    const tabConversations = this.getTabConversations();
     const tabs = [
-      { id: Tab.Favorites, label: <IconStar1 size={18} />, unreadCount: this.getUnreadCount(favorites) },
-      { id: Tab.All, label: 'All', unreadCount: this.getUnreadCount(this.props.conversations) },
-      { id: Tab.Work, label: 'Work', unreadCount: this.getUnreadCount(work) },
-      { id: Tab.Family, label: 'Family', unreadCount: this.getUnreadCount(family) },
-      { id: Tab.Social, label: 'Social', unreadCount: this.getUnreadCount(social) },
+      {
+        id: Tab.Favorites,
+        label: <IconStar1 size={18} />,
+        unreadCount: this.getUnreadCount(tabConversations[Tab.Favorites]),
+      },
+      { id: Tab.All, label: 'All', unreadCount: this.getUnreadCount(tabConversations[Tab.All]) },
+      { id: Tab.Work, label: 'Work', unreadCount: this.getUnreadCount(tabConversations[Tab.Work]) },
+      { id: Tab.Family, label: 'Family', unreadCount: this.getUnreadCount(tabConversations[Tab.Family]) },
+      { id: Tab.Social, label: 'Social', unreadCount: this.getUnreadCount(tabConversations[Tab.Social]) },
+      { id: Tab.Archived, label: 'Archived', unreadCount: this.getUnreadCount(tabConversations[Tab.Archived]) },
     ];
 
     return (
       <div {...cn('tab-list')} ref={this.tabListRef}>
-        {favorites.length > 0
+        {tabConversations[Tab.Favorites].length > 0
           ? [tabs[0], tabs[1]].map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))
           : [tabs[1], tabs[0]].map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))}
         {tabs.slice(2).map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))}

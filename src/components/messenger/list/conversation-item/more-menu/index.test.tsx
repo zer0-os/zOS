@@ -97,6 +97,23 @@ describe(MoreMenu, () => {
 
     expectLabelToContainText(workItem, 'Remove from Social');
   });
+
+  it('should display "Archive chat" if conversation is not archived', function () {
+    const wrapper = subject({ labels: [] });
+
+    const workItem = menuItem(wrapper, 'add-m.archived');
+
+    expectLabelToContainText(workItem, 'Archive chat');
+  });
+
+  it('should only show "Unarchive chat" in more menu if conversation is archived', function () {
+    const wrapper = subject({ labels: [DefaultRoomLabels.ARCHIVED] });
+
+    const workItem = menuItem(wrapper, 'unarchive');
+
+    expectLabelToContainText(workItem, 'Unarchive chat');
+    expect(wrapper.find(DropdownMenu).prop('items').length).toBe(1);
+  });
 });
 
 function selectItem(wrapper, id) {

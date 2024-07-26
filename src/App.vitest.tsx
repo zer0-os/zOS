@@ -16,13 +16,9 @@ vi.mock('@zero-tech/zui/ZUIProvider', () => ({
   },
 }));
 
-const renderComponent = () => {
-  return renderWithProviders(<App />);
-};
-
 describe(App, () => {
   it('should wrap app with ZUIProvider', () => {
-    const { container } = renderComponent();
+    const { container } = renderWithProviders(<App />);
 
     const zuiProvider = screen.getByTestId('zui-provider');
 
@@ -32,8 +28,66 @@ describe(App, () => {
   });
 
   it('should render AppRouter', () => {
-    renderComponent();
+    renderWithProviders(<App />);
 
     expect(screen.getByTestId('app-router')).toBeTruthy();
+  });
+
+  it('should render main element with default class names', () => {
+    const { container } = renderWithProviders(<App />);
+
+    const main = container.querySelector('div.main');
+
+    expect(main).toBeTruthy();
+    expect(main.classList).toContain('messenger-full-screen');
+  });
+
+  describe('when user is not authenticated', () => {
+    var container: HTMLElement;
+
+    beforeEach(() => {
+      container = renderWithProviders(<App />, {
+        preloadedState: {
+          // @ts-ignore
+          authentication: {
+            user: null,
+          },
+        },
+      }).container;
+    });
+
+    it('should not add sidekick-panel-open class to main div', () => {
+      expect(container.querySelector('div.main')?.classList).not.toContain('sidekick-panel-open');
+    });
+
+    it('should not add background class to main div', () => {
+      expect(container.querySelector('div.main')?.classList).not.toContain('background');
+    });
+  });
+
+  describe('when user is authenticated', () => {
+    var container: HTMLElement;
+
+    beforeEach(() => {
+      container = renderWithProviders(<App />, {
+        preloadedState: {
+          // @ts-ignore
+          authentication: {
+            user: {
+              // @ts-ignore
+              data: {},
+            },
+          },
+        },
+      }).container;
+    });
+
+    it('should add sidekick-panel-open class to main div', () => {
+      expect(container.querySelector('div.main')?.classList).toContain('sidekick-panel-open');
+    });
+
+    it('should add background class to main div', () => {
+      expect(container.querySelector('div.main')?.classList).toContain('background');
+    });
   });
 });

@@ -33,17 +33,14 @@ export const App = () => {
 };
 
 const useAppMain = () => {
-  const { isAuthenticated, background } = useSelector((state: RootState) => ({
-    isAuthenticated: !!state.authentication.user?.data,
-    background: state.background.selectedMainBackground,
-  }));
+  const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
+  const background = useSelector((state: RootState) => state.background.selectedMainBackground);
+  const videoBackgroundSrc = getMainBackgroundVideoSrc(background);
 
   const mainClassName = classNames('main', 'messenger-full-screen', getMainBackgroundClass(background), {
     'sidekick-panel-open': isAuthenticated,
     background: isAuthenticated,
   });
-
-  const videoBackgroundSrc = getMainBackgroundVideoSrc(background);
 
   return {
     isAuthenticated,

@@ -22,6 +22,12 @@ vi.mock('./components/app-bar', () => ({
   },
 }));
 
+vi.mock('./components/dialog-manager/container', () => ({
+  DialogManager: () => {
+    return <div data-testid='dialog-manager' />;
+  },
+}));
+
 describe(App, () => {
   it('should wrap app with ZUIProvider', () => {
     const { container } = renderWithProviders(<App />);
@@ -53,6 +59,13 @@ describe(App, () => {
 
     const appBar = screen.getByTestId('app-bar');
     expect(appBar).toBeTruthy();
+  });
+
+  it('should render DialogManager', () => {
+    renderWithProviders(<App />);
+
+    const dialogManager = screen.getByTestId('dialog-manager');
+    expect(dialogManager).toBeTruthy();
   });
 
   describe('when user is not authenticated', () => {

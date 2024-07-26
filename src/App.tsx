@@ -7,6 +7,7 @@ import { RootState } from './store';
 import classNames from 'classnames';
 import { getMainBackgroundClass } from './utils';
 import { AppBar } from './components/app-bar';
+import { DialogManager } from './components/dialog-manager/container';
 
 export const App = () => {
   const { mainClassName } = useAppMain();
@@ -16,6 +17,7 @@ export const App = () => {
     // @ts-ignore
     <ZUIProvider>
       <div className={mainClassName}>
+        <DialogManager />
         <AppBar />
         <AppRouter />
       </div>

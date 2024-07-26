@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { getMainBackgroundClass } from './utils';
 import { AppBar } from './components/app-bar';
 import { DialogManager } from './components/dialog-manager/container';
+import { ThemeEngine } from './components/theme-engine';
 
 export const App = () => {
   const { isAuthenticated, mainClassName } = useAppMain();
@@ -24,6 +25,7 @@ export const App = () => {
             <AppRouter />
           </>
         )}
+        <ThemeEngine />
       </div>
     </ZUIProvider>
   );

@@ -12,6 +12,7 @@ import { getDirectMatches, getIndirectMatches } from './utils';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
+import { IconStar1 } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('messages-list');
 
@@ -148,9 +149,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     return count < 99 ? count : '99+';
   }
 
-  renderTab(tab, label, unreadCount) {
+  renderTab(id, label, unreadCount) {
     return (
-      <div {...cn('tab', this.state.selectedTab === tab && 'active')} onClick={() => this.selectTab(tab)}>
+      <div key={id} {...cn('tab', this.state.selectedTab === id && 'active')} onClick={() => this.selectTab(id)}>
         {label}
         {!!unreadCount && (
           <div {...cn('tab-badge')}>
@@ -167,13 +168,20 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const social = this.getConversationsByLabel(DefaultRoomLabels.SOCIAL);
     const family = this.getConversationsByLabel(DefaultRoomLabels.FAMILY);
 
+    const tabs = [
+      { id: Tab.Favorites, label: <IconStar1 size={16} />, unreadCount: this.getUnreadCount(favorites) },
+      { id: Tab.All, label: 'All', unreadCount: this.getUnreadCount(this.props.conversations) },
+      { id: Tab.Work, label: 'Work', unreadCount: this.getUnreadCount(work) },
+      { id: Tab.Family, label: 'Family', unreadCount: this.getUnreadCount(family) },
+      { id: Tab.Social, label: 'Social', unreadCount: this.getUnreadCount(social) },
+    ];
+
     return (
       <div {...cn('tab-list')} ref={this.tabListRef}>
-        {this.renderTab(Tab.All, 'All', this.getUnreadCount(this.props.conversations))}
-        {this.renderTab(Tab.Favorites, 'Favorites', this.getUnreadCount(favorites))}
-        {this.renderTab(Tab.Work, 'Work', this.getUnreadCount(work))}
-        {this.renderTab(Tab.Family, 'Family', this.getUnreadCount(family))}
-        {this.renderTab(Tab.Social, 'Social', this.getUnreadCount(social))}
+        {favorites.length > 0
+          ? [tabs[0], tabs[1]].map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))
+          : [tabs[1], tabs[0]].map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))}
+        {tabs.slice(2).map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))}
       </div>
     );
   }

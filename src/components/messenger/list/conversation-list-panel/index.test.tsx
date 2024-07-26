@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 import { ConversationListPanel, Properties } from '.';
 import { Channel, DefaultRoomLabels } from '../../../../store/channels';
 import { stubConversation } from '../../../../store/test/store';
+import { IconStar1 } from '@zero-tech/zui/icons';
 
 describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {
@@ -67,13 +68,13 @@ describe('ConversationListPanel', () => {
   it('renders conversations based on selected tab', function () {
     const conversations = [
       stubConversation({ name: 'convo-1' }),
-      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.FAVORITE] }),
-      stubConversation({ name: 'convo-3', labels: [DefaultRoomLabels.FAVORITE] }),
+      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.WORK] }),
+      stubConversation({ name: 'convo-3', labels: [DefaultRoomLabels.WORK] }),
       stubConversation({ name: 'convo-4', labels: [DefaultRoomLabels.FAMILY] }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
-    selectTab(wrapper, 'Favorites');
+    selectTab(wrapper, 'Work');
     expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-2', 'convo-3']);
 
     selectTab(wrapper, 'All');
@@ -88,11 +89,35 @@ describe('ConversationListPanel', () => {
     expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-4']);
   });
 
+  it('renders Favorites tab first if it has conversations', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.FAVORITE], unreadCount: 0 }),
+      stubConversation({ name: 'convo-2', unreadCount: 0 }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    const tabs = wrapper.find('.messages-list__tab');
+    expect(tabs.at(0)).toHaveElement(IconStar1);
+    expect(tabs.at(1)).toHaveText('All');
+  });
+
+  it('renders Favorites tab second if it does not have conversations', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', unreadCount: 0 }),
+      stubConversation({ name: 'convo-2', unreadCount: 0 }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    const tabs = wrapper.find('.messages-list__tab');
+    expect(tabs.at(0)).toHaveText('All');
+    expect(tabs.at(1)).toHaveElement(IconStar1);
+  });
+
   it('renders default state when label list is empty', function () {
     const conversations = [stubConversation({ name: 'convo-1' })];
     const wrapper = subject({ conversations: conversations as any });
 
-    selectTab(wrapper, 'Favorites');
+    selectTab(wrapper, 'Work');
 
     expect(wrapper).toHaveElement('.messages-list__label-preview');
   });
@@ -101,7 +126,7 @@ describe('ConversationListPanel', () => {
     const conversations = [stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.FAVORITE] })];
     const wrapper = subject({ conversations: conversations as any });
 
-    selectTab(wrapper, 'Favorites');
+    selectTab(wrapper, 'All');
 
     expect(wrapper).not.toHaveElement('.messages-list__label-preview');
   });
@@ -109,8 +134,8 @@ describe('ConversationListPanel', () => {
   it('renders tab unread counts', function () {
     const conversations = [
       stubConversation({ name: 'convo-1', unreadCount: 3 }),
-      stubConversation({ name: 'convo-2', unreadCount: 11, labels: [DefaultRoomLabels.FAVORITE] }),
-      stubConversation({ name: 'convo-3', unreadCount: 17, labels: [DefaultRoomLabels.FAVORITE] }),
+      stubConversation({ name: 'convo-2', unreadCount: 11, labels: [DefaultRoomLabels.FAMILY] }),
+      stubConversation({ name: 'convo-3', unreadCount: 17, labels: [DefaultRoomLabels.FAMILY] }),
       stubConversation({ name: 'convo-4', unreadCount: 7 }),
       stubConversation({ name: 'convo-5', unreadCount: 13, labels: [DefaultRoomLabels.WORK] }),
     ];
@@ -119,7 +144,7 @@ describe('ConversationListPanel', () => {
     const allTab = tabNamed(wrapper, 'All');
     expect(allTab.find('.messages-list__tab-badge')).toHaveText('51');
 
-    const favoritesTab = tabNamed(wrapper, 'Favorites');
+    const favoritesTab = tabNamed(wrapper, 'Family');
     expect(favoritesTab.find('.messages-list__tab-badge')).toHaveText('28');
 
     const workTab = tabNamed(wrapper, 'Work');
@@ -129,12 +154,12 @@ describe('ConversationListPanel', () => {
   it('does not render unread count if count is zero', function () {
     const conversations = [
       stubConversation({ name: 'convo-1', unreadCount: 0 }),
-      stubConversation({ name: 'convo-2', unreadCount: 0, labels: [DefaultRoomLabels.FAVORITE] }),
+      stubConversation({ name: 'convo-2', unreadCount: 0, labels: [DefaultRoomLabels.WORK] }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
     expect(tabNamed(wrapper, 'All')).not.toHaveElement('.messages-list__tab-badge');
-    expect(tabNamed(wrapper, 'Favorites')).not.toHaveElement('.messages-list__tab-badge');
+    expect(tabNamed(wrapper, 'Work')).not.toHaveElement('.messages-list__tab-badge');
   });
 
   it('renders conversation group names as well in the filtered conversation list', function () {

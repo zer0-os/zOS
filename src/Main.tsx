@@ -8,7 +8,6 @@ import { withContext as withAuthenticationContext } from './components/authentic
 import { MessengerChat } from './components/messenger/chat';
 import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
-import { AppBar } from './components/app-bar';
 import { DialogManager } from './components/dialog-manager/container';
 import { getMainBackgroundVideoSrc } from './utils';
 
@@ -51,7 +50,6 @@ export class Container extends React.Component<Properties> {
             {videoSrc && this.renderAnimatedBackground(videoSrc)}
 
             <DialogManager />
-            <AppBar />
             <Sidekick />
             <MessengerChat />
             <Sidekick variant='secondary' />

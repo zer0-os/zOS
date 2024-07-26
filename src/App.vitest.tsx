@@ -16,6 +16,12 @@ vi.mock('@zero-tech/zui/ZUIProvider', () => ({
   },
 }));
 
+vi.mock('./components/app-bar', () => ({
+  AppBar: () => {
+    return <div data-testid='app-bar' />;
+  },
+}));
+
 describe(App, () => {
   it('should wrap app with ZUIProvider', () => {
     const { container } = renderWithProviders(<App />);
@@ -40,6 +46,13 @@ describe(App, () => {
 
     expect(main).toBeTruthy();
     expect(main.classList).toContain('messenger-full-screen');
+  });
+
+  it('should render AppBar', () => {
+    renderWithProviders(<App />);
+
+    const appBar = screen.getByTestId('app-bar');
+    expect(appBar).toBeTruthy();
   });
 
   describe('when user is not authenticated', () => {

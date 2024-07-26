@@ -6,6 +6,7 @@ import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 import { RootState } from './store';
 import classNames from 'classnames';
 import { getMainBackgroundClass } from './utils';
+import { AppBar } from './components/app-bar';
 
 export const App = () => {
   const { mainClassName } = useAppMain();
@@ -15,6 +16,7 @@ export const App = () => {
     // @ts-ignore
     <ZUIProvider>
       <div className={mainClassName}>
+        <AppBar />
         <AppRouter />
       </div>
     </ZUIProvider>

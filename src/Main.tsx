@@ -3,7 +3,6 @@ import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 import { ThemeEngine } from './components/theme-engine';
 
-import classNames from 'classnames';
 import { Sidekick } from './components/sidekick/index';
 import { withContext as withAuthenticationContext } from './components/authentication/context';
 import { MessengerChat } from './components/messenger/chat';
@@ -11,7 +10,7 @@ import { DevPanelContainer } from './components/dev-panel/container';
 import { FeatureFlag } from './components/feature-flag';
 import { AppBar } from './components/app-bar';
 import { DialogManager } from './components/dialog-manager/container';
-import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
+import { getMainBackgroundVideoSrc } from './utils';
 
 export interface Properties {
   context: {

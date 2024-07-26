@@ -7,7 +7,7 @@ import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
 
 vi.mock('./utils', () => {
   return {
-    getMainBackgroundVideoSrc: vi.fn().mockReturnValue('mock-background-video-src'),
+    getMainBackgroundVideoSrc: vi.fn().mockReturnValue('https://foo.bar/src'),
     getMainBackgroundClass: vi.fn().mockReturnValue('mock-main-background-class'),
   };
 });
@@ -160,7 +160,9 @@ describe(App, () => {
 
     it('should render correct background video', () => {
       expect(getMainBackgroundVideoSrc).toHaveBeenCalledWith('foo');
-      expect(screen.getByTestId('app-video-background')).toBeTruthy();
+
+      const video = screen.getByTestId('app-video-background');
+      expect(video.querySelector('source').src).toBe('https://foo.bar/src');
     });
   });
 });

@@ -7,6 +7,7 @@
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { MessengerMain } from '../messenger-main';
 import { FeatureFlag } from '../components/feature-flag';
+import { featureFlags } from '../lib/feature-flags';
 
 const redirectToRoot = () => <Redirect to={'/'} />;
 
@@ -15,7 +16,7 @@ export const AppRouter = () => {
     <Switch>
       <Route path='/conversation/:conversationId' exact component={MessengerMain} />
       <Route path='/' exact component={MessengerMain} />
-      {process.env.NODE_ENV !== 'test' && (
+      {featureFlags.enableExplorer && (
         <FeatureFlag featureFlag='enableExplorer'>
           <Route path='/explorer' exact component={MockExplorer} />
         </FeatureFlag>

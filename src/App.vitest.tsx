@@ -29,23 +29,21 @@ vi.mock('./components/dialog-manager/container', () => ({
 }));
 
 describe(App, () => {
-  it('should wrap app with ZUIProvider', () => {
-    const { container } = renderWithProviders(<App />);
+  describe('by default', () => {
+    var container: HTMLElement;
 
-    const zuiProvider = screen.getByTestId('zui-provider');
+    beforeEach(() => {
+      container = renderWithProviders(<App />).container;
+    });
 
-    expect(zuiProvider).toBeTruthy();
-    expect(zuiProvider).toBe(container.firstChild);
-    expect(container.childNodes).toHaveLength(1);
-  });
+    it('should wrap app with ZUIProvider', () => {
+      expect(screen.getByTestId('zui-provider')).toBe(container.firstChild);
+      expect(container.childNodes).toHaveLength(1);
+    });
 
-  it('should render main element with default class names', () => {
-    const { container } = renderWithProviders(<App />);
-
-    const main = container.querySelector('div.main');
-
-    expect(main).toBeTruthy();
-    expect(main.classList).toContain('messenger-full-screen');
+    it('should render main element with default class names', () => {
+      expect(container.querySelector('div.main').classList).toContain('messenger-full-screen');
+    });
   });
 
   describe('when user is not authenticated', () => {
@@ -71,22 +69,14 @@ describe(App, () => {
     });
 
     it('should render AppBar', () => {
-      renderWithProviders(<App />);
-
-      const appBar = screen.queryByTestId('app-bar');
-      expect(appBar).not.toBeTruthy();
+      expect(screen.queryByTestId('app-bar')).not.toBeTruthy();
     });
 
     it('should not render DialogManager', () => {
-      renderWithProviders(<App />);
-
-      const dialogManager = screen.queryByTestId('dialog-manager');
-      expect(dialogManager).not.toBeTruthy();
+      expect(screen.queryByTestId('dialog-manager')).not.toBeTruthy();
     });
 
     it('should not render AppRouter', () => {
-      renderWithProviders(<App />);
-
       expect(screen.queryByTestId('app-router')).not.toBeTruthy();
     });
   });
@@ -117,22 +107,14 @@ describe(App, () => {
     });
 
     it('should render AppBar', () => {
-      renderWithProviders(<App />);
-
-      const appBar = screen.getByTestId('app-bar');
-      expect(appBar).toBeTruthy();
+      expect(screen.getByTestId('app-bar')).toBeTruthy();
     });
 
     it('should render DialogManager', () => {
-      renderWithProviders(<App />);
-
-      const dialogManager = screen.getByTestId('dialog-manager');
-      expect(dialogManager).toBeTruthy();
+      expect(screen.getByTestId('dialog-manager')).toBeTruthy();
     });
 
     it('should render AppRouter', () => {
-      renderWithProviders(<App />);
-
       expect(screen.getByTestId('app-router')).toBeTruthy();
     });
   });

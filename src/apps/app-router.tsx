@@ -25,6 +25,10 @@ export const AppRouter = () => {
   );
 };
 
+/**
+ * Just a mock Explorer for now so something renders when
+ * the Explorer feature flag is enabled.
+ */
 const MockExplorer = () => {
   return (
     <iframe

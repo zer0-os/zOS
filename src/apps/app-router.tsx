@@ -15,9 +15,11 @@ export const AppRouter = () => {
     <Switch>
       <Route path='/conversation/:conversationId' exact component={MessengerMain} />
       <Route path='/' exact component={MessengerMain} />
-      <FeatureFlag featureFlag='enableExplorer'>
-        <Route path='/explorer' exact component={MockExplorer} />
-      </FeatureFlag>
+      {process.env.NODE_ENV !== 'test' && (
+        <FeatureFlag featureFlag='enableExplorer'>
+          <Route path='/explorer' exact component={MockExplorer} />
+        </FeatureFlag>
+      )}
       <Route component={redirectToRoot} />
     </Switch>
   );

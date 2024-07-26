@@ -28,6 +28,12 @@ vi.mock('./components/dialog-manager/container', () => ({
   },
 }));
 
+vi.mock('./components/theme-engine', () => ({
+  ThemeEngine: () => {
+    return <div data-testid='theme-engine' />;
+  },
+}));
+
 describe(App, () => {
   describe('by default', () => {
     var container: HTMLElement;
@@ -43,6 +49,10 @@ describe(App, () => {
 
     it('should render main element with default class names', () => {
       expect(container.querySelector('div.main').classList).toContain('messenger-full-screen');
+    });
+
+    it('should render ThemeEngine', () => {
+      expect(screen.getByTestId('theme-engine')).toBeTruthy();
     });
   });
 

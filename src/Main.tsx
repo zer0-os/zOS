@@ -1,7 +1,6 @@
 import React from 'react';
 import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
-import { ThemeEngine } from './components/theme-engine';
 
 import { Sidekick } from './components/sidekick/index';
 import { withContext as withAuthenticationContext } from './components/authentication/context';
@@ -56,7 +55,6 @@ export class Container extends React.Component<Properties> {
             </FeatureFlag>
           </>
         )}
-        <ThemeEngine />
       </>
     );
   }

@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { Container as Main, Properties } from './Main';
-import { ThemeEngine } from './components/theme-engine';
 import { MessengerChat } from './components/messenger/chat';
 import { MainBackground } from './store/background';
 
@@ -18,12 +17,6 @@ describe(Main, () => {
 
     return shallow(<Main {...allProps} />);
   };
-
-  it('renders theme engine', () => {
-    const wrapper = subject();
-
-    expect(wrapper).toHaveElement(ThemeEngine);
-  });
 
   it('renders direct message chat component', () => {
     const wrapper = subject({ context: { isAuthenticated: true } });

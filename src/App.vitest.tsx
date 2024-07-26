@@ -3,6 +3,14 @@ import { App } from './App';
 import { renderWithProviders } from './test-utils';
 import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
+import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
+
+vi.mock('./utils', () => {
+  return {
+    getMainBackgroundVideoSrc: vi.fn().mockReturnValue('mock-background-video-src'),
+    getMainBackgroundClass: vi.fn().mockReturnValue('mock-main-background-class'),
+  };
+});
 
 vi.mock('./apps/app-router', () => ({
   AppRouter: () => {
@@ -39,7 +47,14 @@ describe(App, () => {
     var container: HTMLElement;
 
     beforeEach(() => {
-      container = renderWithProviders(<App />).container;
+      container = renderWithProviders(<App />, {
+        preloadedState: {
+          background: {
+            // @ts-ignore
+            selectedMainBackground: 'foo',
+          },
+        },
+      }).container;
     });
 
     it('should wrap app with ZUIProvider', () => {
@@ -53,6 +68,17 @@ describe(App, () => {
 
     it('should render ThemeEngine', () => {
       expect(screen.getByTestId('theme-engine')).toBeTruthy();
+    });
+
+    it('should not render with video background', () => {
+      expect(screen.queryByTestId('app-video-background')).not.toBeTruthy();
+    });
+
+    it('should apply correct background class for selected background', () => {
+      const { container } = renderWithProviders(<App />);
+
+      expect(getMainBackgroundClass).toHaveBeenCalledWith('foo');
+      expect(container.querySelector('div.main')?.classList).toContain('mock-main-background-class');
     });
   });
 
@@ -104,6 +130,10 @@ describe(App, () => {
               data: {},
             },
           },
+          background: {
+            // @ts-ignore
+            selectedMainBackground: 'foo',
+          },
         },
       }).container;
     });
@@ -126,6 +156,11 @@ describe(App, () => {
 
     it('should render AppRouter', () => {
       expect(screen.getByTestId('app-router')).toBeTruthy();
+    });
+
+    it('should render correct background video', () => {
+      expect(getMainBackgroundVideoSrc).toHaveBeenCalledWith('foo');
+      expect(screen.getByTestId('app-video-background')).toBeTruthy();
     });
   });
 });

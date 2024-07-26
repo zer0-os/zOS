@@ -169,7 +169,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const family = this.getConversationsByLabel(DefaultRoomLabels.FAMILY);
 
     const tabs = [
-      { id: Tab.Favorites, label: <IconStar1 size={16} />, unreadCount: this.getUnreadCount(favorites) },
+      { id: Tab.Favorites, label: <IconStar1 size={18} />, unreadCount: this.getUnreadCount(favorites) },
       { id: Tab.All, label: 'All', unreadCount: this.getUnreadCount(this.props.conversations) },
       { id: Tab.Work, label: 'Work', unreadCount: this.getUnreadCount(work) },
       { id: Tab.Family, label: 'Family', unreadCount: this.getUnreadCount(family) },

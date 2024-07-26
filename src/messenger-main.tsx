@@ -58,15 +58,9 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <>
-        <AuthenticationContextProvider value={this.authenticationContext}>
-          {/* See: ZOS-115
-           * @ts-ignore */}
-          <ZUIProvider>
-            <Main />
-          </ZUIProvider>
-        </AuthenticationContextProvider>
-      </>
+      <AuthenticationContextProvider value={this.authenticationContext}>
+        <Main />
+      </AuthenticationContextProvider>
     );
   }
 }

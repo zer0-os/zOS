@@ -3,10 +3,13 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppRouter } from './app-router';
 import { vi } from 'vitest';
 import { renderWithProviders } from '../test-utils';
+import { featureFlags } from '../lib/feature-flags';
+
+featureFlags.enableExplorer = false;
 
 vi.mock('../messenger-main', () => ({
   MessengerMain: () => {
-    return 'MessengerMain';
+    return <div data-testid='messenger-main' />;
   },
 }));
 
@@ -21,16 +24,16 @@ const renderComponent = (route: string | undefined = '/') => {
 describe(AppRouter, () => {
   it('should render MessengerMain component when route is /', () => {
     renderComponent('/');
-    expect(screen.getByText('MessengerMain')).toBeTruthy();
+    expect(screen.getByTestId('messenger-main')).toBeTruthy();
   });
 
   it('should render MessengerMain component when route is /conversation/:conversationId', () => {
     renderComponent('/conversation/123');
-    expect(screen.getByText('MessengerMain')).toBeTruthy();
+    expect(screen.getByTestId('messenger-main')).toBeTruthy();
   });
 
   it('should redirect to / when route is invalid', () => {
     renderComponent('/foo-bar');
-    expect(screen.getByText('MessengerMain')).toBeTruthy();
+    expect(screen.getByTestId('messenger-main')).toBeTruthy();
   });
 });

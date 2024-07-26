@@ -3,7 +3,6 @@ import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 import { ThemeEngine } from './components/theme-engine';
 
-import './main.scss';
 import classNames from 'classnames';
 import { Sidekick } from './components/sidekick/index';
 import { withContext as withAuthenticationContext } from './components/authentication/context';
@@ -45,15 +44,9 @@ export class Container extends React.Component<Properties> {
 
   render() {
     const videoSrc = getMainBackgroundVideoSrc(this.props.selectedMainBackground);
-    const backgroundClass = getMainBackgroundClass(this.props.selectedMainBackground);
-
-    const mainClassName = classNames('main', 'messenger-full-screen', backgroundClass, {
-      'sidekick-panel-open': this.props.context.isAuthenticated,
-      background: this.props.context.isAuthenticated,
-    });
 
     return (
-      <div className={mainClassName}>
+      <>
         {this.props.context.isAuthenticated && (
           <>
             {videoSrc && this.renderAnimatedBackground(videoSrc)}
@@ -69,7 +62,7 @@ export class Container extends React.Component<Properties> {
           </>
         )}
         <ThemeEngine />
-      </div>
+      </>
     );
   }
 }

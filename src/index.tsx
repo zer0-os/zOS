@@ -21,7 +21,7 @@ import { desktopInit } from './lib/desktop';
 import { Restricted } from './restricted';
 import { RainbowKitConnect } from './lib/web3/rainbowkit/connect';
 import { RainbowKitProvider } from './lib/web3/rainbowkit/provider';
-import { AppRouter } from './apps/app-router';
+import { App } from './App';
 
 desktopInit();
 runSagas();
@@ -50,7 +50,7 @@ root.render(
                   <Route path='/get-access' exact component={Invite} />
                   <Route path='/login' exact component={LoginPage} />
                   <Route path='/reset-password' exact component={ResetPassword} />
-                  <Route component={AppRouter} />
+                  <Route component={App} />
                 </Switch>
               </RainbowKitConnect>
             </RainbowKitProvider>

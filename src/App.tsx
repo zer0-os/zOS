@@ -10,16 +10,20 @@ import { AppBar } from './components/app-bar';
 import { DialogManager } from './components/dialog-manager/container';
 
 export const App = () => {
-  const { mainClassName } = useAppMain();
+  const { isAuthenticated, mainClassName } = useAppMain();
 
   return (
     // See: ZOS-115
     // @ts-ignore
     <ZUIProvider>
       <div className={mainClassName}>
-        <DialogManager />
-        <AppBar />
-        <AppRouter />
+        {isAuthenticated && (
+          <>
+            <DialogManager />
+            <AppBar />
+            <AppRouter />
+          </>
+        )}
       </div>
     </ZUIProvider>
   );
@@ -37,6 +41,7 @@ const useAppMain = () => {
   });
 
   return {
+    isAuthenticated,
     mainClassName,
   };
 };

@@ -39,12 +39,6 @@ describe(App, () => {
     expect(container.childNodes).toHaveLength(1);
   });
 
-  it('should render AppRouter', () => {
-    renderWithProviders(<App />);
-
-    expect(screen.getByTestId('app-router')).toBeTruthy();
-  });
-
   it('should render main element with default class names', () => {
     const { container } = renderWithProviders(<App />);
 
@@ -52,20 +46,6 @@ describe(App, () => {
 
     expect(main).toBeTruthy();
     expect(main.classList).toContain('messenger-full-screen');
-  });
-
-  it('should render AppBar', () => {
-    renderWithProviders(<App />);
-
-    const appBar = screen.getByTestId('app-bar');
-    expect(appBar).toBeTruthy();
-  });
-
-  it('should render DialogManager', () => {
-    renderWithProviders(<App />);
-
-    const dialogManager = screen.getByTestId('dialog-manager');
-    expect(dialogManager).toBeTruthy();
   });
 
   describe('when user is not authenticated', () => {
@@ -88,6 +68,26 @@ describe(App, () => {
 
     it('should not add background class to main div', () => {
       expect(container.querySelector('div.main')?.classList).not.toContain('background');
+    });
+
+    it('should render AppBar', () => {
+      renderWithProviders(<App />);
+
+      const appBar = screen.queryByTestId('app-bar');
+      expect(appBar).not.toBeTruthy();
+    });
+
+    it('should not render DialogManager', () => {
+      renderWithProviders(<App />);
+
+      const dialogManager = screen.queryByTestId('dialog-manager');
+      expect(dialogManager).not.toBeTruthy();
+    });
+
+    it('should not render AppRouter', () => {
+      renderWithProviders(<App />);
+
+      expect(screen.queryByTestId('app-router')).not.toBeTruthy();
     });
   });
 
@@ -114,6 +114,26 @@ describe(App, () => {
 
     it('should add background class to main div', () => {
       expect(container.querySelector('div.main')?.classList).toContain('background');
+    });
+
+    it('should render AppBar', () => {
+      renderWithProviders(<App />);
+
+      const appBar = screen.getByTestId('app-bar');
+      expect(appBar).toBeTruthy();
+    });
+
+    it('should render DialogManager', () => {
+      renderWithProviders(<App />);
+
+      const dialogManager = screen.getByTestId('dialog-manager');
+      expect(dialogManager).toBeTruthy();
+    });
+
+    it('should render AppRouter', () => {
+      renderWithProviders(<App />);
+
+      expect(screen.getByTestId('app-router')).toBeTruthy();
     });
   });
 });

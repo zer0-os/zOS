@@ -1,12 +1,14 @@
 import * as React from 'react';
 
 import { WorldPanelItem } from './world-panel-item';
-import { IconDotsGrid, IconMessageSquare2 } from '@zero-tech/zui/icons';
+import { IconDotsGrid, IconGlobe3, IconMessageSquare2 } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
+import { Link } from 'react-router-dom';
 
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
+import { FeatureFlag } from '../feature-flag';
 
 const cn = bemClassName('app-bar');
 
@@ -27,6 +29,11 @@ export class AppBar extends React.Component<Properties, State> {
       <>
         <div {...cn('')}>
           <WorldPanelItem Icon={IconMessageSquare2} label='Messenger' isActive />
+          <FeatureFlag featureFlag='enableExplorer'>
+            <Link to='/explorer'>
+              <WorldPanelItem Icon={IconGlobe3} label='Explorer' isActive={false} />
+            </Link>
+          </FeatureFlag>
           <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
         </div>
         {this.state.isModalOpen && <MoreAppsModal onClose={this.closeModal} />}

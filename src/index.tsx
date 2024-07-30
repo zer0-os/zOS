@@ -22,6 +22,8 @@ import { desktopInit } from './lib/desktop';
 import { Restricted } from './restricted';
 import { RainbowKitConnect } from './lib/web3/rainbowkit/connect';
 import { RainbowKitProvider } from './lib/web3/rainbowkit/provider';
+import { Maintenance } from './maintenance';
+import { featureFlags } from './lib/feature-flags';
 
 desktopInit();
 runSagas();
@@ -48,13 +50,24 @@ root.render(
               <RainbowKitConnect>
                 {isElectron() && <ElectronTitlebar />}
                 <Switch>
-                  <Route path='/restricted' exact component={Restricted} />
-                  <Route path='/get-access' exact component={Invite} />
-                  <Route path='/login' exact component={LoginPage} />
-                  <Route path='/reset-password' exact component={ResetPassword} />
-                  <Route path='/conversation/:conversationId' exact component={MessengerMain} />
-                  <Route path='/' exact component={MessengerMain} />
-                  <Route component={redirectToRoot} />
+                  {featureFlags.disableMaintenance && (
+                    <>
+                      <Route path='/restricted' exact component={Restricted} />
+                      <Route path='/get-access' exact component={Invite} />
+                      <Route path='/login' exact component={LoginPage} />
+                      <Route path='/reset-password' exact component={ResetPassword} />
+                      <Route path='/conversation/:conversationId' exact component={MessengerMain} />
+                      <Route path='/' exact component={MessengerMain} />
+                      <Route component={redirectToRoot} />
+                    </>
+                  )}
+
+                  {!featureFlags.disableMaintenance && (
+                    <>
+                      <Route path='/maintenance' exact component={Maintenance} />
+                      <Redirect to='/maintenance' />
+                    </>
+                  )}
                 </Switch>
               </RainbowKitConnect>
             </RainbowKitProvider>

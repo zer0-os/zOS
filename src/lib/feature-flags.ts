@@ -105,14 +105,6 @@ export class FeatureFlags {
   set enableTimerLogs(value: boolean) {
     this._setBoolean('enableTimerLogs', value);
   }
-
-  get disableMaintenance() {
-    return this._getBoolean('disableMaintenance', false);
-  }
-
-  set disableMaintenance(value: boolean) {
-    this._setBoolean('disableMaintenance', value);
-  }
 }
 
 export const featureFlags = new FeatureFlags();

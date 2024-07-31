@@ -3,6 +3,7 @@ import { RootState } from './store/reducer';
 import { connectContainer } from './store/redux-container';
 
 import { Main } from './Main';
+import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 import { Provider as AuthenticationContextProvider } from './components/authentication/context';
 import { setActiveConversationId } from './store/chat';
 
@@ -57,9 +58,15 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <AuthenticationContextProvider value={this.authenticationContext}>
-        <Main />
-      </AuthenticationContextProvider>
+      <>
+        <AuthenticationContextProvider value={this.authenticationContext}>
+          {/* See: ZOS-115
+           * @ts-ignore */}
+          <ZUIProvider>
+            <Main />
+          </ZUIProvider>
+        </AuthenticationContextProvider>
+      </>
     );
   }
 }

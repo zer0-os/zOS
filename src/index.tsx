@@ -2,11 +2,12 @@ import './init';
 import React from 'react';
 
 import { createRoot } from 'react-dom/client';
+import { MessengerMain } from './messenger-main';
 import { store, runSagas } from './store';
 import { Provider } from 'react-redux';
 import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
 import * as serviceWorker from './serviceWorker';
-import { Router, Route, Switch } from 'react-router-dom';
+import { Router, Redirect, Route, Switch } from 'react-router-dom';
 import { showReleaseVersionInConsole, initializeErrorBoundary, isElectron } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
@@ -21,7 +22,6 @@ import { desktopInit } from './lib/desktop';
 import { Restricted } from './restricted';
 import { RainbowKitConnect } from './lib/web3/rainbowkit/connect';
 import { RainbowKitProvider } from './lib/web3/rainbowkit/provider';
-import { App } from './App';
 
 desktopInit();
 runSagas();
@@ -31,6 +31,8 @@ initializeErrorBoundary();
 showReleaseVersionInConsole();
 
 export const history = getHistory();
+
+const redirectToRoot = () => <Redirect to={'/'} />;
 
 const container = document.getElementById('platform');
 
@@ -50,7 +52,9 @@ root.render(
                   <Route path='/get-access' exact component={Invite} />
                   <Route path='/login' exact component={LoginPage} />
                   <Route path='/reset-password' exact component={ResetPassword} />
-                  <Route component={App} />
+                  <Route path='/conversation/:conversationId' exact component={MessengerMain} />
+                  <Route path='/' exact component={MessengerMain} />
+                  <Route component={redirectToRoot} />
                 </Switch>
               </RainbowKitConnect>
             </RainbowKitProvider>

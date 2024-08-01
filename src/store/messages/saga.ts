@@ -160,25 +160,6 @@ export function* fetch(action) {
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
-
-    if (yield select(_isActive(channelId))) {
-      const currentUser = yield select(currentUserSelector());
-
-      let latestUserMessage = null;
-      for (let i = messages?.length - 1; i >= 0; i--) {
-        const msg = messages[i];
-
-        if (msg?.sender?.userId === currentUser?.id) {
-          latestUserMessage = msg;
-
-          break;
-        }
-      }
-
-      if (latestUserMessage) {
-        yield call(mapMessageReadByUsers, latestUserMessage.id, channelId);
-      }
-    }
   } catch (error) {
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
   }

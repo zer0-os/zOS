@@ -2,7 +2,6 @@ import { call, fork, put, take, takeLatest } from 'redux-saga/effects';
 
 import { SagaActionTypes, Stage, setSelectedMessageId, setStage } from './index';
 import { Events, getAuthChannel } from '../authentication/channels';
-import { mapMessageReadByUsers } from '../messages/saga';
 import { resetConversationManagement } from '../group-management/saga';
 
 function* authWatcher() {
@@ -14,13 +13,11 @@ function* authWatcher() {
 }
 
 export function* openOverview(action) {
-  const { roomId, messageId } = action.payload;
+  const { messageId } = action.payload;
 
   yield call(resetConversationManagement);
   yield put(setStage(Stage.Overview));
   yield put(setSelectedMessageId(messageId));
-
-  yield call(mapMessageReadByUsers, messageId, roomId);
 }
 
 export function* closeOverview() {

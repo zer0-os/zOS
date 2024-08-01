@@ -967,7 +967,6 @@ describe('matrix client', () => {
         event: { event_id: latestEventId },
       };
 
-      const sendReadReceipt = jest.fn().mockResolvedValue(undefined);
       const setRoomReadMarkers = jest.fn().mockResolvedValue(undefined);
       const getLiveTimelineEvents = jest.fn().mockReturnValue([latestEvent]);
       const getRoom = jest.fn().mockReturnValue(
@@ -977,13 +976,12 @@ describe('matrix client', () => {
       );
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ sendReadReceipt, setRoomReadMarkers, getRoom })),
+        createClient: jest.fn(() => getSdkClient({ setRoomReadMarkers, getRoom })),
       });
 
       await client.connect(null, 'token');
       await client.markRoomAsRead(roomId);
 
-      expect(sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.ReadPrivate);
       expect(setRoomReadMarkers).toHaveBeenCalledWith(roomId, latestEventId);
     });
   });

@@ -174,10 +174,6 @@ export function* fetch(action) {
           break;
         }
       }
-
-      if (latestUserMessage) {
-        yield call(mapMessageReadByUsers, latestUserMessage.id, channelId);
-      }
     }
   } catch (error) {
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });

@@ -6,7 +6,7 @@ import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 import { RootState } from './store';
 import classNames from 'classnames';
 import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
-import { AppBar } from './components/app-bar';
+import { AppBar } from './components/app-bar/container';
 import { DialogManager } from './components/dialog-manager/container';
 import { ThemeEngine } from './components/theme-engine';
 

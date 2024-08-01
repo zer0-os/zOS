@@ -716,12 +716,6 @@ export class MatrixClient implements IChatClient {
       return;
     }
 
-    const userReceiptPreference = await this.getReadReceiptPreference();
-
-    const receiptType =
-      userReceiptPreference === ReadReceiptPreferenceType.Public ? ReceiptType.Read : ReceiptType.ReadPrivate;
-
-    await this.processSendReadReceipt(room, latestEvent, receiptType);
     await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
   }
 

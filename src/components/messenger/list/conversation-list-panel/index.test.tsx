@@ -89,7 +89,7 @@ describe('ConversationListPanel', () => {
     expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-4']);
   });
 
-  it('renders Favorites tab first if it has conversations', function () {
+  it('renders Favorites tab first', function () {
     const conversations = [
       stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.FAVORITE], unreadCount: 0 }),
       stubConversation({ name: 'convo-2', unreadCount: 0 }),
@@ -99,18 +99,6 @@ describe('ConversationListPanel', () => {
     const tabs = wrapper.find('.messages-list__tab');
     expect(tabs.at(0)).toHaveElement(IconStar1);
     expect(tabs.at(1)).toHaveText('All');
-  });
-
-  it('renders Favorites tab second if it does not have conversations', function () {
-    const conversations = [
-      stubConversation({ name: 'convo-1', unreadCount: 0 }),
-      stubConversation({ name: 'convo-2', unreadCount: 0 }),
-    ];
-    const wrapper = subject({ conversations: conversations as any });
-
-    const tabs = wrapper.find('.messages-list__tab');
-    expect(tabs.at(0)).toHaveText('All');
-    expect(tabs.at(1)).toHaveElement(IconStar1);
   });
 
   it('renders default state when label list is empty', function () {

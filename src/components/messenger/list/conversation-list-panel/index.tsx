@@ -189,10 +189,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
     return (
       <div {...cn('tab-list')} ref={this.tabListRef}>
-        {tabConversations[Tab.Favorites].length > 0
-          ? [tabs[0], tabs[1]].map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))
-          : [tabs[1], tabs[0]].map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))}
-        {tabs.slice(2).map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))}
+        {tabs.map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))}
       </div>
     );
   }

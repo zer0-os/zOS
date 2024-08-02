@@ -358,6 +358,19 @@ describe('ConversationListPanel', () => {
         'convo-4',
       ]);
     });
+
+    it('filters archived conversations', () => {
+      const archivedConversations = [
+        stubConversation({ name: 'convo-1', labels: [] }),
+        stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.ARCHIVED] }),
+        stubConversation({ name: 'convo-3', labels: [DefaultRoomLabels.ARCHIVED] }),
+      ];
+      const wrapper = subject({ conversations: archivedConversations as any });
+
+      wrapper.find('Input').simulate('change', 'convo');
+      const displayChatNames = renderedConversations(wrapper).map((c) => c.name);
+      expect(displayChatNames).toStrictEqual(['convo-1']);
+    });
   });
 
   it('selecting an existing conversation announces click event', async function () {

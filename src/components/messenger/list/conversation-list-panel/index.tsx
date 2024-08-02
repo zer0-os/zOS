@@ -111,6 +111,10 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   }
 
   get filteredConversations() {
+    const archivedConversationIds = this.props.conversations
+      .filter((c) => c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+      .map((c) => c.id);
+
     if (!this.state.filter) {
       return this.getTabConversations()[this.state.selectedTab];
     }
@@ -119,7 +123,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     const directMatches = getDirectMatches(this.props.conversations, searchRegEx);
     const indirectMatches = getIndirectMatches(this.props.conversations, searchRegEx);
 
-    return [...directMatches, ...indirectMatches];
+    return [...directMatches, ...indirectMatches].filter((c) => !archivedConversationIds.includes(c.id));
   }
 
   openExistingConversation = (id: string) => {

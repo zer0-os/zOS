@@ -24,7 +24,7 @@ vi.mock('@zero-tech/zui/ZUIProvider', () => ({
   },
 }));
 
-vi.mock('./components/app-bar', () => ({
+vi.mock('./components/app-bar/container', () => ({
   AppBar: () => {
     return <div data-testid='app-bar' />;
   },

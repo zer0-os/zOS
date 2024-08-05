@@ -41,6 +41,7 @@ describe('messenger-list', () => {
       isRewardsDialogOpen: false,
       showRewardsTooltip: false,
       hasUnviewedRewards: false,
+      isSecondaryConversationDataLoaded: true,
       closeConversationErrorDialog: () => null,
       startCreateConversation: () => null,
       membersSelected: () => null,

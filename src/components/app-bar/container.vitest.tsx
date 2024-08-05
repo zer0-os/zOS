@@ -36,7 +36,7 @@ describe(AppBar, () => {
   });
 
   it('should pass undefined if route match is undefined', () => {
-    renderComponent(undefined);
+    renderComponent();
     expect(mockAppBar).toHaveBeenCalledWith(expect.objectContaining({ activeApp: '' }));
   });
 });

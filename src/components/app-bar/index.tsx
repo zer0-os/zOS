@@ -4,15 +4,18 @@ import { WorldPanelItem } from './world-panel-item';
 import { IconDotsGrid, IconGlobe3, IconMessageSquare2 } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
+import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
+import { FeatureFlag } from '../feature-flag';
 
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
-import { FeatureFlag } from '../feature-flag';
 
 const cn = bemClassName('app-bar');
 
-export interface Properties {}
+export interface Properties {
+  activeApp: string | undefined;
+}
 
 interface State {
   isModalOpen: boolean;
@@ -25,14 +28,15 @@ export class AppBar extends React.Component<Properties, State> {
   closeModal = () => this.setState({ isModalOpen: false });
 
   render() {
+    const { activeApp } = this.props;
+    const isActive = checkActive(activeApp);
+
     return (
       <>
         <div {...cn('')}>
-          <WorldPanelItem Icon={IconMessageSquare2} label='Messenger' isActive />
+          <AppLink Icon={IconMessageSquare2} isActive={isActive('conversation')} label='Messenger' to='/conversation' />
           <FeatureFlag featureFlag='enableExplorer'>
-            <Link to='/explorer'>
-              <WorldPanelItem Icon={IconGlobe3} label='Explorer' isActive={false} />
-            </Link>
+            <AppLink Icon={IconGlobe3} isActive={isActive('explorer')} label='Explorer' to='/explorer' />
           </FeatureFlag>
           <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
         </div>
@@ -41,3 +45,22 @@ export class AppBar extends React.Component<Properties, State> {
     );
   }
 }
+
+interface AppLinkProps {
+  Icon: React.JSXElementConstructor<IconProps>;
+  isActive: boolean;
+  label: string;
+  to: string;
+}
+
+const AppLink = ({ Icon, isActive, to, label }: AppLinkProps) => {
+  return (
+    <Link to={to}>
+      <WorldPanelItem Icon={Icon} label={label} isActive={isActive} />
+    </Link>
+  );
+};
+
+const checkActive = (activeApp: Properties['activeApp']) => (label: string) => {
+  return activeApp?.toLowerCase() === label.toLowerCase();
+};

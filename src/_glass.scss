@@ -159,13 +159,18 @@ $glass-state-default-color: rgba(167, 163, 163, 0.05);
 // can't apply this to just the main background. Provide a mixin so all components
 // can apply the same gradient.
 @mixin main-background {
-  background: linear-gradient(
-    rgba(0, 0, 0, 0.75) 0%,
-    rgba(0, 0, 0, 0.492172) 22px,
-    rgba(0, 0, 0, 0) 64px,
+  // @note 05 August 2024
+  // This has been commented out as it was difficult to consistently
+  // apply the gradient to all sections of the UI.
+  // See: ZOS-169
 
-    rgba(0, 0, 0, 0) calc(100% - 64px),
-    rgba(0, 0, 0, 0.492172) calc(100% - 22px),
-    rgba(0, 0, 0, 0.75) 100%
-  );
+  // background: linear-gradient(
+  //   rgba(0, 0, 0, 0.75) 0%,
+  //   rgba(0, 0, 0, 0.492172) 22px,
+  //   rgba(0, 0, 0, 0) 64px,
+
+  //   rgba(0, 0, 0, 0) calc(100% - 64px),
+  //   rgba(0, 0, 0, 0.492172) calc(100% - 22px),
+  //   rgba(0, 0, 0, 0.75) 100%
+  // );
 }

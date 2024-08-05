@@ -36,7 +36,7 @@ $side-padding: 16px;
     gap: 10px;
     overflow-x: auto;
     white-space: nowrap;
-    padding: 8px 16px;
+    padding: 8px 0;
     margin: 0 16px;
 
     &::-webkit-scrollbar-thumb {
@@ -62,6 +62,7 @@ $side-padding: 16px;
     position: relative;
     box-sizing: border-box;
     padding: 8px 4px 2px 4px;
+    border-bottom: 1px solid transparent;
 
     @include glass-text-secondary-color;
     font-size: 14px;
@@ -80,17 +81,13 @@ $side-padding: 16px;
         color: theme.$color-secondary-11;
         cursor: auto;
       }
-
-      .messages-list__tab-badge {
-        display: none;
-      }
     }
   }
 
   &__tab-badge {
     position: absolute;
     right: -10px;
-    top: -2px;
+    top: -4px;
 
     display: flex;
     flex-direction: column;

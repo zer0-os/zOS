@@ -12,6 +12,7 @@ import { getDirectMatches, getIndirectMatches } from './utils';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
+import { IconStar1 } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('messages-list');
 
@@ -33,6 +34,7 @@ enum Tab {
   Work = 'work',
   Social = 'social',
   Family = 'family',
+  Archived = 'archived',
 }
 
 interface State {
@@ -43,12 +45,33 @@ interface State {
 
 export class ConversationListPanel extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<ScrollbarContainer>;
+  tabListRef: React.RefObject<HTMLDivElement>;
   state = { filter: '', userSearchResults: [], selectedTab: Tab.All };
 
   constructor(props) {
     super(props);
     this.scrollContainerRef = React.createRef();
+    this.tabListRef = React.createRef();
   }
+
+  componentDidMount() {
+    if (this.tabListRef.current) {
+      this.tabListRef.current.addEventListener('wheel', this.horizontalScroll, { passive: false });
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.tabListRef.current) {
+      this.tabListRef.current.removeEventListener('wheel', this.horizontalScroll);
+    }
+  }
+
+  horizontalScroll = (event) => {
+    if (event.deltaY !== 0) {
+      event.preventDefault();
+      this.tabListRef.current.scrollLeft += event.deltaY;
+    }
+  };
 
   scrollToTop = () => {
     if (this.scrollContainerRef.current) {
@@ -76,24 +99,31 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     this.setState({ userSearchResults: filteredItems?.map(itemToOption) });
   };
 
-  get filteredConversations() {
-    if (!this.state.filter) {
-      const tabToConversationsMap = {
-        [Tab.All]: this.props.conversations,
-        [Tab.Favorites]: this.getConversationsByLabel(DefaultRoomLabels.FAVORITE),
-        [Tab.Work]: this.getConversationsByLabel(DefaultRoomLabels.WORK),
-        [Tab.Social]: this.getConversationsByLabel(DefaultRoomLabels.SOCIAL),
-        [Tab.Family]: this.getConversationsByLabel(DefaultRoomLabels.FAMILY),
-      };
+  getTabConversations() {
+    return {
+      [Tab.All]: this.props.conversations.filter((c) => !c.labels?.includes(DefaultRoomLabels.ARCHIVED)),
+      [Tab.Favorites]: this.getConversationsByLabel(DefaultRoomLabels.FAVORITE),
+      [Tab.Work]: this.getConversationsByLabel(DefaultRoomLabels.WORK),
+      [Tab.Social]: this.getConversationsByLabel(DefaultRoomLabels.SOCIAL),
+      [Tab.Family]: this.getConversationsByLabel(DefaultRoomLabels.FAMILY),
+      [Tab.Archived]: this.getConversationsByLabel(DefaultRoomLabels.ARCHIVED),
+    };
+  }
 
-      return tabToConversationsMap[this.state.selectedTab];
+  get filteredConversations() {
+    const archivedConversationIds = this.props.conversations
+      .filter((c) => c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+      .map((c) => c.id);
+
+    if (!this.state.filter) {
+      return this.getTabConversations()[this.state.selectedTab];
     }
 
     const searchRegEx = new RegExp(escapeRegExp(this.state.filter), 'i');
     const directMatches = getDirectMatches(this.props.conversations, searchRegEx);
     const indirectMatches = getIndirectMatches(this.props.conversations, searchRegEx);
 
-    return [...directMatches, ...indirectMatches];
+    return [...directMatches, ...indirectMatches].filter((c) => !archivedConversationIds.includes(c.id));
   }
 
   openExistingConversation = (id: string) => {
@@ -119,17 +149,23 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   };
 
   getConversationsByLabel(label) {
-    return this.props.conversations.filter((c) => c.labels?.includes(label));
+    return this.props.conversations.filter(
+      (c) =>
+        c.labels?.includes(label) &&
+        (label === DefaultRoomLabels.ARCHIVED || !c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+    );
   }
 
   getUnreadCount(conversations: Channel[]) {
-    const count = conversations.reduce((acc, c) => acc + c.unreadCount, 0);
+    const count = conversations
+      .filter((c) => !c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+      .reduce((acc, c) => acc + c.unreadCount, 0);
     return count < 99 ? count : '99+';
   }
 
-  renderTab(tab, label, unreadCount) {
+  renderTab(id, label, unreadCount) {
     return (
-      <div {...cn('tab', this.state.selectedTab === tab && 'active')} onClick={() => this.selectTab(tab)}>
+      <div key={id} {...cn('tab', this.state.selectedTab === id && 'active')} onClick={() => this.selectTab(id)}>
         {label}
         {!!unreadCount && (
           <div {...cn('tab-badge')}>
@@ -141,18 +177,23 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   }
 
   renderTabList() {
-    const favorites = this.getConversationsByLabel(DefaultRoomLabels.FAVORITE);
-    const work = this.getConversationsByLabel(DefaultRoomLabels.WORK);
-    const social = this.getConversationsByLabel(DefaultRoomLabels.SOCIAL);
-    const family = this.getConversationsByLabel(DefaultRoomLabels.FAMILY);
+    const tabConversations = this.getTabConversations();
+    const tabs = [
+      {
+        id: Tab.Favorites,
+        label: <IconStar1 size={18} />,
+        unreadCount: this.getUnreadCount(tabConversations[Tab.Favorites]),
+      },
+      { id: Tab.All, label: 'All', unreadCount: this.getUnreadCount(tabConversations[Tab.All]) },
+      { id: Tab.Work, label: 'Work', unreadCount: this.getUnreadCount(tabConversations[Tab.Work]) },
+      { id: Tab.Family, label: 'Family', unreadCount: this.getUnreadCount(tabConversations[Tab.Family]) },
+      { id: Tab.Social, label: 'Social', unreadCount: this.getUnreadCount(tabConversations[Tab.Social]) },
+      { id: Tab.Archived, label: 'Archived', unreadCount: this.getUnreadCount(tabConversations[Tab.Archived]) },
+    ];
 
     return (
-      <div {...cn('tab-list')}>
-        {this.renderTab(Tab.All, 'All', this.getUnreadCount(this.props.conversations))}
-        {this.renderTab(Tab.Favorites, 'Favorites', this.getUnreadCount(favorites))}
-        {this.renderTab(Tab.Work, 'Work', this.getUnreadCount(work))}
-        {this.renderTab(Tab.Social, 'Social', this.getUnreadCount(social))}
-        {this.renderTab(Tab.Family, 'Family', this.getUnreadCount(family))}
+      <div {...cn('tab-list')} ref={this.tabListRef}>
+        {tabs.map((tab) => this.renderTab(tab.id, tab.label, tab.unreadCount))}
       </div>
     );
   }

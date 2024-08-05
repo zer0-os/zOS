@@ -43,9 +43,19 @@ export class MoreMenu extends React.Component<Properties> {
       [DefaultRoomLabels.WORK]: 'Work',
       [DefaultRoomLabels.FAMILY]: 'Family',
       [DefaultRoomLabels.SOCIAL]: 'Social',
+      [DefaultRoomLabels.ARCHIVED]: 'Archived',
     };
 
     const menuItems = [];
+
+    if (this.props.labels?.includes(DefaultRoomLabels.ARCHIVED)) {
+      menuItems.push({
+        id: 'unarchive',
+        label: this.renderMenuOption(<IconBookmarkX size={20} />, 'Unarchive chat'),
+        onSelect: this.removeLabel(DefaultRoomLabels.ARCHIVED),
+      });
+      return menuItems;
+    }
 
     if (this.props.labels?.includes(DefaultRoomLabels.FAVORITE)) {
       menuItems.push({
@@ -72,7 +82,10 @@ export class MoreMenu extends React.Component<Properties> {
       } else {
         menuItems.push({
           id: `add-${label.toLowerCase()}`,
-          label: this.renderMenuOption(<IconBookmark size={20} />, `Add to ${labelName}`),
+          label: this.renderMenuOption(
+            <IconBookmark size={20} />,
+            label === DefaultRoomLabels.ARCHIVED ? 'Archive chat' : `Add to ${labelName}`
+          ),
           onSelect: this.addLabel(label),
         });
       }

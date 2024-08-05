@@ -536,7 +536,7 @@ export function* sendBrowserNotification(eventData) {
   if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
 
   const roomLabels = yield select(roomLabelSelector(eventData?.roomId));
-  if (roomLabels?.includes(DefaultRoomLabels.MUTE)) return;
+  if (roomLabels?.includes(DefaultRoomLabels.MUTE) || roomLabels?.includes(DefaultRoomLabels.ARCHIVED)) return;
 
   if (eventData.type === NotifiableEventType.RoomMessage) {
     yield call(sendBrowserMessage, mapMessage(eventData));

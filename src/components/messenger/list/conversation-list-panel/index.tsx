@@ -20,6 +20,7 @@ export interface Properties {
   conversations: Channel[];
   myUserId: string;
   activeConversationId: string;
+  isLabelDataLoaded: boolean;
 
   search: (input: string) => any;
   onCreateConversation: (userId: string) => void;
@@ -58,11 +59,32 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     if (this.tabListRef.current) {
       this.tabListRef.current.addEventListener('wheel', this.horizontalScroll, { passive: false });
     }
+
+    this.setInitialTab();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.isLabelDataLoaded !== this.props.isLabelDataLoaded) {
+      this.setInitialTab();
+    }
   }
 
   componentWillUnmount() {
     if (this.tabListRef.current) {
       this.tabListRef.current.removeEventListener('wheel', this.horizontalScroll);
+    }
+  }
+
+  setInitialTab() {
+    if (this.props.isLabelDataLoaded) {
+      const favoriteConversations = this.props.conversations.filter(
+        (c) => c.labels?.includes(DefaultRoomLabels.FAVORITE) && !c.labels?.includes(DefaultRoomLabels.ARCHIVED)
+      );
+      if (favoriteConversations.length > 0) {
+        this.setState({ selectedTab: Tab.Favorites });
+      } else {
+        this.setState({ selectedTab: Tab.All });
+      }
     }
   }
 
@@ -224,11 +246,12 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
           </div>
 
-          {this.renderTabList()}
+          {this.props.isLabelDataLoaded && this.renderTabList()}
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>
-              {this.filteredConversations.length > 0 &&
+              {this.props.isLabelDataLoaded &&
+                this.filteredConversations.length > 0 &&
                 this.filteredConversations.map((c) => (
                   <ConversationItem
                     key={c.id}

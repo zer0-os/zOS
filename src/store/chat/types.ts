@@ -11,4 +11,5 @@ export interface ChatState {
   isJoiningConversation: boolean;
   isChatConnectionComplete: boolean;
   isConversationsLoaded: boolean;
+  isSecondaryConversationDataLoaded: boolean;
 }

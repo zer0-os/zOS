@@ -246,12 +246,11 @@ export class ConversationListPanel extends React.Component<Properties, State> {
             />
           </div>
 
-          {this.props.isLabelDataLoaded && this.renderTabList()}
+          {this.renderTabList()}
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>
-              {this.props.isLabelDataLoaded &&
-                this.filteredConversations.length > 0 &&
+              {this.filteredConversations.length > 0 &&
                 this.filteredConversations.map((c) => (
                   <ConversationItem
                     key={c.id}

@@ -105,14 +105,6 @@ export class FeatureFlags {
   set enableTimerLogs(value: boolean) {
     this._setBoolean('enableTimerLogs', value);
   }
-
-  get enableExplorer() {
-    return this._getBoolean('enableExplorer', false);
-  }
-
-  set enableExplorer(value: boolean) {
-    this._setBoolean('enableExplorer', value);
-  }
 }
 
 export const featureFlags = new FeatureFlags();

@@ -3,9 +3,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppRouter } from './app-router';
 import { vi } from 'vitest';
 import { renderWithProviders } from '../test-utils';
-import { featureFlags } from '../lib/feature-flags';
-
-featureFlags.enableExplorer = false;
 
 vi.mock('../messenger-main', () => ({
   MessengerMain: () => {

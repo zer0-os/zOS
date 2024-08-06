@@ -12,6 +12,7 @@ describe('ConversationListPanel', () => {
       conversations: [],
       myUserId: '',
       activeConversationId: '',
+      isLabelDataLoaded: true,
       search: () => undefined,
       onConversationClick: () => null,
       onCreateConversation: () => null,
@@ -99,6 +100,26 @@ describe('ConversationListPanel', () => {
     const tabs = wrapper.find('.messages-list__tab');
     expect(tabs.at(0)).toHaveElement(IconStar1);
     expect(tabs.at(1)).toHaveText('All');
+  });
+
+  it('sets selectedTab to Favorites if there are favorite and non-archived conversations', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.FAVORITE] }),
+      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.FAVORITE, DefaultRoomLabels.ARCHIVED] }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    expect(wrapper.state('selectedTab')).toEqual('favorites');
+  });
+
+  it('sets selectedTab to All if there are no favorite and non-archived conversations', function () {
+    const conversations = [
+      stubConversation({ name: 'convo-1' }),
+      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.ARCHIVED] }),
+    ];
+    const wrapper = subject({ conversations: conversations as any });
+
+    expect(wrapper.state('selectedTab')).toEqual('all');
   });
 
   it('renders default state when label list is empty', function () {

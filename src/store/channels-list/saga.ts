@@ -22,7 +22,7 @@ import { getZEROUsers } from './api';
 import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
 import { channelListStatus, rawConversationsList } from './selectors';
-import { setIsConversationsLoaded } from '../chat';
+import { setIsConversationsLoaded, setIsSecondaryConversationDataLoaded } from '../chat';
 import { getUserReadReceiptPreference } from '../user-profile/saga';
 import { featureFlags } from '../../lib/feature-flags';
 
@@ -105,9 +105,11 @@ export function* fetchConversations() {
 }
 
 export function* loadSecondaryConversationData(conversations) {
+  yield put(setIsSecondaryConversationDataLoaded(false));
   yield call(getRoomTags, conversations);
 
   yield put(receive(conversations));
+  yield put(setIsSecondaryConversationDataLoaded(true));
 }
 
 export function userSelector(state, userIds) {

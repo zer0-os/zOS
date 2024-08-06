@@ -60,6 +60,7 @@ export interface Properties extends PublicProperties {
   isRewardsDialogOpen: boolean;
   showRewardsTooltip: boolean;
   hasUnviewedRewards: boolean;
+  isSecondaryConversationDataLoaded: boolean;
 
   startCreateConversation: () => void;
   back: () => void;
@@ -87,7 +88,7 @@ export class Container extends React.Component<Properties, State> {
       createConversation,
       registration,
       authentication: { user },
-      chat: { activeConversationId, joinRoomErrorContent },
+      chat: { activeConversationId, joinRoomErrorContent, isSecondaryConversationDataLoaded },
       rewards,
     } = state;
 
@@ -109,6 +110,7 @@ export class Container extends React.Component<Properties, State> {
       isRewardsDialogOpen: rewards.showRewardsInPopup,
       showRewardsTooltip: rewards.showRewardsInTooltip,
       hasUnviewedRewards: rewards.showNewRewardsIndicator,
+      isSecondaryConversationDataLoaded,
     };
   }
 
@@ -259,6 +261,7 @@ export class Container extends React.Component<Properties, State> {
             activeConversationId={this.props.activeConversationId}
             onAddLabel={this.props.onAddLabel}
             onRemoveLabel={this.props.onRemoveLabel}
+            isLabelDataLoaded={this.props.isSecondaryConversationDataLoaded}
           />
         )}
         {this.props.stage === SagaStage.InitiateConversation && (

@@ -420,7 +420,6 @@ export class Message extends React.Component<Properties, State> {
 
   renderLinkPreview() {
     const { preview, hidePreview, media, parentMessageText } = this.props;
-    console.log('XXXpreview', preview);
     if (
       !preview?.title ||
       !preview?.description ||

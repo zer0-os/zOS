@@ -30,9 +30,19 @@ export async function uploadAttachment(file: File): Promise<AttachmentUploadResu
   };
 }
 
-export async function getLinkPreviews(link: string): Promise<LinkPreview> {
+export async function getLinkPreviews(link: string): Promise<{ success: boolean; body?: LinkPreview }> {
   const filter: any = { url: link };
 
-  const response = await get<any>('/linkPreviews', filter);
-  return response.body;
+  try {
+    const response = await get<any>('/linkPreviews', filter);
+    return {
+      success: true,
+      body: response.body,
+    };
+  } catch (error) {
+    console.error('Failed to fetch link preview:', error);
+    return {
+      success: false,
+    };
+  }
 }

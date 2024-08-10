@@ -185,7 +185,7 @@ describe(createOptimisticPreview, () => {
 
     const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
       // stub empty response to retain the initial, optmistic preview
-      .provide([[call(getLinkPreviews, 'http://example.com'), null]])
+      .provide([[call(getLinkPreviews, 'http://example.com'), { success: false }]])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -201,7 +201,12 @@ describe(createOptimisticPreview, () => {
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [optimisticMessage] });
 
     const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
-      .provide([stubResponse(call(getLinkPreviews, 'http://example.com'), linkPreview)])
+      .provide([
+        stubResponse(call(getLinkPreviews, 'http://example.com'), {
+          success: true,
+          body: linkPreview,
+        }),
+      ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -218,7 +223,12 @@ describe(createOptimisticPreview, () => {
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [receivedMessage] });
 
     const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
-      .provide([stubResponse(call(getLinkPreviews, 'http://example.com'), linkPreview)])
+      .provide([
+        stubResponse(call(getLinkPreviews, 'http://example.com'), {
+          success: true,
+          body: linkPreview,
+        }),
+      ])
       .withReducer(rootReducer, initialState.build())
       .run();
 

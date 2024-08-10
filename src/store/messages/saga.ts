@@ -512,7 +512,12 @@ export function* getPreview(message) {
 
   const firstUrl = getFirstUrl(message);
   if (firstUrl) {
-    return yield call(getLinkPreviews, firstUrl);
+    const previewResult = yield call(getLinkPreviews, firstUrl);
+    if (previewResult.success) {
+      return previewResult.body;
+    } else {
+      return null;
+    }
   }
 }
 

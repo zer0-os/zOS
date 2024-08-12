@@ -53,6 +53,7 @@ describe('messenger-list', () => {
       totalRewardsViewed: () => null,
       onAddLabel: () => null,
       onRemoveLabel: () => null,
+      createChannel: () => null,
 
       ...props,
     };
@@ -156,7 +157,7 @@ describe('messenger-list', () => {
     expect(wrapper.find(CreateConversationPanel).prop('isSubmitting')).toBeTrue();
   });
 
-  it('creates a group conversation when details submitted', async function () {
+  it('creates a group conversation (encrypted - Create Conversation) when details submitted', async function () {
     const createConversation = jest.fn();
     const wrapper = subject({ createConversation, stage: Stage.InitiateConversation });
     await wrapper.find(CreateConversationPanel).prop('onStartGroup')([{ value: 'id-1' } as any]);
@@ -167,6 +168,26 @@ describe('messenger-list', () => {
       .simulate('create', { name: 'group name', users: [{ value: 'id-1' }], image: { some: 'image' } });
 
     expect(createConversation).toHaveBeenCalledWith({
+      name: 'group name',
+      userIds: ['id-1'],
+      image: { some: 'image' },
+    });
+  });
+
+  it('creates a group conversation (unencrypted - Create Channel) when details submitted', async function () {
+    const createChannel = jest.fn();
+    const wrapper = subject({ createChannel, stage: Stage.InitiateConversation });
+    await wrapper.find(CreateConversationPanel).prop('onStartGroup')([{ value: 'id-1' } as any]);
+    wrapper.setProps({ stage: Stage.GroupDetails });
+
+    wrapper.find(GroupDetailsPanel).simulate('create', {
+      name: 'group name',
+      users: [{ value: 'id-1' }],
+      image: { some: 'image' },
+      isSocialChannel: true, // toggle social channel
+    });
+
+    expect(createChannel).toHaveBeenCalledWith({
       name: 'group name',
       userIds: ['id-1'],
       image: { some: 'image' },

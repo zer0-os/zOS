@@ -10,6 +10,7 @@ import {
   Stage as SagaStage,
   back,
   createConversation,
+  createChannel,
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
@@ -66,6 +67,7 @@ export interface Properties extends PublicProperties {
   back: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
+  createChannel: (payload: CreateMessengerConversation) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
@@ -118,6 +120,7 @@ export class Container extends React.Component<Properties, State> {
     return {
       onConversationClick: openConversation,
       createConversation,
+      createChannel,
       startCreateConversation,
       back,
       membersSelected,
@@ -165,7 +168,12 @@ export class Container extends React.Component<Properties, State> {
       userIds: details.users.map((u) => u.value),
       image: details.image,
     };
-    this.props.createConversation(conversation);
+
+    if (details.isSocialChannel) {
+      this.props.createChannel(conversation);
+    } else {
+      this.props.createConversation(conversation);
+    }
   };
 
   openVerifyIdDialog = () => {

@@ -89,7 +89,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
           </div>
 
           <div {...cn('checkbox-container')}>
-            Group Options
+            Group Type
             <label {...cn('checkbox-label-wrapper')}>
               <input
                 {...cn('checkbox')}
@@ -98,13 +98,10 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
                 onChange={this.onSocialChannelChange}
               />
               {this.state.isSocialChannel && <IconCheck {...cn('checkbox-icon')} size={14} isFilled />}
-              Social Channel
+              Super Group
             </label>
             <Alert {...cn('alert')} variant='info'>
-              Social Channels are designed to accommodate larger communities and are not encrypted by default.
-            </Alert>
-            <Alert {...cn('alert')} variant='info'>
-              If your room is for social or public interaction, consider using this option.
+              Super Groups are designed to accommodate larger communities and are not encrypted by default.
             </Alert>
             <Alert {...cn('alert')} variant='info'>
               Check this box if you are creating a room intended for larger groups (10+ people).

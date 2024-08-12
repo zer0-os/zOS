@@ -1,14 +1,10 @@
 import { put, call, select, race, take, fork, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import {
-  channelsReceived,
   createConversation as performCreateConversation,
   createChannel as performCreateChannel,
 } from '../channels-list/saga';
 import { Events, getAuthChannel } from '../authentication/channels';
-import { currentUserSelector } from '../authentication/selectors';
-import { fetchConversationsWithUsers } from '../../lib/chat';
-import { denormalize as denormalizeUsers } from '../users';
 import { denormalizeConversations } from '../channels-list';
 import { openConversation } from '../channels/saga';
 
@@ -31,24 +27,8 @@ export function* groupMembersSelected(action) {
 }
 
 export function* performGroupMembersSelected(userSelections: { value: string; label: string; image?: string }[]) {
-  const currentUser = yield select(currentUserSelector);
-  const userIds = [
-    currentUser.id,
-    ...userSelections.map((o) => o.value),
-  ];
-  const users = yield select((state) => denormalizeUsers(userIds, state));
-
-  const existingConversations = yield call(fetchConversationsWithUsers, users);
-
-  if (existingConversations.length === 0) {
-    yield put(setGroupUsers(userSelections));
-    return Stage.GroupDetails;
-  } else {
-    const selectedConversation = existingConversations[0];
-    yield call(channelsReceived, { payload: { channels: [selectedConversation] } });
-    yield call(openConversation, selectedConversation.id);
-    return Stage.None;
-  }
+  yield put(setGroupUsers(userSelections));
+  return Stage.GroupDetails;
 }
 
 export function* createConversation(action) {

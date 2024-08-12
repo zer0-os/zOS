@@ -456,6 +456,139 @@ describe('matrix client', () => {
     });
   });
 
+  describe('createChannel', () => {
+    const subject = async (stubs = {}, sessionStorage = { userId: 'stub-user-id' }) => {
+      const allStubs = {
+        createRoom: jest.fn().mockResolvedValue({ room_id: 'stub-id' }),
+        getRoom: jest.fn().mockReturnValue(stubRoom({})),
+        ...stubs,
+      };
+      const allProps: any = {
+        createClient: (_opts: any) => getSdkClient(allStubs),
+      };
+
+      const client = new MatrixClient(allProps, { get: () => sessionStorage, clear: () => {} } as any);
+      await client.connect(sessionStorage.userId || 'stub-user-id', 'token');
+      return client;
+    };
+
+    it('disallows guest access', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom });
+
+      await client.createChannel([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initial_state: expect.arrayContaining([
+            { type: 'm.room.guest_access', state_key: '', content: { guest_access: 'forbidden' } },
+          ]),
+        })
+      );
+    });
+
+    it('sets default channel settings (unencrypted)', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom });
+
+      await client.createChannel([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          preset: Preset.PrivateChat,
+          visibility: Visibility.Private,
+          is_direct: true,
+        })
+      );
+    });
+
+    it('sets the appropriate default power_levels in group channel', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom }, { userId: '@this.user' });
+
+      await client.createChannel(
+        [
+          { userId: 'id-1', matrixId: '@first.user' },
+          { userId: 'id-2', matrixId: '@second.user' },
+        ],
+        null,
+        null,
+        null
+      );
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          power_level_content_override: {
+            users: {
+              '@this.user': 100, // the user who created the room
+            },
+            invite: PowerLevels.Moderator,
+            kick: PowerLevels.Moderator,
+            redact: PowerLevels.Owner,
+            ban: PowerLevels.Owner,
+            users_default: PowerLevels.Viewer,
+          },
+        })
+      );
+    });
+
+    it('invites the users after createRoom', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const invite = jest.fn().mockResolvedValue({});
+      const users = [
+        { userId: 'id-1', matrixId: '@first.user' },
+        { userId: 'id-2', matrixId: '@second.user' },
+      ];
+      const client = await subject({ createRoom, invite });
+
+      await client.createChannel(users, null, null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ invite: [] }));
+      expect(invite).toHaveBeenCalledWith('new-room-id', '@first.user');
+      expect(invite).toHaveBeenCalledWith('new-room-id', '@second.user');
+    });
+
+    it('sets the conversation as a Matrix direct message', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'test-room' });
+      const users = [{ userId: 'id-1', matrixId: '@first.user' }];
+      const client = await subject({ createRoom });
+
+      await client.createChannel(users, null, null, null);
+
+      expect(setAsDM).toHaveBeenCalledWith(expect.anything(), 'test-room', '@first.user');
+    });
+
+    it('sets the channel name', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      const client = await subject({ createRoom });
+
+      await client.createChannel([{ userId: 'id', matrixId: '@somebody.else' }], 'channel-name', null, null);
+
+      expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ name: 'channel-name' }));
+    });
+
+    it('uploads the image', async () => {
+      const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
+      when(mockUploadImage).calledWith(expect.anything()).mockResolvedValue({ url: 'upload-url' });
+      const client = await subject({ createRoom });
+
+      await client.createChannel(
+        [{ userId: 'id', matrixId: '@somebody.else' }],
+        null,
+        { name: 'test file' } as File,
+        null
+      );
+
+      expect(createRoom).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initial_state: expect.arrayContaining([
+            { type: EventType.RoomAvatar, state_key: '', content: { url: 'upload-url' } },
+          ]),
+        })
+      );
+    });
+  });
+
   describe('addMembersToRoom', () => {
     it('successfully invites users to a room', async () => {
       const invite = jest.fn().mockResolvedValue({});

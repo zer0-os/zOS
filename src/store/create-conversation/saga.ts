@@ -1,6 +1,10 @@
 import { put, call, select, race, take, fork, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
-import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
+import {
+  channelsReceived,
+  createConversation as performCreateConversation,
+  createChannel as performCreateChannel,
+} from '../channels-list/saga';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/selectors';
 import { fetchConversationsWithUsers } from '../../lib/chat';
@@ -57,19 +61,33 @@ export function* createConversation(action) {
   }
 }
 
+export function* createChannel(action) {
+  const { userIds, name, image } = action.payload;
+  try {
+    yield put(setGroupCreating(true));
+    yield call(performCreateChannel, userIds, name, image);
+  } finally {
+    yield put(setGroupCreating(false));
+  }
+}
+
 export function* saga() {
   yield fork(authWatcher);
 
   while (true) {
     const { startEvent, createConversationEvent } = yield race({
       startEvent: take(SagaActionTypes.Start),
-      createConversationEvent: take(SagaActionTypes.CreateConversation),
+      createConversationEvent: take([SagaActionTypes.CreateConversation, SagaActionTypes.CreateChannel]),
     });
 
     if (startEvent) {
       yield call(startConversation);
     } else if (createConversationEvent) {
-      yield call(createConversation, createConversationEvent);
+      if (createConversationEvent.type === SagaActionTypes.CreateConversation) {
+        yield call(createConversation, createConversationEvent);
+      } else if (createConversationEvent.type === SagaActionTypes.CreateChannel) {
+        yield call(createChannel, createConversationEvent);
+      }
     }
   }
 }
@@ -116,6 +134,7 @@ function* handleInitiation() {
   const action = yield take([
     SagaActionTypes.MembersSelected,
     SagaActionTypes.CreateConversation,
+    SagaActionTypes.CreateChannel,
   ]);
 
   if (action.type === SagaActionTypes.MembersSelected) {
@@ -128,16 +147,24 @@ function* handleInitiation() {
 
   if (existingOneOnOne) {
     yield call(openConversation, existingOneOnOne.id);
-  } else {
+  } else if (action.type === SagaActionTypes.CreateConversation) {
     yield call(createConversation, action);
+  } else if (action.type === SagaActionTypes.CreateChannel) {
+    yield call(createChannel, action);
   }
 
   return Stage.None;
 }
 
 function* handleGroupDetails() {
-  const action = yield take(SagaActionTypes.CreateConversation);
-  yield spawn(createConversation, action);
+  const action = yield take([SagaActionTypes.CreateConversation, SagaActionTypes.CreateChannel]);
+
+  if (action.type === SagaActionTypes.CreateConversation) {
+    yield spawn(createConversation, action);
+  } else if (action.type === SagaActionTypes.CreateChannel) {
+    yield spawn(createChannel, action);
+  }
+
   return Stage.None;
 }
 

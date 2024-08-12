@@ -486,6 +486,51 @@ export class MatrixClient implements IChatClient {
     return await this.mapConversation(room);
   }
 
+  async createChannel(users: User[], name: string = null, image: File = null, _optimisticId: string) {
+    await this.waitForConnection();
+    const coverUrl = await this.uploadCoverImage(image);
+
+    const initial_state: any[] = [
+      { type: EventType.RoomGuestAccess, state_key: '', content: { guest_access: GuestAccess.Forbidden } },
+    ];
+
+    if (coverUrl) {
+      initial_state.push({ type: EventType.RoomAvatar, state_key: '', content: { url: coverUrl } });
+    }
+
+    const options: ICreateRoomOpts = {
+      preset: Preset.PrivateChat,
+      visibility: Visibility.Private,
+      invite: [],
+      is_direct: true,
+      initial_state,
+      power_level_content_override: {
+        users: {
+          [this.userId]: PowerLevels.Owner,
+        },
+        invite: PowerLevels.Moderator, // default is PL0
+        // all below except users_default, default to PL50
+        kick: PowerLevels.Moderator,
+        redact: PowerLevels.Owner,
+        ban: PowerLevels.Owner,
+        users_default: PowerLevels.Viewer,
+      },
+    };
+    if (name) {
+      options.name = name;
+    }
+
+    const result = await this.matrix.createRoom(options);
+    await setAsDM(this.matrix, result.room_id, users[0].matrixId);
+
+    const room = this.matrix.getRoom(result.room_id);
+    this.initializeRoomEventHandlers(room);
+    for (const user of users) {
+      await this.matrix.invite(result.room_id, user.matrixId);
+    }
+    return await this.mapConversation(room);
+  }
+
   async userJoinedInviterOnZero(channelId: string, inviterId: string, inviteeId: string) {
     this.matrix.sendEvent(channelId, CustomEventType.USER_JOINED_INVITER_ON_ZERO, {
       inviterId,

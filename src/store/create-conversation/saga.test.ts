@@ -13,14 +13,12 @@ import {
 import { setGroupCreating, Stage, setFetchingConversations, setStage } from '.';
 
 import {
-  channelsReceived,
   createConversation as performCreateConversation,
   createChannel as performCreateChannel,
 } from '../channels-list/saga';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
 import { fetchConversationsWithUsers } from '../../lib/chat';
-import { openConversation } from '../channels/saga';
 
 describe('create conversation saga', () => {
   describe('startConversation', () => {

@@ -1,12 +1,12 @@
 import React from 'react';
-import { RootState } from './store/reducer';
-import { connectContainer } from './store/redux-container';
+import { RootState } from '../../store/reducer';
+import { connectContainer } from '../../store/redux-container';
 
-import { Sidekick } from './components/sidekick/index';
-import { withContext as withAuthenticationContext } from './components/authentication/context';
-import { MessengerChat } from './components/messenger/chat';
-import { DevPanelContainer } from './components/dev-panel/container';
-import { FeatureFlag } from './components/feature-flag';
+import { Sidekick } from '../../components/sidekick/index';
+import { withContext as withAuthenticationContext } from '../../components/authentication/context';
+import { MessengerChat } from '../../components/messenger/chat';
+import { DevPanelContainer } from '../../components/dev-panel/container';
+import { FeatureFlag } from '../../components/feature-flag';
 
 export interface Properties {
   context: {

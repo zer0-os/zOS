@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './messenger-main';
-import { Provider as AuthenticationContextProvider } from './components/authentication/context';
+import { Provider as AuthenticationContextProvider } from '../../components/authentication/context';
 import { Main } from './Main';
 
 describe('MessengerMain', () => {

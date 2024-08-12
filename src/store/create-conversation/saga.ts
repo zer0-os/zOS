@@ -31,24 +31,8 @@ export function* groupMembersSelected(action) {
 }
 
 export function* performGroupMembersSelected(userSelections: { value: string; label: string; image?: string }[]) {
-  const currentUser = yield select(currentUserSelector);
-  const userIds = [
-    currentUser.id,
-    ...userSelections.map((o) => o.value),
-  ];
-  const users = yield select((state) => denormalizeUsers(userIds, state));
-
-  const existingConversations = yield call(fetchConversationsWithUsers, users);
-
-  if (existingConversations.length === 0) {
-    yield put(setGroupUsers(userSelections));
-    return Stage.GroupDetails;
-  } else {
-    const selectedConversation = existingConversations[0];
-    yield call(channelsReceived, { payload: { channels: [selectedConversation] } });
-    yield call(openConversation, selectedConversation.id);
-    return Stage.None;
-  }
+  yield put(setGroupUsers(userSelections));
+  return Stage.GroupDetails;
 }
 
 export function* createConversation(action) {

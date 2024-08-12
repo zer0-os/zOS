@@ -105,6 +105,14 @@ export class FeatureFlags {
   set enableTimerLogs(value: boolean) {
     this._setBoolean('enableTimerLogs', value);
   }
+
+  get enableChannels() {
+    return this._getBoolean('enableChannels');
+  }
+
+  set enableChannels(value: boolean) {
+    this._setBoolean('enableChannels', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

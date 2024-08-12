@@ -25,6 +25,7 @@ import { channelListStatus, rawConversationsList } from './selectors';
 import { setIsConversationsLoaded, setIsSecondaryConversationDataLoaded } from '../chat';
 import { getUserReadReceiptPreference } from '../user-profile/saga';
 import { featureFlags } from '../../lib/feature-flags';
+import { createChannel as createMatrixChannel } from '../../lib/chat';
 
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
@@ -138,6 +139,25 @@ export function* createConversation(userIds: string[], name: string = null, imag
     return conversation;
   } catch {
     yield call(handleCreateConversationError, optimisticConversation);
+  }
+}
+
+export function* createChannel(userIds: string[], name: string = null, image: File = null) {
+  const chatClient = yield call(chat.get);
+
+  let optimisticChannel = { id: '', optimisticId: '' };
+  if (yield call(chatClient.supportsOptimisticCreateConversation)) {
+    optimisticChannel = yield call(createOptimisticConversation, userIds, name, image);
+    yield call(openConversation, optimisticChannel.id);
+  }
+
+  try {
+    const users = yield select(userSelector, userIds);
+    const channel = yield call(createMatrixChannel, users, name, image, optimisticChannel.id);
+    yield call(receiveCreatedConversation, channel, optimisticChannel);
+    return channel;
+  } catch {
+    yield call(handleCreateConversationError, optimisticChannel);
   }
 }
 

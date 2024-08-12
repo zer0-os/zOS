@@ -4,6 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { expectSaga } from '../../test/saga';
 import {
   createConversation,
+  createChannel,
   groupMembersSelected,
   performGroupMembersSelected,
   reset,
@@ -11,7 +12,11 @@ import {
 } from './saga';
 import { setGroupCreating, Stage, setFetchingConversations, setStage } from '.';
 
-import { channelsReceived, createConversation as performCreateConversation } from '../channels-list/saga';
+import {
+  channelsReceived,
+  createConversation as performCreateConversation,
+  createChannel as performCreateChannel,
+} from '../channels-list/saga';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
 import { fetchConversationsWithUsers } from '../../lib/chat';
@@ -171,6 +176,24 @@ describe('create conversation saga', () => {
         .put(setGroupCreating(true))
         .next()
         .call(performCreateConversation, ['test'], 'test name', {})
+        .next()
+        .put(setGroupCreating(false));
+    });
+  });
+
+  describe('createChannel', () => {
+    it('manages the creating status while performing the actual create', async () => {
+      const testPayload = {
+        userIds: ['test'],
+        name: 'test name',
+        image: {},
+      };
+
+      return testSaga(createChannel, { payload: testPayload })
+        .next()
+        .put(setGroupCreating(true))
+        .next()
+        .call(performCreateChannel, ['test'], 'test name', {})
         .next()
         .put(setGroupCreating(false));
     });

@@ -330,3 +330,7 @@ export async function removeRoomFromLabel(roomId: string, label: string) {
 export async function getRoomTags(conversations: Partial<Channel>[]) {
   return await chat.get().matrix.getRoomTags(conversations);
 }
+
+export async function createChannel(users: User[], name: string, image: File, optimisticId: string) {
+  return chat.get().matrix.createChannel(users, name, image, optimisticId);
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { Container as Main, Properties } from './Main';
-import { MessengerChat } from './components/messenger/chat';
+import { MessengerChat } from '../../components/messenger/chat';
 
 describe(Main, () => {
   const subject = (props: Partial<Properties> = {}) => {

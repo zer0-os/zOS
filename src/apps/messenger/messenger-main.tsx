@@ -1,10 +1,10 @@
 import React from 'react';
-import { RootState } from './store/reducer';
-import { connectContainer } from './store/redux-container';
+import { RootState } from '../../store/reducer';
+import { connectContainer } from '../../store/redux-container';
 
 import { Main } from './Main';
-import { Provider as AuthenticationContextProvider } from './components/authentication/context';
-import { setActiveConversationId } from './store/chat';
+import { Provider as AuthenticationContextProvider } from '../../components/authentication/context';
+import { setActiveConversationId } from '../../store/chat';
 
 export interface Properties {
   isAuthenticated: boolean;

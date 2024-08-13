@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import { GroupTypeMenu, Properties } from '.';
-import { SelectInput, Alert, IconButton } from '@zero-tech/zui/components';
+import { SelectInput, IconButton } from '@zero-tech/zui/components';
 
 const featureFlags = { enableChannels: true };
 jest.mock('../../../../../lib/feature-flags', () => ({

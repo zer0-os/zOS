@@ -4,7 +4,7 @@ import { Option } from '../../lib/types';
 import { PanelHeader } from '../panel-header';
 import { ImageUpload } from '../../../image-upload';
 import { SelectedUserTag } from '../selected-user-tag';
-import { Alert, Button, IconButton, Input } from '@zero-tech/zui/components';
+import { Button, IconButton, Input } from '@zero-tech/zui/components';
 import { IconImagePlus, IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeMenu } from './group-type-menu';
 

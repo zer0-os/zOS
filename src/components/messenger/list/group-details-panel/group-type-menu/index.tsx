@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { IconInfoCircle, IconLock1, IconMonitor2, IconUsers1 } from '@zero-tech/zui/icons';
 import { featureFlags } from '../../../../../lib/feature-flags';
-import { Alert, IconButton, SelectInput } from '@zero-tech/zui/components';
+import { IconButton, SelectInput } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../../../../lib/bem';
 import './styles.scss';

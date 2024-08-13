@@ -1,0 +1,33 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../glass';
+@import '../../../../../animation';
+
+.group-type-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__select-input-container {
+    > *:last-child {
+      > div {
+        min-width: 236px;
+        gap: 8px;
+      }
+    }
+  }
+
+  &__alert-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  &__alert {
+    @include glass-text-secondary-color;
+
+    font-size: 12px;
+    padding: 2px;
+    animation: fadeIn 0.5s ease forwards;
+  }
+}

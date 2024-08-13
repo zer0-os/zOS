@@ -3,6 +3,7 @@ import * as React from 'react';
 import { IconInfoCircle, IconLock1, IconMonitor2, IconUsers1 } from '@zero-tech/zui/icons';
 import { featureFlags } from '../../../../../lib/feature-flags';
 import { IconButton, SelectInput } from '@zero-tech/zui/components';
+import { GroupType } from '..';
 
 import { bemClassName } from '../../../../../lib/bem';
 import './styles.scss';
@@ -49,20 +50,20 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
     menuItems.push({
       id: 'encrypted',
       label: this.renderMenuItem(<IconLock1 size={20} />, 'Encrypted Group'),
-      onSelect: () => this.selectType('Encrypted Group'),
+      onSelect: () => this.selectType(GroupType.ENCRYPTED),
     });
 
     menuItems.push({
       id: 'super-group',
       label: this.renderMenuItem(<IconUsers1 size={20} />, 'Super Group'),
-      onSelect: () => this.selectType('Super Group'),
+      onSelect: () => this.selectType(GroupType.SUPER),
     });
 
     featureFlags.enableChannels &&
       menuItems.push({
         id: 'social-channel',
         label: this.renderMenuItem(<IconMonitor2 size={20} />, 'Social Channel'),
-        onSelect: () => this.selectType('Social Channel'),
+        onSelect: () => this.selectType(GroupType.SOCIAL),
       });
 
     return menuItems;

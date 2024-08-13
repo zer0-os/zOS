@@ -1,6 +1,7 @@
 import { shallow } from 'enzyme';
 import { GroupTypeMenu, Properties } from '.';
 import { SelectInput, IconButton } from '@zero-tech/zui/components';
+import { GroupType } from '..';
 
 const featureFlags = { enableChannels: true };
 jest.mock('../../../../../lib/feature-flags', () => ({
@@ -24,7 +25,7 @@ describe(GroupTypeMenu, () => {
 
     selectInputItem(wrapper, SelectInput, 'encrypted');
 
-    expect(onSelect).toHaveBeenCalledWith('Encrypted Group');
+    expect(onSelect).toHaveBeenCalledWith(GroupType.ENCRYPTED);
     expect(onSelect).toHaveBeenCalledOnce();
   });
 
@@ -34,7 +35,7 @@ describe(GroupTypeMenu, () => {
 
     selectInputItem(wrapper, SelectInput, 'super-group');
 
-    expect(onSelect).toHaveBeenCalledWith('Super Group');
+    expect(onSelect).toHaveBeenCalledWith(GroupType.SUPER);
     expect(onSelect).toHaveBeenCalledOnce();
   });
 
@@ -44,7 +45,7 @@ describe(GroupTypeMenu, () => {
 
     selectInputItem(wrapper, SelectInput, 'social-channel');
 
-    expect(onSelect).toHaveBeenCalledWith('Social Channel');
+    expect(onSelect).toHaveBeenCalledWith(GroupType.SOCIAL);
     expect(onSelect).toHaveBeenCalledOnce();
   });
 

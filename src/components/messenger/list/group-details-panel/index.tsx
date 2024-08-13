@@ -27,6 +27,12 @@ interface State {
   selectedGroupType: string;
 }
 
+export enum GroupType {
+  ENCRYPTED = 'Encrypted Group',
+  SUPER = 'Super Group',
+  SOCIAL = 'Social Group',
+}
+
 export class GroupDetailsPanel extends React.Component<Properties, State> {
   state = { name: '', image: null, selectedGroupType: '' };
 
@@ -35,7 +41,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
       name: this.state.name,
       users: this.props.users,
       image: this.state.image,
-      type: this.state.selectedGroupType !== 'encrypted' ? 'encrypted' : 'unencrypted',
+      type: this.state.selectedGroupType !== GroupType.ENCRYPTED ? 'unencrypted' : 'encrypted',
     });
   };
 

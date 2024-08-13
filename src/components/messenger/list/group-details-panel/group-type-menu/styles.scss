@@ -16,18 +16,21 @@
     }
   }
 
-  &__alert-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 8px;
-  }
-
-  &__alert {
+  &__select-input-label-container {
     @include glass-text-secondary-color;
 
-    font-size: 12px;
-    padding: 2px;
-    animation: fadeIn 0.5s ease forwards;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 10px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__icon-button {
+    @include glass-text-secondary-color;
   }
 }

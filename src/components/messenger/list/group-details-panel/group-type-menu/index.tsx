@@ -1,17 +1,17 @@
 import * as React from 'react';
 
-import { IconLock1, IconMonitor2, IconUsers1 } from '@zero-tech/zui/icons';
+import { IconInfoCircle, IconLock1, IconMonitor2, IconUsers1 } from '@zero-tech/zui/icons';
 import { featureFlags } from '../../../../../lib/feature-flags';
-import { Alert, SelectInput } from '@zero-tech/zui/components';
+import { Alert, IconButton, SelectInput } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../../../../lib/bem';
 import './styles.scss';
-import { ALERT_MESSAGES } from './types';
 
 const cn = bemClassName('group-type-menu');
 
 export interface Properties {
   onSelect: (groupType: string) => void;
+  onOpen: () => void;
 }
 
 interface State {
@@ -29,6 +29,10 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
   selectType = (type) => {
     this.setState({ selectedGroupType: type });
     this.props.onSelect(type);
+  };
+
+  open = () => {
+    this.props.onOpen();
   };
 
   renderMenuItem(icon, label) {
@@ -64,26 +68,6 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
     return menuItems;
   }
 
-  renderAlerts() {
-    const { selectedGroupType } = this.state;
-
-    if (!selectedGroupType) {
-      return (
-        <Alert {...cn('alert')} variant='info'>
-          Choose the Group Type that best supports your community's goals.
-        </Alert>
-      );
-    }
-
-    const messages = ALERT_MESSAGES[selectedGroupType] || [];
-
-    return messages.map((message, index) => (
-      <Alert key={`${selectedGroupType}-${index}`} {...cn('alert')} variant='info'>
-        {message}
-      </Alert>
-    ));
-  }
-
   render() {
     const { selectedGroupType } = this.state;
     const items = this.menuItems;
@@ -95,10 +79,18 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
     return (
       <div {...cn('')}>
         <div {...cn('select-input-container')}>
-          <SelectInput items={items} label='Group Type' placeholder='' value={selectedGroupType} itemSize='compact' />
+          <SelectInput
+            items={items}
+            placeholder='Group Type (Required)'
+            label=''
+            value={selectedGroupType}
+            itemSize='compact'
+          />
         </div>
-
-        <div {...cn('alert-container')}>{this.renderAlerts()}</div>
+        <div {...cn('select-input-label-container')} onClick={this.open}>
+          Click here for more information
+          <IconButton {...cn('icon-button')} Icon={IconInfoCircle} size={24} isFilled onClick={this.open} />
+        </div>
       </div>
     );
   }

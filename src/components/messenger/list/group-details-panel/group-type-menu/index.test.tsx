@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import { GroupTypeMenu, Properties } from '.';
-import { SelectInput, Alert } from '@zero-tech/zui/components';
+import { SelectInput, Alert, IconButton } from '@zero-tech/zui/components';
 
 const featureFlags = { enableChannels: true };
 jest.mock('../../../../../lib/feature-flags', () => ({
@@ -11,6 +11,7 @@ describe(GroupTypeMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       onSelect: jest.fn(),
+      onOpen: jest.fn(),
       ...props,
     };
 
@@ -47,17 +48,13 @@ describe(GroupTypeMenu, () => {
     expect(onSelect).toHaveBeenCalledOnce();
   });
 
-  it('renders alerts when a group type is selected', () => {
-    const wrapper = subject();
+  it('publishes onOpen event when icon button is clicked', () => {
+    const onOpen = jest.fn();
+    const wrapper = subject({ onOpen });
 
-    selectInputItem(wrapper, SelectInput, 'encrypted');
-    expect(wrapper.find(Alert)).toExist();
+    wrapper.find(IconButton).simulate('click');
 
-    selectInputItem(wrapper, SelectInput, 'super-group');
-    expect(wrapper.find(Alert)).toExist();
-
-    selectInputItem(wrapper, SelectInput, 'social-channel');
-    expect(wrapper.find(Alert)).toExist();
+    expect(onOpen).toHaveBeenCalledOnce();
   });
 });
 

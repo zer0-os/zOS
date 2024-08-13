@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { IconLock1, IconMonitor2, IconUsers1 } from '@zero-tech/zui/icons';
+import { featureFlags } from '../../../../../lib/feature-flags';
 import { Alert, SelectInput } from '@zero-tech/zui/components';
 
 import { bemClassName } from '../../../../../lib/bem';
@@ -53,11 +54,14 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
       onSelect: () => this.selectType('Super Group'),
     });
 
-    menuItems.push({
-      id: 'social-channel',
-      label: this.renderMenuItem(<IconMonitor2 size={20} />, 'Social Channel'),
-      onSelect: () => this.selectType('Social Channel'),
-    });
+    {
+      featureFlags.enableChannels &&
+        menuItems.push({
+          id: 'social-channel',
+          label: this.renderMenuItem(<IconMonitor2 size={20} />, 'Social Channel'),
+          onSelect: () => this.selectType('Social Channel'),
+        });
+    }
 
     return menuItems;
   }

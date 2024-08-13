@@ -2,6 +2,11 @@ import { shallow } from 'enzyme';
 import { GroupTypeMenu, Properties } from '.';
 import { SelectInput, Alert } from '@zero-tech/zui/components';
 
+const featureFlags = { enableChannels: true };
+jest.mock('../../../../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 describe(GroupTypeMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {

@@ -4,7 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { expectSaga } from '../../test/saga';
 import {
   createConversation,
-  createChannel,
+  createUnencryptedConversation,
   groupMembersSelected,
   performGroupMembersSelected,
   reset,
@@ -14,7 +14,7 @@ import { setGroupCreating, Stage, setFetchingConversations, setStage } from '.';
 
 import {
   createConversation as performCreateConversation,
-  createChannel as performCreateChannel,
+  createUnencryptedConversation as performCreateUnencryptedConversation,
 } from '../channels-list/saga';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
@@ -136,7 +136,7 @@ describe('create conversation saga', () => {
     });
   });
 
-  describe('createChannel', () => {
+  describe('createUnencryptedConversation', () => {
     it('manages the creating status while performing the actual create', async () => {
       const testPayload = {
         userIds: ['test'],
@@ -144,11 +144,11 @@ describe('create conversation saga', () => {
         image: {},
       };
 
-      return testSaga(createChannel, { payload: testPayload })
+      return testSaga(createUnencryptedConversation, { payload: testPayload })
         .next()
         .put(setGroupCreating(true))
         .next()
-        .call(performCreateChannel, ['test'], 'test name', {})
+        .call(performCreateUnencryptedConversation, ['test'], 'test name', {})
         .next()
         .put(setGroupCreating(false));
     });

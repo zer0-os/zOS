@@ -486,7 +486,7 @@ export class MatrixClient implements IChatClient {
     return await this.mapConversation(room);
   }
 
-  async createChannel(users: User[], name: string = null, image: File = null, _optimisticId: string) {
+  async createUnencryptedConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
     await this.waitForConnection();
     const coverUrl = await this.uploadCoverImage(image);
 
@@ -521,12 +521,12 @@ export class MatrixClient implements IChatClient {
     }
 
     const result = await this.matrix.createRoom(options);
-    await setAsDM(this.matrix, result.room_id, users[0].matrixId);
+    await setAsDM(this.matrix, result?.room_id, users[0].matrixId);
 
-    const room = this.matrix.getRoom(result.room_id);
+    const room = this.matrix.getRoom(result?.room_id);
     this.initializeRoomEventHandlers(room);
     for (const user of users) {
-      await this.matrix.invite(result.room_id, user.matrixId);
+      await this.matrix.invite(result?.room_id, user.matrixId);
     }
     return await this.mapConversation(room);
   }

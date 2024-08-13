@@ -2,7 +2,7 @@ import { put, call, select, race, take, fork, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setFetchingConversations, setGroupCreating, setGroupUsers, setStage } from '.';
 import {
   createConversation as performCreateConversation,
-  createChannel as performCreateChannel,
+  createUnencryptedConversation as performCreateUnencryptedConversation,
 } from '../channels-list/saga';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalizeConversations } from '../channels-list';
@@ -41,11 +41,11 @@ export function* createConversation(action) {
   }
 }
 
-export function* createChannel(action) {
+export function* createUnencryptedConversation(action) {
   const { userIds, name, image } = action.payload;
   try {
     yield put(setGroupCreating(true));
-    yield call(performCreateChannel, userIds, name, image);
+    yield call(performCreateUnencryptedConversation, userIds, name, image);
   } finally {
     yield put(setGroupCreating(false));
   }
@@ -57,7 +57,10 @@ export function* saga() {
   while (true) {
     const { startEvent, createConversationEvent } = yield race({
       startEvent: take(SagaActionTypes.Start),
-      createConversationEvent: take([SagaActionTypes.CreateConversation, SagaActionTypes.CreateChannel]),
+      createConversationEvent: take([
+        SagaActionTypes.CreateConversation,
+        SagaActionTypes.CreateUnencryptedConversation,
+      ]),
     });
 
     if (startEvent) {
@@ -65,8 +68,8 @@ export function* saga() {
     } else if (createConversationEvent) {
       if (createConversationEvent.type === SagaActionTypes.CreateConversation) {
         yield call(createConversation, createConversationEvent);
-      } else if (createConversationEvent.type === SagaActionTypes.CreateChannel) {
-        yield call(createChannel, createConversationEvent);
+      } else if (createConversationEvent.type === SagaActionTypes.CreateUnencryptedConversation) {
+        yield call(createUnencryptedConversation, createConversationEvent);
       }
     }
   }
@@ -114,7 +117,7 @@ function* handleInitiation() {
   const action = yield take([
     SagaActionTypes.MembersSelected,
     SagaActionTypes.CreateConversation,
-    SagaActionTypes.CreateChannel,
+    SagaActionTypes.CreateUnencryptedConversation,
   ]);
 
   if (action.type === SagaActionTypes.MembersSelected) {
@@ -129,20 +132,20 @@ function* handleInitiation() {
     yield call(openConversation, existingOneOnOne.id);
   } else if (action.type === SagaActionTypes.CreateConversation) {
     yield call(createConversation, action);
-  } else if (action.type === SagaActionTypes.CreateChannel) {
-    yield call(createChannel, action);
+  } else if (action.type === SagaActionTypes.CreateUnencryptedConversation) {
+    yield call(createUnencryptedConversation, action);
   }
 
   return Stage.None;
 }
 
 function* handleGroupDetails() {
-  const action = yield take([SagaActionTypes.CreateConversation, SagaActionTypes.CreateChannel]);
+  const action = yield take([SagaActionTypes.CreateConversation, SagaActionTypes.CreateUnencryptedConversation]);
 
   if (action.type === SagaActionTypes.CreateConversation) {
     yield spawn(createConversation, action);
-  } else if (action.type === SagaActionTypes.CreateChannel) {
-    yield spawn(createChannel, action);
+  } else if (action.type === SagaActionTypes.CreateUnencryptedConversation) {
+    yield spawn(createUnencryptedConversation, action);
   }
 
   return Stage.None;

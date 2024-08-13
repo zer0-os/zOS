@@ -10,7 +10,7 @@ import {
   Stage as SagaStage,
   back,
   createConversation,
-  createChannel,
+  createUnencryptedConversation,
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
@@ -37,6 +37,7 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { openUserProfile } from '../../../store/user-profile';
 import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
+import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -67,7 +68,7 @@ export interface Properties extends PublicProperties {
   back: () => void;
   membersSelected: (payload: MembersSelectedPayload) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
-  createChannel: (payload: CreateMessengerConversation) => void;
+  createUnencryptedConversation: (payload: CreateMessengerConversation) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
   logout: () => void;
   receiveSearchResults: (data) => void;
@@ -82,6 +83,7 @@ export interface Properties extends PublicProperties {
 interface State {
   isVerifyIdDialogOpen: boolean;
   isInviteDialogOpen: boolean;
+  isGroupTypeDialogOpen: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -120,7 +122,7 @@ export class Container extends React.Component<Properties, State> {
     return {
       onConversationClick: openConversation,
       createConversation,
-      createChannel,
+      createUnencryptedConversation,
       startCreateConversation,
       back,
       membersSelected,
@@ -138,6 +140,7 @@ export class Container extends React.Component<Properties, State> {
   state = {
     isVerifyIdDialogOpen: false,
     isInviteDialogOpen: false,
+    isGroupTypeDialogOpen: false,
   };
 
   usersInMyNetworks = async (search: string) => {
@@ -169,8 +172,8 @@ export class Container extends React.Component<Properties, State> {
       image: details.image,
     };
 
-    if (details.isSocialChannel) {
-      this.props.createChannel(conversation);
+    if (details.type === 'unencrypted') {
+      this.props.createUnencryptedConversation(conversation);
     } else {
       this.props.createConversation(conversation);
     }
@@ -190,6 +193,14 @@ export class Container extends React.Component<Properties, State> {
 
   closeInviteDialog = () => {
     this.setState({ isInviteDialogOpen: false });
+  };
+
+  openGroupTypeDialog = () => {
+    this.setState({ isGroupTypeDialogOpen: true });
+  };
+
+  closeGroupTypeDialog = () => {
+    this.setState({ isGroupTypeDialogOpen: false });
   };
 
   closeErrorDialog = () => {
@@ -230,6 +241,14 @@ export class Container extends React.Component<Properties, State> {
     return (
       <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
         <InviteDialogContainer onClose={this.closeInviteDialog} />
+      </Modal>
+    );
+  };
+
+  renderGroupTypeDialog = (): JSX.Element => {
+    return (
+      <Modal open={this.state.isGroupTypeDialogOpen} onOpenChange={this.closeGroupTypeDialog}>
+        <GroupTypeDialog onClose={this.closeGroupTypeDialog} />
       </Modal>
     );
   };
@@ -284,7 +303,12 @@ export class Container extends React.Component<Properties, State> {
           />
         )}
         {this.props.stage === SagaStage.GroupDetails && (
-          <GroupDetailsPanel users={this.props.groupUsers} onCreate={this.createGroup} onBack={this.props.back} />
+          <GroupDetailsPanel
+            users={this.props.groupUsers}
+            onCreate={this.createGroup}
+            onOpenGroupTypeDialog={this.openGroupTypeDialog}
+            onBack={this.props.back}
+          />
         )}
       </>
     );
@@ -314,6 +338,7 @@ export class Container extends React.Component<Properties, State> {
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
+          {this.state.isGroupTypeDialogOpen && this.renderGroupTypeDialog()}
         </div>
         {this.props.stage === SagaStage.None && this.renderFooterButton()}
         {this.renderInviteDialog()}

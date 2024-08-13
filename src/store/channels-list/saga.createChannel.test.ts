@@ -1,7 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 
 import {
-  createChannel,
+  createUnencryptedConversation,
   createOptimisticConversation,
   receiveCreatedConversation,
   handleCreateConversationError,
@@ -9,11 +9,11 @@ import {
 } from './saga';
 
 import { chat } from '../../lib/chat';
-import { createChannel as createMatrixChannel } from '../../lib/chat';
+import { createUnencryptedConversation as createUnencryptedMatrixConversation } from '../../lib/chat';
 import { openConversation } from '../channels/saga';
 
-describe(createChannel, () => {
-  it('creates the channel - full success flow', async () => {
+describe(createUnencryptedConversation, () => {
+  it('creates the unencrypted conversation - full success flow', async () => {
     const otherUserIds = ['user-1'];
     const name = 'channel name';
     const image = { name: 'file' } as File;
@@ -23,10 +23,10 @@ describe(createChannel, () => {
 
     const chatClient = {
       supportsOptimisticCreateConversation: () => undefined,
-      createChannel: () => undefined,
+      createUnencryptedConversation: () => undefined,
     };
 
-    testSaga(createChannel, otherUserIds, name, image)
+    testSaga(createUnencryptedConversation, otherUserIds, name, image)
       .next()
       .call(chat.get)
       .next(chatClient)
@@ -38,7 +38,7 @@ describe(createChannel, () => {
       .next()
       .select(userSelector, otherUserIds)
       .next([{ userId: 'user-1' }])
-      .call(createMatrixChannel, [{ userId: 'user-1' }], name, image, 'optimistic-id')
+      .call(createUnencryptedMatrixConversation, [{ userId: 'user-1' }], name, image, 'optimistic-id')
       .next(stubReceivedChannel)
       .call(receiveCreatedConversation, stubReceivedChannel, stubOptimisticChannel)
       .next()
@@ -56,7 +56,7 @@ describe(createChannel, () => {
       supportsOptimisticCreateConversation: () => undefined,
     };
 
-    testSaga(createChannel, otherUserIds, name, image)
+    testSaga(createUnencryptedConversation, otherUserIds, name, image)
       .next()
       .call(chat.get)
       .next(chatClient)

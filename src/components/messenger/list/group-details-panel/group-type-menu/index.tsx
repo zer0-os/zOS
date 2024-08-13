@@ -54,14 +54,12 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
       onSelect: () => this.selectType('Super Group'),
     });
 
-    {
-      featureFlags.enableChannels &&
-        menuItems.push({
-          id: 'social-channel',
-          label: this.renderMenuItem(<IconMonitor2 size={20} />, 'Social Channel'),
-          onSelect: () => this.selectType('Social Channel'),
-        });
-    }
+    featureFlags.enableChannels &&
+      menuItems.push({
+        id: 'social-channel',
+        label: this.renderMenuItem(<IconMonitor2 size={20} />, 'Social Channel'),
+        onSelect: () => this.selectType('Social Channel'),
+      });
 
     return menuItems;
   }

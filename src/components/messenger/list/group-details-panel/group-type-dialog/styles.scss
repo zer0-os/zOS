@@ -1,0 +1,67 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../glass';
+
+.group-type-dialog {
+  @include glass-text-primary-color;
+
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  position: relative;
+
+  gap: 16px;
+  width: 528px;
+  margin: 16px;
+
+  &__close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__heading-container {
+    width: 100%;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(163, 162, 163, 0.1);
+  }
+
+  &__header {
+    align-self: flex-start;
+
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 29px;
+  }
+
+  &__body {
+    font-size: 14px;
+  }
+
+  &__section-header {
+    @include glass-text-primary-color;
+
+    padding: 0;
+    margin: 16px 0 2px 0;
+    line-height: 24px;
+  }
+
+  &__section-content {
+    @include glass-text-secondary-color;
+    padding: 0;
+    margin: 2px 0;
+    line-height: 17px;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    width: 100%;
+  }
+}

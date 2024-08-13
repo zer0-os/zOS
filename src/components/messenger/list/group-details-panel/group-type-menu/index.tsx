@@ -93,13 +93,7 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
     return (
       <div {...cn('')}>
         <div {...cn('select-input-container')}>
-          <SelectInput
-            items={items}
-            label='Group Type'
-            placeholder=''
-            value={this.state.selectedGroupType}
-            itemSize='compact'
-          />
+          <SelectInput items={items} label='Group Type' placeholder='' value={selectedGroupType} itemSize='compact' />
         </div>
 
         <div {...cn('alert-container')}>{this.renderAlerts()}</div>

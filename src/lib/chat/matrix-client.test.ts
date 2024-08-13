@@ -456,7 +456,7 @@ describe('matrix client', () => {
     });
   });
 
-  describe('createChannel', () => {
+  describe('createUnencryptedConversation', () => {
     const subject = async (stubs = {}, sessionStorage = { userId: 'stub-user-id' }) => {
       const allStubs = {
         createRoom: jest.fn().mockResolvedValue({ room_id: 'stub-id' }),
@@ -476,7 +476,7 @@ describe('matrix client', () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
       const client = await subject({ createRoom });
 
-      await client.createChannel([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+      await client.createUnencryptedConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
 
       expect(createRoom).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -491,7 +491,7 @@ describe('matrix client', () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
       const client = await subject({ createRoom });
 
-      await client.createChannel([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
+      await client.createUnencryptedConversation([{ userId: 'id', matrixId: '@somebody.else' }], null, null, null);
 
       expect(createRoom).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -506,7 +506,7 @@ describe('matrix client', () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
       const client = await subject({ createRoom }, { userId: '@this.user' });
 
-      await client.createChannel(
+      await client.createUnencryptedConversation(
         [
           { userId: 'id-1', matrixId: '@first.user' },
           { userId: 'id-2', matrixId: '@second.user' },
@@ -541,7 +541,7 @@ describe('matrix client', () => {
       ];
       const client = await subject({ createRoom, invite });
 
-      await client.createChannel(users, null, null, null);
+      await client.createUnencryptedConversation(users, null, null, null);
 
       expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ invite: [] }));
       expect(invite).toHaveBeenCalledWith('new-room-id', '@first.user');
@@ -553,7 +553,7 @@ describe('matrix client', () => {
       const users = [{ userId: 'id-1', matrixId: '@first.user' }];
       const client = await subject({ createRoom });
 
-      await client.createChannel(users, null, null, null);
+      await client.createUnencryptedConversation(users, null, null, null);
 
       expect(setAsDM).toHaveBeenCalledWith(expect.anything(), 'test-room', '@first.user');
     });
@@ -562,7 +562,12 @@ describe('matrix client', () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
       const client = await subject({ createRoom });
 
-      await client.createChannel([{ userId: 'id', matrixId: '@somebody.else' }], 'channel-name', null, null);
+      await client.createUnencryptedConversation(
+        [{ userId: 'id', matrixId: '@somebody.else' }],
+        'channel-name',
+        null,
+        null
+      );
 
       expect(createRoom).toHaveBeenCalledWith(expect.objectContaining({ name: 'channel-name' }));
     });
@@ -572,7 +577,7 @@ describe('matrix client', () => {
       when(mockUploadImage).calledWith(expect.anything()).mockResolvedValue({ url: 'upload-url' });
       const client = await subject({ createRoom });
 
-      await client.createChannel(
+      await client.createUnencryptedConversation(
         [{ userId: 'id', matrixId: '@somebody.else' }],
         null,
         { name: 'test file' } as File,

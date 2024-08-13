@@ -331,6 +331,6 @@ export async function getRoomTags(conversations: Partial<Channel>[]) {
   return await chat.get().matrix.getRoomTags(conversations);
 }
 
-export async function createChannel(users: User[], name: string, image: File, optimisticId: string) {
-  return chat.get().matrix.createChannel(users, name, image, optimisticId);
+export async function createUnencryptedConversation(users: User[], name: string, image: File, optimisticId: string) {
+  return chat.get().matrix.createUnencryptedConversation(users, name, image, optimisticId);
 }

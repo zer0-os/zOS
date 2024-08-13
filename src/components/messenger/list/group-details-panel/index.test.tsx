@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 
 import { GroupDetailsPanel, Properties } from '.';
 import { SelectedUserTag } from '../selected-user-tag';
+import { GroupTypeMenu } from './group-type-menu';
 
 describe('GroupDetailsPanel', () => {
   const subject = (props: Partial<Properties>) => {
@@ -11,6 +12,7 @@ describe('GroupDetailsPanel', () => {
       users: [],
       onBack: () => null,
       onCreate: () => null,
+      onOpenGroupTypeDialog: () => null,
       ...props,
     };
 
@@ -73,10 +75,11 @@ describe('GroupDetailsPanel', () => {
     expect(wrapper.find('Button')).toHaveProp('isDisabled', true);
   });
 
-  it('enables create button when name is present', function () {
+  it('enables create button when name is present and group type is selected', function () {
     const wrapper = subject({});
 
     wrapper.find('Input').simulate('change', 'group name');
+    wrapper.find(GroupTypeMenu).props().onSelect('encrypted');
 
     expect(wrapper.find('Button')).toHaveProp('isDisabled', false);
   });

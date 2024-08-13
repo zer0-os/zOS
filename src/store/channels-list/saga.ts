@@ -25,7 +25,7 @@ import { channelListStatus, rawConversationsList } from './selectors';
 import { setIsConversationsLoaded, setIsSecondaryConversationDataLoaded } from '../chat';
 import { getUserReadReceiptPreference } from '../user-profile/saga';
 import { featureFlags } from '../../lib/feature-flags';
-import { createChannel as createMatrixChannel } from '../../lib/chat';
+import { createUnencryptedConversation as createUnencryptedMatrixConversation } from '../../lib/chat';
 
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
@@ -142,7 +142,7 @@ export function* createConversation(userIds: string[], name: string = null, imag
   }
 }
 
-export function* createChannel(userIds: string[], name: string = null, image: File = null) {
+export function* createUnencryptedConversation(userIds: string[], name: string = null, image: File = null) {
   const chatClient = yield call(chat.get);
 
   let optimisticChannel = { id: '', optimisticId: '' };
@@ -153,7 +153,7 @@ export function* createChannel(userIds: string[], name: string = null, image: Fi
 
   try {
     const users = yield select(userSelector, userIds);
-    const channel = yield call(createMatrixChannel, users, name, image, optimisticChannel.id);
+    const channel = yield call(createUnencryptedMatrixConversation, users, name, image, optimisticChannel.id);
     yield call(receiveCreatedConversation, channel, optimisticChannel);
     return channel;
   } catch {

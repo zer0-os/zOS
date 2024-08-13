@@ -1,7 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../../variables';
 @import '../../../../layout';
-@import '../../../../glass';
 
 $side-padding: 16px;
 
@@ -22,7 +21,8 @@ $side-padding: 16px;
     align-items: center;
     gap: 40px;
     margin-top: 24px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     max-height: calc(100vh - 180px);
   }
 
@@ -34,7 +34,6 @@ $side-padding: 16px;
     display: flex;
     flex-direction: column;
     width: 100%;
-    overflow-y: auto;
   }
 
   &__selected-header {
@@ -54,72 +53,6 @@ $side-padding: 16px;
   &__selected-tags {
     flex-grow: 1;
     overflow-y: auto;
-  }
-
-  &__checkbox-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-    font-size: 14px;
-
-    &:hover .group-details-panel__alert {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  &__checkbox-label-wrapper {
-    @include glass-input-inset-default;
-
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 9px 8px 17px;
-    position: relative;
-
-    border: 1px solid transparent;
-    border-radius: 8px;
-    line-height: 24px;
-    font-size: 14px;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-
-  &__checkbox {
-    position: relative;
-    background-color: rgba(163, 162, 163, 0.1);
-    border: 1px solid rgba(163, 162, 163, 0.1);
-    border-radius: 4px;
-    width: 16px;
-    height: 16px;
-
-    appearance: none;
-
-    &:checked {
-      border: 1px solid theme.$color-secondary-11;
-    }
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-
-  &__checkbox-icon {
-    position: absolute;
-    top: 10px;
-    left: 22px;
-    color: theme.$color-secondary-11;
-  }
-
-  &__alert {
-    @include glass-text-secondary-color;
-    font-size: 12px;
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
   }
 
   &__footer {

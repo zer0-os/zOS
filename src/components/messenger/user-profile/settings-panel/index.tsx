@@ -120,6 +120,7 @@ export class SettingsPanel extends React.Component<Properties> {
                   placeholder='Select Background'
                   value={selectedBackgroundLabel}
                   itemSize='compact'
+                  menuClassName='settings-panel__dropdown'
                 />
               </div>
             </div>

@@ -86,6 +86,7 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
             label=''
             value={selectedGroupType}
             itemSize='compact'
+            menuClassName='group-type-menu__dropdown'
           />
         </div>
         <div {...cn('select-input-label-container')} onClick={this.open}>

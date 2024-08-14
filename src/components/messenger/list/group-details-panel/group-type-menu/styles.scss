@@ -33,4 +33,8 @@
   &__icon-button {
     @include glass-text-secondary-color;
   }
+
+  &__dropdown {
+    width: 222px;
+  }
 }

@@ -17,7 +17,7 @@ export interface Properties {
   users: Option[];
 
   onBack: () => void;
-  onCreate: (data: { name: string; users: Option[]; image: File; type: string }) => void;
+  onCreate: (data: { name: string; users: Option[]; image: File; groupType: string }) => void;
   onOpenGroupTypeDialog: () => void;
 }
 
@@ -28,9 +28,9 @@ interface State {
 }
 
 export enum GroupType {
-  ENCRYPTED = 'Encrypted Group',
-  SUPER = 'Super Group',
-  SOCIAL = 'Social Group',
+  ENCRYPTED = 'encrypted',
+  SUPER = 'super',
+  SOCIAL = 'social',
 }
 
 export class GroupDetailsPanel extends React.Component<Properties, State> {
@@ -41,7 +41,7 @@ export class GroupDetailsPanel extends React.Component<Properties, State> {
       name: this.state.name,
       users: this.props.users,
       image: this.state.image,
-      type: this.state.selectedGroupType !== GroupType.ENCRYPTED ? 'unencrypted' : 'encrypted',
+      groupType: this.state.selectedGroupType,
     });
   };
 

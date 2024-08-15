@@ -42,10 +42,10 @@ export function* createConversation(action) {
 }
 
 export function* createUnencryptedConversation(action) {
-  const { userIds, name, image } = action.payload;
+  const { userIds, name, image, groupType } = action.payload;
   try {
     yield put(setGroupCreating(true));
-    yield call(performCreateUnencryptedConversation, userIds, name, image);
+    yield call(performCreateUnencryptedConversation, userIds, name, image, groupType);
   } finally {
     yield put(setGroupCreating(false));
   }

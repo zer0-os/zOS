@@ -8,4 +8,5 @@ export interface CreateMessengerConversation {
   name?: string;
   userIds: string[];
   image?: File;
+  groupType?: string;
 }

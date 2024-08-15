@@ -5,6 +5,7 @@ import { connectContainer } from '../../store/redux-container';
 import { Sidekick } from '../../components/sidekick/index';
 import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 import { MessengerChat } from '../../components/messenger/chat';
+import { MessengerFeed } from '../../components/messenger/feed';
 import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
 
@@ -29,8 +30,14 @@ export class Container extends React.Component<Properties> {
         {this.props.context.isAuthenticated && (
           <>
             <Sidekick />
+
+            <FeatureFlag featureFlag='enableChannels'>
+              <MessengerFeed />
+            </FeatureFlag>
+
             <MessengerChat />
             <Sidekick variant='secondary' />
+
             <FeatureFlag featureFlag='enableDevPanel'>
               <DevPanelContainer />
             </FeatureFlag>

@@ -15,10 +15,6 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties> {
-  constructor(props: Properties) {
-    super(props);
-  }
-
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId },

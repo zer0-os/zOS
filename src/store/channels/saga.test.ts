@@ -321,5 +321,5 @@ const CHANNEL_DEFAULTS = {
   moderatorIds: [],
   otherMembersTyping: [],
   labels: [],
-  groupType: '',
+  isSocialChannel: false,
 };

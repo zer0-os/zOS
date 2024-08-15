@@ -1251,7 +1251,7 @@ export class MatrixClient implements IChatClient {
       adminMatrixIds: admins,
       moderatorIds: mods,
       labels: [],
-      groupType: groupType || '',
+      isSocialChannel: groupType === 'social',
     };
 
     featureFlags.enableTimerLogs && console.timeEnd(`xxxmapConversation${room.roomId}`);

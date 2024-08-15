@@ -380,7 +380,7 @@ export function* roomAvatarChanged(id: string, url: string) {
 }
 
 export function* roomGroupTypeChanged(id: string, type: string) {
-  yield call(receiveChannel, { id, groupType: type });
+  yield call(receiveChannel, { id, isSocialChannel: type === 'social' });
 }
 
 export function* otherUserJoinedChannel(roomId: string, user: User) {

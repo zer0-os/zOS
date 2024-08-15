@@ -142,13 +142,14 @@ describe('create conversation saga', () => {
         userIds: ['test'],
         name: 'test name',
         image: {},
+        groupType: '',
       };
 
       return testSaga(createUnencryptedConversation, { payload: testPayload })
         .next()
         .put(setGroupCreating(true))
         .next()
-        .call(performCreateUnencryptedConversation, ['test'], 'test name', {})
+        .call(performCreateUnencryptedConversation, ['test'], 'test name', {}, '')
         .next()
         .put(setGroupCreating(false));
     });

@@ -14,6 +14,7 @@ export interface RealtimeChatEvents {
   onUserLeft: (channelId: string, userId: string) => void;
   onRoomNameChanged: (channelId: string, name: string) => void;
   onRoomAvatarChanged: (roomId: string, url: string) => void;
+  onRoomGroupTypeChanged: (roomId: string, groupType: string) => void;
   onOtherUserJoinedChannel: (channelId: string, user: UserModel) => void;
   onOtherUserLeftChannel: (channelId: string, user: UserModel) => void;
   receiveLiveRoomEvent: (eventData) => void;
@@ -40,6 +41,7 @@ export interface IChatClient {
   supportsOptimisticCreateConversation: () => boolean;
   getRoomNameById: (id: string) => Promise<string>;
   getRoomAvatarById: (id: string) => Promise<string>;
+  getRoomGroupTypeById: (id: string) => Promise<string>;
   getChannels: (id: string) => Promise<Partial<Channel>[]>;
   getConversations: () => Promise<Partial<Channel>[]>;
   searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
@@ -102,6 +104,10 @@ export class Chat {
 
   async getRoomAvatarById(roomId: string) {
     return this.client.getRoomAvatarById(roomId);
+  }
+
+  async getRoomGroupTypeById(roomId: string) {
+    return this.client.getRoomGroupTypeById(roomId);
   }
 
   async getConversations() {
@@ -331,6 +337,12 @@ export async function getRoomTags(conversations: Partial<Channel>[]) {
   return await chat.get().matrix.getRoomTags(conversations);
 }
 
-export async function createUnencryptedConversation(users: User[], name: string, image: File, optimisticId: string) {
-  return chat.get().matrix.createUnencryptedConversation(users, name, image, optimisticId);
+export async function createUnencryptedConversation(
+  users: User[],
+  name: string,
+  image: File,
+  optimisticId: string,
+  groupType?: string
+) {
+  return chat.get().matrix.createUnencryptedConversation(users, name, image, optimisticId, groupType);
 }

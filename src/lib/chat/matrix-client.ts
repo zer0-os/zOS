@@ -112,6 +112,13 @@ export class MatrixClient implements IChatClient {
     return this.getRoomAvatar(room);
   }
 
+  async getRoomGroupTypeById(roomId: string) {
+    await this.waitForConnection();
+
+    const room = this.matrix.getRoom(roomId);
+    return this.getRoomGroupType(room);
+  }
+
   async getChannels(_id: string) {
     return [];
   }
@@ -486,7 +493,13 @@ export class MatrixClient implements IChatClient {
     return await this.mapConversation(room);
   }
 
-  async createUnencryptedConversation(users: User[], name: string = null, image: File = null, _optimisticId: string) {
+  async createUnencryptedConversation(
+    users: User[],
+    name: string = null,
+    image: File = null,
+    _optimisticId: string,
+    groupType?: string
+  ) {
     await this.waitForConnection();
     const coverUrl = await this.uploadCoverImage(image);
 
@@ -496,6 +509,10 @@ export class MatrixClient implements IChatClient {
 
     if (coverUrl) {
       initial_state.push({ type: EventType.RoomAvatar, state_key: '', content: { url: coverUrl } });
+    }
+
+    if (groupType) {
+      initial_state.push({ type: CustomEventType.GROUP_TYPE, state_key: '', content: { group_type: groupType } });
     }
 
     const options: ICreateRoomOpts = {
@@ -982,6 +999,11 @@ export class MatrixClient implements IChatClient {
       if (event.type === EventType.RoomAvatar) {
         this.publishRoomAvatarChange(event);
       }
+
+      if (event.type === CustomEventType.GROUP_TYPE) {
+        this.publishChannelTypeChange(event);
+      }
+
       if (event.type === EventType.RoomRedaction) {
         this.receiveDeleteMessage(event);
       }
@@ -1128,6 +1150,10 @@ export class MatrixClient implements IChatClient {
     this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
   };
 
+  private publishChannelTypeChange = (event) => {
+    this.events.onRoomGroupTypeChanged(event.room_id, event.content?.group_type);
+  };
+
   private publishRoomMemberTyping = (event: MatrixEvent, member: RoomMember) => {
     const content = event.getContent();
     this.events.roomMemberTyping(member.roomId, content.user_ids || []);
@@ -1198,6 +1224,7 @@ export class MatrixClient implements IChatClient {
     const name = this.getRoomName(room);
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
+    const groupType = this.getRoomGroupType(room);
 
     featureFlags.enableTimerLogs && console.time(`xxxgetUpToLatestUserMessageFromRoom${room.roomId}`);
     const messages = await this.getUpToLatestUserMessageFromRoom(room);
@@ -1224,6 +1251,7 @@ export class MatrixClient implements IChatClient {
       adminMatrixIds: admins,
       moderatorIds: mods,
       labels: [],
+      groupType: groupType || '',
     };
 
     featureFlags.enableTimerLogs && console.timeEnd(`xxxmapConversation${room.roomId}`);
@@ -1244,6 +1272,14 @@ export class MatrixClient implements IChatClient {
       lastSeenAt: '',
       primaryZID: '',
     };
+  }
+
+  private getRoomGroupType(room: Room): string {
+    const roomType = room
+      .getLiveTimeline()
+      .getState(EventTimeline.FORWARDS)
+      .getStateEvents(CustomEventType.GROUP_TYPE, '');
+    return roomType?.getContent()?.group_type || '';
   }
 
   private getRoomName(room: Room): string {

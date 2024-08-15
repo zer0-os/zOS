@@ -163,14 +163,18 @@ describe('messenger-list', () => {
     await wrapper.find(CreateConversationPanel).prop('onStartGroup')([{ value: 'id-1' } as any]);
     wrapper.setProps({ stage: Stage.GroupDetails });
 
-    wrapper
-      .find(GroupDetailsPanel)
-      .simulate('create', { name: 'group name', users: [{ value: 'id-1' }], image: { some: 'image' } });
+    wrapper.find(GroupDetailsPanel).simulate('create', {
+      name: 'group name',
+      users: [{ value: 'id-1' }],
+      image: { some: 'image' },
+      groupType: 'encrypted',
+    });
 
     expect(createConversation).toHaveBeenCalledWith({
       name: 'group name',
       userIds: ['id-1'],
       image: { some: 'image' },
+      groupType: 'encrypted',
     });
   });
 
@@ -184,13 +188,14 @@ describe('messenger-list', () => {
       name: 'group name',
       users: [{ value: 'id-1' }],
       image: { some: 'image' },
-      type: 'unencrypted',
+      groupType: 'social',
     });
 
     expect(createUnencryptedConversation).toHaveBeenCalledWith({
       name: 'group name',
       userIds: ['id-1'],
       image: { some: 'image' },
+      groupType: 'social',
     });
   });
 

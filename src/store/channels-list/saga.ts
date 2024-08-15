@@ -3,7 +3,7 @@ import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
 import { receive, denormalizeConversations, setStatus } from '.';
-import { chat, getRoomTags } from '../../lib/chat';
+import { addRoomToLabel, chat, getRoomTags } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
@@ -55,6 +55,12 @@ export function* fetchRoomAvatar(roomId) {
   const chatClient = yield call(chat.get);
   const roomAvatar = yield call([chatClient, chatClient.getRoomAvatarById], roomId);
   yield call(roomAvatarChanged, roomId, roomAvatar);
+}
+
+export function* fetchRoomGroupType(roomId) {
+  const chatClient = yield call(chat.get);
+  const roomGroupType = yield call([chatClient, chatClient.getRoomGroupTypeById], roomId);
+  yield call(roomGroupTypeChanged, roomId, roomGroupType);
 }
 
 export function* fetchConversations() {
@@ -142,7 +148,12 @@ export function* createConversation(userIds: string[], name: string = null, imag
   }
 }
 
-export function* createUnencryptedConversation(userIds: string[], name: string = null, image: File = null) {
+export function* createUnencryptedConversation(
+  userIds: string[],
+  name: string = null,
+  image: File = null,
+  groupType?: string
+) {
   const chatClient = yield call(chat.get);
 
   let optimisticChannel = { id: '', optimisticId: '' };
@@ -153,7 +164,14 @@ export function* createUnencryptedConversation(userIds: string[], name: string =
 
   try {
     const users = yield select(userSelector, userIds);
-    const channel = yield call(createUnencryptedMatrixConversation, users, name, image, optimisticChannel.id);
+    const channel = yield call(
+      createUnencryptedMatrixConversation,
+      users,
+      name,
+      image,
+      optimisticChannel.id,
+      groupType
+    );
     yield call(receiveCreatedConversation, channel, optimisticChannel);
     return channel;
   } catch {
@@ -311,6 +329,7 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, ChatEvents.UserJoinedChannel, userJoinedChannelAction);
   yield takeEveryFromBus(chatBus, ChatEvents.RoomNameChanged, roomNameChangedAction);
   yield takeEveryFromBus(chatBus, ChatEvents.RoomAvatarChanged, roomAvatarChangedAction);
+  yield takeEveryFromBus(chatBus, ChatEvents.RoomGroupTypeChanged, roomGroupTypeChangedAction);
   yield takeEveryFromBus(chatBus, ChatEvents.OtherUserJoinedChannel, otherUserJoinedChannelAction);
   yield takeEveryFromBus(chatBus, ChatEvents.OtherUserLeftChannel, otherUserLeftChannelAction);
 }
@@ -330,6 +349,10 @@ function* roomAvatarChangedAction(action) {
   yield roomAvatarChanged(action.payload.id, action.payload.url);
 }
 
+function* roomGroupTypeChangedAction(action) {
+  yield roomGroupTypeChanged(action.payload.id, action.payload.groupType);
+}
+
 function* otherUserJoinedChannelAction({ payload }) {
   yield otherUserJoinedChannel(payload.channelId, payload.user);
 }
@@ -343,6 +366,7 @@ export function* addChannel(channel) {
   yield call(mapToZeroUsers, [channel]);
   yield fork(fetchRoomName, channel.id);
   yield fork(fetchRoomAvatar, channel.id);
+  yield fork(fetchRoomGroupType, channel.id);
 
   yield put(receive(uniqNormalizedList([...conversationsList, channel])));
 }
@@ -353,6 +377,10 @@ export function* roomNameChanged(id: string, name: string) {
 
 export function* roomAvatarChanged(id: string, url: string) {
   yield call(receiveChannel, { id, icon: url });
+}
+
+export function* roomGroupTypeChanged(id: string, type: string) {
+  yield call(receiveChannel, { id, groupType: type });
 }
 
 export function* otherUserJoinedChannel(roomId: string, user: User) {

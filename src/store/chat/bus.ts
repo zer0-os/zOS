@@ -13,6 +13,7 @@ export enum Events {
   UserJoinedChannel = 'chat/channel/userJoined',
   RoomNameChanged = 'chat/roomNameChanged',
   RoomAvatarChanged = 'chat/roomAvatarChanged',
+  RoomGroupTypeChanged = 'chat/roomGroupTypeChanged',
   OtherUserJoinedChannel = 'chat/channel/otherUserJoined',
   OtherUserLeftChannel = 'chat/channel/otherUserLeft',
   LiveRoomEventReceived = 'chat/message/liveRoomEventReceived',
@@ -79,6 +80,8 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
     const onUserJoinedChannel = (channel) => emit({ type: Events.UserJoinedChannel, payload: { channel } });
     const onRoomNameChanged = (roomId, name) => emit({ type: Events.RoomNameChanged, payload: { id: roomId, name } });
     const onRoomAvatarChanged = (roomId, url) => emit({ type: Events.RoomAvatarChanged, payload: { id: roomId, url } });
+    const onRoomGroupTypeChanged = (roomId, groupType) =>
+      emit({ type: Events.RoomGroupTypeChanged, payload: { id: roomId, groupType } });
     const onOtherUserJoinedChannel = (channelId, user) =>
       emit({ type: Events.OtherUserJoinedChannel, payload: { channelId, user } });
     const onOtherUserLeftChannel = (channelId, user) =>
@@ -100,6 +103,7 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       onUserJoinedChannel,
       onRoomNameChanged,
       onRoomAvatarChanged,
+      onRoomGroupTypeChanged,
       onOtherUserJoinedChannel,
       onOtherUserLeftChannel,
       receiveLiveRoomEvent,

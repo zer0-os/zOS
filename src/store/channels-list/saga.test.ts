@@ -16,6 +16,8 @@ import {
   fetchRoomAvatar,
   roomAvatarChanged,
   loadSecondaryConversationData,
+  fetchRoomGroupType,
+  roomGroupTypeChanged,
 } from './saga';
 
 import { RootState, rootReducer } from '../reducer';
@@ -45,6 +47,7 @@ const chatClient = {
   getConversations: () => MOCK_CONVERSATIONS,
   getRoomNameById: () => {},
   getRoomAvatarById: () => {},
+  getRoomGroupTypeById: () => {},
 };
 
 describe('channels list saga', () => {
@@ -566,6 +569,38 @@ describe('channels list saga', () => {
         .call([chatClient, chatClient.getRoomAvatarById], 'room-id')
         .next(mockRoomAvatar)
         .call(roomAvatarChanged, 'room-id', mockRoomAvatar)
+        .next()
+        .isDone();
+    });
+  });
+
+  describe(fetchRoomGroupType, () => {
+    function subject(roomId: string, provide = []) {
+      return expectSaga(fetchRoomGroupType, roomId).provide([
+        [matchers.call.fn(chat.get), chatClient],
+        ...provide,
+      ]);
+    }
+
+    const mockGroupType = 'some-group-type';
+
+    it('fetches and updates room group type data', async () => {
+      await subject('room-id', [
+        [matchers.call([chatClient, chatClient.getRoomGroupTypeById], 'room-id'), mockGroupType],
+      ])
+        .call(chat.get)
+        .call([chatClient, chatClient.getRoomGroupTypeById], 'room-id')
+        .run();
+    });
+
+    it('calls roomGroupTypeChanged when group type is fetched', () => {
+      testSaga(fetchRoomGroupType, 'room-id')
+        .next()
+        .call(chat.get)
+        .next(chatClient)
+        .call([chatClient, chatClient.getRoomGroupTypeById], 'room-id')
+        .next(mockGroupType)
+        .call(roomGroupTypeChanged, 'room-id', mockGroupType)
         .next()
         .isDone();
     });

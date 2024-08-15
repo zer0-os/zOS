@@ -170,9 +170,10 @@ export class Container extends React.Component<Properties, State> {
       name: details.name,
       userIds: details.users.map((u) => u.value),
       image: details.image,
+      groupType: details.groupType,
     };
 
-    if (details.type === 'unencrypted') {
+    if (details.groupType !== 'encrypted') {
       this.props.createUnencryptedConversation(conversation);
     } else {
       this.props.createConversation(conversation);

@@ -69,8 +69,22 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
     return menuItems;
   }
 
+  transformGroupType = (type: string): string => {
+    switch (type) {
+      case GroupType.ENCRYPTED:
+        return 'Encrypted Group';
+      case GroupType.SUPER:
+        return 'Super Group';
+      case GroupType.SOCIAL:
+        return 'Social Channel';
+      default:
+        return '';
+    }
+  };
+
   render() {
     const { selectedGroupType } = this.state;
+    const transformedGroupType = this.transformGroupType(selectedGroupType);
     const items = this.menuItems;
 
     if (items.length === 0) {
@@ -84,7 +98,7 @@ export class GroupTypeMenu extends React.Component<Properties, State> {
             items={items}
             placeholder='Group Type (Required)'
             label=''
-            value={selectedGroupType}
+            value={transformedGroupType}
             itemSize='compact'
             menuClassName='group-type-menu__dropdown'
           />

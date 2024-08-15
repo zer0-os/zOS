@@ -65,7 +65,7 @@ export interface Channel {
   reply?: ParentMessage;
   otherMembersTyping: string[];
   labels?: string[];
-  groupType?: string;
+  isSocialChannel?: boolean;
 }
 
 export const CHANNEL_DEFAULTS = {
@@ -87,7 +87,7 @@ export const CHANNEL_DEFAULTS = {
   moderatorIds: [],
   otherMembersTyping: [],
   labels: [],
-  groupType: '',
+  isSocialChannel: false,
 };
 
 export enum SagaActionTypes {

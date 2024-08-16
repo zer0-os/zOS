@@ -9,7 +9,7 @@ import {
   IconPlus,
   IconUserRight1,
 } from '@zero-tech/zui/icons';
-import { DropdownMenu } from '@zero-tech/zui/components';
+import { DropdownMenu } from '@zero-tech/zui/components/DropdownMenu';
 
 import './styles.scss';
 

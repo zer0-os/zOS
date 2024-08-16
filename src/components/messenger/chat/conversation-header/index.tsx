@@ -1,9 +1,11 @@
 import * as React from 'react';
 
+import { Header } from '../../../header';
 import { User } from '../../../../store/channels';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../../group-management-menu';
-import { Avatar, IconButton } from '@zero-tech/zui/components';
+import { Avatar } from '@zero-tech/zui/components/Avatar';
+import { IconButton } from '@zero-tech/zui/components/IconButton';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../../../lib/bem';
 
@@ -112,39 +114,35 @@ export class ConversationHeader extends React.Component<Properties> {
 
   render() {
     return (
-      <div {...cn('')}>
-        <div {...cn('details-container')} onClick={this.toggleSidekick}>
-          <div {...cn('avatar')}>{this.renderAvatar()}</div>
-
-          <span {...cn('description')}>
-            <div {...cn('title')}>{this.renderTitle()}</div>
-            <div {...cn('subtitle')}>{this.renderSubTitle()}</div>
-          </span>
-        </div>
-
-        <div {...cn('group-management-menu-container')}>
-          <GroupManagementMenu
-            canAddMembers={this.props.canAddMembers}
-            canLeaveRoom={this.props.canLeaveRoom}
-            canEdit={this.props.canEdit}
-            canViewGroupInformation={this.props.canViewDetails}
-            isRoomMuted={this.props.isRoomMuted}
-            onStartAddMember={this.addMember}
-            onLeave={this.leaveGroup}
-            onEdit={this.editGroup}
-            onViewGroupInformation={this.viewGroupInformation}
-            onMute={this.muteRoom}
-            onUnmute={this.unmuteRoom}
-          />
-
-          <IconButton
-            {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
-            Icon={IconUsers1}
-            size={32}
-            onClick={this.toggleSidekick}
-          />
-        </div>
-      </div>
+      <Header
+        icon={this.renderAvatar()}
+        title={this.renderTitle()}
+        subtitle={this.renderSubTitle()}
+        onClick={this.toggleSidekick}
+        end={
+          <>
+            <GroupManagementMenu
+              canAddMembers={this.props.canAddMembers}
+              canEdit={this.props.canEdit}
+              canLeaveRoom={this.props.canLeaveRoom}
+              canViewGroupInformation={this.props.canViewDetails}
+              isRoomMuted={this.props.isRoomMuted}
+              onEdit={this.editGroup}
+              onLeave={this.leaveGroup}
+              onMute={this.muteRoom}
+              onStartAddMember={this.addMember}
+              onUnmute={this.unmuteRoom}
+              onViewGroupInformation={this.viewGroupInformation}
+            />
+            <IconButton
+              {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
+              Icon={IconUsers1}
+              size={32}
+              onClick={this.toggleSidekick}
+            />
+          </>
+        }
+      />
     );
   }
 }

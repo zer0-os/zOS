@@ -36,7 +36,15 @@ export class Container extends React.Component<Properties> {
       return null;
     }
 
-    return <div {...cn('')}>Messenger Feed</div>;
+    return (
+      <>
+        <div {...cn('')}>
+          <>Messenger Feed</>
+          <div {...cn('feed-view')}>Feed View Component</div>
+        </div>
+        <div {...cn('divider')} />
+      </>
+    );
   }
 }
 

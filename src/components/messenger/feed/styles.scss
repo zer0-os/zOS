@@ -1,4 +1,19 @@
 .messenger-feed {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: center;
   width: 100%;
+  margin: auto 0;
+
+  &__posts-input {
+  }
+
+  &__divider {
+    width: 1px;
+    height: auto;
+    background-color: rgba(245, 245, 245, 0.12);
+    margin: 16px;
+    align-self: stretch;
+  }
 }

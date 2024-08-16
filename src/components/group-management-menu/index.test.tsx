@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Properties, GroupManagementMenu } from '.';
-import { DropdownMenu } from '@zero-tech/zui/components';
+import { DropdownMenu } from '@zero-tech/zui/components/DropdownMenu';
 
 describe(GroupManagementMenu, () => {
   const subject = (props: Partial<Properties> = {}) => {

@@ -4,7 +4,8 @@ import { Header } from '../../../header';
 import { User } from '../../../../store/channels';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../../group-management-menu';
-import { Avatar, IconButton } from '@zero-tech/zui/components';
+import { Avatar } from '@zero-tech/zui/components/Avatar';
+import { IconButton } from '@zero-tech/zui/components/IconButton';
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../../../lib/bem';
 

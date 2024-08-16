@@ -40,8 +40,7 @@ export class Container extends React.Component<Properties> {
       <>
         <div {...cn('')}>
           <>Messenger Feed</>
-          <div {...cn('post-input')}>Post Input</div>
-          <div {...cn('posts')}>Posts</div>
+          <div {...cn('feed-view')}>Feed View Component</div>
         </div>
         <div {...cn('divider')} />
       </>

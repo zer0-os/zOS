@@ -2,6 +2,9 @@ import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import { rawChannelSelector } from '../../../store/channels/saga';
+import { Posts } from './components/posts';
+import { ScrollbarContainer } from '../../scrollbar-container';
+import { CreatePost } from './components/create-post';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -38,10 +41,12 @@ export class Container extends React.Component<Properties> {
 
     return (
       <>
-        <div {...cn('')}>
-          <>Messenger Feed</>
-          <div {...cn('feed-view')}>Feed View Component</div>
-        </div>
+        <ScrollbarContainer>
+          <div {...cn('')}>
+            <CreatePost />
+            <Posts />
+          </div>
+        </ScrollbarContainer>
         <div {...cn('divider')} />
       </>
     );

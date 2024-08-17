@@ -1,0 +1,26 @@
+.Create {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.Input {
+  width: 100%;
+}
+
+.Actions,
+.Media {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+
+  svg {
+    color: var(--color-secondary-11) !important;
+  }
+}
+
+.Button {
+  border-radius: 8px;
+}

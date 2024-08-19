@@ -1,9 +1,15 @@
+.Container {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+}
+
 .Create {
   align-items: flex-end;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 8px;
-  padding: 16px;
 
   hr {
     border: none;

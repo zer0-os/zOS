@@ -1,0 +1,46 @@
+.Container {
+  display: flex;
+  gap: 8px;
+  padding: 16px 8px;
+}
+
+.Create {
+  align-items: flex-end;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+
+  hr {
+    border: none;
+    border-bottom: 1px solid rgba(245, 245, 245, 0.12);
+    outline: none;
+    width: 100%;
+  }
+}
+
+.Input {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  height: auto;
+  outline: none;
+  resize: none;
+  width: 100%;
+}
+
+.Actions,
+.Media {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+
+  svg {
+    color: var(--color-secondary-11) !important;
+  }
+}
+
+.Button {
+  border-radius: 8px;
+}

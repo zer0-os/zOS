@@ -6,7 +6,7 @@
 
 .sidekick {
   position: relative;
-  width: $width-sidekick + 32px;
+  width: $width-sidekick + 16px;
   height: 100%;
   transition: margin animation.$animation-duration-double var(--sidekick-transition-easing-function);
   @include main-background;

@@ -1001,7 +1001,7 @@ export class MatrixClient implements IChatClient {
       }
 
       if (event.type === CustomEventType.GROUP_TYPE) {
-        this.publishChannelTypeChange(event);
+        this.publishGroupTypeChange(event);
       }
 
       if (event.type === EventType.RoomRedaction) {
@@ -1150,7 +1150,7 @@ export class MatrixClient implements IChatClient {
     this.events.onRoomAvatarChanged(event.room_id, event.content?.url);
   };
 
-  private publishChannelTypeChange = (event) => {
+  private publishGroupTypeChange = (event) => {
     this.events.onRoomGroupTypeChanged(event.room_id, event.content?.group_type);
   };
 

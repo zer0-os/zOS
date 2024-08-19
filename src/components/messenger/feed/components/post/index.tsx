@@ -14,7 +14,9 @@ export const Post = ({ post }: PostProps) => {
       body={post.text}
       details={
         <>
+          {/* @ts-ignore */}
           <Name variant='name'>{post.nickname}</Name>
+          {/* @ts-ignore */}
           <Name variant='username'>{post.author}</Name>
         </>
       }

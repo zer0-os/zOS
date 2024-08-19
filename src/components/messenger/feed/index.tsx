@@ -3,6 +3,9 @@ import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import { Channel, denormalize } from '../../../store/channels';
 import { Message } from '../../../store/messages';
+import { Posts } from './components/posts';
+import { ScrollbarContainer } from '../../scrollbar-container';
+import { CreatePost } from './components/create-post';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -46,15 +49,12 @@ export class Container extends React.Component<Properties> {
 
     return (
       <>
-        <div {...cn('')}>
-          <>Messenger Feed</>
-
-          <div {...cn('feed-view')}>
-            {this.posts.map((post) => (
-              <div key={post.id}>{post.message}</div>
-            ))}
+        <ScrollbarContainer>
+          <div {...cn('')}>
+            <CreatePost />
+            <Posts />
           </div>
-        </div>
+        </ScrollbarContainer>
         <div {...cn('divider')} />
       </>
     );

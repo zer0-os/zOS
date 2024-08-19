@@ -1,10 +1,15 @@
 .messenger-feed {
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  align-items: center;
   width: 100%;
-  margin: auto 0;
+  padding-top: 16px;
+
+  padding: 16px 8px 0 8px;
+  box-sizing: border-box;
+
+  pointer-events: auto;
+  background: var(--Transparencies-Black-translucent, #0000007a);
+  backdrop-filter: blur(60px);
 
   &__feed-view {
     display: flex;

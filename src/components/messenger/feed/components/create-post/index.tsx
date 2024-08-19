@@ -22,7 +22,7 @@ export const CreatePost = () => {
 
   return (
     <div className={styles.Container}>
-      <Avatar size={'medium'} />
+      <Avatar size={'regular'} />
       <div className={styles.Create}>
         <PostInput value={value} onChange={handleOnChange} />
         <hr />

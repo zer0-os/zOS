@@ -144,6 +144,22 @@ describe('ChannelViewContainer', () => {
     expect(fetchMessages).toHaveBeenLastCalledWith({ channelId: 'the-channel-id' });
   });
 
+  it('filters out messages with isPost flag', () => {
+    const messages = [
+      { id: 'message-one', message: 'what', isPost: false },
+      { id: 'message-two', message: 'hello', isPost: true },
+      { id: 'message-three', message: 'bye', isPost: true },
+      { id: 'message-four', message: 'morning', isPost: false },
+    ];
+
+    const wrapper = subject({ channel: { messages } });
+
+    expect(wrapper.find(ChatView)).toHaveProp('messages', [
+      { id: 'message-one', message: 'what', isPost: false },
+      { id: 'message-four', message: 'morning', isPost: false },
+    ]);
+  });
+
   it('should call fetchMore with reference timestamp when hasMore is true', () => {
     const fetchMessages = jest.fn();
     const messages = [

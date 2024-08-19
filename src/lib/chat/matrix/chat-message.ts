@@ -48,6 +48,8 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
   const senderData = sdkMatrixClient.getUser(senderId);
 
   let messageContent = content.body;
+  let isPost = content['is_post'] || false;
+
   if (parent && parent['m.in_reply_to']) {
     messageContent = parsePlainBody(content.body);
   }
@@ -77,6 +79,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
     parentMessageMedia: null,
     parentMessageId: parent ? parent['m.in_reply_to']?.event_id : null,
     isHidden: content?.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE,
+    isPost: isPost,
     ...(await parseMediaData(matrixMessage)),
   };
 }

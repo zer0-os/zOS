@@ -88,6 +88,7 @@ export interface Message {
   rootMessageId?: string;
   sendStatus: MessageSendStatus;
   readBy?: User[];
+  isPost?: boolean;
 }
 
 export interface EditMessageOptions {

@@ -8,7 +8,6 @@ export interface PostProps {
 }
 
 export const Post = ({ post }: PostProps) => {
-  console.log('got post', post, post.nickname, post.author);
   return (
     <ZUIPost
       body={post.text}

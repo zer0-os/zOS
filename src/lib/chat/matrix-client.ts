@@ -594,23 +594,29 @@ export class MatrixClient implements IChatClient {
   }
 
   async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '') {
-    if (!this.matrix.isRoomEncrypted(roomId)) {
-      console.warn('uploadFileMessage called for non-encrypted room', roomId);
-      return;
-    }
+    const isEncrypted = this.matrix.isRoomEncrypted(roomId);
 
     const { width, height } = await getImageDimensions(media);
-    const encrypedFileInfo = await encryptFile(media);
-    const uploadedFile = await uploadAttachment(encrypedFileInfo.file);
 
-    // https://spec.matrix.org/v1.8/client-server-api/#extensions-to-mroommessage-msgtypes
-    const file = {
-      url: uploadedFile.key,
-      ...encrypedFileInfo.info,
-    };
+    let file;
+    if (isEncrypted) {
+      const encryptedFileInfo = await encryptFile(media); // Call encryptFile if the room is encrypted
+      const uploadedFile = await uploadAttachment(encryptedFileInfo.file);
+      file = {
+        url: uploadedFile.key,
+        ...encryptedFileInfo.info,
+      };
+    } else {
+      const uploadedFile = await uploadAttachment(media); // Directly upload the file without encryption
+      file = {
+        url: uploadedFile.key,
+        mimetype: media.type,
+        size: media.size,
+      };
+    }
 
     const content = {
-      body: null,
+      body: isEncrypted ? null : '',
       msgtype: MsgType.Image,
       file,
       info: {
@@ -644,13 +650,10 @@ export class MatrixClient implements IChatClient {
     rootMessageId: string = '',
     optimisticId = ''
   ) {
-    if (!this.matrix.isRoomEncrypted(roomId)) {
-      console.warn('uploadGiphyMessage called for non-encrypted room', roomId);
-      return;
-    }
+    const isEncrypted = this.matrix.isRoomEncrypted(roomId);
 
     const content = {
-      body: null,
+      body: isEncrypted ? null : '',
       msgtype: MsgType.Image,
       url: url,
       info: {

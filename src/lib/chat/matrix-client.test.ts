@@ -789,25 +789,7 @@ describe('matrix client', () => {
   });
 
   describe('uploadFileMessage', () => {
-    it('logs warning if room is not encrypted and returns ', async () => {
-      const roomId = '!testRoomId';
-      const optimisticId = 'optimistic-id';
-      const rootMessageId = 'root-message-id';
-
-      const isRoomEncrypted = jest.fn(() => false);
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted })),
-      });
-
-      await client.connect(null, 'token');
-      client.uploadFileMessage(roomId, {} as File, rootMessageId, optimisticId);
-
-      expect(mockEncryptFile).not.toHaveBeenCalled();
-    });
-
-    it('sends a file message successfully', async () => {
-      // const originalMessageId = 'orig-message-id';
+    it('does not encrypt and sends a file message successfully in a non-encrypted room', async () => {
       const roomId = '!testRoomId';
       const optimisticId = 'optimistic-id';
       const rootMessageId = 'root-message-id';
@@ -816,6 +798,71 @@ describe('matrix client', () => {
         size: 1000,
         type: 'image/png',
       };
+
+      const isRoomEncrypted = jest.fn(() => false);
+
+      when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
+
+      when(mockUploadAttachment).calledWith(expect.anything()).mockResolvedValue({
+        name: 'test-file',
+        key: 'attachments/../test.jpg',
+        url: 'attachments/../test.jpg',
+        type: 'file',
+      });
+
+      const sendMessage = jest.fn(() =>
+        Promise.resolve({
+          event_id: 'new-message-id',
+        })
+      );
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.uploadFileMessage(roomId, media as File, rootMessageId, optimisticId);
+
+      expect(sendMessage).toBeCalledWith(
+        roomId,
+        expect.objectContaining({
+          body: '',
+          msgtype: 'm.image',
+          file: {
+            url: 'attachments/../test.jpg',
+            mimetype: 'image/png',
+            size: 1000,
+          },
+          info: {
+            mimetype: 'image/png',
+            size: 1000,
+            name: 'test-file',
+            optimisticId: 'optimistic-id',
+            rootMessageId: 'root-message-id',
+            width: 800,
+            height: 600,
+          },
+          optimisticId: 'optimistic-id',
+        })
+      );
+
+      expect(result).toMatchObject({
+        id: 'new-message-id',
+        optimisticId: optimisticId,
+      });
+    });
+
+    it('encrypts and sends a file message successfully in an encrypted room', async () => {
+      const roomId = '!testRoomId';
+      const optimisticId = 'optimistic-id';
+      const rootMessageId = 'root-message-id';
+      const media = {
+        name: 'test-file',
+        size: 1000,
+        type: 'image/png',
+      };
+
+      const isRoomEncrypted = jest.fn(() => true);
 
       when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
 
@@ -845,7 +892,7 @@ describe('matrix client', () => {
       );
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ sendMessage })),
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage })),
       });
 
       await client.connect(null, 'token');
@@ -884,21 +931,53 @@ describe('matrix client', () => {
   });
 
   describe('uploadImageUrl', () => {
-    it('logs warning if room is not encrypted and returns ', async () => {
+    it('sends an image URL message successfully in a non-encrypted room', async () => {
       const roomId = '!testRoomId';
+      const url = 'http://example.com/image.gif';
+      const width = 500;
+      const height = 300;
+      const size = 1500;
       const optimisticId = 'optimistic-id';
       const rootMessageId = 'root-message-id';
 
       const isRoomEncrypted = jest.fn(() => false);
 
+      const sendMessage = jest.fn(() =>
+        Promise.resolve({
+          event_id: 'new-message-id',
+        })
+      );
+
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted })),
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage })),
       });
 
       await client.connect(null, 'token');
-      await client.uploadImageUrl(roomId, 'http://example.com/image.gif', 500, 300, 1500, rootMessageId, optimisticId);
 
-      expect(mockEncryptFile).not.toHaveBeenCalled();
+      const result = await client.uploadImageUrl(roomId, url, width, height, size, rootMessageId, optimisticId);
+
+      expect(sendMessage).toBeCalledWith(
+        roomId,
+        expect.objectContaining({
+          body: '',
+          msgtype: 'm.image',
+          url: url,
+          info: {
+            mimetype: 'image/gif',
+            w: width,
+            h: height,
+            size: size,
+            optimisticId,
+            rootMessageId,
+          },
+          optimisticId,
+        })
+      );
+
+      expect(result).toMatchObject({
+        id: 'new-message-id',
+        optimisticId,
+      });
     });
 
     it('sends an image URL message successfully in an encrypted room', async () => {
@@ -910,6 +989,8 @@ describe('matrix client', () => {
       const optimisticId = 'optimistic-id';
       const rootMessageId = 'root-message-id';
 
+      const isRoomEncrypted = jest.fn(() => true);
+
       const sendMessage = jest.fn(() =>
         Promise.resolve({
           event_id: 'new-message-id',
@@ -917,7 +998,7 @@ describe('matrix client', () => {
       );
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ sendMessage })),
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage })),
       });
 
       await client.connect(null, 'token');

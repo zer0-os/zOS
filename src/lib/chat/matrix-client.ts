@@ -21,7 +21,12 @@ import {
   ReceiptType,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
-import { mapEventToAdminMessage, mapMatrixMessage, mapToLiveRoomEvent } from './matrix/chat-message';
+import {
+  mapEventToAdminMessage,
+  mapEventToPostMessage,
+  mapMatrixMessage,
+  mapToLiveRoomEvent,
+} from './matrix/chat-message';
 import { ConversationStatus, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
@@ -47,6 +52,11 @@ import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
+
+export interface PostsResponse {
+  hasMore: boolean;
+  postMessages: Message[];
+}
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;
@@ -374,6 +384,10 @@ export class MatrixClient implements IChatClient {
           return mapEventToAdminMessage(event);
         }
         return null;
+
+      case CustomEventType.ROOM_POST:
+        return mapEventToPostMessage(event, this.matrix);
+
       case EventType.RoomPowerLevels:
         return mapEventToAdminMessage(event);
       default:
@@ -429,6 +443,7 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  // Chat Messages
   async getMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<MessagesResponse> {
     await this.waitForConnection();
     const room = this.matrix.getRoom(roomId);
@@ -436,8 +451,19 @@ export class MatrixClient implements IChatClient {
     const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
 
     // For now, just return the full list again. Could filter out anything prior to lastCreatedAt
-    const messages = await this.getAllMessagesFromRoom(room);
+    const messages = await this.getAllChatMessagesFromRoom(room);
     return { messages, hasMore };
+  }
+
+  // Post Messages
+  async getPostMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<PostsResponse> {
+    await this.waitForConnection();
+    const room = this.matrix.getRoom(roomId);
+    const liveTimeline = room.getLiveTimeline();
+    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
+
+    const postMessages = await this.getAllPostMessagesFromRoom(room);
+    return { postMessages: postMessages, hasMore };
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
@@ -589,6 +615,23 @@ export class MatrixClient implements IChatClient {
     // Don't return a full message, only the pertinent attributes that changed.
     return {
       id: messageResult.event_id,
+      optimisticId,
+    };
+  }
+
+  async sendPostsByChannelId(channelId: string, message: string, optimisticId?: string): Promise<any> {
+    await this.waitForConnection();
+
+    const content = {
+      body: message,
+      msgtype: MsgType.Text,
+      optimisticId: optimisticId,
+    };
+
+    const postResult = await this.matrix.sendEvent(channelId, CustomEventType.ROOM_POST, content);
+
+    return {
+      id: postResult.event_id,
       optimisticId,
     };
   }
@@ -954,6 +997,8 @@ export class MatrixClient implements IChatClient {
       } else {
         this.publishMessageEvent(event);
       }
+    } else if (event.type === CustomEventType.ROOM_POST) {
+      this.publishPostEvent(event);
     }
   }
 
@@ -1145,6 +1190,10 @@ export class MatrixClient implements IChatClient {
     this.events.receiveNewMessage(event.room_id, (await mapMatrixMessage(event, this.matrix)) as any);
   }
 
+  private async publishPostEvent(event) {
+    this.events.receiveNewMessage(event.room_id, mapEventToPostMessage(event, this.matrix) as any);
+  }
+
   private publishRoomNameChange = (room: Room) => {
     this.events.onRoomNameChanged(room.roomId, this.getRoomName(room));
   };
@@ -1299,13 +1348,28 @@ export class MatrixClient implements IChatClient {
     return this.getLatestEvent(room, EventType.RoomCreate)?.getTs() || 0;
   }
 
-  private async getAllMessagesFromRoom(room: Room): Promise<any[]> {
+  private async getAllChatMessagesFromRoom(room: Room): Promise<any[]> {
     const events = room
       .getLiveTimeline()
       .getEvents()
       .map((event) => event.getEffectiveEvent());
 
-    return await this.processRawEventsToMessages(events);
+    const chatMessageEvents = events.filter((event) => !this.isPostEvent(event));
+    return await this.processRawEventsToMessages(chatMessageEvents);
+  }
+
+  private async getAllPostMessagesFromRoom(room: Room): Promise<any[]> {
+    const events = room
+      .getLiveTimeline()
+      .getEvents()
+      .map((event) => event.getEffectiveEvent());
+
+    const postMessageEvents = events.filter((event) => this.isPostEvent(event));
+    return await this.processRawEventsToMessages(postMessageEvents);
+  }
+
+  private isPostEvent(event): boolean {
+    return event.type === CustomEventType.ROOM_POST;
   }
 
   // Performance improvement: Fetches only the latest user message to avoid processing large image files and other attachments

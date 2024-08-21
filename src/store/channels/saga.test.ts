@@ -309,6 +309,7 @@ const CHANNEL_DEFAULTS = {
   otherMembers: [],
   memberHistory: [],
   hasMore: true,
+  hasMorePosts: true,
   createdAt: 0,
   lastMessage: null,
   unreadCount: 0,

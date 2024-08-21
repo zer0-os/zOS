@@ -288,6 +288,28 @@ describe(getMessagePreview, () => {
 
     expect(preview).toEqual('You: Failed to send');
   });
+
+  it('returns post preview for isPost messages', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: '', isAdmin: false, isPost: true, sender: { userId: 'current-user' } } as Message,
+      state
+    );
+
+    expect(preview).toEqual('You: shared a new post');
+  });
+
+  it('returns post preview with sender firstName for non-current user', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: '', isAdmin: false, isPost: true, sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
+      state
+    );
+
+    expect(preview).toEqual('Jack: shared a new post');
+  });
 });
 
 describe(previewDisplayDate, () => {

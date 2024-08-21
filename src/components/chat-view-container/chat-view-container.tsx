@@ -151,9 +151,13 @@ export class Container extends React.Component<Properties> {
   };
 
   get messages() {
-    const messagesById = mapMessagesById(this.channel?.messages || []);
-    const messagesByRootId = mapMessagesByRootId(this.channel?.messages || []);
-    const messages = linkMessages(this.channel?.messages || [], messagesById, messagesByRootId);
+    const allMessages = this.channel?.messages || [];
+
+    const chatMessages = allMessages.filter((message) => !message.isPost);
+
+    const messagesById = mapMessagesById(chatMessages);
+    const messagesByRootId = mapMessagesByRootId(chatMessages);
+    const messages = linkMessages(chatMessages, messagesById, messagesByRootId);
 
     return messages.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt));
   }

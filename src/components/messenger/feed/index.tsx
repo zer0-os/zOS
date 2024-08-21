@@ -119,13 +119,19 @@ export class Container extends React.Component<Properties> {
       <>
         <div {...cn('')}>
           <ScrollbarContainer>
-            <CreatePost onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />
             {channel.hasLoadedMessages && (
               <>
-                <Posts postMessages={this.postMessages} />
-                <Waypoint onEnter={this.fetchMorePosts} />
+                <CreatePost onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />
+                {this.postMessages.length > 0 && (
+                  <>
+                    <Posts postMessages={this.postMessages} />
+                    <Waypoint onEnter={this.fetchMorePosts} />
+                  </>
+                )}
               </>
             )}
+
+            {!channel.hasLoadedMessages && <div> Loading posts...</div>}
           </ScrollbarContainer>
         </div>
 

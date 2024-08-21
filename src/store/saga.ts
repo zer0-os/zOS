@@ -23,6 +23,7 @@ import { saga as messageInfo } from './message-info/saga';
 import { saga as userProfile } from './user-profile/saga';
 import { saga as background } from './background/saga';
 import { saga as accountManagement } from './account-management/saga';
+import { saga as posts } from './posts/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -49,6 +50,7 @@ export function* rootSaga() {
     userProfile,
     background,
     accountManagement,
+    posts,
   };
 
   yield all(

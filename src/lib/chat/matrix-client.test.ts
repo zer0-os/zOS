@@ -639,6 +639,19 @@ describe('matrix client', () => {
     });
   });
 
+  describe('sendPostsByChannelId', () => {
+    it('sends a post message successfully', async () => {
+      const sendEvent = jest.fn().mockResolvedValue({ event_id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU' });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ sendEvent })) });
+
+      await client.connect(null, 'token');
+
+      const result = await client.sendPostsByChannelId('channel-id', 'post-message');
+
+      expect(result).toMatchObject({ id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU' });
+    });
+  });
+
   describe('deleteMessageByRoomId', () => {
     it('deletes a message by room ID and message ID', async () => {
       const messageId = '123456';
@@ -687,6 +700,43 @@ describe('matrix client', () => {
       expect(fetchedMessages[0].message).toEqual('message 2');
     });
 
+    it('filters out post messages', async () => {
+      const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
+      const getEvents = jest.fn().mockReturnValue([
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.message',
+            content: { body: 'message 1', msgtype: 'm.text' },
+            event_id: 'message-id-1',
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.post',
+            content: { body: 'post message 1', msgtype: 'm.text' },
+            event_id: 'post-message-id-1',
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.message',
+            content: { body: 'message 2', msgtype: 'm.text' },
+            event_id: 'message-id-2',
+          }),
+        },
+      ]);
+      const getRoom = jest.fn().mockReturnValue(stubRoom({ getLiveTimeline: () => stubTimeline({ getEvents }) }));
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getUser, getRoom })) });
+
+      await client.connect(null, 'token');
+      const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
+
+      expect(fetchedMessages).toHaveLength(2);
+      expect(fetchedMessages[0].message).toEqual('message 1');
+      expect(fetchedMessages[1].message).toEqual('message 2');
+    });
+
     it('fetches messages successfully', async () => {
       const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
       const getEvents = jest.fn().mockReturnValue([
@@ -732,6 +782,93 @@ describe('matrix client', () => {
 
       await client.connect(null, 'token');
       const { messages: fetchedMessages } = await client.getMessagesByChannelId('channel-id');
+
+      expect(fetchedMessages).toHaveLength(0);
+    });
+  });
+
+  describe('getPostMessagesByChannelId', () => {
+    it('fetches post messages successfully', async () => {
+      const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
+      const getEvents = jest.fn().mockReturnValue([
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.post',
+            content: { body: 'post message 1', msgtype: 'm.text' },
+            event_id: 'post-message-id-1',
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.post',
+            content: { body: 'post message 2', msgtype: 'm.text' },
+            event_id: 'post-message-id-2',
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.post',
+            content: { body: 'post message 3', msgtype: 'm.text' },
+            event_id: 'post-message-id-3',
+          }),
+        },
+      ]);
+      const getRoom = jest.fn().mockReturnValue(stubRoom({ getLiveTimeline: () => stubTimeline({ getEvents }) }));
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getUser, getRoom })) });
+
+      await client.connect(null, 'token');
+      const { postMessages: fetchedPostMessages } = await client.getPostMessagesByChannelId('channel-id');
+
+      expect(fetchedPostMessages).toHaveLength(3);
+    });
+
+    it('filters out regular chat messages', async () => {
+      const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
+      const getEvents = jest.fn().mockReturnValue([
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.message',
+            content: { body: 'message 1', msgtype: 'm.text' },
+            event_id: 'message-id-1',
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.post',
+            content: { body: 'post message 1', msgtype: 'm.text' },
+            event_id: 'post-message-id-1',
+          }),
+        },
+        {
+          getEffectiveEvent: () => ({
+            type: 'm.room.message',
+            content: { body: 'message 2', msgtype: 'm.text' },
+            event_id: 'message-id-2',
+          }),
+        },
+      ]);
+      const getRoom = jest.fn().mockReturnValue(stubRoom({ getLiveTimeline: () => stubTimeline({ getEvents }) }));
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getUser, getRoom })) });
+
+      await client.connect(null, 'token');
+      const { postMessages: fetchedPostMessages } = await client.getPostMessagesByChannelId('channel-id');
+
+      expect(fetchedPostMessages).toHaveLength(1);
+      expect(fetchedPostMessages[0].message).toEqual('post message 1');
+    });
+
+    it('returns an empty array if no messages are found', async () => {
+      const getUser = jest.fn().mockReturnValue({ displayName: 'Mock User' });
+      const createPostMessagesRequest = jest.fn().mockResolvedValue({ chunk: [] });
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ createPostMessagesRequest, getUser })),
+      });
+
+      await client.connect(null, 'token');
+      const { postMessages: fetchedMessages } = await client.getPostMessagesByChannelId('channel-id');
 
       expect(fetchedMessages).toHaveLength(0);
     });

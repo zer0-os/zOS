@@ -346,3 +346,11 @@ export async function createUnencryptedConversation(
 ) {
   return chat.get().matrix.createUnencryptedConversation(users, name, image, optimisticId, groupType);
 }
+
+export async function sendPostByChannelId(channelId: string, message: string, optimisticId?: string) {
+  return chat.get().matrix.sendPostsByChannelId(channelId, message, optimisticId);
+}
+
+export async function getPostMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
+  return chat.get().matrix.getPostMessagesByChannelId(channelId, lastCreatedAt);
+}

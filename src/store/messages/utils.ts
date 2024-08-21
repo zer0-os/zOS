@@ -60,6 +60,7 @@ export function createOptimisticMessageObject(
     preview: null,
     media,
     sendStatus: MessageSendStatus.IN_PROGRESS,
+    isPost: false,
   };
 }
 

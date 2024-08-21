@@ -52,6 +52,7 @@ export interface Channel {
   otherMembers: User[];
   memberHistory: User[];
   hasMore: boolean;
+  hasMorePosts?: boolean;
   createdAt: number;
   lastMessage: Message;
   unreadCount?: number;
@@ -75,6 +76,7 @@ export const CHANNEL_DEFAULTS = {
   otherMembers: [],
   memberHistory: [],
   hasMore: true,
+  hasMorePosts: true,
   createdAt: 0,
   lastMessage: null,
   unreadCount: 0,

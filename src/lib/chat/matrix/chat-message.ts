@@ -103,6 +103,36 @@ export function mapEventToAdminMessage(matrixMessage): Message {
     hidePreview: false,
     preview: null,
     sendStatus: MessageSendStatus.SUCCESS,
+    isPost: false,
+  };
+}
+
+export function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
+  const { event_id, content, origin_server_ts, sender: senderId } = matrixMessage;
+
+  const senderData = sdkMatrixClient.getUser(senderId);
+
+  return {
+    id: event_id,
+    message: content.body,
+    createdAt: origin_server_ts,
+    updatedAt: 0,
+    optimisticId: content.optimisticId,
+
+    sender: {
+      userId: senderId,
+      firstName: senderData?.displayName,
+      lastName: '',
+      profileImage: '',
+      profileId: '',
+    },
+
+    isAdmin: false,
+    mentionedUsers: [],
+    hidePreview: false,
+    preview: null,
+    sendStatus: MessageSendStatus.SUCCESS,
+    isPost: true,
   };
 }
 

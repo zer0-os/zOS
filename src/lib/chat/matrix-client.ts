@@ -50,13 +50,9 @@ import { encryptFile, getImageDimensions } from './matrix/media';
 import { uploadAttachment } from '../../store/messages/api';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
+import { PostsResponse } from '../../store/posts';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
-
-export interface PostsResponse {
-  hasMore: boolean;
-  postMessages: Message[];
-}
 
 export class MatrixClient implements IChatClient {
   private matrix: SDKMatrixClient = null;

@@ -1,14 +1,13 @@
 import { Post } from '../post';
-import { MOCK_POSTS } from '../../mock';
 
 import styles from './styles.module.scss';
 
-export const Posts = () => {
+export const Posts = ({ postMessages }) => {
   return (
     <ol className={styles.Posts}>
-      {MOCK_POSTS.map((post) => (
+      {postMessages.map((post) => (
         <li key={post.id}>
-          <Post post={post} />
+          <Post text={post.message} nickname={post.sender.firstName} timestamp={post.createdAt} />
         </li>
       ))}
     </ol>

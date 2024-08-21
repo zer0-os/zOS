@@ -1,16 +1,18 @@
 import { Action, Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
-import type { Post as PostType } from '../../lib/types';
 import { IconMessageSquare2, IconShare7 } from '@zero-tech/zui/icons';
 import { Avatar } from '@zero-tech/zui/components';
 
 import styles from './styles.module.scss';
 
 export interface PostProps {
-  post: PostType;
+  timestamp: number;
+  author?: string;
+  nickname: string;
+  text: string;
 }
 
-export const Post = ({ post }: PostProps) => {
+export const Post = ({ text, nickname, author, timestamp }: PostProps) => {
   return (
     <div className={styles.Container}>
       <div>
@@ -18,16 +20,16 @@ export const Post = ({ post }: PostProps) => {
       </div>
       <ZUIPost
         className={styles.Post}
-        body={post.text}
+        body={text}
         details={
           <>
             {/* @ts-ignore */}
-            <Name variant='name'>{post.nickname}</Name>
+            <Name variant='name'>{nickname}</Name>
             {/* @ts-ignore */}
-            <Name variant='username'>{post.author}</Name>
+            <Name variant='username'>{author}</Name>
           </>
         }
-        options={<Timestamp timestamp={post.timestamp} />}
+        options={<Timestamp timestamp={timestamp} />}
         actions={
           <>
             <Action>

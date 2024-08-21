@@ -35,6 +35,11 @@ export function getMessagePreview(message: Message, state: RootState) {
     return adminMessageText(message, state);
   }
 
+  if (message.isPost) {
+    let prefix = previewPrefix(message.sender, state);
+    return `${prefix}: shared a new post`;
+  }
+
   let prefix = previewPrefix(message.sender, state);
   return `${prefix}: ${message.message || getMediaPreview(message)}`;
 }

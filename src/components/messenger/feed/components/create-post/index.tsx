@@ -8,12 +8,13 @@ import { Key } from '../../../../../lib/keyboard-search';
 import styles from './styles.module.scss';
 
 interface CreatePostProps {
+  avatarUrl?: string;
   isSubmitting?: boolean;
 
   onSubmit: (message: string) => void;
 }
 
-export const CreatePost = ({ isSubmitting, onSubmit }: CreatePostProps) => {
+export const CreatePost = ({ avatarUrl, isSubmitting, onSubmit }: CreatePostProps) => {
   const [value, setValue] = useState('');
   const isDisabled = !value.trim() || isSubmitting;
 
@@ -38,7 +39,7 @@ export const CreatePost = ({ isSubmitting, onSubmit }: CreatePostProps) => {
 
   return (
     <div className={styles.Container}>
-      <Avatar size={'regular'} />
+      <Avatar imageURL={avatarUrl} size={'regular'} />
       <div className={styles.Create}>
         <PostInput value={value} onChange={handleOnChange} onKeyDown={handleKeyDown} />
         <hr />

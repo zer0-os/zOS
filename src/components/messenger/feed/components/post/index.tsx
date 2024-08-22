@@ -1,6 +1,5 @@
-import { Action, Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
+import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
-import { IconMessageSquare2, IconShare7 } from '@zero-tech/zui/icons';
 import { Avatar } from '@zero-tech/zui/components';
 
 import styles from './styles.module.scss';

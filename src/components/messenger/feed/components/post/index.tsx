@@ -3,6 +3,7 @@ import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
 import { Avatar } from '@zero-tech/zui/components';
 
 import styles from './styles.module.scss';
+import { useMemo } from 'react';
 
 export interface PostProps {
   avatarUrl?: string;
@@ -13,6 +14,8 @@ export interface PostProps {
 }
 
 export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps) => {
+  const multilineText = useMemo(() => text.split('\n').map((line, index) => <p key={index}>{line}</p>), [text]);
+
   return (
     <div className={styles.Container}>
       <div>
@@ -20,7 +23,7 @@ export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps
       </div>
       <ZUIPost
         className={styles.Post}
-        body={text}
+        body={multilineText}
         details={
           <>
             {/* @ts-ignore */}

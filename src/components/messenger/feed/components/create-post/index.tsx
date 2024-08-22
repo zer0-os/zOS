@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Avatar, Button, IconButton } from '@zero-tech/zui/components';
-import { IconCamera1, IconPlus, IconMicrophone2 } from '@zero-tech/zui/icons';
+import { Avatar, Button } from '@zero-tech/zui/components';
 
 import { Key } from '../../../../../lib/keyboard-search';
 
@@ -44,11 +43,7 @@ export const CreatePost = ({ avatarUrl, isSubmitting, onSubmit }: CreatePostProp
         <PostInput value={value} onChange={handleOnChange} onKeyDown={handleKeyDown} />
         <hr />
         <div className={styles.Actions}>
-          <div className={styles.Media}>
-            <IconButton Icon={IconPlus} onClick={() => {}} />
-            <IconButton Icon={IconCamera1} onClick={() => {}} />
-            <IconButton Icon={IconMicrophone2} onClick={() => {}} />
-          </div>
+          <div className={styles.Media}></div>
           <Button isDisabled={isDisabled} isLoading={isSubmitting} className={styles.Button} onPress={handleOnSubmit}>
             Create
           </Button>

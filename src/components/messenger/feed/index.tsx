@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import { Posts } from './components/posts';
@@ -10,6 +10,7 @@ import { MessageSendStatus } from '../../../store/messages';
 import { fetchPosts, sendPost } from '../../../store/posts';
 import { AuthenticationState } from '../../../store/authentication/types';
 import { Waypoint } from 'react-waypoint';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -119,19 +120,25 @@ export class Container extends React.Component<Properties> {
       <>
         <div {...cn('')}>
           <ScrollbarContainer variant='on-hover'>
+            <CreatePost onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />
             {channel.hasLoadedMessages && (
               <>
-                <CreatePost onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />
-                {this.postMessages.length > 0 && (
+                {this.postMessages.length > 0 ? (
                   <>
                     <Posts postMessages={this.postMessages} />
                     <Waypoint onEnter={this.fetchMorePosts} />
                   </>
+                ) : (
+                  <Message>Nobody has posted here yet</Message>
                 )}
               </>
             )}
 
-            {!channel.hasLoadedMessages && <div> Loading posts...</div>}
+            {!channel.hasLoadedMessages && (
+              <Message>
+                <Spinner />
+              </Message>
+            )}
           </ScrollbarContainer>
         </div>
 
@@ -140,5 +147,9 @@ export class Container extends React.Component<Properties> {
     );
   }
 }
+
+const Message = ({ children }: { children: ReactNode }) => {
+  return <div {...cn('message')}>{children}</div>;
+};
 
 export const MessengerFeed = connectContainer<PublicProperties>(Container);

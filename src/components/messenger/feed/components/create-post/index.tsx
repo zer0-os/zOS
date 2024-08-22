@@ -22,10 +22,9 @@ export const CreatePost = ({ avatarUrl, isSubmitting, onSubmit }: CreatePostProp
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (!event.shiftKey && event.key === Key.Enter && value.trim()) {
+    if (!event.shiftKey && event.key === Key.Enter) {
       event.preventDefault();
-      onSubmit(value);
-      setValue('');
+      handleOnSubmit();
     }
   };
 

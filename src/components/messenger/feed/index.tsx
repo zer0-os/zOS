@@ -120,7 +120,11 @@ export class Container extends React.Component<Properties> {
       <>
         <div {...cn('')}>
           <ScrollbarContainer variant='on-hover'>
-            <CreatePost onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />
+            <CreatePost
+              avatarUrl={this.props.user.data?.profileSummary.profileImage}
+              onSubmit={this.submitPost}
+              isSubmitting={this.isSubmitting}
+            />
             {channel.hasLoadedMessages && (
               <>
                 {this.postMessages.length > 0 ? (

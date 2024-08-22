@@ -5,17 +5,18 @@ import { Avatar } from '@zero-tech/zui/components';
 import styles from './styles.module.scss';
 
 export interface PostProps {
+  avatarUrl?: string;
   timestamp: number;
   author?: string;
   nickname: string;
   text: string;
 }
 
-export const Post = ({ text, nickname, author, timestamp }: PostProps) => {
+export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps) => {
   return (
     <div className={styles.Container}>
       <div>
-        <Avatar size='regular' />
+        <Avatar size='regular' imageURL={avatarUrl} />
       </div>
       <ZUIPost
         className={styles.Post}

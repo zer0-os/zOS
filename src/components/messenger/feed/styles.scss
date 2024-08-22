@@ -22,4 +22,13 @@
     margin: 16px;
     align-self: stretch;
   }
+
+  &__message {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    color: var(--color-greyscale-10);
+  }
 }

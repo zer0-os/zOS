@@ -45,7 +45,7 @@ describe('FeedViewContainer', () => {
     expect(wrapper.find(FeedView).prop('postMessages')).toStrictEqual([]);
   });
 
-  it('fetches posts on mount', () => {
+  it('fetches posts on mount if posts are not loaded', () => {
     const fetchPosts = jest.fn();
 
     subject({ fetchPosts, channelId: 'the-channel-id', channel: { hasLoadedMessages: false } });
@@ -53,16 +53,52 @@ describe('FeedViewContainer', () => {
     expect(fetchPosts).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });
 
-  it('fetches posts when channel id is set or updated', () => {
+  it('does not fetch posts on mount if posts are already loaded', () => {
+    const fetchPosts = jest.fn();
+
+    subject({ fetchPosts, channelId: 'the-channel-id', channel: { hasLoadedMessages: true } });
+
+    expect(fetchPosts).not.toHaveBeenCalled();
+  });
+
+  it('fetches posts when channel id is set or updated if posts are not loaded', () => {
     const fetchPosts = jest.fn();
 
     const wrapper = subject({
       fetchPosts,
       channelId: '',
-      channel: { name: 'first channel', shouldSyncChannels: false },
+      channel: { hasLoadedMessages: false },
     });
 
-    wrapper.setProps({ channelId: 'the-channel-id' });
+    wrapper.setProps({ channelId: 'the-channel-id', channel: { hasLoadedMessages: false } });
+
+    expect(fetchPosts).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
+  });
+
+  it('does not fetch posts when channel id is updated if posts are already loaded', () => {
+    const fetchPosts = jest.fn();
+
+    const wrapper = subject({
+      fetchPosts,
+      channelId: 'the-channel-id',
+      channel: { hasLoadedMessages: true },
+    });
+
+    wrapper.setProps({ channelId: 'new-channel-id', channel: { hasLoadedMessages: true } });
+
+    expect(fetchPosts).not.toHaveBeenCalled();
+  });
+
+  it('fetches posts when user data becomes available', () => {
+    const fetchPosts = jest.fn();
+    const wrapper = subject({
+      fetchPosts,
+      channelId: 'the-channel-id',
+      channel: { hasLoadedMessages: false },
+      user: { isLoading: false, data: null },
+    });
+
+    wrapper.setProps({ user: { isLoading: false, data: { id: 'user-id' } } });
 
     expect(fetchPosts).toHaveBeenCalledWith({ channelId: 'the-channel-id' });
   });

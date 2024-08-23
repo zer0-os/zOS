@@ -11,24 +11,11 @@
   background: var(--Transparencies-Black-translucent, #0000007a);
   backdrop-filter: blur(60px);
 
-  &__feed-view {
-    display: flex;
-  }
-
   &__divider {
     width: 1px;
     height: auto;
     background-color: rgba(245, 245, 245, 0.12);
     margin: 16px;
     align-self: stretch;
-  }
-
-  &__message {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 16px;
-    box-sizing: border-box;
-    color: var(--color-greyscale-10);
   }
 }

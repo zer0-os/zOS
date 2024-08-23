@@ -1,16 +1,14 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Posts } from './components/posts';
 import { ScrollbarContainer } from '../../scrollbar-container';
 import { CreatePost } from './components/create-post';
-import { PostPayload as PayloadPostMessage, Payload as PayloadFetchPosts } from '../../../store/posts/saga';
+import { PostPayload as PayloadPostMessage } from '../../../store/posts/saga';
 import { Channel, denormalize } from '../../../store/channels';
 import { MessageSendStatus } from '../../../store/messages';
-import { fetchPosts, sendPost } from '../../../store/posts';
+import { sendPost } from '../../../store/posts';
 import { AuthenticationState } from '../../../store/authentication/types';
-import { Waypoint } from 'react-waypoint';
-import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { FeedViewContainer } from './feed-view-container/feed-view-container';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -27,7 +25,6 @@ export interface Properties extends PublicProperties {
   isJoiningConversation: boolean;
 
   sendPost: (payload: PayloadPostMessage) => void;
-  fetchPosts: (payload: PayloadFetchPosts) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -51,43 +48,8 @@ export class Container extends React.Component<Properties> {
   static mapActions(): Partial<Properties> {
     return {
       sendPost,
-      fetchPosts,
     };
   }
-
-  componentDidMount() {
-    const { activeConversationId, channel } = this.props;
-    if (activeConversationId && !channel.hasLoadedMessages) {
-      this.props.fetchPosts({ channelId: activeConversationId });
-    }
-  }
-
-  componentDidUpdate(prevProps: Properties) {
-    const { activeConversationId } = this.props;
-
-    if (activeConversationId && activeConversationId !== prevProps.activeConversationId) {
-      this.props.fetchPosts({ channelId: activeConversationId });
-    }
-
-    if (activeConversationId && prevProps.user.data === null && this.props.user.data !== null) {
-      this.props.fetchPosts({ channelId: activeConversationId });
-    }
-  }
-
-  getOldestTimestamp(messages = []) {
-    return messages.reduce((previousTimestamp, message) => {
-      return message.createdAt < previousTimestamp ? message.createdAt : previousTimestamp;
-    }, Date.now());
-  }
-
-  fetchMorePosts = () => {
-    const { activeConversationId, channel } = this.props;
-
-    if (channel.hasMorePosts) {
-      const referenceTimestamp = this.getOldestTimestamp(this.postMessages);
-      this.props.fetchPosts({ channelId: activeConversationId, referenceTimestamp });
-    }
-  };
 
   submitPost = (message: string) => {
     const { activeConversationId } = this.props;
@@ -100,17 +62,12 @@ export class Container extends React.Component<Properties> {
     this.props.sendPost(payloadPostMessage);
   };
 
-  get postMessages() {
-    const messages = this.props.channel?.messages || [];
-    return messages.filter((message) => message.isPost && message.sendStatus === MessageSendStatus.SUCCESS).reverse();
-  }
-
   get isSubmitting() {
     return this.props.channel?.messages.some((message) => message.sendStatus === MessageSendStatus.IN_PROGRESS);
   }
 
   render() {
-    const { channel, isJoiningConversation, activeConversationId, isSocialChannel } = this.props;
+    const { isJoiningConversation, activeConversationId, isSocialChannel } = this.props;
 
     if (!activeConversationId || !isSocialChannel || isJoiningConversation) {
       return null;
@@ -125,24 +82,8 @@ export class Container extends React.Component<Properties> {
               onSubmit={this.submitPost}
               isSubmitting={this.isSubmitting}
             />
-            {channel.hasLoadedMessages && (
-              <>
-                {this.postMessages.length > 0 ? (
-                  <>
-                    <Posts postMessages={this.postMessages} />
-                    <Waypoint onEnter={this.fetchMorePosts} />
-                  </>
-                ) : (
-                  <Message>Nobody has posted here yet</Message>
-                )}
-              </>
-            )}
 
-            {!channel.hasLoadedMessages && (
-              <Message>
-                <Spinner />
-              </Message>
-            )}
+            <FeedViewContainer channelId={activeConversationId} />
           </ScrollbarContainer>
         </div>
 
@@ -151,9 +92,5 @@ export class Container extends React.Component<Properties> {
     );
   }
 }
-
-const Message = ({ children }: { children: ReactNode }) => {
-  return <div {...cn('message')}>{children}</div>;
-};
 
 export const MessengerFeed = connectContainer<PublicProperties>(Container);

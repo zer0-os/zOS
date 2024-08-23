@@ -49,9 +49,9 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidUpdate(prevProps: Properties) {
-    const { channelId } = this.props;
+    const { channel, channelId } = this.props;
 
-    if (channelId && channelId !== prevProps.channelId) {
+    if (channelId && channelId !== prevProps.channelId && !channel.hasLoadedMessages) {
       this.props.fetchPosts({ channelId });
     }
 

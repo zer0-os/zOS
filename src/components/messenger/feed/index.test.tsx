@@ -12,7 +12,6 @@ describe(MessengerFeed, () => {
       isSocialChannel: false,
       isJoiningConversation: false,
       sendPost: jest.fn(),
-      fetchPosts: jest.fn(),
       ...props,
     };
 
@@ -31,7 +30,7 @@ describe(MessengerFeed, () => {
 
     const wrapper = subject({ channel: channel as any, isSocialChannel: false });
 
-    expect(wrapper).not.toHaveElement('CreatePost');
+    expect(wrapper.isEmptyRender()).toBe(true);
   });
 
   it('does not render Messenger Feed when isJoiningConversation is true', () => {
@@ -39,7 +38,7 @@ describe(MessengerFeed, () => {
 
     const wrapper = subject({ channel: channel as any, isSocialChannel: true, isJoiningConversation: true });
 
-    expect(wrapper).not.toHaveElement('CreatePost');
+    expect(wrapper.isEmptyRender()).toBe(true);
   });
 
   it('does not render Messenger Feed when no active conversation id', () => {
@@ -47,7 +46,7 @@ describe(MessengerFeed, () => {
 
     const wrapper = subject({ channel: channel as any, isSocialChannel: true, activeConversationId: null });
 
-    expect(wrapper).not.toHaveElement('CreatePost');
+    expect(wrapper.isEmptyRender()).toBe(true);
   });
 
   describe('mapState', () => {
@@ -61,6 +60,32 @@ describe(MessengerFeed, () => {
       const state = new StoreBuilder().withActiveConversation(stubConversation({ isSocialChannel: false })).build();
 
       expect(MessengerFeed.mapState(state)).toEqual(expect.objectContaining({ isSocialChannel: false }));
+    });
+
+    it('maps isJoiningConversation from state', () => {
+      const state = new StoreBuilder().withChat({ isJoiningConversation: true }).build();
+
+      expect(MessengerFeed.mapState(state)).toEqual(expect.objectContaining({ isJoiningConversation: true }));
+    });
+
+    it('maps activeConversationId from state', () => {
+      const activeConversationId = 'test-conversation-id';
+      const state = new StoreBuilder().withActiveConversationId(activeConversationId).build();
+
+      expect(MessengerFeed.mapState(state)).toEqual(expect.objectContaining({ activeConversationId }));
+    });
+
+    it('maps channel from state', () => {
+      const conversation = stubConversation({ id: 'test-conversation-id' });
+      const state = new StoreBuilder().withActiveConversation(conversation).build();
+
+      expect(MessengerFeed.mapState(state)).toEqual(
+        expect.objectContaining({
+          channel: expect.objectContaining({
+            id: 'test-conversation-id',
+          }),
+        })
+      );
     });
   });
 });

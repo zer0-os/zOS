@@ -223,7 +223,7 @@ export class Container extends React.Component<Properties> {
             )}
           </div>
 
-          {!this.props.isJoiningConversation && (
+          {/* {!this.props.isJoiningConversation && (
             <ChatViewContainer
               key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
               channelId={this.props.activeConversationId}
@@ -231,7 +231,7 @@ export class Container extends React.Component<Properties> {
               showSenderAvatar={!this.isOneOnOne()}
               ref={this.chatViewContainerRef}
             />
-          )}
+          )} */}
 
           <div className='direct-message-chat__footer-position'>
             <div className='direct-message-chat__footer'>

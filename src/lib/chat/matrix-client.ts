@@ -445,9 +445,9 @@ export class MatrixClient implements IChatClient {
     const room = this.matrix.getRoom(roomId);
     const liveTimeline = room.getLiveTimeline();
     const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
+    const events = liveTimeline.getEvents().map((event) => event.getEffectiveEvent());
+    const messages = await this.getAllChatMessagesFromRoom(events);
 
-    // For now, just return the full list again. Could filter out anything prior to lastCreatedAt
-    const messages = await this.getAllChatMessagesFromRoom(room);
     return { messages, hasMore };
   }
 
@@ -457,9 +457,10 @@ export class MatrixClient implements IChatClient {
     const room = this.matrix.getRoom(roomId);
     const liveTimeline = room.getLiveTimeline();
     const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
+    const events = liveTimeline.getEvents().map((event) => event.getEffectiveEvent());
+    const postMessages = await this.getAllPostMessagesFromRoom(events);
 
-    const postMessages = await this.getAllPostMessagesFromRoom(room);
-    return { postMessages: postMessages, hasMore };
+    return { postMessages, hasMore };
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
@@ -1344,22 +1345,12 @@ export class MatrixClient implements IChatClient {
     return this.getLatestEvent(room, EventType.RoomCreate)?.getTs() || 0;
   }
 
-  private async getAllChatMessagesFromRoom(room: Room): Promise<any[]> {
-    const events = room
-      .getLiveTimeline()
-      .getEvents()
-      .map((event) => event.getEffectiveEvent());
-
+  private async getAllChatMessagesFromRoom(events): Promise<any[]> {
     const chatMessageEvents = events.filter((event) => !this.isPostEvent(event));
     return await this.processRawEventsToMessages(chatMessageEvents);
   }
 
-  private async getAllPostMessagesFromRoom(room: Room): Promise<any[]> {
-    const events = room
-      .getLiveTimeline()
-      .getEvents()
-      .map((event) => event.getEffectiveEvent());
-
+  private async getAllPostMessagesFromRoom(events): Promise<any[]> {
     const postMessageEvents = events.filter((event) => this.isPostEvent(event));
     return await this.processRawEventsToMessages(postMessageEvents);
   }

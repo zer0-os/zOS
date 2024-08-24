@@ -125,6 +125,7 @@ export function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKMatrixC
       lastName: '',
       profileImage: '',
       profileId: '',
+      displaySubHandle: '',
     },
 
     isAdmin: false,

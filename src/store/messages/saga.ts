@@ -22,6 +22,7 @@ import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
 import { decryptFile } from '../../lib/chat/matrix/media';
+import { getUserSubHandle } from '../../lib/user';
 
 export interface Payload {
   channelId: string;
@@ -94,6 +95,7 @@ export function* getLocalZeroUsersMap() {
   }
   // map current user as well
   const currentUser = yield select(currentUserSelector());
+  const displaySubHandle = getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress);
   if (currentUser) {
     zeroUsersMap[currentUser.matrixId] = {
       userId: currentUser.id,
@@ -101,6 +103,7 @@ export function* getLocalZeroUsersMap() {
       firstName: currentUser.profileSummary.firstName,
       lastName: currentUser.profileSummary.lastName,
       profileImage: currentUser.profileSummary.profileImage,
+      displaySubHandle,
     } as User;
   }
 

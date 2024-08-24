@@ -12,6 +12,7 @@ export const Posts = ({ postMessages }) => {
             text={post.message}
             nickname={post.sender.firstName}
             timestamp={post.createdAt}
+            author={post.sender.displaySubHandle}
           />
         </li>
       ))}

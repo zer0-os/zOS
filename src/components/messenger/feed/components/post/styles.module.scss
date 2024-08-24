@@ -1,3 +1,5 @@
+@import '../../../../../glass';
+
 .Container {
   display: flex;
   gap: 8px;
@@ -6,4 +8,37 @@
 .Post {
   padding: 0;
   flex: 1;
+}
+
+.Body {
+  font-size: 14px;
+}
+
+.Avatar {
+  pointer-events: none;
+}
+
+.UserDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.Name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+}
+
+.UserName {
+  font-size: 12px;
+  line-height: normal;
+
+  @include glass-text-secondary-color;
+}
+
+.Date {
+  font-size: 12px;
+  line-height: normal;
+
+  @include glass-text-secondary-color;
 }

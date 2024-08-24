@@ -18,21 +18,25 @@ export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps
 
   return (
     <div className={styles.Container}>
-      <div>
+      <div className={styles.Avatar}>
         <Avatar size='regular' imageURL={avatarUrl} />
       </div>
       <ZUIPost
         className={styles.Post}
-        body={multilineText}
+        body={<div className={styles.Body}>{multilineText}</div>}
         details={
-          <>
+          <div className={styles.UserDetails}>
             {/* @ts-ignore */}
-            <Name variant='name'>{nickname}</Name>
+            <Name className={styles.Name} variant='name'>
+              {nickname}
+            </Name>
             {/* @ts-ignore */}
-            <Name variant='username'>{author}</Name>
-          </>
+            <Name className={styles.UserName} variant='username'>
+              {author}
+            </Name>
+          </div>
         }
-        options={<Timestamp timestamp={timestamp} />}
+        options={<Timestamp className={styles.Date} timestamp={timestamp} />}
       />
     </div>
   );

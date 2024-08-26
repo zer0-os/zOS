@@ -37,7 +37,9 @@ export const CreatePost = ({ avatarUrl, isSubmitting, onSubmit }: CreatePostProp
 
   return (
     <div className={styles.Container}>
-      <Avatar imageURL={avatarUrl} size={'regular'} />
+      <div className={styles.Avatar}>
+        <Avatar imageURL={avatarUrl} size={'regular'} />
+      </div>
       <div className={styles.Create}>
         <PostInput value={value} onChange={handleOnChange} onKeyDown={handleKeyDown} />
         <hr />

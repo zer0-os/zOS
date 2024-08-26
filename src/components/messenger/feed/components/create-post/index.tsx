@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, Button } from '@zero-tech/zui/components';
 
 import { Key } from '../../../../../lib/keyboard-search';
@@ -41,8 +42,21 @@ export const CreatePost = ({ avatarUrl, isSubmitting, onSubmit }: CreatePostProp
         <Avatar imageURL={avatarUrl} size={'regular'} />
       </div>
       <div className={styles.Create}>
-        <PostInput value={value} onChange={handleOnChange} onKeyDown={handleKeyDown} />
-        <hr />
+        <div className={styles.Input}>
+          <AnimatePresence>
+            {isSubmitting && (
+              <motion.div
+                className={styles.Loading}
+                initial={{ width: 0, opacity: 1 }}
+                animate={{ width: '60%', opacity: 1 }}
+                exit={{ width: '100%', opacity: 0 }}
+                transition={{ duration: 0.4 }}
+              />
+            )}
+          </AnimatePresence>
+          <PostInput value={value} onChange={handleOnChange} onKeyDown={handleKeyDown} />
+          <hr />
+        </div>
         <div className={styles.Actions}>
           <div className={styles.Media}></div>
           <Button isDisabled={isDisabled} isLoading={isSubmitting} className={styles.Button} onPress={handleOnSubmit}>

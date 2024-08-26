@@ -38,6 +38,7 @@
     "emoji-mart": "^3.0.1",
     "es6-promise-debounce": "^1.0.1",
     "ethers": "^5.5.2",
+    "framer-motion": "^11.3.30",
     "global": "^4.4.0",
     "history": "^4.10.1",
     "if-emoji": "^0.1.0",

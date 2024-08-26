@@ -572,7 +572,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async userJoinedInviterOnZero(channelId: string, inviterId: string, inviteeId: string) {
-    this.matrix.sendEvent(channelId, CustomEventType.USER_JOINED_INVITER_ON_ZERO, {
+    this.matrix.sendEvent(channelId, CustomEventType.USER_JOINED_INVITER_ON_ZERO as any, {
       inviterId,
       inviteeId,
     });
@@ -592,7 +592,7 @@ export class MatrixClient implements IChatClient {
       body: message,
       msgtype: MsgType.Text,
       optimisticId: optimisticId,
-    };
+    } as any;
 
     if (parentMessage) {
       const fallback = constructFallbackForParentMessage(parentMessage);
@@ -625,7 +625,7 @@ export class MatrixClient implements IChatClient {
       optimisticId: optimisticId,
     };
 
-    const postResult = await this.matrix.sendEvent(channelId, CustomEventType.ROOM_POST, content);
+    const postResult = await this.matrix.sendEvent(channelId, CustomEventType.ROOM_POST as any, content);
 
     return {
       id: postResult.event_id,
@@ -669,7 +669,7 @@ export class MatrixClient implements IChatClient {
         height,
       },
       optimisticId,
-    };
+    } as any;
 
     const messageResult = await this.matrix.sendMessage(roomId, content);
     this.recordMessageSent(roomId);
@@ -705,7 +705,7 @@ export class MatrixClient implements IChatClient {
         rootMessageId,
       },
       optimisticId,
-    };
+    } as any;
 
     const messageResult = await this.matrix.sendMessage(roomId, content);
     this.recordMessageSent(roomId);
@@ -745,7 +745,7 @@ export class MatrixClient implements IChatClient {
         rel_type: MatrixConstants.REPLACE,
         event_id: messageId,
       },
-    };
+    } as any;
 
     const editResult = await this.matrix.sendMessage(roomId, content);
     const newMessage = await this.matrix.fetchRoomEvent(roomId, editResult.event_id);

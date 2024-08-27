@@ -74,21 +74,17 @@ export class Container extends React.Component<Properties> {
     }
 
     return (
-      <>
-        <div {...cn('')}>
-          <ScrollbarContainer variant='on-hover'>
-            <CreatePost
-              avatarUrl={this.props.user.data?.profileSummary.profileImage}
-              onSubmit={this.submitPost}
-              isSubmitting={this.isSubmitting}
-            />
+      <div {...cn('')}>
+        <ScrollbarContainer variant='on-hover'>
+          <CreatePost
+            avatarUrl={this.props.user.data?.profileSummary.profileImage}
+            onSubmit={this.submitPost}
+            isSubmitting={this.isSubmitting}
+          />
 
-            <FeedViewContainer channelId={activeConversationId} />
-          </ScrollbarContainer>
-        </div>
-
-        <div {...cn('divider')} />
-      </>
+          <FeedViewContainer channelId={activeConversationId} />
+        </ScrollbarContainer>
+      </div>
     );
   }
 }

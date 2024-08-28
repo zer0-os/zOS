@@ -2,16 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import {
-  Channel,
-  DefaultRoomLabels,
-  denormalize,
-  onAddLabel,
-  onRemoveLabel,
-  onRemoveReply,
-} from '../../../store/channels';
+import { Channel, denormalize, onAddLabel, onRemoveLabel, onRemoveReply } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
-import { currentUserSelector } from '../../../store/authentication/selectors';
 import { send as sendMessage } from '../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
 import {
@@ -27,7 +19,6 @@ import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
-import { ConversationHeader } from './conversation-header';
 
 import './styles.scss';
 import { rawChannelSelector } from '../../../store/channels/saga';
@@ -38,13 +29,7 @@ export interface PublicProperties {}
 export interface Properties extends PublicProperties {
   activeConversationId: string;
   directMessage: Channel;
-  isCurrentUserRoomAdmin: boolean;
   isJoiningConversation: boolean;
-  isRoomMuted: boolean;
-  canLeaveRoom: boolean;
-  canEdit: boolean;
-  canAddMembers: boolean;
-  canViewDetails: boolean;
   isSecondarySidekickOpen: boolean;
   otherMembersTypingInRoom: string[];
   startAddGroupMember: () => void;
@@ -74,30 +59,14 @@ export class Container extends React.Component<Properties> {
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
-    const currentUser = currentUserSelector(state);
-    const hasMultipleMembers = (directMessage?.otherMembers || []).length > 1;
-    const isSocialChannel = directMessage?.isSocialChannel;
-    const isCurrentUserRoomAdmin = directMessage?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
-    const isCurrentUserRoomModerator = directMessage?.moderatorIds?.includes(currentUser?.id) ?? false;
-
-    const canLeaveRoom = !isCurrentUserRoomAdmin && hasMultipleMembers;
-    const canEdit =
-      (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && (!directMessage?.isOneOnOne || isSocialChannel);
-    const canAddMembers = isCurrentUserRoomAdmin && (!directMessage?.isOneOnOne || isSocialChannel);
-    const canViewDetails = !directMessage?.isOneOnOne || isSocialChannel;
     const channel = rawChannelSelector(activeConversationId)(state);
 
     return {
       activeConversationId,
       directMessage,
-      isCurrentUserRoomAdmin,
-      leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
       isJoiningConversation,
-      canLeaveRoom,
-      canEdit,
-      canAddMembers,
-      canViewDetails,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
+      leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
       otherMembersTypingInRoom: channel?.otherMembersTyping || [],
     };
   }
@@ -123,10 +92,6 @@ export class Container extends React.Component<Properties> {
   get isLeaveGroupDialogOpen() {
     return this.props.leaveGroupDialogStatus !== LeaveGroupDialogStatus.CLOSED;
   }
-
-  openLeaveGroupDialog = () => {
-    this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.OPEN);
-  };
 
   closeLeaveGroupDialog = () => {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
@@ -182,18 +147,6 @@ export class Container extends React.Component<Properties> {
     return <div className='direct-message-chat__typing-indicator'>{text}</div>;
   };
 
-  muteRoom = () => {
-    this.props.onAddLabel({ roomId: this.props.activeConversationId, label: DefaultRoomLabels.MUTE });
-  };
-
-  unmuteRoom = () => {
-    this.props.onRemoveLabel({ roomId: this.props.activeConversationId, label: DefaultRoomLabels.MUTE });
-  };
-
-  get isMuted() {
-    return this.props.directMessage.labels?.includes(DefaultRoomLabels.MUTE);
-  }
-
   render() {
     if ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) {
       return null;
@@ -202,31 +155,6 @@ export class Container extends React.Component<Properties> {
     return (
       <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
         <div className='direct-message-chat__content'>
-          <div className='direct-message-chat__header-gradient'></div>
-          <div className='direct-message-chat__header-position'>
-            {this.props.directMessage && (
-              <ConversationHeader
-                icon={this.props.directMessage.icon}
-                name={this.props.directMessage.name}
-                isOneOnOne={this.isOneOnOne()}
-                otherMembers={this.props.directMessage.otherMembers || []}
-                canAddMembers={this.props.canAddMembers}
-                canLeaveRoom={this.props.canLeaveRoom}
-                canEdit={this.props.canEdit}
-                canViewDetails={this.props.canViewDetails}
-                onLeaveRoom={this.openLeaveGroupDialog}
-                onViewDetails={this.props.viewGroupInformation}
-                onAddMember={this.props.startAddGroupMember}
-                onEdit={this.props.startEditConversation}
-                toggleSecondarySidekick={this.props.toggleSecondarySidekick}
-                isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
-                isRoomMuted={this.isMuted}
-                onMuteRoom={this.muteRoom}
-                onUnmuteRoom={this.unmuteRoom}
-              />
-            )}
-          </div>
-
           {!this.props.isJoiningConversation && (
             <ChatViewContainer
               key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat

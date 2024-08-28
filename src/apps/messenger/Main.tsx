@@ -9,6 +9,8 @@ import { MessengerFeed } from '../../components/messenger/feed';
 import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
 
+import styles from './Main.module.scss';
+
 export interface Properties {
   context: {
     isAuthenticated: boolean;
@@ -31,11 +33,13 @@ export class Container extends React.Component<Properties> {
           <>
             <Sidekick />
 
-            <FeatureFlag featureFlag='enableChannels'>
-              <MessengerFeed />
-            </FeatureFlag>
+            <div className={styles.Split}>
+              <FeatureFlag featureFlag='enableChannels'>
+                <MessengerFeed />
+              </FeatureFlag>
 
-            <MessengerChat />
+              <MessengerChat />
+            </div>
             <Sidekick variant='secondary' />
 
             <FeatureFlag featureFlag='enableDevPanel'>

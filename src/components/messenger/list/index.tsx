@@ -36,8 +36,7 @@ import { closeRewardsDialog, totalRewardsViewed } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
 import { openUserProfile } from '../../../store/user-profile';
 import { Button } from '@zero-tech/zui/components/Button';
-import { IconButton } from '@zero-tech/zui/components';
-import { IconArrowsLeft, IconArrowsRight, IconPlus } from '@zero-tech/zui/icons';
+import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 
 import { bemClassName } from '../../../lib/bem';

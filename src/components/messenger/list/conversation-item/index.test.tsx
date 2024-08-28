@@ -20,6 +20,7 @@ describe(ConversationItem, () => {
       onClick: () => null,
       onAddLabel: () => null,
       onRemoveLabel: () => null,
+      isCollapsed: false,
       ...props,
     };
 

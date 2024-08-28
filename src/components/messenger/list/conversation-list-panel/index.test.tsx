@@ -18,6 +18,7 @@ describe('ConversationListPanel', () => {
       onCreateConversation: () => null,
       onAddLabel: () => null,
       onRemoveLabel: () => null,
+      isCollapsed: false,
       ...props,
     };
 

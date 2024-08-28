@@ -113,6 +113,14 @@ export class FeatureFlags {
   set enableChannels(value: boolean) {
     this._setBoolean('enableChannels', value);
   }
+
+  get enableCollapseableMenu() {
+    return this._getBoolean('enableCollapseableMenu', false);
+  }
+
+  set enableCollapseableMenu(value: boolean) {
+    this._setBoolean('enableCollapseableMenu', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

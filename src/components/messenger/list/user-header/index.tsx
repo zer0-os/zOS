@@ -7,6 +7,7 @@ import { RewardsToolTipContainer } from '../rewards-tooltip/container';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
+import { FeatureFlag } from '../../../feature-flag';
 
 const cn = bemClassName('user-header');
 
@@ -90,13 +91,15 @@ export class UserHeader extends React.Component<Properties> {
           </>
         )}
 
-        <div {...cn('collapse')}>
-          <IconButton
-            Icon={this.props.isCollapsed ? IconArrowsRight : IconArrowsLeft}
-            size={32}
-            onClick={this.props.onToggleExpand}
-          />
-        </div>
+        <FeatureFlag featureFlag='enableCollapseableMenu'>
+          <div {...cn('collapse')}>
+            <IconButton
+              Icon={this.props.isCollapsed ? IconArrowsRight : IconArrowsLeft}
+              size={32}
+              onClick={this.props.onToggleExpand}
+            />
+          </div>
+        </FeatureFlag>
 
         {isExpanded && <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={32} />}
       </div>

@@ -75,9 +75,12 @@ export class Container extends React.Component<Properties> {
 
     const directMessage = denormalize(activeConversationId, state);
     const currentUser = currentUserSelector(state);
+    const hasMultipleMembers = (directMessage?.otherMembers || []).length > 1;
+    const isSocialChannel = directMessage?.isSocialChannel;
     const isCurrentUserRoomAdmin = directMessage?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
     const isCurrentUserRoomModerator = directMessage?.moderatorIds?.includes(currentUser?.id) ?? false;
-    const canLeaveRoom = !isCurrentUserRoomAdmin && (directMessage?.otherMembers || []).length > 1;
+
+    const canLeaveRoom = (!isCurrentUserRoomAdmin && hasMultipleMembers) || (isSocialChannel && hasMultipleMembers);
     const canEdit = (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !directMessage?.isOneOnOne;
     const canAddMembers = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
     const canViewDetails = !directMessage?.isOneOnOne;

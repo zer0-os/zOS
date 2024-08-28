@@ -9,6 +9,10 @@
   height: 32px;
   gap: 8px;
 
+  &[is-collapsed] {
+    justify-content: center;
+  }
+
   &__avatar-container {
     cursor: pointer;
   }
@@ -39,6 +43,8 @@
     @include glass-text-tertiary-color;
 
     display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: flex-start;
     gap: 4px;
 
@@ -48,9 +54,10 @@
 
   &__verify-id-button {
     height: fit-content;
+    padding: 0;
 
-    > *:first-child {
-      margin: 0 2px;
+    * {
+      margin: 0;
     }
   }
 

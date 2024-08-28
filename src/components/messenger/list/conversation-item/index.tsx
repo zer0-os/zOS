@@ -21,6 +21,7 @@ export interface Properties {
   conversation: Channel & { messagePreview?: string; previewDisplayDate?: string };
   myUserId: string;
   activeConversationId: string;
+  isCollapsed: boolean;
 
   onClick: (conversationId: string) => void;
   onAddLabel: (roomId: string, label: string) => void;
@@ -125,6 +126,9 @@ export class ConversationItem extends React.Component<Properties, State> {
     const isUnread = hasUnreadMessages ? 'true' : 'false';
     const isActive = conversation.id === activeConversationId ? 'true' : 'false';
     const isTyping = (otherMembersTyping || []).length > 0 ? 'true' : 'false';
+    const isCollapsed = this.props.isCollapsed;
+    const isExpanded = !isCollapsed;
+
     return (
       <div
         {...cn('')}
@@ -133,6 +137,7 @@ export class ConversationItem extends React.Component<Properties, State> {
         tabIndex={0}
         role='button'
         is-active={isActive}
+        is-collapsed={isCollapsed ? '' : null}
         onContextMenu={this.openContextMenu}
       >
         <div {...cn('avatar-with-menu-container')}>
@@ -140,22 +145,26 @@ export class ConversationItem extends React.Component<Properties, State> {
           {this.renderMoreMenu()}
         </div>
 
-        <div {...cn('summary')}>
-          <div {...cn('header')}>
-            <div {...cn('name')} is-unread={isUnread}>
-              {this.highlightedName()}
-            </div>
-            {conversation.labels?.includes(DefaultRoomLabels.MUTE) && <IconBellOff1 {...cn('muted-icon')} size={16} />}
+        {isExpanded && (
+          <div {...cn('summary')}>
+            <div {...cn('header')}>
+              <div {...cn('name')} is-unread={isUnread}>
+                {this.highlightedName()}
+              </div>
+              {conversation.labels?.includes(DefaultRoomLabels.MUTE) && (
+                <IconBellOff1 {...cn('muted-icon')} size={16} />
+              )}
 
-            <div {...cn('timestamp')}>{previewDisplayDate}</div>
-          </div>
-          <div {...cn('content')}>
-            <div {...cn('message')} is-unread={isUnread} is-typing={isTyping}>
-              <ContentHighlighter message={this.getMessagePreview()} variant='negative' tabIndex={-1} />
+              <div {...cn('timestamp')}>{previewDisplayDate}</div>
             </div>
-            {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
+            <div {...cn('content')}>
+              <div {...cn('message')} is-unread={isUnread} is-typing={isTyping}>
+                <ContentHighlighter message={this.getMessagePreview()} variant='negative' tabIndex={-1} />
+              </div>
+              {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
-import { IconPlus } from '@zero-tech/zui/icons';
+import { IconArrowsLeft, IconArrowsRight, IconPlus } from '@zero-tech/zui/icons';
 import { RewardsToolTipContainer } from '../rewards-tooltip/container';
 
 import { bemClassName } from '../../../../lib/bem';
@@ -17,6 +17,8 @@ export interface Properties {
   userIsOnline: boolean;
   showRewardsTooltip: boolean;
   hasUnviewedRewards: boolean;
+  isCollapsed: boolean;
+  onToggleExpand: () => void;
 
   onLogout?: () => void;
   onVerifyId: () => void;
@@ -67,21 +69,36 @@ export class UserHeader extends React.Component<Properties> {
   }
 
   render() {
+    const isCollapsed = this.props.isCollapsed;
+    const isExpanded = !isCollapsed;
+
     return (
-      <div {...cn('')}>
-        <div {...cn('avatar-container')} onClick={this.openProfile}>
-          <Avatar
-            isActive={this.shouldAvatarHaveHighlight}
-            size={'medium'}
-            imageURL={this.props.userAvatarUrl}
-            statusType={'active'}
+      <div {...cn('')} is-collapsed={this.props.isCollapsed ? '' : undefined}>
+        {isExpanded && (
+          <>
+            <div {...cn('avatar-container')} onClick={this.openProfile}>
+              <Avatar
+                isActive={this.shouldAvatarHaveHighlight}
+                size={'medium'}
+                imageURL={this.props.userAvatarUrl}
+                statusType={'active'}
+              />
+            </div>
+            {this.props.showRewardsTooltip && <RewardsToolTipContainer />}
+
+            {this.renderUserDetails()}
+          </>
+        )}
+
+        <div {...cn('collapse')}>
+          <IconButton
+            Icon={this.props.isCollapsed ? IconArrowsRight : IconArrowsLeft}
+            size={32}
+            onClick={this.props.onToggleExpand}
           />
         </div>
-        {this.props.showRewardsTooltip && <RewardsToolTipContainer />}
 
-        {this.renderUserDetails()}
-
-        <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={32} />
+        {isExpanded && <IconButton Icon={IconPlus} onClick={this.props.startConversation} size={32} />}
       </div>
     );
   }

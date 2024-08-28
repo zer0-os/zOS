@@ -6,7 +6,7 @@
 
 .sidekick {
   position: relative;
-  width: $width-sidekick + 16px;
+  width: auto;
   height: 100%;
   transition: margin animation.$animation-duration-double var(--sidekick-transition-easing-function);
   @include main-background;
@@ -52,7 +52,7 @@
     display: flex;
     flex-shrink: 0;
     pointer-events: auto;
-    width: $width-sidekick;
+    max-width: $width-sidekick;
 
     @include glass-outer;
   }

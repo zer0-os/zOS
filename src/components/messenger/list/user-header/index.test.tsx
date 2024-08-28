@@ -16,7 +16,9 @@ describe(UserHeader, () => {
       userIsOnline: true,
       showRewardsTooltip: false,
       hasUnviewedRewards: false,
+      isCollapsed: false,
 
+      onToggleExpand: () => null,
       onLogout: () => null,
       onVerifyId: () => null,
       startConversation: () => null,
@@ -47,7 +49,9 @@ describe(UserHeader, () => {
     const startConversationMock = jest.fn();
     const wrapper = subject({ startConversation: startConversationMock });
 
-    wrapper.find(IconButton).simulate('click');
+    const buttons = wrapper.find(IconButton);
+
+    buttons.at(1).simulate('click');
     expect(startConversationMock).toHaveBeenCalled();
   });
 

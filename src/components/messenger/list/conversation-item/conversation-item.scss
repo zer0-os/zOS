@@ -12,6 +12,10 @@
   margin-bottom: 8px;
   padding: 0 8px;
 
+  &[is-collapsed] {
+    justify-content: center;
+  }
+
   &:hover,
   &:focus,
   &[is-active='true'] {

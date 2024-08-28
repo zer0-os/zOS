@@ -84,6 +84,7 @@ interface State {
   isVerifyIdDialogOpen: boolean;
   isInviteDialogOpen: boolean;
   isGroupTypeDialogOpen: boolean;
+  isCollapsed: boolean;
 }
 
 export class Container extends React.Component<Properties, State> {
@@ -141,6 +142,7 @@ export class Container extends React.Component<Properties, State> {
     isVerifyIdDialogOpen: false,
     isInviteDialogOpen: false,
     isGroupTypeDialogOpen: false,
+    isCollapsed: false,
   };
 
   usersInMyNetworks = async (search: string) => {
@@ -178,6 +180,14 @@ export class Container extends React.Component<Properties, State> {
     } else {
       this.props.createConversation(conversation);
     }
+  };
+
+  collapse = () => {
+    this.setState({ isCollapsed: true });
+  };
+
+  expand = () => {
+    this.setState({ isCollapsed: false });
   };
 
   openVerifyIdDialog = () => {
@@ -272,6 +282,8 @@ export class Container extends React.Component<Properties, State> {
         openUserProfile={this.props.openUserProfile}
         hasUnviewedRewards={this.props.hasUnviewedRewards}
         totalRewardsViewed={this.props.totalRewardsViewed}
+        onToggleExpand={this.state.isCollapsed ? this.expand : this.collapse}
+        isCollapsed={this.state.isCollapsed}
       />
     );
   }
@@ -290,6 +302,7 @@ export class Container extends React.Component<Properties, State> {
             onAddLabel={this.props.onAddLabel}
             onRemoveLabel={this.props.onRemoveLabel}
             isLabelDataLoaded={this.props.isSecondaryConversationDataLoaded}
+            isCollapsed={this.state.isCollapsed}
           />
         )}
         {this.props.stage === SagaStage.InitiateConversation && (
@@ -330,10 +343,12 @@ export class Container extends React.Component<Properties, State> {
   }
 
   render() {
+    const isCollapsed = this.state.isCollapsed;
+    const isExpanded = !isCollapsed;
+
     return (
       <>
         {this.props.stage === SagaStage.None && this.renderUserHeader()}
-
         <div {...cn('')}>
           {this.renderCreateConversation()}
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
@@ -341,7 +356,7 @@ export class Container extends React.Component<Properties, State> {
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
           {this.state.isGroupTypeDialogOpen && this.renderGroupTypeDialog()}
         </div>
-        {this.props.stage === SagaStage.None && this.renderFooterButton()}
+        {isExpanded && this.props.stage === SagaStage.None && this.renderFooterButton()}
         {this.renderInviteDialog()}
       </>
     );

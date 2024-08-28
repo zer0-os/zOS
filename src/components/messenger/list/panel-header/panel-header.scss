@@ -7,15 +7,17 @@
     flex-direction: row;
     align-content: center;
     align-items: center;
+    gap: 8px;
 
     color: theme.$color-greyscale-12;
 
     padding: 16px;
-    width: 216px;
+    width: 300px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   &__title {
-    flex: 1 0 0;
     text-align: center;
     font-weight: 700;
   }

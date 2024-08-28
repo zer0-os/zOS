@@ -6,6 +6,9 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 16px;
+  width: 500px;
+  max-width: 100%;
+  box-sizing: border-box;
 
   &__header-container {
     display: flex;

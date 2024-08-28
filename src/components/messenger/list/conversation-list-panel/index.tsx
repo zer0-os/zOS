@@ -21,6 +21,7 @@ export interface Properties {
   myUserId: string;
   activeConversationId: string;
   isLabelDataLoaded: boolean;
+  isCollapsed: boolean;
 
   search: (input: string) => any;
   onCreateConversation: (userId: string) => void;
@@ -233,20 +234,25 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   };
 
   render() {
+    const isCollapsed = this.props.isCollapsed;
+    const isExpanded = !isCollapsed;
+
     return (
       <>
         <div {...cn('items')}>
-          <div {...cn('items-actions')}>
-            <Input
-              {...cn('items-conversations-search')}
-              onChange={this.searchChanged}
-              size={'small'}
-              type={'search'}
-              value={this.state.filter}
-            />
-          </div>
+          {isExpanded && (
+            <div {...cn('items-actions')}>
+              <Input
+                {...cn('items-conversations-search')}
+                onChange={this.searchChanged}
+                size={'small'}
+                type={'search'}
+                value={this.state.filter}
+              />
+            </div>
+          )}
 
-          {this.renderTabList()}
+          {isExpanded && this.renderTabList()}
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>
@@ -261,9 +267,13 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                     activeConversationId={this.props.activeConversationId}
                     onAddLabel={this.onAddLabel}
                     onRemoveLabel={this.onRemoveLabel}
+                    isCollapsed={isCollapsed}
                   />
                 ))}
-              {this.filteredConversations.length === 0 && !this.state.filter && this.renderEmptyConversationList()}
+              {isExpanded &&
+                this.filteredConversations.length === 0 &&
+                !this.state.filter &&
+                this.renderEmptyConversationList()}
 
               {this.filteredConversations?.length === 0 &&
                 this.state.userSearchResults?.length === 0 &&

@@ -80,10 +80,11 @@ export class Container extends React.Component<Properties> {
     const isCurrentUserRoomAdmin = directMessage?.adminMatrixIds?.includes(currentUser?.matrixId) ?? false;
     const isCurrentUserRoomModerator = directMessage?.moderatorIds?.includes(currentUser?.id) ?? false;
 
-    const canLeaveRoom = (!isCurrentUserRoomAdmin && hasMultipleMembers) || (isSocialChannel && hasMultipleMembers);
-    const canEdit = (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !directMessage?.isOneOnOne;
-    const canAddMembers = isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
-    const canViewDetails = !directMessage?.isOneOnOne;
+    const canLeaveRoom = !isCurrentUserRoomAdmin && hasMultipleMembers;
+    const canEdit =
+      (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && (!directMessage?.isOneOnOne || isSocialChannel);
+    const canAddMembers = isCurrentUserRoomAdmin && (!directMessage?.isOneOnOne || isSocialChannel);
+    const canViewDetails = !directMessage?.isOneOnOne || isSocialChannel;
     const channel = rawChannelSelector(activeConversationId)(state);
 
     return {

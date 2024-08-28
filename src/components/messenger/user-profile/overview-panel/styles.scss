@@ -16,6 +16,9 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 16px;
+  width: 300px;
+  max-width: 100%;
+  box-sizing: border-box;
 
   &__header-container {
     display: flex;

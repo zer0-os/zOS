@@ -11,16 +11,30 @@ import { FeatureFlag } from '../../components/feature-flag';
 
 import styles from './Main.module.scss';
 import { ConversationHeader } from '../../components/messenger/chat/conversation-header/container';
+import { denormalize } from '../../store/channels';
 
 export interface Properties {
   context: {
     isAuthenticated: boolean;
   };
+  isValidConversation: boolean;
+  isSocialChannel: boolean;
+  isJoiningConversation: boolean;
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(_state: RootState): Partial<Properties> {
-    return {};
+  static mapState(state: RootState): Partial<Properties> {
+    const {
+      chat: { activeConversationId, isJoiningConversation },
+    } = state;
+
+    const currentChannel = denormalize(activeConversationId, state) || null;
+
+    return {
+      isValidConversation: !!activeConversationId,
+      isSocialChannel: currentChannel?.isSocialChannel,
+      isJoiningConversation,
+    };
   }
 
   static mapActions(_state: RootState): Partial<Properties> {
@@ -37,9 +51,11 @@ export class Container extends React.Component<Properties> {
             <div className={styles.Split}>
               <ConversationHeader className={styles.Header} />
 
-              <FeatureFlag featureFlag='enableChannels'>
-                <MessengerFeed />
-              </FeatureFlag>
+              {this.props.isSocialChannel && !this.props.isJoiningConversation && this.props.isValidConversation && (
+                <FeatureFlag featureFlag='enableChannels'>
+                  <MessengerFeed />
+                </FeatureFlag>
+              )}
 
               <MessengerChat />
             </div>

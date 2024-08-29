@@ -11,6 +11,9 @@ describe(Main, () => {
       context: {
         isAuthenticated: false,
       },
+      isValidConversation: false,
+      isSocialChannel: false,
+      isJoiningConversation: false,
       ...props,
     };
 
@@ -23,9 +26,21 @@ describe(Main, () => {
     expect(wrapper).toHaveElement(MessengerChat);
   });
 
-  it('renders messenger feed container', () => {
-    const wrapper = subject({ context: { isAuthenticated: true } });
+  it('renders messenger feed container when is social channel and is valid conversation', () => {
+    const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: true, isValidConversation: true });
 
     expect(wrapper).toHaveElement(MessengerFeed);
+  });
+
+  it('should not render messenger feed container when is not social channel', () => {
+    const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: false, isValidConversation: true });
+
+    expect(wrapper).not.toHaveElement(MessengerFeed);
+  });
+
+  it('should not render messenger feed container when is not valid conversation', () => {
+    const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: true, isValidConversation: false });
+
+    expect(wrapper).not.toHaveElement(MessengerFeed);
   });
 });

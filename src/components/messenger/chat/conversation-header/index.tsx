@@ -14,6 +14,7 @@ import './styles.scss';
 const cn = bemClassName('conversation-header');
 
 export interface Properties {
+  className?: string;
   isOneOnOne: boolean;
   otherMembers: User[];
   icon: string;
@@ -119,6 +120,7 @@ export class ConversationHeader extends React.Component<Properties> {
         title={this.renderTitle()}
         subtitle={this.renderSubTitle()}
         onClick={this.toggleSidekick}
+        className={this.props.className}
         end={
           <>
             <GroupManagementMenu

@@ -14,7 +14,15 @@ export interface PostProps {
 }
 
 export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps) => {
-  const multilineText = useMemo(() => text.split('\n').map((line, index) => <p key={index}>{line}</p>), [text]);
+  const multilineText = useMemo(
+    () =>
+      text.split('\n').map((line, index) => (
+        <p key={index} className={styles.Text}>
+          {line}
+        </p>
+      )),
+    [text]
+  );
 
   return (
     <div className={styles.Container}>

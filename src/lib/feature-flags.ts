@@ -107,7 +107,7 @@ export class FeatureFlags {
   }
 
   get enableChannels() {
-    return this._getBoolean('enableChannels');
+    return this._getBoolean('enableChannels', true);
   }
 
   set enableChannels(value: boolean) {
@@ -115,7 +115,7 @@ export class FeatureFlags {
   }
 
   get enableCollapseableMenu() {
-    return this._getBoolean('enableCollapseableMenu', false);
+    return this._getBoolean('enableCollapseableMenu', true);
   }
 
   set enableCollapseableMenu(value: boolean) {

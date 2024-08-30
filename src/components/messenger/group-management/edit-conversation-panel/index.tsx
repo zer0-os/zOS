@@ -69,6 +69,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
     return this.props.otherMembers.length > 1;
   }
 
+  get canEditGroupName() {
+    return !this.props.name.includes('0://');
+  }
+
   get isCurrentUserAdmin() {
     return isUserAdmin(this.props.currentUser, this.props.conversationAdminIds);
   }
@@ -107,6 +111,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
           onChange={this.trackName}
           placeholder='Group name...'
           {...cn('body-input')}
+          isDisabled={!this.canEditGroupName}
         />
 
         {this.generalError && (

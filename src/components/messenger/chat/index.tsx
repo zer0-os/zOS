@@ -177,7 +177,6 @@ export class Container extends React.Component<Properties> {
               {this.renderTypingIndicators()}
             </div>
           </div>
-          <div className='direct-message-chat__footer-gradient'></div>
 
           {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
           {this.props.isJoiningConversation && <JoiningConversationDialog />}

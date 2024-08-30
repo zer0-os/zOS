@@ -68,15 +68,6 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     backdrop-filter: blur(32px);
   }
 
-  &__footer-gradient {
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
-    height: 64px;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.75) 0px, rgba(0, 0, 0, 0.492172) 22px, rgba(0, 0, 0, 0) 64px);
-    z-index: 2;
-  }
-
   &__typing-indicator {
     font-size: 13px;
     font-style: italic;
@@ -136,6 +127,7 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     flex-grow: 1;
     overflow: hidden;
     width: 100%;
+    margin-bottom: 16px;
 
     .direct-message-chat__content {
       height: 100vh;

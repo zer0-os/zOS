@@ -17,14 +17,16 @@ export const App = () => {
     // See: ZOS-115
     // @ts-ignore
     <ZUIProvider>
-      {videoBackgroundSrc && <VideoBackground src={videoBackgroundSrc} />}
       <div className={mainClassName}>
         {isAuthenticated && (
-          <div className={wrapperClassName}>
-            <DialogManager />
-            <AppBar />
-            <AppRouter />
-          </div>
+          <>
+            {videoBackgroundSrc && <VideoBackground src={videoBackgroundSrc} />}
+            <div className={wrapperClassName}>
+              <DialogManager />
+              <AppBar />
+              <AppRouter />
+            </div>
+          </>
         )}
         <ThemeEngine />
       </div>

@@ -27,6 +27,14 @@ $border-color-hover: theme-zui.$color-primary-7;
 
   pointer-events: none;
 
+  .app-main-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: 1700px;
+    width: 100%;
+  }
+
   &.messenger-full-screen {
     justify-content: start;
   }

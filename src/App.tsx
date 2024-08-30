@@ -11,20 +11,20 @@ import { DialogManager } from './components/dialog-manager/container';
 import { ThemeEngine } from './components/theme-engine';
 
 export const App = () => {
-  const { isAuthenticated, mainClassName, videoBackgroundSrc } = useAppMain();
+  const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName } = useAppMain();
 
   return (
     // See: ZOS-115
     // @ts-ignore
     <ZUIProvider>
+      {videoBackgroundSrc && <VideoBackground src={videoBackgroundSrc} />}
       <div className={mainClassName}>
         {isAuthenticated && (
-          <>
-            {videoBackgroundSrc && <VideoBackground src={videoBackgroundSrc} />}
+          <div className={wrapperClassName}>
             <DialogManager />
             <AppBar />
             <AppRouter />
-          </>
+          </div>
         )}
         <ThemeEngine />
       </div>
@@ -42,10 +42,13 @@ const useAppMain = () => {
     background: isAuthenticated,
   });
 
+  const wrapperClassName = 'app-main-wrapper';
+
   return {
     isAuthenticated,
     mainClassName,
     videoBackgroundSrc,
+    wrapperClassName,
   };
 };
 

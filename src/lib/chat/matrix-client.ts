@@ -51,6 +51,8 @@ import { uploadAttachment } from '../../store/messages/api';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
 import { PostsResponse } from '../../store/posts';
+import { SlidingSync, SlidingSyncEvent } from 'matrix-js-sdk/lib/sliding-sync';
+//import { SlidingSync } from 'matrix-js-sdk/lib/sliding-sync';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
@@ -200,6 +202,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async getConversations() {
+    console.log('getConversations??');
     featureFlags.enableTimerLogs && console.time('xxxgetConversations');
 
     await this.waitForConnection();
@@ -229,6 +232,8 @@ export class MatrixClient implements IChatClient {
 
     featureFlags.enableTimerLogs && console.time('xxxmapConversationresult');
     const result = await Promise.all(filteredRooms.map((r) => this.mapConversation(r)));
+    console.log('Conversation result', result);
+
     featureFlags.enableTimerLogs && console.timeEnd('xxxmapConversationresult');
 
     featureFlags.enableTimerLogs && console.timeEnd('xxxgetConversations');
@@ -1147,13 +1152,54 @@ export class MatrixClient implements IChatClient {
       // this.matrix.getCrypto().globalBlacklistUnverifiedDevices = false;
       this.matrix.setGlobalErrorOnUnknownDevices(false);
 
-      await this.matrix.startClient();
+      const listReq = {
+        ranges: [[0, 9]],
+        sort: ['by_recency'],
+        timeline_limit: 10,
+        required_state: [['*', '*']],
+        bump_event_types: ['m.room.message', 'm.room.encrypted'],
+
+        // filters: {
+        //   is_dm: true,
+        // },
+      };
+
+      const slidingSync = new SlidingSync(
+        'http://localhost:8009',
+        new Map([['a', listReq]]),
+        {
+          required_state: [['*', '*']],
+          timeline_limit: 100,
+        },
+        this.matrix,
+        30000
+      );
+
+      try {
+        await this.matrix.startClient({
+          //slidingSync,
+        });
+
+        //await slidingSync.start();
+        slidingSync.addListener(SlidingSyncEvent.RoomData, (event, ed) => {
+          console.log('SS EVENT ______--- :: ', event);
+          console.log('ED ', ed);
+        });
+
+        //console.log('x:: ', x);
+      } catch (error) {
+        console.log('error:: ', error);
+        throw error;
+      }
 
       featureFlags.enableTimerLogs && console.time('xxxWaitForSync');
       await this.waitForSync();
       featureFlags.enableTimerLogs && console.timeEnd('xxxWaitForSync');
 
       featureFlags.enableTimerLogs && console.timeEnd('xxxinitializeClient');
+
+      //await slidingSync.start();
+
       return opts.userId;
     }
   }

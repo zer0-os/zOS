@@ -11,6 +11,8 @@
   background: var(--Transparencies-Black-translucent, #0000007a);
   backdrop-filter: blur(60px);
 
+  border-radius: 0 0 16px 16px;
+
   &__divider {
     width: 1px;
     height: auto;

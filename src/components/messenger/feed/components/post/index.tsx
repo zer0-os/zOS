@@ -33,7 +33,7 @@ export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps
         className={styles.Post}
         body={<div className={styles.Body}>{multilineText}</div>}
         details={
-          <div className={styles.UserDetails}>
+          <>
             {/* @ts-ignore */}
             <Name className={styles.Name} variant='name'>
               {nickname}
@@ -42,7 +42,7 @@ export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps
             <Name className={styles.UserName} variant='username'>
               {author}
             </Name>
-          </div>
+          </>
         }
         options={<Timestamp className={styles.Date} timestamp={timestamp} />}
       />

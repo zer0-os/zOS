@@ -1,14 +1,27 @@
+@import '../../scrollbar.scss';
+
 .scroll-container {
   overflow-y: scroll;
   overflow-x: hidden;
 
+  @include scrollbar();
+
+  // Scrollbar is hidden by default
+  &::-webkit-scrollbar-thumb {
+    display: none;
+  }
+
+  // Show scrollbar on hover
+  &:hover {
+    &::-webkit-scrollbar-thumb {
+      display: block;
+    }
+  }
+
+  // If scrollbar is intentionally hidden, don't show on hover
   &.scrollbar-hidden {
     &::-webkit-scrollbar {
-      width: 0;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: none;
+      display: none !important;
     }
   }
 }

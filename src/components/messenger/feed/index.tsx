@@ -63,7 +63,9 @@ export class Container extends React.Component<Properties> {
   };
 
   get isSubmitting() {
-    return this.props.channel?.messages.some((message) => message.sendStatus === MessageSendStatus.IN_PROGRESS);
+    return this.props.channel?.messages
+      .filter((message) => message.isPost)
+      .some((message) => message.sendStatus === MessageSendStatus.IN_PROGRESS);
   }
 
   render() {

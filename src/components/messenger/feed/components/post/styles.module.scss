@@ -3,6 +3,19 @@
 .Container {
   display: flex;
   gap: 8px;
+
+  &:not([has-author]) {
+    [class*='_Header'] {
+      align-items: center;
+      margin-top: 8px;
+    }
+  }
+
+  &[has-author] {
+    [class*='_Header'] {
+      margin-top: 4px;
+    }
+  }
 }
 
 .Post {

@@ -2,11 +2,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as MessengerFeed, Properties } from '.';
 import { StoreBuilder, stubConversation } from '../../../store/test/store';
+import { PostInputContainer } from './components/post-input/container';
 
 describe(MessengerFeed, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      user: { data: null },
       channel: null,
       activeConversationId: 'channel-id',
       isSocialChannel: false,
@@ -22,7 +22,7 @@ describe(MessengerFeed, () => {
     const channel = stubConversation({ name: 'convo-1', hasLoadedMessages: true, messages: [] });
 
     const wrapper = subject({ channel: channel as any, isSocialChannel: true });
-    expect(wrapper).toHaveElement('CreatePost');
+    expect(wrapper).toHaveElement(PostInputContainer);
   });
 
   it('does not render Messenger Feed when isSocialChannel is false', () => {

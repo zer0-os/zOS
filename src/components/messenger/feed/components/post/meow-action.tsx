@@ -21,8 +21,6 @@ const MAX = CONFIG.increments * CONFIG.options;
 export const MeowAction = () => {
   const { amount, stop, start, scale } = useMeowAction();
 
-  console.log('opacity', (1 / MAX) * amount);
-
   return (
     <motion.div style={{ scale }} onTapStart={start} onTap={stop} className={styles.Container}>
       <Action>

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { bemClassName } from '../../../../lib/bem';
 import { PanelHeader } from '../../list/panel-header';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
-import { Alert, Modal, IconButton } from '@zero-tech/zui/components';
+import { Alert, Modal as ZuiModal, IconButton } from '@zero-tech/zui/components';
 
 import { IconPlus } from '@zero-tech/zui/icons';
 import './styles.scss';
@@ -12,6 +12,9 @@ import { CitizenListItem } from '../../../citizen-list-item';
 import { IconXClose } from '@zero-tech/zui/icons';
 import { CreateEmailAccountContainer } from '../../../../authentication/create-email-account/container';
 import { ScrollbarContainer } from '../../../scrollbar-container';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { Color, Modal, Variant } from '../../../modal';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 const cn = bemClassName('account-management-panel');
 
@@ -21,24 +24,58 @@ export interface Properties {
   successMessage: string;
   currentUser: any;
   canAddEmail: boolean;
+  isWalletConnected: boolean;
+  connectedWallet: string;
 
   onBack: () => void;
   onOpenAddEmailModal: () => void;
   onCloseAddEmailModal: () => void;
 }
 
-export class AccountManagementPanel extends React.Component<Properties> {
+interface State {
+  isUserLinkingNewWallet: boolean;
+}
+
+export class AccountManagementPanel extends React.Component<Properties, State> {
+  state = {
+    isUserLinkingNewWallet: false,
+  };
+
+  setIsUserLinkingNewWallet = (isUserLinkingNewWallet: boolean) => {
+    this.setState({ isUserLinkingNewWallet });
+  };
+
   back = () => {
     this.props.onBack();
   };
 
-  // note: hiding this for now
   renderAddNewWalletButton = () => {
+    const handleAddWallet = (account, openConnectModal) => {
+      this.setIsUserLinkingNewWallet(true);
+
+      if (!account?.address) {
+        // Prompt user to connect their wallet if none is connected
+        openConnectModal();
+      }
+
+      // Otherwise, wallet is already connected, proceed to the next step
+    };
+
     return (
       <div {...cn('add-wallet')}>
-        <Button variant={ButtonVariant.Secondary} onPress={() => {}} startEnhancer={<IconPlus size={20} isFilled />}>
-          Add new wallet
-        </Button>
+        <ConnectButton.Custom>
+          {({ account, openConnectModal }) => {
+            return (
+              <Button
+                variant={ButtonVariant.Secondary}
+                onPress={() => handleAddWallet(account, openConnectModal)}
+                startEnhancer={<IconPlus size={20} isFilled />}
+              >
+                Add wallet
+              </Button>
+            );
+          }}
+        </ConnectButton.Custom>
       </div>
     );
   };
@@ -61,6 +98,8 @@ export class AccountManagementPanel extends React.Component<Properties> {
             </Alert>
           </div>
         )}
+
+        {featureFlags.enableAddWallets && wallets.length === 0 && this.renderAddNewWalletButton()}
       </div>
     );
   };
@@ -101,7 +140,7 @@ export class AccountManagementPanel extends React.Component<Properties> {
 
   renderAddEmailAccountModal = () => {
     return (
-      <Modal
+      <ZuiModal
         open={this.props.isAddEmailModalOpen}
         onOpenChange={(isOpen) => {
           isOpen ? this.props.onOpenAddEmailModal() : this.props.onCloseAddEmailModal();
@@ -120,6 +159,38 @@ export class AccountManagementPanel extends React.Component<Properties> {
           </div>
 
           <CreateEmailAccountContainer addAccount />
+        </div>
+      </ZuiModal>
+    );
+  };
+
+  renderLinkNewWalletModal = () => {
+    const onClose = () => {
+      this.setIsUserLinkingNewWallet(false);
+    };
+
+    return (
+      <Modal
+        title='Link Wallet'
+        primaryText='Link Wallet'
+        primaryVariant={Variant.Primary}
+        primaryColor={Color.Highlight}
+        secondaryText='Cancel'
+        secondaryVariant={Variant.Secondary}
+        secondaryColor={Color.Red}
+        onPrimary={() => {}}
+        onSecondary={onClose}
+        onClose={onClose}
+        isProcessing={false}
+      >
+        <div {...cn('link-new-wallet-modal')}>
+          You have a wallet connected by the address{' '}
+          <b>
+            <i>{this.props.connectedWallet}</i>
+          </b>
+          <br />
+          <br />
+          Do you want to link this wallet with your ZERO account?
         </div>
       </Modal>
     );
@@ -152,6 +223,7 @@ export class AccountManagementPanel extends React.Component<Properties> {
             </div>
 
             {this.renderAddEmailAccountModal()}
+            {this.state.isUserLinkingNewWallet && this.props.isWalletConnected && this.renderLinkNewWalletModal()}
           </div>
         </ScrollbarContainer>
       </div>

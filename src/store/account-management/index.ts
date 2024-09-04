@@ -4,22 +4,18 @@ import { Connectors } from '../../lib/web3';
 export enum SagaActionTypes {
   AddNewWallet = 'Wallets/addNewWallet',
   AddEmailAccount = 'Wallets/addEmailAccount',
-  OpenWalletSelectModal = 'Wallets/openWalletSelectModal',
-  CloseWalletSelectModal = 'Wallets/closeWalletSelectModal',
   OpenAddEmailAccountModal = 'Wallets/openAddEmailAccountModal',
   CloseAddEmailAccountModal = 'Wallets/closeAddEmailAccountModal',
 }
 
 export type AccountManagementState = {
   errors: string[];
-  isWalletSelectModalOpen: boolean;
   isAddEmailAccountModalOpen: boolean;
   successMessage: string;
 };
 
 export const initialState: AccountManagementState = {
   errors: [],
-  isWalletSelectModalOpen: false,
   isAddEmailAccountModalOpen: false,
   successMessage: '',
 };
@@ -30,8 +26,6 @@ export enum Errors {
 
 export const addNewWallet = createAction<{ connector: Connectors }>(SagaActionTypes.AddNewWallet);
 export const addEmailAccount = createAction<{ email: string; password: string }>(SagaActionTypes.AddEmailAccount);
-export const openWalletSelectModal = createAction(SagaActionTypes.OpenWalletSelectModal);
-export const closeWalletSelectModal = createAction(SagaActionTypes.CloseWalletSelectModal);
 export const openAddEmailAccountModal = createAction(SagaActionTypes.OpenAddEmailAccountModal);
 export const closeAddEmailAccountModal = createAction(SagaActionTypes.CloseAddEmailAccountModal);
 
@@ -41,9 +35,6 @@ const slice = createSlice({
   reducers: {
     setErrors: (state, action: PayloadAction<AccountManagementState['errors']>) => {
       state.errors = action.payload;
-    },
-    setWalletSelectModalStatus: (state, action: PayloadAction<AccountManagementState['isWalletSelectModalOpen']>) => {
-      state.isWalletSelectModalOpen = action.payload;
     },
     setAddEmailAccountModalStatus: (
       state,
@@ -57,6 +48,5 @@ const slice = createSlice({
   },
 });
 
-export const { setErrors, setWalletSelectModalStatus, setAddEmailAccountModalStatus, setSuccessMessage } =
-  slice.actions;
+export const { setErrors, setAddEmailAccountModalStatus, setSuccessMessage } = slice.actions;
 export const { reducer } = slice;

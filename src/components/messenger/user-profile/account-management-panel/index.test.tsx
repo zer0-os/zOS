@@ -6,6 +6,11 @@ import { bem } from '../../../../lib/bem';
 import { Button } from '@zero-tech/zui/components/Button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
+const featureFlags = { enableAddWallets: true };
+jest.mock('../../../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 // Mock the ConnectButton from rainbowkit
 jest.mock('@rainbow-me/rainbowkit', () => ({
   ConnectButton: {

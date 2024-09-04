@@ -1,10 +1,26 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { Message, MessageSendStatus } from './../messages';
+import { MediaType, Message, MessageSendStatus } from './../messages';
 import { User } from './../authentication/types';
 
-export function createOptimisticPostObject(postText: string, user: User): Message {
+export function createOptimisticPostObject(
+  postText: string,
+  user: User,
+  file?: { name: string; url: string; mediaType: MediaType; giphy: any },
+  rootMessageId?: string
+): Message {
   const id = uuidv4();
+  let media;
+
+  if (file) {
+    media = {
+      type: file.mediaType,
+      url: file.giphy ? file.giphy.images.downsized.url : file.url,
+      name: file.name,
+      height: 0,
+      width: 0,
+    };
+  }
 
   return {
     createdAt: Date.now(),
@@ -24,8 +40,9 @@ export function createOptimisticPostObject(postText: string, user: User): Messag
     },
     updatedAt: 0,
     preview: null,
-    media: null,
+    media,
     sendStatus: MessageSendStatus.IN_PROGRESS,
     isPost: true,
+    rootMessageId,
   };
 }

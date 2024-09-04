@@ -1,4 +1,5 @@
 @import '../../../../../glass';
+@import '../../../../../animation';
 
 .Container {
   display: flex;
@@ -49,4 +50,38 @@
   line-height: normal;
 
   @include glass-text-secondary-color;
+}
+
+.BlockImage {
+  position: relative;
+  width: 100%;
+
+  img {
+    display: block;
+    margin: auto;
+    max-width: 100%;
+    max-height: 520px;
+  }
+
+  animation: fadein 1s ease-in forwards;
+}
+
+.ImagePlaceholderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  max-width: 100%;
+  max-height: 520px;
+}
+
+.ImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  filter: blur(2px);
+  background-color: rgba(54, 93, 87, 0.2);
+  background: linear-gradient(90deg, rgba(54, 93, 87, 0.2) 25%, rgba(54, 93, 87, 0.4) 50%, rgba(54, 93, 87, 0.2) 75%);
+  background-size: 600px 100%;
+  animation: fadein 1s ease-in forwards, loadingShimmer 2s infinite linear;
 }

@@ -3,10 +3,12 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { Payload as PayloadFetchPost } from '../../../../store/posts/saga';
 import { Channel, denormalize } from '../../../../store/channels';
-import { MessageSendStatus } from '../../../../store/messages';
+import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
 import { fetchPosts } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
+import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../chat-view-container/utils';
+import { compareDatesAsc } from '../../../../lib/date';
 
 interface PublicProperties {
   channelId: string;
@@ -18,6 +20,7 @@ export interface Properties extends PublicProperties {
   activeConversationId?: string;
 
   fetchPosts: (payload: PayloadFetchPost) => void;
+  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -38,6 +41,7 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchPosts,
+      loadAttachmentDetails,
     };
   }
 
@@ -80,8 +84,17 @@ export class Container extends React.Component<Properties> {
   };
 
   get postMessages() {
-    const messages = this.props.channel?.messages || [];
-    return messages.filter((message) => message.isPost && message.sendStatus === MessageSendStatus.SUCCESS).reverse();
+    const allMessages = this.props.channel?.messages || [];
+
+    const postMessages = allMessages.filter(
+      (message) => message.isPost && message.sendStatus === MessageSendStatus.SUCCESS
+    );
+
+    const postMessagesById = mapMessagesById(postMessages);
+    const postMessagesByRootId = mapMessagesByRootId(postMessages);
+    const posts = linkMessages(postMessages, postMessagesById, postMessagesByRootId);
+
+    return posts.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt)).reverse();
   }
 
   render() {
@@ -95,6 +108,7 @@ export class Container extends React.Component<Properties> {
           onFetchMore={this.fetchMorePosts}
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           messagesFetchStatus={this.channel.messagesFetchStatus}
+          loadAttachmentDetails={this.props.loadAttachmentDetails}
         />
       </>
     );

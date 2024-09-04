@@ -19,10 +19,10 @@ const CONFIG: MeowActionConfig = {
 const MAX = CONFIG.increments * CONFIG.options;
 
 export const MeowAction = () => {
-  const { amount, stop, start, scale } = useMeowAction();
+  const { amount, cancel, stop, start, scale } = useMeowAction();
 
   return (
-    <motion.div style={{ scale }} onTapStart={start} onTap={stop} className={styles.Container}>
+    <motion.div style={{ scale }} onTapStart={start} onTap={stop} onTapCancel={cancel} className={styles.Container}>
       <Action>
         <AnimatePresence>
           {!!amount && (
@@ -76,7 +76,22 @@ const useMeowAction = () => {
     }, CONFIG.msBetweenIncrements);
   };
 
+  /**
+   * Successfully trigger MEOW
+   */
   const stop = () => {
+    // Send data to matrix, then reset
+    resetValues();
+  };
+
+  /**
+   * Cancel the MEOW action
+   */
+  const cancel = () => {
+    resetValues();
+  };
+
+  const resetValues = () => {
     intervalRef.current && clearInterval(intervalRef.current);
     setAmount(null);
     scale.set(1);
@@ -84,6 +99,7 @@ const useMeowAction = () => {
 
   return {
     amount,
+    cancel,
     stop,
     start,
     scale,

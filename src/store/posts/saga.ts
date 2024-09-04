@@ -1,4 +1,4 @@
-import { takeLatest, call, put, select } from 'redux-saga/effects';
+import { takeLatest, call, select } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
 
 import { SagaActionTypes } from '.';

@@ -18,8 +18,12 @@ const CONFIG: MeowActionConfig = {
 
 const MAX = CONFIG.increments * CONFIG.options;
 
-export const MeowAction = () => {
-  const { amount, cancel, stop, start, scale } = useMeowAction();
+export interface MeowActionProps {
+  meows?: number;
+}
+
+export const MeowAction = ({ meows = 0 }: MeowActionProps) => {
+  const { amount, cancel, isActive, stop, start, scale, userAmount } = useMeowAction();
 
   return (
     <motion.div style={{ scale }} onTapStart={start} onTap={stop} onTapCancel={cancel} className={styles.Container}>
@@ -40,8 +44,9 @@ export const MeowAction = () => {
             fill='#01F4CB'
           />
         </svg>
+        {!isActive && <span>{meows + userAmount}</span>}
         <AnimatePresence>
-          {amount && (
+          {amount && isActive && (
             <motion.span initial={{ opacity: 0, y: '100%' }} animate={{ opacity: 1, y: 0 }}>
               +{amount}
             </motion.span>
@@ -55,9 +60,12 @@ export const MeowAction = () => {
 const useMeowAction = () => {
   const intervalRef = useRef(null);
   const [amount, setAmount] = useState<number | null>(null);
+  const [isActive, setIsActive] = useState(false);
   const scale = useSpring(1, { stiffness: 300, damping: 7 });
+  const [userAmount, setUserAmount] = useState<number>(0);
 
   const start = () => {
+    setIsActive(true);
     if (amount === null) {
       setAmount(CONFIG.increments);
       scale.set(getScale(CONFIG.increments, CONFIG.increments, MAX));
@@ -81,6 +89,7 @@ const useMeowAction = () => {
    */
   const stop = () => {
     // Send data to matrix, then reset
+    setUserAmount(amount);
     resetValues();
   };
 
@@ -92,6 +101,7 @@ const useMeowAction = () => {
   };
 
   const resetValues = () => {
+    setIsActive(false);
     intervalRef.current && clearInterval(intervalRef.current);
     setAmount(null);
     scale.set(1);
@@ -100,9 +110,11 @@ const useMeowAction = () => {
   return {
     amount,
     cancel,
+    isActive,
     stop,
     start,
     scale,
+    userAmount,
   };
 };
 

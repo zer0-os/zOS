@@ -53,7 +53,8 @@ export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps
           </>
         }
         options={<Timestamp className={styles.Date} timestamp={timestamp} />}
-        actions={isMeowsEnabled && <MeowAction />}
+        // @note: This has no backend, so we're mocking MEOWs
+        actions={isMeowsEnabled && <MeowAction meows={text.length * 10} />}
       />
     </div>
   );

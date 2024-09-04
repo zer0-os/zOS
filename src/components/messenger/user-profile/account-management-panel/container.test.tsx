@@ -9,7 +9,7 @@ describe('Container', () => {
       const state = {
         authentication: { user: {} },
         web3: { value: {} },
-        accountManagement: { errors: [], isWalletSelectModalOpen: false },
+        accountManagement: { errors: [] },
         ...inputState,
       } as RootState;
       return Container.mapState(state);

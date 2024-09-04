@@ -1,8 +1,5 @@
 import { expectSaga } from '../../test/saga';
 import {
-  openWalletSelectModal,
-  closeWalletSelectModal,
-  linkNewWalletToZEROAccount,
   openAddEmailAccountModal,
   closeAddEmailAccountModal,
   addEmailToZEROAccount,
@@ -10,35 +7,10 @@ import {
 } from './saga';
 import { call } from 'redux-saga/effects';
 
-import { setAddEmailAccountModalStatus, setWalletSelectModalStatus } from '.';
+import { setAddEmailAccountModalStatus } from '.';
 import { rootReducer } from '../reducer';
 import { addEmailAccount } from '../registration/saga';
 import { StoreBuilder } from '../test/store';
-
-describe('openWalletSelectModal', () => {
-  it('opens the wallet select modal', async () => {
-    const initialState = new StoreBuilder().build();
-    const { storeState } = await expectSaga(openWalletSelectModal)
-      .withReducer(rootReducer, initialState)
-      .put(setWalletSelectModalStatus(true))
-      .run();
-
-    expect(storeState.accountManagement.isWalletSelectModalOpen).toEqual(true);
-  });
-});
-
-describe('closeWalletSelectModal', () => {
-  it('closes the wallet select modal', async () => {
-    const initialState = new StoreBuilder().withAccountManagement({ isWalletSelectModalOpen: true });
-
-    const { storeState } = await expectSaga(closeWalletSelectModal)
-      .withReducer(rootReducer, initialState.build())
-      .put(setWalletSelectModalStatus(false))
-      .run();
-
-    expect(storeState.accountManagement.isWalletSelectModalOpen).toEqual(false);
-  });
-});
 
 describe('addEmailAccountModal', () => {
   it('opens the add email account modal', async () => {
@@ -60,19 +32,6 @@ describe('addEmailAccountModal', () => {
       .run();
 
     expect(storeState.accountManagement.isAddEmailAccountModalOpen).toEqual(false);
-  });
-});
-
-// todo: this will change when we have actual wallet select implementation
-describe('linkNewWalletToZEROAccount', () => {
-  it('closes the wallet select modal', async () => {
-    const connector = 'MetaMask';
-    const initialState = new StoreBuilder().withAccountManagement({ isWalletSelectModalOpen: true });
-    const { storeState } = await expectSaga(linkNewWalletToZEROAccount, { payload: { connector } })
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    expect(storeState.accountManagement.isWalletSelectModalOpen).toEqual(false);
   });
 });
 

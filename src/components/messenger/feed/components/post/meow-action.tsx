@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { motion, useSpring } from 'framer-motion';
+import { AnimatePresence, motion, useSpring } from 'framer-motion';
 import { Action } from '@zero-tech/zui/components/Post';
 
 interface MeowActionConfig {
@@ -28,7 +28,13 @@ export const MeowAction = () => {
             fill='#01F4CB'
           />
         </svg>
-        {amount && <span>{amount}</span>}
+        <AnimatePresence>
+          {amount && (
+            <motion.span initial={{ opacity: 0, y: '100%' }} animate={{ opacity: 1, y: 0 }}>
+              {amount}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </Action>
     </motion.div>
   );

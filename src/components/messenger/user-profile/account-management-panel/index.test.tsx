@@ -4,6 +4,14 @@ import { Properties, AccountManagementPanel } from '.';
 import { PanelHeader } from '../../list/panel-header';
 import { bem } from '../../../../lib/bem';
 import { Button } from '@zero-tech/zui/components/Button';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+// Mock the ConnectButton from rainbowkit
+jest.mock('@rainbow-me/rainbowkit', () => ({
+  ConnectButton: {
+    Custom: ({ children }) => children({ account: { address: '0x123' }, openConnectModal: jest.fn() }),
+  },
+}));
 
 const c = bem('.account-management-panel');
 
@@ -15,6 +23,8 @@ describe(AccountManagementPanel, () => {
       isAddEmailModalOpen: false,
       currentUser: {},
       canAddEmail: false,
+      isWalletConnected: false,
+      connectedWallet: '',
 
       onBack: () => {},
       onOpenAddEmailModal: () => {},
@@ -180,6 +190,49 @@ describe(AccountManagementPanel, () => {
       wrapper.find('IconButton').simulate('click');
 
       expect(onCloseAddEmailModal).toHaveBeenCalled();
+    });
+  });
+
+  describe('link new wallet', () => {
+    it('should render Add Wallet button if user has no wallet linked to his ZERO account', () => {
+      const wrapper = subject({ currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] } });
+
+      expect(wrapper.find(ConnectButton.Custom).exists()).toEqual(true);
+    });
+
+    it('should not render Add Wallet button if user has a wallet linked to his ZERO account', () => {
+      const wrapper = subject({ currentUser: { primaryEmail: 'test@zero.tech', wallets: [{ id: 'wallet-id-1' }] } });
+      expect(wrapper.find(ConnectButton.Custom).exists()).toEqual(false);
+    });
+
+    it('should open Link Wallet modal when user clicks on Add Wallet, and metamask is connected', () => {
+      const wrapper = subject({
+        currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
+        isWalletConnected: true,
+        connectedWallet: '0xA100C16E67884Da7d515211Bb065592079bEcde6',
+      });
+
+      wrapper.setState({ isUserLinkingNewWallet: true });
+
+      const linkWalletModal = wrapper.find('Modal').at(1);
+      expect(linkWalletModal.exists()).toEqual(true);
+      expect(linkWalletModal.prop('title')).toEqual('Link Wallet');
+      expect(linkWalletModal.find(c('link-new-wallet-modal')).text()).toEqual(
+        'You have a wallet connected by the address 0xA100C16E67884Da7d515211Bb065592079bEcde6Do you want to link this wallet with your ZERO account?'
+      );
+    });
+
+    it('should update isUserLinkingNewWallet state to false when user closes Link Wallet modal', () => {
+      const wrapper = subject({
+        currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
+        isWalletConnected: true,
+      });
+
+      wrapper.setState({ isUserLinkingNewWallet: true });
+
+      const linkWalletModal = wrapper.find('Modal').at(1);
+      (linkWalletModal as any).props().onClose();
+      expect(wrapper.state('isUserLinkingNewWallet')).toEqual(false);
     });
   });
 });

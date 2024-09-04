@@ -1,9 +1,11 @@
 import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
 import { Avatar } from '@zero-tech/zui/components';
+import { MeowAction } from './meow-action';
 
 import styles from './styles.module.scss';
 import { useMemo } from 'react';
+import { featureFlags } from '../../../../../lib/feature-flags';
 
 export interface PostProps {
   avatarUrl?: string;
@@ -14,6 +16,8 @@ export interface PostProps {
 }
 
 export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps) => {
+  const isMeowsEnabled = featureFlags.enableMeows;
+
   const multilineText = useMemo(
     () =>
       text.split('\n').map((line, index) => (
@@ -49,6 +53,7 @@ export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps
           </>
         }
         options={<Timestamp className={styles.Date} timestamp={timestamp} />}
+        actions={isMeowsEnabled && <MeowAction />}
       />
     </div>
   );

@@ -2,23 +2,24 @@ import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import { ScrollbarContainer } from '../../scrollbar-container';
-import { CreatePost } from './components/create-post';
 import { PostPayload as PayloadPostMessage } from '../../../store/posts/saga';
 import { Channel, denormalize } from '../../../store/channels';
 import { MessageSendStatus } from '../../../store/messages';
 import { sendPost } from '../../../store/posts';
-import { AuthenticationState } from '../../../store/authentication/types';
 import { FeedViewContainer } from './feed-view-container/feed-view-container';
+import { PostInputContainer as PostInput } from './components/post-input/container';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
+
+// should move this to a shared location
+import { Media } from '../../message-input/utils';
 
 const cn = bemClassName('messenger-feed');
 
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
-  user: AuthenticationState['user'];
   channel: Channel;
   activeConversationId: string;
   isSocialChannel: boolean;
@@ -30,14 +31,12 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      authentication: { user },
       chat: { activeConversationId, isJoiningConversation },
     } = state;
 
     const currentChannel = denormalize(activeConversationId, state) || null;
 
     return {
-      user,
       channel: currentChannel,
       isJoiningConversation,
       activeConversationId,
@@ -51,12 +50,13 @@ export class Container extends React.Component<Properties> {
     };
   }
 
-  submitPost = (message: string) => {
+  submitPost = (message: string, media: Media[] = []) => {
     const { activeConversationId } = this.props;
 
     let payloadPostMessage = {
       channelId: activeConversationId,
       message: message,
+      files: media,
     };
 
     this.props.sendPost(payloadPostMessage);
@@ -78,11 +78,7 @@ export class Container extends React.Component<Properties> {
     return (
       <div {...cn('')}>
         <ScrollbarContainer variant='on-hover'>
-          <CreatePost
-            avatarUrl={this.props.user.data?.profileSummary.profileImage}
-            onSubmit={this.submitPost}
-            isSubmitting={this.isSubmitting}
-          />
+          <PostInput id={activeConversationId} onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />
 
           <FeedViewContainer channelId={activeConversationId} />
         </ScrollbarContainer>

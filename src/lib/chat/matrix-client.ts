@@ -633,7 +633,7 @@ export class MatrixClient implements IChatClient {
     };
   }
 
-  async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '') {
+  async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '', isPost = false) {
     const isEncrypted = this.matrix.isRoomEncrypted(roomId);
 
     const { width, height } = await getImageDimensions(media);
@@ -671,8 +671,13 @@ export class MatrixClient implements IChatClient {
       optimisticId,
     } as any;
 
-    const messageResult = await this.matrix.sendMessage(roomId, content);
-    this.recordMessageSent(roomId);
+    let messageResult;
+    if (isPost) {
+      messageResult = await this.matrix.sendEvent(roomId, CustomEventType.ROOM_POST as any, content);
+    } else {
+      messageResult = await this.matrix.sendMessage(roomId, content);
+      this.recordMessageSent(roomId);
+    }
 
     // Don't return a full message, only the pertinent attributes that changed.
     return {
@@ -1188,7 +1193,7 @@ export class MatrixClient implements IChatClient {
   }
 
   private async publishPostEvent(event) {
-    this.events.receiveNewMessage(event.room_id, mapEventToPostMessage(event, this.matrix) as any);
+    this.events.receiveNewMessage(event.room_id, (await mapEventToPostMessage(event, this.matrix)) as any);
   }
 
   private publishRoomNameChange = (room: Room) => {

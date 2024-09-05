@@ -17,20 +17,21 @@ export const createUploadableFile = (file): Uploadable => {
 export interface Uploadable {
   file: any;
   optimisticMessage: Message;
-  upload: (channelId, rootMessageId) => Generator<CallEffect<Message | unknown>>;
+  upload: (channelId, rootMessageId, isPost?) => Generator<CallEffect<Message | unknown>>;
 }
 
 export class UploadableMedia implements Uploadable {
   public optimisticMessage: Message;
 
   constructor(public file) {}
-  *upload(channelId, rootMessageId) {
+  *upload(channelId, rootMessageId, isPost = false) {
     return yield call(
       uploadFileMessage,
       channelId,
       this.file.nativeFile,
       rootMessageId,
-      this.optimisticMessage?.id?.toString()
+      this.optimisticMessage?.id?.toString(),
+      isPost
     );
   }
 }

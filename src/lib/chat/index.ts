@@ -321,8 +321,14 @@ export async function getMessageReadReceipts(roomId: string, messageId: string) 
   return await chat.get().matrix.getMessageReadReceipts(roomId, messageId);
 }
 
-export async function uploadFileMessage(channelId: string, media: File, rootMessageId: string = '', optimisticId = '') {
-  return chat.get().matrix.uploadFileMessage(channelId, media, rootMessageId, optimisticId);
+export async function uploadFileMessage(
+  channelId: string,
+  media: File,
+  rootMessageId: string = '',
+  optimisticId = '',
+  isPost: boolean = false
+) {
+  return chat.get().matrix.uploadFileMessage(channelId, media, rootMessageId, optimisticId, isPost);
 }
 
 export async function addRoomToLabel(roomId: string, label: string) {

@@ -107,10 +107,11 @@ export function mapEventToAdminMessage(matrixMessage): Message {
   };
 }
 
-export function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
+export async function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
   const { event_id, content, origin_server_ts, sender: senderId } = matrixMessage;
 
   const senderData = sdkMatrixClient.getUser(senderId);
+  const { media, image, rootMessageId } = await parseMediaData(matrixMessage);
 
   return {
     id: event_id,
@@ -134,6 +135,9 @@ export function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKMatrixC
     preview: null,
     sendStatus: MessageSendStatus.SUCCESS,
     isPost: true,
+    media,
+    image,
+    rootMessageId,
   };
 }
 

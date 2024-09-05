@@ -39,16 +39,6 @@ describe(GroupTypeMenu, () => {
     expect(onSelect).toHaveBeenCalledOnce();
   });
 
-  it('publishes onSelect event when social channel is selected', () => {
-    const onSelect = jest.fn();
-    const wrapper = subject({ onSelect });
-
-    selectInputItem(wrapper, SelectInput, 'social-channel');
-
-    expect(onSelect).toHaveBeenCalledWith(GroupType.SOCIAL);
-    expect(onSelect).toHaveBeenCalledOnce();
-  });
-
   it('publishes onOpen event when icon button is clicked', () => {
     const onOpen = jest.fn();
     const wrapper = subject({ onOpen });

@@ -2,7 +2,10 @@ import { useState, useCallback, useMemo } from 'react';
 import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
 import { Avatar } from '@zero-tech/zui/components';
+import { MeowAction } from './actions/meow';
+import { featureFlags } from '../../../../../lib/feature-flags';
 import { Media, MediaType } from '../../../../../store/messages';
+
 import styles from './styles.module.scss';
 
 export interface PostProps {
@@ -27,6 +30,8 @@ export const Post = ({
   loadAttachmentDetails,
 }: PostProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  const isMeowsEnabled = featureFlags.enableMeows;
 
   const multilineText = useMemo(
     () =>
@@ -133,6 +138,8 @@ export const Post = ({
           </>
         }
         options={<Timestamp className={styles.Date} timestamp={timestamp} />}
+        // @note: This has no backend, so we're mocking MEOWs
+        actions={isMeowsEnabled && <MeowAction meows={text.length * 10} />}
       />
     </div>
   );

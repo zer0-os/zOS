@@ -1,0 +1,17 @@
+.Container > *:active {
+  background: none !important;
+}
+
+.Wash {
+  background: var(--color-secondary-5);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+}
+
+.Amount {
+  font-size: 8px !important;
+}

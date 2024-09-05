@@ -129,6 +129,14 @@ export class FeatureFlags {
   set enableAddWallets(value: boolean) {
     this._setBoolean('enableAddWallets', value);
   }
+
+  get enableMeows() {
+    return this._getBoolean('enableMeows', false);
+  }
+
+  set enableMeows(value: boolean) {
+    this._setBoolean('enableMeows', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

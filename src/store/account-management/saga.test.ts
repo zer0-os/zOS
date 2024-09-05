@@ -4,13 +4,18 @@ import {
   closeAddEmailAccountModal,
   addEmailToZEROAccount,
   updateCurrentUserPrimaryEmail,
+  linkNewWalletToZEROAccount,
+  reset,
 } from './saga';
 import { call } from 'redux-saga/effects';
 
-import { setAddEmailAccountModalStatus } from '.';
+import { setAddEmailAccountModalStatus, State } from '.';
 import { rootReducer } from '../reducer';
 import { addEmailAccount } from '../registration/saga';
 import { StoreBuilder } from '../test/store';
+import { getSignedToken } from '../web3/saga';
+import { linkNewWalletToZEROAccount as apiLinkNewWalletToZEROAccount } from './api';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 describe('addEmailAccountModal', () => {
   it('opens the add email account modal', async () => {
@@ -111,5 +116,105 @@ describe(addEmailToZEROAccount, () => {
     expect(accountManagement.successMessage).toEqual('');
     expect(accountManagement.isAddEmailAccountModalOpen).toEqual(true);
     expect(authentication.user.data.profileSummary.primaryEmail).toEqual(null);
+  });
+});
+
+describe(linkNewWalletToZEROAccount, () => {
+  it('calls reset initially, and sets error if getSignedToken fails', async () => {
+    const initialState = new StoreBuilder().build();
+
+    const {
+      storeState: { accountManagement },
+    } = await expectSaga(linkNewWalletToZEROAccount)
+      .provide([
+        [
+          call(getSignedToken),
+          { success: false, error: 'failed to connect to metamask' },
+        ],
+      ])
+      .withReducer(rootReducer, initialState)
+      .call(reset)
+      .run();
+
+    expect(accountManagement.state).toEqual(State.LOADED);
+    expect(accountManagement.errors).toEqual(['failed to connect to metamask']);
+  });
+
+  it('calls apiAddNewWallet with token', async () => {
+    const initialState = new StoreBuilder().build();
+
+    await expectSaga(linkNewWalletToZEROAccount)
+      .provide([
+        [call(getSignedToken), { success: true, token: 'some_token' }],
+        [call(apiLinkNewWalletToZEROAccount, 'some_token'), { success: true, response: { wallet: 'some_wallet' } }],
+      ])
+      .withReducer(rootReducer, initialState)
+      .call(apiLinkNewWalletToZEROAccount, 'some_token')
+      .run();
+  });
+
+  it('sets API error if apiAddNewWallet fails', async () => {
+    const initialState = new StoreBuilder()
+      .withAccountManagement({ state: State.NONE, errors: ['unknown_error_1'] })
+      .build();
+
+    const {
+      storeState: { accountManagement },
+    } = await expectSaga(linkNewWalletToZEROAccount)
+      .provide([
+        [call(getSignedToken), { success: true, token: 'some_token' }],
+        [call(apiLinkNewWalletToZEROAccount, 'some_token'), { success: false, error: 'failed to link wallet' }],
+      ])
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    expect(accountManagement.state).toEqual(State.LOADED);
+    expect(accountManagement.errors).toEqual(['failed to link wallet']);
+  });
+
+  it('sets unknown error if apiAddNewWallet throws an error', async () => {
+    const initialState = new StoreBuilder().build();
+
+    const {
+      storeState: { accountManagement },
+    } = await expectSaga(linkNewWalletToZEROAccount)
+      .provide([
+        [call(getSignedToken), { success: true, token: 'some_token' }],
+        [call(apiLinkNewWalletToZEROAccount, 'some_token'), throwError(new Error('some error'))],
+      ])
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    expect(accountManagement.state).toEqual(State.LOADED);
+    expect(accountManagement.errors).toEqual(['UNKNOWN_ERROR']);
+  });
+
+  it('adds wallet to current user state and puts success message if added successfully', async () => {
+    const initialState = new StoreBuilder()
+      .withCurrentUser({
+        id: 'user-id',
+        profileSummary: { primaryEmail: 'test@zero.tech', wallets: [] },
+      } as any)
+      .build();
+
+    const {
+      storeState: {
+        accountManagement,
+        authentication: { user },
+      },
+    } = await expectSaga(linkNewWalletToZEROAccount)
+      .provide([
+        [call(getSignedToken), { success: true, token: 'some_token' }],
+        [
+          call(apiLinkNewWalletToZEROAccount, 'some_token'),
+          { success: true, response: { wallet: { id: 'wallet_id', address: 'some_wallet_address' } } },
+        ],
+      ])
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    expect(accountManagement.errors).toEqual([]);
+    expect(accountManagement.successMessage).toEqual('Wallet added successfully');
+    expect(user.data.wallets).toStrictEqual([{ id: 'wallet_id', address: 'some_wallet_address' }]);
   });
 });

@@ -19,6 +19,8 @@ describe('FeedView', () => {
       messagesFetchStatus: MessagesFetchState.SUCCESS,
       fetchPosts: jest.fn(),
       onFetchMore: jest.fn(),
+      loadAttachmentDetails: jest.fn(),
+
       ...props,
     };
 

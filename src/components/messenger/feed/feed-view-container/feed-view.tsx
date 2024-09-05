@@ -3,7 +3,7 @@ import { Waypoint } from 'react-waypoint';
 
 import { Posts } from '../components/posts';
 import { MessagesFetchState } from '../../../../store/channels';
-import { Message as MessageModel } from '../../../../store/messages';
+import { Media, Message as MessageModel } from '../../../../store/messages';
 import { Payload as PayloadFetchPosts } from '../../../../store/posts/saga';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
@@ -19,6 +19,7 @@ export interface Properties {
 
   fetchPosts: (payload: PayloadFetchPosts) => void;
   onFetchMore: () => void;
+  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
 }
 
 export class FeedView extends React.Component<Properties> {
@@ -64,7 +65,10 @@ export class FeedView extends React.Component<Properties> {
           <>
             {this.props.postMessages.length > 0 ? (
               <>
-                <Posts postMessages={this.props.postMessages} />
+                <Posts
+                  postMessages={this.props.postMessages}
+                  loadAttachmentDetails={this.props.loadAttachmentDetails}
+                />
 
                 {this.props.messagesFetchStatus === MessagesFetchState.SUCCESS && this.state.shouldRenderWaypoint && (
                   <Waypoint onEnter={this.props.onFetchMore} />

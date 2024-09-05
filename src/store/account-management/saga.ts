@@ -1,28 +1,66 @@
 import { call, put, select, spawn, take, takeLeading } from 'redux-saga/effects';
 
-import { Errors, SagaActionTypes, setAddEmailAccountModalStatus, setErrors, setSuccessMessage } from '.';
+import {
+  Errors,
+  SagaActionTypes,
+  setAddEmailAccountModalStatus,
+  setErrors,
+  setState,
+  setSuccessMessage,
+  State,
+} from '.';
 
 import { addEmailAccount } from '../registration/saga';
 import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
 import cloneDeep from 'lodash/cloneDeep';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
+import { getSignedToken } from '../web3/saga';
+import { linkNewWalletToZEROAccount as apiLinkNewWalletToZEROAccount } from './api';
 
 export function* reset() {
+  yield put(setState(State.NONE));
   yield put(setErrors([]));
   yield put(setSuccessMessage(''));
 }
 
-export function* linkNewWalletToZEROAccount(action) {
-  const { connector } = action.payload;
-  console.log('Connector: ', connector);
+export function* linkNewWalletToZEROAccount() {
+  yield call(reset);
 
+  yield put(setState(State.INPROGRESS));
   try {
-    //yield call(closeWalletSelectModal);
+    let result = yield call(getSignedToken);
+    if (!result.success) {
+      yield put(setErrors([result.error]));
+      return;
+    }
+
+    const apiResult = yield call(apiLinkNewWalletToZEROAccount, result.token);
+    if (apiResult.success) {
+      // other code
+      yield call(updateCurrentUserWallets, apiResult.response.wallet);
+      yield put(setSuccessMessage('Wallet added successfully'));
+    } else {
+      yield put(setErrors([apiResult.error]));
+      return;
+    }
   } catch (e) {
     yield put(setErrors([Errors.UNKNOWN_ERROR]));
   } finally {
+    yield put(setState(State.LOADED));
   }
+
+  return;
+}
+
+export function* updateCurrentUserWallets(wallet) {
+  if (!wallet) {
+    return;
+  }
+
+  let currentUser = cloneDeep(yield select(currentUserSelector()));
+  currentUser.wallets = (currentUser.wallets || []).concat(wallet);
+  yield put(setUser({ data: currentUser }));
 }
 
 export function* updateCurrentUserPrimaryEmail(email) {
@@ -73,4 +111,5 @@ export function* saga() {
 
   yield takeLeading(SagaActionTypes.OpenAddEmailAccountModal, openAddEmailAccountModal);
   yield takeLeading(SagaActionTypes.CloseAddEmailAccountModal, closeAddEmailAccountModal);
+  yield takeLeading(SagaActionTypes.Reset, reset);
 }

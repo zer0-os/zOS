@@ -6,6 +6,7 @@ import { connectContainer } from '../../../../store/redux-container';
 import { AccountManagementPanel } from './index';
 import { openAddEmailAccountModal, closeAddEmailAccountModal, Errors } from '../../../../store/account-management';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { ConnectionStatus } from '../../../../lib/web3';
 
 export interface PublicProperties {
   onClose?: () => void;
@@ -17,6 +18,8 @@ export interface Properties extends PublicProperties {
   successMessage: string;
   currentUser: any;
   canAddEmail: boolean;
+  isWalletConnected: boolean;
+  connectedWallet: string;
 
   openAddEmailAccountModal: () => void;
   closeAddEmailAccountModal: () => void;
@@ -24,7 +27,10 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { accountManagement } = state;
+    const {
+      accountManagement,
+      web3: { status, value },
+    } = state;
 
     const currentUser = currentUserSelector(state);
     const primaryEmail = currentUser?.profileSummary.primaryEmail;
@@ -33,6 +39,8 @@ export class Container extends React.Component<Properties> {
       error: Container.mapErrors(accountManagement.errors),
       successMessage: accountManagement.successMessage,
       isAddEmailModalOpen: accountManagement.isAddEmailAccountModalOpen,
+      isWalletConnected: status === ConnectionStatus.Connected,
+      connectedWallet: value?.address,
       currentUser: {
         userId: currentUser?.id,
         firstName: currentUser?.profileSummary.firstName,
@@ -71,6 +79,8 @@ export class Container extends React.Component<Properties> {
         isAddEmailModalOpen={this.props.isAddEmailModalOpen}
         currentUser={this.props.currentUser}
         canAddEmail={this.props.canAddEmail}
+        isWalletConnected={this.props.isWalletConnected}
+        connectedWallet={this.props.connectedWallet}
         onOpenAddEmailModal={() => this.props.openAddEmailAccountModal()}
         onCloseAddEmailModal={() => this.props.closeAddEmailAccountModal()}
         onBack={this.props.onClose}

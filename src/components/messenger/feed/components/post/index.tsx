@@ -25,7 +25,7 @@ export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps
   );
 
   return (
-    <div className={styles.Container}>
+    <div className={styles.Container} has-author={author ? '' : null}>
       <div className={styles.Avatar}>
         <Avatar size='regular' imageURL={avatarUrl} />
       </div>
@@ -38,10 +38,14 @@ export const Post = ({ avatarUrl, text, nickname, author, timestamp }: PostProps
             <Name className={styles.Name} variant='name'>
               {nickname}
             </Name>
-            {/* @ts-ignore */}
-            <Name className={styles.UserName} variant='username'>
-              {author}
-            </Name>
+            {author && (
+              <>
+                {/* @ts-ignore */}
+                <Name className={styles.UserName} variant='username'>
+                  {author}
+                </Name>
+              </>
+            )}
           </>
         }
         options={<Timestamp className={styles.Date} timestamp={timestamp} />}

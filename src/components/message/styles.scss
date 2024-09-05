@@ -14,6 +14,21 @@
   &--owner {
     flex-direction: row-reverse;
 
+    .message__block {
+      background: none !important;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--color-secondary-8);
+        opacity: 0.5;
+      }
+    }
+
     .message__block-body {
       transition: background-color 0.3s ease-out;
       position: relative;

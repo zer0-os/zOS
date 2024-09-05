@@ -121,6 +121,14 @@ export class FeatureFlags {
   set enableCollapseableMenu(value: boolean) {
     this._setBoolean('enableCollapseableMenu', value);
   }
+
+  get enableAddWallets() {
+    return this._getBoolean('enableAddWallets', false);
+  }
+
+  set enableAddWallets(value: boolean) {
+    this._setBoolean('enableAddWallets', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

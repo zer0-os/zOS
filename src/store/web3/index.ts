@@ -9,7 +9,7 @@ export enum SagaActionTypes {
   SetConnectionError = 'web3/saga/setConnectionError',
 }
 
-export const updateConnector = createAction<Connectors | WalletType>(SagaActionTypes.UpdateConnector);
+export const updateConnector = createAction<Connectors | WalletType | string>(SagaActionTypes.UpdateConnector);
 export const setAddress = createAction<string>(SagaActionTypes.SetAddress);
 export const setConnectionError = createAction<string>(SagaActionTypes.SetConnectionError);
 

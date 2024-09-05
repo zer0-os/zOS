@@ -15,6 +15,7 @@ import { ScrollbarContainer } from '../../../scrollbar-container';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Color, Modal, Variant } from '../../../modal';
 import { featureFlags } from '../../../../lib/feature-flags';
+import { State as AddWalletState } from '../../../../store/account-management';
 
 const cn = bemClassName('account-management-panel');
 
@@ -26,10 +27,13 @@ export interface Properties {
   canAddEmail: boolean;
   isWalletConnected: boolean;
   connectedWallet: string;
+  addWalletState: AddWalletState;
 
   onBack: () => void;
+  reset: () => void; // reset saga state
   onOpenAddEmailModal: () => void;
   onCloseAddEmailModal: () => void;
+  onAddNewWallet: () => void;
 }
 
 interface State {
@@ -52,6 +56,7 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
   renderAddNewWalletButton = () => {
     const handleAddWallet = (account, openConnectModal) => {
       this.setIsUserLinkingNewWallet(true);
+      this.props.reset();
 
       if (!account?.address) {
         // Prompt user to connect their wallet if none is connected
@@ -178,10 +183,10 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
         secondaryText='Cancel'
         secondaryVariant={Variant.Secondary}
         secondaryColor={Color.Red}
-        onPrimary={() => {}}
+        onPrimary={this.props.onAddNewWallet}
         onSecondary={onClose}
         onClose={onClose}
-        isProcessing={false}
+        isProcessing={this.props.addWalletState === AddWalletState.INPROGRESS}
       >
         <div {...cn('link-new-wallet-modal')}>
           You have a wallet connected by the address{' '}
@@ -195,6 +200,16 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
       </Modal>
     );
   };
+
+  get isLinkNewWalletModalOpen() {
+    const { isWalletConnected, error, addWalletState } = this.props;
+    return (
+      this.state.isUserLinkingNewWallet &&
+      isWalletConnected &&
+      !error &&
+      (addWalletState === AddWalletState.NONE || addWalletState === AddWalletState.INPROGRESS)
+    );
+  }
 
   render() {
     return (
@@ -223,7 +238,7 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
             </div>
 
             {this.renderAddEmailAccountModal()}
-            {this.state.isUserLinkingNewWallet && this.props.isWalletConnected && this.renderLinkNewWalletModal()}
+            {this.isLinkNewWalletModalOpen && this.renderLinkNewWalletModal()}
           </div>
         </ScrollbarContainer>
       </div>

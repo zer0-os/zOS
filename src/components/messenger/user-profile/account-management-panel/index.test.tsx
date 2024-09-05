@@ -5,6 +5,7 @@ import { PanelHeader } from '../../list/panel-header';
 import { bem } from '../../../../lib/bem';
 import { Button } from '@zero-tech/zui/components/Button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { State } from '../../../../store/account-management';
 
 const featureFlags = { enableAddWallets: true };
 jest.mock('../../../../lib/feature-flags', () => ({
@@ -30,10 +31,13 @@ describe(AccountManagementPanel, () => {
       canAddEmail: false,
       isWalletConnected: false,
       connectedWallet: '',
+      addWalletState: State.NONE,
 
       onBack: () => {},
       onOpenAddEmailModal: () => {},
       onCloseAddEmailModal: () => {},
+      reset: () => {},
+      onAddNewWallet: () => {},
       ...props,
     };
 
@@ -238,6 +242,57 @@ describe(AccountManagementPanel, () => {
       const linkWalletModal = wrapper.find('Modal').at(1);
       (linkWalletModal as any).props().onClose();
       expect(wrapper.state('isUserLinkingNewWallet')).toEqual(false);
+    });
+
+    it('does not render Link Wallet modal if error is set', () => {
+      const wrapper = subject({
+        currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
+        isWalletConnected: true,
+        error: 'An error occurred',
+      });
+      wrapper.setState({ isUserLinkingNewWallet: true });
+
+      const linkWalletModal = wrapper.find('Modal').at(1);
+      expect(linkWalletModal.exists()).toEqual(false);
+    });
+
+    it('does not render Link Wallet modal if wallet is NOT connected', () => {
+      const wrapper = subject({
+        currentUser: { primaryEmail: 'test@zero.tech', wallets: [] },
+        isWalletConnected: false,
+      });
+      wrapper.setState({ isUserLinkingNewWallet: true });
+
+      const linkWalletModal = wrapper.find('Modal').at(1);
+      expect(linkWalletModal.exists()).toEqual(false);
+    });
+
+    it('calls addNewWallet when user clicks on Link Wallet', () => {
+      const addNewWallet = jest.fn();
+      const wrapper = subject({
+        currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
+        isWalletConnected: true,
+        addWalletState: State.NONE,
+        onAddNewWallet: addNewWallet,
+      });
+      wrapper.setState({ isUserLinkingNewWallet: true });
+
+      const linkWalletModal = wrapper.find('Modal').at(1);
+      (linkWalletModal as any).props().onPrimary();
+
+      expect(addNewWallet).toHaveBeenCalled();
+    });
+
+    it('keeps Link Wallet button in loading state while IN_PROGRESS', () => {
+      const wrapper = subject({
+        currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
+        isWalletConnected: true,
+        addWalletState: State.INPROGRESS,
+      });
+      wrapper.setState({ isUserLinkingNewWallet: true });
+
+      const linkWalletModal = wrapper.find('Modal').at(1);
+      expect(linkWalletModal.prop('isProcessing')).toEqual(true);
     });
   });
 });

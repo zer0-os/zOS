@@ -4,7 +4,14 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 
 import { AccountManagementPanel } from './index';
-import { openAddEmailAccountModal, closeAddEmailAccountModal, Errors } from '../../../../store/account-management';
+import {
+  openAddEmailAccountModal,
+  closeAddEmailAccountModal,
+  reset,
+  Errors,
+  addNewWallet,
+  State,
+} from '../../../../store/account-management';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { ConnectionStatus } from '../../../../lib/web3';
 
@@ -20,9 +27,12 @@ export interface Properties extends PublicProperties {
   canAddEmail: boolean;
   isWalletConnected: boolean;
   connectedWallet: string;
+  addWalletState: State;
 
   openAddEmailAccountModal: () => void;
   closeAddEmailAccountModal: () => void;
+  addNewWallet: () => void;
+  onReset: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -41,6 +51,7 @@ export class Container extends React.Component<Properties> {
       isAddEmailModalOpen: accountManagement.isAddEmailAccountModalOpen,
       isWalletConnected: status === ConnectionStatus.Connected,
       connectedWallet: value?.address,
+      addWalletState: accountManagement.state,
       currentUser: {
         userId: currentUser?.id,
         firstName: currentUser?.profileSummary.firstName,
@@ -57,6 +68,8 @@ export class Container extends React.Component<Properties> {
     return {
       openAddEmailAccountModal,
       closeAddEmailAccountModal,
+      addNewWallet,
+      onReset: reset,
     };
   }
 
@@ -81,9 +94,12 @@ export class Container extends React.Component<Properties> {
         canAddEmail={this.props.canAddEmail}
         isWalletConnected={this.props.isWalletConnected}
         connectedWallet={this.props.connectedWallet}
+        addWalletState={this.props.addWalletState}
         onOpenAddEmailModal={() => this.props.openAddEmailAccountModal()}
         onCloseAddEmailModal={() => this.props.closeAddEmailAccountModal()}
+        onAddNewWallet={this.props.addNewWallet}
         onBack={this.props.onClose}
+        reset={this.props.onReset}
       />
     );
   }

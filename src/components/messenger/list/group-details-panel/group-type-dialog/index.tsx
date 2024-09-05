@@ -39,12 +39,6 @@ export class GroupTypeDialog extends React.Component<Properties> {
             Super Groups are designed to accommodate larger communities and are not encrypted by default. Check this box
             if you are creating a room intended for larger groups (10+ people).
           </p>
-
-          <h3 {...cn('section-header')}>Social Channel</h3>
-          <p {...cn('section-content')}>
-            Social Channels are designed for an interactive social experience with a feed, posts, and live chat. Check
-            this box for rooms where communities can share updates and chat in one space.
-          </p>
         </div>
 
         <div {...cn('footer')}>

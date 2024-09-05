@@ -30,7 +30,6 @@ interface State {
 export enum GroupType {
   ENCRYPTED = 'encrypted',
   SUPER = 'super',
-  SOCIAL = 'social',
 }
 
 export class GroupDetailsPanel extends React.Component<Properties, State> {

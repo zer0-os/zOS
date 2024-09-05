@@ -4,7 +4,7 @@ import { Action } from '@zero-tech/zui/components/Post';
 import { MeowIcon } from './icon';
 import { useMeowAction } from './useMeow';
 
-import styles from './meow.module.scss';
+import styles from './meow-action.module.scss';
 
 export interface MeowActionProps {
   meows?: number;

@@ -44,12 +44,17 @@ export const MeowAction = ({ meows = 0 }: MeowActionProps) => {
             fill='#01F4CB'
           />
         </svg>
-        {!isActive && <span>{meows + userAmount}</span>}
+        <span>{meows + (amount ?? userAmount)}</span>
         <AnimatePresence>
           {amount && isActive && (
-            <motion.span initial={{ opacity: 0, y: '100%' }} animate={{ opacity: 1, y: 0 }}>
+            <motion.b
+              initial={{ opacity: 0, y: '100%', width: 0 }}
+              animate={{ opacity: 1, y: 0, width: 'auto' }}
+              exit={{ opacity: 0, y: '-200%', width: 0 }}
+              className={styles.Amount}
+            >
               +{amount}
-            </motion.span>
+            </motion.b>
           )}
         </AnimatePresence>
       </Action>

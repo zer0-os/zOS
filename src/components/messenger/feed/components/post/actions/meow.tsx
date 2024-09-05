@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { AnimatePresence, motion, useSpring } from 'framer-motion';
 import { Action } from '@zero-tech/zui/components/Post';
 
-import styles from './meow-action.module.scss';
+import styles from './meow.module.scss';
 
 interface MeowActionConfig {
   increments: number;

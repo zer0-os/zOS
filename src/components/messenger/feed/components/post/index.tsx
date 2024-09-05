@@ -1,7 +1,7 @@
 import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
 import { Avatar } from '@zero-tech/zui/components';
-import { MeowAction } from './meow-action';
+import { MeowAction } from './actions/meow';
 
 import styles from './styles.module.scss';
 import { useMemo } from 'react';

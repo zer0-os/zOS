@@ -1,5 +1,5 @@
 import { Container } from './container';
-import { Errors, AccountManagementState } from '../../../../store/account-management';
+import { Errors, AccountManagementState, State } from '../../../../store/account-management';
 import { RootState } from '../../../../store/reducer';
 import { ConnectionStatus } from '../../../../lib/web3';
 
@@ -55,6 +55,14 @@ describe('Container', () => {
 
         expect(props.isWalletConnected).toEqual(false);
       });
+    });
+
+    it('addWalletState', () => {
+      const props = subject({
+        accountManagement: { state: State.NONE } as any,
+      });
+
+      expect(props.addWalletState).toEqual(State.NONE);
     });
 
     describe('errors', () => {

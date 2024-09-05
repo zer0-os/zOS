@@ -9,15 +9,19 @@ import { connectContainer } from '../../../store/redux-container';
 import { watchAccount } from '@wagmi/core';
 import { getWagmiConfig } from '../wagmi-config';
 import { Chains, ConnectionStatus } from '..';
-import { setChain, setConnectionStatus } from '../../../store/web3';
+import { setChain, setConnectionStatus, setAddress, updateConnector } from '../../../store/web3';
 import { config } from '../../../config';
+import { RootState } from '../../../store';
 
 export interface PublicProperties {
   children?: React.ReactNode;
 }
 
 export interface Properties extends PublicProperties {
+  address: string;
+
   setAddress: (address: string) => void;
+  updateConnector: (connector: string) => void;
   setChain: (chain: Chains) => void;
   setConnectionStatus: (status: ConnectionStatus) => void;
 }
@@ -25,12 +29,18 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties> {
   private unwatch: () => void;
 
-  static mapState(): Partial<Properties> {
-    return {};
+  static mapState(state: RootState): Partial<Properties> {
+    const {
+      web3: { value },
+    } = state;
+
+    return {
+      address: value.address,
+    };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setChain, setConnectionStatus };
+    return { setChain, setConnectionStatus, setAddress, updateConnector };
   }
 
   componentDidMount(): void {
@@ -42,8 +52,10 @@ export class Container extends React.Component<Properties> {
    */
   watchConnection() {
     this.unwatch = watchAccount(getWagmiConfig(), {
-      onChange: (account) => {
+      onChange: (account, prevAccount) => {
         this.props.setChain(account.chainId);
+        // note: this is commented out but we should fix the saga logic to handle this
+        // this.props.updateConnector(account.connector.name);
 
         if (!account.isConnected) {
           this.props.setConnectionStatus(ConnectionStatus.Disconnected);
@@ -51,6 +63,11 @@ export class Container extends React.Component<Properties> {
           this.props.setConnectionStatus(ConnectionStatus.NetworkNotSupported);
         } else {
           this.props.setConnectionStatus(ConnectionStatus.Connected);
+          if (!this.props.address) {
+            this.props.setAddress(account.address);
+          } else if (account.address && prevAccount?.address !== account.address) {
+            this.props.setAddress(account.address); // new wallet connected
+          }
         }
       },
     });

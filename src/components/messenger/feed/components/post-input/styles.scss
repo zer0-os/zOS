@@ -40,11 +40,23 @@
     width: 100%;
   }
 
-  &__actions,
-  &__media {
+  &__emoji-picker-container {
+    position: absolute;
+    left: 0;
+    top: 70px;
+    z-index: 12;
+    color: theme.$color-greyscale-11;
+  }
+
+  &__icon-wrapper {
     display: flex;
-    gap: 8px;
+    gap: 4px;
+  }
+
+  &__actions {
+    display: flex;
     width: 100%;
+    justify-content: space-between;
 
     svg {
       color: var(--color-secondary-11) !important;

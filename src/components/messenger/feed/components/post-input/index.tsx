@@ -4,9 +4,11 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../../../../config';
 import { Key } from '../../../../../lib/keyboard-search';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Avatar, Button } from '@zero-tech/zui/components';
+import { Avatar, Button, IconButton } from '@zero-tech/zui/components';
 import ImageCards from '../../../../../platform-apps/channels/image-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
+import { ViewModes } from '../../../../../shared-components/theme-engine';
+import { IconFaceSmile } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../../lib/bem';
 import './styles.scss';
@@ -15,12 +17,14 @@ import './styles.scss';
 import Menu from '../../../../message-input/menu/menu';
 import { MediaType } from '../../../../../store/messages';
 import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../../../message-input/utils';
+import { EmojiPicker } from '../../../../message-input/emoji-picker/emoji-picker';
 
 const cn = bemClassName('post-input-container');
 
 export interface Properties extends PublicPropertiesContainer {
   avatarUrl?: string;
   isSubmitting?: boolean;
+  viewMode: ViewModes;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
@@ -32,12 +36,14 @@ export interface Properties extends PublicPropertiesContainer {
 interface State {
   value: string;
   media: Media[];
+  isEmojisActive: boolean;
 }
 
 export class PostInput extends React.Component<Properties, State> {
   state = {
     value: this.props.initialValue || '',
     media: [],
+    isEmojisActive: false,
   };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
@@ -153,6 +159,14 @@ export class PostInput extends React.Component<Properties, State> {
     }
   };
 
+  openEmojis = () => this.setState({ isEmojisActive: true });
+  closeEmojis = () => this.setState({ isEmojisActive: false });
+
+  onInsertEmoji = (value: string) => {
+    this.setState({ value });
+    this.closeEmojis();
+  };
+
   renderInput() {
     const isDisabled = (!this.state.value.trim() && !this.state.media.length) || this.props.isSubmitting;
 
@@ -200,13 +214,16 @@ export class PostInput extends React.Component<Properties, State> {
                   </div>
 
                   <div {...cn('actions')}>
-                    <div {...cn('media')}>
+                    <div {...cn('icon-wrapper')}>
                       <Menu
                         onSelected={this.mediaSelected}
                         mimeTypes={this.mimeTypes}
                         maxSize={config.cloudinary.max_file_size}
                       />
+
+                      <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size='small' />
                     </div>
+
                     <Button
                       {...cn('button')}
                       isDisabled={isDisabled}
@@ -215,6 +232,18 @@ export class PostInput extends React.Component<Properties, State> {
                     >
                       Create
                     </Button>
+                  </div>
+
+                  <div {...cn('emoji-picker-container')}>
+                    <EmojiPicker
+                      textareaRef={this.textareaRef}
+                      isOpen={this.state.isEmojisActive}
+                      onOpen={this.openEmojis}
+                      onClose={this.closeEmojis}
+                      value={this.state.value}
+                      viewMode={this.props.viewMode}
+                      onSelect={this.onInsertEmoji}
+                    />
                   </div>
                 </div>
               </div>

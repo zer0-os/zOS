@@ -3,6 +3,7 @@ import React, { RefObject } from 'react';
 import { RootState } from '../../../../../store/reducer';
 import { connectContainer } from '../../../../../store/redux-container';
 import { AuthenticationState } from '../../../../../store/authentication/types';
+import { ViewModes } from '../../../../../shared-components/theme-engine';
 
 import { PostInput } from '.';
 
@@ -20,15 +21,19 @@ export interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
+  viewMode: ViewModes;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       authentication: { user },
+      theme: {
+        value: { viewMode },
+      },
     } = state;
 
-    return { user };
+    return { user, viewMode };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -53,6 +58,7 @@ export class Container extends React.Component<Properties> {
         onSubmit={this.props.onSubmit}
         onPostInputRendered={this.onPostInputRendered}
         avatarUrl={this.props.user.data?.profileSummary.profileImage}
+        viewMode={this.props.viewMode}
       />
     );
   }

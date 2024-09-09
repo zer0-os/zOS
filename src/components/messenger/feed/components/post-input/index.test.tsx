@@ -5,10 +5,12 @@ import { Key } from '../../../../../lib/keyboard-search';
 import Dropzone from 'react-dropzone';
 import { config } from '../../../../../config';
 import { Button } from '@zero-tech/zui/components';
+import { ViewModes } from '../../../../../shared-components/theme-engine';
 
 describe('PostInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {
     const allProps: Properties = {
+      viewMode: ViewModes.Dark,
       onSubmit: () => undefined,
       onPostInputRendered: () => undefined,
       clipboard: {

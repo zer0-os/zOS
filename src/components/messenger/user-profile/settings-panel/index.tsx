@@ -56,6 +56,12 @@ export class SettingsPanel extends React.Component<Properties> {
     const mainBackgroundItems = [];
 
     mainBackgroundItems.push({
+      id: MainBackground.StaticLightsOut,
+      label: this.renderSelectInputLabel('Lights Out (Static)'),
+      onSelect: () => this.setMainBackground(MainBackground.StaticLightsOut),
+    });
+
+    mainBackgroundItems.push({
       id: MainBackground.StaticGreenParticles,
       label: this.renderSelectInputLabel('Green Particle (Static)'),
       onSelect: () => this.setMainBackground(MainBackground.StaticGreenParticles),

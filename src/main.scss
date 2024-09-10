@@ -62,6 +62,10 @@ $border-color-hover: theme-zui.$color-primary-7;
       background-image: url(cloudAsset('AbstractBGwithoutShine.jpg'));
     }
 
+    &.static-lights-out {
+      background: rgba(0, 0, 0, 1);
+    }
+
     &.animated {
       position: relative;
 

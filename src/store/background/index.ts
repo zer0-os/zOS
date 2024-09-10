@@ -5,6 +5,7 @@ export enum SagaActionTypes {
 }
 
 export enum MainBackground {
+  StaticLightsOut = 'static-lights-out',
   StaticGreenParticles = 'static-green-particles',
   AnimatedGreenParticles = 'animated-green-particles',
   AnimatedBlackParticles = 'animated-black-particles',
@@ -20,8 +21,7 @@ export interface BackgroundState {
 
 const initialState: BackgroundState = {
   selectedMainBackground:
-    (localStorage.getItem('mainBackground:selectedMainBackground') as MainBackground) ||
-    MainBackground.StaticGreenParticles,
+    (localStorage.getItem('mainBackground:selectedMainBackground') as MainBackground) || MainBackground.StaticLightsOut,
 };
 
 const slice = createSlice({

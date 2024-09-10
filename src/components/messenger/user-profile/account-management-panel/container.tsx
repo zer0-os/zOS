@@ -13,7 +13,6 @@ import {
   State,
 } from '../../../../store/account-management';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
-import { ConnectionStatus } from '../../../../lib/web3';
 
 export interface PublicProperties {
   onClose?: () => void;
@@ -25,8 +24,7 @@ export interface Properties extends PublicProperties {
   successMessage: string;
   currentUser: any;
   canAddEmail: boolean;
-  isWalletConnected: boolean;
-  connectedWallet: string;
+  connectedWalletAddr: string;
   addWalletState: State;
 
   openAddEmailAccountModal: () => void;
@@ -39,7 +37,7 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       accountManagement,
-      web3: { status, value },
+      web3: { value },
     } = state;
 
     const currentUser = currentUserSelector(state);
@@ -49,8 +47,7 @@ export class Container extends React.Component<Properties> {
       error: Container.mapErrors(accountManagement.errors),
       successMessage: accountManagement.successMessage,
       isAddEmailModalOpen: accountManagement.isAddEmailAccountModalOpen,
-      isWalletConnected: status === ConnectionStatus.Connected,
-      connectedWallet: value?.address,
+      connectedWalletAddr: value?.address,
       addWalletState: accountManagement.state,
       currentUser: {
         userId: currentUser?.id,
@@ -92,8 +89,7 @@ export class Container extends React.Component<Properties> {
         isAddEmailModalOpen={this.props.isAddEmailModalOpen}
         currentUser={this.props.currentUser}
         canAddEmail={this.props.canAddEmail}
-        isWalletConnected={this.props.isWalletConnected}
-        connectedWallet={this.props.connectedWallet}
+        connectedWalletAddr={this.props.connectedWalletAddr}
         addWalletState={this.props.addWalletState}
         onOpenAddEmailModal={() => this.props.openAddEmailAccountModal()}
         onCloseAddEmailModal={() => this.props.closeAddEmailAccountModal()}

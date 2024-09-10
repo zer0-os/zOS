@@ -16,7 +16,8 @@ import { setUser } from '../authentication';
 import cloneDeep from 'lodash/cloneDeep';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { getSignedToken } from '../web3/saga';
-import { linkNewWalletToZEROAccount as apiLinkNewWalletToZEROAccount } from './api';
+import { linkNewWalletToZEROAccount as apiLinkNewWalletToZEROAccount, LinkNewWalletToZEROAccountResponse } from './api';
+import { getUserSubHandle } from '../../lib/user';
 
 export function* reset() {
   yield put(setState(State.NONE));
@@ -35,10 +36,10 @@ export function* linkNewWalletToZEROAccount() {
       return;
     }
 
-    const apiResult = yield call(apiLinkNewWalletToZEROAccount, result.token);
+    const apiResult: LinkNewWalletToZEROAccountResponse = yield call(apiLinkNewWalletToZEROAccount, result.token);
     if (apiResult.success) {
       // other code
-      yield call(updateCurrentUserWallets, apiResult.response.wallet);
+      yield call(updateCurrentUserWallets, apiResult.response.wallet, apiResult.response.primaryZID);
       yield put(setSuccessMessage('Wallet added successfully'));
     } else {
       yield put(setErrors([apiResult.error]));
@@ -53,14 +54,28 @@ export function* linkNewWalletToZEROAccount() {
   return;
 }
 
-export function* updateCurrentUserWallets(wallet) {
-  if (!wallet) {
-    return;
+export function* updateCurrentUserWallets({ publicAddress, ...walletRest }, primaryZID) {
+  if (!publicAddress) {
+    return; // Ensure wallet has a valid publicAddress
   }
 
-  let currentUser = cloneDeep(yield select(currentUserSelector()));
-  currentUser.wallets = (currentUser.wallets || []).concat(wallet);
-  yield put(setUser({ data: currentUser }));
+  const currentUser = yield select(currentUserSelector());
+
+  // Update wallets immutably
+  const updatedWallets = [...(currentUser.wallets || []), { publicAddress, ...walletRest }];
+
+  // Update primaryZID, either from the argument or derive from the wallet's publicAddress
+  const updatedPrimaryZID = primaryZID || getUserSubHandle(undefined, publicAddress);
+
+  yield put(
+    setUser({
+      data: {
+        ...currentUser,
+        wallets: updatedWallets,
+        primaryZID: updatedPrimaryZID,
+      },
+    })
+  );
 }
 
 export function* updateCurrentUserPrimaryEmail(email) {

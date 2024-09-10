@@ -29,8 +29,7 @@ describe(AccountManagementPanel, () => {
       isAddEmailModalOpen: false,
       currentUser: {},
       canAddEmail: false,
-      isWalletConnected: false,
-      connectedWallet: '',
+      connectedWalletAddr: '',
       addWalletState: State.NONE,
 
       onBack: () => {},
@@ -217,8 +216,7 @@ describe(AccountManagementPanel, () => {
     it('should open Link Wallet modal when user clicks on Add Wallet, and metamask is connected', () => {
       const wrapper = subject({
         currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
-        isWalletConnected: true,
-        connectedWallet: '0xA100C16E67884Da7d515211Bb065592079bEcde6',
+        connectedWalletAddr: '0xA100C16E67884Da7d515211Bb065592079bEcde6',
       });
 
       wrapper.setState({ isUserLinkingNewWallet: true });
@@ -234,7 +232,7 @@ describe(AccountManagementPanel, () => {
     it('should update isUserLinkingNewWallet state to false when user closes Link Wallet modal', () => {
       const wrapper = subject({
         currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
-        isWalletConnected: true,
+        connectedWalletAddr: '0x123',
       });
 
       wrapper.setState({ isUserLinkingNewWallet: true });
@@ -247,7 +245,7 @@ describe(AccountManagementPanel, () => {
     it('does not render Link Wallet modal if error is set', () => {
       const wrapper = subject({
         currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
-        isWalletConnected: true,
+        connectedWalletAddr: '0x123',
         error: 'An error occurred',
       });
       wrapper.setState({ isUserLinkingNewWallet: true });
@@ -259,7 +257,7 @@ describe(AccountManagementPanel, () => {
     it('does not render Link Wallet modal if wallet is NOT connected', () => {
       const wrapper = subject({
         currentUser: { primaryEmail: 'test@zero.tech', wallets: [] },
-        isWalletConnected: false,
+        connectedWalletAddr: null,
       });
       wrapper.setState({ isUserLinkingNewWallet: true });
 
@@ -271,7 +269,7 @@ describe(AccountManagementPanel, () => {
       const addNewWallet = jest.fn();
       const wrapper = subject({
         currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
-        isWalletConnected: true,
+        connectedWalletAddr: '0x123',
         addWalletState: State.NONE,
         onAddNewWallet: addNewWallet,
       });
@@ -286,7 +284,7 @@ describe(AccountManagementPanel, () => {
     it('keeps Link Wallet button in loading state while IN_PROGRESS', () => {
       const wrapper = subject({
         currentUser: { primaryEmail: 'ratik@zero.tech', wallets: [] },
-        isWalletConnected: true,
+        connectedWalletAddr: '0x123',
         addWalletState: State.INPROGRESS,
       });
       wrapper.setState({ isUserLinkingNewWallet: true });

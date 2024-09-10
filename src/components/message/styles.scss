@@ -49,6 +49,7 @@
 
     .message__block {
       background: #111213;
+      backdrop-filter: blur(64px);
       border-radius: var(--border-owner-radius); // set in message__message-row
 
       &--edit {
@@ -77,6 +78,7 @@
 
     border-radius: var(--border-radius); // set in message__message-row
     background: #111213;
+    backdrop-filter: blur(64px);
 
     &--edit {
       width: 100%;

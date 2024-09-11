@@ -5,7 +5,7 @@ import { ConversationActions, Properties } from '.';
 
 const mockGroupManagementMenu = vi.fn();
 
-vi.mock('../../../group-management-menu', () => ({
+vi.mock('../../group-management-menu', () => ({
   GroupManagementMenu: (props) => {
     mockGroupManagementMenu(props);
     return <div data-testid='group-management-menu' />;

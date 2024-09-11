@@ -68,6 +68,8 @@ $recent-indicator-size: 8px;
   }
 
   &__group-button {
+    color: rgba(113, 117, 122, 1);
+
     &--is-active {
       background-color: theme.$color-greyscale-transparency-3;
     }

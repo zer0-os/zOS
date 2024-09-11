@@ -6,7 +6,7 @@ import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { GroupManagementMenu } from '../../../group-management-menu';
 import { Avatar } from '@zero-tech/zui/components/Avatar';
 import { IconButton } from '@zero-tech/zui/components/IconButton';
-import { IconUsers1 } from '@zero-tech/zui/icons';
+import { IconChevronRight } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../../../lib/bem';
 
 import './styles.scss';
@@ -116,9 +116,6 @@ export class ConversationHeader extends React.Component<Properties> {
   render() {
     return (
       <Header
-        icon={this.renderAvatar()}
-        title={this.renderTitle()}
-        subtitle={this.renderSubTitle()}
         onClick={this.toggleSidekick}
         className={this.props.className}
         end={
@@ -138,9 +135,10 @@ export class ConversationHeader extends React.Component<Properties> {
             />
             <IconButton
               {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
-              Icon={IconUsers1}
+              Icon={IconChevronRight}
               size={32}
               onClick={this.toggleSidekick}
+              isFilled
             />
           </>
         }

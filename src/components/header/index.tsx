@@ -13,22 +13,25 @@ export interface HeaderProps {
   icon?: ReactNode;
   onClick?: () => void;
   subtitle?: ReactNode;
-  title: ReactNode;
+  title?: ReactNode;
 }
 
 export const Header = ({ icon, className, end, onClick, subtitle, title }: HeaderProps) => {
   // If it's clickable, it should be a button
   const Details = onClick ? 'button' : 'div';
+  const hasDetails = icon || title || subtitle;
 
   return (
     <div className={classNames(styles.Header, className)}>
-      <Details className={styles.Details} onClick={onClick}>
-        {icon && <div className={styles.Avatar}>{icon}</div>}
-        <span className={styles.Description}>
-          <div className={styles.Title}>{title}</div>
-          {subtitle && <div className={styles.Subtitle}>{subtitle}</div>}
-        </span>
-      </Details>
+      {hasDetails && (
+        <Details className={styles.Details} onClick={onClick}>
+          {icon && <div className={styles.Avatar}>{icon}</div>}
+          <span className={styles.Description}>
+            <div className={styles.Title}>{title}</div>
+            {subtitle && <div className={styles.Subtitle}>{subtitle}</div>}
+          </span>
+        </Details>
+      )}
       {end && <div className={styles.End}>{end}</div>}
     </div>
   );

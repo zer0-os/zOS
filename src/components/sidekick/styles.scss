@@ -17,7 +17,7 @@
   display: flex;
 
   flex-shrink: 0;
-  padding: 16px 16px 16px 0px;
+  padding: 24px 18px 24px 0px;
 
   &--secondary {
     overflow-y: auto;
@@ -27,13 +27,14 @@
     &.open {
       transform: translateX(0);
       max-width: 286px;
-      padding: 16px 0;
+      padding: 24px 18px;
+      margin-right: 18px;
     }
 
     &.close {
       transform: translateX(100%);
       max-width: 0;
-      padding: 16px 0;
+      padding: 18px 0;
     }
 
     transition: transform 0.1s ease-out, max-width 0.1s ease-out, padding 0.1s ease-out;
@@ -53,6 +54,7 @@
     flex-shrink: 0;
     pointer-events: auto;
     max-width: $width-sidekick;
+    border: 1px solid rgba(52, 56, 60, 0.24);
 
     @include glass-outer;
   }
@@ -60,7 +62,9 @@
   &__tab-content {
     width: inherit;
 
-    @include glass-inner;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(17, 18, 19, 0.24);
 
     &--messages {
       height: 100%;

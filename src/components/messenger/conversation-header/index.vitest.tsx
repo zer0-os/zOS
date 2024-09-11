@@ -1,11 +1,12 @@
 import { vi } from 'vitest';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import { ConversationHeader, Properties } from '.';
+import { stubUser } from '../../../store/test/store';
 
 const mockGroupManagementMenu = vi.fn();
 
-vi.mock('../../../group-management-menu', () => ({
+vi.mock('../../group-management-menu', () => ({
   GroupManagementMenu: (props) => {
     mockGroupManagementMenu(props);
     return <div data-testid='group-management-menu' />;
@@ -14,19 +15,11 @@ vi.mock('../../../group-management-menu', () => ({
 
 const subject = (props: Partial<Properties> = {}) => {
   const allProps: Properties = {
-    canAddMembers: false,
-    canLeaveRoom: false,
-    canEdit: false,
-    canViewDetails: false,
-    isSecondarySidekickOpen: false,
-    isRoomMuted: false,
-    onAddMember: () => null,
-    onEdit: () => null,
-    onLeaveRoom: () => null,
-    onViewDetails: () => null,
+    isOneOnOne: false,
+    otherMembers: [],
+    icon: '',
+    name: '',
     toggleSecondarySidekick: () => null,
-    onMuteRoom: () => null,
-    onUnmuteRoom: () => null,
 
     ...props,
   };
@@ -37,69 +30,63 @@ const subject = (props: Partial<Properties> = {}) => {
 describe(ConversationHeader, () => {
   it('fires toggleSecondarySidekick', function () {
     const toggleSecondarySidekick = vi.fn();
-    const { container } = render(subject({ toggleSecondarySidekick }));
+    const { container } = render(subject({ isOneOnOne: false, toggleSecondarySidekick }));
     const groupButton = container.querySelector('.conversation-header__group-button');
     fireEvent.click(groupButton);
+
     expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
   });
 
-  describe('group management', function () {
-    beforeEach(() => {
-      vi.clearAllMocks();
+  describe('title', () => {
+    it('renders channel name as title when name is provided', () => {
+      render(subject({ name: 'this is my channel name' }));
+
+      expect(screen.getByText('this is my channel name')).toBeTruthy();
     });
 
-    it('onAddMember', function () {
-      const onAddMember = vi.fn();
-      render(subject({ onAddMember }));
-      const lastCall = mockGroupManagementMenu.mock.lastCall[0];
-      lastCall.onStartAddMember();
+    it('renders otherMembers as title when name is NOT provided', () => {
+      render(subject({ otherMembers: [stubUser({ firstName: 'first-name', lastName: 'last-name' })] }));
 
-      expect(onAddMember).toHaveBeenCalled();
+      expect(screen.getByText('first-name last-name')).toBeTruthy();
+    });
+  });
+
+  describe('one on one chat', function () {
+    it('header renders full name in the title', function () {
+      render(
+        subject({
+          otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })],
+        })
+      );
+
+      expect(screen.getByText('Johnny Sanderson')).toBeTruthy();
     });
 
-    it('onEdit', function () {
-      const onEdit = vi.fn();
-      render(subject({ onEdit }));
-      const lastCall = mockGroupManagementMenu.mock.lastCall[0];
-      lastCall.onEdit();
+    it('renders a formatted subtitle', function () {
+      render(
+        subject({
+          isOneOnOne: true,
+          otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', lastSeenAt: null })],
+        })
+      );
 
-      expect(onEdit).toHaveBeenCalled();
+      expect(screen.getByText('0://arc:vet')).toBeTruthy();
     });
+  });
 
-    it('onLeaveRoom', function () {
-      const onLeaveRoom = vi.fn();
-      render(subject({ onLeaveRoom }));
-      const lastCall = mockGroupManagementMenu.mock.lastCall[0];
-      lastCall.onLeave();
+  describe('one to many chat', function () {
+    it('header renders full names in the title', function () {
+      render(
+        subject({
+          isOneOnOne: false,
+          otherMembers: [
+            stubUser({ firstName: 'Johnny', lastName: 'Sanderson' }),
+            stubUser({ firstName: 'Jack', lastName: 'Black' }),
+          ],
+        })
+      );
 
-      expect(onLeaveRoom).toHaveBeenCalled();
-    });
-
-    it('onViewDetails', function () {
-      const onViewDetails = vi.fn();
-      render(subject({ onViewDetails }));
-      const lastCall = mockGroupManagementMenu.mock.lastCall[0];
-      lastCall.onViewGroupInformation();
-
-      expect(onViewDetails).toHaveBeenCalled();
-    });
-
-    it('onMuteRoom', function () {
-      const onMuteRoom = vi.fn();
-      render(subject({ onMuteRoom }));
-      const lastCall = mockGroupManagementMenu.mock.lastCall[0];
-      lastCall.onMute();
-
-      expect(onMuteRoom).toHaveBeenCalled();
-    });
-
-    it('onUnmuteRoom', function () {
-      const onUnmuteRoom = vi.fn();
-      render(subject({ onUnmuteRoom }));
-      const lastCall = mockGroupManagementMenu.mock.lastCall[0];
-      lastCall.onUnmute();
-
-      expect(onUnmuteRoom).toHaveBeenCalled();
+      expect(screen.getByText('Johnny Sanderson, Jack Black')).toBeTruthy();
     });
   });
 });

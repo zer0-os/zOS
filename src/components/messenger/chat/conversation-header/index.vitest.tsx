@@ -1,8 +1,7 @@
 import { vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 
 import { ConversationHeader, Properties } from '.';
-import { stubUser } from '../../../../store/test/store';
 
 const mockGroupManagementMenu = vi.fn();
 

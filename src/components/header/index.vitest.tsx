@@ -43,7 +43,7 @@ describe(Header, () => {
 
   it('should call onClick', async () => {
     const onClick = vi.fn();
-    renderComponent({ onClick, title: 'foo' });
+    renderComponent({ onClick });
 
     screen.getByRole('button').click();
 

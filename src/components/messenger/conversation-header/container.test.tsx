@@ -1,6 +1,6 @@
 import { ConversationHeader } from './container';
 
-import { StoreBuilder, stubAuthenticatedUser, stubConversation, stubUser } from '../../../../store/test/store';
+import { StoreBuilder, stubAuthenticatedUser, stubConversation, stubUser } from '../../../store/test/store';
 
 describe('ConversationHeader', () => {
   describe('mapState', () => {

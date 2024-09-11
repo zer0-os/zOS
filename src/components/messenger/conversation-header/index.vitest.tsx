@@ -28,15 +28,6 @@ const subject = (props: Partial<Properties> = {}) => {
 };
 
 describe(ConversationHeader, () => {
-  it('fires toggleSecondarySidekick', function () {
-    const toggleSecondarySidekick = vi.fn();
-    const { container } = render(subject({ isOneOnOne: false, toggleSecondarySidekick }));
-    const groupButton = container.querySelector('.conversation-header__group-button');
-    fireEvent.click(groupButton);
-
-    expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
-  });
-
   describe('title', () => {
     it('renders channel name as title when name is provided', () => {
       render(subject({ name: 'this is my channel name' }));

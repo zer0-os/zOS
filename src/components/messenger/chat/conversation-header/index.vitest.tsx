@@ -15,10 +15,6 @@ vi.mock('../../../group-management-menu', () => ({
 
 const subject = (props: Partial<Properties> = {}) => {
   const allProps: Properties = {
-    isOneOnOne: false,
-    otherMembers: [],
-    icon: '',
-    name: '',
     canAddMembers: false,
     canLeaveRoom: false,
     canEdit: false,
@@ -40,65 +36,12 @@ const subject = (props: Partial<Properties> = {}) => {
 };
 
 describe(ConversationHeader, () => {
-  describe('title', () => {
-    it('renders channel name as title when name is provided', () => {
-      render(subject({ name: 'this is my channel name' }));
-
-      expect(screen.getByText('this is my channel name')).toBeTruthy();
-    });
-
-    it('renders otherMembers as title when name is NOT provided', () => {
-      render(subject({ otherMembers: [stubUser({ firstName: 'first-name', lastName: 'last-name' })] }));
-
-      expect(screen.getByText('first-name last-name')).toBeTruthy();
-    });
-  });
-
-  describe('one on one chat', function () {
-    it('header renders full name in the title', function () {
-      render(
-        subject({
-          otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })],
-        })
-      );
-
-      expect(screen.getByText('Johnny Sanderson')).toBeTruthy();
-    });
-
-    it('renders a formatted subtitle', function () {
-      render(
-        subject({
-          isOneOnOne: true,
-          otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', lastSeenAt: null })],
-        })
-      );
-
-      expect(screen.getByText('0://arc:vet')).toBeTruthy();
-    });
-  });
-
-  describe('one to many chat', function () {
-    it('header renders full names in the title', function () {
-      render(
-        subject({
-          isOneOnOne: false,
-          otherMembers: [
-            stubUser({ firstName: 'Johnny', lastName: 'Sanderson' }),
-            stubUser({ firstName: 'Jack', lastName: 'Black' }),
-          ],
-        })
-      );
-
-      expect(screen.getByText('Johnny Sanderson, Jack Black')).toBeTruthy();
-    });
-
-    it('fires toggleSecondarySidekick', function () {
-      const toggleSecondarySidekick = vi.fn();
-      const { container } = render(subject({ isOneOnOne: false, toggleSecondarySidekick }));
-      const groupButton = container.querySelector('.conversation-header__group-button');
-      fireEvent.click(groupButton);
-      expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
-    });
+  it('fires toggleSecondarySidekick', function () {
+    const toggleSecondarySidekick = vi.fn();
+    const { container } = render(subject({ toggleSecondarySidekick }));
+    const groupButton = container.querySelector('.conversation-header__group-button');
+    fireEvent.click(groupButton);
+    expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
   });
 
   describe('group management', function () {

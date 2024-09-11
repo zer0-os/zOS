@@ -83,10 +83,6 @@ export class Container extends React.Component<Properties> {
     };
   }
 
-  isOneOnOne() {
-    return this.props.directMessage?.isOneOnOne;
-  }
-
   openLeaveGroupDialog = () => {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.OPEN);
   };
@@ -114,10 +110,6 @@ export class Container extends React.Component<Properties> {
     return (
       <ConversationHeaderComponent
         className={this.props.className}
-        icon={this.props.directMessage.icon}
-        name={this.props.directMessage.name}
-        isOneOnOne={this.isOneOnOne()}
-        otherMembers={this.props.directMessage.otherMembers || []}
         canAddMembers={this.props.canAddMembers}
         canLeaveRoom={this.props.canLeaveRoom}
         canEdit={this.props.canEdit}

@@ -3,7 +3,6 @@ import * as React from 'react';
 import {
   IconBell1,
   IconBellOff1,
-  IconDotsHorizontal,
   IconEdit5,
   IconInfoCircle,
   IconPlus,

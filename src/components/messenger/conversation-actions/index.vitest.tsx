@@ -1,11 +1,11 @@
 import { vi } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
 
-import { ConversationHeader, Properties } from '.';
+import { ConversationActions, Properties } from '.';
 
 const mockGroupManagementMenu = vi.fn();
 
-vi.mock('../../../group-management-menu', () => ({
+vi.mock('../../group-management-menu', () => ({
   GroupManagementMenu: (props) => {
     mockGroupManagementMenu(props);
     return <div data-testid='group-management-menu' />;
@@ -31,14 +31,14 @@ const subject = (props: Partial<Properties> = {}) => {
     ...props,
   };
 
-  return <ConversationHeader {...allProps} />;
+  return <ConversationActions {...allProps} />;
 };
 
-describe(ConversationHeader, () => {
+describe(ConversationActions, () => {
   it('fires toggleSecondarySidekick', function () {
     const toggleSecondarySidekick = vi.fn();
     const { container } = render(subject({ toggleSecondarySidekick }));
-    const groupButton = container.querySelector('.conversation-header__group-button');
+    const groupButton = container.querySelector('.conversation-actions__group-button');
     fireEvent.click(groupButton);
     expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
   });

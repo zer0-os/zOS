@@ -1,8 +1,8 @@
-import { ConversationHeader } from './container';
+import { ConversationActionsContainer } from './container';
 
-import { StoreBuilder, stubAuthenticatedUser, stubConversation, stubUser } from '../../../../store/test/store';
+import { StoreBuilder, stubAuthenticatedUser, stubConversation, stubUser } from '../../../store/test/store';
 
-describe('ConversationHeader', () => {
+describe('ConversationActionsContainer', () => {
   describe('mapState', () => {
     describe('canLeaveRoom', () => {
       it('is false when only when one other member', () => {
@@ -10,7 +10,9 @@ describe('ConversationHeader', () => {
           stubConversation({ otherMembers: [stubUser()], isSocialChannel: false })
         );
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canLeaveRoom: false })
+        );
       });
 
       it('is false when user is admin', () => {
@@ -24,7 +26,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canLeaveRoom: false })
+        );
       });
 
       it('is false when user is admin and conversation is social channel', () => {
@@ -38,7 +42,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canLeaveRoom: false })
+        );
       });
 
       it('is true when user is not admin and more than one other member', () => {
@@ -48,7 +54,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canLeaveRoom: true })
+        );
       });
 
       it('is true when the conversation is a social channel and has multiple members', () => {
@@ -56,7 +64,9 @@ describe('ConversationHeader', () => {
           .withActiveConversation(stubConversation({ otherMembers: [stubUser(), stubUser()], isSocialChannel: true }))
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canLeaveRoom: true })
+        );
       });
 
       it('is false when the conversation is a social channel and has only one member', () => {
@@ -64,7 +74,9 @@ describe('ConversationHeader', () => {
           .withActiveConversation(stubConversation({ otherMembers: [stubUser()], isSocialChannel: true }))
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canLeaveRoom: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canLeaveRoom: false })
+        );
       });
     });
 
@@ -74,7 +86,9 @@ describe('ConversationHeader', () => {
           stubConversation({ isOneOnOne: true, isSocialChannel: false })
         );
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canEdit: false })
+        );
       });
 
       it('is false when current user is not room admin', () => {
@@ -84,7 +98,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canEdit: false })
+        );
       });
 
       it('is true when current user is room admin', () => {
@@ -94,7 +110,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canEdit: true })
+        );
       });
 
       it('is true when current user is room moderator', () => {
@@ -104,7 +122,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ id: 'current-user-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canEdit: true })
+        );
       });
 
       it('is true when the conversation is a social channel and user is an admin', () => {
@@ -118,7 +138,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canEdit: true })
+        );
       });
 
       it('is false when the conversation is a social channel and current user is not room admin', () => {
@@ -128,7 +150,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canEdit: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canEdit: false })
+        );
       });
     });
 
@@ -138,7 +162,9 @@ describe('ConversationHeader', () => {
           stubConversation({ isOneOnOne: true, isSocialChannel: false })
         );
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canAddMembers: false })
+        );
       });
 
       it('is false when current user is not room admin', () => {
@@ -148,7 +174,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canAddMembers: false })
+        );
       });
 
       it('is true when current user is room admin', () => {
@@ -158,7 +186,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canAddMembers: true })
+        );
       });
 
       it('is true when the conversation is a social channel and user is an admin', () => {
@@ -172,7 +202,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canAddMembers: true })
+        );
       });
 
       it('is false when the conversation is a social channel and current user is not room admin', () => {
@@ -182,7 +214,9 @@ describe('ConversationHeader', () => {
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canAddMembers: false })
+        );
       });
     });
 
@@ -192,7 +226,9 @@ describe('ConversationHeader', () => {
           stubConversation({ isOneOnOne: true, isSocialChannel: false })
         );
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canViewDetails: false }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canViewDetails: false })
+        );
       });
 
       it('is true when not a one on one conversation', () => {
@@ -200,7 +236,9 @@ describe('ConversationHeader', () => {
           stubConversation({ isOneOnOne: false, isSocialChannel: false })
         );
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canViewDetails: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canViewDetails: true })
+        );
       });
 
       it('is true when the conversation is a social channel', () => {
@@ -211,7 +249,9 @@ describe('ConversationHeader', () => {
           })
         );
 
-        expect(ConversationHeader.mapState(state.build())).toEqual(expect.objectContaining({ canViewDetails: true }));
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canViewDetails: true })
+        );
       });
     });
   });

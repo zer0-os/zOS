@@ -8,6 +8,7 @@ import { MessageSendStatus } from '../../../store/messages';
 import { sendPost } from '../../../store/posts';
 import { FeedViewContainer } from './feed-view-container/feed-view-container';
 import { PostInputContainer as PostInput } from './components/post-input/container';
+import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -77,6 +78,8 @@ export class Container extends React.Component<Properties> {
 
     return (
       <div {...cn('')}>
+        <ConversationHeader {...cn('header')} />
+
         <ScrollbarContainer variant='on-hover'>
           <PostInput id={activeConversationId} onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />
 

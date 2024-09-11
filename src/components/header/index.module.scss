@@ -1,18 +1,17 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../glass';
 
+$header-height: 66px;
+
 .Header {
-  display: flex;
-  align-items: center;
-  border-radius: 6px;
-  border: 1px solid rgba(52, 56, 60, 0.24);
+  border-radius: 16px;
   box-sizing: border-box;
-
-  gap: 9px;
-  padding: 8px;
-
-  background: rgba(17, 18, 19, 0.24);
-  backdrop-filter: blur(64px);
+  display: flex;
+  gap: 8px;
+  height: $header-height;
+  padding: 16px;
+  width: 100%;
+  @include flat-thick;
 
   .Avatar {
     pointer-events: none;
@@ -38,7 +37,18 @@
 
   .End {
     display: flex;
-    gap: 9px;
+    gap: 8px;
+  }
+
+  .Title {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: theme.$color-greyscale-12;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .Subtitle {

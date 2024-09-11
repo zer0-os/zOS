@@ -1,8 +1,8 @@
 import React from 'react';
-import { RootState } from '../../../../store/reducer';
-import { connectContainer } from '../../../../store/redux-container';
-import { Channel, DefaultRoomLabels, denormalize, onAddLabel, onRemoveLabel } from '../../../../store/channels';
-import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { RootState } from '../../../store/reducer';
+import { connectContainer } from '../../../store/redux-container';
+import { Channel, DefaultRoomLabels, denormalize, onAddLabel, onRemoveLabel } from '../../../store/channels';
+import { currentUserSelector } from '../../../store/authentication/selectors';
 import {
   startAddGroupMember,
   LeaveGroupDialogStatus,
@@ -10,8 +10,8 @@ import {
   startEditConversation,
   viewGroupInformation,
   toggleSecondarySidekick,
-} from '../../../../store/group-management';
-import { ConversationHeader as ConversationHeaderComponent } from './../conversation-header';
+} from '../../../store/group-management';
+import { ConversationActions } from '.';
 
 import './styles.scss';
 
@@ -108,7 +108,7 @@ export class Container extends React.Component<Properties> {
     }
 
     return (
-      <ConversationHeaderComponent
+      <ConversationActions
         className={this.props.className}
         canAddMembers={this.props.canAddMembers}
         canLeaveRoom={this.props.canLeaveRoom}
@@ -128,4 +128,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const ConversationHeader = connectContainer<PublicProperties>(Container);
+export const ConversationActionsContainer = connectContainer<PublicProperties>(Container);

@@ -299,7 +299,7 @@ export class MessageInput extends React.Component<Properties, State> {
             </div>
           )}
 
-          <div {...cn('chat-container')}>
+          <div {...cn('chat-container', this.props.isEditing && 'editing')}>
             <div {...cn('scroll-container')}>
               <div {...cn('text-and-emoji-wrapper')}>
                 <Dropzone

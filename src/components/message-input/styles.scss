@@ -12,6 +12,7 @@
 
   &--editing {
     padding: 0;
+
     margin-right: none;
   }
 
@@ -65,6 +66,17 @@
     gap: 8px;
     width: 100%;
     border-radius: 8px;
+
+    &--editing {
+      padding: 8px 0px 8px 16px;
+
+      @include glass-input-inset-default;
+
+      &:focus-within {
+        border-color: theme.$color-primary-7;
+        @include glass-input-inset-active;
+      }
+    }
   }
 
   &__scroll-container {

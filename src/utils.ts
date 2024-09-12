@@ -21,8 +21,10 @@ export function getMainBackgroundClass(selectedMainBackground) {
     case MainBackground.AnimatedBlackParticles:
       return 'animated';
     case MainBackground.StaticGreenParticles:
-    default:
       return 'static-green-particles';
+    case MainBackground.StaticLightsOut:
+    default:
+      return 'static-lights-out';
   }
 }
 

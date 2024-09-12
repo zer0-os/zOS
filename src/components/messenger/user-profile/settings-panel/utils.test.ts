@@ -2,6 +2,10 @@ import { MainBackground } from '../../../../store/background';
 import { translateBackgroundValue } from './utils';
 
 describe('translateBackgroundValue', () => {
+  it('should return "Lights Out (Static)" for MainBackground.StaticLightsOut', () => {
+    expect(translateBackgroundValue(MainBackground.StaticLightsOut)).toBe('Lights Out (Static)');
+  });
+
   it('should return "Green Particle (Static)" for MainBackground.StaticGreenParticles', () => {
     expect(translateBackgroundValue(MainBackground.StaticGreenParticles)).toBe('Green Particle (Static)');
   });

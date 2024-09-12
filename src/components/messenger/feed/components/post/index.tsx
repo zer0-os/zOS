@@ -105,7 +105,13 @@ export const Post = ({
 
       return null;
     },
-    [isImageLoaded, loadAttachmentDetails]
+    [
+      isImageLoaded,
+      loadAttachmentDetails,
+      messageId,
+      getPlaceholderDimensions,
+      handleImageLoad,
+    ]
   );
 
   return (

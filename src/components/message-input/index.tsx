@@ -286,7 +286,7 @@ export class MessageInput extends React.Component<Properties, State> {
           {this.allowLeftIcons && (
             <div {...cn('icon-wrapper')}>
               {this.allowGiphy && (
-                <IconButton {...cn('icon', 'giphy')} onClick={this.openGiphy} Icon={IconStickerCircle} size='small' />
+                <IconButton {...cn('icon', 'giphy')} onClick={this.openGiphy} Icon={IconStickerCircle} size={26} />
               )}
 
               {this.allowFileAttachment && (
@@ -345,12 +345,7 @@ export class MessageInput extends React.Component<Properties, State> {
                 <div {...cn('emoji-icon-outer')}>
                   <div {...cn('icon-wrapper')}>
                     {!this.props.isEditing && (
-                      <IconButton
-                        {...cn('icon', 'emoji')}
-                        onClick={this.openEmojis}
-                        Icon={IconFaceSmile}
-                        size='small'
-                      />
+                      <IconButton {...cn('icon', 'emoji')} onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
                     )}
                   </div>
                 </div>
@@ -367,7 +362,7 @@ export class MessageInput extends React.Component<Properties, State> {
                   {...cn('icon', 'end-action')}
                   onClick={this.onSend}
                   Icon={IconSend3}
-                  size='small'
+                  size={26}
                   isFilled={this.sendHighlighted()}
                   label='send'
                 />

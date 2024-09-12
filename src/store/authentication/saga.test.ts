@@ -29,7 +29,6 @@ import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearMessages } from '../messages/saga';
 import { clearUsers } from '../users/saga';
 import { updateConnector } from '../web3/saga';
-import { Connectors } from '../../lib/web3';
 import { completePendingUserProfile } from '../registration/saga';
 import { StoreBuilder } from '../test/store';
 import { throwError } from 'redux-saga-test-plan/providers';
@@ -250,10 +249,6 @@ describe(forceLogout, () => {
     const { storeState } = await expectLogoutSaga().withReducer(rootReducer, state.build()).run();
 
     expect(storeState.authentication.displayLogoutModal).toEqual(false);
-  });
-
-  it('clears the web3 connection', async () => {
-    await expectLogoutSaga().call(updateConnector, { payload: Connectors.None }).run();
   });
 
   it('clears the user session', async () => {

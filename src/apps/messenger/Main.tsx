@@ -10,7 +10,6 @@ import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
 
 import styles from './Main.module.scss';
-import { ConversationHeaderContainer as ConversationHeader } from '../../components/messenger/conversation-header/container';
 import { denormalize } from '../../store/channels';
 import { ConversationActionsContainer as ConversationActions } from '../../components/messenger/conversation-actions/container';
 
@@ -50,8 +49,6 @@ export class Container extends React.Component<Properties> {
             <Sidekick />
 
             <div className={styles.Split}>
-              {!this.props.isSocialChannel && <ConversationHeader className={styles.Header} />}
-
               <ConversationActions className={styles.Actions} />
 
               {this.props.isSocialChannel && !this.props.isJoiningConversation && this.props.isValidConversation && (

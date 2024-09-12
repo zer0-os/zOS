@@ -25,8 +25,7 @@ export interface Properties {
   successMessage: string;
   currentUser: any;
   canAddEmail: boolean;
-  isWalletConnected: boolean;
-  connectedWallet: string;
+  connectedWalletAddr: string;
   addWalletState: AddWalletState;
 
   onBack: () => void;
@@ -183,7 +182,9 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
         secondaryText='Cancel'
         secondaryVariant={Variant.Secondary}
         secondaryColor={Color.Red}
-        onPrimary={this.props.onAddNewWallet}
+        onPrimary={() => {
+          this.props.onAddNewWallet();
+        }}
         onSecondary={onClose}
         onClose={onClose}
         isProcessing={this.props.addWalletState === AddWalletState.INPROGRESS}
@@ -191,7 +192,7 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
         <div {...cn('link-new-wallet-modal')}>
           You have a wallet connected by the address{' '}
           <b>
-            <i>{this.props.connectedWallet}</i>
+            <i>{this.props.connectedWalletAddr}</i>
           </b>
           <br />
           <br />
@@ -202,10 +203,11 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
   };
 
   get isLinkNewWalletModalOpen() {
-    const { isWalletConnected, error, addWalletState } = this.props;
+    const { connectedWalletAddr, error, addWalletState } = this.props;
+
     return (
       this.state.isUserLinkingNewWallet &&
-      isWalletConnected &&
+      connectedWalletAddr &&
       !error &&
       (addWalletState === AddWalletState.NONE || addWalletState === AddWalletState.INPROGRESS)
     );

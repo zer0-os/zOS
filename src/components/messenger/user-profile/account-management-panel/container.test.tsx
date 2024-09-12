@@ -1,7 +1,6 @@
 import { Container } from './container';
 import { Errors, AccountManagementState, State } from '../../../../store/account-management';
 import { RootState } from '../../../../store/reducer';
-import { ConnectionStatus } from '../../../../lib/web3';
 
 describe('Container', () => {
   describe('mapState', () => {
@@ -36,25 +35,7 @@ describe('Container', () => {
         web3: { value: { address: 'address123' } } as any,
       });
 
-      expect(props.connectedWallet).toEqual('address123');
-    });
-
-    describe('isWalletConnected', () => {
-      it('connected', () => {
-        const props = subject({
-          web3: { status: ConnectionStatus.Connected } as any,
-        });
-
-        expect(props.isWalletConnected).toEqual(true);
-      });
-
-      it('disconnected', () => {
-        const props = subject({
-          web3: { status: ConnectionStatus.Disconnected } as any,
-        });
-
-        expect(props.isWalletConnected).toEqual(false);
-      });
+      expect(props.connectedWalletAddr).toEqual('address123');
     });
 
     it('addWalletState', () => {

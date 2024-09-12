@@ -10,8 +10,6 @@ import {
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUsers } from '../users/saga';
 import { clearMessages } from '../messages/saga';
-import { updateConnector } from '../web3/saga';
-import { Connectors } from '../../lib/web3';
 import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
 import { completePendingUserProfile } from '../registration/saga';
@@ -110,7 +108,6 @@ export function* closeLogoutModal() {
 
 export function* forceLogout() {
   yield closeLogoutModal();
-  yield call(updateConnector, { payload: Connectors.None });
   yield call(terminate);
 }
 

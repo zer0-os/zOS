@@ -171,7 +171,7 @@ export class PostInput extends React.Component<Properties, State> {
     const isDisabled = (!this.state.value.trim() && !this.state.media.length) || this.props.isSubmitting;
 
     return (
-      <div {...cn('')}>
+      <div>
         <Dropzone
           onDrop={this.imagesSelected}
           noClick

@@ -78,7 +78,11 @@ export class Container extends React.Component<Properties> {
 
     return (
       <div {...cn('')}>
-        <ConversationHeader {...cn('header')} />
+        <div {...cn('header-position')}>
+          <div {...cn('header')}>
+            <ConversationHeader />
+          </div>
+        </div>
 
         <ScrollbarContainer variant='on-hover'>
           <PostInput id={activeConversationId} onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />

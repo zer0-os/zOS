@@ -15,7 +15,7 @@ $title-bar-border-radius: 8px 8px 0px 0px;
   position: fixed;
   z-index: 200;
   pointer-events: auto;
-  background: rgba(5, 5, 6, 1);
+  border-inline: 1px solid rgba(52, 56, 60);
 
   bottom: 0;
   right: $width-sidekick + 25px;
@@ -57,14 +57,13 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     margin-top: 6px;
     box-sizing: border-box;
     z-index: 3;
-    border-top: 1px solid rgba(52, 56, 60, 0.24);
+    border-top: 1px solid rgba(52, 56, 60);
   }
 
   // message-input
   &__footer {
     flex-shrink: 0;
 
-    background: rgba(5, 5, 6, 0.75);
     backdrop-filter: blur(64px);
   }
 

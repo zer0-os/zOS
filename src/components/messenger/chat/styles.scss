@@ -133,6 +133,20 @@ $title-bar-border-radius: 8px 8px 0px 0px;
       margin: 0;
     }
   }
+
+  &__header-position {
+    position: absolute;
+    top: 0px;
+    box-sizing: border-box;
+    z-index: 3;
+    width: 100%;
+    border-bottom: 1px solid rgba(52, 56, 60);
+  }
+
+  &__header {
+    pointer-events: all !important;
+    backdrop-filter: blur(64px);
+  }
 }
 
 // Message sizing

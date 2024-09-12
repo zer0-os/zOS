@@ -19,6 +19,7 @@ import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
+import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 
 import './styles.scss';
 import { rawChannelSelector } from '../../../store/channels/saga';
@@ -156,13 +157,17 @@ export class Container extends React.Component<Properties> {
       <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
         <div className='direct-message-chat__content'>
           {!this.props.isJoiningConversation && (
-            <ChatViewContainer
-              key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
-              channelId={this.props.activeConversationId}
-              className='direct-message-chat__channel'
-              showSenderAvatar={!this.isOneOnOne()}
-              ref={this.chatViewContainerRef}
-            />
+            <>
+              {!this.props.directMessage.isSocialChannel && <ConversationHeader />}
+
+              <ChatViewContainer
+                key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
+                channelId={this.props.activeConversationId}
+                className='direct-message-chat__channel'
+                showSenderAvatar={!this.isOneOnOne()}
+                ref={this.chatViewContainerRef}
+              />
+            </>
           )}
 
           <div className='direct-message-chat__footer-position'>

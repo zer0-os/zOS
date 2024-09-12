@@ -201,7 +201,7 @@ export class PostInput extends React.Component<Properties, State> {
                       {...cn('input')}
                       onChange={this.onChange}
                       onKeyDown={this.onKeyDown}
-                      placeholder='Write a post'
+                      placeholder='Write a Post...'
                       ref={this.textareaRef}
                       rows={2}
                       value={this.state.value}

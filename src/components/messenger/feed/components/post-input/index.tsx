@@ -206,7 +206,6 @@ export class PostInput extends React.Component<Properties, State> {
                       rows={2}
                       value={this.state.value}
                     />
-                    <hr />
                   </div>
 
                   <div {...cn('image')}>

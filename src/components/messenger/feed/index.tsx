@@ -78,7 +78,7 @@ export class Container extends React.Component<Properties> {
 
     return (
       <div {...cn('')}>
-        <div {...cn('header-position')}>
+        <div {...cn('header-position', !this.props.channel?.hasLoadedMessages && 'message-loading')}>
           <div {...cn('header')}>
             <ConversationHeader />
           </div>

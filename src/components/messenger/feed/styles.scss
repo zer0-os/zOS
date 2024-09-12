@@ -16,6 +16,10 @@
     width: 99.2%;
     border: 1px solid rgba(52, 56, 60);
     padding-right: 2px;
+
+    &--message-loading {
+      width: 100%;
+    }
   }
 
   &__header {

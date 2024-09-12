@@ -7,7 +7,7 @@ import {
   IconInfoCircle,
   IconPlus,
   IconUserRight1,
-  IconUsers1,
+  IconDotsHorizontal,
 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components/DropdownMenu';
 
@@ -129,7 +129,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         alignMenu='end'
         onOpenChange={this.handleOpenChange}
         className={'group-management-trigger'}
-        trigger={<IconUsers1 size={24} />}
+        trigger={<IconDotsHorizontal size={24} isFilled />}
       />
     );
   }

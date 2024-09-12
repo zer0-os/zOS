@@ -4,14 +4,15 @@
 
 .message-input {
   display: flex;
-  padding: 8px 16px;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
   gap: 8px;
+  padding: 12px 18px;
 
   &--editing {
     padding: 0;
+
     margin-right: none;
   }
 
@@ -34,16 +35,11 @@
     width: 100%;
   }
 
-  &__icon-outer {
-    padding-bottom: 8px;
-  }
-
   &__emoji-icon-outer {
     display: flex;
     align-self: flex-end;
     position: sticky;
     bottom: 0;
-    margin-right: 3px;
   }
 
   &__icon-wrapper {
@@ -63,7 +59,7 @@
 
   &__chat-container {
     display: flex;
-    padding: 8px 0px 8px 16px;
+    padding: 0;
     flex-direction: column;
     justify-content: center;
     align-items: flex-end;
@@ -71,11 +67,15 @@
     width: 100%;
     border-radius: 8px;
 
-    @include glass-input-inset-default;
+    &--editing {
+      padding: 8px 0px 8px 16px;
 
-    &:focus-within {
-      border-color: theme.$color-primary-7;
-      @include glass-input-inset-active;
+      @include glass-input-inset-default;
+
+      &:focus-within {
+        border-color: theme.$color-primary-7;
+        @include glass-input-inset-active;
+      }
     }
   }
 

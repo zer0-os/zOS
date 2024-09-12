@@ -284,24 +284,22 @@ export class MessageInput extends React.Component<Properties, State> {
 
         <div {...cn('input-row')}>
           {this.allowLeftIcons && (
-            <div {...cn('icon-outer')}>
-              <div {...cn('icon-wrapper')}>
-                {this.allowGiphy && (
-                  <IconButton {...cn('icon', 'giphy')} onClick={this.openGiphy} Icon={IconStickerCircle} size='small' />
-                )}
+            <div {...cn('icon-wrapper')}>
+              {this.allowGiphy && (
+                <IconButton {...cn('icon', 'giphy')} onClick={this.openGiphy} Icon={IconStickerCircle} size='small' />
+              )}
 
-                {this.allowFileAttachment && (
-                  <Menu
-                    onSelected={this.mediaSelected}
-                    mimeTypes={this.mimeTypes}
-                    maxSize={config.cloudinary.max_file_size}
-                  />
-                )}
-              </div>
+              {this.allowFileAttachment && (
+                <Menu
+                  onSelected={this.mediaSelected}
+                  mimeTypes={this.mimeTypes}
+                  maxSize={config.cloudinary.max_file_size}
+                />
+              )}
             </div>
           )}
 
-          <div {...cn('chat-container')}>
+          <div {...cn('chat-container', this.props.isEditing && 'editing')}>
             <div {...cn('scroll-container')}>
               <div {...cn('text-and-emoji-wrapper')}>
                 <Dropzone
@@ -361,21 +359,19 @@ export class MessageInput extends React.Component<Properties, State> {
           </div>
 
           {!this.props.isEditing && (
-            <div {...cn('icon-outer')}>
-              <div {...cn('icon-wrapper')}>
-                {/* See: ZOS-115
-                 * @ts-ignore */}
-                <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
-                  <IconButton
-                    {...cn('icon', 'end-action')}
-                    onClick={this.onSend}
-                    Icon={IconSend3}
-                    size='small'
-                    isFilled={this.sendHighlighted()}
-                    label='send'
-                  />
-                </Tooltip>
-              </div>
+            <div {...cn('icon-wrapper')}>
+              {/* See: ZOS-115
+               * @ts-ignore */}
+              <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
+                <IconButton
+                  {...cn('icon', 'end-action')}
+                  onClick={this.onSend}
+                  Icon={IconSend3}
+                  size='small'
+                  isFilled={this.sendHighlighted()}
+                  label='send'
+                />
+              </Tooltip>
             </div>
           )}
         </div>

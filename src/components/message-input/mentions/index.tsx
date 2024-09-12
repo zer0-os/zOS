@@ -88,6 +88,7 @@ export class Mentions extends React.Component<Properties> {
         allowSuggestionsAboveCursor
         suggestionsPortalHost={document.body}
         onContextMenu={this.handleOnContextMenu}
+        placeholder='Write a Message...'
       >
         {this.renderMentionTypes()}
       </MentionsInput>

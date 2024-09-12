@@ -220,7 +220,7 @@ export class PostInput extends React.Component<Properties, State> {
                         maxSize={config.cloudinary.max_file_size}
                       />
 
-                      <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size='small' />
+                      <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
                     </div>
 
                     <Button

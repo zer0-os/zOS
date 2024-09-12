@@ -65,7 +65,7 @@ export default class Menu extends React.Component<Properties, State> {
             <div className='image-send'>
               <div {...getRootProps({ className: 'image-send__dropzone' })}>
                 <input {...getInputProps()} />
-                <IconButton onClick={open} Icon={IconPlus} size='small' />
+                <IconButton onClick={open} Icon={IconPlus} size={26} />
               </div>
             </div>
           )}

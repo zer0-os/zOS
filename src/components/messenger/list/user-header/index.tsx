@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
-import { IconArrowsLeft, IconArrowsRight, IconPlus } from '@zero-tech/zui/icons';
+import { IconChevronLeft, IconChevronRight, IconPlus } from '@zero-tech/zui/icons';
 import { RewardsToolTipContainer } from '../rewards-tooltip/container';
 
 import { bemClassName } from '../../../../lib/bem';
@@ -94,7 +94,7 @@ export class UserHeader extends React.Component<Properties> {
         <FeatureFlag featureFlag='enableCollapseableMenu'>
           <div {...cn('collapse')}>
             <IconButton
-              Icon={this.props.isCollapsed ? IconArrowsRight : IconArrowsLeft}
+              Icon={this.props.isCollapsed ? IconChevronRight : IconChevronLeft}
               size={32}
               onClick={this.props.onToggleExpand}
             />

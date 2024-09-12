@@ -40,6 +40,17 @@ $header-height: 66px;
     gap: 8px;
   }
 
+  .Title {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: theme.$color-greyscale-12;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .Subtitle {
     flex: 1 0;
     font-family: 'Roboto Mono';

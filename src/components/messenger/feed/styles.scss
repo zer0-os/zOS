@@ -4,22 +4,16 @@
   width: 100%;
   max-width: 504px;
 
-  margin-bottom: 16px;
-  padding: 100px 8px 0 8px;
+  margin: 0 8px;
   box-sizing: border-box;
 
   pointer-events: auto;
   background: var(--Transparencies-Black-translucent, #0000007a);
   backdrop-filter: blur(60px);
-
-  border-radius: 0 0 16px 16px;
+  border-inline: 1px solid rgba(52, 56, 60, 0.24);
 
   &__header {
     left: 0;
     pointer-events: all !important;
-    position: absolute;
-    top: 16px;
-    width: calc(100% - 16px) !important;
-    z-index: 1000;
   }
 }

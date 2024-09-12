@@ -6,7 +6,8 @@
   &__create-outer {
     display: flex;
     gap: 8px;
-    padding: 16px 8px;
+    padding: 18px;
+    border-bottom: 1px solid rgba(52, 56, 60, 0.24);
   }
 
   &__create-inner {
@@ -16,13 +17,6 @@
     flex-direction: column;
     gap: 4px;
     position: relative;
-
-    hr {
-      border: none;
-      border-bottom: 1px solid rgba(245, 245, 245, 0.12);
-      outline: none;
-      width: 100%;
-    }
   }
 
   &__input {

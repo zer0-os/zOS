@@ -2,15 +2,14 @@
   position: relative;
   display: flex;
   width: 100%;
-  gap: 8px;
+  gap: 45px;
 }
 
-.Header {
-  left: 0;
+.Actions {
+  right: 13px;
   pointer-events: all !important;
   position: absolute;
-  top: 16px;
-  width: calc(100% - 16px) !important;
+  top: 12px;
   z-index: 1000;
 }
 

@@ -15,6 +15,7 @@ $title-bar-border-radius: 8px 8px 0px 0px;
   position: fixed;
   z-index: 200;
   pointer-events: auto;
+  background: rgba(5, 5, 6, 1);
 
   bottom: 0;
   right: $width-sidekick + 25px;
@@ -53,19 +54,18 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     position: absolute;
     bottom: 0px;
     width: 100%;
-    padding: 0px 16px 16px 16px;
+    margin-top: 6px;
     box-sizing: border-box;
     z-index: 3;
+    border-top: 1px solid rgba(52, 56, 60, 0.24);
   }
 
   // message-input
   &__footer {
-    border-radius: 32px;
     flex-shrink: 0;
 
-    @include flat-thick;
-
-    backdrop-filter: blur(32px);
+    background: rgba(5, 5, 6, 0.75);
+    backdrop-filter: blur(64px);
   }
 
   &__typing-indicator {
@@ -127,7 +127,6 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     flex-grow: 1;
     overflow: hidden;
     width: 100%;
-    margin-bottom: 16px;
 
     .direct-message-chat__content {
       height: 100vh;

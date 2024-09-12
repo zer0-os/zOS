@@ -3,17 +3,23 @@
   flex-direction: column;
   width: 100%;
   max-width: 504px;
-
   margin: 0 8px;
   box-sizing: border-box;
-
   pointer-events: auto;
-  background: var(--Transparencies-Black-translucent, #0000007a);
-  backdrop-filter: blur(60px);
-  border-inline: 1px solid rgba(52, 56, 60, 0.24);
+  border-inline: 1px solid rgba(52, 56, 60);
+  position: relative;
+
+  &__header-position {
+    position: absolute;
+    top: 0px;
+    box-sizing: border-box;
+    z-index: 3;
+    width: 100%;
+    border-bottom: 1px solid rgba(52, 56, 60);
+  }
 
   &__header {
-    left: 0;
     pointer-events: all !important;
+    backdrop-filter: blur(64px);
   }
 }

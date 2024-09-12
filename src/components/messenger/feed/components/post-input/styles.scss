@@ -3,11 +3,13 @@
 @import '../../../../../glass';
 
 .post-input-container {
+  margin-top: 58px;
+
   &__create-outer {
     display: flex;
     gap: 8px;
-    padding: 18px;
-    border-bottom: 1px solid rgba(52, 56, 60, 0.24);
+    padding: 18px 18px 8px 18px;
+    border-bottom: 1px solid rgba(52, 56, 60, 0.75);
   }
 
   &__create-inner {

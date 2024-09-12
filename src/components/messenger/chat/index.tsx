@@ -158,7 +158,13 @@ export class Container extends React.Component<Properties> {
         <div className='direct-message-chat__content'>
           {!this.props.isJoiningConversation && (
             <>
-              {!this.props.directMessage.isSocialChannel && <ConversationHeader />}
+              {!this.props.directMessage.isSocialChannel && (
+                <div className='direct-message-chat__header-position'>
+                  <div className='direct-message-chat__header'>
+                    <ConversationHeader />
+                  </div>
+                </div>
+              )}
 
               <ChatViewContainer
                 key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat

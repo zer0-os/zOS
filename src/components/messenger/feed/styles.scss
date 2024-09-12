@@ -6,7 +6,6 @@
   margin: 0 8px;
   box-sizing: border-box;
   pointer-events: auto;
-  border-inline: 1px solid rgba(52, 56, 60);
   position: relative;
 
   &__header-position {
@@ -14,8 +13,9 @@
     top: 0px;
     box-sizing: border-box;
     z-index: 3;
-    width: 100%;
-    border-bottom: 1px solid rgba(52, 56, 60);
+    width: 99.2%;
+    border: 1px solid rgba(52, 56, 60);
+    padding-right: 2px;
   }
 
   &__header {

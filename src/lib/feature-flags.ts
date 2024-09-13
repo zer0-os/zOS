@@ -122,14 +122,6 @@ export class FeatureFlags {
     this._setBoolean('enableCollapseableMenu', value);
   }
 
-  get enableAddWallets() {
-    return this._getBoolean('enableAddWallets', false);
-  }
-
-  set enableAddWallets(value: boolean) {
-    this._setBoolean('enableAddWallets', value);
-  }
-
   get enableMeows() {
     return this._getBoolean('enableMeows', false);
   }

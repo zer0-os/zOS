@@ -14,7 +14,6 @@ import { CreateEmailAccountContainer } from '../../../../authentication/create-e
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Color, Modal, Variant } from '../../../modal';
-import { featureFlags } from '../../../../lib/feature-flags';
 import { State as AddWalletState } from '../../../../store/account-management';
 
 const cn = bemClassName('account-management-panel');
@@ -103,7 +102,7 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
           </div>
         )}
 
-        {featureFlags.enableAddWallets && wallets.length === 0 && this.renderAddNewWalletButton()}
+        {wallets.length === 0 && this.renderAddNewWalletButton()}
       </div>
     );
   };

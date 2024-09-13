@@ -7,11 +7,6 @@ import { Button } from '@zero-tech/zui/components/Button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { State } from '../../../../store/account-management';
 
-const featureFlags = { enableAddWallets: true };
-jest.mock('../../../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 // Mock the ConnectButton from rainbowkit
 jest.mock('@rainbow-me/rainbowkit', () => ({
   ConnectButton: {

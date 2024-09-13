@@ -43,11 +43,11 @@ export const Post = ({
     [text]
   );
 
-  const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+  const handleImageLoad = useCallback((event: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth: width, naturalHeight: height } = event.currentTarget;
     handleMediaAspectRatio(width, height);
     setIsImageLoaded(true);
-  };
+  }, []);
 
   const handleMediaAspectRatio = (width: number, height: number) => {
     const aspectRatio = width / height;
@@ -72,11 +72,11 @@ export const Post = ({
     return { width: finalWidth, height: finalHeight };
   };
 
-  const getPlaceholderDimensions = (w: number, h: number) => {
+  const getPlaceholderDimensions = useCallback((w: number, h: number) => {
     const maxWidth = 420;
     const maxHeight = 520;
     return handlePlaceholderAspectRatio(w, h, maxWidth, maxHeight);
-  };
+  }, []);
 
   const renderMedia = useCallback(
     (media) => {

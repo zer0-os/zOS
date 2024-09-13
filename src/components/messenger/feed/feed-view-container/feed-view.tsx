@@ -71,7 +71,9 @@ export class FeedView extends React.Component<Properties> {
                 />
 
                 {this.props.messagesFetchStatus === MessagesFetchState.SUCCESS && this.state.shouldRenderWaypoint && (
-                  <Waypoint onEnter={this.props.onFetchMore} />
+                  <div {...cn('waypoint')}>
+                    <Waypoint onEnter={this.props.onFetchMore} />
+                  </div>
                 )}
               </>
             ) : (

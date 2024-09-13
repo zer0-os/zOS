@@ -7,4 +7,10 @@
     box-sizing: border-box;
     color: var(--color-greyscale-10);
   }
+
+  &__waypoint {
+    overflow-anchor: none;
+    position: relative;
+    bottom: 700px;
+  }
 }

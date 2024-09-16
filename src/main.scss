@@ -33,7 +33,7 @@ $border-color-hover: theme-zui.$color-primary-7;
     margin: 0 auto;
     width: 100%;
 
-    @media only screen and (min-width: 2560px) and (min-height: 1440px) {
+    @media (min-width: 2561px) {
       width: unset;
     }
   }

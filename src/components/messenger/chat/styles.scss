@@ -127,7 +127,7 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     overflow: hidden;
     width: 100%;
 
-    @media only screen and (min-width: 2561px) and (min-height: 1440px) {
+    @media (min-width: 2561px) {
       min-width: 1558px;
     }
 

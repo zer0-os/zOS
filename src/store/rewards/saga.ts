@@ -10,8 +10,14 @@ import {
   setMeowPreviousDay,
   setShowRewardsInPopup,
   setShowNewRewardsIndicator,
+  setTransferError,
 } from '.';
-import { RewardsResp, fetchCurrentMeowPriceInUSD as fetchCurrentMeowPriceInUSDAPI, fetchRewards } from './api';
+import {
+  RewardsResp,
+  fetchCurrentMeowPriceInUSD as fetchCurrentMeowPriceInUSDAPI,
+  fetchRewards,
+  transferMeow as transferMeowAPI,
+} from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { featureFlags } from '../../lib/feature-flags';
@@ -116,6 +122,22 @@ export function* closeRewardsTooltip() {
   }
 }
 
+export function* transferMeow(action) {
+  const { senderUserId, recipientUserId, amount } = action.payload;
+
+  try {
+    const result = yield call(transferMeowAPI, senderUserId, recipientUserId, amount);
+
+    if (result.success) {
+      yield put(setMeow(result.response.senderBalance));
+    } else {
+      yield put(setTransferError({ error: result.error }));
+    }
+  } catch (error: any) {
+    yield put(setTransferError({ error: error.message || 'An unexpected error occurred.' }));
+  }
+}
+
 function* clearOnLogout() {
   yield put(setLoading(false));
   yield put(setMeow('0'));
@@ -124,11 +146,13 @@ function* clearOnLogout() {
   yield put(setShowRewardsInTooltip(false));
   yield put(setShowRewardsInPopup(false));
   yield put(setShowNewRewardsIndicator(false));
+  yield put(setTransferError({ error: '' }));
 }
 
 export function* saga() {
   yield takeEvery(SagaActionTypes.TotalRewardsViewed, totalRewardsViewed);
   yield takeEvery(SagaActionTypes.CloseRewardsTooltip, closeRewardsTooltip);
+  yield takeEvery(SagaActionTypes.TransferMeow, transferMeow);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogin, syncRewardsAndTokenPrice);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

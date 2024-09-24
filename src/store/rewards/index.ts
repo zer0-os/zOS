@@ -14,7 +14,8 @@ export type RewardsState = {
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
   showNewRewardsIndicator: boolean;
-  transferError: string | null;
+  transferLoading: boolean;
+  transferError?: string;
 };
 
 export const initialState: RewardsState = {
@@ -25,12 +26,13 @@ export const initialState: RewardsState = {
   showRewardsInTooltip: false,
   showRewardsInPopup: false,
   showNewRewardsIndicator: false,
+  transferLoading: false,
   transferError: null,
 };
 
 export const totalRewardsViewed = createAction(SagaActionTypes.TotalRewardsViewed);
 export const closeRewardsTooltip = createAction(SagaActionTypes.CloseRewardsTooltip);
-export const transferMeow = createAction<{ senderUserId: string; recipientUserId: string; amount: string }>(
+export const transferMeow = createAction<{ meowSenderUserId: string; meowRecipientUserId: string; amount: string }>(
   SagaActionTypes.TransferMeow
 );
 
@@ -68,6 +70,9 @@ const slice = createSlice({
     setTransferError: (state, action: PayloadAction<{ error: string }>) => {
       state.transferError = action.payload.error;
     },
+    setTransferLoading: (state, action: PayloadAction<RewardsState['transferLoading']>) => {
+      state.transferLoading = action.payload;
+    },
   },
 });
 
@@ -82,5 +87,6 @@ export const {
   setShowRewardsInPopup,
   setShowNewRewardsIndicator,
   setTransferError,
+  setTransferLoading,
 } = slice.actions;
 export const { reducer } = slice;

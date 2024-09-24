@@ -11,6 +11,7 @@ import {
   setShowRewardsInPopup,
   setShowNewRewardsIndicator,
   setTransferError,
+  setTransferLoading,
 } from '.';
 import {
   RewardsResp,
@@ -123,10 +124,17 @@ export function* closeRewardsTooltip() {
 }
 
 export function* transferMeow(action) {
-  const { senderUserId, recipientUserId, amount } = action.payload;
+  const { meowSenderUserId, meowRecipientUserId, amount } = action.payload;
+
+  if (meowSenderUserId === meowRecipientUserId) {
+    yield put(setTransferError({ error: 'Cannot transfer MEOW to yourself.' }));
+    return;
+  }
+
+  yield put(setTransferLoading(true));
 
   try {
-    const result = yield call(transferMeowAPI, senderUserId, recipientUserId, amount);
+    const result = yield call(transferMeowAPI, meowSenderUserId, meowRecipientUserId, amount);
 
     if (result.success) {
       yield put(setMeow(result.response.senderBalance));
@@ -135,6 +143,8 @@ export function* transferMeow(action) {
     }
   } catch (error: any) {
     yield put(setTransferError({ error: error.message || 'An unexpected error occurred.' }));
+  } finally {
+    yield put(setTransferLoading(false));
   }
 }
 

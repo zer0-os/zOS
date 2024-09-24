@@ -1,4 +1,5 @@
 import { get, post } from '../../lib/api/rest';
+import BN from 'bn.js';
 
 export interface RewardsResp {
   success: boolean;
@@ -27,10 +28,12 @@ export async function fetchCurrentMeowPriceInUSD() {
 
 export async function transferMeow(senderUserId: string, recipientUserId: string, amount: string) {
   try {
+    const amountInWei = new BN(amount).mul(new BN('1000000000000000000')).toString();
+
     const response = await post('/rewards/transfer').send({
       senderUserId,
       recipientUserId,
-      amount,
+      amount: amountInWei,
     });
 
     return {

@@ -124,6 +124,8 @@ export function* closeRewardsTooltip() {
 }
 
 export function* transferMeow(action) {
+  yield put(setTransferError({ error: null }));
+
   const { meowSenderUserId, meowRecipientUserId, amount } = action.payload;
 
   if (meowSenderUserId === meowRecipientUserId) {

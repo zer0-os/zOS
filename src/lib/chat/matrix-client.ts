@@ -485,6 +485,24 @@ export class MatrixClient implements IChatClient {
     await this.matrix.sendEvent(roomId, MatrixConstants.REACTION as any, content);
   }
 
+  async getPostMessageReactions(roomId: string): Promise<{ eventId: string; key: string; amount: number }[]> {
+    const room = this.matrix.getRoom(roomId);
+    if (!room) return [];
+
+    const events = room.getLiveTimeline().getEvents();
+
+    return events
+      .filter((event) => event.getType() === MatrixConstants.REACTION)
+      .map((event) => {
+        const content = event.getContent();
+        return {
+          eventId: content[MatrixConstants.RELATES_TO].event_id,
+          key: content[MatrixConstants.RELATES_TO].key,
+          amount: content.amount || 0,
+        };
+      });
+  }
+
   async getMessageByRoomId(channelId: string, messageId: string) {
     await this.waitForConnection();
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageId);

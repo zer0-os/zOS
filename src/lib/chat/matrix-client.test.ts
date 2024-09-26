@@ -664,7 +664,7 @@ describe('matrix client', () => {
         'm.relates_to': {
           rel_type: MatrixConstants.ANNOTATION,
           event_id: 'post-message-id',
-          key: ReactionKeys.MEOW,
+          key: `${ReactionKeys.MEOW}_${Date.now()}`,
         },
         amount: 10,
         postOwnerId: 'post-owner-id',

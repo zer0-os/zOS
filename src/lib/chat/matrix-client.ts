@@ -476,7 +476,7 @@ export class MatrixClient implements IChatClient {
       'm.relates_to': {
         rel_type: MatrixConstants.ANNOTATION,
         event_id: postMessageId,
-        key: ReactionKeys.MEOW,
+        key: `${ReactionKeys.MEOW}_${Date.now()}`,
       },
       amount: meowAmount,
       postOwnerId: postOwnerId,

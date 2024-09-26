@@ -22,6 +22,7 @@ import {
 import { takeEveryFromBus } from '../../lib/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { featureFlags } from '../../lib/feature-flags';
+import { sendMeowReactionEvent } from '../../lib/chat';
 
 const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour
 const SYNC_MEOW_TOKEN_PRICE_INTERVAL = 2 * 60 * 1000; // every 2 minutes
@@ -126,7 +127,7 @@ export function* closeRewardsTooltip() {
 export function* transferMeow(action) {
   yield put(setTransferError({ error: null }));
 
-  const { meowSenderId, postOwnerId, postMessageId, meowAmount, roomId } = action.payload;
+  const { meowSenderId, postOwnerId, meowAmount } = action.payload;
 
   if (meowSenderId === postOwnerId) {
     yield put(setTransferError({ error: 'Cannot transfer MEOW to yourself.' }));

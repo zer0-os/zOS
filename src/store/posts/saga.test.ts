@@ -2,8 +2,8 @@ import { call, select } from 'redux-saga/effects';
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { sendPost, createOptimisticPost, createOptimisticPosts, uploadFileMessages } from './saga';
-import { sendPostByChannelId } from '../../lib/chat';
+import { sendPost, createOptimisticPost, createOptimisticPosts, uploadFileMessages, applyReactions } from './saga';
+import { getPostMessageReactions, sendPostByChannelId } from '../../lib/chat';
 import { rawMessagesSelector } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
 import { fetchPosts } from './saga';
@@ -198,6 +198,7 @@ describe(fetchPosts, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
       [matchers.call.fn(getPostMessagesByChannelId), { postMessages: [] }],
+      [matchers.call.fn(getPostMessageReactions), []],
     ]);
   }
 
@@ -218,6 +219,7 @@ describe(fetchPosts, () => {
       .provide([
         [call(getPostMessagesByChannelId, channel.id), postResponse],
         [matchers.call.fn(mapMessageSenders), postResponse.postMessages],
+        [matchers.call.fn(applyReactions), postResponse.postMessages],
       ])
       .withReducer(rootReducer, initialChannelState(channel) as any)
       .run();
@@ -234,7 +236,10 @@ describe(fetchPosts, () => {
     const postResponse = { hasMore: false, postMessages: [] };
 
     const { storeState } = await subject(fetchPosts, { payload: { channelId: channel.id } })
-      .provide([[call(getPostMessagesByChannelId, channel.id), postResponse]])
+      .provide([
+        [call(getPostMessagesByChannelId, channel.id), postResponse],
+        [matchers.call.fn(applyReactions), postResponse.postMessages],
+      ])
       .withReducer(rootReducer, initialChannelState(channel))
       .run();
 
@@ -245,7 +250,10 @@ describe(fetchPosts, () => {
     const channel = { id: 'channel-id', hasLoadedMessages: false };
 
     const { storeState } = await subject(fetchPosts, { payload: { channelId: channel.id } })
-      .provide([[call(getPostMessagesByChannelId, channel.id), { postMessages: [] }]])
+      .provide([
+        [call(getPostMessagesByChannelId, channel.id), { postMessages: [] }],
+        [matchers.call.fn(applyReactions), []],
+      ])
       .withReducer(rootReducer, initialChannelState(channel))
       .run();
 
@@ -269,6 +277,7 @@ describe(fetchPosts, () => {
       .provide([
         [call(getPostMessagesByChannelId, channel.id, referenceTimestamp), postResponse],
         [call(mapMessageSenders, postResponse.postMessages, channel.id), undefined], // Ensure senders are mapped
+        [matchers.call.fn(applyReactions), postResponse.postMessages],
       ])
       .run();
 
@@ -294,4 +303,52 @@ describe(fetchPosts, () => {
     channel.conversationStatus = channel.conversationStatus ?? ConversationStatus.CREATED;
     return new StoreBuilder().withConversationList(channel).build();
   }
+});
+
+describe(applyReactions, () => {
+  it('applies reactions to the post messages correctly', async () => {
+    const roomId = 'room-id';
+    const postMessages = [
+      { id: 'message-1', reactions: {} },
+      { id: 'message-2', reactions: {} },
+    ] as any;
+
+    const reactions = [
+      { eventId: 'message-1', key: 'MEOW', amount: '10' },
+      { eventId: 'message-1', key: 'MEOW', amount: '5' },
+      { eventId: 'message-2', key: 'MEOW', amount: '15' },
+    ];
+
+    await expectSaga(applyReactions, roomId, postMessages)
+      .provide([
+        [call(getPostMessageReactions, roomId), reactions],
+      ])
+      .run();
+
+    expect(postMessages).toEqual([
+      { id: 'message-1', reactions: { MEOW: 15 } },
+      { id: 'message-2', reactions: { MEOW: 15 } },
+    ]);
+  });
+
+  it('does not modify post messages without reactions', async () => {
+    const roomId = 'room-id';
+    const postMessages = [
+      { id: 'message-1', reactions: {} },
+      { id: 'message-2', reactions: {} },
+    ] as any;
+
+    const reactions = [];
+
+    await expectSaga(applyReactions, roomId, postMessages)
+      .provide([
+        [call(getPostMessageReactions, roomId), reactions],
+      ])
+      .run();
+
+    expect(postMessages).toEqual([
+      { id: 'message-1', reactions: {} },
+      { id: 'message-2', reactions: {} },
+    ]);
+  });
 });

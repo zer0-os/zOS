@@ -89,6 +89,7 @@ export interface Message {
   sendStatus: MessageSendStatus;
   readBy?: User[];
   isPost: boolean;
+  reactions?: { [key: string]: number };
 }
 
 export interface EditMessageOptions {

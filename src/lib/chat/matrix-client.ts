@@ -41,6 +41,7 @@ import {
   IN_ROOM_MEMBERSHIP_STATES,
   MatrixConstants,
   MembershipStateType,
+  ReactionKeys,
   ReadReceiptPreferenceType,
 } from './matrix/types';
 import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
@@ -461,6 +462,27 @@ export class MatrixClient implements IChatClient {
     const postMessages = await this.getAllPostMessagesFromRoom(events);
 
     return { postMessages, hasMore };
+  }
+
+  async sendMeowReactionEvent(
+    roomId: string,
+    postMessageId: string,
+    postOwnerId: string,
+    meowAmount: number
+  ): Promise<void> {
+    await this.waitForConnection();
+
+    const content = {
+      'm.relates_to': {
+        rel_type: MatrixConstants.ANNOTATION,
+        event_id: postMessageId,
+        key: ReactionKeys.MEOW,
+      },
+      amount: meowAmount,
+      postOwnerId: postOwnerId,
+    };
+
+    await this.matrix.sendEvent(roomId, MatrixConstants.REACTION as any, content);
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {

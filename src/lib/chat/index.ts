@@ -360,3 +360,12 @@ export async function sendPostByChannelId(channelId: string, message: string, op
 export async function getPostMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
   return chat.get().matrix.getPostMessagesByChannelId(channelId, lastCreatedAt);
 }
+
+export async function sendMeowReactionEvent(
+  roomId: string,
+  postMessageId: string,
+  postOwnerId: string,
+  meowAmount: number
+) {
+  return chat.get().matrix.sendMeowReactionEvent(roomId, postMessageId, postOwnerId, meowAmount);
+}

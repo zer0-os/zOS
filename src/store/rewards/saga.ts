@@ -126,9 +126,9 @@ export function* closeRewardsTooltip() {
 export function* transferMeow(action) {
   yield put(setTransferError({ error: null }));
 
-  const { meowSenderUserId, meowRecipientUserId, amount } = action.payload;
+  const { meowSenderId, postOwnerId, postMessageId, meowAmount, roomId } = action.payload;
 
-  if (meowSenderUserId === meowRecipientUserId) {
+  if (meowSenderId === postOwnerId) {
     yield put(setTransferError({ error: 'Cannot transfer MEOW to yourself.' }));
     return;
   }
@@ -136,7 +136,7 @@ export function* transferMeow(action) {
   yield put(setTransferLoading(true));
 
   try {
-    const result = yield call(transferMeowAPI, meowSenderUserId, meowRecipientUserId, amount);
+    const result = yield call(transferMeowAPI, meowSenderId, postOwnerId, meowAmount);
 
     if (result.success) {
       yield put(setMeow(result.response.senderBalance));

@@ -113,9 +113,9 @@ describe(checkNewRewardsLoaded, () => {
 
 describe(transferMeow, () => {
   it('handles successful MEOW transfer', async () => {
-    const meowSenderUserId = 'sender-id';
-    const meowRecipientUserId = 'recipient-id';
-    const amount = '500000000000000000';
+    const meowSenderId = 'sender-id';
+    const postOwnerId = 'post-owner-id';
+    const meowAmount = '500000000000000000';
 
     const apiResponse = {
       success: true,
@@ -126,22 +126,22 @@ describe(transferMeow, () => {
     };
 
     const { storeState } = await expectSaga(transferMeow, {
-      payload: { meowSenderUserId, meowRecipientUserId, amount },
+      payload: { meowSenderId, postOwnerId, meowAmount },
     })
       .withReducer(rootReducer, initialState())
-      .provide([[call(transferMeowAPI, meowSenderUserId, meowRecipientUserId, amount), apiResponse]])
+      .provide([[call(transferMeowAPI, meowSenderId, postOwnerId, meowAmount), apiResponse]])
       .run();
 
     expect(storeState.rewards.meow).toEqual('500000000000000000');
   });
 
-  it('handles meowSenderUserId is equal to meowRecipientUserId failure', async () => {
-    const meowSenderUserId = 'sender-id';
-    const meowRecipientUserId = 'sender-id';
-    const amount = '500000000000000000';
+  it('handles meowSenderId is equal to postOwnerId failure', async () => {
+    const meowSenderId = 'sender-id';
+    const postOwnerId = 'sender-id';
+    const meowAmount = '500000000000000000';
 
     const { storeState } = await expectSaga(transferMeow, {
-      payload: { meowSenderUserId, meowRecipientUserId, amount },
+      payload: { meowSenderId, postOwnerId, meowAmount },
     })
       .withReducer(rootReducer, initialState())
       .run();
@@ -150,9 +150,9 @@ describe(transferMeow, () => {
   });
 
   it('handles API MEOW transfer failure', async () => {
-    const meowSenderUserId = 'sender-id';
-    const meowRecipientUserId = 'recipient-id';
-    const amount = '500000000000000000';
+    const meowSenderId = 'sender-id';
+    const postOwnerId = 'post-owner-id';
+    const meowAmount = '500000000000000000';
 
     const apiResponse = {
       success: false,
@@ -160,27 +160,27 @@ describe(transferMeow, () => {
     };
 
     const { storeState } = await expectSaga(transferMeow, {
-      payload: { meowSenderUserId, meowRecipientUserId, amount },
+      payload: { meowSenderId, postOwnerId, meowAmount },
     })
       .withReducer(rootReducer, initialState())
-      .provide([[call(transferMeowAPI, meowSenderUserId, meowRecipientUserId, amount), apiResponse]])
+      .provide([[call(transferMeowAPI, meowSenderId, postOwnerId, meowAmount), apiResponse]])
       .run();
 
     expect(storeState.rewards.transferError).toEqual('Transfer failed.');
   });
 
   it('handles unexpected error during MEOW transfer', async () => {
-    const meowSenderUserId = 'sender-id';
-    const meowRecipientUserId = 'recipient-id';
-    const amount = '500000000000000000';
+    const meowSenderId = 'sender-id';
+    const postOwnerId = 'post-owner-id';
+    const meowAmount = '500000000000000000';
 
     const error = new Error('Network error');
 
     const { storeState } = await expectSaga(transferMeow, {
-      payload: { meowSenderUserId, meowRecipientUserId, amount },
+      payload: { meowSenderId, postOwnerId, meowAmount },
     })
       .withReducer(rootReducer, initialState())
-      .provide([[call(transferMeowAPI, meowSenderUserId, meowRecipientUserId, amount), Promise.reject(error)]])
+      .provide([[call(transferMeowAPI, meowSenderId, postOwnerId, meowAmount), Promise.reject(error)]])
       .run();
 
     expect(storeState.rewards.transferError).toEqual('Network error');
@@ -188,8 +188,8 @@ describe(transferMeow, () => {
 
   it('handles transfer loading', async () => {
     const meowSenderUserId = 'sender-id';
-    const meowRecipientUserId = 'recipient-id';
-    const amount = '500000000000000000';
+    const postOwnerId = 'post-owner-id';
+    const meowAmount = '500000000000000000';
 
     const apiResponse = {
       success: true,
@@ -200,10 +200,10 @@ describe(transferMeow, () => {
     };
 
     const { storeState } = await expectSaga(transferMeow, {
-      payload: { meowSenderUserId, meowRecipientUserId, amount },
+      payload: { meowSenderUserId, postOwnerId, meowAmount },
     })
       .withReducer(rootReducer, initialState())
-      .provide([[call(transferMeowAPI, meowSenderUserId, meowRecipientUserId, amount), apiResponse]])
+      .provide([[call(transferMeowAPI, meowSenderUserId, postOwnerId, meowAmount), apiResponse]])
       .run();
 
     expect(storeState.rewards.transferLoading).toEqual(false);

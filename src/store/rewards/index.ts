@@ -32,9 +32,13 @@ export const initialState: RewardsState = {
 
 export const totalRewardsViewed = createAction(SagaActionTypes.TotalRewardsViewed);
 export const closeRewardsTooltip = createAction(SagaActionTypes.CloseRewardsTooltip);
-export const transferMeow = createAction<{ meowSenderUserId: string; meowRecipientUserId: string; amount: string }>(
-  SagaActionTypes.TransferMeow
-);
+export const transferMeow = createAction<{
+  meowSenderId: string;
+  postOwnerId: string;
+  postMessageId: string;
+  meowAmount: string;
+  roomId: string;
+}>(SagaActionTypes.TransferMeow);
 
 const slice = createSlice({
   name: 'rewards',

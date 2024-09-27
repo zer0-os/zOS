@@ -44,7 +44,7 @@ export const Post = ({
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const isMeowsEnabled = featureFlags.enableMeows;
-  const isDisabled = formatWeiAmount(userMeowBalance) < '0' || ownerUserId === currentUserId;
+  const isDisabled = formatWeiAmount(userMeowBalance) <= '0' || ownerUserId === currentUserId;
 
   const multilineText = useMemo(
     () =>

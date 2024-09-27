@@ -13,6 +13,7 @@ import { mapMessageSenders } from '../messages/utils.matrix';
 import { Uploadable, createUploadableFile } from '../messages/uploadable';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
+import { updateUserMeowBalance } from '../rewards/saga';
 
 export interface Payload {
   channelId: string;
@@ -158,7 +159,7 @@ export function* applyReactions(roomId: string, postMessages: Message[]): Genera
   });
 }
 
-export function* updatePostMessageReaction(roomId, { eventId, key, amount }) {
+export function* updatePostMessageReaction(roomId, { eventId, key, amount, postOwnerId }) {
   const postMessage = yield select(messageSelector(eventId));
   const existingMessages = yield select(rawMessagesSelector(roomId));
 
@@ -171,6 +172,9 @@ export function* updatePostMessageReaction(roomId, { eventId, key, amount }) {
     const updatedMessages = existingMessages.map((message) => (message === eventId ? updatedMessage : message));
 
     yield call(receiveChannel, { id: roomId, messages: updatedMessages });
+
+    // Update the user's MEOW balance if they are the post owner
+    yield call(updateUserMeowBalance, postOwnerId, amount);
   }
 }
 

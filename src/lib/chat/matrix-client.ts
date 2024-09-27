@@ -1265,6 +1265,7 @@ export class MatrixClient implements IChatClient {
       eventId: content[MatrixConstants.RELATES_TO].event_id,
       key: content[MatrixConstants.RELATES_TO].key,
       amount: parseFloat(content.amount),
+      postOwnerId: content.postOwnerId,
     });
   }
 

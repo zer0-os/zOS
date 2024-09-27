@@ -1,5 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
+import BN from 'bn.js';
 
 import {
   checkNewRewardsLoaded,
@@ -7,6 +8,7 @@ import {
   fetch,
   fetchCurrentMeowPriceInUSD,
   transferMeow,
+  updateUserMeowBalance,
 } from './saga';
 import { fetchRewards, transferMeow as transferMeowAPI } from './api';
 import { RewardsState, initialState as initialRewardsState } from '.';
@@ -210,6 +212,38 @@ describe(transferMeow, () => {
   });
 });
 
+describe('updateUserMeowBalance', () => {
+  it('updates the current user MEOW balance correctly', async () => {
+    const postOwnerId = 'user-id';
+    const amount = 10; // Amount in MEOWs to be converted to Wei
+
+    const initialMeowBalance = '1000000000000000000'; // 1 MEOW in Wei
+
+    const { storeState } = await expectSaga(updateUserMeowBalance, postOwnerId, amount)
+      .withReducer(rootReducer, initialState({ meow: initialMeowBalance }))
+      .run();
+
+    const expectedNewBalance = new BN(initialMeowBalance)
+      .add(new BN(amount).mul(new BN('1000000000000000000')))
+      .toString();
+
+    expect(storeState.rewards.meow).toEqual(expectedNewBalance);
+  });
+
+  it('does not update MEOW balance if post owner is not the current user', async () => {
+    const postOwnerId = 'another-user-id';
+    const amount = 10; // Amount in MEOWs to be converted to Wei
+
+    const initialMeowBalance = '1000000000000000000'; // 1 MEOW in Wei
+
+    const { storeState } = await expectSaga(updateUserMeowBalance, postOwnerId, amount)
+      .withReducer(rootReducer, initialState({ meow: initialMeowBalance }))
+      .run();
+
+    expect(storeState.rewards.meow).toEqual(initialMeowBalance); // Balance should remain unchanged
+  });
+});
+
 function initialState(attrs: Partial<RewardsState> = {}, otherAttrs: any = {}) {
   return {
     rewards: {
@@ -219,6 +253,13 @@ function initialState(attrs: Partial<RewardsState> = {}, otherAttrs: any = {}) {
     },
     registration: {
       isFirstTimeLogin: false,
+    },
+    authentication: {
+      user: {
+        data: {
+          id: 'user-id',
+        },
+      },
     },
     ...otherAttrs,
   } as any;

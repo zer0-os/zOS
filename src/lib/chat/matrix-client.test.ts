@@ -662,6 +662,7 @@ describe('matrix client', () => {
 
       await client.connect(null, 'token');
       await client.sendMeowReactionEvent('channel-id', 'post-message-id', 'post-owner-id', 10);
+
       expect(sendEvent).toHaveBeenCalledWith('channel-id', MatrixConstants.REACTION, {
         'm.relates_to': {
           rel_type: MatrixConstants.ANNOTATION,

@@ -1,5 +1,6 @@
 import { call, delay, put, select, spawn, takeEvery } from 'redux-saga/effects';
 import getDeepProperty from 'lodash.get';
+import BN from 'bn.js';
 
 import {
   SagaActionTypes,
@@ -21,6 +22,7 @@ import {
 } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
+import { currentUserSelector } from '../authentication/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { sendMeowReactionEvent } from '../../lib/chat';
 
@@ -150,6 +152,19 @@ export function* transferMeow(action) {
     yield put(setTransferError({ error: error.message || 'An unexpected error occurred.' }));
   } finally {
     yield put(setTransferLoading(false));
+  }
+}
+
+export function* updateUserMeowBalance(postOwnerId: string, amount: number) {
+  const currentUser = yield select(currentUserSelector());
+
+  if (postOwnerId === currentUser.id) {
+    const currentMeowBalance = yield select((state) => state.rewards.meow);
+
+    const amountInWei = new BN(amount).mul(new BN('1000000000000000000'));
+    const newMeowBalance = new BN(currentMeowBalance).add(amountInWei);
+
+    yield put(setMeow(newMeowBalance.toString()));
   }
 }
 

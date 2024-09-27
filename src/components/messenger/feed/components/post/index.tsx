@@ -7,8 +7,10 @@ import { featureFlags } from '../../../../../lib/feature-flags';
 import { Media, MediaType } from '../../../../../store/messages';
 
 import styles from './styles.module.scss';
+import { formatWeiAmount } from '../../../../../lib/number';
 
 export interface PostProps {
+  currentUserId?: string;
   messageId: string;
   avatarUrl?: string;
   timestamp: number;
@@ -16,10 +18,16 @@ export interface PostProps {
   nickname: string;
   text?: string;
   media?: any;
+  ownerUserId?: string;
+  userMeowBalance?: string;
+  reactions?: { [key: string]: number };
+
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
+  transferMeow: (postOwnerId, postMessageId, meowAmount) => void;
 }
 
 export const Post = ({
+  currentUserId,
   messageId,
   avatarUrl,
   text,
@@ -27,11 +35,16 @@ export const Post = ({
   author,
   timestamp,
   media,
+  ownerUserId,
+  userMeowBalance,
+  reactions,
   loadAttachmentDetails,
+  transferMeow,
 }: PostProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const isMeowsEnabled = featureFlags.enableMeows;
+  const isDisabled = formatWeiAmount(userMeowBalance) < '0' || ownerUserId === currentUserId;
 
   const multilineText = useMemo(
     () =>
@@ -144,8 +157,17 @@ export const Post = ({
           </>
         }
         options={<Timestamp className={styles.Date} timestamp={timestamp} />}
-        // @note: This has no backend, so we're mocking MEOWs
-        actions={isMeowsEnabled && <MeowAction meows={text.length * 10} />}
+        actions={
+          isMeowsEnabled && (
+            <MeowAction
+              meows={reactions?.MEOW || 0}
+              isDisabled={isDisabled}
+              ownerUserId={ownerUserId}
+              transferMeow={transferMeow}
+              messageId={messageId}
+            />
+          )
+        }
       />
     </div>
   );

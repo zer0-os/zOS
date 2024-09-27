@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { useSpring } from 'framer-motion';
 import { CONFIG, getScale } from './lib';
 
-export const useMeowAction = (meows?: number) => {
+export const useMeowAction = () => {
   const intervalRef = useRef(null);
   const scale = useSpring(1, { stiffness: 300, damping: 7 });
 
@@ -69,7 +69,6 @@ export const useMeowAction = (meows?: number) => {
     scale,
     start,
     stop,
-    totalMeows: meows + (amount ?? userAmount),
     userAmount,
   };
 };

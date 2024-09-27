@@ -14,12 +14,15 @@ describe('FeedView', () => {
 
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
+      currentUserId: 'user-id',
       postMessages: [],
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
       fetchPosts: jest.fn(),
       onFetchMore: jest.fn(),
       loadAttachmentDetails: jest.fn(),
+      transferMeow: jest.fn(),
+      userMeowBalance: '0',
 
       ...props,
     };

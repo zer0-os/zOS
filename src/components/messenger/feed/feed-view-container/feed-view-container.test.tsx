@@ -183,6 +183,7 @@ describe('FeedViewContainer', () => {
         chat: {
           activeConversationId: '1',
         },
+        rewards: { meow: '0' },
       } as RootState);
 
     test('channel', () => {

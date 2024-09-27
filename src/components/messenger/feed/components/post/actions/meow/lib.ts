@@ -1,6 +1,7 @@
-const INCREMENTS = 10;
-const MS_BETWEEN_INCREMENTS = 1000;
-const OPTIONS = 3;
+const INCREMENTS = 1;
+const MS_BETWEEN_INCREMENTS = 75;
+const OPTIONS = 100;
+const MAX_SCALE = 1.25;
 
 interface MeowActionConfig {
   increments: number;
@@ -17,5 +18,6 @@ export const CONFIG: MeowActionConfig = {
 };
 
 export const getScale = (amount: number, increments: number, max: number): number => {
-  return 1 + (Math.min(amount, max) / increments) * 0.05;
+  const scale = 1 + (Math.min(amount, max) / increments) * 0.005;
+  return Math.min(scale, MAX_SCALE);
 };

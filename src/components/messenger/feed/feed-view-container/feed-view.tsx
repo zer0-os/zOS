@@ -13,13 +13,16 @@ import './styles.scss';
 const cn = bemClassName('feed-view');
 
 export interface Properties {
+  currentUserId: string;
   postMessages: MessageModel[];
   hasLoadedMessages: boolean;
   messagesFetchStatus: MessagesFetchState;
+  userMeowBalance: string;
 
   fetchPosts: (payload: PayloadFetchPosts) => void;
   onFetchMore: () => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
+  transferMeow: (postOwnerId, postMessageId, meowAmount) => void;
 }
 
 export class FeedView extends React.Component<Properties> {
@@ -66,8 +69,11 @@ export class FeedView extends React.Component<Properties> {
             {this.props.postMessages.length > 0 ? (
               <>
                 <Posts
+                  currentUserId={this.props.currentUserId}
                   postMessages={this.props.postMessages}
                   loadAttachmentDetails={this.props.loadAttachmentDetails}
+                  transferMeow={this.props.transferMeow}
+                  userMeowBalance={this.props.userMeowBalance}
                 />
 
                 {this.props.messagesFetchStatus === MessagesFetchState.SUCCESS && this.state.shouldRenderWaypoint && (

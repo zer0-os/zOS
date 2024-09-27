@@ -8,13 +8,33 @@ import styles from './meow-action.module.scss';
 
 export interface MeowActionProps {
   meows?: number;
+  isDisabled?: boolean;
+  ownerUserId: string;
+  messageId: string;
+
+  transferMeow: (postOwnerId, postMessageId, meowAmount) => void;
 }
 
-export const MeowAction = ({ meows = 0 }: MeowActionProps) => {
-  const { amount, backgroundOpacity, cancel, isActive, scale, start, stop, totalMeows } = useMeowAction(meows);
+export const MeowAction = ({ meows = 0, isDisabled, transferMeow, ownerUserId, messageId }: MeowActionProps) => {
+  const { amount, backgroundOpacity, cancel, isActive, scale, start, stop } = useMeowAction();
+
+  const handleStop = () => {
+    if (amount) {
+      transferMeow(ownerUserId, messageId, amount.toString());
+    }
+    stop();
+  };
 
   return (
-    <motion.div style={{ scale }} onTapStart={start} onTap={stop} onTapCancel={cancel} className={styles.Container}>
+    <motion.div
+      style={{
+        scale,
+      }}
+      onTapStart={start}
+      onTap={handleStop}
+      onTapCancel={cancel}
+      className={`${styles.Container} ${isDisabled && styles.Disabled}`}
+    >
       <Action>
         <AnimatePresence>
           {amount && (
@@ -27,7 +47,7 @@ export const MeowAction = ({ meows = 0 }: MeowActionProps) => {
           )}
         </AnimatePresence>
         <MeowIcon />
-        <span>{totalMeows}</span>
+        <span>{meows}</span>
         <AnimatePresence>
           {amount && isActive && (
             <motion.b

@@ -9,6 +9,7 @@ import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
 import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../chat-view-container/utils';
 import { compareDatesAsc } from '../../../../lib/date';
+import { transferMeow } from '../../../../store/rewards';
 
 interface PublicProperties {
   channelId: string;
@@ -18,9 +19,17 @@ export interface Properties extends PublicProperties {
   channel: Channel;
   user: AuthenticationState['user'];
   activeConversationId?: string;
+  userMeowBalance: string;
 
   fetchPosts: (payload: PayloadFetchPost) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
+  transferMeow: (payload: {
+    meowSenderId: string;
+    postOwnerId: string;
+    postMessageId: string;
+    meowAmount: string;
+    roomId: string;
+  }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -29,12 +38,14 @@ export class Container extends React.Component<Properties> {
     const {
       authentication: { user },
       chat: { activeConversationId },
+      rewards: { meow },
     } = state;
 
     return {
       channel,
       user,
       activeConversationId,
+      userMeowBalance: meow,
     };
   }
 
@@ -42,6 +53,7 @@ export class Container extends React.Component<Properties> {
     return {
       fetchPosts,
       loadAttachmentDetails,
+      transferMeow,
     };
   }
 
@@ -97,18 +109,31 @@ export class Container extends React.Component<Properties> {
     return posts.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt)).reverse();
   }
 
+  transferMeow = (postOwnerId, postMessageId, meowAmount) => {
+    this.props.transferMeow({
+      meowSenderId: this.props.user.data.id,
+      postOwnerId,
+      postMessageId,
+      meowAmount,
+      roomId: this.props.channelId,
+    });
+  };
+
   render() {
     if (!this.props.channel) return null;
 
     return (
       <>
         <FeedView
+          currentUserId={this.props.user?.data?.id}
           postMessages={this.postMessages}
           fetchPosts={this.props.fetchPosts}
           onFetchMore={this.fetchMorePosts}
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           messagesFetchStatus={this.channel.messagesFetchStatus}
           loadAttachmentDetails={this.props.loadAttachmentDetails}
+          transferMeow={this.transferMeow}
+          userMeowBalance={this.props.userMeowBalance}
         />
       </>
     );

@@ -123,6 +123,7 @@ export function* fetchPosts(action) {
     }
 
     yield call(mapMessageSenders, postsResponse.postMessages, channelId);
+    yield call(applyReactions, channelId, postsResponse.postMessages);
 
     if (featureFlags.enableMeows) {
       yield call(applyReactions, channelId, postsResponse.postMessages);

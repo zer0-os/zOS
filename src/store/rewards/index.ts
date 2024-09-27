@@ -3,6 +3,7 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 export enum SagaActionTypes {
   TotalRewardsViewed = 'rewards/totalRewardsViewed',
   CloseRewardsTooltip = 'registration/closeRewardsTooltip',
+  TransferMeow = 'rewards/transferMeow',
 }
 
 export type RewardsState = {
@@ -13,6 +14,8 @@ export type RewardsState = {
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
   showNewRewardsIndicator: boolean;
+  transferLoading: boolean;
+  transferError?: string;
 };
 
 export const initialState: RewardsState = {
@@ -23,10 +26,19 @@ export const initialState: RewardsState = {
   showRewardsInTooltip: false,
   showRewardsInPopup: false,
   showNewRewardsIndicator: false,
+  transferLoading: false,
+  transferError: null,
 };
 
 export const totalRewardsViewed = createAction(SagaActionTypes.TotalRewardsViewed);
 export const closeRewardsTooltip = createAction(SagaActionTypes.CloseRewardsTooltip);
+export const transferMeow = createAction<{
+  meowSenderId: string;
+  postOwnerId: string;
+  postMessageId: string;
+  meowAmount: string;
+  roomId: string;
+}>(SagaActionTypes.TransferMeow);
 
 const slice = createSlice({
   name: 'rewards',
@@ -59,6 +71,12 @@ const slice = createSlice({
     setShowNewRewardsIndicator: (state, action: PayloadAction<RewardsState['showNewRewardsIndicator']>) => {
       state.showNewRewardsIndicator = action.payload;
     },
+    setTransferError: (state, action: PayloadAction<{ error: string }>) => {
+      state.transferError = action.payload.error;
+    },
+    setTransferLoading: (state, action: PayloadAction<RewardsState['transferLoading']>) => {
+      state.transferLoading = action.payload;
+    },
   },
 });
 
@@ -72,5 +90,7 @@ export const {
   setShowRewardsInTooltip,
   setShowRewardsInPopup,
   setShowNewRewardsIndicator,
+  setTransferError,
+  setTransferLoading,
 } = slice.actions;
 export const { reducer } = slice;

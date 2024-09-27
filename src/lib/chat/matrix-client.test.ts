@@ -5,7 +5,7 @@ import { uploadImage as _uploadImage } from '../../store/channels-list/api';
 import { when } from 'jest-when';
 import { config } from '../../config';
 import { PowerLevels } from './types';
-import { MatrixConstants, ReadReceiptPreferenceType } from './matrix/types';
+import { MatrixConstants, ReactionKeys, ReadReceiptPreferenceType } from './matrix/types';
 import { DefaultRoomLabels } from '../../store/channels';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
@@ -649,6 +649,26 @@ describe('matrix client', () => {
       const result = await client.sendPostsByChannelId('channel-id', 'post-message');
 
       expect(result).toMatchObject({ id: '$80dh3P6kQKgA0IIrdkw5AW0vSXXcRMT2PPIGVg9nEvU' });
+    });
+  });
+
+  describe('sendMeowReactionEvent', () => {
+    it('sends a meow reaction event successfully', async () => {
+      const sendEvent = jest.fn().mockResolvedValue({});
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ sendEvent })) });
+
+      await client.connect(null, 'token');
+      await client.sendMeowReactionEvent('channel-id', 'post-message-id', 'post-owner-id', 10);
+
+      expect(sendEvent).toHaveBeenCalledWith('channel-id', MatrixConstants.REACTION, {
+        'm.relates_to': {
+          rel_type: MatrixConstants.ANNOTATION,
+          event_id: 'post-message-id',
+          key: ReactionKeys.MEOW,
+        },
+        amount: 10,
+        postOwnerId: 'post-owner-id',
+      });
     });
   });
 

@@ -10,11 +10,19 @@ import {
   setMeowPreviousDay,
   setShowRewardsInPopup,
   setShowNewRewardsIndicator,
+  setTransferError,
+  setTransferLoading,
 } from '.';
-import { RewardsResp, fetchCurrentMeowPriceInUSD as fetchCurrentMeowPriceInUSDAPI, fetchRewards } from './api';
+import {
+  RewardsResp,
+  fetchCurrentMeowPriceInUSD as fetchCurrentMeowPriceInUSDAPI,
+  fetchRewards,
+  transferMeow as transferMeowAPI,
+} from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { featureFlags } from '../../lib/feature-flags';
+import { sendMeowReactionEvent } from '../../lib/chat';
 
 const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour
 const SYNC_MEOW_TOKEN_PRICE_INTERVAL = 2 * 60 * 1000; // every 2 minutes
@@ -116,6 +124,35 @@ export function* closeRewardsTooltip() {
   }
 }
 
+export function* transferMeow(action) {
+  yield put(setTransferError({ error: null }));
+
+  const { meowSenderId, postOwnerId, postMessageId, meowAmount, roomId } = action.payload;
+
+  if (meowSenderId === postOwnerId) {
+    yield put(setTransferError({ error: 'Cannot transfer MEOW to yourself.' }));
+    return;
+  }
+
+  yield put(setTransferLoading(true));
+
+  try {
+    const result = yield call(transferMeowAPI, meowSenderId, postOwnerId, meowAmount);
+
+    if (result.success) {
+      yield put(setMeow(result.response.senderBalance));
+
+      yield call(sendMeowReactionEvent, roomId, postMessageId, postOwnerId, meowAmount);
+    } else {
+      yield put(setTransferError({ error: result.error }));
+    }
+  } catch (error: any) {
+    yield put(setTransferError({ error: error.message || 'An unexpected error occurred.' }));
+  } finally {
+    yield put(setTransferLoading(false));
+  }
+}
+
 function* clearOnLogout() {
   yield put(setLoading(false));
   yield put(setMeow('0'));
@@ -124,11 +161,13 @@ function* clearOnLogout() {
   yield put(setShowRewardsInTooltip(false));
   yield put(setShowRewardsInPopup(false));
   yield put(setShowNewRewardsIndicator(false));
+  yield put(setTransferError({ error: '' }));
 }
 
 export function* saga() {
   yield takeEvery(SagaActionTypes.TotalRewardsViewed, totalRewardsViewed);
   yield takeEvery(SagaActionTypes.CloseRewardsTooltip, closeRewardsTooltip);
+  yield takeEvery(SagaActionTypes.TransferMeow, transferMeow);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogin, syncRewardsAndTokenPrice);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

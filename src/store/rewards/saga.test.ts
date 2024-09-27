@@ -1,8 +1,14 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 
-import { checkNewRewardsLoaded, closeRewardsTooltipAfterDelay, fetch, fetchCurrentMeowPriceInUSD } from './saga';
-import { fetchRewards } from './api';
+import {
+  checkNewRewardsLoaded,
+  closeRewardsTooltipAfterDelay,
+  fetch,
+  fetchCurrentMeowPriceInUSD,
+  transferMeow,
+} from './saga';
+import { fetchRewards, transferMeow as transferMeowAPI } from './api';
 import { RewardsState, initialState as initialRewardsState } from '.';
 
 import { rootReducer } from '../reducer';
@@ -102,6 +108,105 @@ describe(checkNewRewardsLoaded, () => {
       .run();
 
     expect(storeState.rewards.showRewardsInTooltip).toEqual(true);
+  });
+});
+
+describe(transferMeow, () => {
+  it('handles successful MEOW transfer', async () => {
+    const meowSenderId = 'sender-id';
+    const postOwnerId = 'post-owner-id';
+    const meowAmount = '500000000000000000';
+
+    const apiResponse = {
+      success: true,
+      response: {
+        senderBalance: '500000000000000000',
+        recipientBalance: '1000000000000000000',
+      },
+    };
+
+    const { storeState } = await expectSaga(transferMeow, {
+      payload: { meowSenderId, postOwnerId, meowAmount },
+    })
+      .withReducer(rootReducer, initialState())
+      .provide([[call(transferMeowAPI, meowSenderId, postOwnerId, meowAmount), apiResponse]])
+      .run();
+
+    expect(storeState.rewards.meow).toEqual('500000000000000000');
+  });
+
+  it('handles meowSenderId is equal to postOwnerId failure', async () => {
+    const meowSenderId = 'sender-id';
+    const postOwnerId = 'sender-id';
+    const meowAmount = '500000000000000000';
+
+    const { storeState } = await expectSaga(transferMeow, {
+      payload: { meowSenderId, postOwnerId, meowAmount },
+    })
+      .withReducer(rootReducer, initialState())
+      .run();
+
+    expect(storeState.rewards.transferError).toEqual('Cannot transfer MEOW to yourself.');
+  });
+
+  it('handles API MEOW transfer failure', async () => {
+    const meowSenderId = 'sender-id';
+    const postOwnerId = 'post-owner-id';
+    const meowAmount = '500000000000000000';
+
+    const apiResponse = {
+      success: false,
+      error: 'Transfer failed.',
+    };
+
+    const { storeState } = await expectSaga(transferMeow, {
+      payload: { meowSenderId, postOwnerId, meowAmount },
+    })
+      .withReducer(rootReducer, initialState())
+      .provide([[call(transferMeowAPI, meowSenderId, postOwnerId, meowAmount), apiResponse]])
+      .run();
+
+    expect(storeState.rewards.transferError).toEqual('Transfer failed.');
+  });
+
+  it('handles unexpected error during MEOW transfer', async () => {
+    const meowSenderId = 'sender-id';
+    const postOwnerId = 'post-owner-id';
+    const meowAmount = '500000000000000000';
+
+    const error = new Error('Network error');
+
+    const { storeState } = await expectSaga(transferMeow, {
+      payload: { meowSenderId, postOwnerId, meowAmount },
+    })
+      .withReducer(rootReducer, initialState())
+      .provide([[call(transferMeowAPI, meowSenderId, postOwnerId, meowAmount), Promise.reject(error)]])
+      .run();
+
+    expect(storeState.rewards.transferError).toEqual('Network error');
+  });
+
+  it('handles transfer loading', async () => {
+    const meowSenderUserId = 'sender-id';
+    const postOwnerId = 'post-owner-id';
+    const meowAmount = '500000000000000000';
+
+    const apiResponse = {
+      success: true,
+      response: {
+        senderBalance: '500000000000000000',
+        recipientBalance: '1000000000000000000',
+      },
+    };
+
+    const { storeState } = await expectSaga(transferMeow, {
+      payload: { meowSenderUserId, postOwnerId, meowAmount },
+    })
+      .withReducer(rootReducer, initialState())
+      .provide([[call(transferMeowAPI, meowSenderUserId, postOwnerId, meowAmount), apiResponse]])
+      .run();
+
+    expect(storeState.rewards.transferLoading).toEqual(false);
   });
 });
 

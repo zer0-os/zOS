@@ -369,3 +369,7 @@ export async function sendMeowReactionEvent(
 ) {
   return chat.get().matrix.sendMeowReactionEvent(roomId, postMessageId, postOwnerId, meowAmount);
 }
+
+export async function getPostMessageReactions(roomId: string) {
+  return chat.get().matrix.getPostMessageReactions(roomId);
+}

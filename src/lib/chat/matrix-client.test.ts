@@ -664,7 +664,7 @@ describe('matrix client', () => {
         'm.relates_to': {
           rel_type: MatrixConstants.ANNOTATION,
           event_id: 'post-message-id',
-          key: ReactionKeys.MEOW,
+          key: `${ReactionKeys.MEOW}_${Date.now()}`,
         },
         amount: 10,
         postOwnerId: 'post-owner-id',
@@ -1521,6 +1521,83 @@ describe('matrix client', () => {
         },
         { id: 'room2', labels: [] },
       ]);
+    });
+  });
+
+  describe('getPostMessageReactions', () => {
+    it('returns the correct reactions for a room', async () => {
+      const mockGetRoom = jest.fn().mockReturnValue({
+        getLiveTimeline: jest.fn().mockReturnValue({
+          getEvents: jest.fn().mockReturnValue([
+            {
+              getType: () => MatrixConstants.REACTION,
+              getContent: () => ({
+                [MatrixConstants.RELATES_TO]: {
+                  event_id: 'message-1',
+                  key: ReactionKeys.MEOW,
+                },
+                amount: 5,
+              }),
+            },
+
+            {
+              getType: () => 'm.room.message',
+              getContent: () => ({
+                body: 'This is a regular message',
+              }),
+            },
+          ]),
+        }),
+      });
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom: mockGetRoom })) });
+
+      await client.connect(null, 'token');
+      const reactions = await client.getPostMessageReactions('room-id');
+
+      expect(mockGetRoom).toHaveBeenCalledWith('room-id');
+      expect(reactions).toEqual([
+        {
+          eventId: 'message-1',
+          key: ReactionKeys.MEOW,
+          amount: 5,
+        },
+      ]);
+    });
+
+    it('returns an empty array if the room is not found', async () => {
+      const mockGetRoom = jest.fn().mockReturnValue(null);
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom: mockGetRoom })) });
+
+      await client.connect(null, 'token');
+      const reactions = await client.getPostMessageReactions('room-id');
+
+      expect(mockGetRoom).toHaveBeenCalledWith('room-id');
+      expect(reactions).toEqual([]);
+    });
+
+    it('returns an empty array if there are no reaction events', async () => {
+      const mockGetRoom = jest.fn().mockReturnValue({
+        getLiveTimeline: jest.fn().mockReturnValue({
+          getEvents: jest.fn().mockReturnValue([
+            {
+              getType: () => 'm.room.message', // No reaction events
+              getContent: () => ({
+                body: 'This is a regular message',
+              }),
+            },
+          ]),
+        }),
+      });
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom: mockGetRoom })) });
+
+      await client.connect(null, 'token');
+      const reactions = await client.getPostMessageReactions('room-id');
+
+      expect(mockGetRoom).toHaveBeenCalledWith('room-id');
+      expect(reactions).toEqual([]);
     });
   });
 });

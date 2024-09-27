@@ -445,7 +445,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const room = this.matrix.getRoom(roomId);
     const liveTimeline = room.getLiveTimeline();
-    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
+    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 200 });
     const events = liveTimeline.getEvents().map((event) => event.getEffectiveEvent());
     const messages = await this.getAllChatMessagesFromRoom(events);
 
@@ -457,7 +457,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const room = this.matrix.getRoom(roomId);
     const liveTimeline = room.getLiveTimeline();
-    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
+    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 200 });
     const events = liveTimeline.getEvents().map((event) => event.getEffectiveEvent());
     const postMessages = await this.getAllPostMessagesFromRoom(events);
 
@@ -491,7 +491,7 @@ export class MatrixClient implements IChatClient {
 
     const events = room.getLiveTimeline().getEvents();
 
-    return events
+    const result = events
       .filter((event) => event.getType() === MatrixConstants.REACTION)
       .map((event) => {
         const content = event.getContent();
@@ -501,6 +501,8 @@ export class MatrixClient implements IChatClient {
           amount: content.amount || 0,
         };
       });
+
+    return result;
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
@@ -1098,6 +1100,10 @@ export class MatrixClient implements IChatClient {
         this.receiveDeleteMessage(event);
       }
 
+      if (event.type === MatrixConstants.REACTION) {
+        this.publishReactionChange(event);
+      }
+
       this.processMessageEvent(event);
     });
 
@@ -1252,6 +1258,15 @@ export class MatrixClient implements IChatClient {
     const content = event.getContent();
     this.events.roomMemberTyping(member.roomId, content.user_ids || []);
   };
+
+  private publishReactionChange(event) {
+    const content = event.content;
+    this.events.postMessageReactionChange(event.room_id, {
+      eventId: content[MatrixConstants.RELATES_TO].event_id,
+      key: content[MatrixConstants.RELATES_TO].key,
+      amount: parseFloat(content.amount),
+    });
+  }
 
   private publishRoomMemberPowerLevelsChanged = (event: MatrixEvent, member: RoomMember) => {
     this.events.roomMemberPowerLevelChanged(member.roomId, member.userId, member.powerLevel);

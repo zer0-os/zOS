@@ -4,13 +4,15 @@ import uniqBy from 'lodash.uniqby';
 import { SagaActionTypes } from '.';
 import { MediaType, Message } from '../messages';
 import { getPostMessageReactions, getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
-import { rawMessagesSelector, sendMessage } from '../messages/saga';
+import { messageSelector, rawMessagesSelector, sendMessage } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
 import { createOptimisticPostObject } from './utils';
 import { rawChannelSelector, receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
 import { mapMessageSenders } from '../messages/utils.matrix';
 import { Uploadable, createUploadableFile } from '../messages/uploadable';
+import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { takeEveryFromBus } from '../../lib/saga';
 
 export interface Payload {
   channelId: string;
@@ -156,7 +158,30 @@ export function* applyReactions(roomId: string, postMessages: Message[]): Genera
   });
 }
 
+export function* updatePostMessageReaction(roomId, { eventId, key, amount }) {
+  const postMessage = yield select(messageSelector(eventId));
+  const existingMessages = yield select(rawMessagesSelector(roomId));
+
+  if (postMessage) {
+    const newReactions = { ...postMessage.reactions };
+    const baseKey = key.split('_')[0]; // Base key without the unique part for MEOWS
+    newReactions[baseKey] = (newReactions[baseKey] || 0) + amount;
+
+    const updatedMessage = { ...postMessage, reactions: newReactions };
+    const updatedMessages = existingMessages.map((message) => (message === eventId ? updatedMessage : message));
+
+    yield call(receiveChannel, { id: roomId, messages: updatedMessages });
+  }
+}
+
+function* onPostMessageReactionChange(action) {
+  const { roomId, reaction } = action.payload;
+  yield call(updatePostMessageReaction, roomId, reaction);
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.SendPost, sendPost);
   yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
+
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.PostMessageReactionChange, onPostMessageReactionChange);
 }

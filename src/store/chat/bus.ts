@@ -22,6 +22,7 @@ export enum Events {
   RoomMemberPowerLevelChanged = 'chat/channel/roomMemberPowerLevelChanged',
   ReadReceiptReceived = 'chat/message/readReceiptReceived',
   RoomLabelChange = 'chat/channel/roomLabelChange',
+  PostMessageReactionChange = 'chat/message/postMessageReactionChange',
 }
 
 let theBus;
@@ -93,6 +94,8 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
     const readReceiptReceived = (messageId, userId, roomId) =>
       emit({ type: Events.ReadReceiptReceived, payload: { messageId, userId, roomId } });
     const roomLabelChange = (roomId, labels) => emit({ type: Events.RoomLabelChange, payload: { roomId, labels } });
+    const postMessageReactionChange = (roomId, reaction) =>
+      emit({ type: Events.PostMessageReactionChange, payload: { roomId, reaction } });
 
     chatClient.initChat({
       receiveNewMessage,
@@ -111,6 +114,7 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       roomMemberPowerLevelChanged,
       readReceiptReceived,
       roomLabelChange,
+      postMessageReactionChange,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

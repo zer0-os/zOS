@@ -22,6 +22,7 @@ export interface RealtimeChatEvents {
   roomMemberPowerLevelChanged: (roomId: string, matrixId: string, powerLevel: number) => void;
   readReceiptReceived: (messageId: string, userId: string, roomId: string) => void;
   roomLabelChange: (roomId: string, labels: string[]) => void;
+  postMessageReactionChange: (roomId: string, reaction: any) => void;
 }
 
 export interface MatrixKeyBackupInfo {

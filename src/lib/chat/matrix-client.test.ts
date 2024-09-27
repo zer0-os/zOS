@@ -654,6 +654,9 @@ describe('matrix client', () => {
 
   describe('sendMeowReactionEvent', () => {
     it('sends a meow reaction event successfully', async () => {
+      const fixedTimestamp = 1727441803628;
+      jest.spyOn(Date, 'now').mockReturnValue(fixedTimestamp);
+
       const sendEvent = jest.fn().mockResolvedValue({});
       const client = subject({ createClient: jest.fn(() => getSdkClient({ sendEvent })) });
 
@@ -664,11 +667,13 @@ describe('matrix client', () => {
         'm.relates_to': {
           rel_type: MatrixConstants.ANNOTATION,
           event_id: 'post-message-id',
-          key: `${ReactionKeys.MEOW}_${Date.now()}`,
+          key: `${ReactionKeys.MEOW}_${fixedTimestamp}`,
         },
         amount: 10,
         postOwnerId: 'post-owner-id',
       });
+
+      jest.restoreAllMocks();
     });
   });
 

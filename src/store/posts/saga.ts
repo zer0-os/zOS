@@ -2,8 +2,8 @@ import { takeLatest, call, select } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
 
 import { SagaActionTypes } from '.';
-import { MediaType } from '../messages';
-import { getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
+import { MediaType, Message } from '../messages';
+import { getPostMessageReactions, getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
 import { rawMessagesSelector, sendMessage } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
 import { createOptimisticPostObject } from './utils';
@@ -119,6 +119,7 @@ export function* fetchPosts(action) {
     }
 
     yield call(mapMessageSenders, postsResponse.postMessages, channelId);
+    yield call(applyReactions, channelId, postsResponse.postMessages);
 
     const existingMessages = yield select(rawMessagesSelector(channelId));
     const existingPosts = existingMessages.filter((message) => message.isPost);
@@ -137,6 +138,22 @@ export function* fetchPosts(action) {
   } catch (error) {
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
   }
+}
+
+export function* applyReactions(roomId: string, postMessages: Message[]): Generator<any, void, any> {
+  const reactions = yield call(getPostMessageReactions, roomId);
+
+  postMessages.forEach((postMessage) => {
+    const relatedReactions = reactions.filter((reaction) => reaction.eventId === postMessage.id.toString());
+    if (relatedReactions.length > 0) {
+      postMessage.reactions = relatedReactions.reduce((acc, reaction) => {
+        const key = reaction.key.split('_')[0]; // Base key without the unique part for MEOWS
+        const amount = parseFloat(reaction.amount);
+        acc[key] = (acc[key] || 0) + amount;
+        return acc;
+      }, postMessage.reactions || {});
+    }
+  });
 }
 
 export function* saga() {

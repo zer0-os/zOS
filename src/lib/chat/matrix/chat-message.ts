@@ -138,6 +138,7 @@ export async function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKM
     media,
     image,
     rootMessageId,
+    reactions: {},
   };
 }
 

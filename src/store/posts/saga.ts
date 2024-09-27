@@ -14,6 +14,7 @@ import { Uploadable, createUploadableFile } from '../messages/uploadable';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { updateUserMeowBalance } from '../rewards/saga';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface Payload {
   channelId: string;
@@ -122,7 +123,10 @@ export function* fetchPosts(action) {
     }
 
     yield call(mapMessageSenders, postsResponse.postMessages, channelId);
-    yield call(applyReactions, channelId, postsResponse.postMessages);
+
+    if (featureFlags.enableMeows) {
+      yield call(applyReactions, channelId, postsResponse.postMessages);
+    }
 
     const existingMessages = yield select(rawMessagesSelector(channelId));
     const existingPosts = existingMessages.filter((message) => message.isPost);

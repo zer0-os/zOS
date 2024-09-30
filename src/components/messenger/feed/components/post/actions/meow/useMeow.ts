@@ -56,6 +56,11 @@ export const useMeowAction = (meows, transferError) => {
     setDisplayTotal(originalAmount);
   };
 
+  const cancel = () => {
+    resetValues();
+    setDisplayTotal(originalAmount);
+  };
+
   const resetValues = () => {
     intervalRef.current && clearInterval(intervalRef.current);
     setIncrementalAmount(null);
@@ -67,6 +72,7 @@ export const useMeowAction = (meows, transferError) => {
     backgroundOpacity: (1 / CONFIG.max) * incrementalAmount,
     scale,
     start,
+    cancel,
     stop,
     displayTotal,
   };

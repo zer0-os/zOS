@@ -24,7 +24,7 @@ export const MeowAction = ({
   messageId,
   transferError,
 }: MeowActionProps) => {
-  const { incrementalAmount, backgroundOpacity, scale, start, stop, displayTotal } = useMeowAction(
+  const { incrementalAmount, backgroundOpacity, scale, cancel, start, stop, displayTotal } = useMeowAction(
     meows,
     transferError
   );
@@ -38,12 +38,10 @@ export const MeowAction = ({
 
   return (
     <motion.div
-      style={{
-        scale,
-      }}
+      style={{ scale }}
       onTapStart={start}
       onTap={handleStop}
-      onTapCancel={stop}
+      onTapCancel={cancel}
       className={`${styles.Container} ${isDisabled && styles.Disabled}`}
     >
       <Action>

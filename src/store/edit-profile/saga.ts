@@ -11,6 +11,14 @@ import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
 import { uploadFile } from '../../lib/chat';
 
+export function* getLocalUrl(file) {
+  if (!file) {
+    return '';
+  }
+
+  return yield call(URL.createObjectURL, file);
+}
+
 export function* editProfile(action) {
   const { name, image, primaryZID } = action.payload;
 
@@ -33,7 +41,8 @@ export function* editProfile(action) {
       profileImage: profileImage === '' ? undefined : profileImage,
     });
     if (response.success) {
-      yield call(updateUserProfile, { name, profileImage, primaryZID });
+      const localUrl = yield call(getLocalUrl, image);
+      yield call(updateUserProfile, { name, profileImage: localUrl, primaryZID });
       yield put(setState(State.SUCCESS));
       return;
     }

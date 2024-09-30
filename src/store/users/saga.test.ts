@@ -1,9 +1,30 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { clearUsers, receiveSearchResults } from './saga';
-
+import {
+  clearUsers,
+  fetchCurrentUserProfileImage,
+  receiveSearchResults,
+  updateUserProfileImageFromCache,
+} from './saga';
+import { call } from 'redux-saga/effects';
 import { rootReducer } from '../reducer';
 import { denormalize } from '.';
 import { StoreBuilder } from '../test/store';
+import { downloadFile, uploadFile } from '../../lib/chat';
+import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
+
+const mockIdb = {
+  state: {},
+  put(key, item) {
+    this.state[key] = item;
+  },
+  get(key) {
+    return this.state[key];
+  },
+};
+
+jest.mock('../../lib/storage/idb', () => ({
+  getProvider: () => mockIdb,
+}));
 
 describe(clearUsers, () => {
   it('removes the users', async () => {
@@ -98,5 +119,119 @@ describe(receiveSearchResults, () => {
       .run();
 
     expect(denormalize(user1.id, storeState)).toEqual(expect.objectContaining(existingUser));
+  });
+});
+
+describe(fetchCurrentUserProfileImage, () => {
+  it('calls updateUserProfileImageFromCache if the current user is logging in for the first time', async () => {
+    const currentUser: any = {
+      id: 'user-id-1',
+      matrixId: 'matrix-id-1',
+      profileId: 'profile-id-1',
+      profileSummary: { firstName: 'Alice' },
+      primaryZID: 'zid-1',
+    };
+    const initialState = new StoreBuilder().withCurrentUser(currentUser).withRegistration({ isFirstTimeLogin: true });
+
+    await expectSaga(fetchCurrentUserProfileImage)
+      .provide([[call(updateUserProfileImageFromCache, expect.anything()), '']])
+      .withReducer(rootReducer, initialState.build())
+      .call(updateUserProfileImageFromCache, currentUser)
+      .run();
+  });
+
+  it('returns if no profile image is found', async () => {
+    const currentUser: any = {
+      id: 'user-id-1',
+      profileSummary: { firstName: 'Alice', profileImage: '' },
+    };
+    const initialState = new StoreBuilder().withCurrentUser(currentUser).withRegistration({ isFirstTimeLogin: false });
+
+    const { storeState } = await expectSaga(fetchCurrentUserProfileImage)
+      .provide([[call(updateUserProfileImageFromCache, expect.anything()), undefined]])
+      .withReducer(rootReducer, initialState.build())
+      .not.call(updateUserProfileImageFromCache, currentUser)
+      .not.call(downloadFile, '')
+      .run();
+
+    expect(storeState.authentication.user.data.profileSummary.profileImage).toBe('');
+  });
+
+  it('downloads the profile image and updates the store', async () => {
+    const currentUser: any = {
+      id: 'user-id-1',
+      profileSummary: { firstName: 'Alice', profileImage: 'image-url' },
+    };
+    const initialState = new StoreBuilder().withCurrentUser(currentUser).withRegistration({ isFirstTimeLogin: false });
+
+    const { storeState } = await expectSaga(fetchCurrentUserProfileImage)
+      .provide([[call(downloadFile, 'image-url'), 'downloaded-image-url']])
+      .withReducer(rootReducer, initialState.build())
+      .call(downloadFile, 'image-url')
+      .run();
+
+    expect(storeState.authentication.user.data.profileSummary.profileImage).toBe('downloaded-image-url');
+  });
+});
+
+describe(updateUserProfileImageFromCache, () => {
+  it('returns undefined if no profile image is found', async () => {
+    const currentUser: any = {
+      id: 'user-id-1',
+      profileSummary: { firstName: 'Alice' },
+      primaryZID: '0://zid',
+    };
+
+    mockIdb.put('profileImage', undefined);
+
+    const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser).run();
+
+    expect(returnValue).toBeUndefined();
+  });
+
+  it('returns if edit profile fails', async () => {
+    const currentUser: any = {
+      id: 'user-id-1',
+      profileSummary: { firstName: 'Alice' },
+      primaryZID: '0://zid',
+    };
+
+    const file: any = { name: 'Some file', type: 'image/png' };
+    mockIdb.put('profileImage', file);
+
+    const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser)
+      .provide([
+        [call(uploadFile, file), 'uploaded-image-url'],
+        [
+          call(apiEditUserProfile, { name: 'Alice', primaryZID: '0://zid', profileImage: 'uploaded-image-url' }),
+          { success: false },
+        ],
+      ])
+      .run();
+
+    expect(returnValue).toBeUndefined();
+  });
+
+  it('uploads the profile Image, edits the user profile, and sets the state to success', async () => {
+    const currentUser: any = {
+      id: 'user-id-1',
+      profileSummary: { firstName: 'Alice' },
+      primaryZID: '0://zid',
+    };
+
+    const file: any = { name: 'Some file', type: 'image/png' };
+    mockIdb.put('profileImage', file);
+
+    const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser)
+      .provide([
+        [call(uploadFile, file), 'uploaded-image-url'],
+        [
+          call(apiEditUserProfile, { name: 'Alice', primaryZID: '0://zid', profileImage: 'uploaded-image-url' }),
+          { success: true },
+        ],
+      ])
+      .run();
+
+    expect(returnValue).toBe('uploaded-image-url');
   });
 });

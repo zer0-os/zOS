@@ -2,7 +2,8 @@ import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs } from './saga';
 import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
-import { uploadImage } from '../registration/api';
+import { uploadFile } from '../../lib/chat';
+
 import { EditProfileState, State, initialState as initialEditProfileState, setLoadingZIDs } from '.';
 import { rootReducer } from '../reducer';
 import { User } from '../authentication/types';
@@ -24,8 +25,8 @@ describe('editProfile', () => {
     } = await expectSaga(editProfileSaga, { payload: { name, image, primaryZID } })
       .provide([
         [
-          call(uploadImage, image),
-          { url: profileImage },
+          call(uploadFile, image),
+          profileImage,
         ],
         [
           call(apiEditUserProfile, { name, profileImage, primaryZID }),
@@ -55,7 +56,7 @@ describe('editProfile', () => {
     } = await expectSaga(editProfileSaga, { payload: { name, image } })
       .provide([
         [
-          call(uploadImage, image),
+          call(uploadFile, image),
           throwError(new Error('Image upload failed')),
         ],
       ])
@@ -71,7 +72,10 @@ describe('editProfile', () => {
       storeState: { editProfile },
     } = await expectSaga(editProfileSaga, { payload: { name, image, primaryZID } })
       .provide([
-        [call(uploadImage, image), { url: 'profile-image-url' }],
+        [
+          call(uploadFile, image),
+          'profile-image-url',
+        ],
         [
           call(apiEditUserProfile, { name, primaryZID, profileImage: 'profile-image-url' }),
           throwError(new Error('API call failed')),

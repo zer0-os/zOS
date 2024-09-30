@@ -1,7 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { chat, getRoomTags } from '../../lib/chat';
+import { chat, downloadFile, getRoomTags } from '../../lib/chat';
 
 import {
   fetchConversations,
@@ -342,6 +342,7 @@ describe('channels list saga', () => {
         lastName: 'last-1',
         primaryZID: 'primary-zid-1',
         displaySubHandle: 'primary-zid-1',
+        profileImage: 'profile-image-url-1',
       },
       {
         userId: 'user-2',
@@ -351,6 +352,7 @@ describe('channels list saga', () => {
         lastName: 'last-2',
         primaryZID: 'primary-zid-2',
         displaySubHandle: 'primary-zid-2',
+        profileImage: 'profile-image-url-2',
       },
       {
         userId: 'user-3',
@@ -360,6 +362,7 @@ describe('channels list saga', () => {
         lastName: 'last-3',
         primaryZID: '',
         displaySubHandle: '',
+        profileImage: 'profile-image-url-3',
       },
     ] as any;
 
@@ -370,7 +373,7 @@ describe('channels list saga', () => {
         .run();
     });
 
-    it('creates map for zero users after fetching from api', async () => {
+    it('creates map for zero users and downloads profile images after fetching from api', async () => {
       const expectedMap = {
         'matrix-id-1': {
           userId: 'user-1',
@@ -380,6 +383,7 @@ describe('channels list saga', () => {
           lastName: 'last-1',
           primaryZID: 'primary-zid-1',
           displaySubHandle: 'primary-zid-1',
+          profileImage: 'profile-image-local-url-1',
         },
         'matrix-id-2': {
           userId: 'user-2',
@@ -389,6 +393,7 @@ describe('channels list saga', () => {
           lastName: 'last-2',
           primaryZID: 'primary-zid-2',
           displaySubHandle: 'primary-zid-2',
+          profileImage: 'profile-image-local-url-2',
         },
         'matrix-id-3': {
           userId: 'user-3',
@@ -398,12 +403,18 @@ describe('channels list saga', () => {
           lastName: 'last-3',
           primaryZID: '',
           displaySubHandle: '',
+          profileImage: 'profile-image-local-url-3',
         },
       };
 
       await expectSaga(mapToZeroUsers, rooms)
         .withReducer(rootReducer)
-        .provide([[call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers]])
+        .provide([
+          [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
+          [call(downloadFile, 'profile-image-url-1'), 'profile-image-local-url-1'],
+          [call(downloadFile, 'profile-image-url-2'), 'profile-image-local-url-2'],
+          [call(downloadFile, 'profile-image-url-3'), 'profile-image-local-url-3'],
+        ])
         .call(mapChannelMembers, rooms, expectedMap)
         .run();
     });
@@ -424,7 +435,7 @@ describe('channels list saga', () => {
           profileId: 'profile-1',
           firstName: 'first-1',
           lastName: 'last-1',
-          profileImage: undefined,
+          profileImage: 'profile-image-local-url-1',
           primaryZID: 'primary-zid-1',
           displaySubHandle: 'primary-zid-1',
         },
@@ -434,7 +445,7 @@ describe('channels list saga', () => {
           profileId: 'profile-2',
           firstName: 'first-2',
           lastName: 'last-2',
-          profileImage: undefined,
+          profileImage: 'profile-image-local-url-2',
           primaryZID: 'primary-zid-2',
           displaySubHandle: 'primary-zid-2',
         },
@@ -448,7 +459,7 @@ describe('channels list saga', () => {
           profileId: 'profile-3',
           firstName: 'first-3',
           lastName: 'last-3',
-          profileImage: undefined,
+          profileImage: 'profile-image-local-url-3',
           primaryZID: '',
           displaySubHandle: '',
         },
@@ -474,7 +485,7 @@ describe('channels list saga', () => {
         profileId: 'profile-1',
         firstName: 'first-1',
         lastName: 'last-1',
-        profileImage: undefined,
+        profileImage: 'profile-image-local-url-1',
         primaryZID: 'primary-zid-1',
         displaySubHandle: 'primary-zid-1',
       });
@@ -483,7 +494,7 @@ describe('channels list saga', () => {
         profileId: 'profile-2',
         firstName: 'first-2',
         lastName: 'last-2',
-        profileImage: undefined,
+        profileImage: 'profile-image-local-url-2',
         primaryZID: 'primary-zid-2',
         displaySubHandle: 'primary-zid-2',
       });
@@ -492,7 +503,7 @@ describe('channels list saga', () => {
         profileId: 'profile-3',
         firstName: 'first-3',
         lastName: 'last-3',
-        profileImage: undefined,
+        profileImage: 'profile-image-local-url-3',
         primaryZID: '',
         displaySubHandle: '',
       });

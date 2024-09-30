@@ -80,6 +80,8 @@ export interface IChatClient {
   saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
   restoreSecureBackup: (recoveryKey: string) => Promise<void>;
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
+  uploadFile(file: File): Promise<string>;
+  downloadFile(fileUrl: string): Promise<any>;
 }
 
 export class Chat {
@@ -373,4 +375,12 @@ export async function sendMeowReactionEvent(
 
 export async function getPostMessageReactions(roomId: string) {
   return chat.get().matrix.getPostMessageReactions(roomId);
+}
+
+export async function uploadFile(file: File): Promise<string> {
+  return chat.get().matrix.uploadFile(file);
+}
+
+export async function downloadFile(fileUrl: string) {
+  return chat.get().matrix.downloadFile(fileUrl);
 }

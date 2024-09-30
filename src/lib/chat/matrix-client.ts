@@ -620,6 +620,44 @@ export class MatrixClient implements IChatClient {
     });
   }
 
+  async uploadFile(file: File): Promise<string> {
+    await this.waitForConnection();
+
+    const response = await this.matrix.uploadContent(file, {
+      name: file.name,
+      type: file.type,
+      includeFilename: false,
+    });
+
+    const contentURI = response.content_uri;
+    const httpUrl = this.matrix.mxcUrlToHttp(contentURI, undefined, undefined, undefined, undefined, true, true);
+    return httpUrl;
+  }
+
+  // if the file is uploaded to the homerserver, then we need bearer token to download it
+  // since the endpoint to download the file is protected
+  async downloadFile(fileUrl: string) {
+    if (!fileUrl || !fileUrl.includes('_matrix/client/v1/media')) {
+      return fileUrl;
+    }
+
+    await this.waitForConnection();
+
+    const response = await fetch(fileUrl, {
+      headers: {
+        Authorization: `Bearer ${this.matrix.getAccessToken()}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.log(`Failed to download file: ${response.status} ${response.statusText}`);
+      return '';
+    }
+
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
+  }
+
   async sendMessagesByChannelId(
     channelId: string,
     message: string,

@@ -3,7 +3,7 @@ import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
 import { receive, denormalizeConversations, setStatus } from '.';
-import { chat, getRoomTags } from '../../lib/chat';
+import { chat, downloadFile, getRoomTags } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
@@ -37,6 +37,7 @@ export function* mapToZeroUsers(channels: any[]) {
   const zeroUsers = yield call(getZEROUsers, allMatrixIds);
   const zeroUsersMap = {};
   for (const user of zeroUsers) {
+    user.profileImage = yield call(downloadFile, user.profileImage);
     zeroUsersMap[user.matrixId] = user;
   }
 
@@ -391,6 +392,8 @@ export function* otherUserJoinedChannel(roomId: string, user: User) {
 
   if (user.userId === user.matrixId) {
     user = yield call(getUserByMatrixId, user.matrixId) || user;
+    const profileImage = yield call(downloadFile, user.profileImage || '');
+    user = { ...user, profileImage };
   }
 
   if (!channel?.otherMembers?.includes(user.userId)) {

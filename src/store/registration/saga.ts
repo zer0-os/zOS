@@ -19,7 +19,6 @@ import {
   createWeb3Account as apiCreateWeb3Account,
   completeAccount as apiCompleteAccount,
   addEmailAccount as apiAddEmailAccount,
-  uploadImage,
 } from './api';
 import { fetchCurrentUser } from '../authentication/api';
 import { nonce as nonceApi } from '../authentication/api';
@@ -32,6 +31,7 @@ import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { chat } from '../../lib/chat';
+import { getProvider as getIndexedDbProvider } from '../../lib/storage/idb';
 import { receive as receiveUser } from '../users';
 
 export function* validateInvite(action) {
@@ -142,6 +142,11 @@ export function validateAccountInfo({ email, password }) {
   return validationErrors;
 }
 
+export function* cacheProfileImage(image) {
+  const provider = yield call(getIndexedDbProvider);
+  yield call([provider, provider.put], 'profileImage', image);
+}
+
 export function* updateProfile(action) {
   const { name, image } = action.payload;
   yield put(setLoading(true));
@@ -151,19 +156,14 @@ export function* updateProfile(action) {
       return false;
     }
 
-    let profileImage = '';
+    // we cache the image for now, as we need to upload it to the homeserver later
+    // (when the matrix client is initialized)
     if (image) {
-      try {
-        const uploadResult = yield call(uploadImage, image);
-        profileImage = uploadResult.url;
-      } catch (error) {
-        yield put(setErrors([ProfileDetailsErrors.FILE_UPLOAD_ERROR]));
-        return false;
-      }
+      yield call(cacheProfileImage, image);
     }
 
     const { userId, inviteCode } = yield select((state) => state.registration);
-    const response = yield call(apiCompleteAccount, { userId, name, inviteCode, profileImage });
+    const response = yield call(apiCompleteAccount, { userId, name, inviteCode, profileImage: '' });
     if (response.success) {
       yield put(setFirstTimeLogin(true));
       yield call(completeUserLogin);

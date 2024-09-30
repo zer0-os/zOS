@@ -4,6 +4,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   addEmailAccount,
   authorizeAndCreateWeb3Account,
+  cacheProfileImage,
   clearRegistrationStateOnLogout,
   createAccount,
   createWelcomeConversation,
@@ -17,7 +18,6 @@ import {
   createWeb3Account as apiCreateWeb3Account,
   completeAccount as apiCompleteAccount,
   addEmailAccount as apiAddEmailAccount,
-  uploadImage,
 } from './api';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { call, spawn } from 'redux-saga/effects';
@@ -322,7 +322,7 @@ describe('updateProfile', () => {
     expect(returnValue).toEqual(true);
   });
 
-  it('updates the users profile image', async () => {
+  it('caches the users profile image', async () => {
     const name = 'john';
     const image = { some: 'file' };
     const {
@@ -331,11 +331,11 @@ describe('updateProfile', () => {
     } = await expectSaga(updateProfile, { payload: { name, image } })
       .provide([
         [
-          matchers.call.fn(uploadImage),
-          { url: 'image-url' },
+          matchers.call.fn(cacheProfileImage),
+          {},
         ],
         [
-          call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: 'image-url' }),
+          call(apiCompleteAccount, { userId: 'abc', name, inviteCode: 'INV123', profileImage: '' }),
           {
             success: true,
             response: {
@@ -364,36 +364,11 @@ describe('updateProfile', () => {
         rootReducer,
         initialState({ userId: 'abc', inviteCode: 'INV123', stage: RegistrationStage.ProfileDetails })
       )
-      .call(uploadImage, image)
+      .call(cacheProfileImage, image)
       .run();
 
     expect(registration.stage).toEqual(RegistrationStage.Done);
     expect(returnValue).toEqual(true);
-  });
-
-  it('sets error state if uploading the image fails', async () => {
-    const name = 'john';
-    const image = { some: 'file' };
-
-    const {
-      returnValue,
-      storeState: { registration },
-    } = await expectSaga(updateProfile, { payload: { name, image } })
-      .provide([
-        [
-          matchers.call.fn(uploadImage),
-          throwError(new Error('Stub image upload error')),
-        ],
-      ])
-      .withReducer(
-        rootReducer,
-        initialState({ userId: 'abc', inviteCode: 'INV123', stage: RegistrationStage.ProfileDetails })
-      )
-      .run();
-
-    expect(registration.stage).toEqual(RegistrationStage.ProfileDetails);
-    expect(registration.errors).toEqual([ProfileDetailsErrors.FILE_UPLOAD_ERROR]);
-    expect(returnValue).toEqual(false);
   });
 
   it('sets error state if updating the profile fails', async () => {

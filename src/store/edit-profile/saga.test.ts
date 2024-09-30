@@ -1,6 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs } from './saga';
+import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs, getLocalUrl } from './saga';
 import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
 import { uploadFile } from '../../lib/chat';
 
@@ -32,8 +32,9 @@ describe('editProfile', () => {
           call(apiEditUserProfile, { name, profileImage, primaryZID }),
           { success: true },
         ],
+        [call(getLocalUrl, image), 'local-image-url'],
       ])
-      .call(updateUserProfile, { name, profileImage, primaryZID })
+      .call(updateUserProfile, { name, profileImage: 'local-image-url', primaryZID })
       .withReducer(
         rootReducer,
         initialState(
@@ -44,7 +45,7 @@ describe('editProfile', () => {
       .run();
 
     expect(authentication.user.data.profileSummary.firstName).toEqual('John Doe');
-    expect(authentication.user.data.profileSummary.profileImage).toEqual('profile-image-url');
+    expect(authentication.user.data.profileSummary.profileImage).toEqual('local-image-url');
     expect(authentication.user.data.primaryZID).toEqual('primary-zid');
     expect(editProfile.state).toEqual(State.SUCCESS);
     expect(editProfile.errors).toEqual([]);

@@ -21,6 +21,7 @@ export interface PostProps {
   ownerUserId?: string;
   userMeowBalance?: string;
   reactions?: { [key: string]: number };
+  transferError?: string;
 
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   transferMeow: (postOwnerId, postMessageId, meowAmount) => void;
@@ -40,6 +41,7 @@ export const Post = ({
   reactions,
   loadAttachmentDetails,
   transferMeow,
+  transferError,
 }: PostProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -165,6 +167,7 @@ export const Post = ({
               ownerUserId={ownerUserId}
               transferMeow={transferMeow}
               messageId={messageId}
+              transferError={transferError}
             />
           )
         }

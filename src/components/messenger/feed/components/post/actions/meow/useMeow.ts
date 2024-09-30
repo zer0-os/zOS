@@ -1,37 +1,44 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSpring } from 'framer-motion';
 import { CONFIG, getScale } from './lib';
 
-export const useMeowAction = () => {
+export const useMeowAction = (meows, transferError) => {
   const intervalRef = useRef(null);
   const scale = useSpring(1, { stiffness: 300, damping: 7 });
 
-  const [amount, setAmount] = useState<number | null>(null);
-  const [isActive, setIsActive] = useState(false);
-  const [userAmount, setUserAmount] = useState<number>(0);
+  const [incrementalAmount, setIncrementalAmount] = useState<number | null>(null);
+  const [displayTotal, setDisplayTotal] = useState<number>(meows);
+  const [originalAmount, setOriginalAmount] = useState<number>(meows);
+
+  useEffect(() => {
+    if (transferError) {
+      resetTotalAmount();
+    }
+  }, [transferError]);
 
   /**
    * Starts the MEOW action
    * Creates a timer which increments the amount at a set interval
    * Stops when the amount reaches the maximum
-   * Also stops when cancel is called
    */
   const start = () => {
-    setIsActive(true);
+    setOriginalAmount(displayTotal);
 
-    if (amount === null) {
-      setAmount(CONFIG.increments);
+    if (incrementalAmount === null) {
+      setIncrementalAmount(CONFIG.increments);
+      setDisplayTotal((prev) => prev + CONFIG.increments);
       scale.set(getScale(CONFIG.increments, CONFIG.increments, CONFIG.max));
     }
 
     intervalRef.current = setInterval(() => {
-      setAmount((prevAmount) => {
+      setIncrementalAmount((prevAmount) => {
         const newAmount = (prevAmount ?? 0) + CONFIG.increments;
 
         if (newAmount > CONFIG.max) {
           return prevAmount;
         }
 
+        setDisplayTotal((prev) => prev + CONFIG.increments);
         scale.set(getScale(newAmount, CONFIG.increments, CONFIG.max));
         return newAmount;
       });
@@ -42,33 +49,25 @@ export const useMeowAction = () => {
    * Successfully trigger MEOW
    */
   const stop = () => {
-    // Send data to matrix, then reset
-    setUserAmount(amount);
     resetValues();
   };
 
-  /**
-   * Cancel the MEOW action
-   */
-  const cancel = () => {
-    resetValues();
+  const resetTotalAmount = () => {
+    setDisplayTotal(originalAmount);
   };
 
   const resetValues = () => {
-    setIsActive(false);
     intervalRef.current && clearInterval(intervalRef.current);
-    setAmount(null);
+    setIncrementalAmount(null);
     scale.set(1);
   };
 
   return {
-    amount,
-    backgroundOpacity: (1 / CONFIG.max) * amount,
-    cancel,
-    isActive,
+    incrementalAmount,
+    backgroundOpacity: (1 / CONFIG.max) * incrementalAmount,
     scale,
     start,
     stop,
-    userAmount,
+    displayTotal,
   };
 };

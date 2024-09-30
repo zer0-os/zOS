@@ -11,16 +11,27 @@ export interface MeowActionProps {
   isDisabled?: boolean;
   ownerUserId: string;
   messageId: string;
+  transferError?: string;
 
   transferMeow: (postOwnerId, postMessageId, meowAmount) => void;
 }
 
-export const MeowAction = ({ meows = 0, isDisabled, transferMeow, ownerUserId, messageId }: MeowActionProps) => {
-  const { amount, backgroundOpacity, cancel, isActive, scale, start, stop } = useMeowAction();
+export const MeowAction = ({
+  meows = 0,
+  isDisabled,
+  transferMeow,
+  ownerUserId,
+  messageId,
+  transferError,
+}: MeowActionProps) => {
+  const { incrementalAmount, backgroundOpacity, scale, start, stop, displayTotal } = useMeowAction(
+    meows,
+    transferError
+  );
 
   const handleStop = () => {
-    if (amount) {
-      transferMeow(ownerUserId, messageId, amount.toString());
+    if (incrementalAmount) {
+      transferMeow(ownerUserId, messageId, incrementalAmount.toString());
     }
     stop();
   };
@@ -32,12 +43,12 @@ export const MeowAction = ({ meows = 0, isDisabled, transferMeow, ownerUserId, m
       }}
       onTapStart={start}
       onTap={handleStop}
-      onTapCancel={cancel}
+      onTapCancel={stop}
       className={`${styles.Container} ${isDisabled && styles.Disabled}`}
     >
       <Action>
         <AnimatePresence>
-          {amount && (
+          {incrementalAmount && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: backgroundOpacity }}
@@ -47,19 +58,7 @@ export const MeowAction = ({ meows = 0, isDisabled, transferMeow, ownerUserId, m
           )}
         </AnimatePresence>
         <MeowIcon />
-        <span>{meows}</span>
-        <AnimatePresence>
-          {amount && isActive && (
-            <motion.b
-              initial={{ opacity: 0, y: '100%', width: 0 }}
-              animate={{ opacity: 1, y: 0, width: 'auto' }}
-              exit={{ opacity: 0, y: '-200%', width: 0 }}
-              className={styles.Amount}
-            >
-              +{amount}
-            </motion.b>
-          )}
-        </AnimatePresence>
+        <span>{displayTotal}</span>
       </Action>
     </motion.div>
   );

@@ -18,6 +18,7 @@ export interface Properties {
   hasLoadedMessages: boolean;
   messagesFetchStatus: MessagesFetchState;
   userMeowBalance: string;
+  transferError?: string;
 
   fetchPosts: (payload: PayloadFetchPosts) => void;
   onFetchMore: () => void;
@@ -74,6 +75,7 @@ export class FeedView extends React.Component<Properties> {
                   loadAttachmentDetails={this.props.loadAttachmentDetails}
                   transferMeow={this.props.transferMeow}
                   userMeowBalance={this.props.userMeowBalance}
+                  transferError={this.props.transferError}
                 />
 
                 {this.props.messagesFetchStatus === MessagesFetchState.SUCCESS && this.state.shouldRenderWaypoint && (

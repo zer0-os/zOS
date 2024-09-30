@@ -2,7 +2,14 @@ import { Post } from '../post';
 
 import styles from './styles.module.scss';
 
-export const Posts = ({ postMessages, loadAttachmentDetails, transferMeow, userMeowBalance, currentUserId }) => {
+export const Posts = ({
+  postMessages,
+  loadAttachmentDetails,
+  transferMeow,
+  userMeowBalance,
+  currentUserId,
+  transferError,
+}) => {
   return (
     <ol className={styles.Posts}>
       {postMessages.map((post) => (
@@ -21,6 +28,7 @@ export const Posts = ({ postMessages, loadAttachmentDetails, transferMeow, userM
             transferMeow={transferMeow}
             userMeowBalance={userMeowBalance}
             reactions={post.reactions}
+            transferError={transferError}
           />
         </li>
       ))}

@@ -130,6 +130,7 @@ interface FileResult {
   url: string;
 }
 
+// this is used to upload images to cloudinary
 export async function uploadImage(file: File): Promise<FileResult> {
   const response = await get<ImageApiUploadResponse>('/upload/info');
   const uploadInfo = response.body;

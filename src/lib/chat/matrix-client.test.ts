@@ -1192,6 +1192,60 @@ describe('matrix client', () => {
     });
   });
 
+  describe('uploadFile', () => {
+    it('uploads a file successfully', async () => {
+      const file: any = { name: 'some-file', type: 'text/plain' };
+
+      const uploadContent = jest.fn(() =>
+        Promise.resolve({
+          content_uri: 'mxc://content-url',
+        })
+      );
+      const mxcUrlToHttp = jest.fn(() => 'http://example.com/content-url');
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ uploadContent, mxcUrlToHttp })) });
+
+      await client.connect(null, 'token');
+      const result = await client.uploadFile(file);
+
+      expect(uploadContent).toHaveBeenCalledWith(file, {
+        name: file.name,
+        type: file.type,
+        includeFilename: false,
+      });
+      expect(mxcUrlToHttp).toHaveBeenCalledWith(
+        'mxc://content-url',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true,
+        true
+      );
+      expect(result).toBe('http://example.com/content-url');
+    });
+  });
+
+  describe('downloadFile', () => {
+    it('returns null if the fileUrl is null', async () => {
+      const fileUrl = null;
+      const client = subject({ createClient: jest.fn(() => getSdkClient({})) });
+      await client.connect(null, 'token');
+      const result = await client.downloadFile(fileUrl);
+
+      expect(result).toBeNull();
+    });
+
+    it('returns the file url if it is not uploaded the homeserver', async () => {
+      const fileUrl = 'http://aws-s3-bucket-1.com/file.txt';
+      const client = subject({ createClient: jest.fn(() => getSdkClient({})) });
+      await client.connect(null, 'token');
+      const result = await client.downloadFile(fileUrl);
+
+      expect(result).toBe(fileUrl);
+    });
+  });
+
   describe('setReadReceiptPreference', () => {
     it('sets read receipt preference successfully', async () => {
       const setAccountData = jest.fn().mockResolvedValue(undefined);

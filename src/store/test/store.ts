@@ -9,6 +9,7 @@ import { initialState as authenticationInitialState } from '../authentication';
 import { MatrixState, initialState as initialMatrixState } from '../matrix';
 import { AccountManagementState, initialState as initialAccountManagementState } from '../account-management';
 import { initialState as initialLoginState } from '../login';
+import { RegistrationState, initialState as initialRegistrationState } from '../registration';
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -27,6 +28,7 @@ export class StoreBuilder {
   activeConversationId: string = '';
   matrix: MatrixState = { ...initialMatrixState };
   accountManagement: AccountManagementState = { ...initialAccountManagementState };
+  registration: RegistrationState = { ...initialRegistrationState };
 
   withActiveConversation(conversation: Partial<Channel>) {
     this.activeConversation = conversation;
@@ -97,6 +99,11 @@ export class StoreBuilder {
     return this;
   }
 
+  withRegistration(data: Partial<RegistrationState>) {
+    this.registration = { ...initialRegistrationState, ...data };
+    return this;
+  }
+
   build() {
     const { result: channelsList, entities: channelEntitities } = normalizeChannel(
       [
@@ -133,6 +140,7 @@ export class StoreBuilder {
       matrix: {
         ...this.matrix,
       },
+      registration: this.registration,
       ...this.otherState,
     } as RootState;
   }

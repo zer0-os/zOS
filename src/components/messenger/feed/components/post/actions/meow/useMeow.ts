@@ -10,18 +10,14 @@ export const useMeowAction = (meows, transferError) => {
   const [displayTotal, setDisplayTotal] = useState<number>(meows);
   const [originalAmount, setOriginalAmount] = useState<number>(meows);
 
-  useEffect(() => {
-    if (transferError) {
-      resetTotalAmount();
-    }
-  }, [transferError]);
-
   /**
    * Starts the MEOW action
    * Creates a timer which increments the amount at a set interval
    * Stops when the amount reaches the maximum
    */
   const start = () => {
+    resetValues();
+
     setOriginalAmount(displayTotal);
 
     if (incrementalAmount === null) {
@@ -66,6 +62,12 @@ export const useMeowAction = (meows, transferError) => {
     setIncrementalAmount(null);
     scale.set(1);
   };
+
+  useEffect(() => {
+    if (transferError) {
+      resetTotalAmount();
+    }
+  }, [transferError, resetTotalAmount]);
 
   return {
     incrementalAmount,

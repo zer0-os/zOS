@@ -77,13 +77,18 @@ describe(receiveSearchResults, () => {
       user3,
     ])
       .withReducer(rootReducer)
+      .provide([
+        [call(downloadFile, 'image-url-1'), 'downloaded-image-url-1'],
+        [call(downloadFile, 'image-url-2'), 'downloaded-image-url-2'],
+        [call(downloadFile, 'image-url-3'), 'downloaded-image-url-3'],
+      ])
       .run();
 
     expect(denormalize(user1.id, storeState)).toEqual(
       expect.objectContaining({
         userId: user1.id,
         firstName: user1.name,
-        profileImage: user1.profileImage,
+        profileImage: 'downloaded-image-url-1',
         primaryZID: user1.primaryZID,
         displaySubHandle: 'zid-1',
       })
@@ -92,7 +97,7 @@ describe(receiveSearchResults, () => {
       expect.objectContaining({
         userId: user2.id,
         firstName: user2.name,
-        profileImage: user2.profileImage,
+        profileImage: 'downloaded-image-url-2',
         primaryZID: user2.primaryZID,
         displaySubHandle: '0x1234...6789',
       })
@@ -101,7 +106,7 @@ describe(receiveSearchResults, () => {
       expect.objectContaining({
         userId: user3.id,
         firstName: user3.name,
-        profileImage: user3.profileImage,
+        profileImage: 'downloaded-image-url-3',
         primaryZID: user3.primaryZID,
         displaySubHandle: '',
       })

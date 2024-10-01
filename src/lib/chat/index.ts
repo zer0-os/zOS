@@ -82,6 +82,7 @@ export interface IChatClient {
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
   uploadFile(file: File): Promise<string>;
   downloadFile(fileUrl: string): Promise<any>;
+  editProfile(avatarUrl: string): Promise<any>;
 }
 
 export class Chat {
@@ -383,4 +384,8 @@ export async function uploadFile(file: File): Promise<string> {
 
 export async function downloadFile(fileUrl: string) {
   return chat.get().matrix.downloadFile(fileUrl);
+}
+
+export async function editProfile(avatarUrl: string) {
+  return chat.get().matrix.editProfile(avatarUrl);
 }

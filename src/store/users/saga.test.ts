@@ -9,7 +9,7 @@ import { call } from 'redux-saga/effects';
 import { rootReducer } from '../reducer';
 import { denormalize } from '.';
 import { StoreBuilder } from '../test/store';
-import { downloadFile, uploadFile } from '../../lib/chat';
+import { downloadFile, uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
 import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
 
 const mockIdb = {
@@ -204,6 +204,7 @@ describe(updateUserProfileImageFromCache, () => {
     const file: any = { name: 'Some file', type: 'image/png' };
     mockIdb.put('profileImage', file);
 
+    console.error = jest.fn();
     const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser)
       .provide([
         [call(uploadFile, file), 'uploaded-image-url'],
@@ -212,6 +213,7 @@ describe(updateUserProfileImageFromCache, () => {
           { success: false },
         ],
       ])
+      .not.call(matrixEditProfile, 'uploaded-image-url')
       .run();
 
     expect(returnValue).toBeUndefined();
@@ -234,7 +236,12 @@ describe(updateUserProfileImageFromCache, () => {
           call(apiEditUserProfile, { name: 'Alice', primaryZID: '0://zid', profileImage: 'uploaded-image-url' }),
           { success: true },
         ],
+        [
+          call(matrixEditProfile, 'uploaded-image-url'),
+          undefined,
+        ],
       ])
+      .call(matrixEditProfile, 'uploaded-image-url')
       .run();
 
     expect(returnValue).toBe('uploaded-image-url');

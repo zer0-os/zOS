@@ -33,6 +33,12 @@ export function* receiveSearchResults(searchResults) {
         displaySubHandle: getUserSubHandle(r.primaryZID, r.primaryWalletAddress),
       };
     });
+
+  // fetch the profile images from the homeserver for new search result users
+  for (const user of mappedUsers) {
+    user.profileImage = yield call(downloadFile, user.profileImage);
+  }
+
   yield put(receive(mappedUsers));
 }
 

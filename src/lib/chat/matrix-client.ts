@@ -658,6 +658,11 @@ export class MatrixClient implements IChatClient {
     return URL.createObjectURL(blob);
   }
 
+  async editProfile(avatarUrl: string) {
+    await this.waitForConnection();
+    await this.matrix.setProfileInfo('avatar_url', { avatar_url: avatarUrl });
+  }
+
   async sendMessagesByChannelId(
     channelId: string,
     message: string,

@@ -4,6 +4,7 @@ import {
   chat,
   setUserAsModerator as matrixSetUserAsModerator,
   removeUserAsModerator as matrixRemoveUserAsModerator,
+  uploadFile,
 } from '../../lib/chat';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalize as denormalizeUsers } from '../users';
@@ -27,7 +28,6 @@ import {
   MemberManagementAction,
 } from './index';
 import { EditConversationState } from './types';
-import { uploadImage } from '../registration/api';
 import { isSecondarySidekickOpenSelector } from './selectors';
 import { closeOverview as closeMessageInfo } from '../message-info/saga';
 
@@ -224,8 +224,7 @@ export function* editConversationNameAndIcon(action) {
     let imageUrl = '';
     if (image) {
       try {
-        const uploadResult = yield call(uploadImage, image);
-        imageUrl = uploadResult.url;
+        imageUrl = yield call(uploadFile, image);
       } catch (error) {
         yield put(setEditConversationImageError('Failed to upload image, please try again...'));
         return;

@@ -21,10 +21,9 @@ import {
 } from '.';
 import { expectSaga } from '../../test/saga';
 import { rootReducer } from '../reducer';
-import { chat, removeUserAsModerator, setUserAsModerator } from '../../lib/chat';
+import { chat, removeUserAsModerator, setUserAsModerator, uploadFile } from '../../lib/chat';
 import { denormalize as denormalizeUsers } from '../users';
 import { EditConversationState } from './types';
-import { uploadImage } from '../registration/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 
 describe('Group Management Saga', () => {
@@ -319,9 +318,9 @@ describe('Group Management Saga', () => {
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.editRoomNameAndIcon), {}],
-          [matchers.call.fn(uploadImage), { url: 'image-url' }],
+          [matchers.call.fn(uploadFile), 'image-url'],
         ])
-        .call(uploadImage, image)
+        .call(uploadFile, image)
         .call([chatClient, chatClient.editRoomNameAndIcon], roomId, name, 'image-url')
         .put(setEditConversationState(EditConversationState.SUCCESS))
         .put(setEditConversationImageError(''))
@@ -335,7 +334,7 @@ describe('Group Management Saga', () => {
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.editRoomNameAndIcon), {}],
-          [matchers.call.fn(uploadImage), throwError(new Error('Image upload failed'))],
+          [matchers.call.fn(uploadFile), throwError(new Error('Image upload failed'))],
         ])
         .put(setEditConversationImageError('Failed to upload image, please try again...'))
         .run();
@@ -347,7 +346,7 @@ describe('Group Management Saga', () => {
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [matchers.call.fn(chatClient.editRoomNameAndIcon), throwError(new Error('matrix API error'))],
-          [matchers.call.fn(uploadImage), { url: 'image-url' }],
+          [matchers.call.fn(uploadFile), 'image-url'],
         ])
         .put(setEditConversationGeneralError('An unknown error has occurred'))
         .put(setEditConversationState(EditConversationState.LOADED))

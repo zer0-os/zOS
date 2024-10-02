@@ -108,7 +108,7 @@ export const initialState: GroupManagementState = {
     stage: MemberManagementDialogStage.CLOSED,
     error: '',
   },
-  isSecondarySidekickOpen: false,
+  isSecondarySidekickOpen: true,
 };
 
 const slice = createSlice({

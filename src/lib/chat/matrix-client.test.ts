@@ -10,11 +10,6 @@ import { DefaultRoomLabels } from '../../store/channels';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
-const mockUploadImage = jest.fn();
-jest.mock('../../store/channels-list/api', () => {
-  return { uploadImage: (...args) => mockUploadImage(...args) };
-});
-
 const mockEncryptFile = jest.fn();
 const mockGetImageDimensions = jest.fn();
 jest.mock('./matrix/media', () => {
@@ -436,8 +431,9 @@ describe('matrix client', () => {
 
     it('uploads the image', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
-      when(mockUploadImage).calledWith(expect.anything()).mockResolvedValue({ url: 'upload-url' });
-      const client = await subject({ createRoom });
+      const uploadContent = jest.fn().mockResolvedValue({ content_uri: 'upload-url' });
+      const mxcUrlToHttp = jest.fn().mockReturnValue('upload-url');
+      const client = await subject({ createRoom, uploadContent, mxcUrlToHttp });
 
       await client.createConversation(
         [{ userId: 'id', matrixId: '@somebody.else' }],
@@ -574,8 +570,10 @@ describe('matrix client', () => {
 
     it('uploads the image', async () => {
       const createRoom = jest.fn().mockResolvedValue({ room_id: 'new-room-id' });
-      when(mockUploadImage).calledWith(expect.anything()).mockResolvedValue({ url: 'upload-url' });
-      const client = await subject({ createRoom });
+      const uploadContent = jest.fn().mockResolvedValue({ content_uri: 'upload-url' });
+      const mxcUrlToHttp = jest.fn().mockReturnValue('upload-url');
+
+      const client = await subject({ createRoom, uploadContent, mxcUrlToHttp });
 
       await client.createUnencryptedConversation(
         [{ userId: 'id', matrixId: '@somebody.else' }],

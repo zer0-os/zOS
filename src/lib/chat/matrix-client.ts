@@ -45,7 +45,6 @@ import {
   ReadReceiptPreferenceType,
 } from './matrix/types';
 import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
-import { uploadImage } from '../../store/channels-list/api';
 import { SessionStorage } from './session-storage';
 import { encryptFile, getImageDimensions } from './matrix/media';
 import { uploadAttachment } from '../../store/messages/api';
@@ -116,7 +115,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
 
     const room = this.matrix.getRoom(roomId);
-    return this.getRoomAvatar(room);
+    return await this.getRoomAvatar(room);
   }
 
   async getRoomGroupTypeById(roomId: string) {
@@ -1375,7 +1374,7 @@ export class MatrixClient implements IChatClient {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
-    const avatarUrl = this.getRoomAvatar(room);
+    const avatarUrl = await this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
     const groupType = this.getRoomGroupType(room);
 
@@ -1440,9 +1439,13 @@ export class MatrixClient implements IChatClient {
     return roomNameEvent?.getContent()?.name || '';
   }
 
-  private getRoomAvatar(room: Room): string {
+  private async getRoomAvatar(room: Room): Promise<string> {
     const roomAvatarEvent = this.getLatestEvent(room, EventType.RoomAvatar);
-    return roomAvatarEvent?.getContent()?.url || '';
+    const url = roomAvatarEvent?.getContent()?.url;
+    if (url) {
+      return await this.downloadFile(url);
+    }
+    return '';
   }
 
   private getRoomCreatedAt(room: Room): number {
@@ -1509,7 +1512,7 @@ export class MatrixClient implements IChatClient {
   private async uploadCoverImage(image) {
     if (image) {
       try {
-        return (await uploadImage(image)).url;
+        return await this.uploadFile(image);
       } catch (error) {
         // For now, we will just ignore the error and continue to create the room
         // No reason for the image upload to block the room creation

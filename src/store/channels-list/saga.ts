@@ -377,7 +377,12 @@ export function* roomNameChanged(id: string, name: string) {
 }
 
 export function* roomAvatarChanged(id: string, url: string) {
-  yield call(receiveChannel, { id, icon: url });
+  if (!url) {
+    return;
+  }
+
+  const localImageUrl = yield call(downloadFile, url);
+  yield call(receiveChannel, { id, icon: localImageUrl });
 }
 
 export function* roomGroupTypeChanged(id: string, type: string) {

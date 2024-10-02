@@ -127,6 +127,10 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     overflow: hidden;
     width: 100%;
 
+    @media (min-width: 2561px) {
+      min-width: 1558px;
+    }
+
     .direct-message-chat__content {
       height: 100vh;
       width: unset;

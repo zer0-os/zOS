@@ -5,15 +5,12 @@
 
   padding: 16px;
   border-radius: 8px;
-  @include flat-thin;
   backdrop-filter: blur(32px);
 
   width: fit-content;
 
   position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  display: flex;
 
   &__content {
     display: flex;

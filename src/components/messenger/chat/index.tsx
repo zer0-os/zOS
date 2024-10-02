@@ -15,7 +15,6 @@ import {
   toggleSecondarySidekick,
 } from '../../../store/group-management';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
-import { JoiningConversationDialog } from '../../joining-conversation-dialog';
 import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
@@ -190,7 +189,6 @@ export class Container extends React.Component<Properties> {
           </div>
 
           {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
-          {this.props.isJoiningConversation && <JoiningConversationDialog />}
         </div>
       </div>
     );

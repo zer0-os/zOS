@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { GroupManagementMenu } from '../../group-management-menu';
 import { IconButton } from '@zero-tech/zui/components/IconButton';
-import { IconChevronRight } from '@zero-tech/zui/icons';
+import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
 import { bemClassName } from '../../../lib/bem';
@@ -75,7 +75,7 @@ export class ConversationActions extends React.Component<Properties> {
         />
         <IconButton
           {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
-          Icon={IconChevronRight}
+          Icon={this.props.isSecondarySidekickOpen ? IconChevronRight : IconChevronLeft}
           size={32}
           onClick={this.toggleSidekick}
           isFilled

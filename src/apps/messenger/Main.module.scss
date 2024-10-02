@@ -1,14 +1,6 @@
 .Split {
   position: relative;
   display: flex;
+  justify-content: center;
   width: 100%;
-  gap: 18px;
-}
-
-.Actions {
-  right: 7px;
-  pointer-events: all !important;
-  position: absolute;
-  top: 7px;
-  z-index: 1000;
 }

@@ -8,10 +8,10 @@ import { MessengerChat } from '../../components/messenger/chat';
 import { MessengerFeed } from '../../components/messenger/feed';
 import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
+import { denormalize } from '../../store/channels';
+import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
 
 import styles from './Main.module.scss';
-import { denormalize } from '../../store/channels';
-import { ConversationActionsContainer as ConversationActions } from '../../components/messenger/conversation-actions/container';
 
 export interface Properties {
   context: {
@@ -20,12 +20,13 @@ export interface Properties {
   isValidConversation: boolean;
   isSocialChannel: boolean;
   isJoiningConversation: boolean;
+  isConversationsLoaded: boolean;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      chat: { activeConversationId, isJoiningConversation },
+      chat: { activeConversationId, isJoiningConversation, isConversationsLoaded },
     } = state;
 
     const currentChannel = denormalize(activeConversationId, state) || null;
@@ -34,6 +35,7 @@ export class Container extends React.Component<Properties> {
       isValidConversation: !!activeConversationId,
       isSocialChannel: currentChannel?.isSocialChannel,
       isJoiningConversation,
+      isConversationsLoaded,
     };
   }
 
@@ -47,17 +49,13 @@ export class Container extends React.Component<Properties> {
         {this.props.context.isAuthenticated && (
           <>
             <Sidekick />
-
             <div className={styles.Split}>
-              <ConversationActions className={styles.Actions} />
+              {this.props.isJoiningConversation && <JoiningConversationDialog />}
 
-              {this.props.isSocialChannel && !this.props.isJoiningConversation && this.props.isValidConversation && (
-                <FeatureFlag featureFlag='enableChannels'>
-                  <MessengerFeed />
-                </FeatureFlag>
+              {this.props.isConversationsLoaded && this.props.isSocialChannel && this.props.isValidConversation && (
+                <MessengerFeed />
               )}
-
-              <MessengerChat />
+              {this.props.isConversationsLoaded && !this.props.isSocialChannel && <MessengerChat />}
             </div>
             <Sidekick variant='secondary' />
 

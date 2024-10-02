@@ -636,7 +636,7 @@ export class MatrixClient implements IChatClient {
   // if the file is uploaded to the homerserver, then we need bearer token to download it
   // since the endpoint to download the file is protected
   async downloadFile(fileUrl: string) {
-    if (!fileUrl || !fileUrl.includes('_matrix/client/v1/media')) {
+    if (typeof fileUrl !== 'string' || !fileUrl || !fileUrl.includes('_matrix/client/v1/media')) {
       return fileUrl;
     }
 

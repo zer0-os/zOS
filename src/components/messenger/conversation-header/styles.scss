@@ -1,0 +1,9 @@
+.conversation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &__actions-container {
+    margin-right: 8px;
+  }
+}

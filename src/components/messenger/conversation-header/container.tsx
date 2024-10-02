@@ -4,6 +4,12 @@ import { connectContainer } from '../../../store/redux-container';
 import { Channel, denormalize } from '../../../store/channels';
 import { toggleSecondarySidekick } from '../../../store/group-management';
 import { ConversationHeader } from '.';
+import { ConversationActionsContainer as ConversationActions } from '../conversation-actions/container';
+
+import { bemClassName } from '../../../lib/bem';
+import './styles.scss';
+
+const cn = bemClassName('conversation-header');
 
 export interface PublicProperties {
   className?: string;
@@ -54,14 +60,19 @@ export class Container extends React.Component<Properties> {
     }
 
     return (
-      <ConversationHeader
-        className={this.props.className}
-        icon={this.props.directMessage.icon}
-        name={this.props.directMessage.name}
-        isOneOnOne={this.isOneOnOne()}
-        otherMembers={this.props.directMessage.otherMembers || []}
-        toggleSecondarySidekick={this.props.toggleSecondarySidekick}
-      />
+      <div {...cn('')}>
+        <ConversationHeader
+          className={this.props.className}
+          icon={this.props.directMessage.icon}
+          name={this.props.directMessage.name}
+          isOneOnOne={this.isOneOnOne()}
+          otherMembers={this.props.directMessage.otherMembers || []}
+          toggleSecondarySidekick={this.props.toggleSecondarySidekick}
+        />
+        <div {...cn('actions-container')}>
+          <ConversationActions />
+        </div>
+      </div>
     );
   }
 }

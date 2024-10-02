@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 504px;
+  max-width: 580px;
   box-sizing: border-box;
   pointer-events: auto;
   position: relative;
@@ -12,7 +12,8 @@
     top: 0px;
     box-sizing: border-box;
     z-index: 3;
-    width: 99.2%;
+    width: 100%;
+    max-width: 576px;
     border-inline: 1px solid rgba(52, 56, 60);
     border-bottom: 1px solid rgba(52, 56, 60);
     padding-right: 2px;
@@ -25,6 +26,7 @@
   &__header {
     pointer-events: all !important;
     backdrop-filter: blur(64px);
+    margin-right: 4px;
   }
 
   @media (min-width: 2561px) {

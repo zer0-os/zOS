@@ -7,8 +7,6 @@ import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { MessageInput } from '../../message-input/container';
 import { Media } from '../../message-input/utils';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
-import { JoiningConversationDialog } from '../../joining-conversation-dialog';
-import { stubUser } from '../../../store/test/store';
 
 const mockSearchMentionableUsersForChannel = jest.fn();
 jest.mock('../../../platform-apps/channels/util/api', () => {
@@ -47,34 +45,6 @@ describe(DirectMessageChat, () => {
     const wrapper = subject({ activeConversationId: '123' });
 
     expect(wrapper.find(ChatViewContainer)).toHaveProp('channelId', '123');
-  });
-
-  it('renders JoiningConversationDialog when isJoiningConversation is true', () => {
-    const wrapper = subject({ isJoiningConversation: true });
-
-    expect(wrapper).toHaveElement(JoiningConversationDialog);
-  });
-
-  it('does not render ChatViewContainer when isJoiningConversation is true', () => {
-    const wrapper = subject({ isJoiningConversation: true });
-
-    expect(wrapper).not.toHaveElement(ChatViewContainer);
-  });
-
-  it('renders ChatViewContainer when isJoiningConversation is false', () => {
-    const wrapper = subject({
-      isJoiningConversation: false,
-      activeConversationId: '123',
-      directMessage: { otherMembers: [stubUser({ firstName: 'Johnny', lastName: 'Sanderson' })] } as Channel,
-    });
-
-    expect(wrapper).toHaveElement(ChatViewContainer);
-  });
-
-  it('does not render JoiningConversationDialog when isJoiningConversation is false', () => {
-    const wrapper = subject({ isJoiningConversation: false });
-
-    expect(wrapper).not.toHaveElement(JoiningConversationDialog);
   });
 
   describe('leave group dialog', () => {

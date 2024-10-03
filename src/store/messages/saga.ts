@@ -183,6 +183,7 @@ export function* fetch(action) {
       }
     }
   } catch (error) {
+    console.log('Error fetching messages', error);
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
   }
 }

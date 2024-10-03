@@ -994,6 +994,8 @@ describe('matrix client', () => {
             rootMessageId: 'root-message-id',
             width: 800,
             height: 600,
+            w: 800,
+            h: 600,
           },
           optimisticId: 'optimistic-id',
         })
@@ -1066,6 +1068,8 @@ describe('matrix client', () => {
             rootMessageId: 'root-message-id',
             width: 800,
             height: 600,
+            w: 800,
+            h: 600,
           },
           optimisticId: 'optimistic-id',
         })

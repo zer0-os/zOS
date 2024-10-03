@@ -74,6 +74,18 @@ describe('FeedView', () => {
     expect(wrapper).not.toHaveElement(Spinner);
   });
 
+  it('renders a spinner when messagesFetchStatus is equal to MORE_IN_PROGRESS', () => {
+    const wrapper = subject({
+      postMessages: POST_MESSAGES_TEST,
+      messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS,
+    });
+
+    expect(wrapper).toHaveElement(Spinner);
+
+    wrapper.setProps({ messagesFetchStatus: MessagesFetchState.SUCCESS });
+    expect(wrapper).not.toHaveElement(Spinner);
+  });
+
   it('renders a message component with children', () => {
     const wrapper = shallow(<Message>Test Message</Message>);
 

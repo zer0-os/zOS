@@ -1640,4 +1640,57 @@ describe('matrix client', () => {
       expect(reactions).toEqual([]);
     });
   });
+
+  it('filters out invalid reaction events', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const mockGetRoom = jest.fn().mockReturnValue({
+      getLiveTimeline: jest.fn().mockReturnValue({
+        getEvents: jest.fn().mockReturnValue([
+          {
+            getType: () => MatrixConstants.REACTION,
+            getContent: () => ({
+              // Missing the required RELATES_TO properties
+            }),
+          },
+          {
+            getType: () => MatrixConstants.REACTION,
+            getContent: () => ({
+              [MatrixConstants.RELATES_TO]: {
+                key: ReactionKeys.MEOW, // Missing event_id
+              },
+              amount: 5,
+            }),
+          },
+          {
+            getType: () => MatrixConstants.REACTION,
+            getContent: () => ({
+              [MatrixConstants.RELATES_TO]: {
+                event_id: 'message-2',
+                key: ReactionKeys.MEOW,
+              },
+              amount: 3,
+            }),
+          },
+        ]),
+      }),
+    });
+
+    const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom: mockGetRoom })) });
+
+    await client.connect(null, 'token');
+    const reactions = await client.getPostMessageReactions('room-id');
+
+    expect(mockGetRoom).toHaveBeenCalledWith('room-id');
+    expect(reactions).toEqual([
+      {
+        eventId: 'message-2',
+        key: ReactionKeys.MEOW,
+        amount: 3,
+      },
+    ]);
+
+    // Restore console.warn after the test
+    consoleWarnSpy.mockRestore();
+  });
 });

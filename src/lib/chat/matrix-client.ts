@@ -622,6 +622,10 @@ export class MatrixClient implements IChatClient {
     });
   }
 
+  mxcUrlToHttp(mxcUrl: string): string {
+    return this.matrix.mxcUrlToHttp(mxcUrl, undefined, undefined, undefined, undefined, true, true);
+  }
+
   async uploadFile(file: File): Promise<string> {
     await this.waitForConnection();
 
@@ -631,9 +635,7 @@ export class MatrixClient implements IChatClient {
       includeFilename: false,
     });
 
-    const contentURI = response.content_uri;
-    const httpUrl = this.matrix.mxcUrlToHttp(contentURI, undefined, undefined, undefined, undefined, true, true);
-    return httpUrl;
+    return response.content_uri;
   }
 
   // if the file is uploaded to the homeserver, then we need bearer token to download it
@@ -645,7 +647,7 @@ export class MatrixClient implements IChatClient {
 
     await this.waitForConnection();
 
-    const response = await fetch(fileUrl, {
+    const response = await fetch(this.mxcUrlToHttp(fileUrl), {
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
       },
@@ -743,7 +745,7 @@ export class MatrixClient implements IChatClient {
     }
 
     const content = {
-      body: isEncrypted ? null : '',
+      body: '',
       msgtype: MsgType.Image,
       file,
       info: {

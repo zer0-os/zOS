@@ -1038,10 +1038,9 @@ describe('matrix client', () => {
       );
 
       const uploadContent = jest.fn().mockResolvedValue({ content_uri: 'upload-url' });
-      const mxcUrlToHttp = jest.fn().mockReturnValue('upload-url');
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage, uploadContent, mxcUrlToHttp })),
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage, uploadContent })),
       });
 
       await client.connect(null, 'token');
@@ -1050,7 +1049,7 @@ describe('matrix client', () => {
       expect(sendMessage).toBeCalledWith(
         roomId,
         expect.objectContaining({
-          body: null,
+          body: '',
           msgtype: 'm.image',
           file: {
             url: 'upload-url',
@@ -1188,9 +1187,8 @@ describe('matrix client', () => {
           content_uri: 'mxc://content-url',
         })
       );
-      const mxcUrlToHttp = jest.fn(() => 'http://example.com/content-url');
 
-      const client = subject({ createClient: jest.fn(() => getSdkClient({ uploadContent, mxcUrlToHttp })) });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ uploadContent })) });
 
       await client.connect(null, 'token');
       const result = await client.uploadFile(file);
@@ -1200,16 +1198,8 @@ describe('matrix client', () => {
         type: file.type,
         includeFilename: false,
       });
-      expect(mxcUrlToHttp).toHaveBeenCalledWith(
-        'mxc://content-url',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        true,
-        true
-      );
-      expect(result).toBe('http://example.com/content-url');
+
+      expect(result).toBe('mxc://content-url');
     });
   });
 

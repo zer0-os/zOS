@@ -83,6 +83,7 @@ export interface IChatClient {
   uploadFile(file: File): Promise<string>;
   downloadFile(fileUrl: string): Promise<any>;
   editProfile(avatarUrl: string): Promise<any>;
+  getAccessToken(): string | null;
 }
 
 export class Chat {
@@ -388,4 +389,8 @@ export async function downloadFile(fileUrl: string) {
 
 export async function editProfile(avatarUrl: string) {
   return chat.get().matrix.editProfile(avatarUrl);
+}
+
+export function getAccessToken(): string | null {
+  return chat.get().matrix.getAccessToken();
 }

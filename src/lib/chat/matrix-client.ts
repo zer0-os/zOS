@@ -46,8 +46,7 @@ import {
 } from './matrix/types';
 import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { SessionStorage } from './session-storage';
-import { encryptFile, getImageDimensions } from './matrix/media';
-import { uploadAttachment } from '../../store/messages/api';
+import { encryptFile, getImageDimensions, isFileUploadedToMatrix } from './matrix/media';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
 import { PostsResponse } from '../../store/posts';
@@ -80,6 +79,10 @@ export class MatrixClient implements IChatClient {
 
   supportsOptimisticCreateConversation() {
     return false;
+  }
+
+  getAccessToken(): string | null {
+    return this.matrix.getAccessToken();
   }
 
   async connect(userId: string, accessToken: string) {
@@ -633,10 +636,10 @@ export class MatrixClient implements IChatClient {
     return httpUrl;
   }
 
-  // if the file is uploaded to the homerserver, then we need bearer token to download it
+  // if the file is uploaded to the homeserver, then we need bearer token to download it
   // since the endpoint to download the file is protected
   async downloadFile(fileUrl: string) {
-    if (typeof fileUrl !== 'string' || !fileUrl || !fileUrl.includes('_matrix/client/v1/media')) {
+    if (!isFileUploadedToMatrix(fileUrl)) {
       return fileUrl;
     }
 
@@ -644,7 +647,7 @@ export class MatrixClient implements IChatClient {
 
     const response = await fetch(fileUrl, {
       headers: {
-        Authorization: `Bearer ${this.matrix.getAccessToken()}`,
+        Authorization: `Bearer ${this.getAccessToken()}`,
       },
     });
 
@@ -725,15 +728,15 @@ export class MatrixClient implements IChatClient {
     let file;
     if (isEncrypted) {
       const encryptedFileInfo = await encryptFile(media); // Call encryptFile if the room is encrypted
-      const uploadedFile = await uploadAttachment(encryptedFileInfo.file);
+      const uploadedFileUrl = await this.uploadFile(encryptedFileInfo.file);
       file = {
-        url: uploadedFile.key,
+        url: uploadedFileUrl,
         ...encryptedFileInfo.info,
       };
     } else {
-      const uploadedFile = await uploadAttachment(media); // Directly upload the file without encryption
+      const uploadedFileUrl = await this.uploadFile(media); // Directly upload the file without encryption
       file = {
-        url: uploadedFile.key,
+        url: uploadedFileUrl,
         mimetype: media.type,
         size: media.size,
       };

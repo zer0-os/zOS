@@ -13,15 +13,13 @@ jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefi
 const mockEncryptFile = jest.fn();
 const mockGetImageDimensions = jest.fn();
 jest.mock('./matrix/media', () => {
+  const originalModule = jest.requireActual('./matrix/media');
+
   return {
+    ...originalModule,
     encryptFile: (...args) => mockEncryptFile(...args),
     getImageDimensions: (...args) => mockGetImageDimensions(...args),
   };
-});
-
-const mockUploadAttachment = jest.fn();
-jest.mock('../../store/messages/api', () => {
-  return { uploadAttachment: (...args) => mockUploadAttachment(...args) };
 });
 
 const stubRoom = (attrs = {}) => ({
@@ -962,22 +960,17 @@ describe('matrix client', () => {
       const isRoomEncrypted = jest.fn(() => false);
 
       when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
-
-      when(mockUploadAttachment).calledWith(expect.anything()).mockResolvedValue({
-        name: 'test-file',
-        key: 'attachments/../test.jpg',
-        url: 'attachments/../test.jpg',
-        type: 'file',
-      });
-
       const sendMessage = jest.fn(() =>
         Promise.resolve({
           event_id: 'new-message-id',
         })
       );
 
+      const uploadContent = jest.fn().mockResolvedValue({ content_uri: 'upload-url' });
+      const mxcUrlToHttp = jest.fn().mockReturnValue('upload-url');
+
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage })),
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage, uploadContent, mxcUrlToHttp })),
       });
 
       await client.connect(null, 'token');
@@ -989,7 +982,7 @@ describe('matrix client', () => {
           body: '',
           msgtype: 'm.image',
           file: {
-            url: 'attachments/../test.jpg',
+            url: 'upload-url',
             mimetype: 'image/png',
             size: 1000,
           },
@@ -1038,21 +1031,17 @@ describe('matrix client', () => {
           },
         });
 
-      when(mockUploadAttachment).calledWith(expect.anything()).mockResolvedValue({
-        name: 'test-file',
-        key: 'attachments/../test.jpg',
-        url: 'attachments/../test.jpg',
-        type: 'file',
-      });
-
       const sendMessage = jest.fn(() =>
         Promise.resolve({
           event_id: 'new-message-id',
         })
       );
 
+      const uploadContent = jest.fn().mockResolvedValue({ content_uri: 'upload-url' });
+      const mxcUrlToHttp = jest.fn().mockReturnValue('upload-url');
+
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage })),
+        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage, uploadContent, mxcUrlToHttp })),
       });
 
       await client.connect(null, 'token');
@@ -1064,7 +1053,7 @@ describe('matrix client', () => {
           body: null,
           msgtype: 'm.image',
           file: {
-            url: 'attachments/../test.jpg',
+            url: 'upload-url',
             hashes: { sha256: 'wfewfe' },
             iv: 'XH0bn67qTPsAAAAAAAAAAA',
             key: {},

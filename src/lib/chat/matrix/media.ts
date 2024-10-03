@@ -1,5 +1,6 @@
 import encrypt from 'matrix-encrypt-attachment';
 import { getAttachmentUrl } from '../../api/attachment';
+import { getAccessToken } from '..';
 
 /**
  * Read the file as an ArrayBuffer.
@@ -64,16 +65,31 @@ export async function encryptFile(file: File): Promise<{ info: encrypt.IEncrypte
   };
 }
 
+export function isFileUploadedToMatrix(url: string): boolean {
+  if (!url) return false;
+
+  return url.includes('_matrix/client/v1/media');
+}
+
 // https://github.com/matrix-org/matrix-react-sdk/blob/develop/src/utils/DecryptFile.ts#L50
 export async function decryptFile(encryptedFile, mimetype): Promise<Blob> {
   // Determine if the file is encrypted by checking for encryption-related fields
   const isEncrypted = !!(encryptedFile.key && encryptedFile.iv && encryptedFile.hashes?.sha256);
 
-  // Get the signed URL for the file
-  const signedUrl = await getAttachmentUrl({ key: encryptedFile.url });
+  const url = encryptedFile.url;
+  let response;
 
-  // Download the file as an array buffer
-  const response = await fetch(signedUrl);
+  if (isFileUploadedToMatrix(url)) {
+    response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+  } else {
+    const signedUrl = await getAttachmentUrl({ key: encryptedFile.url });
+    response = await fetch(signedUrl);
+  }
+
   if (!response.ok) {
     throw new Error(`Error occurred while downloading file ${encryptedFile.url}: ${await response.text()}`);
   }

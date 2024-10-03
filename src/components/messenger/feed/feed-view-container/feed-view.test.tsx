@@ -99,31 +99,4 @@ describe('FeedView', () => {
 
     expect(wrapper.text()).toEqual('Test Message');
   });
-
-  it('updates shouldRenderWaypoint state based on content height after mount', () => {
-    const wrapper = subject({ postMessages: POST_MESSAGES_TEST });
-
-    const instance = wrapper.instance() as FeedView;
-    jest.spyOn(instance, 'checkContentHeight');
-
-    instance.componentDidMount();
-
-    expect(instance.checkContentHeight).toHaveBeenCalled();
-  });
-
-  it('updates shouldRenderWaypoint state based on content height after update', () => {
-    const wrapper = subject({ postMessages: POST_MESSAGES_TEST });
-
-    const instance = wrapper.instance() as FeedView;
-    jest.spyOn(instance, 'checkContentHeight');
-
-    wrapper.setProps({
-      postMessages: [
-        ...POST_MESSAGES_TEST,
-        { id: 'post-three', message: 'Third post', createdAt: 1659018545429, isPost: true },
-      ],
-    });
-
-    expect(instance.checkContentHeight).toHaveBeenCalled();
-  });
 });

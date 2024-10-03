@@ -75,7 +75,7 @@ export function* updateUserProfileImageFromCache(currentUser: User) {
 
 /*
   Fetch the current user's profile image url from the store, and then fetch the image from the homeserver.
-  This is because the profile image stored in the homerserver (mxc://) is authoritative, and we need the matrix-client
+  This is because the profile image stored in the homeserver (mxc://) is authoritative, and we need the matrix-client
   access token to fetch the image.
 
   Also handles the case where the user is logging in for the first time.

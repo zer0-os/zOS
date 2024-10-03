@@ -1,6 +1,6 @@
 import encrypt from 'matrix-encrypt-attachment';
 import { getAttachmentUrl } from '../../api/attachment';
-import { getAccessToken } from '..';
+import { getAccessToken, mxcUrlToHttp } from '..';
 
 /**
  * Read the file as an ArrayBuffer.
@@ -68,7 +68,7 @@ export async function encryptFile(file: File): Promise<{ info: encrypt.IEncrypte
 export function isFileUploadedToMatrix(url: string): boolean {
   if (!url || typeof url !== 'string') return false;
 
-  return url.includes('_matrix/client/v1/media');
+  return url.startsWith('mxc://');
 }
 
 // https://github.com/matrix-org/matrix-react-sdk/blob/develop/src/utils/DecryptFile.ts#L50
@@ -80,7 +80,7 @@ export async function decryptFile(encryptedFile, mimetype): Promise<Blob> {
   let response;
 
   if (isFileUploadedToMatrix(url)) {
-    response = await fetch(url, {
+    response = await fetch(mxcUrlToHttp(url), {
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
       },

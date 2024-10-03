@@ -84,6 +84,7 @@ export interface IChatClient {
   downloadFile(fileUrl: string): Promise<any>;
   editProfile(avatarUrl: string): Promise<any>;
   getAccessToken(): string | null;
+  mxcUrlToHttp(mxcUrl: string): string;
 }
 
 export class Chat {
@@ -393,4 +394,8 @@ export async function editProfile(avatarUrl: string) {
 
 export function getAccessToken(): string | null {
   return chat.get().matrix.getAccessToken();
+}
+
+export function mxcUrlToHttp(mxcUrl: string): string {
+  return chat.get().matrix.mxcUrlToHttp(mxcUrl);
 }

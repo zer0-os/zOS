@@ -497,12 +497,21 @@ export class MatrixClient implements IChatClient {
       .filter((event) => event.getType() === MatrixConstants.REACTION)
       .map((event) => {
         const content = event.getContent();
-        return {
-          eventId: content[MatrixConstants.RELATES_TO].event_id,
-          key: content[MatrixConstants.RELATES_TO].key,
-          amount: content.amount || 0,
-        };
-      });
+        const relatesTo = content[MatrixConstants.RELATES_TO];
+
+        if (relatesTo && relatesTo.event_id && relatesTo.key) {
+          return {
+            eventId: relatesTo.event_id,
+            key: relatesTo.key,
+            amount: content.amount || 0,
+          };
+        }
+
+        // If the structure is not as we expect, return null to filter it out
+        console.warn('Invalid reaction event structure:', event);
+        return null;
+      })
+      .filter((reaction) => reaction !== null);
 
     return result;
   }

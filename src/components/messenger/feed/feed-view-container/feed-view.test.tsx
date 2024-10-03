@@ -50,33 +50,13 @@ describe('FeedView', () => {
     expect(wrapper).toHaveElement(Spinner);
   });
 
-  it('renders a waypoint if posts are present and content exceeds viewport height', () => {
+  it('renders a waypoint if posts are present', () => {
     const onFetchMoreSpy = jest.fn();
     const wrapper = subject({ postMessages: POST_MESSAGES_TEST, onFetchMore: onFetchMoreSpy });
-
-    wrapper.setState({ shouldRenderWaypoint: true });
 
     const waypoint = wrapper.find(Waypoint);
     expect(waypoint.exists()).toBe(true);
     expect(waypoint.prop('onEnter')).toEqual(onFetchMoreSpy);
-  });
-
-  it('does not render a waypoint if content does not exceed viewport height', () => {
-    const wrapper = subject({ postMessages: POST_MESSAGES_TEST });
-
-    wrapper.setState({ shouldRenderWaypoint: false });
-
-    expect(wrapper.find(Waypoint).exists()).toBe(false);
-  });
-
-  it('renders a waypoint if posts are present and content height changes after update', () => {
-    const onFetchMoreSpy = jest.fn();
-    const wrapper = subject({ postMessages: POST_MESSAGES_TEST, onFetchMore: onFetchMoreSpy });
-
-    wrapper.setState({ shouldRenderWaypoint: true });
-
-    const waypoint = wrapper.find(Waypoint);
-    expect(waypoint.exists()).toBe(true);
   });
 
   it('does not render a waypoint if no posts are present', () => {
@@ -98,32 +78,5 @@ describe('FeedView', () => {
     const wrapper = shallow(<Message>Test Message</Message>);
 
     expect(wrapper.text()).toEqual('Test Message');
-  });
-
-  it('updates shouldRenderWaypoint state based on content height after mount', () => {
-    const wrapper = subject({ postMessages: POST_MESSAGES_TEST });
-
-    const instance = wrapper.instance() as FeedView;
-    jest.spyOn(instance, 'checkContentHeight');
-
-    instance.componentDidMount();
-
-    expect(instance.checkContentHeight).toHaveBeenCalled();
-  });
-
-  it('updates shouldRenderWaypoint state based on content height after update', () => {
-    const wrapper = subject({ postMessages: POST_MESSAGES_TEST });
-
-    const instance = wrapper.instance() as FeedView;
-    jest.spyOn(instance, 'checkContentHeight');
-
-    wrapper.setProps({
-      postMessages: [
-        ...POST_MESSAGES_TEST,
-        { id: 'post-three', message: 'Third post', createdAt: 1659018545429, isPost: true },
-      ],
-    });
-
-    expect(instance.checkContentHeight).toHaveBeenCalled();
   });
 });

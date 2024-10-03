@@ -123,7 +123,6 @@ export function* fetchPosts(action) {
     }
 
     yield call(mapMessageSenders, postsResponse.postMessages, channelId);
-    yield call(applyReactions, channelId, postsResponse.postMessages);
 
     if (featureFlags.enableMeows) {
       yield call(applyReactions, channelId, postsResponse.postMessages);
@@ -144,6 +143,7 @@ export function* fetchPosts(action) {
       messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
   } catch (error) {
+    console.log('Error fetching posts', error);
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
   }
 }

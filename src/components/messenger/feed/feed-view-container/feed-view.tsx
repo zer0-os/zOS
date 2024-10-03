@@ -51,7 +51,7 @@ export class FeedView extends React.Component<Properties> {
           </>
         )}
 
-        {!this.props.hasLoadedMessages && (
+        {(!this.props.hasLoadedMessages || this.props.messagesFetchStatus === MessagesFetchState.MORE_IN_PROGRESS) && (
           <Message>
             <Spinner />
           </Message>

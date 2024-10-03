@@ -66,7 +66,7 @@ export async function encryptFile(file: File): Promise<{ info: encrypt.IEncrypte
 }
 
 export function isFileUploadedToMatrix(url: string): boolean {
-  if (!url) return false;
+  if (!url || typeof url !== 'string') return false;
 
   return url.includes('_matrix/client/v1/media');
 }

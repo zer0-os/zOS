@@ -756,6 +756,8 @@ export class MatrixClient implements IChatClient {
         rootMessageId,
         width,
         height,
+        w: width,
+        h: height,
       },
       optimisticId,
     } as any;

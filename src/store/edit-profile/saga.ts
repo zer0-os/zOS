@@ -9,7 +9,7 @@ import { ProfileDetailsErrors } from '../registration';
 import cloneDeep from 'lodash/cloneDeep';
 import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
-import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
+import { uploadFile } from '../../lib/chat';
 
 export function* getLocalUrl(file) {
   if (!file) {
@@ -41,9 +41,10 @@ export function* editProfile(action) {
       profileImage: profileImage === '' ? undefined : profileImage,
     });
     if (response.success) {
-      if (profileImage) {
-        yield call(matrixEditProfile, profileImage);
-      }
+      // commenting this out for now, this is spurring up a lot of "member events". not sure why.
+      // if (profileImage) {
+      //   yield call(matrixEditProfile, profileImage);
+      // }
 
       const localUrl = yield call(getLocalUrl, image);
       yield call(updateUserProfile, { name, profileImage: localUrl, primaryZID });

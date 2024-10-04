@@ -6,7 +6,7 @@ import { getUserSubHandle } from '../../lib/user';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
-import { downloadFile, uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
+import { downloadFile, uploadFile } from '../../lib/chat';
 import cloneDeep from 'lodash/cloneDeep';
 import { getProvider as getIndexedDbProvider } from '../../lib/storage/idb';
 import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
@@ -63,7 +63,7 @@ export function* updateUserProfileImageFromCache(currentUser: User) {
       profileImage: profileImageUrl || undefined,
     });
     if (response.success) {
-      yield call(matrixEditProfile, profileImageUrl); // also update the profile image in the homeserver user directory
+      //yield call(matrixEditProfile, profileImageUrl); // also update the profile image in the homeserver user directory
       return profileImageUrl;
     } else {
       console.error('Failed to update user profile on registration:', response.error);

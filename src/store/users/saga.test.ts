@@ -213,7 +213,7 @@ describe(updateUserProfileImageFromCache, () => {
           { success: false },
         ],
       ])
-      .not.call(matrixEditProfile, 'uploaded-image-url')
+      //.not.call(matrixEditProfile, 'uploaded-image-url')
       .run();
 
     expect(returnValue).toBeUndefined();
@@ -241,7 +241,7 @@ describe(updateUserProfileImageFromCache, () => {
           undefined,
         ],
       ])
-      .call(matrixEditProfile, 'uploaded-image-url')
+      //.call(matrixEditProfile, 'uploaded-image-url')
       .run();
 
     expect(returnValue).toBe('uploaded-image-url');

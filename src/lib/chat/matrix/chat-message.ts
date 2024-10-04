@@ -244,6 +244,7 @@ function convertToNotifiableEventType(eventType) {
   switch (eventType) {
     case EventType.RoomMessageEncrypted:
     case EventType.RoomMessage:
+    case CustomEventType.ROOM_POST:
       return NotifiableEventType.RoomMessage;
     default:
       return '';

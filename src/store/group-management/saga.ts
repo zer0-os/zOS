@@ -30,6 +30,7 @@ import {
 import { EditConversationState } from './types';
 import { isSecondarySidekickOpenSelector } from './selectors';
 import { closeOverview as closeMessageInfo } from '../message-info/saga';
+import { rawChannelSelector } from '../channels/saga';
 
 export function* reset() {
   yield put(setStage(Stage.None));
@@ -263,4 +264,16 @@ export function* toggleIsSecondarySidekick() {
   }
 
   yield put(setSecondarySidekickOpen(!isOpen));
+}
+
+export function* openSidekickForSocialChannel(conversationId) {
+  const channel = yield select(rawChannelSelector(conversationId));
+
+  if (channel?.isSocialChannel) {
+    const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
+
+    if (!isSidekickOpen) {
+      yield put(setSecondarySidekickOpen(true));
+    }
+  }
 }

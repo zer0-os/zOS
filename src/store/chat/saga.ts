@@ -23,6 +23,7 @@ import { openFirstConversation } from '../channels/saga';
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 import { rawConversationsList } from '../channels-list/selectors';
+import { openSidekickForSocialChannel } from '../group-management/saga';
 
 function* initChat(userId, token) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, token, chat.get());
@@ -117,6 +118,7 @@ export function* validateActiveConversation(conversationId: string) {
   const isLoaded = yield call(waitForChatConnectionCompletion);
   if (isLoaded) {
     yield call(performValidateActiveConversation, conversationId);
+    yield spawn(openSidekickForSocialChannel, conversationId);
   }
 
   yield put(setIsJoiningConversation(false));

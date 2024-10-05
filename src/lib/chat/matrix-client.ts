@@ -448,7 +448,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
     const room = this.matrix.getRoom(roomId);
     const liveTimeline = room.getLiveTimeline();
-    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 200 });
+    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
     const events = liveTimeline.getEvents().map((event) => event.getEffectiveEvent());
     const messages = await this.getAllChatMessagesFromRoom(events);
 

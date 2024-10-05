@@ -68,7 +68,7 @@ export async function encryptFile(file: File): Promise<{ info: encrypt.IEncrypte
 export function isFileUploadedToMatrix(url: string): boolean {
   if (!url || typeof url !== 'string') return false;
 
-  return url.startsWith('mxc://');
+  return url.includes('_matrix/client/v1/media/download') || url.startsWith('mxc://');
 }
 
 // https://github.com/matrix-org/matrix-react-sdk/blob/develop/src/utils/DecryptFile.ts#L50

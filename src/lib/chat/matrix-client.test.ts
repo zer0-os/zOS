@@ -22,6 +22,12 @@ jest.mock('./matrix/media', () => {
   };
 });
 
+const featureFlags = { postImageMessagesToMatrix: true };
+
+jest.mock('../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 const stubRoom = (attrs = {}) => ({
   roomId: 'some-id',
   getAvatarUrl: () => '',

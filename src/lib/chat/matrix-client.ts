@@ -50,6 +50,7 @@ import { encryptFile, getImageDimensions, isFileUploadedToMatrix } from './matri
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
 import { PostsResponse } from '../../store/posts';
+import { uploadAttachment } from '../../store/messages/api';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
@@ -731,6 +732,15 @@ export class MatrixClient implements IChatClient {
     };
   }
 
+  private async _uploadFile(file: File) {
+    if (featureFlags.postImageMessagesToMatrix) {
+      return await this.uploadFile(file);
+    } else {
+      const uploadedFile = await uploadAttachment(file);
+      return uploadedFile.key;
+    }
+  }
+
   async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '', isPost = false) {
     const isEncrypted = this.matrix.isRoomEncrypted(roomId);
 
@@ -739,13 +749,13 @@ export class MatrixClient implements IChatClient {
     let file;
     if (isEncrypted) {
       const encryptedFileInfo = await encryptFile(media); // Call encryptFile if the room is encrypted
-      const uploadedFileUrl = await this.uploadFile(encryptedFileInfo.file);
+      const uploadedFileUrl = await this._uploadFile(encryptedFileInfo.file);
       file = {
         url: uploadedFileUrl,
         ...encryptedFileInfo.info,
       };
     } else {
-      const uploadedFileUrl = await this.uploadFile(media); // Directly upload the file without encryption
+      const uploadedFileUrl = await this._uploadFile(media); // Directly upload the file without encryption
       file = {
         url: uploadedFileUrl,
         mimetype: media.type,

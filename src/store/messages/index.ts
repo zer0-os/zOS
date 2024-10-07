@@ -31,12 +31,19 @@ export enum MediaType {
   File = 'file',
 }
 
+export enum MediaDownloadStatus {
+  Success = 'SUCCESS',
+  Failed = 'FAILED',
+  Loading = 'LOADING',
+}
+
 export interface Media {
   height: number;
   name: string;
   type: MediaType;
   url: string;
   width: number;
+  downloadStatus?: MediaDownloadStatus;
 }
 
 export interface MessagesResponse {

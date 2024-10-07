@@ -1,7 +1,16 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
-import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
+import {
+  EditMessageOptions,
+  SagaActionTypes,
+  schema,
+  removeAll,
+  denormalize,
+  MediaType,
+  MessageSendStatus,
+  MediaDownloadStatus,
+} from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../channels';
 import { markConversationAsRead, rawChannelSelector, receiveChannel } from '../channels/saga';
@@ -615,31 +624,41 @@ const inProgress = {};
 export function* loadAttachmentDetails(action) {
   const { media, messageId } = action.payload;
 
-  if (inProgress[messageId] || media.url) {
+  // Check conditions to skip processing
+  if (inProgress[messageId] || media.url || media.downloadStatus === MediaDownloadStatus.Failed) {
     return;
   }
 
   inProgress[messageId] = true;
 
   try {
-    const blob = yield call(decryptFile, media.file, media.mimetype);
+    // Set status to 'LOADING'
+    yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Loading));
 
+    const blob = yield call(decryptFile, media.file, media.mimetype);
     const url = URL.createObjectURL(blob);
 
     if (!url) {
+      yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Failed));
       return;
     }
 
-    yield put(
-      receiveMessage({
-        id: messageId,
-        media: { ...media, url: url },
-        image: { ...media, url: url },
-      })
-    );
+    // Set status to 'SUCCESS' and update URL
+    yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Success, url));
   } catch (error) {
     console.error('Failed to download and decrypt image:', error);
-  }
 
-  inProgress[messageId] = false;
+    // Set status to 'FAILED'
+    yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Failed));
+  } finally {
+    inProgress[messageId] = false;
+  }
+}
+
+function updateMediaStatus(messageId, media, downloadStatus, url = null) {
+  return receiveMessage({
+    id: messageId,
+    media: { ...media, downloadStatus, ...(url && { url }) },
+    image: url ? { ...media, url } : undefined,
+  });
 }

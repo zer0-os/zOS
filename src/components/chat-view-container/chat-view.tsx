@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Waypoint } from 'react-waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions, Media } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions, Media, AdminMessageType } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import { Lightbox } from '@zer0-os/zos-component-library';
 import { User } from '../../store/authentication/types';
@@ -140,7 +140,7 @@ export class ChatView extends React.Component<Properties, State> {
 
   renderMessageGroup(groupMessages) {
     return groupMessages.map((message, index) => {
-      if (message.isAdmin && !message.isPost) {
+      if (message.isAdmin && message.admin.type !== AdminMessageType.REACTION) {
         return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;
       } else {
         const messageRenderProps = getMessageRenderProps(

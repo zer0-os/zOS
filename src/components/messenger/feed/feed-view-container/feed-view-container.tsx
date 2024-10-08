@@ -20,6 +20,7 @@ export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   activeConversationId?: string;
   userMeowBalance: string;
+  transferError?: string;
 
   fetchPosts: (payload: PayloadFetchPost) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
@@ -38,7 +39,7 @@ export class Container extends React.Component<Properties> {
     const {
       authentication: { user },
       chat: { activeConversationId },
-      rewards: { meow },
+      rewards: { meow, transferError },
     } = state;
 
     return {
@@ -46,6 +47,7 @@ export class Container extends React.Component<Properties> {
       user,
       activeConversationId,
       userMeowBalance: meow,
+      transferError,
     };
   }
 
@@ -134,6 +136,7 @@ export class Container extends React.Component<Properties> {
           loadAttachmentDetails={this.props.loadAttachmentDetails}
           transferMeow={this.transferMeow}
           userMeowBalance={this.props.userMeowBalance}
+          transferError={this.props.transferError}
         />
       </>
     );

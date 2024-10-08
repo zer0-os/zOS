@@ -1,3 +1,4 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../../../../glass';
 @import '../../../../../animation';
 
@@ -96,8 +97,20 @@
   border-radius: 8px;
   filter: blur(2px);
   background-color: rgba(54, 93, 87, 0.2);
-  background: linear-gradient(90deg, rgba(54, 93, 87, 0.2) 25%, rgba(54, 93, 87, 0.4) 50%, rgba(54, 93, 87, 0.2) 75%);
   border: 1px solid rgba(52, 56, 60, 0.5);
+}
+
+.Loading {
+  background: linear-gradient(90deg, rgba(54, 93, 87, 0.2) 25%, rgba(54, 93, 87, 0.4) 50%, rgba(54, 93, 87, 0.2) 75%);
   background-size: 600px 100%;
   animation: fadein 1s ease-in forwards, loadingShimmer 2s infinite linear;
+}
+
+.Failed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: none;
+  border: none;
+  color: theme.$color-failure-11;
 }

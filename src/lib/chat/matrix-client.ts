@@ -390,6 +390,9 @@ export class MatrixClient implements IChatClient {
 
       case EventType.RoomPowerLevels:
         return mapEventToAdminMessage(event);
+
+      case EventType.Reaction:
+        return mapEventToAdminMessage(event);
       default:
         return null;
     }
@@ -1505,7 +1508,7 @@ export class MatrixClient implements IChatClient {
       .filter((event) => {
         if (found) return false;
 
-        if (event.type === EventType.RoomMessage) {
+        if (event.type === EventType.RoomMessage || event.type === CustomEventType.ROOM_POST) {
           found = true;
         }
 

@@ -152,9 +152,15 @@ function getAdminDataFromEventType(type, content, sender, targetUserId, previous
       return { type: AdminMessageType.CONVERSATION_STARTED, userId: sender };
     case EventType.RoomPowerLevels:
       return getRoomPowerLevelsChangedAdminData(content, previousContent);
+    case EventType.Reaction:
+      return getRoomReactionAdminData(content, sender);
     default:
       return null;
   }
+}
+
+function getRoomReactionAdminData(content, sender) {
+  return { type: AdminMessageType.REACTION, userId: sender, amount: content.amount };
 }
 
 function getRoomMemberAdminData(content, targetUserId) {

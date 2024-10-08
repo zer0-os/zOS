@@ -4,7 +4,8 @@ import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
 import { Avatar } from '@zero-tech/zui/components';
 import { MeowAction } from './actions/meow';
 import { featureFlags } from '../../../../../lib/feature-flags';
-import { Media, MediaType } from '../../../../../store/messages';
+import { Media, MediaDownloadStatus, MediaType } from '../../../../../store/messages';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
 
 import styles from './styles.module.scss';
 import { formatWeiAmount } from '../../../../../lib/number';
@@ -93,17 +94,26 @@ export const Post = ({
 
   const renderMedia = useCallback(
     (media) => {
-      const { type, url, name, width, height } = media;
+      const { type, url, name, width, height, downloadStatus } = media;
       const placeholderDimensions = getPlaceholderDimensions(width, height);
 
       if (!url) {
-        loadAttachmentDetails({ media, messageId: media.id ?? messageId.toString() });
+        if (downloadStatus !== MediaDownloadStatus.Failed) {
+          loadAttachmentDetails({ media, messageId: media.id ?? messageId.toString() });
+        }
+
         return (
           <div
             className={styles.ImagePlaceholderContainer}
             style={{ width: placeholderDimensions.width, height: placeholderDimensions.height }}
           >
-            <div className={styles.ImagePlaceholder} />
+            <div
+              className={`${styles.ImagePlaceholder} ${
+                downloadStatus === MediaDownloadStatus.Loading ? styles.Loading : styles.Failed
+              }`}
+            >
+              {downloadStatus === MediaDownloadStatus.Failed && <IconAlertCircle size={32} />}
+            </div>
           </div>
         );
       }

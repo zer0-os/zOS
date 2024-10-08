@@ -222,6 +222,35 @@ describe(adminMessageText, () => {
       expect(adminText).toEqual('Courtney was removed as moderator by admin');
     });
   });
+
+  describe(AdminMessageType.REACTION, () => {
+    it('returns default message if admin user id not found', () => {
+      const state = getState('current-user', {});
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.REACTION, userId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
+
+      expect(adminText).toEqual('some message');
+    });
+
+    it('translates message if admin user id is found', () => {
+      const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.REACTION, userId: 'admin-user-id', amount: '10' },
+      } as any;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Courtney reacted with 10 MEOW');
+    });
+  });
 });
 
 describe(getMessagePreview, () => {

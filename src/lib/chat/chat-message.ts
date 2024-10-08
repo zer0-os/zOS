@@ -85,10 +85,21 @@ export function adminMessageText(message: Message, state: RootState) {
       return translateMemberSetAsModerator(message.admin, state) ?? text;
     case AdminMessageType.MEMBER_REMOVED_AS_MODERATOR:
       return translateMemberRemovedAsModerator(message.admin, state) ?? text;
+    case AdminMessageType.REACTION:
+      return translateReaction(message.admin, user, state) ?? text;
 
     default:
       return text;
   }
+}
+
+function translateReaction(admin: { userId?: string; amount?: string }, currentUser, state: RootState) {
+  if (admin.userId === currentUser.id) {
+    return `You reacted with ${admin.amount} MEOW`;
+  }
+
+  const user = denormalizeUser(admin.userId, state);
+  return user?.firstName ? `${user.firstName} reacted with ${admin.amount} MEOW` : null;
 }
 
 function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, currentUser, state: RootState) {

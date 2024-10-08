@@ -10,6 +10,7 @@ import {
   EditMessageOptions,
   loadAttachmentDetails,
   Media,
+  AdminMessageType,
 } from '../../store/messages';
 import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
@@ -153,7 +154,9 @@ export class Container extends React.Component<Properties> {
   get messages() {
     const allMessages = this.channel?.messages || [];
 
-    const chatMessages = allMessages.filter((message) => !message.isPost);
+    const chatMessages = allMessages.filter(
+      (message) => !message.isPost && (!message.admin || message.admin?.type !== AdminMessageType.REACTION)
+    );
 
     const messagesById = mapMessagesById(chatMessages);
     const messagesByRootId = mapMessagesByRootId(chatMessages);

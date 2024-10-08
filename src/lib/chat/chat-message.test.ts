@@ -250,6 +250,19 @@ describe(adminMessageText, () => {
 
       expect(adminText).toEqual('Courtney reacted with 10 MEOW');
     });
+
+    it('translates message if amount is not found', () => {
+      const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.REACTION, userId: 'admin-user-id' },
+      } as any;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Courtney sent a reaction');
+    });
   });
 });
 

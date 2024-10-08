@@ -94,12 +94,21 @@ export function adminMessageText(message: Message, state: RootState) {
 }
 
 function translateReaction(admin: { userId?: string; amount?: string }, currentUser, state: RootState) {
-  if (admin.userId === currentUser.id) {
+  const user = denormalizeUser(admin.userId, state);
+
+  if (!admin.amount && admin.userId === currentUser.id) {
+    return 'You sent a reaction';
+  }
+
+  if (!admin.amount && user?.firstName) {
+    return `${user.firstName} sent a reaction`;
+  }
+
+  if (admin.amount && admin.userId === currentUser.id) {
     return `You reacted with ${admin.amount} MEOW`;
   }
 
-  const user = denormalizeUser(admin.userId, state);
-  return user?.firstName ? `${user.firstName} reacted with ${admin.amount} MEOW` : null;
+  return admin.amount && user?.firstName ? `${user.firstName} reacted with ${admin.amount} MEOW` : null;
 }
 
 function translateJoinedZero(admin: { inviteeId?: string; inviterId?: string }, currentUser, state: RootState) {

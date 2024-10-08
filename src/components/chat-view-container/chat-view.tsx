@@ -140,7 +140,7 @@ export class ChatView extends React.Component<Properties, State> {
 
   renderMessageGroup(groupMessages) {
     return groupMessages.map((message, index) => {
-      if (message.isAdmin) {
+      if (message.isAdmin && !message.isPost) {
         return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;
       } else {
         const messageRenderProps = getMessageRenderProps(

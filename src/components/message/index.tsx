@@ -1,7 +1,14 @@
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions, MessageSendStatus, Media } from '../../store/messages';
+import {
+  Message as MessageModel,
+  MediaType,
+  EditMessageOptions,
+  MessageSendStatus,
+  Media,
+  MediaDownloadStatus,
+} from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
@@ -161,14 +168,19 @@ export class Message extends React.Component<Properties, State> {
   };
 
   renderMedia(media) {
-    const { type, url, name } = media;
+    const { type, url, name, downloadStatus } = media;
     const { width, height } = this.getPlaceholderDimensions(media.width, media.height);
 
     if (!url) {
-      this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
+      if (downloadStatus !== MediaDownloadStatus.Failed) {
+        this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
+      }
+
       return (
         <div {...cn('image-placeholder-container')} style={{ width, height }}>
-          <div {...cn('image-placeholder')} />
+          <div {...cn('image-placeholder', downloadStatus === MediaDownloadStatus.Loading ? 'loading' : 'failed')}>
+            {downloadStatus === MediaDownloadStatus.Failed && <IconAlertCircle size={32} />}
+          </div>
         </div>
       );
     }

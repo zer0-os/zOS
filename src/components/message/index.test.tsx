@@ -1,13 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from '.';
-import { MediaType, MessageSendStatus } from '../../store/messages';
+import { MediaDownloadStatus, MediaType, MessageSendStatus } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../message-input/container';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import { ContentHighlighter } from '../content-highlighter';
 import { ParentMessage } from './parent-message';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
 
 describe('message', () => {
   const sender = {
@@ -79,6 +80,30 @@ describe('message', () => {
     subject({ messageId: 'test-id', loadAttachmentDetails, media: { url: null, type: MediaType.Image } });
 
     expect(loadAttachmentDetails).toHaveBeenCalled();
+  });
+
+  it('does not call loadAttachmentDetails if media download status is failed', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
+    });
+
+    expect(loadAttachmentDetails).not.toHaveBeenCalled();
+  });
+
+  it('renders failed alert icon if media download status is failed', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    const wrapper = subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
+    });
+
+    expect(wrapper).toHaveElement(IconAlertCircle);
   });
 
   it('calculates and applies correct dimensions for the placeholder', () => {

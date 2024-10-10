@@ -131,7 +131,7 @@ export class FeatureFlags {
   }
 
   get postImageMessagesToMatrix() {
-    return this._getBoolean('postImagesToMatrix', false);
+    return this._getBoolean('postImagesToMatrix', true);
   }
 
   set postImageMessagesToMatrix(value: boolean) {

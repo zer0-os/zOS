@@ -42,6 +42,7 @@ const stubRoom = (attrs = {}) => ({
   getUnreadNotificationCount: () => 0,
   on: () => undefined,
   off: () => undefined,
+  hasEncryptionStateEvent: jest.fn(() => false),
   ...attrs,
 });
 
@@ -963,8 +964,6 @@ describe('matrix client', () => {
         type: 'image/png',
       };
 
-      const isRoomEncrypted = jest.fn(() => false);
-
       when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
       const sendMessage = jest.fn(() =>
         Promise.resolve({
@@ -976,7 +975,14 @@ describe('matrix client', () => {
       const mxcUrlToHttp = jest.fn().mockReturnValue('upload-url');
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage, uploadContent, mxcUrlToHttp })),
+        createClient: jest.fn(() =>
+          getSdkClient({
+            getRoom: jest.fn().mockReturnValue(stubRoom({ hasEncryptionStateEvent: jest.fn(() => false) })),
+            sendMessage,
+            uploadContent,
+            mxcUrlToHttp,
+          })
+        ),
       });
 
       await client.connect(null, 'token');
@@ -987,11 +993,7 @@ describe('matrix client', () => {
         expect.objectContaining({
           body: '',
           msgtype: 'm.image',
-          file: {
-            url: 'upload-url',
-            mimetype: 'image/png',
-            size: 1000,
-          },
+          url: 'upload-url',
           info: {
             mimetype: 'image/png',
             size: 1000,
@@ -1002,6 +1004,9 @@ describe('matrix client', () => {
             height: 600,
             w: 800,
             h: 600,
+            'xyz.amorgan.blurhash': null,
+            thumbnail_url: null,
+            thumbnail_info: null,
           },
           optimisticId: 'optimistic-id',
         })
@@ -1022,8 +1027,6 @@ describe('matrix client', () => {
         size: 1000,
         type: 'image/png',
       };
-
-      const isRoomEncrypted = jest.fn(() => true);
 
       when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
 
@@ -1048,7 +1051,13 @@ describe('matrix client', () => {
       const uploadContent = jest.fn().mockResolvedValue({ content_uri: 'upload-url' });
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage, uploadContent })),
+        createClient: jest.fn(() =>
+          getSdkClient({
+            getRoom: jest.fn().mockReturnValue(stubRoom({ hasEncryptionStateEvent: jest.fn(() => true) })),
+            sendMessage,
+            uploadContent,
+          })
+        ),
       });
 
       await client.connect(null, 'token');
@@ -1076,6 +1085,9 @@ describe('matrix client', () => {
             height: 600,
             w: 800,
             h: 600,
+            'xyz.amorgan.blurhash': null,
+            thumbnail_url: null,
+            thumbnail_info: null,
           },
           optimisticId: 'optimistic-id',
         })

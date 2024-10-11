@@ -817,7 +817,8 @@ export class MatrixClient implements IChatClient {
     rootMessageId: string = '',
     optimisticId = ''
   ) {
-    const isEncrypted = this.matrix.isRoomEncrypted(roomId);
+    const room = this.matrix.getRoom(roomId);
+    const isEncrypted = room?.hasEncryptionStateEvent();
 
     const content = {
       body: isEncrypted ? null : '',

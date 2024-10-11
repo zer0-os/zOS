@@ -74,7 +74,6 @@ const getSdkClient = (sdkClient = {}) => ({
   setGlobalErrorOnUnknownDevices: () => undefined,
   fetchRoomEvent: jest.fn(),
   paginateEventTimeline: () => true,
-  isRoomEncrypted: () => true,
   invite: jest.fn().mockResolvedValue({}),
   setRoomTag: jest.fn().mockResolvedValue({}),
   deleteRoomTag: jest.fn().mockResolvedValue({}),
@@ -1110,8 +1109,6 @@ describe('matrix client', () => {
       const optimisticId = 'optimistic-id';
       const rootMessageId = 'root-message-id';
 
-      const isRoomEncrypted = jest.fn(() => false);
-
       const sendMessage = jest.fn(() =>
         Promise.resolve({
           event_id: 'new-message-id',
@@ -1119,7 +1116,12 @@ describe('matrix client', () => {
       );
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage })),
+        createClient: jest.fn(() =>
+          getSdkClient({
+            getRoom: jest.fn().mockReturnValue(stubRoom({ hasEncryptionStateEvent: jest.fn(() => false) })),
+            sendMessage,
+          })
+        ),
       });
 
       await client.connect(null, 'token');
@@ -1159,8 +1161,6 @@ describe('matrix client', () => {
       const optimisticId = 'optimistic-id';
       const rootMessageId = 'root-message-id';
 
-      const isRoomEncrypted = jest.fn(() => true);
-
       const sendMessage = jest.fn(() =>
         Promise.resolve({
           event_id: 'new-message-id',
@@ -1168,7 +1168,12 @@ describe('matrix client', () => {
       );
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ isRoomEncrypted, sendMessage })),
+        createClient: jest.fn(() =>
+          getSdkClient({
+            getRoom: jest.fn().mockReturnValue(stubRoom({ hasEncryptionStateEvent: jest.fn(() => true) })),
+            sendMessage,
+          })
+        ),
       });
 
       await client.connect(null, 'token');

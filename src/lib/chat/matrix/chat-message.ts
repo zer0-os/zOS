@@ -54,7 +54,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
 
   return {
     id: event_id,
-    message: messageContent,
+    message: content.msgtype === 'm.image' ? '' : messageContent,
     createdAt: origin_server_ts,
     updatedAt: updatedAt,
     sender: {

@@ -1,4 +1,4 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select, spawn, takeLatest } from 'redux-saga/effects';
 import { SagaActionTypes, State, setErrors, setLoadingZIDs, setOwnedZIDs, setState } from '.';
 import {
   editUserProfile as apiEditUserProfile,
@@ -9,7 +9,7 @@ import { ProfileDetailsErrors } from '../registration';
 import cloneDeep from 'lodash/cloneDeep';
 import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
-import { uploadFile } from '../../lib/chat';
+import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
 
 export function* getLocalUrl(file) {
   if (!file) {
@@ -41,10 +41,9 @@ export function* editProfile(action) {
       profileImage: profileImage === '' ? undefined : profileImage,
     });
     if (response.success) {
-      // commenting this out for now, this is spurring up a lot of "member events". not sure why.
-      // if (profileImage) {
-      //   yield call(matrixEditProfile, profileImage);
-      // }
+      if (profileImage) {
+        yield spawn(matrixEditProfile, profileImage);
+      }
 
       const localUrl = yield call(getLocalUrl, image);
       yield call(updateUserProfile, { name, profileImage: localUrl, primaryZID });

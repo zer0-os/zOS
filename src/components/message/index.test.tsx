@@ -74,12 +74,47 @@ describe('message', () => {
     expect(wrapper.find('.message__image-placeholder').exists()).toBe(true);
   });
 
+  it('renders image placeholder if matrix media url', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    const wrapper = subject({
+      loadAttachmentDetails,
+      media: { id: '1', url: 'mxc://some-test-matrix-url', type: MediaType.Image },
+    });
+
+    expect(wrapper.find('.message__image-placeholder').exists()).toBe(true);
+  });
+
   it('calls loadAttachmentDetails if no media url', () => {
     const loadAttachmentDetails = jest.fn();
 
     subject({ messageId: 'test-id', loadAttachmentDetails, media: { url: null, type: MediaType.Image } });
 
     expect(loadAttachmentDetails).toHaveBeenCalled();
+  });
+
+  it('calls loadAttachmentDetails if url is a matrix media url', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: 'mxc://some-test-matrix-url', type: MediaType.Image },
+    });
+
+    expect(loadAttachmentDetails).toHaveBeenCalled();
+  });
+
+  it('does not call loadAttachmentDetails if url is defined and not a matrix media url', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: 'some-test-url', type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
+    });
+
+    expect(loadAttachmentDetails).not.toHaveBeenCalled();
   });
 
   it('does not call loadAttachmentDetails if media download status is failed', () => {

@@ -749,31 +749,30 @@ export class MatrixClient implements IChatClient {
   }
 
   async uploadFileMessage(roomId: string, media: File, rootMessageId: string = '', optimisticId = '', isPost = false) {
-    const isEncrypted = this.matrix.isRoomEncrypted(roomId);
+    const room = this.matrix.getRoom(roomId);
+    const isEncrypted = room?.hasEncryptionStateEvent();
 
     const { width, height } = await getImageDimensions(media);
 
     let file;
+    let url;
+
     if (isEncrypted) {
-      const encryptedFileInfo = await encryptFile(media); // Call encryptFile if the room is encrypted
-      const uploadedFileUrl = await this._uploadFile(encryptedFileInfo.file);
+      // For encrypted rooms, encrypt the file and use the `file` object
+      const encryptedFileInfo = await encryptFile(media);
+      url = await this._uploadFile(encryptedFileInfo.file);
       file = {
-        url: uploadedFileUrl,
+        url,
         ...encryptedFileInfo.info,
       };
     } else {
-      const uploadedFileUrl = await this._uploadFile(media); // Directly upload the file without encryption
-      file = {
-        url: uploadedFileUrl,
-        mimetype: media.type,
-        size: media.size,
-      };
+      // For unencrypted rooms, directly upload the file and use `url`
+      url = await this._uploadFile(media);
     }
 
-    const content = {
+    const content: any = {
       body: '',
       msgtype: MsgType.Image,
-      file,
       info: {
         mimetype: media.type,
         size: media.size,
@@ -784,9 +783,19 @@ export class MatrixClient implements IChatClient {
         height,
         w: width,
         h: height,
+        // Optional: blurhash and thumbnail fields (null or undefined for now)
+        'xyz.amorgan.blurhash': null,
+        thumbnail_url: null,
+        thumbnail_info: null,
       },
       optimisticId,
-    } as any;
+    };
+
+    if (isEncrypted) {
+      content.file = file;
+    } else {
+      content.url = url;
+    }
 
     let messageResult;
     if (isPost) {

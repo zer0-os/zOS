@@ -170,8 +170,9 @@ export class Message extends React.Component<Properties, State> {
   renderMedia(media) {
     const { type, url, name, downloadStatus } = media;
     const { width, height } = this.getPlaceholderDimensions(media.width, media.height);
+    const isMatrixUrl = url?.startsWith('mxc://');
 
-    if (!url) {
+    if (!url || isMatrixUrl) {
       if (downloadStatus !== MediaDownloadStatus.Failed) {
         this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
       }

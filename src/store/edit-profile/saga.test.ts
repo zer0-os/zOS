@@ -1,5 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { call } from 'redux-saga/effects';
+import { call, spawn } from 'redux-saga/effects';
 import { editProfile as editProfileSaga, updateUserProfile, fetchOwnedZIDs, getLocalUrl } from './saga';
 import { editUserProfile as apiEditUserProfile, fetchOwnedZIDs as apiFetchOwnedZIDs } from './api';
 import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
@@ -32,7 +32,7 @@ describe('editProfile', () => {
           call(apiEditUserProfile, { name, profileImage, primaryZID }),
           { success: true },
         ],
-        [call(matrixEditProfile, profileImage), {}],
+        [spawn(matrixEditProfile, profileImage), {}],
         [call(getLocalUrl, image), 'local-image-url'],
       ])
       .call(updateUserProfile, { name, profileImage: 'local-image-url', primaryZID })
@@ -43,7 +43,7 @@ describe('editProfile', () => {
           { profileSummary: { firstName: 'old-name', profileImage: 'old-image' } as any, primaryZID: 'old-zid' }
         )
       )
-      //.call(matrixEditProfile, profileImage)
+      .spawn(matrixEditProfile, profileImage)
       .run();
 
     expect(authentication.user.data.profileSummary.firstName).toEqual('John Doe');
@@ -100,7 +100,7 @@ describe('editProfile', () => {
           call(apiEditUserProfile, { name, primaryZID, profileImage: undefined }),
           { success: true },
         ],
-        [call(matrixEditProfile, undefined), {}],
+        [spawn(matrixEditProfile, undefined), {}],
       ])
       .withReducer(
         rootReducer,

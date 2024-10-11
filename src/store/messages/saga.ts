@@ -624,8 +624,11 @@ const inProgress = {};
 export function* loadAttachmentDetails(action) {
   const { media, messageId } = action.payload;
 
-  // Check conditions to skip processing
-  if (inProgress[messageId] || media.url || media.downloadStatus === MediaDownloadStatus.Failed) {
+  if (
+    inProgress[messageId] ||
+    (media.url && !media.url.startsWith('mxc://')) ||
+    media.downloadStatus === MediaDownloadStatus.Failed
+  ) {
     return;
   }
 
@@ -635,7 +638,7 @@ export function* loadAttachmentDetails(action) {
     // Set status to 'LOADING'
     yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Loading));
 
-    const blob = yield call(decryptFile, media.file, media.mimetype);
+    const blob = yield call(decryptFile, media.file || { url: media.url }, media.mimetype);
     const url = URL.createObjectURL(blob);
 
     if (!url) {

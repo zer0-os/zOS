@@ -5,7 +5,7 @@ import {
   receiveSearchResults,
   updateUserProfileImageFromCache,
 } from './saga';
-import { call } from 'redux-saga/effects';
+import { call, spawn } from 'redux-saga/effects';
 import { rootReducer } from '../reducer';
 import { denormalize } from '.';
 import { StoreBuilder } from '../test/store';
@@ -213,7 +213,7 @@ describe(updateUserProfileImageFromCache, () => {
           { success: false },
         ],
       ])
-      //.not.call(matrixEditProfile, 'uploaded-image-url')
+      .not.spawn(matrixEditProfile, 'uploaded-image-url')
       .run();
 
     expect(returnValue).toBeUndefined();
@@ -237,11 +237,11 @@ describe(updateUserProfileImageFromCache, () => {
           { success: true },
         ],
         [
-          call(matrixEditProfile, 'uploaded-image-url'),
+          spawn(matrixEditProfile, 'uploaded-image-url'),
           undefined,
         ],
       ])
-      //.call(matrixEditProfile, 'uploaded-image-url')
+      .spawn(matrixEditProfile, 'uploaded-image-url')
       .run();
 
     expect(returnValue).toBe('uploaded-image-url');

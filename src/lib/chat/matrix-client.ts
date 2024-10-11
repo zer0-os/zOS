@@ -677,6 +677,10 @@ export class MatrixClient implements IChatClient {
 
   async editProfile(avatarUrl: string) {
     await this.waitForConnection();
+    if (!avatarUrl) {
+      return;
+    }
+
     await this.matrix.setProfileInfo('avatar_url', { avatar_url: avatarUrl });
   }
 

@@ -96,8 +96,9 @@ export const Post = ({
     (media) => {
       const { type, url, name, width, height, downloadStatus } = media;
       const placeholderDimensions = getPlaceholderDimensions(width, height);
+      const isMatrixUrl = url?.startsWith('mxc://');
 
-      if (!url) {
+      if (!url || isMatrixUrl) {
         if (downloadStatus !== MediaDownloadStatus.Failed) {
           loadAttachmentDetails({ media, messageId: media.id ?? messageId.toString() });
         }

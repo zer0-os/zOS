@@ -1540,9 +1540,7 @@ export class MatrixClient implements IChatClient {
         return true;
       });
 
-    const latestEvent = events[0];
-
-    return await this.processRawEventsToMessages([latestEvent]);
+    return await this.processRawEventsToMessages(events.reverse());
   }
 
   private getMemberHistoryFromRoom(room: Room): string[] {

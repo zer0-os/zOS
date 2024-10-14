@@ -327,6 +327,10 @@ export class MatrixClient implements IChatClient {
     return relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE;
   }
 
+  private isUserAvatarEvent(event): boolean {
+    return event.content?.avatar_url && event.unsigned?.prev_content?.avatar_url !== event.content?.avatar_url;
+  }
+
   async searchMyNetworksByName(filter: string): Promise<MemberNetworks[]> {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50, isMatrixEnabled: true })
       .catch((_error) => null)
@@ -379,10 +383,12 @@ export class MatrixClient implements IChatClient {
       case EventType.RoomMember:
         if (
           event.content.membership === MembershipStateType.Leave ||
-          event.content.membership === MembershipStateType.Invite
+          event.content.membership === MembershipStateType.Invite ||
+          this.isUserAvatarEvent(event)
         ) {
           return mapEventToAdminMessage(event);
         }
+
         return null;
 
       case CustomEventType.ROOM_POST:
@@ -1534,7 +1540,9 @@ export class MatrixClient implements IChatClient {
         return true;
       });
 
-    return await this.processRawEventsToMessages(events.reverse());
+    const latestEvent = events[0];
+
+    return await this.processRawEventsToMessages([latestEvent]);
   }
 
   private getMemberHistoryFromRoom(room: Room): string[] {

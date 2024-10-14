@@ -147,7 +147,7 @@ function getAdminDataFromEventType(type, content, sender, targetUserId, previous
     case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       return { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
     case EventType.RoomMember:
-      return getRoomMemberAdminData(content, targetUserId);
+      return getRoomMemberAdminData(content, targetUserId, previousContent);
     case EventType.RoomCreate:
       return { type: AdminMessageType.CONVERSATION_STARTED, userId: sender };
     case EventType.RoomPowerLevels:
@@ -163,7 +163,11 @@ function getRoomReactionAdminData(content, sender) {
   return { type: AdminMessageType.REACTION, userId: sender, amount: content.amount };
 }
 
-function getRoomMemberAdminData(content, targetUserId) {
+function getRoomMemberAdminData(content, targetUserId, previousContent?) {
+  if (previousContent?.avatar_url !== content.avatar_url) {
+    return { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: targetUserId };
+  }
+
   switch (content.membership) {
     case MembershipStateType.Leave:
       return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: targetUserId };

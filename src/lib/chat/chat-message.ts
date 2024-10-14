@@ -87,6 +87,8 @@ export function adminMessageText(message: Message, state: RootState) {
       return translateMemberRemovedAsModerator(message.admin, state) ?? text;
     case AdminMessageType.REACTION:
       return translateReaction(message.admin, user, state) ?? text;
+    case AdminMessageType.MEMBER_AVATAR_CHANGED:
+      return translateMemberAvatarChanged(message.admin, user, state) ?? text;
 
     default:
       return text;
@@ -149,4 +151,13 @@ function translateMemberSetAsModerator(admin: { userId?: string }, state: RootSt
 function translateMemberRemovedAsModerator(admin: { userId?: string }, state: RootState) {
   const user = denormalizeUser(admin.userId, state);
   return user?.firstName ? `${user.firstName} was removed as moderator by admin` : null;
+}
+
+function translateMemberAvatarChanged(admin: { userId?: string }, currentUser, state: RootState) {
+  if (admin.userId === currentUser.id) {
+    return 'Admin: You changed your avatar';
+  }
+
+  const user = denormalizeUser(admin.userId, state);
+  return user?.firstName ? `Admin: ${user.firstName} changed their avatar` : null;
 }

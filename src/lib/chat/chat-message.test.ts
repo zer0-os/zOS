@@ -223,6 +223,35 @@ describe(adminMessageText, () => {
     });
   });
 
+  describe(AdminMessageType.MEMBER_AVATAR_CHANGED, () => {
+    it('returns default message if admin user id not found', () => {
+      const state = getState('current-user', {});
+      const adminText = adminMessageText(
+        {
+          message: 'some message',
+          isAdmin: true,
+          admin: { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: 'unknown-user-id' },
+        } as Message,
+        state
+      );
+
+      expect(adminText).toEqual('some message');
+    });
+
+    it('translates message if admin user id is found', () => {
+      const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const message = {
+        message: 'some message',
+        isAdmin: true,
+        admin: { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: 'admin-user-id' },
+      } as Message;
+
+      const adminText = adminMessageText(message, state);
+
+      expect(adminText).toEqual('Admin: Courtney changed their avatar');
+    });
+  });
+
   describe(AdminMessageType.REACTION, () => {
     it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});

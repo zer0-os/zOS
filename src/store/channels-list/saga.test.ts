@@ -30,6 +30,7 @@ import { getZEROUsers } from './api';
 import { mapAdminUserIdToZeroUserId, mapChannelMembers } from './utils';
 import { openFirstConversation } from '../channels/saga';
 import { getUserReadReceiptPreference } from '../user-profile/saga';
+import cloneDeep from 'lodash/cloneDeep';
 
 const mockConversation = (id: string) => ({
   id: `conversation_${id}`,
@@ -383,7 +384,7 @@ describe('channels list saga', () => {
           lastName: 'last-1',
           primaryZID: 'primary-zid-1',
           displaySubHandle: 'primary-zid-1',
-          profileImage: 'profile-image-local-url-1',
+          profileImage: 'profile-image-url-1',
         },
         'matrix-id-2': {
           userId: 'user-2',
@@ -393,7 +394,7 @@ describe('channels list saga', () => {
           lastName: 'last-2',
           primaryZID: 'primary-zid-2',
           displaySubHandle: 'primary-zid-2',
-          profileImage: 'profile-image-local-url-2',
+          profileImage: 'profile-image-url-2',
         },
         'matrix-id-3': {
           userId: 'user-3',
@@ -403,32 +404,34 @@ describe('channels list saga', () => {
           lastName: 'last-3',
           primaryZID: '',
           displaySubHandle: '',
-          profileImage: 'profile-image-local-url-3',
+          profileImage: 'profile-image-url-3',
         },
       };
 
-      await expectSaga(mapToZeroUsers, rooms)
+      const clonedRooms = cloneDeep(rooms);
+      await expectSaga(mapToZeroUsers, clonedRooms)
         .withReducer(rootReducer)
+        .provide([
+          [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
+        ])
+        .call(mapChannelMembers, clonedRooms, expectedMap)
+        .run();
+    });
+
+    it('maps member history of channels to ZERO Users', async () => {
+      const initialState = new StoreBuilder().withConversationList(rooms[0], rooms[1]);
+
+      await expectSaga(mapToZeroUsers, rooms)
+        .withReducer(rootReducer, initialState.build())
         .provide([
           [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
           [call(downloadFile, 'profile-image-url-1'), 'profile-image-local-url-1'],
           [call(downloadFile, 'profile-image-url-2'), 'profile-image-local-url-2'],
           [call(downloadFile, 'profile-image-url-3'), 'profile-image-local-url-3'],
         ])
-        .call(mapChannelMembers, rooms, expectedMap)
-        .run();
-    });
-
-    it('maps member history of channels to ZERO Users and save normalized state', async () => {
-      const initialState = new StoreBuilder().withConversationList(rooms[0], rooms[1]);
-
-      const { storeState } = await expectSaga(mapToZeroUsers, rooms)
-        .withReducer(rootReducer, initialState.build())
-        .provide([[call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers]])
         .run();
 
-      const channel1 = denormalizeChannel('room-1', storeState);
-      expect(channel1.memberHistory).toIncludeSameMembers([
+      expect(rooms[0].memberHistory).toIncludeSameMembers([
         {
           matrixId: 'matrix-id-1',
           userId: 'user-1',
@@ -451,8 +454,7 @@ describe('channels list saga', () => {
         },
       ]);
 
-      const channel2 = denormalizeChannel('room-2', storeState);
-      expect(channel2.memberHistory).toIncludeSameMembers([
+      expect(rooms[1].memberHistory).toIncludeSameMembers([
         {
           matrixId: 'matrix-id-3',
           userId: 'user-3',
@@ -477,7 +479,12 @@ describe('channels list saga', () => {
 
       await expectSaga(mapToZeroUsers, rooms)
         .withReducer(rootReducer, initialState.build())
-        .provide([[call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers]])
+        .provide([
+          [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
+          [call(downloadFile, 'profile-image-url-1'), 'profile-image-local-url-1'],
+          [call(downloadFile, 'profile-image-url-2'), 'profile-image-local-url-2'],
+          [call(downloadFile, 'profile-image-url-3'), 'profile-image-local-url-3'],
+        ])
         .run();
 
       expect(rooms[0].messages[0].sender).toStrictEqual({

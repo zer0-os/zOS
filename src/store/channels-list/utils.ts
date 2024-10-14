@@ -1,7 +1,8 @@
 import { Channel, ConversationStatus, User } from './../channels/index';
-import { select } from 'redux-saga/effects';
+import { call, select } from 'redux-saga/effects';
 import { currentUserSelector } from '../authentication/selectors';
 import { getUserSubHandle } from '../../lib/user';
+import { downloadFile } from '../../lib/chat';
 
 export const toLocalChannel = (input): Partial<Channel> => {
   const otherMembers = input.otherMembers || [];
@@ -19,18 +20,18 @@ export const toLocalChannel = (input): Partial<Channel> => {
   };
 };
 
-export const mapChannelMembers = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
+export function* mapChannelMembers(channels: Channel[], zeroUsersMap: { [id: string]: User }) {
   for (const channel of channels) {
     for (const member of channel.otherMembers) {
-      replaceZOSUserFields(member, zeroUsersMap[member.matrixId]);
+      yield call(replaceZOSUserFields, member, zeroUsersMap[member.userId]);
     }
     for (const member of channel.memberHistory) {
-      replaceZOSUserFields(member as User, zeroUsersMap[member.matrixId]);
+      yield call(replaceZOSUserFields, member, zeroUsersMap[member.userId]);
     }
 
     channel.moderatorIds = channel.moderatorIds.map((matrixId) => zeroUsersMap[matrixId]?.userId || matrixId);
   }
-};
+}
 
 export function* mapChannelMessages(channels: Channel[], zeroUsersMap: { [id: string]: User }) {
   for (const channel of channels) {
@@ -38,7 +39,7 @@ export function* mapChannelMessages(channels: Channel[], zeroUsersMap: { [id: st
       if (message.isAdmin) {
         continue;
       }
-      replaceZOSUserFields(message.sender, zeroUsersMap[message.sender.userId]);
+      yield call(replaceZOSUserFields, message.sender, zeroUsersMap[message.sender.userId]);
     }
   }
   yield mapAdminUserIdToZeroUserId(channels, zeroUsersMap);
@@ -67,7 +68,7 @@ export function* mapAdminUserIdToZeroUserId(messageContainers, zeroUsersMap) {
   }
 }
 
-export function replaceZOSUserFields(
+export function* replaceZOSUserFields(
   member: {
     userId: string;
     firstName: string;
@@ -84,7 +85,7 @@ export function replaceZOSUserFields(
     member.profileId = zeroUser.profileId;
     member.firstName = zeroUser.firstName;
     member.lastName = zeroUser.lastName;
-    member.profileImage = zeroUser.profileImage;
+    member.profileImage = yield call(getProfileImage, member.profileImage || zeroUser.profileImage);
     member.primaryZID = zeroUser.primaryZID;
     member.displaySubHandle = getUserSubHandle(zeroUser.primaryZID, zeroUser.primaryWallet?.publicAddress);
   }
@@ -104,4 +105,12 @@ export function rawUserToDomainUser(u): User {
     primaryWallet: u.primaryWallet,
     wallets: u.wallets,
   };
+}
+
+function* getProfileImage(profileImage) {
+  if (!profileImage || typeof profileImage !== 'string' || profileImage.includes('res.cloudinary.com')) {
+    return '';
+  }
+
+  return yield call(downloadFile, profileImage);
 }

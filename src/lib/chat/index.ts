@@ -85,6 +85,7 @@ export interface IChatClient {
   editProfile(avatarUrl: string): Promise<any>;
   getAccessToken(): string | null;
   mxcUrlToHttp(mxcUrl: string): string;
+  getProfileInfo(userId: string): Promise<{ avatar_url?: string; displayname?: string }>;
 }
 
 export class Chat {
@@ -398,4 +399,11 @@ export function getAccessToken(): string | null {
 
 export function mxcUrlToHttp(mxcUrl: string): string {
   return chat.get().matrix.mxcUrlToHttp(mxcUrl);
+}
+
+export function getProfileInfo(userId: string): Promise<{
+  avatar_url?: string;
+  displayname?: string;
+}> {
+  return chat.get().matrix.getProfileInfo(userId);
 }

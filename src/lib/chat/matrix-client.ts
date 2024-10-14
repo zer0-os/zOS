@@ -684,6 +684,11 @@ export class MatrixClient implements IChatClient {
     await this.matrix.setProfileInfo('avatar_url', { avatar_url: avatarUrl });
   }
 
+  async getProfileInfo(userId: string) {
+    await this.waitForConnection();
+    return await this.matrix.getProfileInfo(userId);
+  }
+
   async sendMessagesByChannelId(
     channelId: string,
     message: string,

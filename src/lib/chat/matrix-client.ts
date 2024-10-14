@@ -1542,15 +1542,13 @@ export class MatrixClient implements IChatClient {
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {
-    const members = room
+    return room
       .getMembers()
       .filter(
         (member) => member.membership === MembershipStateType.Join || member.membership === MembershipStateType.Invite
       )
       .filter((member) => member.userId !== this.userId)
       .map((member) => member.userId);
-
-    return members;
   }
 
   private async getRoomsUserIsIn() {

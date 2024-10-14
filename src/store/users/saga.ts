@@ -6,7 +6,12 @@ import { getUserSubHandle } from '../../lib/user';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/saga';
 import { setUser } from '../authentication';
-import { downloadFile, uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
+import {
+  downloadFile,
+  uploadFile,
+  editProfile as matrixEditProfile,
+  getProfileInfo as matrixGetProfileInfo,
+} from '../../lib/chat';
 import cloneDeep from 'lodash/cloneDeep';
 import { getProvider as getIndexedDbProvider } from '../../lib/storage/idb';
 import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
@@ -90,6 +95,10 @@ export function* fetchCurrentUserProfileImage() {
     profileImageUrl = yield call(updateUserProfileImageFromCache, currentUser);
   } else {
     profileImageUrl = currentUser.profileSummary?.profileImage;
+    if (!profileImageUrl) {
+      const profileInfo = yield call(matrixGetProfileInfo, currentUser.matrixId);
+      profileImageUrl = profileInfo?.avatar_url;
+    }
   }
 
   if (!profileImageUrl) {

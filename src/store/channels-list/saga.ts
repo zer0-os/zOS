@@ -27,15 +27,6 @@ import { getUserReadReceiptPreference } from '../user-profile/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { createUnencryptedConversation as createUnencryptedMatrixConversation } from '../../lib/chat';
 
-function* getProfileImage(user) {
-  let profileImage = user.profileImage;
-  if (!profileImage || typeof profileImage !== 'string' || profileImage.includes('res.cloudinary.com')) {
-    return '';
-  }
-
-  return yield call(downloadFile, user.profileImage);
-}
-
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [];
   for (const channel of channels) {
@@ -46,7 +37,6 @@ export function* mapToZeroUsers(channels: any[]) {
   const zeroUsers = yield call(getZEROUsers, allMatrixIds);
   const zeroUsersMap = {};
   for (const user of zeroUsers) {
-    user.profileImage = yield call(getProfileImage, user);
     zeroUsersMap[user.matrixId] = user;
   }
 

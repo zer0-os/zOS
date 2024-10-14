@@ -684,6 +684,11 @@ export class MatrixClient implements IChatClient {
     await this.matrix.setProfileInfo('avatar_url', { avatar_url: avatarUrl });
   }
 
+  async getProfileInfo(userId: string) {
+    await this.waitForConnection();
+    return await this.matrix.getProfileInfo(userId);
+  }
+
   async sendMessagesByChannelId(
     channelId: string,
     message: string,
@@ -1537,13 +1542,15 @@ export class MatrixClient implements IChatClient {
   }
 
   private getOtherMembersFromRoom(room: Room): string[] {
-    return room
+    const members = room
       .getMembers()
       .filter(
         (member) => member.membership === MembershipStateType.Join || member.membership === MembershipStateType.Invite
       )
       .filter((member) => member.userId !== this.userId)
       .map((member) => member.userId);
+
+    return members;
   }
 
   private async getRoomsUserIsIn() {

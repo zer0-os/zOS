@@ -129,14 +129,6 @@ export class FeatureFlags {
   set enableMeows(value: boolean) {
     this._setBoolean('enableMeows', value);
   }
-
-  get postImageMessagesToMatrix() {
-    return this._getBoolean('postImagesToMatrix', true);
-  }
-
-  set postImageMessagesToMatrix(value: boolean) {
-    this._setBoolean('postImagesToMatrix', value);
-  }
 }
 
 export const featureFlags = new FeatureFlags();

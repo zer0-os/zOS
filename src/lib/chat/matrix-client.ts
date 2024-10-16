@@ -247,10 +247,10 @@ export class MatrixClient implements IChatClient {
 
   async generateSecureBackup() {
     const recoveryKey = await this.matrix.getCrypto()!.createRecoveryKeyFromPassphrase();
-    return recoveryKey.encodedPrivateKey;
+    return recoveryKey;
   }
 
-  async saveSecureBackup(recoveryKey: string) {
+  async saveSecureBackup(recoveryKey) {
     await this.matrix.bootstrapCrossSigning({
       authUploadDeviceSigningKeys: async (makeRequest) => {
         await makeRequest({ identifier: { type: 'm.id.user', user: this.userId } });
@@ -260,9 +260,15 @@ export class MatrixClient implements IChatClient {
     // Set this because bootstrapping the secret storage will call back
     // and require this value. Not ideal but given the callback nature of
     // setting up the secret storage, this suffices for now.
-    this.secretStorageKey = recoveryKey;
+    this.secretStorageKey = recoveryKey.encodedPrivateKey;
     try {
-      await this.matrix.getCrypto().bootstrapSecretStorage({ setupNewKeyBackup: true });
+      await this.matrix.getCrypto().bootstrapSecretStorage({
+        // createSecretStorageKey is now required to correctly setup the secret storage?
+        createSecretStorageKey: async () => recoveryKey,
+        setupNewKeyBackup: true,
+      });
+    } catch (error) {
+      console.log('Fail: bootstrapSecretStorage failed', error);
     } finally {
       this.secretStorageKey = null;
     }

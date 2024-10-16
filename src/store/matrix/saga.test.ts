@@ -75,16 +75,29 @@ describe(getBackup, () => {
 describe(generateBackup, () => {
   it('generates a new backup', async () => {
     const { storeState } = await subject(generateBackup)
-      .provide([[call([chatClient, chatClient.generateSecureBackup]), 'new key']])
+      .provide([
+        [
+          call([chatClient, chatClient.generateSecureBackup]),
+          { encodedPrivateKey: 'new key - encoded', privateKey: 'new key - private' },
+        ],
+      ])
       .withReducer(rootReducer)
       .run();
 
-    expect(storeState.matrix.generatedRecoveryKey).toEqual('new key');
+    expect(storeState.matrix.generatedRecoveryKey).toEqual({
+      encodedPrivateKey: 'new key - encoded',
+      privateKey: Buffer.from('new key - private').toString('base64'),
+    });
   });
 
   it('sets stage to GenerateBackup', async () => {
     const { storeState } = await subject(generateBackup)
-      .provide([[call([chatClient, chatClient.generateSecureBackup]), 'new key']])
+      .provide([
+        [
+          call([chatClient, chatClient.generateSecureBackup]),
+          { encodedPrivateKey: 'new key - encoded', privateKey: 'new key - private' },
+        ],
+      ])
       .withReducer(rootReducer)
       .run();
 
@@ -103,7 +116,11 @@ describe(generateBackup, () => {
   });
 
   it('reuses existing backup key if present and does not call generateSecureBackup', async () => {
-    const initialState = { matrix: { generatedRecoveryKey: 'existing-key' } };
+    const initialState = {
+      matrix: {
+        generatedRecoveryKey: { encodedPrivateKey: 'existing key - encoded', privateKey: 'existing key - private' },
+      },
+    };
     const generateSecureBackupMock = jest.fn();
 
     const { storeState } = await subject(generateBackup)
@@ -114,7 +131,10 @@ describe(generateBackup, () => {
       ])
       .run();
 
-    expect(storeState.matrix.generatedRecoveryKey).toEqual('existing-key');
+    expect(storeState.matrix.generatedRecoveryKey).toEqual({
+      encodedPrivateKey: 'existing key - encoded',
+      privateKey: Buffer.from('existing key - private').toString('base64'),
+    });
     expect(generateSecureBackupMock).not.toHaveBeenCalled();
   });
 });
@@ -122,12 +142,28 @@ describe(generateBackup, () => {
 describe(saveBackup, () => {
   describe('success', () => {
     function successSubject(userInputKeyPhrase) {
-      const initialState = { matrix: { generatedRecoveryKey: 'generated-key' } };
+      const initialState = {
+        matrix: {
+          generatedRecoveryKey: {
+            encodedPrivateKey: 'generated-key',
+            privateKey: Buffer.from('generated-key').toString('base64'),
+          },
+        },
+      };
 
       return subject(saveBackup, { payload: userInputKeyPhrase })
-        .provide([[call([chatClient, chatClient.saveSecureBackup], 'generated-key'), { version: 1 }]])
+        .provide([
+          [
+            call([chatClient, chatClient.saveSecureBackup], {
+              encodedPrivateKey: 'generated-key',
+              privateKey: Uint8Array.from(Buffer.from('generated-key', 'base64')),
+            }),
+            { version: 1 },
+          ],
+        ])
         .withReducer(rootReducer, initialState as any);
     }
+
     it('clears the generated backup', async () => {
       const { storeState } = await successSubject('generated-key').run();
 
@@ -147,7 +183,14 @@ describe(saveBackup, () => {
 
   describe('failure', () => {
     it('sets a failure message', async () => {
-      const initialState = { matrix: { generatedRecoveryKey: 'generated-key' } };
+      const initialState = {
+        matrix: {
+          generatedRecoveryKey: {
+            encodedPrivateKey: 'generated-key',
+            privateKey: Buffer.from('generated-key').toString('base64'),
+          },
+        },
+      };
 
       const { storeState } = await subject(saveBackup, { payload: 'generated-key' })
         .provide([

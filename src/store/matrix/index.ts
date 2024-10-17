@@ -30,11 +30,16 @@ export enum BackupStage {
   Success = 'success',
 }
 
+export type GeneratedRecoveryKey = {
+  encodedPrivateKey: string;
+  privateKey: string;
+} | null;
+
 export type MatrixState = {
   isLoaded: boolean;
   backupExists: boolean;
   backupRestored: boolean;
-  generatedRecoveryKey: string | null;
+  generatedRecoveryKey: GeneratedRecoveryKey;
   successMessage: string;
   errorMessage: string;
   deviceId: string;

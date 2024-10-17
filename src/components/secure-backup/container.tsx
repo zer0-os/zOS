@@ -47,7 +47,7 @@ export class Container extends React.Component<Properties> {
       isLoading: !isLoaded,
       backupExists,
       backupRestored,
-      recoveryKey: generatedRecoveryKey || '',
+      recoveryKey: generatedRecoveryKey?.encodedPrivateKey || '',
       successMessage,
       errorMessage,
       videoAssetsPath: config.videoAssetsPath,

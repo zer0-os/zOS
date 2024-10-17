@@ -83,7 +83,10 @@ export function* generateBackup() {
 
   const existingKey = yield select((state) => state.matrix.generatedRecoveryKey);
   if (existingKey) {
-    yield put(setGeneratedRecoveryKey(existingKey));
+    const privateKeyBase64 = Buffer.from(existingKey.privateKey).toString('base64');
+    yield put(
+      setGeneratedRecoveryKey({ encodedPrivateKey: existingKey.encodedPrivateKey, privateKey: privateKeyBase64 })
+    );
     return;
   }
 
@@ -91,7 +94,9 @@ export function* generateBackup() {
 
   try {
     const key = yield call([chatClient, chatClient.generateSecureBackup]);
-    yield put(setGeneratedRecoveryKey(key));
+    // serialize the private key to base64 for temporary storage
+    const privateKeyBase64 = Buffer.from(key.privateKey).toString('base64');
+    yield put(setGeneratedRecoveryKey({ encodedPrivateKey: key.encodedPrivateKey, privateKey: privateKeyBase64 }));
   } catch (error) {
     yield put(setErrorMessage('Failed to generate backup key. Please try again.'));
     yield call(userInitiatedBackupDialog);
@@ -114,14 +119,21 @@ export function* saveBackup(action) {
   const generatedKey = yield select((state) => state.matrix.generatedRecoveryKey);
   const userInputKeyPhrase = action.payload;
 
-  if (userInputKeyPhrase !== generatedKey) {
+  if (userInputKeyPhrase !== generatedKey.encodedPrivateKey) {
     yield put(setErrorMessage('The phrase you entered does not match. Backup phrases are case sensitive'));
     return;
   }
 
   const chatClient = yield call(chat.get);
   try {
-    yield call([chatClient, chatClient.saveSecureBackup], generatedKey);
+    // convert the base64 encoded private key back to a Uint8Array
+    const privateKey = Uint8Array.from(Buffer.from(generatedKey.privateKey, 'base64'));
+
+    yield call([chatClient, chatClient.saveSecureBackup], {
+      encodedPrivateKey: generatedKey.encodedPrivateKey,
+      privateKey: privateKey,
+    });
+
     yield put(setGeneratedRecoveryKey(null));
     yield call(getBackup);
     yield put(setBackupStage(BackupStage.Success));

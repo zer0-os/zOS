@@ -1,4 +1,5 @@
 import { post } from '../../lib/api/rest';
+import { JoinRoomApiErrorCode } from './utils';
 
 export async function joinRoom(aliasOrId: string): Promise<{ success: boolean; response: any; message: string }> {
   try {
@@ -18,6 +19,10 @@ export async function joinRoom(aliasOrId: string): Promise<{ success: boolean; r
         message: error.response.body.message,
       };
     }
-    throw error;
+    return {
+      success: false,
+      response: JoinRoomApiErrorCode.UNKNOWN_ERROR,
+      message: '',
+    };
   }
 }

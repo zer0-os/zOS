@@ -24,7 +24,7 @@ export function previewDisplayDate(timestamp: number, currentDate = moment()) {
 
 export function getMessagePreview(message: Message, state: RootState) {
   if (!message) {
-    return '';
+    return 'Admin: System update or change occurred';
   }
 
   if (message.sendStatus === MessageSendStatus.FAILED) {

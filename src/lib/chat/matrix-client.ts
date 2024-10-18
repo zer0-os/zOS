@@ -1292,11 +1292,6 @@ export class MatrixClient implements IChatClient {
       await this.waitForSync();
       featureFlags.enableTimerLogs && console.timeEnd('xxxWaitForSync');
 
-      console.log(
-        'matrix client initialized ------------------------->>>> ',
-        await this.matrix.getProfileInfo(opts.userId)
-      );
-
       featureFlags.enableTimerLogs && console.timeEnd('xxxinitializeClient');
       return opts.userId;
     }

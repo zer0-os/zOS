@@ -41,9 +41,7 @@ export function* editProfile(action) {
       profileImage: profileImage === '' ? undefined : profileImage,
     });
     if (response.success) {
-      if (profileImage) {
-        yield spawn(matrixEditProfile, profileImage);
-      }
+      yield spawn(matrixEditProfile, { avatarUrl: profileImage, displayName: name });
 
       const localUrl = yield call(getLocalUrl, image);
       yield call(updateUserProfile, { name, profileImage: localUrl, primaryZID });

@@ -30,7 +30,7 @@ import {
 import { ConversationStatus, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
-import { ParentMessage, PowerLevels, User } from './types';
+import { MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
@@ -686,13 +686,15 @@ export class MatrixClient implements IChatClient {
     return URL.createObjectURL(blob);
   }
 
-  async editProfile(avatarUrl: string) {
+  async editProfile(profileInfo: MatrixProfileInfo = {}) {
     await this.waitForConnection();
-    if (!avatarUrl) {
-      return;
+    if (profileInfo.displayName) {
+      await this.matrix.setDisplayName(profileInfo.displayName);
     }
 
-    await this.matrix.setProfileInfo('avatar_url', { avatar_url: avatarUrl });
+    if (profileInfo.avatarUrl) {
+      await this.matrix.setAvatarUrl(profileInfo.avatarUrl);
+    }
   }
 
   async getProfileInfo(userId: string) {

@@ -2,7 +2,7 @@ import { EditMessageOptions, Message, MessagesResponse } from '../../store/messa
 import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
-import { ParentMessage, User } from './types';
+import { MatrixProfileInfo, ParentMessage, User } from './types';
 import { MemberNetworks } from '../../store/users/types';
 
 export interface RealtimeChatEvents {
@@ -82,7 +82,7 @@ export interface IChatClient {
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
   uploadFile(file: File): Promise<string>;
   downloadFile(fileUrl: string): Promise<any>;
-  editProfile(avatarUrl: string): Promise<any>;
+  editProfile(profileInfo: MatrixProfileInfo): Promise<void>;
   getAccessToken(): string | null;
   mxcUrlToHttp(mxcUrl: string): string;
   getProfileInfo(userId: string): Promise<{ avatar_url?: string; displayname?: string }>;
@@ -389,8 +389,8 @@ export async function downloadFile(fileUrl: string) {
   return chat.get().matrix.downloadFile(fileUrl);
 }
 
-export async function editProfile(avatarUrl: string) {
-  return chat.get().matrix.editProfile(avatarUrl);
+export async function editProfile(profileInfo: MatrixProfileInfo) {
+  return chat.get().matrix.editProfile(profileInfo);
 }
 
 export function getAccessToken(): string | null {

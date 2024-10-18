@@ -213,7 +213,7 @@ describe(updateUserProfileImageFromCache, () => {
           { success: false },
         ],
       ])
-      .not.spawn(matrixEditProfile, 'uploaded-image-url')
+      .not.spawn(matrixEditProfile, { avatarUrl: 'uploaded-image-url', displayName: 'Alice' })
       .run();
 
     expect(returnValue).toBeUndefined();
@@ -237,11 +237,11 @@ describe(updateUserProfileImageFromCache, () => {
           { success: true },
         ],
         [
-          spawn(matrixEditProfile, 'uploaded-image-url'),
+          spawn(matrixEditProfile, { avatarUrl: 'uploaded-image-url', displayName: 'Alice' }),
           undefined,
         ],
       ])
-      .spawn(matrixEditProfile, 'uploaded-image-url')
+      .spawn(matrixEditProfile, { avatarUrl: 'uploaded-image-url', displayName: 'Alice' })
       .run();
 
     expect(returnValue).toBe('uploaded-image-url');

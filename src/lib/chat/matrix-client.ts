@@ -1435,6 +1435,7 @@ export class MatrixClient implements IChatClient {
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
 
     const [admins, mods] = this.getRoomAdminsAndMods(room);
+    const isSocialChannel = groupType === 'social';
 
     const result = {
       id: room.roomId,
@@ -1442,7 +1443,7 @@ export class MatrixClient implements IChatClient {
       icon: avatarUrl,
       // Even if a member leaves they stay in the member list so this will still be correct
       // as zOS considers any conversation to have ever had more than 2 people to not be 1 on 1
-      isOneOnOne: room.getMembers().length === 2,
+      isOneOnOne: room.getMembers().length === 2 && !isSocialChannel,
       otherMembers: otherMembers,
       memberHistory: memberHistory,
       lastMessage: null,
@@ -1453,7 +1454,7 @@ export class MatrixClient implements IChatClient {
       adminMatrixIds: admins,
       moderatorIds: mods,
       labels: [],
-      isSocialChannel: groupType === 'social',
+      isSocialChannel,
     };
 
     featureFlags.enableTimerLogs && console.timeEnd(`xxxmapConversation${room.roomId}`);

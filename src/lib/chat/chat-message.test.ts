@@ -381,6 +381,14 @@ describe(getMessagePreview, () => {
 
     expect(preview).toEqual('Jack: shared a new post');
   });
+
+  it('returns a system update message if message is null', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(null, state);
+
+    expect(preview).toEqual('Admin: System update or change occurred');
+  });
 });
 
 describe(previewDisplayDate, () => {

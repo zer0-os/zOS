@@ -4,6 +4,11 @@ export interface ChatMessage {
   [key: string]: any;
 }
 
+export interface MatrixProfileInfo {
+  avatarUrl?: string;
+  displayName?: string;
+}
+
 export interface ParentMessage {
   messageId: number;
   userId: string;

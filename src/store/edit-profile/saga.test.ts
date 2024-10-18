@@ -32,7 +32,7 @@ describe('editProfile', () => {
           call(apiEditUserProfile, { name, profileImage, primaryZID }),
           { success: true },
         ],
-        [spawn(matrixEditProfile, profileImage), {}],
+        [spawn(matrixEditProfile, { avatarUrl: profileImage, displayName: name }), {}],
         [call(getLocalUrl, image), 'local-image-url'],
       ])
       .call(updateUserProfile, { name, profileImage: 'local-image-url', primaryZID })
@@ -43,7 +43,7 @@ describe('editProfile', () => {
           { profileSummary: { firstName: 'old-name', profileImage: 'old-image' } as any, primaryZID: 'old-zid' }
         )
       )
-      .spawn(matrixEditProfile, profileImage)
+      .spawn(matrixEditProfile, { avatarUrl: profileImage, displayName: name })
       .run();
 
     expect(authentication.user.data.profileSummary.firstName).toEqual('John Doe');
@@ -100,7 +100,7 @@ describe('editProfile', () => {
           call(apiEditUserProfile, { name, primaryZID, profileImage: undefined }),
           { success: true },
         ],
-        [spawn(matrixEditProfile, undefined), {}],
+        [spawn(matrixEditProfile, { avatarUrl: '', displayName: name }), {}],
       ])
       .withReducer(
         rootReducer,

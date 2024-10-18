@@ -68,7 +68,9 @@ export function* updateUserProfileImageFromCache(currentUser: User) {
       profileImage: profileImageUrl || undefined,
     });
     if (response.success) {
-      yield spawn(matrixEditProfile, profileImageUrl); // also update the profile image in the homeserver user directory
+      // also update the profile image & name in the homeserver user directory
+      yield spawn(matrixEditProfile, { avatarUrl: profileImageUrl, displayName: name });
+
       return profileImageUrl;
     } else {
       console.error('Failed to update user profile on registration:', response.error);

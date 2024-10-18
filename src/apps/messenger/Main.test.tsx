@@ -34,8 +34,8 @@ describe(Main, () => {
     expect(wrapper).not.toHaveElement(JoiningConversationDialog);
   });
 
-  it('renders direct message chat component when not a social channel and conversations loaded', () => {
-    const wrapper = subject({ context: { isAuthenticated: true } });
+  it('renders direct message chat component when not a social channel, conversations loaded and is valid', () => {
+    const wrapper = subject({ context: { isAuthenticated: true }, isValidConversation: true });
 
     expect(wrapper).toHaveElement(MessengerChat);
   });
@@ -51,13 +51,24 @@ describe(Main, () => {
     expect(wrapper).not.toHaveElement(MessengerChat);
   });
 
+  it('should not render messenger chat container when is not valid conversation', () => {
+    const wrapper = subject({
+      context: { isAuthenticated: true },
+      isSocialChannel: false,
+      isValidConversation: false,
+      isConversationsLoaded: false,
+    });
+
+    expect(wrapper).not.toHaveElement(MessengerFeed);
+  });
+
   it('renders messenger feed container when is social channel, conversations loaded and is valid conversation', () => {
     const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: true, isValidConversation: true });
 
     expect(wrapper).toHaveElement(MessengerFeed);
   });
 
-  it('should not render messenger feed container when is not social channel', () => {
+  it('should not render messenger feed container when is not social channel ', () => {
     const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: false, isValidConversation: true });
 
     expect(wrapper).not.toHaveElement(MessengerFeed);

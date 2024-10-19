@@ -121,5 +121,21 @@ describe(Container, () => {
         expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canEditGroup: false }));
       });
     });
+
+    it('gets users', () => {
+      const state = new StoreBuilder()
+        .managingGroup({})
+        .withUsers({ userId: 'user-id-1', matrixId: 'matrix-id-1', firstName: 'Jack' })
+        .withUsers({ userId: 'user-id-2', matrixId: 'matrix-id-2', firstName: 'Jill' });
+
+      const users = Container.mapState(state.build()).users;
+
+      expect(users['user-id-1']).toEqual(
+        expect.objectContaining({ userId: 'user-id-1', matrixId: 'matrix-id-1', firstName: 'Jack' })
+      );
+      expect(users['user-id-2']).toEqual(
+        expect.objectContaining({ userId: 'user-id-2', matrixId: 'matrix-id-2', firstName: 'Jill' })
+      );
+    });
   });
 });

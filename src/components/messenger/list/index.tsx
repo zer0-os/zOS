@@ -1,7 +1,7 @@
 import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
-import { Channel, onAddLabel, onRemoveLabel, openConversation } from '../../../store/channels';
+import { Channel, onAddLabel, onRemoveLabel, openConversation, User } from '../../../store/channels';
 import { denormalizeConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
@@ -63,6 +63,7 @@ export interface Properties extends PublicProperties {
   showRewardsTooltip: boolean;
   hasUnviewedRewards: boolean;
   isSecondaryConversationDataLoaded: boolean;
+  users: { [id: string]: User };
 
   startCreateConversation: () => void;
   back: () => void;
@@ -116,6 +117,7 @@ export class Container extends React.Component<Properties, State> {
       showRewardsTooltip: rewards.showRewardsInTooltip,
       hasUnviewedRewards: rewards.showNewRewardsIndicator,
       isSecondaryConversationDataLoaded,
+      users: state.normalized['users'] || {},
     };
   }
 
@@ -146,13 +148,22 @@ export class Container extends React.Component<Properties, State> {
   };
 
   usersInMyNetworks = async (search: string) => {
+    const { users: usersFromState, myUserId, receiveSearchResults } = this.props;
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
 
-    const filteredUsers = users?.filter((user) => user.id !== this.props.myUserId);
+    const mappedFilteredUsers = users
+      ?.filter((user) => user.id !== myUserId)
+      .map((user) => ({
+        ...user,
+        // since redux state has local blob url image
+        image: usersFromState[user.id]?.profileImage ?? user.profileImage,
+        profileImage: usersFromState[user.id]?.profileImage ?? user.profileImage,
+      }));
 
-    this.props.receiveSearchResults(filteredUsers);
+    // Send the filtered results to the state handler
+    receiveSearchResults(mappedFilteredUsers);
 
-    return filteredUsers?.map((user) => ({ ...user, image: user.profileImage }));
+    return mappedFilteredUsers;
   };
 
   startCreateConversation = () => {

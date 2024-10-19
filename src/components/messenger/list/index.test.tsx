@@ -54,7 +54,7 @@ describe('messenger-list', () => {
       onAddLabel: () => null,
       onRemoveLabel: () => null,
       createUnencryptedConversation: () => null,
-
+      users: {},
       ...props,
     };
 
@@ -130,6 +130,19 @@ describe('messenger-list', () => {
 
     const searchResults = await wrapper.find(CreateConversationPanel).prop('search')('jac');
 
+    expect(searchResults).toStrictEqual([{ id: 'user-id', image: 'image-url', profileImage: 'image-url' }]);
+  });
+
+  it('maps local profile image to search results', async function () {
+    when(mockSearchMyNetworksByName)
+      .calledWith('jac')
+      .mockResolvedValue([{ id: 'user-id', profileImage: 'mxc://contentId' }]);
+    const wrapper = subject({
+      stage: Stage.InitiateConversation,
+      users: { 'user-id': { profileImage: 'image-url' } } as any,
+    });
+
+    const searchResults = await wrapper.find(CreateConversationPanel).prop('search')('jac');
     expect(searchResults).toStrictEqual([{ id: 'user-id', image: 'image-url', profileImage: 'image-url' }]);
   });
 

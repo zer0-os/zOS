@@ -686,6 +686,42 @@ export class MatrixClient implements IChatClient {
     return URL.createObjectURL(blob);
   }
 
+  async batchDownloadFiles(fileUrls: string[], batchSize: number = 15): Promise<{ [fileUrl: string]: string }> {
+    // Helper function to download a single file
+    const downloadFileWithFallback = async (fileUrl: string) => {
+      try {
+        const downloadedUrl = await this.downloadFile(fileUrl);
+        return { [fileUrl]: downloadedUrl };
+      } catch (error) {
+        console.log(`Error downloading file ${fileUrl}:`, error);
+        return { [fileUrl]: '' }; // If the download fails, return an empty string as a fallback
+      }
+    };
+
+    const downloadResultsMap = {};
+
+    // Split the file URLs into batches
+    for (let i = 0; i < fileUrls.length; i += batchSize) {
+      const batch = fileUrls.slice(i, i + batchSize);
+
+      console.log(`Downloading batch ${i / batchSize + 1} of ${Math.ceil(fileUrls.length / batchSize)} `, batch);
+
+      // Download the current batch of files concurrently
+      const batchResultsArray: Array<{ [fileUrl: string]: string }> = await Promise.all(
+        batch.map((fileUrl) => downloadFileWithFallback(fileUrl))
+      );
+
+      console.log(`Download for batch ${i / batchSize + 1} complete: `, batchResultsArray);
+
+      // Merge the results of the current batch into the overall map
+      batchResultsArray.forEach((result) => {
+        Object.assign(downloadResultsMap, result);
+      });
+    }
+
+    return downloadResultsMap;
+  }
+
   async editProfile(profileInfo: MatrixProfileInfo = {}) {
     await this.waitForConnection();
     if (profileInfo.displayName) {

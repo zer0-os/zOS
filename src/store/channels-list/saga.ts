@@ -19,7 +19,6 @@ import { rawMessagesSelector, replaceOptimisticMessage } from '../messages/saga'
 import { getUserByMatrixId } from '../users/saga';
 import { rawChannel } from '../channels/selectors';
 import { getZEROUsers } from './api';
-import { union } from 'lodash';
 import { uniqNormalizedList } from '../utils';
 import { channelListStatus, rawConversationsList } from './selectors';
 import { setIsConversationsLoaded, setIsSecondaryConversationDataLoaded } from '../chat';
@@ -27,11 +26,37 @@ import { getUserReadReceiptPreference } from '../user-profile/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { createUnencryptedConversation as createUnencryptedMatrixConversation } from '../../lib/chat';
 
+function* getProfileImage(profileImage) {
+  if (!profileImage || typeof profileImage !== 'string' || profileImage.includes('res.cloudinary.com')) {
+    return '';
+  }
+
+  console.log('downloading profile image: ', profileImage);
+  return yield call(downloadFile, profileImage);
+}
+
+export function* parseProfileImages(matrixUsersMap, zeroUsersMap: { [id: string]: User }) {
+  // Iterate over all zeroUsersMap entries
+  for (const [matrixId, zeroUser] of Object.entries(zeroUsersMap)) {
+    const matrixUser = matrixUsersMap[matrixId];
+    const profileImageUrl = matrixUser?.profileImage || zeroUser.profileImage;
+
+    // Update zeroUser profile image with the downloaded version (if available)
+    zeroUser.profileImage = yield call(getProfileImage, profileImageUrl);
+  }
+}
+
 export function* mapToZeroUsers(channels: any[]) {
-  let allMatrixIds = [];
+  let allMatrixIds = [],
+    matrixUsersMap = {};
+
   for (const channel of channels) {
-    const matrixIds = channel.memberHistory.map((u) => u.matrixId);
-    allMatrixIds = union(allMatrixIds, matrixIds);
+    channel.memberHistory.forEach((member) => {
+      matrixUsersMap[member.matrixId] = member;
+    });
+
+    // Use the spread operator and Set to remove duplicates and improve union performance
+    allMatrixIds = [...new Set([...allMatrixIds, ...channel.memberHistory.map((u) => u.matrixId)])];
   }
 
   const zeroUsers = yield call(getZEROUsers, allMatrixIds);
@@ -40,6 +65,7 @@ export function* mapToZeroUsers(channels: any[]) {
     zeroUsersMap[user.matrixId] = user;
   }
 
+  yield call(parseProfileImages, matrixUsersMap, zeroUsersMap);
   yield call(mapChannelMembers, channels, zeroUsersMap);
   yield call(mapChannelMessages, channels, zeroUsersMap);
   return;

@@ -392,7 +392,7 @@ export async function downloadFile(fileUrl: string) {
 
 export async function batchDownloadFiles(
   fileUrls: string[],
-  batchSize: number = 15
+  batchSize: number = 20
 ): Promise<{ [fileUrl: string]: string }> {
   return chat.get().matrix.batchDownloadFiles(fileUrls, batchSize);
 }

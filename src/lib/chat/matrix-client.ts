@@ -686,7 +686,7 @@ export class MatrixClient implements IChatClient {
     return URL.createObjectURL(blob);
   }
 
-  async batchDownloadFiles(fileUrls: string[], batchSize: number = 15): Promise<{ [fileUrl: string]: string }> {
+  async batchDownloadFiles(fileUrls: string[], batchSize: number = 20): Promise<{ [fileUrl: string]: string }> {
     // Helper function to download a single file
     const downloadFileWithFallback = async (fileUrl: string) => {
       try {

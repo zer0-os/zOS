@@ -397,7 +397,7 @@ export async function downloadFile(fileUrl: string) {
 export async function batchDownloadFiles(
   fileUrls: string[],
   isThumbnail: boolean = false,
-  batchSize: number = 20
+  batchSize: number = 25
 ): Promise<{ [fileUrl: string]: string }> {
   return chat.get().matrix.batchDownloadFiles(fileUrls, isThumbnail, batchSize);
 }

@@ -693,7 +693,7 @@ export class MatrixClient implements IChatClient {
   async batchDownloadFiles(
     fileUrls: string[],
     isThumbnail: boolean = false,
-    batchSize: number = 20
+    batchSize: number = 25
   ): Promise<{ [fileUrl: string]: string }> {
     // Helper function to download a single file
     const downloadFileWithFallback = async (fileUrl: string) => {

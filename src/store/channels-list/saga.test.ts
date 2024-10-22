@@ -374,11 +374,15 @@ describe('channels list saga', () => {
       return [
         [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
         [
-          call(batchDownloadFiles, [
-            'mxc://profile-image-url-1',
-            'mxc://profile-image-url-2',
-            'mxc://profile-image-url-3',
-          ]),
+          call(
+            batchDownloadFiles,
+            [
+              'mxc://profile-image-url-1',
+              'mxc://profile-image-url-2',
+              'mxc://profile-image-url-3',
+            ],
+            true
+          ),
           {
             'mxc://profile-image-url-1': 'blob://profile-image-url-1',
             'mxc://profile-image-url-2': 'blob://profile-image-url-2',

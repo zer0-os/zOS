@@ -28,7 +28,8 @@ import { createUnencryptedConversation as createUnencryptedMatrixConversation } 
 import { isFileUploadedToMatrix } from '../../lib/chat/matrix/media';
 
 export function* parseProfileImages(matrixUsersMap, zeroUsersMap: { [id: string]: User }) {
-  const profileImageUrls = [];
+  // Create a map of users that need profile image downloads
+  const profileImageUrlsMap: { [url: string]: string } = {};
 
   // Iterate over all zeroUsersMap entries
   for (const [matrixId, zeroUser] of Object.entries(zeroUsersMap)) {
@@ -36,16 +37,20 @@ export function* parseProfileImages(matrixUsersMap, zeroUsersMap: { [id: string]
     const profileImageUrl = matrixUser?.profileImage || zeroUser.profileImage;
 
     if (isFileUploadedToMatrix(profileImageUrl)) {
-      profileImageUrls.push(profileImageUrl);
+      profileImageUrlsMap[profileImageUrl] = matrixId; // Map the URL to the user for easier update later
     }
   }
 
-  // Download all profile images in parallel (in batches of 15)
-  const profileImages = yield call(batchDownloadFiles, profileImageUrls);
+  // Download all profile images in parallel (in batches of 20)
+  const profileImageUrls = Object.keys(profileImageUrlsMap);
+  if (profileImageUrls.length > 0) {
+    const downloadedProfileImages = yield call(batchDownloadFiles, profileImageUrls, true);
 
-  // Update zeroUsersMap with the downloaded profile images
-  for (const [_matrixId, zeroUser] of Object.entries(zeroUsersMap)) {
-    zeroUser.profileImage = profileImages[zeroUser.profileImage];
+    // Update zeroUsersMap with the downloaded profile images
+    for (const [profileImageUrl, matrixId] of Object.entries(profileImageUrlsMap)) {
+      zeroUsersMap[matrixId].profileImage =
+        downloadedProfileImages[profileImageUrl] || zeroUsersMap[matrixId].profileImage;
+    }
   }
 }
 

@@ -646,8 +646,12 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  mxcUrlToHttp(mxcUrl: string): string {
-    return this.matrix.mxcUrlToHttp(mxcUrl, undefined, undefined, undefined, undefined, true, true);
+  mxcUrlToHttp(mxcUrl: string, isThumbnail: boolean = false): string {
+    const height = isThumbnail ? 32 : undefined;
+    const width = isThumbnail ? 32 : undefined;
+    const resizeMethod = isThumbnail ? 'scale' : undefined;
+
+    return this.matrix.mxcUrlToHttp(mxcUrl, width, height, resizeMethod, undefined, true, true);
   }
 
   async uploadFile(file: File): Promise<string> {
@@ -664,14 +668,14 @@ export class MatrixClient implements IChatClient {
 
   // if the file is uploaded to the homeserver, then we need bearer token to download it
   // since the endpoint to download the file is protected
-  async downloadFile(fileUrl: string) {
+  async downloadFile(fileUrl: string, isThumbnail: boolean = false): Promise<string> {
     if (!isFileUploadedToMatrix(fileUrl)) {
       return fileUrl;
     }
 
     await this.waitForConnection();
 
-    const response = await fetch(this.mxcUrlToHttp(fileUrl), {
+    const response = await fetch(this.mxcUrlToHttp(fileUrl, isThumbnail), {
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
       },
@@ -686,11 +690,15 @@ export class MatrixClient implements IChatClient {
     return URL.createObjectURL(blob);
   }
 
-  async batchDownloadFiles(fileUrls: string[], batchSize: number = 20): Promise<{ [fileUrl: string]: string }> {
+  async batchDownloadFiles(
+    fileUrls: string[],
+    isThumbnail: boolean = false,
+    batchSize: number = 20
+  ): Promise<{ [fileUrl: string]: string }> {
     // Helper function to download a single file
     const downloadFileWithFallback = async (fileUrl: string) => {
       try {
-        const downloadedUrl = await this.downloadFile(fileUrl);
+        const downloadedUrl = await this.downloadFile(fileUrl, isThumbnail);
         return { [fileUrl]: downloadedUrl };
       } catch (error) {
         console.log(`Error downloading file ${fileUrl}:`, error);

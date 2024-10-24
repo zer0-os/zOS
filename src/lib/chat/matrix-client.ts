@@ -484,13 +484,27 @@ export class MatrixClient implements IChatClient {
   }
 
   // Post Messages
-  async getPostMessagesByChannelId(roomId: string, _lastCreatedAt?: number): Promise<PostsResponse> {
+  async getPostMessagesByChannelId(roomId: string, lastCreatedAt?: number): Promise<PostsResponse> {
     await this.waitForConnection();
     const room = this.matrix.getRoom(roomId);
     const liveTimeline = room.getLiveTimeline();
-    const hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 200 });
-    const events = liveTimeline.getEvents().map((event) => event.getEffectiveEvent());
-    const postMessages = await this.getAllPostMessagesFromRoom(events);
+    let hasMore = false;
+
+    let events = liveTimeline.getEvents();
+
+    if (lastCreatedAt) {
+      // Filter out messages that are newer than `lastCreatedAt` (only get older messages)
+      hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 200 });
+      events = events.filter((event) => {
+        const timestamp = event.getTs();
+        return timestamp < lastCreatedAt;
+      });
+    } else {
+      hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 200 });
+    }
+
+    const effectiveEvents = events.map((event) => event.getEffectiveEvent());
+    const postMessages = await this.getAllPostMessagesFromRoom(effectiveEvents);
 
     return { postMessages, hasMore };
   }

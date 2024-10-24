@@ -3,7 +3,7 @@ import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
 import { receive, denormalizeConversations, setStatus } from '.';
-import { chat, downloadFile, getRoomTags } from '../../lib/chat';
+import { batchDownloadFiles, chat, downloadFile, getRoomTags } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
@@ -25,24 +25,32 @@ import { setIsConversationsLoaded, setIsSecondaryConversationDataLoaded } from '
 import { getUserReadReceiptPreference } from '../user-profile/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { createUnencryptedConversation as createUnencryptedMatrixConversation } from '../../lib/chat';
-
-function* getProfileImage(profileImage) {
-  if (!profileImage || typeof profileImage !== 'string' || profileImage.includes('res.cloudinary.com')) {
-    return '';
-  }
-
-  console.log('downloading profile image: ', profileImage);
-  return yield call(downloadFile, profileImage);
-}
+import { isFileUploadedToMatrix } from '../../lib/chat/matrix/media';
 
 export function* parseProfileImages(matrixUsersMap, zeroUsersMap: { [id: string]: User }) {
+  // Create a map of users that need profile image downloads
+  const profileImageUrlsMap: { [url: string]: string } = {};
+
   // Iterate over all zeroUsersMap entries
   for (const [matrixId, zeroUser] of Object.entries(zeroUsersMap)) {
     const matrixUser = matrixUsersMap[matrixId];
     const profileImageUrl = matrixUser?.profileImage || zeroUser.profileImage;
 
-    // Update zeroUser profile image with the downloaded version (if available)
-    zeroUser.profileImage = yield call(getProfileImage, profileImageUrl);
+    if (isFileUploadedToMatrix(profileImageUrl)) {
+      profileImageUrlsMap[profileImageUrl] = matrixId; // Map the URL to the user for easier update later
+    }
+  }
+
+  // Download all profile images in parallel (in batches of 20)
+  const profileImageUrls = Object.keys(profileImageUrlsMap);
+  if (profileImageUrls.length > 0) {
+    const downloadedProfileImages = yield call(batchDownloadFiles, profileImageUrls, true);
+
+    // Update zeroUsersMap with the downloaded profile images
+    for (const [profileImageUrl, matrixId] of Object.entries(profileImageUrlsMap)) {
+      zeroUsersMap[matrixId].profileImage =
+        downloadedProfileImages[profileImageUrl] || zeroUsersMap[matrixId].profileImage;
+    }
   }
 }
 

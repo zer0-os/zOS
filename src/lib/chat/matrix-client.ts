@@ -674,8 +674,12 @@ export class MatrixClient implements IChatClient {
     });
   }
 
-  mxcUrlToHttp(mxcUrl: string): string {
-    return this.matrix.mxcUrlToHttp(mxcUrl, undefined, undefined, undefined, undefined, true, true);
+  mxcUrlToHttp(mxcUrl: string, isThumbnail: boolean = false): string {
+    const height = isThumbnail ? 32 : undefined;
+    const width = isThumbnail ? 32 : undefined;
+    const resizeMethod = isThumbnail ? 'scale' : undefined;
+
+    return this.matrix.mxcUrlToHttp(mxcUrl, width, height, resizeMethod, undefined, true, true);
   }
 
   async uploadFile(file: File): Promise<string> {
@@ -692,14 +696,14 @@ export class MatrixClient implements IChatClient {
 
   // if the file is uploaded to the homeserver, then we need bearer token to download it
   // since the endpoint to download the file is protected
-  async downloadFile(fileUrl: string) {
+  async downloadFile(fileUrl: string, isThumbnail: boolean = false): Promise<string> {
     if (!isFileUploadedToMatrix(fileUrl)) {
       return fileUrl;
     }
 
     await this.waitForConnection();
 
-    const response = await fetch(this.mxcUrlToHttp(fileUrl), {
+    const response = await fetch(this.mxcUrlToHttp(fileUrl, isThumbnail), {
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
       },
@@ -712,6 +716,46 @@ export class MatrixClient implements IChatClient {
 
     const blob = await response.blob();
     return URL.createObjectURL(blob);
+  }
+
+  async batchDownloadFiles(
+    fileUrls: string[],
+    isThumbnail: boolean = false,
+    batchSize: number = 25
+  ): Promise<{ [fileUrl: string]: string }> {
+    // Helper function to download a single file
+    const downloadFileWithFallback = async (fileUrl: string) => {
+      try {
+        const downloadedUrl = await this.downloadFile(fileUrl, isThumbnail);
+        return { [fileUrl]: downloadedUrl };
+      } catch (error) {
+        console.log(`Error downloading file ${fileUrl}:`, error);
+        return { [fileUrl]: '' }; // If the download fails, return an empty string as a fallback
+      }
+    };
+
+    const downloadResultsMap = {};
+
+    // Split the file URLs into batches
+    for (let i = 0; i < fileUrls.length; i += batchSize) {
+      const batch = fileUrls.slice(i, i + batchSize);
+
+      console.log(`Downloading batch ${i / batchSize + 1} of ${Math.ceil(fileUrls.length / batchSize)} `, batch);
+
+      // Download the current batch of files concurrently
+      const batchResultsArray: Array<{ [fileUrl: string]: string }> = await Promise.all(
+        batch.map((fileUrl) => downloadFileWithFallback(fileUrl))
+      );
+
+      console.log(`Download for batch ${i / batchSize + 1} complete: `, batchResultsArray);
+
+      // Merge the results of the current batch into the overall map
+      batchResultsArray.forEach((result) => {
+        Object.assign(downloadResultsMap, result);
+      });
+    }
+
+    return downloadResultsMap;
   }
 
   async editProfile(profileInfo: MatrixProfileInfo = {}) {

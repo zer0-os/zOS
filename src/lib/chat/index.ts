@@ -82,6 +82,11 @@ export interface IChatClient {
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
   uploadFile(file: File): Promise<string>;
   downloadFile(fileUrl: string): Promise<any>;
+  batchDownloadFiles(
+    fileUrls: string[],
+    isThumbnail: boolean,
+    batchSize: number
+  ): Promise<{ [fileUrl: string]: string }>;
   editProfile(profileInfo: MatrixProfileInfo): Promise<void>;
   getAccessToken(): string | null;
   mxcUrlToHttp(mxcUrl: string): string;
@@ -387,6 +392,14 @@ export async function uploadFile(file: File): Promise<string> {
 
 export async function downloadFile(fileUrl: string) {
   return chat.get().matrix.downloadFile(fileUrl);
+}
+
+export async function batchDownloadFiles(
+  fileUrls: string[],
+  isThumbnail: boolean = false,
+  batchSize: number = 25
+): Promise<{ [fileUrl: string]: string }> {
+  return chat.get().matrix.batchDownloadFiles(fileUrls, isThumbnail, batchSize);
 }
 
 export async function editProfile(profileInfo: MatrixProfileInfo) {

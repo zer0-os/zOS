@@ -1,7 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { chat, downloadFile, getRoomTags } from '../../lib/chat';
+import { batchDownloadFiles, chat, getRoomTags } from '../../lib/chat';
 
 import {
   fetchConversations,
@@ -30,7 +30,6 @@ import { getZEROUsers } from './api';
 import { mapAdminUserIdToZeroUserId, mapChannelMembers } from './utils';
 import { openFirstConversation } from '../channels/saga';
 import { getUserReadReceiptPreference } from '../user-profile/saga';
-import cloneDeep from 'lodash/cloneDeep';
 
 const mockConversation = (id: string) => ({
   id: `conversation_${id}`,
@@ -312,60 +311,86 @@ describe('channels list saga', () => {
   });
 
   describe(mapToZeroUsers, () => {
-    const rooms = [
-      {
-        id: 'room-1',
-        otherMembers: [],
-        memberHistory: [
-          { matrixId: 'matrix-id-1', userId: 'matrix-id-1' },
-          { matrixId: 'matrix-id-2', userId: 'matrix-id-2' },
-        ],
-        messages: [],
-        moderatorIds: [],
-      },
-      {
-        id: 'room-2',
-        otherMembers: [],
-        memberHistory: [
-          { matrixId: 'matrix-id-3', userId: 'matrix-id-3' },
-        ],
-        messages: [],
-        moderatorIds: [],
-      },
-    ] as any;
+    let rooms, zeroUsers;
 
-    const zeroUsers = [
-      {
-        userId: 'user-1',
-        matrixId: 'matrix-id-1',
-        profileId: 'profile-1',
-        firstName: 'first-1',
-        lastName: 'last-1',
-        primaryZID: 'primary-zid-1',
-        displaySubHandle: 'primary-zid-1',
-        profileImage: 'profile-image-url-1',
-      },
-      {
-        userId: 'user-2',
-        matrixId: 'matrix-id-2',
-        profileId: 'profile-2',
-        firstName: 'first-2',
-        lastName: 'last-2',
-        primaryZID: 'primary-zid-2',
-        displaySubHandle: 'primary-zid-2',
-        profileImage: 'profile-image-url-2',
-      },
-      {
-        userId: 'user-3',
-        matrixId: 'matrix-id-3',
-        profileId: 'profile-3',
-        firstName: 'first-3',
-        lastName: 'last-3',
-        primaryZID: '',
-        displaySubHandle: '',
-        profileImage: 'profile-image-url-3',
-      },
-    ] as any;
+    beforeEach(() => {
+      rooms = [
+        {
+          id: 'room-1',
+          otherMembers: [],
+          memberHistory: [
+            { matrixId: 'matrix-id-1', userId: 'matrix-id-1' },
+            { matrixId: 'matrix-id-2', userId: 'matrix-id-2' },
+          ],
+          messages: [],
+          moderatorIds: [],
+        },
+        {
+          id: 'room-2',
+          otherMembers: [],
+          memberHistory: [
+            { matrixId: 'matrix-id-3', userId: 'matrix-id-3' },
+          ],
+          messages: [],
+          moderatorIds: [],
+        },
+      ] as any;
+
+      zeroUsers = [
+        {
+          userId: 'user-1',
+          matrixId: 'matrix-id-1',
+          profileId: 'profile-1',
+          firstName: 'first-1',
+          lastName: 'last-1',
+          primaryZID: 'primary-zid-1',
+          displaySubHandle: 'primary-zid-1',
+          profileImage: 'mxc://profile-image-url-1',
+        },
+        {
+          userId: 'user-2',
+          matrixId: 'matrix-id-2',
+          profileId: 'profile-2',
+          firstName: 'first-2',
+          lastName: 'last-2',
+          primaryZID: 'primary-zid-2',
+          displaySubHandle: 'primary-zid-2',
+          profileImage: 'mxc://profile-image-url-2',
+        },
+        {
+          userId: 'user-3',
+          matrixId: 'matrix-id-3',
+          profileId: 'profile-3',
+          firstName: 'first-3',
+          lastName: 'last-3',
+          primaryZID: '',
+          displaySubHandle: '',
+          profileImage: 'mxc://profile-image-url-3',
+        },
+      ] as any;
+    });
+
+    const getProviders = (zeroUsers) => {
+      return [
+        [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
+        [
+          call(
+            batchDownloadFiles,
+            [
+              'mxc://profile-image-url-1',
+              'mxc://profile-image-url-2',
+              'mxc://profile-image-url-3',
+            ],
+            true
+          ),
+          {
+            'mxc://profile-image-url-1': 'blob://profile-image-url-1',
+            'mxc://profile-image-url-2': 'blob://profile-image-url-2',
+            'mxc://profile-image-url-3': 'blob://profile-image-url-3',
+          },
+        ],
+      ] as any;
+    };
 
     it('calls getZEROUsers by merging all matrixIds', async () => {
       await expectSaga(mapToZeroUsers, rooms)
@@ -374,7 +399,7 @@ describe('channels list saga', () => {
         .run();
     });
 
-    it('creates map for zero users and downloads profile images after fetching from api', async () => {
+    it('creates map for zero users and downloads profile images', async () => {
       const expectedMap = {
         'matrix-id-1': {
           userId: 'user-1',
@@ -384,7 +409,7 @@ describe('channels list saga', () => {
           lastName: 'last-1',
           primaryZID: 'primary-zid-1',
           displaySubHandle: 'primary-zid-1',
-          profileImage: 'profile-image-url-1',
+          profileImage: 'blob://profile-image-url-1',
         },
         'matrix-id-2': {
           userId: 'user-2',
@@ -394,7 +419,7 @@ describe('channels list saga', () => {
           lastName: 'last-2',
           primaryZID: 'primary-zid-2',
           displaySubHandle: 'primary-zid-2',
-          profileImage: 'profile-image-url-2',
+          profileImage: 'blob://profile-image-url-2',
         },
         'matrix-id-3': {
           userId: 'user-3',
@@ -404,17 +429,14 @@ describe('channels list saga', () => {
           lastName: 'last-3',
           primaryZID: '',
           displaySubHandle: '',
-          profileImage: 'profile-image-url-3',
+          profileImage: 'blob://profile-image-url-3',
         },
       };
 
-      const clonedRooms = cloneDeep(rooms);
-      await expectSaga(mapToZeroUsers, clonedRooms)
+      await expectSaga(mapToZeroUsers, rooms)
         .withReducer(rootReducer)
-        .provide([
-          [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
-        ])
-        .call(mapChannelMembers, clonedRooms, expectedMap)
+        .provide(getProviders(zeroUsers))
+        .call(mapChannelMembers, rooms, expectedMap)
         .run();
     });
 
@@ -423,12 +445,7 @@ describe('channels list saga', () => {
 
       await expectSaga(mapToZeroUsers, rooms)
         .withReducer(rootReducer, initialState.build())
-        .provide([
-          [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
-          [call(downloadFile, 'profile-image-url-1'), 'profile-image-local-url-1'],
-          [call(downloadFile, 'profile-image-url-2'), 'profile-image-local-url-2'],
-          [call(downloadFile, 'profile-image-url-3'), 'profile-image-local-url-3'],
-        ])
+        .provide(getProviders(zeroUsers))
         .run();
 
       expect(rooms[0].memberHistory).toIncludeSameMembers([
@@ -438,7 +455,7 @@ describe('channels list saga', () => {
           profileId: 'profile-1',
           firstName: 'first-1',
           lastName: 'last-1',
-          profileImage: 'profile-image-local-url-1',
+          profileImage: 'blob://profile-image-url-1',
           primaryZID: 'primary-zid-1',
           displaySubHandle: 'primary-zid-1',
         },
@@ -448,7 +465,7 @@ describe('channels list saga', () => {
           profileId: 'profile-2',
           firstName: 'first-2',
           lastName: 'last-2',
-          profileImage: 'profile-image-local-url-2',
+          profileImage: 'blob://profile-image-url-2',
           primaryZID: 'primary-zid-2',
           displaySubHandle: 'primary-zid-2',
         },
@@ -461,7 +478,7 @@ describe('channels list saga', () => {
           profileId: 'profile-3',
           firstName: 'first-3',
           lastName: 'last-3',
-          profileImage: 'profile-image-local-url-3',
+          profileImage: 'blob://profile-image-url-3',
           primaryZID: '',
           displaySubHandle: '',
         },
@@ -479,12 +496,7 @@ describe('channels list saga', () => {
 
       await expectSaga(mapToZeroUsers, rooms)
         .withReducer(rootReducer, initialState.build())
-        .provide([
-          [call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers],
-          [call(downloadFile, 'profile-image-url-1'), 'profile-image-local-url-1'],
-          [call(downloadFile, 'profile-image-url-2'), 'profile-image-local-url-2'],
-          [call(downloadFile, 'profile-image-url-3'), 'profile-image-local-url-3'],
-        ])
+        .provide(getProviders(zeroUsers))
         .run();
 
       expect(rooms[0].messages[0].sender).toStrictEqual({
@@ -492,7 +504,7 @@ describe('channels list saga', () => {
         profileId: 'profile-1',
         firstName: 'first-1',
         lastName: 'last-1',
-        profileImage: 'profile-image-local-url-1',
+        profileImage: 'blob://profile-image-url-1',
         primaryZID: 'primary-zid-1',
         displaySubHandle: 'primary-zid-1',
       });
@@ -501,7 +513,7 @@ describe('channels list saga', () => {
         profileId: 'profile-2',
         firstName: 'first-2',
         lastName: 'last-2',
-        profileImage: 'profile-image-local-url-2',
+        profileImage: 'blob://profile-image-url-2',
         primaryZID: 'primary-zid-2',
         displaySubHandle: 'primary-zid-2',
       });
@@ -510,7 +522,7 @@ describe('channels list saga', () => {
         profileId: 'profile-3',
         firstName: 'first-3',
         lastName: 'last-3',
-        profileImage: 'profile-image-local-url-3',
+        profileImage: 'blob://profile-image-url-3',
         primaryZID: '',
         displaySubHandle: '',
       });
@@ -524,7 +536,7 @@ describe('channels list saga', () => {
 
       await expectSaga(mapToZeroUsers, rooms)
         .withReducer(rootReducer, initialState.build())
-        .provide([[call(getZEROUsers, ['matrix-id-1', 'matrix-id-2', 'matrix-id-3']), zeroUsers]])
+        .provide(getProviders(zeroUsers))
         .run();
 
       expect(rooms[0].moderatorIds).toIncludeSameMembers(['user-1', 'user-2']);

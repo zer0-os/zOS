@@ -1,6 +1,7 @@
 import encrypt from 'matrix-encrypt-attachment';
 import { getAttachmentUrl } from '../../api/attachment';
 import { getAccessToken, mxcUrlToHttp } from '..';
+import { encode } from 'blurhash';
 
 /**
  * Read the file as an ArrayBuffer.
@@ -38,6 +39,61 @@ export function getImageDimensions(file: File): Promise<{ width: number; height:
     };
     img.src = URL.createObjectURL(file);
   });
+}
+
+/**
+ * Get the pixel data of an image file.
+ * @param {File} file The image file to read.
+ * @return {Promise} A promise that resolves with an ImageData object containing
+ *   the pixel data of the image when it is loaded.
+ */
+export function getImagePixelData(file: File): Promise<ImageData> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const imageData = event.target?.result;
+
+      const img = new Image();
+      img.src = imageData as string;
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, img.width, img.height);
+          const imageData = ctx.getImageData(0, 0, img.width, img.height);
+          resolve(imageData);
+        } else {
+          reject(new Error('Failed to get canvas context'));
+        }
+      };
+
+      img.onerror = (error) => {
+        reject(error);
+      };
+    };
+
+    reader.onerror = (error) => {
+      reject(error);
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Generate a Blurhash for an image file.
+ * @param {File} file The image file to read.
+ * @return {Promise} A promise that resolves with the Blurhash string when the image is processed.
+ */
+export async function generateBlurhash(file: File): Promise<string> {
+  const imageData = await getImagePixelData(file);
+  const blurhash = encode(imageData.data, imageData.width, imageData.height, 3, 2);
+  return blurhash;
 }
 
 export class UploadCanceledError extends Error {}

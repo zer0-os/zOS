@@ -46,7 +46,7 @@ import {
 } from './matrix/types';
 import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { SessionStorage } from './session-storage';
-import { encryptFile, getImageDimensions, isFileUploadedToMatrix } from './matrix/media';
+import { encryptFile, generateBlurhash, getImageDimensions, isFileUploadedToMatrix } from './matrix/media';
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
 import { PostsResponse } from '../../store/posts';
@@ -851,6 +851,16 @@ export class MatrixClient implements IChatClient {
       url = await this.uploadFile(media);
     }
 
+    // Generate the blurhash for the image
+    let blurhash = null;
+    if (media.type.startsWith('image/')) {
+      try {
+        blurhash = await generateBlurhash(media);
+      } catch (error) {
+        console.error('Failed to generate Blurhash:', error);
+      }
+    }
+
     const content: any = {
       body: '',
       msgtype: MsgType.Image,
@@ -864,8 +874,8 @@ export class MatrixClient implements IChatClient {
         height,
         w: width,
         h: height,
-        // Optional: blurhash and thumbnail fields (null or undefined for now)
-        'xyz.amorgan.blurhash': null,
+        // Optional: blurhash and thumbnail fields
+        'xyz.amorgan.blurhash': blurhash,
         thumbnail_url: null,
         thumbnail_info: null,
       },

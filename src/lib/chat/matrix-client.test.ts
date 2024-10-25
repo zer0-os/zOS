@@ -12,6 +12,7 @@ jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefi
 
 const mockEncryptFile = jest.fn();
 const mockGetImageDimensions = jest.fn();
+const mockGenerateBlurhash = jest.fn();
 jest.mock('./matrix/media', () => {
   const originalModule = jest.requireActual('./matrix/media');
 
@@ -19,6 +20,7 @@ jest.mock('./matrix/media', () => {
     ...originalModule,
     encryptFile: (...args) => mockEncryptFile(...args),
     getImageDimensions: (...args) => mockGetImageDimensions(...args),
+    generateBlurhash: (...args) => mockGenerateBlurhash(...args),
   };
 });
 
@@ -958,6 +960,8 @@ describe('matrix client', () => {
       };
 
       when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
+      when(mockGenerateBlurhash).calledWith(expect.anything()).mockResolvedValue('blurhash-string');
+
       const sendMessage = jest.fn(() =>
         Promise.resolve({
           event_id: 'new-message-id',
@@ -997,7 +1001,7 @@ describe('matrix client', () => {
             height: 600,
             w: 800,
             h: 600,
-            'xyz.amorgan.blurhash': null,
+            'xyz.amorgan.blurhash': 'blurhash-string',
             thumbnail_url: null,
             thumbnail_info: null,
           },
@@ -1022,6 +1026,7 @@ describe('matrix client', () => {
       };
 
       when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
+      when(mockGenerateBlurhash).calledWith(expect.anything()).mockResolvedValue('blurhash-string');
 
       when(mockEncryptFile)
         .calledWith(expect.anything())
@@ -1078,7 +1083,7 @@ describe('matrix client', () => {
             height: 600,
             w: 800,
             h: 600,
-            'xyz.amorgan.blurhash': null,
+            'xyz.amorgan.blurhash': 'blurhash-string',
             thumbnail_url: null,
             thumbnail_info: null,
           },

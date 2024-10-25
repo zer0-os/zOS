@@ -33,6 +33,7 @@
     "@zer0-os/zos-component-library": "0.18.9",
     "@zero-tech/zui": "^1.14.0",
     "assert": "^2.1.0",
+    "blurhash": "^2.0.5",
     "buffer": "^6.0.3",
     "classnames": "^2.3.1",
     "emoji-mart": "^3.0.1",

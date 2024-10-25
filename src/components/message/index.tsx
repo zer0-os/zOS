@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import moment from 'moment';
 import {
@@ -19,14 +20,15 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle } from '@zero-tech/zui/icons';
-import { Avatar } from '@zero-tech/zui/components';
+import { IconAlertCircle, IconDownload2 } from '@zero-tech/zui/icons';
+import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
+import { Blurhash } from 'react-blurhash';
+import { ParentMessage } from './parent-message';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 import './styles.scss';
-import { ParentMessage } from './parent-message';
-import { createPortal } from 'react-dom';
 
 const cn = bemClassName('message');
 
@@ -120,6 +122,10 @@ export class Message extends React.Component<Properties, State> {
     this.props.onImageClick(media);
   };
 
+  onLoadAttachmentDetails = (media) => () => {
+    this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
+  };
+
   handleMediaAspectRatio = (width: number, height: number) => {
     const aspectRatio = width / height;
     this.setState({ isFullWidth: height > 640 && aspectRatio <= 5 / 4 });
@@ -167,20 +173,47 @@ export class Message extends React.Component<Properties, State> {
     return { width: finalWidth, height: finalHeight };
   };
 
+  renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height, media) {
+    return (
+      <>
+        {hasFailed ? (
+          <IconAlertCircle size={32} {...cn('icon', 'failed')} />
+        ) : blurhash ? (
+          <Blurhash hash={blurhash} width={width} height={height} resolutionX={16} resolutionY={12} punch={1.5} />
+        ) : (
+          <div {...cn('placeholder-box')} />
+        )}
+
+        {isLoading && <Spinner {...cn('icon', 'loading')} />}
+
+        {!isLoading && !hasFailed && (
+          <IconButton
+            {...cn('icon')}
+            size={32}
+            isFilled
+            Icon={IconDownload2}
+            onClick={this.onLoadAttachmentDetails(media)}
+          />
+        )}
+      </>
+    );
+  }
+
   renderMedia(media) {
     const { type, url, name, downloadStatus } = media;
+    const blurhash = media['xyz.amorgan.blurhash'];
+
     const { width, height } = this.getPlaceholderDimensions(media.width, media.height);
     const isMatrixUrl = url?.startsWith('mxc://');
 
     if (!url || isMatrixUrl) {
-      if (downloadStatus !== MediaDownloadStatus.Failed) {
-        this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
-      }
+      const isLoading = downloadStatus === MediaDownloadStatus.Loading;
+      const hasFailed = downloadStatus === MediaDownloadStatus.Failed;
 
       return (
-        <div {...cn('image-placeholder-container')} style={{ width, height }}>
-          <div {...cn('image-placeholder', downloadStatus === MediaDownloadStatus.Loading ? 'loading' : 'failed')}>
-            {downloadStatus === MediaDownloadStatus.Failed && <IconAlertCircle size={32} />}
+        <div {...cn('placeholder-container')} style={{ width, height }}>
+          <div {...cn('placeholder-content')}>
+            {this.renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height, media)}
           </div>
         </div>
       );

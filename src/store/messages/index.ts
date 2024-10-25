@@ -44,6 +44,7 @@ export interface Media {
   url: string;
   width: number;
   downloadStatus?: MediaDownloadStatus;
+  blurhash?: string;
 }
 
 export interface MessagesResponse {

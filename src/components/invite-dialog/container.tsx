@@ -13,7 +13,7 @@ export interface Properties extends PublicProperties {
   inviteCode: string;
   inviteCount: number;
   inviteUrl: string;
-  assetPath: string;
+  assetsPath: string;
   isLoading: boolean;
 
   fetchInvite: () => void;
@@ -27,7 +27,7 @@ export class Container extends React.Component<Properties> {
     return {
       inviteCode: createInvitation.code,
       inviteUrl: createInvitation.url,
-      assetPath: config.imageAssetsPath,
+      assetsPath: config.imageAssetsPath,
       inviteCount: createInvitation.inviteCount,
       isLoading: createInvitation.isLoading,
     };
@@ -51,7 +51,7 @@ export class Container extends React.Component<Properties> {
         inviteCode={this.props.inviteCode}
         inviteCount={this.props.inviteCount}
         inviteUrl={this.props.inviteUrl}
-        assetsPath={this.props.assetPath}
+        assetsPath={this.props.assetsPath}
         onClose={this.props.onClose}
         isLoading={this.props.isLoading}
       />

@@ -62,7 +62,7 @@ $border-color-hover: theme-zui.$color-primary-7;
     @include main-background;
 
     &.static-green-particles {
-      background-image: url(cloudAsset('AbstractBGwithoutShine.jpg'));
+      background-image: url(cloudAsset('GreenParticlesStatic.png'));
     }
 
     &.static-lights-out {

@@ -31,9 +31,9 @@ export function getMainBackgroundClass(selectedMainBackground) {
 export function getMainBackgroundVideoSrc(selectedMainBackground) {
   switch (selectedMainBackground) {
     case MainBackground.AnimatedGreenParticles:
-      return `${config.videoAssetsPath}GreenParticlesBG.mp4`;
+      return `${config.videoAssetsPath}/GreenParticlesBG.mp4`;
     case MainBackground.AnimatedBlackParticles:
-      return `${config.videoAssetsPath}BlackParticlesBG.mp4`;
+      return `${config.videoAssetsPath}/BlackParticlesBG.mp4`;
     default:
       return '';
   }

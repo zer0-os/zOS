@@ -11,7 +11,7 @@ describe('Container', () => {
     const allProps: Properties = {
       inviteCode: '',
       inviteUrl: '',
-      assetPath: '',
+      assetsPath: '',
       inviteCount: 0,
       isLoading: false,
       fetchInvite: () => null,

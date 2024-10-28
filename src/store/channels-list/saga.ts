@@ -60,6 +60,27 @@ export function* parseProfileImagesForMembers(channels: any[]) {
   }
 }
 
+export function* mapConversationIcons(channels: any[]) {
+  // Filter channels to find those with icons that need to be downloaded
+  const channelIcons = channels
+    .filter((channel) => isFileUploadedToMatrix(channel.icon))
+    .map((channel) => channel.icon);
+
+  if (channelIcons.length === 0) {
+    return;
+  }
+
+  // Download all channel icons in parallel (in batches of 20)
+  const downloadedChannelIcons = yield call(batchDownloadFiles, channelIcons, true);
+
+  // Update channels with the downloaded icons
+  channels.forEach((channel) => {
+    if (downloadedChannelIcons[channel.icon]) {
+      channel.icon = downloadedChannelIcons[channel.icon];
+    }
+  });
+}
+
 export function* mapToZeroUsers(channels: any[]) {
   let allMatrixIds = [],
     matrixUsersMap = {};
@@ -115,6 +136,7 @@ export function* fetchConversations() {
 
   featureFlags.enableTimerLogs && console.time('xxxmapToZeroUsers');
   yield call(mapToZeroUsers, conversations);
+  yield call(mapConversationIcons, conversations);
   featureFlags.enableTimerLogs && console.timeEnd('xxxmapToZeroUsers');
 
   yield call(getUserReadReceiptPreference);

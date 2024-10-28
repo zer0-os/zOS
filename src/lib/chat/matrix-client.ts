@@ -118,7 +118,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
 
     const room = this.matrix.getRoom(roomId);
-    return await this.getRoomAvatar(room);
+    return this.getRoomAvatar(room);
   }
 
   async getRoomGroupTypeById(roomId: string) {
@@ -1516,7 +1516,7 @@ export class MatrixClient implements IChatClient {
     const otherMembers = this.getOtherMembersFromRoom(room).map((userId) => this.mapUser(userId));
     const memberHistory = this.getMemberHistoryFromRoom(room).map((userId) => this.mapUser(userId));
     const name = this.getRoomName(room);
-    const avatarUrl = await this.getRoomAvatar(room);
+    const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
     const groupType = this.getRoomGroupType(room);
 
@@ -1582,13 +1582,9 @@ export class MatrixClient implements IChatClient {
     return roomNameEvent?.getContent()?.name || '';
   }
 
-  private async getRoomAvatar(room: Room): Promise<string> {
+  private getRoomAvatar(room: Room): string {
     const roomAvatarEvent = this.getLatestEvent(room, EventType.RoomAvatar);
-    const url = roomAvatarEvent?.getContent()?.url;
-    if (url) {
-      return await this.downloadFile(url);
-    }
-    return '';
+    return roomAvatarEvent?.getContent()?.url;
   }
 
   private getRoomCreatedAt(room: Room): number {

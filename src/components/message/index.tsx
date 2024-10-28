@@ -20,8 +20,8 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle, IconDownload2 } from '@zero-tech/zui/icons';
-import { Avatar, IconButton } from '@zero-tech/zui/components';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { Avatar } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 import { Blurhash } from 'react-blurhash';
@@ -173,7 +173,7 @@ export class Message extends React.Component<Properties, State> {
     return { width: finalWidth, height: finalHeight };
   };
 
-  renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height, media) {
+  renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height) {
     return (
       <>
         {hasFailed ? (
@@ -185,16 +185,6 @@ export class Message extends React.Component<Properties, State> {
         )}
 
         {isLoading && <Spinner {...cn('icon', 'loading')} />}
-
-        {!isLoading && !hasFailed && (
-          <IconButton
-            {...cn('icon')}
-            size={32}
-            isFilled
-            Icon={IconDownload2}
-            onClick={this.onLoadAttachmentDetails(media)}
-          />
-        )}
       </>
     );
   }
@@ -210,10 +200,14 @@ export class Message extends React.Component<Properties, State> {
       const isLoading = downloadStatus === MediaDownloadStatus.Loading;
       const hasFailed = downloadStatus === MediaDownloadStatus.Failed;
 
+      if (!hasFailed && !isLoading) {
+        this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
+      }
+
       return (
         <div {...cn('placeholder-container')} style={{ width, height }}>
           <div {...cn('placeholder-content')}>
-            {this.renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height, media)}
+            {this.renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height)}
           </div>
         </div>
       );

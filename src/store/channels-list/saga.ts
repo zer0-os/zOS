@@ -27,30 +27,36 @@ import { featureFlags } from '../../lib/feature-flags';
 import { createUnencryptedConversation as createUnencryptedMatrixConversation } from '../../lib/chat';
 import { isFileUploadedToMatrix } from '../../lib/chat/matrix/media';
 
-export function* parseProfileImages(matrixUsersMap, zeroUsersMap: { [id: string]: User }) {
+export function* parseProfileImagesForMembers(channels: any[]) {
   // Create a map of users that need profile image downloads
   const profileImageUrlsMap: { [url: string]: string } = {};
 
-  // Iterate over all zeroUsersMap entries
-  for (const [matrixId, zeroUser] of Object.entries(zeroUsersMap)) {
-    const matrixUser = matrixUsersMap[matrixId];
-    const profileImageUrl = matrixUser?.profileImage || zeroUser.profileImage;
-
-    if (isFileUploadedToMatrix(profileImageUrl)) {
-      profileImageUrlsMap[profileImageUrl] = matrixId; // Map the URL to the user for easier update later
-    }
+  for (const channel of channels) {
+    [...(channel.memberHistory || []), ...(channel.otherMembers || [])].forEach((member) => {
+      if (isFileUploadedToMatrix(member.profileImage)) {
+        profileImageUrlsMap[member.profileImage] = member.matrixId;
+      }
+    });
   }
 
   // Download all profile images in parallel (in batches of 20)
   const profileImageUrls = Object.keys(profileImageUrlsMap);
-  if (profileImageUrls.length > 0) {
-    const downloadedProfileImages = yield call(batchDownloadFiles, profileImageUrls, true);
+  if (profileImageUrls.length === 0) {
+    return;
+  }
 
-    // Update zeroUsersMap with the downloaded profile images
-    for (const [profileImageUrl, matrixId] of Object.entries(profileImageUrlsMap)) {
-      zeroUsersMap[matrixId].profileImage =
-        downloadedProfileImages[profileImageUrl] || zeroUsersMap[matrixId].profileImage;
+  const downloadedProfileImages = yield call(batchDownloadFiles, profileImageUrls, true);
+
+  // Helper function to update profile images
+  const updateMemberProfileImage = (member) => {
+    if (downloadedProfileImages[member.profileImage]) {
+      member.profileImage = downloadedProfileImages[member.profileImage];
     }
+  };
+
+  // Update all members in channels with the downloaded profile images
+  for (const channel of channels) {
+    [...(channel.memberHistory || []), ...(channel.otherMembers || [])].forEach(updateMemberProfileImage);
   }
 }
 
@@ -70,10 +76,10 @@ export function* mapToZeroUsers(channels: any[]) {
   const zeroUsers = yield call(getZEROUsers, allMatrixIds);
   const zeroUsersMap = {};
   for (const user of zeroUsers) {
+    user.profileImage = matrixUsersMap[user.matrixId]?.profileImage || user.profileImage;
     zeroUsersMap[user.matrixId] = user;
   }
 
-  yield call(parseProfileImages, matrixUsersMap, zeroUsersMap);
   yield call(mapChannelMembers, channels, zeroUsersMap);
   yield call(mapChannelMessages, channels, zeroUsersMap);
   return;
@@ -148,6 +154,7 @@ export function* fetchConversations() {
 export function* loadSecondaryConversationData(conversations) {
   yield put(setIsSecondaryConversationDataLoaded(false));
   yield call(getRoomTags, conversations);
+  yield call(parseProfileImagesForMembers, conversations);
 
   yield put(receive(conversations));
   yield put(setIsSecondaryConversationDataLoaded(true));
@@ -287,6 +294,8 @@ export function* receiveCreatedConversation(conversation, optimisticConversation
     listWithoutOptimistic.push(conversation);
   }
 
+  yield call(parseProfileImagesForMembers, [conversation]);
+
   yield put(receive(listWithoutOptimistic));
   yield call(openConversation, conversation.id);
 }
@@ -398,6 +407,7 @@ function* otherUserLeftChannelAction({ payload }) {
 export function* addChannel(channel) {
   const conversationsList = yield select(rawConversationsList);
   yield call(mapToZeroUsers, [channel]);
+  yield call(parseProfileImagesForMembers, [channel]);
   yield fork(fetchRoomName, channel.id);
   yield fork(fetchRoomAvatar, channel.id);
   yield fork(fetchRoomGroupType, channel.id);

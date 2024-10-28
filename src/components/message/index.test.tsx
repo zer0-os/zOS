@@ -9,7 +9,6 @@ import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import { ContentHighlighter } from '../content-highlighter';
 import { ParentMessage } from './parent-message';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
-import { IconButton } from '@zero-tech/zui/components';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
 
 describe('message', () => {
@@ -87,18 +86,6 @@ describe('message', () => {
     expect(wrapper.find('.message__placeholder-container').exists()).toBe(true);
   });
 
-  it('calls loadAttachmentDetails when download icon is clicked', () => {
-    const loadAttachmentDetails = jest.fn();
-    const wrapper = subject({
-      messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Success },
-    });
-
-    wrapper.find(IconButton).simulate('click');
-    expect(loadAttachmentDetails).toHaveBeenCalled();
-  });
-
   it('renders failed alert icon if media download status is failed', () => {
     const loadAttachmentDetails = jest.fn();
 
@@ -123,16 +110,59 @@ describe('message', () => {
     expect(wrapper).toHaveElement(Spinner);
   });
 
-  it('renders download icon if media download status is not failed or loading', () => {
+  it('calls loadAttachmentDetails if no media url', () => {
     const loadAttachmentDetails = jest.fn();
 
-    const wrapper = subject({
+    subject({ messageId: 'test-id', loadAttachmentDetails, media: { url: null, type: MediaType.Image } });
+
+    expect(loadAttachmentDetails).toHaveBeenCalled();
+  });
+
+  it('calls loadAttachmentDetails if url is a matrix media url', () => {
+    const loadAttachmentDetails = jest.fn();
+    subject({
       messageId: 'test-id',
       loadAttachmentDetails,
-      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Success },
+      media: { url: 'mxc://some-test-matrix-url', type: MediaType.Image },
     });
 
-    expect(wrapper).toHaveElement(IconButton);
+    expect(loadAttachmentDetails).toHaveBeenCalled();
+  });
+
+  it('does not call loadAttachmentDetails if url is defined and not a matrix media url', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: 'some-test-url', type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
+    });
+
+    expect(loadAttachmentDetails).not.toHaveBeenCalled();
+  });
+
+  it('does not call loadAttachmentDetails if media download status is failed', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
+    });
+
+    expect(loadAttachmentDetails).not.toHaveBeenCalled();
+  });
+
+  it('does not call loadAttachmentDetails if media download status is loading', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Loading },
+    });
+
+    expect(loadAttachmentDetails).not.toHaveBeenCalled();
   });
 
   it('calculates and applies correct dimensions for the placeholder', () => {

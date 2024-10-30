@@ -377,7 +377,7 @@ export class Container extends React.Component<Properties, State> {
 
 function addLastMessageMeta(state: RootState): any {
   return (conversation) => {
-    const sortedMessages = conversation.messages.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+    const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
 
     const filteredMessages = sortedMessages.filter(
       (message) => message?.admin?.type !== AdminMessageType.MEMBER_AVATAR_CHANGED

@@ -38,6 +38,7 @@ import { openUserProfile } from '../../../store/user-profile';
 import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
+import { AdminMessageType } from '../../../store/messages';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -376,9 +377,15 @@ export class Container extends React.Component<Properties, State> {
 
 function addLastMessageMeta(state: RootState): any {
   return (conversation) => {
-    const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
+    const sortedMessages = conversation.messages.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
 
-    let mostRecentMessage = sortedMessages[0] || conversation.lastMessage;
+    const filteredMessages = sortedMessages.filter(
+      (message) => message?.admin?.type !== AdminMessageType.MEMBER_AVATAR_CHANGED
+    );
+
+    // Use the most recent valid message or fall back to the lastMessage
+    let mostRecentMessage = filteredMessages[0] || conversation.lastMessage;
+
     return {
       ...conversation,
       mostRecentMessage,

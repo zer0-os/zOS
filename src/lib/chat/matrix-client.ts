@@ -1471,14 +1471,6 @@ export class MatrixClient implements IChatClient {
       }
 
       if (membership === MembershipStateType.Join) {
-        if (
-          event.prev_content?.avatar_url !== event.content?.avatar_url ||
-          event.prev_content?.displayname !== event.content?.displayname
-        ) {
-          // Avatar or display name change, no need to publish or process a join event
-          return;
-        }
-
         const room = this.matrix.getRoom(roomId);
         if (room) {
           this.events.onUserJoinedChannel(await this.mapConversation(room));

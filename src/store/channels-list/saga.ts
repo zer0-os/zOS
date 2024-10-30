@@ -178,7 +178,16 @@ export function* loadSecondaryConversationData(conversations) {
   yield call(getRoomTags, conversations);
   yield call(parseProfileImagesForMembers, conversations);
 
-  yield put(receive(conversations));
+  const receiveCalls = conversations.map((conversation) =>
+    call(receiveChannel, {
+      id: conversation.id,
+      labels: conversation.labels,
+      otherMembers: conversation.otherMembers,
+      memberHistory: conversation.memberHistory,
+    })
+  );
+  yield all(receiveCalls);
+
   yield put(setIsSecondaryConversationDataLoaded(true));
 }
 

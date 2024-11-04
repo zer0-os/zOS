@@ -10,6 +10,7 @@ import {
   MediaType,
   MessageSendStatus,
   MediaDownloadStatus,
+  Message,
 } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../channels';
@@ -23,7 +24,7 @@ import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
-import { chat, getMessageReadReceipts } from '../../lib/chat';
+import { chat, getMessageEmojiReactions, getMessageReadReceipts, sendEmojiReactionEvent } from '../../lib/chat';
 import { User } from '../channels';
 import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
@@ -164,6 +165,10 @@ export function* fetch(action) {
     // (eg. parentMessage), then it gets written to state
     messages = [...messagesResponse.messages, ...existingMessages];
     messages = uniqBy(messages, (m) => m.id ?? m);
+
+    if (yield select(_isActive(channelId))) {
+      yield call(applyEmojiReactions, channelId, messages);
+    }
 
     yield call(receiveChannel, {
       id: channelId,
@@ -586,6 +591,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
   yield takeEvery(SagaActionTypes.LoadAttachmentDetails, loadAttachmentDetails);
+  yield takeEvery(SagaActionTypes.SendEmojiReaction, sendEmojiReaction);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
@@ -593,6 +599,7 @@ export function* saga() {
   yield takeEveryFromBus(chatBus, ChatEvents.MessageDeleted, receiveDelete);
   yield takeEveryFromBus(chatBus, ChatEvents.LiveRoomEventReceived, receiveLiveRoomEventAction);
   yield takeEveryFromBus(chatBus, ChatEvents.ReadReceiptReceived, readReceiptReceived);
+  yield takeEveryFromBus(chatBus, ChatEvents.MessageEmojiReactionChange, onMessageEmojiReactionChange);
 }
 
 function* receiveLiveRoomEventAction({ payload }) {
@@ -663,5 +670,54 @@ function updateMediaStatus(messageId, media, downloadStatus, url = null) {
     id: messageId,
     media: { ...media, downloadStatus, ...(url && { url }) },
     image: url ? { ...media, url } : undefined,
+  });
+}
+
+export function* sendEmojiReaction(action) {
+  const { roomId, messageId, key } = action.payload;
+  try {
+    yield call(sendEmojiReactionEvent, roomId, messageId, key);
+  } catch (error) {
+    console.error('Error sending emoji reaction:', error);
+  }
+}
+
+export function* onMessageEmojiReactionChange(action) {
+  const { roomId, reaction } = action.payload;
+  yield call(updateMessageEmojiReaction, roomId, reaction);
+}
+
+export function* updateMessageEmojiReaction(roomId, { eventId, key }) {
+  const message = yield select(messageSelector(eventId));
+  const existingMessages = yield select(rawMessagesSelector(roomId));
+
+  if (message) {
+    const newReactions = { ...message.reactions };
+    newReactions[key] = (newReactions[key] || 0) + 1;
+
+    const updatedMessage = { ...message, reactions: newReactions };
+    const updatedMessages = existingMessages.map((message) => (message === eventId ? updatedMessage : message));
+
+    yield call(receiveChannel, { id: roomId, messages: updatedMessages });
+  }
+}
+
+export function* applyEmojiReactions(roomId: string, messages: Message[]): Generator<any, void, any> {
+  const reactions = yield call(getMessageEmojiReactions, roomId);
+
+  messages.forEach((message) => {
+    const relatedReactions = reactions.filter((reaction) => {
+      const messageId = message?.id?.toString();
+      const eventId = reaction.eventId.toString();
+      return eventId === messageId;
+    });
+
+    if (relatedReactions.length > 0) {
+      message.reactions = relatedReactions.reduce((acc, reaction) => {
+        const key = reaction.key;
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, message.reactions || {});
+    }
   });
 }

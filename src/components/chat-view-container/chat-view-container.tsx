@@ -11,6 +11,7 @@ import {
   loadAttachmentDetails,
   Media,
   AdminMessageType,
+  sendEmojiReaction,
 } from '../../store/messages';
 import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
@@ -40,6 +41,7 @@ export interface Properties extends PublicProperties {
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
+  sendEmojiReaction: (payload: { roomId: string; messageId: string; key: string }) => void;
 }
 
 interface PublicProperties {
@@ -83,6 +85,7 @@ export class Container extends React.Component<Properties> {
       openMessageInfo,
       toggleSecondarySidekick,
       loadAttachmentDetails,
+      sendEmojiReaction,
     };
   }
 
@@ -149,6 +152,14 @@ export class Container extends React.Component<Properties> {
     if (channelId && messageId) {
       this.props.editMessage({ channelId, messageId, message, mentionedUserIds, data });
     }
+  };
+
+  sendEmojiReaction = (messageId, key) => {
+    this.props.sendEmojiReaction({
+      roomId: this.props.channelId,
+      messageId,
+      key,
+    });
   };
 
   get messages() {
@@ -229,6 +240,7 @@ export class Container extends React.Component<Properties> {
           toggleSecondarySidekick={this.props.toggleSecondarySidekick}
           openMessageInfo={this.props.openMessageInfo}
           loadAttachmentDetails={this.props.loadAttachmentDetails}
+          sendEmojiReaction={this.sendEmojiReaction}
         />
       </>
     );

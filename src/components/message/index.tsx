@@ -27,6 +27,7 @@ import { bemClassName } from '../../lib/bem';
 import { Blurhash } from 'react-blurhash';
 import { ParentMessage } from './parent-message';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { ReactionMenu } from '../reaction-menu';
 
 import './styles.scss';
 
@@ -60,6 +61,7 @@ interface Properties extends MessageModel {
   isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
+  sendEmojiReaction: (messageId, key) => void;
 }
 
 export interface State {
@@ -70,6 +72,7 @@ export interface State {
   menuX: number;
   menuY: number;
   isImageLoaded: boolean;
+  isReactionMenuOpen: boolean;
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -81,6 +84,7 @@ export class Message extends React.Component<Properties, State> {
     menuX: 0,
     menuY: 0,
     isImageLoaded: false,
+    isReactionMenuOpen: false,
   } as State;
 
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -281,6 +285,7 @@ export class Message extends React.Component<Properties, State> {
       </div>
     );
   }
+
   renderTime(time): React.ReactElement {
     const createdTime = moment(time).format('h:mm A');
     return <div {...cn('time')}>{createdTime}</div>;
@@ -360,6 +365,14 @@ export class Message extends React.Component<Properties, State> {
     this.setState({ isMessageMenuOpen: false, isDropdownMenuOpen: false });
   };
 
+  handleOpenReactionMenu = (isReactionMenuOpen: boolean) => {
+    this.setState({ isReactionMenuOpen });
+  };
+
+  handleCloseReactionMenu = () => {
+    this.setState({ isReactionMenuOpen: false });
+  };
+
   canReply = () => {
     return (
       this.props.sendStatus !== MessageSendStatus.IN_PROGRESS && this.props.sendStatus !== MessageSendStatus.FAILED
@@ -380,10 +393,14 @@ export class Message extends React.Component<Properties, State> {
     return this.props.sendStatus === MessageSendStatus.FAILED;
   };
 
+  onEmojiReaction = (key) => {
+    this.props.sendEmojiReaction(this.props.messageId, key);
+  };
+
   renderMenu(): React.ReactElement {
     const { isMessageMenuOpen } = this.state;
 
-    const menuProps = {
+    const messageMenuProps = {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
@@ -398,17 +415,28 @@ export class Message extends React.Component<Properties, State> {
       onCloseMenu: this.handleCloseMenu,
     };
 
+    const reactionProps = {
+      onOpenChange: this.handleOpenReactionMenu,
+      onSelectReaction: this.onEmojiReaction,
+    };
+
+    const onClose = () => {
+      this.handleCloseMenu();
+      this.handleCloseReactionMenu();
+    };
+
     return (
       <div
         {...cn(
           classNames('menu', {
-            'menu--open': this.state.isMessageMenuOpen,
+            'menu--open': this.state.isMessageMenuOpen || this.state.isReactionMenuOpen,
             'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
           })
         )}
-        onClick={menuProps.onCloseMenu}
+        onClick={onClose}
       >
-        <MessageMenu {...cn('menu-item')} {...menuProps} />
+        <ReactionMenu {...cn('menu-item')} {...reactionProps} />
+        <MessageMenu {...cn('menu-item')} {...messageMenuProps} />
       </div>
     );
   }
@@ -476,7 +504,7 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderBody() {
-    const { message, isHidden } = this.props;
+    const { message, isHidden, reactions } = this.props;
 
     return (
       <div {...cn('block-body')}>
@@ -487,9 +515,29 @@ export class Message extends React.Component<Properties, State> {
             onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
           />
         )}
-        {this.renderFooter()}
+
+        <div {...cn('footer-container', !!reactions && 'has-reactions')}>
+          {this.renderReactions()}
+          {this.renderFooter()}
+        </div>
       </div>
     );
+  }
+
+  renderReactions() {
+    const { reactions } = this.props;
+
+    if (!!reactions) {
+      return (
+        <div {...cn('reactions')}>
+          {Object.entries(reactions).map(([key, value]) => (
+            <div key={key} {...cn('reaction-icon')}>
+              {key} <span>{value}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
   }
 
   renderParentMessage() {
@@ -522,7 +570,6 @@ export class Message extends React.Component<Properties, State> {
             </div>
           </div>
         )}
-
         <div
           {...cn(
             'block',

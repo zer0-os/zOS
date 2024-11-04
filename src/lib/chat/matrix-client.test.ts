@@ -675,6 +675,29 @@ describe('matrix client', () => {
     });
   });
 
+  describe('sendEmojiReactionEvent', () => {
+    it('sends a emoji reaction event successfully', async () => {
+      const fixedTimestamp = 1727441803628;
+      jest.spyOn(Date, 'now').mockReturnValue(fixedTimestamp);
+
+      const sendEvent = jest.fn().mockResolvedValue({});
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ sendEvent })) });
+
+      await client.connect(null, 'token');
+      await client.sendEmojiReactionEvent('channel-id', 'message-id', '😂');
+
+      expect(sendEvent).toHaveBeenCalledWith('channel-id', MatrixConstants.REACTION, {
+        'm.relates_to': {
+          rel_type: MatrixConstants.ANNOTATION,
+          event_id: 'message-id',
+          key: '😂',
+        },
+      });
+
+      jest.restoreAllMocks();
+    });
+  });
+
   describe('deleteMessageByRoomId', () => {
     it('deletes a message by room ID and message ID', async () => {
       const messageId = '123456';
@@ -1709,6 +1732,131 @@ describe('matrix client', () => {
         eventId: 'message-2',
         key: ReactionKeys.MEOW,
         amount: 3,
+      },
+    ]);
+
+    // Restore console.warn after the test
+    consoleWarnSpy.mockRestore();
+  });
+
+  describe('getMessageEmojiReactions', () => {
+    it('returns the correct reactions for a room', async () => {
+      const mockGetRoom = jest.fn().mockReturnValue({
+        getLiveTimeline: jest.fn().mockReturnValue({
+          getEvents: jest.fn().mockReturnValue([
+            {
+              getType: () => MatrixConstants.REACTION,
+              getContent: () => ({
+                [MatrixConstants.RELATES_TO]: {
+                  event_id: 'message-1',
+                  key: '😂',
+                },
+              }),
+            },
+
+            {
+              getType: () => 'm.room.message',
+              getContent: () => ({
+                body: 'This is a regular message',
+              }),
+            },
+          ]),
+        }),
+      });
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom: mockGetRoom })) });
+
+      await client.connect(null, 'token');
+      const reactions = await client.getMessageEmojiReactions('room-id');
+
+      expect(mockGetRoom).toHaveBeenCalledWith('room-id');
+      expect(reactions).toEqual([
+        {
+          eventId: 'message-1',
+          key: '😂',
+        },
+      ]);
+    });
+
+    it('returns an empty array if the room is not found', async () => {
+      const mockGetRoom = jest.fn().mockReturnValue(null);
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom: mockGetRoom })) });
+
+      await client.connect(null, 'token');
+      const reactions = await client.getMessageEmojiReactions('room-id');
+
+      expect(mockGetRoom).toHaveBeenCalledWith('room-id');
+      expect(reactions).toEqual([]);
+    });
+
+    it('returns an empty array if there are no reaction events', async () => {
+      const mockGetRoom = jest.fn().mockReturnValue({
+        getLiveTimeline: jest.fn().mockReturnValue({
+          getEvents: jest.fn().mockReturnValue([
+            {
+              getType: () => 'm.room.message', // No reaction events
+              getContent: () => ({
+                body: 'This is a regular message',
+              }),
+            },
+          ]),
+        }),
+      });
+
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom: mockGetRoom })) });
+
+      await client.connect(null, 'token');
+      const reactions = await client.getMessageEmojiReactions('room-id');
+
+      expect(mockGetRoom).toHaveBeenCalledWith('room-id');
+      expect(reactions).toEqual([]);
+    });
+  });
+
+  it('filters out invalid reaction events', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const mockGetRoom = jest.fn().mockReturnValue({
+      getLiveTimeline: jest.fn().mockReturnValue({
+        getEvents: jest.fn().mockReturnValue([
+          {
+            getType: () => MatrixConstants.REACTION,
+            getContent: () => ({
+              // Missing the required RELATES_TO properties
+            }),
+          },
+          {
+            getType: () => MatrixConstants.REACTION,
+            getContent: () => ({
+              [MatrixConstants.RELATES_TO]: {
+                key: '😂', // Missing event_id
+              },
+            }),
+          },
+          {
+            getType: () => MatrixConstants.REACTION,
+            getContent: () => ({
+              [MatrixConstants.RELATES_TO]: {
+                event_id: 'message-2',
+                key: '😂',
+              },
+            }),
+          },
+        ]),
+      }),
+    });
+
+    const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoom: mockGetRoom })) });
+
+    await client.connect(null, 'token');
+    const reactions = await client.getMessageEmojiReactions('room-id');
+
+    expect(mockGetRoom).toHaveBeenCalledWith('room-id');
+    expect(reactions).toEqual([
+      {
+        eventId: 'message-2',
+        key: '😂',
       },
     ]);
 

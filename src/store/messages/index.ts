@@ -112,6 +112,7 @@ export enum SagaActionTypes {
   DeleteMessage = 'messages/saga/deleteMessage',
   EditMessage = 'messages/saga/editMessage',
   LoadAttachmentDetails = 'messages/saga/loadAttachmentDetails',
+  SendEmojiReaction = 'messages/saga/sendEmojiReaction',
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
@@ -119,6 +120,9 @@ const send = createAction<SendPayload>(SagaActionTypes.Send);
 const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
 const editMessage = createAction<EditPayload>(SagaActionTypes.EditMessage);
 const loadAttachmentDetails = createAction<{ media: Media }>(SagaActionTypes.LoadAttachmentDetails);
+const sendEmojiReaction = createAction<{ roomId: string; messageId: string; key: string }>(
+  SagaActionTypes.SendEmojiReaction
+);
 
 const slice = createNormalizedSlice({
   name: 'messages',
@@ -126,4 +130,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch, send, deleteMessage, editMessage, removeAll, loadAttachmentDetails };
+export { fetch, send, deleteMessage, editMessage, removeAll, loadAttachmentDetails, sendEmojiReaction };

@@ -23,6 +23,7 @@ export interface RealtimeChatEvents {
   readReceiptReceived: (messageId: string, userId: string, roomId: string) => void;
   roomLabelChange: (roomId: string, labels: string[]) => void;
   postMessageReactionChange: (roomId: string, reaction: any) => void;
+  messageEmojiReactionChange: (roomId: string, reaction: any) => void;
 }
 
 export interface MatrixKeyBackupInfo {
@@ -382,8 +383,16 @@ export async function sendMeowReactionEvent(
   return chat.get().matrix.sendMeowReactionEvent(roomId, postMessageId, postOwnerId, meowAmount);
 }
 
+export async function sendEmojiReactionEvent(roomId: string, messageId: string, key: string) {
+  return chat.get().matrix.sendEmojiReactionEvent(roomId, messageId, key);
+}
+
 export async function getPostMessageReactions(roomId: string) {
   return chat.get().matrix.getPostMessageReactions(roomId);
+}
+
+export async function getMessageEmojiReactions(roomId: string) {
+  return chat.get().matrix.getMessageEmojiReactions(roomId);
 }
 
 export async function uploadFile(file: File): Promise<string> {

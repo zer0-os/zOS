@@ -530,6 +530,48 @@ export class MatrixClient implements IChatClient {
     await this.matrix.sendEvent(roomId, MatrixConstants.REACTION as any, content);
   }
 
+  async sendEmojiReactionEvent(roomId: string, messageId: string, key: string): Promise<void> {
+    await this.waitForConnection();
+
+    const content = {
+      'm.relates_to': {
+        rel_type: MatrixConstants.ANNOTATION,
+        event_id: messageId,
+        key,
+      },
+    };
+
+    await this.matrix.sendEvent(roomId, MatrixConstants.REACTION as any, content);
+  }
+
+  async getMessageEmojiReactions(roomId: string): Promise<{ eventId: string; key: string }[]> {
+    const room = this.matrix.getRoom(roomId);
+    if (!room) return [];
+
+    const events = room.getLiveTimeline().getEvents();
+
+    const result = events
+      .filter((event) => event.getType() === MatrixConstants.REACTION)
+      .map((event) => {
+        const content = event.getContent();
+        const relatesTo = content[MatrixConstants.RELATES_TO];
+
+        if (relatesTo && relatesTo.event_id && relatesTo.key) {
+          return {
+            eventId: relatesTo.event_id,
+            key: relatesTo.key,
+          };
+        }
+
+        // If the structure is not as we expect, return null to filter it out
+        console.warn('Invalid reaction event structure:', event);
+        return null;
+      })
+      .filter((reaction) => reaction !== null);
+
+    return result;
+  }
+
   async getPostMessageReactions(roomId: string): Promise<{ eventId: string; key: string; amount: number }[]> {
     const room = this.matrix.getRoom(roomId);
     if (!room) return [];
@@ -1437,12 +1479,20 @@ export class MatrixClient implements IChatClient {
 
   private publishReactionChange(event) {
     const content = event.content;
-    this.events.postMessageReactionChange(event.room_id, {
-      eventId: content[MatrixConstants.RELATES_TO].event_id,
-      key: content[MatrixConstants.RELATES_TO].key,
-      amount: parseFloat(content.amount),
-      postOwnerId: content.postOwnerId,
-    });
+
+    if (content.postOwnerId) {
+      this.events.postMessageReactionChange(event.room_id, {
+        eventId: content[MatrixConstants.RELATES_TO].event_id,
+        key: content[MatrixConstants.RELATES_TO].key,
+        amount: parseFloat(content.amount),
+        postOwnerId: content.postOwnerId,
+      });
+    } else {
+      this.events.messageEmojiReactionChange(event.room_id, {
+        eventId: content[MatrixConstants.RELATES_TO].event_id,
+        key: content[MatrixConstants.RELATES_TO].key,
+      });
+    }
   }
 
   private publishRoomMemberPowerLevelsChanged = (event: MatrixEvent, member: RoomMember) => {

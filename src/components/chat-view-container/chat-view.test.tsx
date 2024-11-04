@@ -49,6 +49,7 @@ describe('ChatView', () => {
       toggleSecondarySidekick: () => null,
       openMessageInfo: () => null,
       loadAttachmentDetails: () => null,
+      sendEmojiReaction: () => null,
 
       ...props,
     };

@@ -717,8 +717,8 @@ export class MatrixClient implements IChatClient {
   }
 
   mxcUrlToHttp(mxcUrl: string, isThumbnail: boolean = false): string {
-    const height = isThumbnail ? 32 : undefined;
-    const width = isThumbnail ? 32 : undefined;
+    const height = isThumbnail ? 96 : undefined;
+    const width = isThumbnail ? 96 : undefined;
     const resizeMethod = isThumbnail ? 'scale' : undefined;
 
     return this.matrix.mxcUrlToHttp(mxcUrl, width, height, resizeMethod, undefined, true, true);

@@ -53,6 +53,7 @@ export interface Properties {
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
+  sendEmojiReaction: (messageId, key) => void;
 }
 
 export interface State {
@@ -182,6 +183,8 @@ export class ChatView extends React.Component<Properties, State> {
                 showAuthorName={messageRenderProps.showAuthorName}
                 onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
                 loadAttachmentDetails={this.props.loadAttachmentDetails}
+                sendEmojiReaction={this.props.sendEmojiReaction}
+                reactions={message.reactions}
                 {...message}
               />
             </div>

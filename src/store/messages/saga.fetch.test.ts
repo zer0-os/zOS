@@ -53,10 +53,7 @@ describe(fetch, () => {
     const messageResponse = { hasMore: false, messages: [] };
 
     const { storeState } = await subject(fetch, { payload: { channelId: channel.id } })
-      .provide([
-        [matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse],
-        [matchers.call.fn(mapMessagesAndPreview), messageResponse.messages],
-      ])
+      .provide([[matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse]])
       .withReducer(rootReducer, initialChannelState(channel))
       .run();
 
@@ -65,12 +62,8 @@ describe(fetch, () => {
 
   it('sets hasLoadedMessages on channel', async () => {
     const channel = { id: 'channel-id', hasLoadedMessages: false };
-    const messageResponse = { hasMore: false, messages: [] };
 
     const { storeState } = await subject(fetch, { payload: { channelId: channel.id } })
-      .provide([
-        [matchers.call.fn(mapMessagesAndPreview), messageResponse.messages],
-      ])
       .withReducer(rootReducer, initialChannelState(channel))
       .run();
 
@@ -93,7 +86,6 @@ describe(fetch, () => {
       .withReducer(rootReducer, initialState as any)
       .provide([
         [call([chatClient, chatClient.getMessagesByChannelId], channel.id, referenceTimestamp), messageResponse],
-        [matchers.call.fn(mapMessagesAndPreview), messageResponse.messages],
       ])
       .run();
 

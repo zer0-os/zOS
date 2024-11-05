@@ -10,7 +10,6 @@ import { denormalize as denormalizeChannel } from '../channels';
 import { expectSaga, stubResponse } from '../../test/saga';
 import { markConversationAsRead } from '../channels/saga';
 import { StoreBuilder } from '../test/store';
-import { getMessageEmojiReactions } from '../../lib/chat';
 
 describe(receiveNewMessage, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
@@ -30,11 +29,7 @@ describe(receiveNewMessage, () => {
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
 
     const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
       .withReducer(rootReducer, initialState.build())
-
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
@@ -50,9 +45,6 @@ describe(receiveNewMessage, () => {
       .withUsers({ userId: 'user-1', matrixId: 'matrix-id', firstName: 'the real user' });
 
     const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -68,7 +60,6 @@ describe(receiveNewMessage, () => {
 
     const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
       .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
         stubResponse(call(getPreview, 'www.google.com'), stubPreview),
       ])
       .withReducer(rootReducer, initialState.build())
@@ -76,25 +67,6 @@ describe(receiveNewMessage, () => {
 
     const channel = denormalizeChannel(channelId, storeState);
     expect(channel.messages[0].preview).toEqual(stubPreview);
-  });
-
-  it('adds the reactions to the message', async () => {
-    const channelId = 'channel-id';
-    const message = { id: 'message-id', message: 'www.google.com' };
-    const stubPreview = { id: 'simulated-preview' };
-    const stubReactions = [{ eventId: 'message-id', key: '😂' }];
-    const initialState = new StoreBuilder().withConversationList({ id: channelId });
-
-    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), stubReactions),
-        stubResponse(call(getPreview, 'www.google.com'), stubPreview),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].reactions).toEqual({ '😂': 1 });
   });
 
   it('does nothing if the channel does not exist', async () => {
@@ -110,7 +82,6 @@ describe(receiveNewMessage, () => {
   it('favors the new version if message already exists', async () => {
     const channelId = 'channel-id';
     const message = { id: 'new-message', message: 'the new message' };
-
     const existingMessages = [
       { id: 'new-message', message: 'message_0001' },
       { id: 'other-message', message: 'message_0002' },
@@ -118,9 +89,6 @@ describe(receiveNewMessage, () => {
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
 
     const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -134,9 +102,6 @@ describe(receiveNewMessage, () => {
     const conversationState = new StoreBuilder().withConversationList({ id: 'channel-id' });
 
     await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, 'channel-id'), [{}]),
-      ])
       .withReducer(rootReducer, conversationState.build())
       .not.call(markConversationAsRead, 'channel-id')
       .run();
@@ -160,9 +125,6 @@ describe(receiveNewMessage, () => {
     });
 
     const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -187,9 +149,6 @@ describe(receiveNewMessage, () => {
     });
 
     const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -218,9 +177,6 @@ describe(receiveNewMessage, () => {
       const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
 
       const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
-        .provide([
-          stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-        ])
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -246,10 +202,6 @@ describe(receiveNewMessage, () => {
       );
 
       const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
-        .provide([
-          stubResponse(call(getMessageEmojiReactions, channelId1), [{}]),
-          stubResponse(call(getMessageEmojiReactions, channelId2), [{}]),
-        ])
         .withReducer(rootReducer, initialState.build())
         .run();
 
@@ -274,9 +226,6 @@ describe(receiveNewMessage, () => {
       const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
 
       const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
-        .provide([
-          stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-        ])
         .withReducer(rootReducer, initialState.build())
         .run();
 

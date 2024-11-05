@@ -9,6 +9,7 @@ import {
   sendBrowserNotification,
   receiveUpdateMessage,
   replaceOptimisticMessage,
+  applyEmojiReactions,
   onMessageEmojiReactionChange,
   updateMessageEmojiReaction,
   sendEmojiReaction,
@@ -288,7 +289,7 @@ describe(receiveUpdateMessage, () => {
     const { storeState } = await expectSaga(receiveUpdateMessage, {
       payload: { channelId: 'channel-1', message: editedMessage },
     })
-      .provide([...successResponses(), [call(getMessageEmojiReactions, 'channel-1'), [{}]]])
+      .provide([...successResponses()])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -306,43 +307,13 @@ describe(receiveUpdateMessage, () => {
       payload: { channelId: 'channel-1', message: editedMessage },
     })
       .provide([
-        [call(getMessageEmojiReactions, 'channel-1'), [{}]],
         [call(getPreview, editedMessage.message), preview],
-
         ...successResponses(),
       ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.normalized.messages[message.id]).toEqual({ ...editedMessage, preview });
-  });
-
-  it('adds the reactions if they exist', async () => {
-    const message = { id: 8667728016, message: 'original message' };
-    const editedMessage = { id: 8667728016, message: 'edited message with reaction' };
-    const reactions = [
-      { eventId: 8667728016, key: '😂' },
-      { eventId: 8667728016, key: '👍' },
-    ];
-
-    const expectedReactions = {
-      '😂': 1,
-      '👍': 1,
-    };
-
-    const initialState = new StoreBuilder().withConversationList({ id: 'channel-1', messages: [message] as any });
-
-    const { storeState } = await expectSaga(receiveUpdateMessage, {
-      payload: { channelId: 'channel-1', message: editedMessage },
-    })
-      .provide([
-        [call(getMessageEmojiReactions, 'channel-1'), reactions],
-        ...successResponses(),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    expect(storeState.normalized.messages[message.id]).toEqual({ ...editedMessage, reactions: expectedReactions });
   });
 
   function successResponses() {
@@ -418,6 +389,91 @@ describe(replaceOptimisticMessage, () => {
       .run();
 
     expect(returnValue[0].preview).toEqual({ url: 'example.com/old-preview' });
+  });
+});
+
+describe('applyEmojiReactions', () => {
+  it('applies emoji reactions to messages correctly', async () => {
+    const roomId = 'room-id';
+    const messages = [
+      { id: 'message-1', reactions: {} },
+      { id: 'message-2', reactions: {} },
+    ] as any;
+
+    const reactions = [
+      { eventId: 'message-1', key: '😲' },
+      { eventId: 'message-1', key: '❤️' },
+      { eventId: 'message-2', key: '😂' },
+      { eventId: 'message-2', key: '❤️' },
+    ];
+
+    await expectSaga(applyEmojiReactions, roomId, messages)
+      .provide([[call(getMessageEmojiReactions, roomId), reactions]])
+      .run();
+
+    expect(messages).toEqual([
+      { id: 'message-1', reactions: { '😲': 1, '❤️': 1 } },
+      { id: 'message-2', reactions: { '😂': 1, '❤️': 1 } },
+    ]);
+  });
+
+  it('does not modify messages without reactions', async () => {
+    const roomId = 'room-id';
+    const messages = [
+      { id: 'message-1', reactions: {} },
+      { id: 'message-2', reactions: {} },
+    ] as any;
+
+    const reactions = [];
+
+    await expectSaga(applyEmojiReactions, roomId, messages)
+      .provide([[call(getMessageEmojiReactions, roomId), reactions]])
+      .run();
+
+    expect(messages).toEqual([
+      { id: 'message-1', reactions: {} },
+      { id: 'message-2', reactions: {} },
+    ]);
+  });
+
+  it('accumulates reactions for the same key', async () => {
+    const roomId = 'room-id';
+    const messages = [
+      { id: 'message-1', reactions: {} },
+    ] as any;
+
+    const reactions = [
+      { eventId: 'message-1', key: '❤️' },
+      { eventId: 'message-1', key: '❤️' },
+      { eventId: 'message-1', key: '😂' },
+    ];
+
+    await expectSaga(applyEmojiReactions, roomId, messages)
+      .provide([[call(getMessageEmojiReactions, roomId), reactions]])
+      .run();
+
+    expect(messages).toEqual([
+      { id: 'message-1', reactions: { '❤️': 2, '😂': 1 } },
+    ]);
+  });
+
+  it('handles reactions when there are no matching messages', async () => {
+    const roomId = 'room-id';
+    const messages = [
+      { id: 'message-1', reactions: {} },
+    ] as any;
+
+    const reactions = [
+      { eventId: 'message-2', key: '❤️' },
+    ];
+
+    await expectSaga(applyEmojiReactions, roomId, messages)
+      .provide([[call(getMessageEmojiReactions, roomId), reactions]])
+      .run();
+
+    expect(messages).toEqual([
+      { id: 'message-1', reactions: {} },
+    ]);
   });
 });
 

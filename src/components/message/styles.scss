@@ -15,17 +15,7 @@
     flex-direction: row-reverse;
 
     .message__block {
-      background: none !important;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(1, 244, 203, 0.12);
-      }
+      background: rgba(6, 31, 27);
     }
 
     .message__block-body {
@@ -48,8 +38,6 @@
     }
 
     .message__block {
-      background: #111213;
-      backdrop-filter: blur(64px);
       border-radius: var(--border-owner-radius); // set in message__message-row
 
       &--edit {
@@ -77,7 +65,6 @@
 
     border-radius: var(--border-radius); // set in message__message-row
     background: #111213;
-    backdrop-filter: blur(64px);
 
     &--edit {
       width: 100%;

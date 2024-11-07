@@ -10,7 +10,6 @@ import {
   MediaType,
   MessageSendStatus,
   MediaDownloadStatus,
-  Message,
 } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../channels';
@@ -121,6 +120,8 @@ export function* getLocalZeroUsersMap() {
 }
 
 export function* mapMessagesAndPreview(messages, channelId) {
+  const reactions = yield call(getMessageEmojiReactions, channelId);
+
   const zeroUsersMap = yield call(mapMessageSenders, messages, channelId);
   yield call(mapAdminUserIdToZeroUserId, [{ messages }], zeroUsersMap);
 
@@ -133,6 +134,23 @@ export function* mapMessagesAndPreview(messages, channelId) {
     if (preview) {
       message.preview = preview;
     }
+
+    if (channelId === '!OhPCRBVfMZkCQRIBQX:zero-synapse-development.zer0.io') {
+      console.log('XXXX MESSAAGEGEGE 1 1 1 1 1 1 ', message);
+    }
+
+    const relatedReactions = reactions.filter((reaction) => reaction.eventId === message.id);
+    if (relatedReactions.length > 0) {
+      message.reactions = relatedReactions.reduce((acc, reaction) => {
+        if (!reaction.key) return acc; // Skip if key is undefined
+        acc[reaction.key] = (acc[reaction.key] || 0) + 1;
+        return acc;
+      }, message.reactions || {});
+    }
+  }
+
+  if (channelId === '!OhPCRBVfMZkCQRIBQX:zero-synapse-development.zer0.io') {
+    console.log('XXXX MESSAAGEGEGE 2 2 2 2 2 2 ', messages);
   }
 
   return messages;
@@ -165,10 +183,6 @@ export function* fetch(action) {
     // (eg. parentMessage), then it gets written to state
     messages = [...messagesResponse.messages, ...existingMessages];
     messages = uniqBy(messages, (m) => m.id ?? m);
-
-    if (yield select(_isActive(channelId))) {
-      yield call(applyEmojiReactions, channelId, messages);
-    }
 
     yield call(receiveChannel, {
       id: channelId,
@@ -461,7 +475,6 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
     if (!channel) {
       continue;
     }
-
     const mappedMessages = yield call(mapMessagesAndPreview, byChannelId[channelId], channelId);
     yield receiveBatchedMessages(channelId, mappedMessages);
 
@@ -700,24 +713,4 @@ export function* updateMessageEmojiReaction(roomId, { eventId, key }) {
 
     yield call(receiveChannel, { id: roomId, messages: updatedMessages });
   }
-}
-
-export function* applyEmojiReactions(roomId: string, messages: Message[]): Generator<any, void, any> {
-  const reactions = yield call(getMessageEmojiReactions, roomId);
-
-  messages.forEach((message) => {
-    const relatedReactions = reactions.filter((reaction) => {
-      const messageId = message?.id?.toString();
-      const eventId = reaction.eventId.toString();
-      return eventId === messageId;
-    });
-
-    if (relatedReactions.length > 0) {
-      message.reactions = relatedReactions.reduce((acc, reaction) => {
-        const key = reaction.key;
-        acc[key] = (acc[key] || 0) + 1;
-        return acc;
-      }, message.reactions || {});
-    }
-  });
 }

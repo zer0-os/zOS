@@ -477,6 +477,11 @@ export class MatrixClient implements IChatClient {
       hasMore = await this.matrix.paginateEventTimeline(liveTimeline, { backwards: true, limit: 50 });
     }
 
+    const isEncrypted = room?.hasEncryptionStateEvent();
+    if (isEncrypted) {
+      await room.decryptAllEvents();
+    }
+
     const effectiveEvents = events.map((event) => event.getEffectiveEvent());
     const messages = await this.getAllChatMessagesFromRoom(effectiveEvents);
 
@@ -551,7 +556,7 @@ export class MatrixClient implements IChatClient {
     const events = room.getLiveTimeline().getEvents();
 
     const result = events
-      .filter((event) => event.getType() === MatrixConstants.REACTION)
+      .filter((event) => event.getType() === MatrixConstants.REACTION && !event?.event?.unsigned?.redacted_because)
       .map((event) => {
         const content = event.getContent();
         const relatesTo = content[MatrixConstants.RELATES_TO];

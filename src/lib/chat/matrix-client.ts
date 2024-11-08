@@ -381,7 +381,6 @@ export class MatrixClient implements IChatClient {
       case EventType.RoomMessage:
         return mapMatrixMessage(event, this.matrix);
 
-      case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
       case EventType.RoomCreate:
         return mapEventToAdminMessage(event);
 
@@ -712,13 +711,6 @@ export class MatrixClient implements IChatClient {
       await this.matrix.invite(result?.room_id, user.matrixId);
     }
     return await this.mapConversation(room);
-  }
-
-  async userJoinedInviterOnZero(channelId: string, inviterId: string, inviteeId: string) {
-    this.matrix.sendEvent(channelId, CustomEventType.USER_JOINED_INVITER_ON_ZERO as any, {
-      inviterId,
-      inviteeId,
-    });
   }
 
   mxcUrlToHttp(mxcUrl: string, isThumbnail: boolean = false): string {

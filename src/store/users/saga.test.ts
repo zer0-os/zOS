@@ -139,7 +139,13 @@ describe(fetchCurrentUserProfileImage, () => {
     const initialState = new StoreBuilder().withCurrentUser(currentUser).withRegistration({ isFirstTimeLogin: true });
 
     await expectSaga(fetchCurrentUserProfileImage)
-      .provide([[call(updateUserProfileImageFromCache, expect.anything()), '']])
+      .provide([
+        [call(updateUserProfileImageFromCache, expect.anything()), ''],
+        [
+          spawn(matrixEditProfile, { displayName: 'Alice' }),
+          undefined,
+        ],
+      ])
       .withReducer(rootReducer, initialState.build())
       .call(updateUserProfileImageFromCache, currentUser)
       .run();
@@ -180,7 +186,7 @@ describe(fetchCurrentUserProfileImage, () => {
 });
 
 describe(updateUserProfileImageFromCache, () => {
-  it('returns undefined if no profile image is found', async () => {
+  it('updates only displayname & returns undefined if no profile image is found', async () => {
     const currentUser: any = {
       id: 'user-id-1',
       profileSummary: { firstName: 'Alice' },
@@ -189,7 +195,15 @@ describe(updateUserProfileImageFromCache, () => {
 
     mockIdb.put('profileImage', undefined);
 
-    const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser).run();
+    const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser)
+      .provide([
+        [
+          spawn(matrixEditProfile, { displayName: 'Alice' }),
+          undefined,
+        ],
+      ])
+      .spawn(matrixEditProfile, { displayName: 'Alice' })
+      .run();
 
     expect(returnValue).toBeUndefined();
   });

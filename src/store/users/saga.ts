@@ -75,6 +75,9 @@ export function* updateUserProfileImageFromCache(currentUser: User) {
     } else {
       console.error('Failed to update user profile on registration:', response.error);
     }
+  } else {
+    // only update the displayname if the user hasn't uploaded a profile image during registration
+    yield spawn(matrixEditProfile, { displayName: name });
   }
 
   return undefined;

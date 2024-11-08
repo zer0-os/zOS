@@ -135,10 +135,6 @@ export function* mapMessagesAndPreview(messages, channelId) {
       message.preview = preview;
     }
 
-    if (channelId === '!OhPCRBVfMZkCQRIBQX:zero-synapse-development.zer0.io') {
-      console.log('XXXX MESSAAGEGEGE 1 1 1 1 1 1 ', message);
-    }
-
     const relatedReactions = reactions.filter((reaction) => reaction.eventId === message.id);
     if (relatedReactions.length > 0) {
       message.reactions = relatedReactions.reduce((acc, reaction) => {
@@ -147,10 +143,6 @@ export function* mapMessagesAndPreview(messages, channelId) {
         return acc;
       }, message.reactions || {});
     }
-  }
-
-  if (channelId === '!OhPCRBVfMZkCQRIBQX:zero-synapse-development.zer0.io') {
-    console.log('XXXX MESSAAGEGEGE 2 2 2 2 2 2 ', messages);
   }
 
   return messages;

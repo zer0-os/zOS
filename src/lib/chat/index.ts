@@ -74,7 +74,6 @@ export interface IChatClient {
     mentionedUserIds: string[],
     data?: Partial<EditMessageOptions>
   ): Promise<any>;
-  userJoinedInviterOnZero: (channelId: string, inviterId: string, inviteeId: string) => Promise<any>;
   markRoomAsRead: (roomId: string, userId?: string) => Promise<void>;
   getSecureBackup: () => Promise<any>;
   generateSecureBackup: () => Promise<any>;
@@ -145,10 +144,6 @@ export class Chat {
 
   async deleteMessageByRoomId(roomId: string, messageId: string): Promise<void> {
     return this.client.deleteMessageByRoomId(roomId, messageId);
-  }
-
-  async userJoinedInviterOnZero(channelId: string, inviterId: string, inviteeId: string) {
-    return this.client.userJoinedInviterOnZero(channelId, inviterId, inviteeId);
   }
 
   async editMessage(

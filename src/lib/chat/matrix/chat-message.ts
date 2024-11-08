@@ -144,8 +144,6 @@ export async function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKM
 
 function getAdminDataFromEventType(type, content, sender, targetUserId, previousContent) {
   switch (type) {
-    case CustomEventType.USER_JOINED_INVITER_ON_ZERO:
-      return { type: AdminMessageType.JOINED_ZERO, inviterId: content.inviterId, inviteeId: content.inviteeId };
     case EventType.RoomMember:
       return getRoomMemberAdminData(content, targetUserId, previousContent);
     case EventType.RoomCreate:

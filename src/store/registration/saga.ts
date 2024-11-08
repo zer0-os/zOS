@@ -30,7 +30,6 @@ import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { chat } from '../../lib/chat';
 import { getProvider as getIndexedDbProvider } from '../../lib/storage/idb';
 import { receive as receiveUser } from '../users';
 
@@ -251,12 +250,7 @@ export function* createWelcomeConversation(userId: string, inviter: { id: string
     const inviterZeroUserData = yield call(getZEROUsersAPI, [inviter.matrixId]);
     const inviterUser = inviterZeroUserData?.[0];
     yield put(receiveUser(inviterUser));
-
-    const createdConversation = yield call(createConversation, [inviterUser.userId], '', null);
-    const createdConversationId = createdConversation.id;
-
-    const chatClient = yield call(chat.get);
-    yield call([chatClient, chatClient.userJoinedInviterOnZero], createdConversationId, inviterUser.userId, userId);
+    yield call(createConversation, [inviterUser.userId], '', null);
   } catch (error) {}
 }
 

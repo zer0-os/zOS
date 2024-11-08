@@ -38,7 +38,6 @@ import { completeUserLogin } from '../authentication/saga';
 import { createConversation } from '../channels-list/saga';
 import { denormalize as denormalizeUser } from '../users';
 import { StoreBuilder } from '../test/store';
-import { chat } from '../../lib/chat';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -508,13 +507,10 @@ describe('authorizeAndCreateWeb3Account', () => {
 });
 
 describe(createWelcomeConversation, () => {
-  const chatClient = { userJoinedInviterOnZero: jest.fn() };
-
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
       [matchers.call.fn(getZEROUsersAPI), [{ userId: 'stub-id' }]],
       [matchers.call.fn(createConversation), { id: 'conversation-id' }],
-      [matchers.call.fn(chat.get), chatClient],
     ]);
   }
   it('creates the welcome conversation between the inviter and new user', async () => {
@@ -524,7 +520,6 @@ describe(createWelcomeConversation, () => {
       .provide([[call(getZEROUsersAPI, ['inviter-matrix-id']), [{ userId: 'inviter-id', firstName: 'The inviter' }]]])
       .withReducer(rootReducer, initialState.build())
       .call(createConversation, ['inviter-id'], '', null)
-      .call([chatClient, chatClient.userJoinedInviterOnZero], 'conversation-id', 'inviter-id', 'new-user-id')
       .run();
   });
 

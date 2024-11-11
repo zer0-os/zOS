@@ -129,6 +129,14 @@ export class FeatureFlags {
   set enableMeows(value: boolean) {
     this._setBoolean('enableMeows', value);
   }
+
+  get enableTokenGatedChat() {
+    return this._getBoolean('enableTokenGatedChat', false);
+  }
+
+  set enableTokenGatedChat(value: boolean) {
+    this._setBoolean('enableTokenGatedChat', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

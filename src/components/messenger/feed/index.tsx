@@ -9,6 +9,8 @@ import { sendPost } from '../../../store/posts';
 import { FeedViewContainer } from './feed-view-container/feed-view-container';
 import { PostInputContainer as PostInput } from './components/post-input/container';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
+import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
+import { LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -25,14 +27,17 @@ export interface Properties extends PublicProperties {
   activeConversationId: string;
   isSocialChannel: boolean;
   isJoiningConversation: boolean;
+  leaveGroupDialogStatus: LeaveGroupDialogStatus;
 
   sendPost: (payload: PayloadPostMessage) => void;
+  setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId, isJoiningConversation },
+      groupManagement,
     } = state;
 
     const currentChannel = denormalize(activeConversationId, state) || null;
@@ -41,6 +46,7 @@ export class Container extends React.Component<Properties> {
       channel: currentChannel,
       isJoiningConversation,
       activeConversationId,
+      leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
       isSocialChannel: currentChannel?.isSocialChannel,
     };
   }
@@ -48,6 +54,7 @@ export class Container extends React.Component<Properties> {
   static mapActions(): Partial<Properties> {
     return {
       sendPost,
+      setLeaveGroupStatus,
     };
   }
 
@@ -69,6 +76,24 @@ export class Container extends React.Component<Properties> {
       .some((message) => message.sendStatus === MessageSendStatus.IN_PROGRESS);
   }
 
+  get isLeaveGroupDialogOpen() {
+    return this.props.leaveGroupDialogStatus !== LeaveGroupDialogStatus.CLOSED;
+  }
+
+  closeLeaveGroupDialog = () => {
+    this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
+  };
+
+  renderLeaveGroupDialog = (): JSX.Element => {
+    return (
+      <LeaveGroupDialogContainer
+        groupName={this.props.channel.name}
+        onClose={this.closeLeaveGroupDialog}
+        roomId={this.props.activeConversationId}
+      />
+    );
+  };
+
   render() {
     const { isJoiningConversation, activeConversationId, isSocialChannel } = this.props;
 
@@ -89,6 +114,8 @@ export class Container extends React.Component<Properties> {
 
           <FeedViewContainer channelId={activeConversationId} />
         </ScrollbarContainer>
+
+        {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
       </div>
     );
   }

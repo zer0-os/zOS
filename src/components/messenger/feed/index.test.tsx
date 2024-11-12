@@ -3,6 +3,8 @@ import { shallow } from 'enzyme';
 import { Container as MessengerFeed, Properties } from '.';
 import { StoreBuilder, stubConversation } from '../../../store/test/store';
 import { PostInputContainer } from './components/post-input/container';
+import { LeaveGroupDialogStatus } from '../../../store/group-management';
+import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 
 describe(MessengerFeed, () => {
   const subject = (props: Partial<Properties>) => {
@@ -11,7 +13,9 @@ describe(MessengerFeed, () => {
       activeConversationId: 'channel-id',
       isSocialChannel: false,
       isJoiningConversation: false,
+      leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       sendPost: jest.fn(),
+      setLeaveGroupStatus: jest.fn(),
       ...props,
     };
 
@@ -47,6 +51,59 @@ describe(MessengerFeed, () => {
     const wrapper = subject({ channel: channel as any, isSocialChannel: true, activeConversationId: null });
 
     expect(wrapper.isEmptyRender()).toBe(true);
+  });
+
+  describe('leave group dialog', () => {
+    it('renders leave group dialog when status is OPEN', async () => {
+      const channel = stubConversation({ name: 'convo-1', hasLoadedMessages: true, messages: [] });
+
+      const wrapper = subject({
+        channel: channel as any,
+        isSocialChannel: true,
+        leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN,
+      });
+
+      expect(wrapper).toHaveElement(LeaveGroupDialogContainer);
+    });
+
+    it('renders leave group dialog when status is IN_PROGRESS', () => {
+      const channel = stubConversation({ name: 'convo-1', hasLoadedMessages: true, messages: [] });
+
+      const wrapper = subject({
+        channel: channel as any,
+        isSocialChannel: true,
+        leaveGroupDialogStatus: LeaveGroupDialogStatus.IN_PROGRESS,
+      });
+
+      expect(wrapper).toHaveElement(LeaveGroupDialogContainer);
+    });
+
+    it('does not render leave group dialog when LeaveGroupDialogStatus is closed', () => {
+      const channel = stubConversation({ name: 'convo-1', hasLoadedMessages: true, messages: [] });
+
+      const wrapper = subject({
+        channel: channel as any,
+        isSocialChannel: true,
+        leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
+      });
+
+      expect(wrapper).not.toHaveElement(LeaveGroupDialogContainer);
+    });
+
+    it('passes name and roomId to leave group dialog', () => {
+      const channel = stubConversation({ name: 'group-name', id: 'channel-id', hasLoadedMessages: true, messages: [] });
+
+      const wrapper = subject({
+        channel: channel as any,
+        isSocialChannel: true,
+        leaveGroupDialogStatus: LeaveGroupDialogStatus.OPEN,
+      });
+
+      const leaveGroupDialog = wrapper.find(LeaveGroupDialogContainer);
+
+      expect(leaveGroupDialog).toHaveProp('roomId', 'channel-id');
+      expect(leaveGroupDialog).toHaveProp('groupName', 'group-name');
+    });
   });
 
   describe('mapState', () => {

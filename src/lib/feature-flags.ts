@@ -131,7 +131,7 @@ export class FeatureFlags {
   }
 
   get enableTokenGatedChat() {
-    return this._getBoolean('enableTokenGatedChat', false);
+    return this._getBoolean('enableTokenGatedChat', true);
   }
 
   set enableTokenGatedChat(value: boolean) {

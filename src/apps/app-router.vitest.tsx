@@ -15,9 +15,6 @@ vi.mock('./messenger', () => ({
   MessengerApp: () => {
     return <div data-testid='messenger-app' />;
   },
-  NotificationsApp: () => {
-    return <div data-testid='notifications-app' />;
-  },
 }));
 
 vi.mock('./notifications', () => ({

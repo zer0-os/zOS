@@ -8,6 +8,9 @@ vi.mock('./messenger', () => ({
   MessengerApp: () => {
     return <div data-testid='messenger-app' />;
   },
+  NotificationsApp: () => {
+    return <div data-testid='notifications-app' />;
+  },
 }));
 
 const renderComponent = (route: string | undefined = '/') => {
@@ -32,5 +35,10 @@ describe(AppRouter, () => {
   it('should redirect to / when route is invalid', () => {
     renderComponent('/foo-bar');
     expect(screen.getByTestId('messenger-app')).toBeTruthy();
+  });
+
+  it('should render NotificationsApp component when route is /notifications', () => {
+    renderComponent('/notifications');
+    expect(screen.getByTestId('notifications-app')).toBeTruthy();
   });
 });

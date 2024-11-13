@@ -7,6 +7,8 @@
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { MessengerApp } from './messenger';
 import { ExplorerApp } from './explorer';
+import { NotificationsApp } from './notifications';
+import { featureFlags } from '../lib/feature-flags';
 
 const redirectToRoot = () => <Redirect to={'/'} />;
 
@@ -16,6 +18,7 @@ export const AppRouter = () => {
       <Route path='/conversation/:conversationId' exact component={MessengerApp} />
       <Route path='/' exact component={MessengerApp} />
       <Route path='/explorer' component={ExplorerApp} />
+      {featureFlags.enableNotificationsApp && <Route path='/notifications' component={NotificationsApp} />}
       <Route component={redirectToRoot} />
     </Switch>
   );

@@ -137,6 +137,14 @@ export class FeatureFlags {
   set enableTokenGatedChat(value: boolean) {
     this._setBoolean('enableTokenGatedChat', value);
   }
+
+  get enableNotificationsApp() {
+    return this._getBoolean('enableNotificationsApp', false);
+  }
+
+  set enableNotificationsApp(value: boolean) {
+    this._setBoolean('enableNotificationsApp', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

@@ -1,20 +1,18 @@
 import { takeLatest, call, select } from 'redux-saga/effects';
-import uniqBy from 'lodash.uniqby';
 
 import { SagaActionTypes } from '.';
 import { MediaType, Message } from '../messages';
-import { getPostMessageReactions, getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
+import { getPostMessageReactions, sendPostByChannelId } from '../../lib/chat';
 import { messageSelector, rawMessagesSelector, sendMessage } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
 import { createOptimisticPostObject } from './utils';
 import { rawChannelSelector, receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
-import { mapMessageSenders } from '../messages/utils.matrix';
 import { Uploadable, createUploadableFile } from '../messages/uploadable';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { updateUserMeowBalance } from '../rewards/saga';
-import { featureFlags } from '../../lib/feature-flags';
+import { get } from '../../lib/api/rest';
 
 export interface Payload {
   channelId: string;
@@ -103,42 +101,78 @@ export function* uploadFileMessages(channelId, rootMessageId, uploadableFiles: U
 }
 
 export function* fetchPosts(action) {
-  const { channelId, referenceTimestamp } = action.payload;
+  const { channelId } = action.payload;
   const channel = yield select(rawChannelSelector(channelId));
 
   if (channel.conversationStatus !== ConversationStatus.CREATED) {
     return;
   }
 
-  let postsResponse;
+  const channelZna = channel.name?.split('0://')[1];
+
   let posts;
+  const PAGE_SIZE = 20;
 
   try {
-    if (referenceTimestamp) {
-      yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS });
-      postsResponse = yield call(getPostMessagesByChannelId, channelId, referenceTimestamp);
-    } else {
-      yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS });
-      postsResponse = yield call(getPostMessagesByChannelId, channelId);
+    /* Grab existing posts from state, and filter out any Matrix posts.
+     * This is a temporary work around so we can continue to use the existing
+     * post business logic. */
+    const existingPosts = yield select(rawMessagesSelector(channelId));
+    const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
+
+    // Calculate the current page number
+    const currentPage = Math.floor(filteredPosts.length / PAGE_SIZE);
+
+    const endpoint = `/api/v2/posts/channel/${channelZna}`;
+
+    const res = yield call(get, endpoint, undefined, {
+      limit: PAGE_SIZE,
+      skip: currentPage * PAGE_SIZE,
+    });
+
+    if (!res.ok) {
+      yield call(receiveChannel, {
+        id: channelId,
+        messages: filteredPosts,
+        hasMorePosts: false,
+        hasLoadedMessages: true,
+        messagesFetchStatus: MessagesFetchState.FAILED,
+      });
     }
 
-    yield call(mapMessageSenders, postsResponse.postMessages, channelId);
+    const irysPosts = res.body.posts;
 
-    if (featureFlags.enableMeows) {
-      yield call(applyReactions, channelId, postsResponse.postMessages);
-    }
+    const messagePosts: Message[] = irysPosts.map((post) => ({
+      createdAt: post.createdAt,
+      hidePreview: false,
+      id: post.id,
+      image: undefined,
+      isAdmin: false,
+      isPost: true,
+      media: null,
+      mentionedUsers: [],
+      message: post.text,
+      optimisticId: post.id,
+      preview: null,
+      reactions: {},
+      rootMessageId: '',
+      sendStatus: 0,
+      sender: {
+        userId: post.userId,
+        firstName: post.user.handle,
+        displaySubHandle: '0://' + post.zid,
+      },
+    }));
 
-    const existingMessages = yield select(rawMessagesSelector(channelId));
-    const existingPosts = existingMessages.filter((message) => message.isPost);
+    posts = [...messagePosts, ...filteredPosts];
 
-    posts = uniqBy([...postsResponse.postMessages, ...existingPosts], (p) => p.id ?? p);
+    const hasMorePosts = irysPosts.length === PAGE_SIZE;
 
     // Updates the channel's state with the fetched posts and existing non-post messages
-    const nonPostMessages = existingMessages.filter((message) => !message.isPost);
     yield call(receiveChannel, {
       id: channelId,
-      messages: uniqBy([...posts, ...nonPostMessages], (m) => m.id ?? m),
-      hasMorePosts: postsResponse.hasMore,
+      messages: posts,
+      hasMorePosts,
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
     });

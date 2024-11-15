@@ -87,7 +87,7 @@ export class Container extends React.Component<Properties> {
   }
 
   renderError() {
-    return <div className={styles.Error}>{'this.props.error'}</div>;
+    return <div className={styles.Error}>{this.props.error}</div>;
   }
 
   render() {
@@ -103,7 +103,7 @@ export class Container extends React.Component<Properties> {
           <div className={styles.Body}>
             <ol className={styles.Notifications}>{notifications.length > 0 && this.renderNotifications()}</ol>
 
-            {notifications.length === 0 && !loading && this.renderNoNotifications()}
+            {notifications.length === 0 && !loading && !error && this.renderNoNotifications()}
             {loading && this.renderLoading()}
             {error && !loading && this.renderError()}
           </div>

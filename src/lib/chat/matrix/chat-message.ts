@@ -210,7 +210,7 @@ export async function mapEventToNotification(event) {
 
 function extractMentionsFromBody(body: string) {
   const mentionRegex = /@\[.*?\]\(user:(.*?)\)/g;
-  const matches = [...body.matchAll(mentionRegex)];
+  const matches = [...body?.matchAll(mentionRegex)];
   return matches.map((match) => match[1]);
 }
 

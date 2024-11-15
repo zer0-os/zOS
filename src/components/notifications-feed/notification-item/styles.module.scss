@@ -1,6 +1,27 @@
 .NotificationItem {
   display: flex;
   align-items: center;
-  font-size: 14px;
-  gap: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .Content {
+    margin-left: 12px;
+    flex: 1;
+
+    .Message {
+      font-size: 14px;
+      // color: #333;
+    }
+
+    .Timestamp {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+  }
 }

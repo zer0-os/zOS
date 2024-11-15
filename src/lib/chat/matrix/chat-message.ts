@@ -154,8 +154,8 @@ export async function mapEventToNotification(event) {
     },
   };
 
-  if (type === 'm.room.message') {
-    const mentions = extractMentionsFromBody(content.body);
+  if (type === 'm.room.message' && content?.body) {
+    const mentions = content.body ? extractMentionsFromBody(content.body) : [];
     if (mentions.length > 0) {
       return {
         ...baseNotification,

@@ -15,7 +15,7 @@ export interface Notification {
     firstName?: string;
     profileImage?: string;
   };
-  content: {
+  content?: {
     body?: string;
     replyToEventId?: string;
     reactionKey?: string;

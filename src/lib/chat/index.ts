@@ -424,3 +424,7 @@ export function getProfileInfo(userId: string): Promise<{
 }> {
   return chat.get().matrix.getProfileInfo(userId);
 }
+
+export function getNotifications(): Promise<any[]> {
+  return chat.get().matrix.getNotifications();
+}

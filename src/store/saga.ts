@@ -24,6 +24,7 @@ import { saga as userProfile } from './user-profile/saga';
 import { saga as background } from './background/saga';
 import { saga as accountManagement } from './account-management/saga';
 import { saga as posts } from './posts/saga';
+import { saga as notifications } from './notifications/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -51,6 +52,7 @@ export function* rootSaga() {
     background,
     accountManagement,
     posts,
+    notifications,
   };
 
   yield all(

@@ -14,6 +14,7 @@ export function* fetchNotifications() {
 
     yield put(setNotifications(notificationsWithSenders));
   } catch (error: any) {
+    console.error('Error fetching notifications:', error);
     yield put(setError(error.message));
   } finally {
     yield put(setLoading(false));

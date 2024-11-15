@@ -23,6 +23,7 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import {
   mapEventToAdminMessage,
+  mapEventToNotification,
   mapEventToPostMessage,
   mapMatrixMessage,
   mapToLiveRoomEvent,
@@ -603,6 +604,22 @@ export class MatrixClient implements IChatClient {
       .filter((reaction) => reaction !== null);
 
     return result;
+  }
+
+  async getNotifications(): Promise<any[]> {
+    await this.waitForConnection();
+    const rooms = await this.getRoomsUserIsIn();
+    let allNotifications = [];
+
+    for (const room of rooms) {
+      const timeline = room.getLiveTimeline();
+      const events = timeline.getEvents().map((event) => event.getEffectiveEvent());
+
+      const notifications = await this.getNotificationsFromRoom(events);
+      allNotifications = [...allNotifications, ...notifications];
+    }
+
+    return allNotifications.sort((a, b) => b.createdAt - a.createdAt);
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
@@ -1642,6 +1659,34 @@ export class MatrixClient implements IChatClient {
 
   private isPostEvent(event): boolean {
     return event.type === CustomEventType.ROOM_POST;
+  }
+
+  private async getNotificationsFromRoom(events): Promise<any[]> {
+    const currentUserId = this.matrix.getUserId();
+
+    const notificationEvents = events.filter((event) => {
+      const relatesTo = event.content && event.content['m.relates_to'];
+      const isDM = this.matrix.getRoom(event.room_id)?.getMembers().length === 2;
+      const isFromCurrentUser = event.sender === currentUserId;
+      const hasMentions =
+        event.type === 'm.room.message' &&
+        event.content?.body?.includes('@[') &&
+        event.content?.body?.includes('](user:');
+
+      // Don't show notifications from the current user
+      if (isFromCurrentUser) return false;
+
+      return (
+        (relatesTo && relatesTo['m.in_reply_to']) ||
+        (event.type === MatrixConstants.REACTION && !event?.unsigned?.redacted_because) ||
+        (isDM && event.type === 'm.room.message') ||
+        hasMentions
+      );
+    });
+
+    const notifications = await Promise.all(notificationEvents.map((event) => mapEventToNotification(event)));
+
+    return notifications.filter((notification) => notification !== null);
   }
 
   // Performance improvement: Fetches only the latest user message to avoid processing large image files and other attachments

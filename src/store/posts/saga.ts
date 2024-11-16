@@ -79,7 +79,7 @@ function mapPost(post) {
     sendStatus: 0,
     sender: {
       userId: post.userId,
-      firstName: post.user.handle,
+      firstName: post.user?.profileSummary?.firstName,
       displaySubHandle: '0://' + post.zid,
     },
   };

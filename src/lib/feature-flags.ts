@@ -123,7 +123,7 @@ export class FeatureFlags {
   }
 
   get enableMeows() {
-    return this._getBoolean('enableMeows', false);
+    return this._getBoolean('enableMeows', true);
   }
 
   set enableMeows(value: boolean) {

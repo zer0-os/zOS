@@ -169,7 +169,8 @@ export const Post = ({
         }
         options={<Timestamp className={styles.Date} timestamp={timestamp} />}
         actions={
-          isMeowsEnabled && (
+          isMeowsEnabled &&
+          !featureFlags.enableIrysPosting && (
             <MeowAction
               meows={reactions?.MEOW || 0}
               isDisabled={isDisabled}

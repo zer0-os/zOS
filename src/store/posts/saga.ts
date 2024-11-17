@@ -108,7 +108,7 @@ async function getWallet() {
   return walletClient;
 }
 
-export function* sendPost(action) {
+export function* sendPostIrys(action) {
   const { channelId, message } = action.payload;
 
   const channel = yield select(rawChannelSelector(channelId));
@@ -231,7 +231,7 @@ export function* uploadFileMessages(channelId, rootMessageId, uploadableFiles: U
   }
 }
 
-export function* fetchPosts(action) {
+export function* fetchPostsIrys(action) {
   const { channelId } = action.payload;
   const channel = yield select(rawChannelSelector(channelId));
 
@@ -334,8 +334,8 @@ function* onPostMessageReactionChange(action) {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.SendPost, sendPost);
-  yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
+  yield takeLatest(SagaActionTypes.SendPost, sendPostIrys);
+  yield takeLatest(SagaActionTypes.FetchPosts, fetchPostsIrys);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.PostMessageReactionChange, onPostMessageReactionChange);
 }

@@ -4,12 +4,13 @@ import { connectContainer } from '../../../../store/redux-container';
 import { Payload as PayloadFetchPost } from '../../../../store/posts/saga';
 import { Channel, denormalize } from '../../../../store/channels';
 import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
-import { fetchPosts } from '../../../../store/posts';
+import { fetchPosts, fetchPostsIrys } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
 import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../chat-view-container/utils';
 import { compareDatesAsc } from '../../../../lib/date';
 import { transferMeow } from '../../../../store/rewards';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 interface PublicProperties {
   channelId: string;
@@ -51,7 +52,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      fetchPosts,
+      fetchPosts: featureFlags.enableIrysPosting ? fetchPostsIrys : fetchPosts,
       loadAttachmentDetails,
       transferMeow,
     };

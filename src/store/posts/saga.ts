@@ -1,14 +1,15 @@
 import { takeLatest, call, select } from 'redux-saga/effects';
+import uniqBy from 'lodash.uniqby';
 
 import { SagaActionTypes } from '.';
 import { MediaType, Message } from '../messages';
-import { getPostMessageReactions } from '../../lib/chat';
+import { getPostMessageReactions, getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
 import { messageSelector, rawMessagesSelector, sendMessage } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
 import { createOptimisticPostObject } from './utils';
 import { rawChannelSelector, receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
-import { Uploadable } from '../messages/uploadable';
+import { createUploadableFile, Uploadable } from '../messages/uploadable';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { updateUserMeowBalance } from '../rewards/saga';
@@ -16,6 +17,8 @@ import { get, post } from '../../lib/api/rest';
 import { getWagmiConfig } from '../../lib/web3/wagmi-config';
 import { WalletClient } from 'viem';
 import { getWalletClient } from '@wagmi/core';
+import { featureFlags } from '../../lib/feature-flags';
+import { mapMessageSenders } from '../messages/utils.matrix';
 
 export interface Payload {
   channelId: string;
@@ -106,6 +109,31 @@ async function getWallet() {
   const walletClient: WalletClient = await getWalletClient(wagmiConfig);
 
   return walletClient;
+}
+
+export function* sendPost(action) {
+  const { channelId, message, files = [] } = action.payload;
+
+  const processedFiles: Uploadable[] = files.map(createUploadableFile);
+
+  // Create optimistic posts (for both the text and media files)
+  const { optimisticPost, uploadableFiles } = yield call(createOptimisticPosts, channelId, message, processedFiles);
+
+  let rootMessageId = '';
+  if (optimisticPost) {
+    // If the text post is created, send it first
+    const textPost = yield call(sendPostByChannelId, channelId, message, optimisticPost.optimisticId);
+
+    if (textPost) {
+      rootMessageId = textPost.id;
+    } else {
+      // If the text post fails, shift the first file to avoid sending it
+      uploadableFiles.shift();
+    }
+  }
+
+  // Upload the media files after sending the text post
+  yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles, true);
 }
 
 export function* sendPostIrys(action) {
@@ -231,6 +259,52 @@ export function* uploadFileMessages(channelId, rootMessageId, uploadableFiles: U
   }
 }
 
+export function* fetchPosts(action) {
+  const { channelId, referenceTimestamp } = action.payload;
+  const channel = yield select(rawChannelSelector(channelId));
+
+  if (channel.conversationStatus !== ConversationStatus.CREATED) {
+    return;
+  }
+
+  let postsResponse;
+  let posts;
+
+  try {
+    if (referenceTimestamp) {
+      yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.MORE_IN_PROGRESS });
+      postsResponse = yield call(getPostMessagesByChannelId, channelId, referenceTimestamp);
+    } else {
+      yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.IN_PROGRESS });
+      postsResponse = yield call(getPostMessagesByChannelId, channelId);
+    }
+
+    yield call(mapMessageSenders, postsResponse.postMessages, channelId);
+
+    if (featureFlags.enableMeows) {
+      yield call(applyReactions, channelId, postsResponse.postMessages);
+    }
+
+    const existingMessages = yield select(rawMessagesSelector(channelId));
+    const existingPosts = existingMessages.filter((message) => message.isPost);
+
+    posts = uniqBy([...postsResponse.postMessages, ...existingPosts], (p) => p.id ?? p);
+
+    // Updates the channel's state with the fetched posts and existing non-post messages
+    const nonPostMessages = existingMessages.filter((message) => !message.isPost);
+    yield call(receiveChannel, {
+      id: channelId,
+      messages: uniqBy([...posts, ...nonPostMessages], (m) => m.id ?? m),
+      hasMorePosts: postsResponse.hasMore,
+      hasLoadedMessages: true,
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
+    });
+  } catch (error) {
+    console.log('Error fetching posts', error);
+    yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
+  }
+}
+
 export function* fetchPostsIrys(action) {
   const { channelId } = action.payload;
   const channel = yield select(rawChannelSelector(channelId));
@@ -334,8 +408,10 @@ function* onPostMessageReactionChange(action) {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.SendPost, sendPostIrys);
-  yield takeLatest(SagaActionTypes.FetchPosts, fetchPostsIrys);
+  yield takeLatest(SagaActionTypes.SendPostIrys, sendPostIrys);
+  yield takeLatest(SagaActionTypes.FetchPostsIrys, fetchPostsIrys);
+  yield takeLatest(SagaActionTypes.SendPost, sendPost);
+  yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.PostMessageReactionChange, onPostMessageReactionChange);
 }

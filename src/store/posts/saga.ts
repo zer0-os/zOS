@@ -275,7 +275,7 @@ export function* fetchPostsIrys(action) {
     }
 
     const fetchedPosts = res.body.posts;
-    const posts = [...fetchedPosts.map(mapPostToMatrixMessage), ...filteredPosts];
+    const posts = uniqBy([...fetchedPosts.map(mapPostToMatrixMessage), ...filteredPosts], (p) => p.id ?? p);
     const hasMorePosts = fetchedPosts.length === POSTS_PAGE_SIZE;
 
     // Updates the channel's state with the fetched posts and existing non-post messages

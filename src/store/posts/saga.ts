@@ -148,7 +148,7 @@ export function* sendPostIrys(action) {
           profileSummary: {
             firstName: user.profileSummary?.firstName,
           },
-          userId: user.userId,
+          userId: user.id,
         },
         zid: userZid,
       }),

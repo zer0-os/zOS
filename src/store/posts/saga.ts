@@ -6,20 +6,24 @@ import { MediaType, Message } from '../messages';
 import { getPostMessageReactions, getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
 import { messageSelector, rawMessagesSelector, sendMessage } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
-import { createOptimisticPostObject } from './utils';
 import { rawChannelSelector, receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
 import { createUploadableFile, Uploadable } from '../messages/uploadable';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { updateUserMeowBalance } from '../rewards/saga';
-import { get, post } from '../../lib/api/rest';
-import { getWagmiConfig } from '../../lib/web3/wagmi-config';
-import { WalletClient } from 'viem';
-import { getWalletClient } from '@wagmi/core';
+import { get } from '../../lib/api/rest';
 import { featureFlags } from '../../lib/feature-flags';
 import { mapMessageSenders } from '../messages/utils.matrix';
 import { POSTS_PAGE_SIZE } from './constants';
+import {
+  createOptimisticPostObject,
+  getWallet,
+  mapPostToMatrixMessage,
+  SignedMessagePayload,
+  signPostPayload,
+  uploadPost,
+} from './utils';
 
 export interface Payload {
   channelId: string;
@@ -40,76 +44,6 @@ export interface PostPayload {
   message?: string;
   files?: MediaInfo[];
   optimisticId?: string;
-}
-
-interface SignedMessagePayload {
-  created_at: string;
-  text: string;
-  wallet_address: string;
-  zid: string;
-}
-
-async function signPostPayload(
-  payload: SignedMessagePayload,
-  walletClient: WalletClient
-): Promise<{ signedPost: string; unsignedPost: string }> {
-  const unsignedPost = JSON.stringify(payload);
-  const signedPost = await walletClient.signMessage({
-    account: payload.wallet_address as `0x${string}`,
-    message: unsignedPost,
-  });
-
-  return {
-    unsignedPost,
-    signedPost,
-  };
-}
-
-function mapPost(post) {
-  return {
-    createdAt: post.createdAt,
-    hidePreview: false,
-    id: post.id,
-    image: undefined,
-    isAdmin: false,
-    isPost: true,
-    media: null,
-    mentionedUsers: [],
-    message: post.text,
-    optimisticId: post.id,
-    preview: null,
-    reactions: {},
-    rootMessageId: '',
-    sendStatus: 0,
-    sender: {
-      userId: post.userId,
-      firstName: post.user?.profileSummary?.firstName,
-      displaySubHandle: '0://' + post.zid,
-    },
-  };
-}
-
-async function uploadPost(formData: FormData, worldZid: string) {
-  const endpoint = `/api/v2/posts/channel/${worldZid}`;
-
-  try {
-    return await post(endpoint)
-      .field('text', formData.get('text'))
-      .field('unsignedMessage', formData.get('unsignedMessage'))
-      .field('signedMessage', formData.get('signedMessage'))
-      .field('zid', formData.get('zid'))
-      .field('walletAddress', formData.get('walletAddress'));
-  } catch (e) {
-    console.error('Failed to upload post', e);
-    throw new Error('Failed to upload post');
-  }
-}
-
-async function getWallet() {
-  const wagmiConfig = getWagmiConfig();
-  const walletClient: WalletClient = await getWalletClient(wagmiConfig);
-
-  return walletClient;
 }
 
 export function* sendPost(action) {
@@ -206,7 +140,7 @@ export function* sendPostIrys(action) {
     id: channelId,
     messages: [
       ...filteredPosts,
-      mapPost({
+      mapPostToMatrixMessage({
         createdAt,
         id: res.body.id,
         text: message,
@@ -339,7 +273,7 @@ export function* fetchPostsIrys(action) {
     }
 
     const fetchedPosts = res.body.posts;
-    const posts = [...fetchedPosts.map(mapPost), ...filteredPosts];
+    const posts = [...fetchedPosts.map(mapPostToMatrixMessage), ...filteredPosts];
     const hasMorePosts = fetchedPosts.length === POSTS_PAGE_SIZE;
 
     // Updates the channel's state with the fetched posts and existing non-post messages

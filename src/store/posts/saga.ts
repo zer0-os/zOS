@@ -6,15 +6,24 @@ import { MediaType, Message } from '../messages';
 import { getPostMessageReactions, getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
 import { messageSelector, rawMessagesSelector, sendMessage } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
-import { createOptimisticPostObject } from './utils';
 import { rawChannelSelector, receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
-import { mapMessageSenders } from '../messages/utils.matrix';
-import { Uploadable, createUploadableFile } from '../messages/uploadable';
+import { createUploadableFile, Uploadable } from '../messages/uploadable';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { updateUserMeowBalance } from '../rewards/saga';
+import { get } from '../../lib/api/rest';
 import { featureFlags } from '../../lib/feature-flags';
+import { mapMessageSenders } from '../messages/utils.matrix';
+import { POSTS_PAGE_SIZE } from './constants';
+import {
+  createOptimisticPostObject,
+  getWallet,
+  mapPostToMatrixMessage,
+  SignedMessagePayload,
+  signPostPayload,
+  uploadPost,
+} from './utils';
 
 export interface Payload {
   channelId: string;
@@ -60,6 +69,91 @@ export function* sendPost(action) {
 
   // Upload the media files after sending the text post
   yield call(uploadFileMessages, channelId, rootMessageId, uploadableFiles, true);
+}
+
+export function* sendPostIrys(action) {
+  const { channelId, message } = action.payload;
+
+  const channel = yield select(rawChannelSelector(channelId));
+
+  if (channel.conversationStatus !== ConversationStatus.CREATED) {
+    return;
+  }
+
+  const user = yield select(currentUserSelector());
+  const userZid = user.primaryZID.split('0://')[1];
+
+  // If user does not have a primary ZID
+  if (!userZid || userZid.trim() === '') {
+    // throw an error
+  }
+
+  const channelZid = channel?.name?.split('0://')[1];
+
+  // If the message contect is empty, or the channel does not have a name
+  if (!message || message.trim() === '' || !channelZid) {
+    // throw an error
+  }
+
+  const walletClient = yield call(getWallet);
+  const connectedAddress = walletClient.account?.address;
+
+  // If the user does not have a connected address
+  if (!connectedAddress) {
+    // throw an error
+  }
+
+  // If the user is connected to a wallet which is not linked to their account
+  if (!user.wallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
+    // throw an error
+  }
+
+  const createdAt = new Date().getTime();
+
+  const formData = new FormData();
+
+  const payloadToSign: SignedMessagePayload = {
+    created_at: createdAt.toString(),
+    text: message,
+    wallet_address: connectedAddress,
+    zid: userZid,
+  };
+
+  const { unsignedPost, signedPost } = yield call(signPostPayload, payloadToSign, walletClient);
+
+  formData.append('text', message);
+  formData.append('unsignedMessage', unsignedPost);
+  formData.append('signedMessage', signedPost);
+  formData.append('zid', userZid);
+  formData.append('walletAddress', connectedAddress);
+
+  const res = yield call(uploadPost, formData, channelZid);
+
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+
+  const existingPosts = yield select(rawMessagesSelector(channelId));
+  const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
+
+  yield call(receiveChannel, {
+    id: channelId,
+    messages: [
+      ...filteredPosts,
+      mapPostToMatrixMessage({
+        createdAt,
+        id: res.body.id,
+        text: message,
+        user: {
+          profileSummary: {
+            firstName: user.profileSummary?.firstName,
+          },
+          userId: user.id,
+        },
+        zid: userZid,
+      }),
+    ],
+  });
 }
 
 export function* createOptimisticPosts(channelId, postText, uploadableFiles?) {
@@ -148,6 +242,56 @@ export function* fetchPosts(action) {
   }
 }
 
+export function* fetchPostsIrys(action) {
+  const { channelId } = action.payload;
+  const channel = yield select(rawChannelSelector(action.payload.channelId));
+
+  if (channel.conversationStatus !== ConversationStatus.CREATED) {
+    return;
+  }
+
+  const channelZna = channel.name?.split('0://')[1];
+
+  try {
+    /* Grab existing posts from state, and filter out any Matrix posts.
+     * This is a temporary work around so we can continue to use the existing
+     * post business logic. */
+    const existingPosts = yield select(rawMessagesSelector(channelId));
+    const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
+    const currentPage = Math.floor(filteredPosts.length / POSTS_PAGE_SIZE);
+
+    const res = yield call(get, `/api/v2/posts/channel/${channelZna}`, undefined, {
+      limit: POSTS_PAGE_SIZE,
+      skip: currentPage * POSTS_PAGE_SIZE,
+    });
+
+    if (!res.ok) {
+      return yield call(receiveChannel, {
+        id: channelId,
+        hasMorePosts: false,
+        hasLoadedMessages: true,
+        messagesFetchStatus: MessagesFetchState.FAILED,
+      });
+    }
+
+    const fetchedPosts = res.body.posts;
+    const posts = uniqBy([...fetchedPosts.map(mapPostToMatrixMessage), ...filteredPosts], (p) => p.id ?? p);
+    const hasMorePosts = fetchedPosts.length === POSTS_PAGE_SIZE;
+
+    // Updates the channel's state with the fetched posts and existing non-post messages
+    yield call(receiveChannel, {
+      id: channelId,
+      messages: posts,
+      hasMorePosts,
+      hasLoadedMessages: true,
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
+    });
+  } catch (error) {
+    console.log('Error fetching posts', error);
+    yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
+  }
+}
+
 export function* applyReactions(roomId: string, postMessages: Message[]): Generator<any, void, any> {
   const reactions = yield call(getPostMessageReactions, roomId);
 
@@ -189,6 +333,8 @@ function* onPostMessageReactionChange(action) {
 }
 
 export function* saga() {
+  yield takeLatest(SagaActionTypes.SendPostIrys, sendPostIrys);
+  yield takeLatest(SagaActionTypes.FetchPostsIrys, fetchPostsIrys);
   yield takeLatest(SagaActionTypes.SendPost, sendPost);
   yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
 

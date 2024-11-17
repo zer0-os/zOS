@@ -2,6 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { MediaType, Message, MessageSendStatus } from './../messages';
 import { User } from './../authentication/types';
+import { WalletClient } from 'viem';
+import { post } from '../../lib/api/rest';
+import { getWagmiConfig } from '../../lib/web3/wagmi-config';
+import { getWalletClient } from '@wagmi/core';
 
 export function createOptimisticPostObject(
   postText: string,
@@ -45,4 +49,88 @@ export function createOptimisticPostObject(
     isPost: true,
     rootMessageId,
   };
+}
+
+export interface SignedMessagePayload {
+  created_at: string;
+  text: string;
+  wallet_address: string;
+  zid: string;
+}
+
+export async function signPostPayload(
+  payload: SignedMessagePayload,
+  walletClient: WalletClient
+): Promise<{ signedPost: string; unsignedPost: string }> {
+  const unsignedPost = JSON.stringify(payload);
+  const signedPost = await walletClient.signMessage({
+    account: payload.wallet_address as `0x${string}`,
+    message: unsignedPost,
+  });
+
+  return {
+    unsignedPost,
+    signedPost,
+  };
+}
+
+/**
+ * Maps an Irys post (from zOS API) to a Message object, so we can
+ * re-use the existing Matrix business logic.
+ *
+ * Please note - types here are a bit funky.
+ *
+ * @param post Irys post to map
+ * @returns Matrix Message object
+ */
+export function mapPostToMatrixMessage(post) {
+  return {
+    createdAt: post.createdAt,
+    hidePreview: false,
+    id: post.id,
+    image: undefined,
+    isAdmin: false,
+    isPost: true,
+    media: null,
+    mentionedUsers: [],
+    message: post.text,
+    optimisticId: post.id,
+    preview: null,
+    reactions: {},
+    rootMessageId: '',
+    sendStatus: 0,
+    sender: {
+      userId: post.userId,
+      firstName: post.user?.profileSummary?.firstName,
+      displaySubHandle: '0://' + post.zid,
+    },
+  };
+}
+
+/**
+ * Uploads a post as FormData to the zOS API.
+ * @param formData The parameters of the post to upload.
+ * @param worldZid The world ZID to upload the post to.
+ */
+export async function uploadPost(formData: FormData, worldZid: string) {
+  const endpoint = `/api/v2/posts/channel/${worldZid}`;
+
+  try {
+    return await post(endpoint)
+      .field('text', formData.get('text'))
+      .field('unsignedMessage', formData.get('unsignedMessage'))
+      .field('signedMessage', formData.get('signedMessage'))
+      .field('zid', formData.get('zid'))
+      .field('walletAddress', formData.get('walletAddress'));
+  } catch (e) {
+    console.error('Failed to upload post', e);
+    throw new Error('Failed to upload post');
+  }
+}
+
+export async function getWallet() {
+  const wagmiConfig = getWagmiConfig();
+  const walletClient: WalletClient = await getWalletClient(wagmiConfig);
+
+  return walletClient;
 }

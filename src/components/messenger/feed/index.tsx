@@ -5,12 +5,13 @@ import { ScrollbarContainer } from '../../scrollbar-container';
 import { PostPayload as PayloadPostMessage } from '../../../store/posts/saga';
 import { Channel, denormalize } from '../../../store/channels';
 import { MessageSendStatus } from '../../../store/messages';
-import { sendPost } from '../../../store/posts';
+import { sendPost, sendPostIrys } from '../../../store/posts';
 import { FeedViewContainer } from './feed-view-container/feed-view-container';
 import { PostInputContainer as PostInput } from './components/post-input/container';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
+import { featureFlags } from '../../../lib/feature-flags';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -53,7 +54,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(): Partial<Properties> {
     return {
-      sendPost,
+      sendPost: featureFlags.enableIrysPosting ? sendPostIrys : sendPost,
       setLeaveGroupStatus,
     };
   }

@@ -308,7 +308,7 @@ export function* fetchPosts(action) {
 
 export function* fetchPostsIrys(action) {
   const { channelId } = action.payload;
-  const channel = yield select(rawChannelSelector(channelId));
+  const channel = yield select(rawChannelSelector(action.payload.channelId));
 
   if (channel.conversationStatus !== ConversationStatus.CREATED) {
     return;
@@ -322,34 +322,25 @@ export function* fetchPostsIrys(action) {
      * post business logic. */
     const existingPosts = yield select(rawMessagesSelector(channelId));
     const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
-
-    // Calculate the current page number
     const currentPage = Math.floor(filteredPosts.length / POSTS_PAGE_SIZE);
 
-    const endpoint = `/api/v2/posts/channel/${channelZna}`;
-
-    const res = yield call(get, endpoint, undefined, {
+    const res = yield call(get, `/api/v2/posts/channel/${channelZna}`, undefined, {
       limit: POSTS_PAGE_SIZE,
       skip: currentPage * POSTS_PAGE_SIZE,
     });
 
     if (!res.ok) {
-      yield call(receiveChannel, {
+      return yield call(receiveChannel, {
         id: channelId,
-        messages: filteredPosts,
         hasMorePosts: false,
         hasLoadedMessages: true,
         messagesFetchStatus: MessagesFetchState.FAILED,
       });
     }
 
-    const irysPosts = res.body.posts;
-
-    const messagePosts: Message[] = irysPosts.map(mapPost);
-
-    const posts = [...messagePosts, ...filteredPosts];
-
-    const hasMorePosts = irysPosts.length === POSTS_PAGE_SIZE;
+    const fetchedPosts = res.body.posts;
+    const posts = [...fetchedPosts.map(mapPost), ...filteredPosts];
+    const hasMorePosts = fetchedPosts.length === POSTS_PAGE_SIZE;
 
     // Updates the channel's state with the fetched posts and existing non-post messages
     yield call(receiveChannel, {

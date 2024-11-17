@@ -145,8 +145,10 @@ export function* sendPostIrys(action) {
         id: res.body.id,
         text: message,
         user: {
-          handle: user.handle,
-          userId: user.id,
+          profileSummary: {
+            firstName: user.profileSummary?.firstName,
+          },
+          userId: user.userId,
         },
         zid: userZid,
       }),

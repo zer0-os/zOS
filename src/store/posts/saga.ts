@@ -19,6 +19,7 @@ import { WalletClient } from 'viem';
 import { getWalletClient } from '@wagmi/core';
 import { featureFlags } from '../../lib/feature-flags';
 import { mapMessageSenders } from '../messages/utils.matrix';
+import { POSTS_PAGE_SIZE } from './constants';
 
 export interface Payload {
   channelId: string;
@@ -315,9 +316,6 @@ export function* fetchPostsIrys(action) {
 
   const channelZna = channel.name?.split('0://')[1];
 
-  let posts;
-  const PAGE_SIZE = 20;
-
   try {
     /* Grab existing posts from state, and filter out any Matrix posts.
      * This is a temporary work around so we can continue to use the existing
@@ -326,13 +324,13 @@ export function* fetchPostsIrys(action) {
     const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
 
     // Calculate the current page number
-    const currentPage = Math.floor(filteredPosts.length / PAGE_SIZE);
+    const currentPage = Math.floor(filteredPosts.length / POSTS_PAGE_SIZE);
 
     const endpoint = `/api/v2/posts/channel/${channelZna}`;
 
     const res = yield call(get, endpoint, undefined, {
-      limit: PAGE_SIZE,
-      skip: currentPage * PAGE_SIZE,
+      limit: POSTS_PAGE_SIZE,
+      skip: currentPage * POSTS_PAGE_SIZE,
     });
 
     if (!res.ok) {
@@ -349,9 +347,9 @@ export function* fetchPostsIrys(action) {
 
     const messagePosts: Message[] = irysPosts.map(mapPost);
 
-    posts = [...messagePosts, ...filteredPosts];
+    const posts = [...messagePosts, ...filteredPosts];
 
-    const hasMorePosts = irysPosts.length === PAGE_SIZE;
+    const hasMorePosts = irysPosts.length === POSTS_PAGE_SIZE;
 
     // Updates the channel's state with the fetched posts and existing non-post messages
     yield call(receiveChannel, {

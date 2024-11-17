@@ -1,6 +1,7 @@
 import React, { RefObject } from 'react';
 import Dropzone from 'react-dropzone';
 
+import { featureFlags } from '../../../../../lib/feature-flags';
 import { config } from '../../../../../config';
 import { Key } from '../../../../../lib/keyboard-search';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -214,11 +215,13 @@ export class PostInput extends React.Component<Properties, State> {
 
                   <div {...cn('actions')}>
                     <div {...cn('icon-wrapper')}>
-                      <Menu
-                        onSelected={this.mediaSelected}
-                        mimeTypes={this.mimeTypes}
-                        maxSize={config.cloudinary.max_file_size}
-                      />
+                      {!featureFlags.enableIrysPosting && (
+                        <Menu
+                          onSelected={this.mediaSelected}
+                          mimeTypes={this.mimeTypes}
+                          maxSize={config.cloudinary.max_file_size}
+                        />
+                      )}
 
                       <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
                     </div>

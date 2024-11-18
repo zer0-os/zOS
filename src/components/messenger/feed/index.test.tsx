@@ -13,6 +13,7 @@ describe(MessengerFeed, () => {
       activeConversationId: 'channel-id',
       isSocialChannel: false,
       isJoiningConversation: false,
+      isSubmittingPost: false, // Added missing property
       leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       sendPost: jest.fn(),
       setLeaveGroupStatus: jest.fn(),

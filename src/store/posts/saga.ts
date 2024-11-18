@@ -1,4 +1,4 @@
-import { takeLatest, call, select } from 'redux-saga/effects';
+import { takeLatest, call, select, put } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
 
 import { SagaActionTypes } from '.';
@@ -16,6 +16,7 @@ import { get } from '../../lib/api/rest';
 import { featureFlags } from '../../lib/feature-flags';
 import { mapMessageSenders } from '../messages/utils.matrix';
 import { POSTS_PAGE_SIZE } from './constants';
+import { setIsSubmitting } from '.';
 import {
   createOptimisticPostObject,
   getWallet,
@@ -80,80 +81,88 @@ export function* sendPostIrys(action) {
     return;
   }
 
-  const user = yield select(currentUserSelector());
-  const userZid = user.primaryZID.split('0://')[1];
+  yield put(setIsSubmitting(true));
 
-  // If user does not have a primary ZID
-  if (!userZid || userZid.trim() === '') {
-    // throw an error
-  }
+  try {
+    const user = yield select(currentUserSelector());
+    const userZid = user.primaryZID.split('0://')[1];
 
-  const channelZid = channel?.name?.split('0://')[1];
+    // If user does not have a primary ZID
+    if (!userZid || userZid.trim() === '') {
+      // throw an error
+    }
 
-  // If the message contect is empty, or the channel does not have a name
-  if (!message || message.trim() === '' || !channelZid) {
-    // throw an error
-  }
+    const channelZid = channel?.name?.split('0://')[1];
 
-  const walletClient = yield call(getWallet);
-  const connectedAddress = walletClient.account?.address;
+    // If the message contect is empty, or the channel does not have a name
+    if (!message || message.trim() === '' || !channelZid) {
+      // throw an error
+    }
 
-  // If the user does not have a connected address
-  if (!connectedAddress) {
-    // throw an error
-  }
+    const walletClient = yield call(getWallet);
+    const connectedAddress = walletClient.account?.address;
 
-  // If the user is connected to a wallet which is not linked to their account
-  if (!user.wallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
-    // throw an error
-  }
+    // If the user does not have a connected address
+    if (!connectedAddress) {
+      // throw an error
+    }
 
-  const createdAt = new Date().getTime();
+    // If the user is connected to a wallet which is not linked to their account
+    if (!user.wallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
+      // throw an error
+    }
 
-  const formData = new FormData();
+    const createdAt = new Date().getTime();
 
-  const payloadToSign: SignedMessagePayload = {
-    created_at: createdAt.toString(),
-    text: message,
-    wallet_address: connectedAddress,
-    zid: userZid,
-  };
+    const formData = new FormData();
 
-  const { unsignedPost, signedPost } = yield call(signPostPayload, payloadToSign, walletClient);
+    const payloadToSign: SignedMessagePayload = {
+      created_at: createdAt.toString(),
+      text: message,
+      wallet_address: connectedAddress,
+      zid: userZid,
+    };
 
-  formData.append('text', message);
-  formData.append('unsignedMessage', unsignedPost);
-  formData.append('signedMessage', signedPost);
-  formData.append('zid', userZid);
-  formData.append('walletAddress', connectedAddress);
+    const { unsignedPost, signedPost } = yield call(signPostPayload, payloadToSign, walletClient);
 
-  const res = yield call(uploadPost, formData, channelZid);
+    formData.append('text', message);
+    formData.append('unsignedMessage', unsignedPost);
+    formData.append('signedMessage', signedPost);
+    formData.append('zid', userZid);
+    formData.append('walletAddress', connectedAddress);
 
-  if (!res.ok) {
-    throw new Error(`HTTP error! status: ${res.status}`);
-  }
+    const res = yield call(uploadPost, formData, channelZid);
 
-  const existingPosts = yield select(rawMessagesSelector(channelId));
-  const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
 
-  yield call(receiveChannel, {
-    id: channelId,
-    messages: [
-      ...filteredPosts,
-      mapPostToMatrixMessage({
-        createdAt,
-        id: res.body.id,
-        text: message,
-        user: {
-          profileSummary: {
-            firstName: user.profileSummary?.firstName,
+    const existingPosts = yield select(rawMessagesSelector(channelId));
+    const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
+
+    yield call(receiveChannel, {
+      id: channelId,
+      messages: [
+        ...filteredPosts,
+        mapPostToMatrixMessage({
+          createdAt,
+          id: res.body.id,
+          text: message,
+          user: {
+            profileSummary: {
+              firstName: user.profileSummary?.firstName,
+            },
+            userId: user.id,
           },
-          userId: user.id,
-        },
-        zid: userZid,
-      }),
-    ],
-  });
+          zid: userZid,
+        }),
+      ],
+    });
+  } catch (e) {
+    // handle error
+  }
+
+  yield put(setIsSubmitting(false));
 }
 
 export function* createOptimisticPosts(channelId, postText, uploadableFiles?) {

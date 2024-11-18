@@ -29,6 +29,7 @@ export interface Properties extends PublicProperties {
   isSocialChannel: boolean;
   isJoiningConversation: boolean;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
+  isSubmittingPost: boolean;
 
   sendPost: (payload: PayloadPostMessage) => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
@@ -39,6 +40,7 @@ export class Container extends React.Component<Properties> {
     const {
       chat: { activeConversationId, isJoiningConversation },
       groupManagement,
+      posts: { isSubmitting },
     } = state;
 
     const currentChannel = denormalize(activeConversationId, state) || null;
@@ -47,6 +49,7 @@ export class Container extends React.Component<Properties> {
       channel: currentChannel,
       isJoiningConversation,
       activeConversationId,
+      isSubmittingPost: isSubmitting,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
       isSocialChannel: currentChannel?.isSocialChannel,
     };
@@ -72,9 +75,13 @@ export class Container extends React.Component<Properties> {
   };
 
   get isSubmitting() {
-    return this.props.channel?.messages
-      .filter((message) => message.isPost)
-      .some((message) => message.sendStatus === MessageSendStatus.IN_PROGRESS);
+    if (featureFlags.enableIrysPosting) {
+      return this.props.isSubmittingPost;
+    } else {
+      return this.props.channel?.messages
+        .filter((message) => message.isPost)
+        .some((message) => message.sendStatus === MessageSendStatus.IN_PROGRESS);
+    }
   }
 
   get isLeaveGroupDialogOpen() {

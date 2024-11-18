@@ -15,9 +15,15 @@ export enum SagaActionTypes {
   FetchPostsIrys = 'posts/saga/fetchPostsIrys',
 }
 
-export type PostsState = {};
+export type PostsState = {
+  error?: string;
+  isSubmitting: boolean;
+};
 
-export const initialState: PostsState = {};
+export const initialState: PostsState = {
+  error: undefined,
+  isSubmitting: false,
+};
 
 export const sendPost = createAction<PostPayload>(SagaActionTypes.SendPost);
 export const fetchPosts = createAction<Payload>(SagaActionTypes.FetchPosts);
@@ -27,7 +33,15 @@ export const fetchPostsIrys = createAction<Payload>(SagaActionTypes.FetchPostsIr
 const slice = createSlice({
   name: 'posts',
   initialState,
-  reducers: {},
+  reducers: {
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
+    setIsSubmitting: (state, action) => {
+      state.isSubmitting = action.payload;
+    },
+  },
 });
 
+export const { setError, setIsSubmitting } = slice.actions;
 export const { reducer } = slice;

@@ -61,6 +61,18 @@
     }
   }
 
+  &__wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__error {
+    color: var(--color-failure-11);
+    font-size: 12px;
+    margin: 0;
+  }
+
   &__button {
     border-radius: 8px;
   }

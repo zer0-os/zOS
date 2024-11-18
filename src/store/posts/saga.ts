@@ -1,7 +1,7 @@
-import { takeLatest, call, select } from 'redux-saga/effects';
+import { takeLatest, call, select, put } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
 
-import { SagaActionTypes } from '.';
+import { SagaActionTypes, setError } from '.';
 import { MediaType, Message } from '../messages';
 import { getPostMessageReactions, getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
 import { messageSelector, rawMessagesSelector, sendMessage } from '../messages/saga';
@@ -10,12 +10,14 @@ import { rawChannelSelector, receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
 import { createUploadableFile, Uploadable } from '../messages/uploadable';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { SagaActionTypes as ChannelsEvents } from '../channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { updateUserMeowBalance } from '../rewards/saga';
 import { get } from '../../lib/api/rest';
 import { featureFlags } from '../../lib/feature-flags';
 import { mapMessageSenders } from '../messages/utils.matrix';
 import { POSTS_PAGE_SIZE } from './constants';
+import { setIsSubmitting } from '.';
 import {
   createOptimisticPostObject,
   getWallet,
@@ -80,80 +82,110 @@ export function* sendPostIrys(action) {
     return;
   }
 
-  const user = yield select(currentUserSelector());
-  const userZid = user.primaryZID.split('0://')[1];
+  yield put(setIsSubmitting(true));
+  yield put(setError(undefined));
 
-  // If user does not have a primary ZID
-  if (!userZid || userZid.trim() === '') {
-    // throw an error
-  }
+  try {
+    const user = yield select(currentUserSelector());
+    const userZid = user.primaryZID.split('0://')[1];
 
-  const channelZid = channel?.name?.split('0://')[1];
+    // If user does not have a primary ZID
+    if (!userZid || userZid.trim() === '') {
+      throw new Error('Please set a primary ZID in your profile');
+    }
 
-  // If the message contect is empty, or the channel does not have a name
-  if (!message || message.trim() === '' || !channelZid) {
-    // throw an error
-  }
+    const channelZid = channel?.name?.split('0://')[1];
 
-  const walletClient = yield call(getWallet);
-  const connectedAddress = walletClient.account?.address;
+    // If channel does not have a name
+    if (!channelZid) {
+      throw new Error('Channel ZID is invalid');
+    }
 
-  // If the user does not have a connected address
-  if (!connectedAddress) {
-    // throw an error
-  }
+    // If the message contect is empty, or the channel does not have a name
+    if (!message || message.trim() === '') {
+      throw new Error('Post is empty');
+    }
 
-  // If the user is connected to a wallet which is not linked to their account
-  if (!user.wallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
-    // throw an error
-  }
+    let walletClient, connectedAddress;
 
-  const createdAt = new Date().getTime();
+    try {
+      walletClient = yield call(getWallet);
+      connectedAddress = walletClient.account?.address;
+    } catch (e) {
+      //
+      throw new Error('Please connect a wallet');
+    }
 
-  const formData = new FormData();
+    // If the user does not have a connected address
+    if (!connectedAddress) {
+      throw new Error('Please connect a wallet');
+    }
 
-  const payloadToSign: SignedMessagePayload = {
-    created_at: createdAt.toString(),
-    text: message,
-    wallet_address: connectedAddress,
-    zid: userZid,
-  };
+    // If the user is connected to a wallet which is not linked to their account
+    if (!user.wallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
+      throw new Error('Wallet is not linked to your account');
+    }
 
-  const { unsignedPost, signedPost } = yield call(signPostPayload, payloadToSign, walletClient);
+    const createdAt = new Date().getTime();
 
-  formData.append('text', message);
-  formData.append('unsignedMessage', unsignedPost);
-  formData.append('signedMessage', signedPost);
-  formData.append('zid', userZid);
-  formData.append('walletAddress', connectedAddress);
+    const formData = new FormData();
 
-  const res = yield call(uploadPost, formData, channelZid);
+    const payloadToSign: SignedMessagePayload = {
+      created_at: createdAt.toString(),
+      text: message,
+      wallet_address: connectedAddress,
+      zid: userZid,
+    };
 
-  if (!res.ok) {
-    throw new Error(`HTTP error! status: ${res.status}`);
-  }
+    let unsignedPost, signedPost;
 
-  const existingPosts = yield select(rawMessagesSelector(channelId));
-  const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
+    try {
+      const signatureResult = yield call(signPostPayload, payloadToSign, walletClient);
+      unsignedPost = signatureResult.unsignedPost;
+      signedPost = signatureResult.signedPost;
+    } catch (e) {
+      console.error(e);
+      throw new Error('Failed to sign post');
+    }
 
-  yield call(receiveChannel, {
-    id: channelId,
-    messages: [
-      ...filteredPosts,
-      mapPostToMatrixMessage({
-        createdAt,
-        id: res.body.id,
-        text: message,
-        user: {
-          profileSummary: {
-            firstName: user.profileSummary?.firstName,
+    formData.append('text', message);
+    formData.append('unsignedMessage', unsignedPost);
+    formData.append('signedMessage', signedPost);
+    formData.append('zid', userZid);
+    formData.append('walletAddress', connectedAddress);
+
+    const res = yield call(uploadPost, formData, channelZid);
+
+    if (!res.ok) {
+      throw new Error('Failed to submit post');
+    }
+
+    const existingPosts = yield select(rawMessagesSelector(channelId));
+    const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
+
+    yield call(receiveChannel, {
+      id: channelId,
+      messages: [
+        ...filteredPosts,
+        mapPostToMatrixMessage({
+          createdAt,
+          id: res.body.id,
+          text: message,
+          user: {
+            profileSummary: {
+              firstName: user.profileSummary?.firstName,
+            },
+            userId: user.id,
           },
-          userId: user.id,
-        },
-        zid: userZid,
-      }),
-    ],
-  });
+          zid: userZid,
+        }),
+      ],
+    });
+  } catch (e) {
+    yield put(setError((e as any).message ?? 'Failed to submit post'));
+  }
+
+  yield put(setIsSubmitting(false));
 }
 
 export function* createOptimisticPosts(channelId, postText, uploadableFiles?) {
@@ -332,11 +364,17 @@ function* onPostMessageReactionChange(action) {
   yield call(updatePostMessageReaction, roomId, reaction);
 }
 
+function* reset() {
+  yield put(setError(undefined));
+  yield put(setIsSubmitting(false));
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.SendPostIrys, sendPostIrys);
   yield takeLatest(SagaActionTypes.FetchPostsIrys, fetchPostsIrys);
   yield takeLatest(SagaActionTypes.SendPost, sendPost);
   yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
+  yield takeLatest(ChannelsEvents.OpenConversation, reset);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.PostMessageReactionChange, onPostMessageReactionChange);
 }

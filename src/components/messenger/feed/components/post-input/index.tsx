@@ -26,6 +26,7 @@ export interface Properties extends PublicPropertiesContainer {
   avatarUrl?: string;
   isSubmitting?: boolean;
   viewMode: ViewModes;
+  error?: string;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
@@ -226,14 +227,17 @@ export class PostInput extends React.Component<Properties, State> {
                       <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
                     </div>
 
-                    <Button
-                      {...cn('button')}
-                      isDisabled={isDisabled}
-                      isLoading={this.props.isSubmitting}
-                      onPress={this.onSubmit}
-                    >
-                      Create
-                    </Button>
+                    <div {...cn('wrapper')}>
+                      <p {...cn('error')}>{this.props.error}</p>
+                      <Button
+                        {...cn('button')}
+                        isDisabled={isDisabled}
+                        isLoading={this.props.isSubmitting}
+                        onPress={this.onSubmit}
+                      >
+                        Create
+                      </Button>
+                    </div>
                   </div>
 
                   <div {...cn('emoji-picker-container')}>

@@ -40,7 +40,7 @@ export class Container extends React.Component<Properties> {
     const {
       chat: { activeConversationId, isJoiningConversation },
       groupManagement,
-      posts: { isSubmitting },
+      posts,
     } = state;
 
     const currentChannel = denormalize(activeConversationId, state) || null;
@@ -49,7 +49,7 @@ export class Container extends React.Component<Properties> {
       channel: currentChannel,
       isJoiningConversation,
       activeConversationId,
-      isSubmittingPost: isSubmitting,
+      isSubmittingPost: posts?.isSubmitting,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
       isSocialChannel: currentChannel?.isSocialChannel,
     };

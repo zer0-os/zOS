@@ -14,6 +14,7 @@ export interface PublicProperties {
   id?: string;
   initialValue?: string;
   isSubmitting?: boolean;
+  error?: string;
 
   onSubmit: (message: string, media: Media[]) => void;
   onPostInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
@@ -31,9 +32,10 @@ export class Container extends React.Component<Properties> {
       theme: {
         value: { viewMode },
       },
+      posts: { error },
     } = state;
 
-    return { user, viewMode };
+    return { user, error, viewMode };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -53,6 +55,7 @@ export class Container extends React.Component<Properties> {
     return (
       <PostInput
         id={this.props.id}
+        error={this.props.error}
         initialValue={this.props.initialValue}
         isSubmitting={this.props.isSubmitting}
         onSubmit={this.props.onSubmit}

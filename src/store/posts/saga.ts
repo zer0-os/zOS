@@ -1,7 +1,7 @@
 import { takeLatest, call, select, put } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
 
-import { SagaActionTypes } from '.';
+import { SagaActionTypes, setError } from '.';
 import { MediaType, Message } from '../messages';
 import { getPostMessageReactions, getPostMessagesByChannelId, sendPostByChannelId } from '../../lib/chat';
 import { messageSelector, rawMessagesSelector, sendMessage } from '../messages/saga';
@@ -10,6 +10,7 @@ import { rawChannelSelector, receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
 import { createUploadableFile, Uploadable } from '../messages/uploadable';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { SagaActionTypes as ChannelsEvents } from '../channels';
 import { takeEveryFromBus } from '../../lib/saga';
 import { updateUserMeowBalance } from '../rewards/saga';
 import { get } from '../../lib/api/rest';
@@ -82,6 +83,7 @@ export function* sendPostIrys(action) {
   }
 
   yield put(setIsSubmitting(true));
+  yield put(setError(undefined));
 
   try {
     const user = yield select(currentUserSelector());
@@ -89,27 +91,39 @@ export function* sendPostIrys(action) {
 
     // If user does not have a primary ZID
     if (!userZid || userZid.trim() === '') {
-      // throw an error
+      throw new Error('Please set a primary ZID in your profile');
     }
 
     const channelZid = channel?.name?.split('0://')[1];
 
-    // If the message contect is empty, or the channel does not have a name
-    if (!message || message.trim() === '' || !channelZid) {
-      // throw an error
+    // If channel does not have a name
+    if (!channelZid) {
+      throw new Error('Channel ZID is invalid');
     }
 
-    const walletClient = yield call(getWallet);
-    const connectedAddress = walletClient.account?.address;
+    // If the message contect is empty, or the channel does not have a name
+    if (!message || message.trim() === '') {
+      throw new Error('Post is empty');
+    }
+
+    let walletClient, connectedAddress;
+
+    try {
+      walletClient = yield call(getWallet);
+      connectedAddress = walletClient.account?.address;
+    } catch (e) {
+      //
+      throw new Error('Please connect a wallet');
+    }
 
     // If the user does not have a connected address
     if (!connectedAddress) {
-      // throw an error
+      throw new Error('Please connect a wallet');
     }
 
     // If the user is connected to a wallet which is not linked to their account
     if (!user.wallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
-      // throw an error
+      throw new Error('Wallet is not linked to your account');
     }
 
     const createdAt = new Date().getTime();
@@ -123,7 +137,16 @@ export function* sendPostIrys(action) {
       zid: userZid,
     };
 
-    const { unsignedPost, signedPost } = yield call(signPostPayload, payloadToSign, walletClient);
+    let unsignedPost, signedPost;
+
+    try {
+      const signatureResult = yield call(signPostPayload, payloadToSign, walletClient);
+      unsignedPost = signatureResult.unsignedPost;
+      signedPost = signatureResult.signedPost;
+    } catch (e) {
+      console.error(e);
+      throw new Error('Failed to sign post');
+    }
 
     formData.append('text', message);
     formData.append('unsignedMessage', unsignedPost);
@@ -134,7 +157,7 @@ export function* sendPostIrys(action) {
     const res = yield call(uploadPost, formData, channelZid);
 
     if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
+      throw new Error('Failed to submit post');
     }
 
     const existingPosts = yield select(rawMessagesSelector(channelId));
@@ -159,7 +182,7 @@ export function* sendPostIrys(action) {
       ],
     });
   } catch (e) {
-    // handle error
+    yield put(setError((e as any).message ?? 'Failed to submit post'));
   }
 
   yield put(setIsSubmitting(false));
@@ -341,11 +364,17 @@ function* onPostMessageReactionChange(action) {
   yield call(updatePostMessageReaction, roomId, reaction);
 }
 
+function* reset() {
+  yield put(setError(undefined));
+  yield put(setIsSubmitting(false));
+}
+
 export function* saga() {
   yield takeLatest(SagaActionTypes.SendPostIrys, sendPostIrys);
   yield takeLatest(SagaActionTypes.FetchPostsIrys, fetchPostsIrys);
   yield takeLatest(SagaActionTypes.SendPost, sendPost);
   yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
+  yield takeLatest(ChannelsEvents.OpenConversation, reset);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.PostMessageReactionChange, onPostMessageReactionChange);
 }

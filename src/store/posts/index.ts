@@ -16,10 +16,12 @@ export enum SagaActionTypes {
 }
 
 export type PostsState = {
+  error?: string;
   isSubmitting: boolean;
 };
 
 export const initialState: PostsState = {
+  error: undefined,
   isSubmitting: false,
 };
 
@@ -32,11 +34,14 @@ const slice = createSlice({
   name: 'posts',
   initialState,
   reducers: {
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
     setIsSubmitting: (state, action) => {
       state.isSubmitting = action.payload;
     },
   },
 });
 
-export const { setIsSubmitting } = slice.actions;
+export const { setError, setIsSubmitting } = slice.actions;
 export const { reducer } = slice;

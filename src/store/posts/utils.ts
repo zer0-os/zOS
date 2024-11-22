@@ -142,9 +142,9 @@ export async function getWallet() {
 }
 
 /**
- * Uploads a post as FormData to the zOS API.
- * @param formData The parameters of the post to upload.
- * @param worldZid The world ZID to upload the post to.
+ * "MEOW"s a post in the API.
+ * @param postId the post to "MEOW"
+ * @param meowAmount the amount of MEOW to send
  */
 export async function meowPost(postId: string, meowAmount: string) {
   const endpoint = `/api/v2/posts/post/${postId}/meow`;

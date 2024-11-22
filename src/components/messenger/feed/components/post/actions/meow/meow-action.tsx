@@ -13,6 +13,7 @@ export interface MeowActionProps {
   isDisabled?: boolean;
   ownerUserId: string;
   messageId: string;
+  hasUserVoted: boolean;
 
   transferMeow: (postOwnerId, postMessageId, meowAmount) => void;
   meowPost: (postId: string, meowAmount: string) => void;
@@ -25,6 +26,7 @@ export const MeowAction = ({
   ownerUserId,
   messageId,
   meowPost,
+  hasUserVoted,
 }: MeowActionProps) => {
   const { amount, backgroundOpacity, cancel, isActive, scale, start, stop } = useMeowAction();
 
@@ -47,7 +49,7 @@ export const MeowAction = ({
       onTapStart={start}
       onTap={handleStop}
       onTapCancel={cancel}
-      className={`${styles.Container} ${isDisabled && styles.Disabled}`}
+      className={`${styles.Container} ${isDisabled && styles.Disabled} ${hasUserVoted && styles.Voted}`}
     >
       <Action>
         <AnimatePresence>

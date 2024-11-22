@@ -101,6 +101,7 @@ export function mapPostToMatrixMessage(post) {
     preview: null,
     reactions: {
       MEOW: meowCount,
+      VOTED: post.meows?.length ?? 0,
     },
     rootMessageId: '',
     sendStatus: 0,

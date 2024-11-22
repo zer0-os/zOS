@@ -370,24 +370,31 @@ function* meowPost(action) {
     return;
   }
 
-  const meowAmountWei = ethers.utils.parseEther(meowAmount.toString());
+  try {
+    const meowAmountWei = ethers.utils.parseEther(meowAmount.toString());
 
-  const res = yield call(meowPostApi, postId, meowAmountWei.toString());
+    const existingPost = yield select(messageSelector(postId));
+    const meow = new BN(existingPost.reactions.MEOW ?? 0).add(new BN(meowAmount)).toString();
+    const updatedPost = { ...existingPost, reactions: { ...existingPost.reactions, MEOW: meow, VOTED: 1 } };
 
-  if (!res.ok) {
-    throw new Error('Failed to submit post');
+    const existingMessages = yield select(rawMessagesSelector(channelId));
+    const updatedMessages = existingMessages.map((message) => (message === postId ? updatedPost : message));
+
+    yield call(receiveChannel, { id: channelId, messages: updatedMessages });
+    yield call(updateUserMeowBalance, existingPost.sender.userId, meowAmount);
+    yield call(updateUserMeowBalance, user.id, Number(meowAmount ?? 0) * -1);
+
+    const res = yield call(meowPostApi, postId, meowAmountWei.toString());
+
+    if (!res.ok) {
+      yield call(receiveChannel, { id: channelId, messages: existingMessages });
+      yield call(updateUserMeowBalance, existingPost.sender.userId, Number(meowAmount) * -1);
+      yield call(updateUserMeowBalance, user.id, Number(meowAmount));
+      throw new Error('Failed to submit post');
+    }
+  } catch (e) {
+    console.error(e);
   }
-
-  const existingPost = yield select(messageSelector(postId));
-  const meow = new BN(existingPost.reactions.MEOW ?? 0).add(new BN(meowAmount)).toString();
-  const updatedPost = { ...existingPost, reactions: { ...existingPost.reactions, MEOW: meow } };
-
-  const existingMessages = yield select(rawMessagesSelector(channelId));
-  const updatedMessages = existingMessages.map((message) => (message === postId ? updatedPost : message));
-
-  yield call(receiveChannel, { id: channelId, messages: updatedMessages });
-  yield call(updateUserMeowBalance, existingPost.sender.userId, meowAmount);
-  yield call(updateUserMeowBalance, user.id, Number(meowAmount ?? 0) * -1);
 }
 
 function* onPostMessageReactionChange(action) {

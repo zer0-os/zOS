@@ -20,3 +20,11 @@
   pointer-events: none;
   opacity: 0.5;
 }
+
+.Voted {
+  pointer-events: none;
+
+  background: var(--color-secondary-6);
+
+  border-radius: 0.5rem;
+}

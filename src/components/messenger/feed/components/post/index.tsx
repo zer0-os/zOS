@@ -179,6 +179,7 @@ export const Post = ({
               transferMeow={transferMeow}
               messageId={messageId}
               meowPost={meowPost}
+              hasUserVoted={reactions?.VOTED > 0}
             />
           )
         }

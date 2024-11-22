@@ -23,6 +23,7 @@ describe('FeedView', () => {
       loadAttachmentDetails: jest.fn(),
       transferMeow: jest.fn(),
       userMeowBalance: '0',
+      meowPost: jest.fn(),
 
       ...props,
     };

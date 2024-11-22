@@ -4,7 +4,7 @@ import { connectContainer } from '../../../../store/redux-container';
 import { Payload as PayloadFetchPost } from '../../../../store/posts/saga';
 import { Channel, denormalize } from '../../../../store/channels';
 import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
-import { fetchPosts, fetchPostsIrys } from '../../../../store/posts';
+import { fetchPosts, fetchPostsIrys, meowPost } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
 import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../chat-view-container/utils';
@@ -31,6 +31,7 @@ export interface Properties extends PublicProperties {
     meowAmount: string;
     roomId: string;
   }) => void;
+  meowPost: (payload: { postId: string; meowAmount: string; channelId: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -55,6 +56,7 @@ export class Container extends React.Component<Properties> {
       fetchPosts: featureFlags.enableIrysPosting ? fetchPostsIrys : fetchPosts,
       loadAttachmentDetails,
       transferMeow,
+      meowPost,
     };
   }
 
@@ -120,6 +122,10 @@ export class Container extends React.Component<Properties> {
     });
   };
 
+  meowPost = (postId, meowAmount) => {
+    this.props.meowPost({ postId, meowAmount, channelId: this.props.channelId });
+  };
+
   render() {
     if (!this.props.channel) return null;
 
@@ -135,6 +141,7 @@ export class Container extends React.Component<Properties> {
           loadAttachmentDetails={this.props.loadAttachmentDetails}
           transferMeow={this.transferMeow}
           userMeowBalance={this.props.userMeowBalance}
+          meowPost={this.meowPost}
         />
       </>
     );

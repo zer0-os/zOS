@@ -25,6 +25,7 @@ export interface PostProps {
 
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   transferMeow: (postOwnerId, postMessageId, meowAmount) => void;
+  meowPost: (postId: string, meowAmount: string) => void;
 }
 
 export const Post = ({
@@ -41,6 +42,7 @@ export const Post = ({
   reactions,
   loadAttachmentDetails,
   transferMeow,
+  meowPost,
 }: PostProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -169,14 +171,15 @@ export const Post = ({
         }
         options={<Timestamp className={styles.Date} timestamp={timestamp} />}
         actions={
-          isMeowsEnabled &&
-          !featureFlags.enableIrysPosting && (
+          isMeowsEnabled && (
             <MeowAction
               meows={reactions?.MEOW || 0}
               isDisabled={isDisabled}
               ownerUserId={ownerUserId}
               transferMeow={transferMeow}
               messageId={messageId}
+              meowPost={meowPost}
+              hasUserVoted={reactions?.VOTED > 0}
             />
           )
         }

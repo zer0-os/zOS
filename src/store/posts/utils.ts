@@ -6,6 +6,7 @@ import { WalletClient } from 'viem';
 import { post } from '../../lib/api/rest';
 import { getWagmiConfig } from '../../lib/web3/wagmi-config';
 import { getWalletClient } from '@wagmi/core';
+import { ethers } from 'ethers';
 
 export function createOptimisticPostObject(
   postText: string,
@@ -84,6 +85,8 @@ export async function signPostPayload(
  * @returns Matrix Message object
  */
 export function mapPostToMatrixMessage(post) {
+  const meowCount = Math.round(Number(ethers.utils.formatEther(post.postsMeowsSummary?.totalMeowAmount ?? 0)));
+
   return {
     createdAt: post.createdAt,
     hidePreview: false,
@@ -96,7 +99,10 @@ export function mapPostToMatrixMessage(post) {
     message: post.text,
     optimisticId: post.id,
     preview: null,
-    reactions: {},
+    reactions: {
+      MEOW: meowCount,
+      VOTED: post.meows?.length ?? 0,
+    },
     rootMessageId: '',
     sendStatus: 0,
     sender: {
@@ -133,4 +139,20 @@ export async function getWallet() {
   const walletClient: WalletClient = await getWalletClient(wagmiConfig);
 
   return walletClient;
+}
+
+/**
+ * "MEOW"s a post in the API.
+ * @param postId the post to "MEOW"
+ * @param meowAmount the amount of MEOW to send
+ */
+export async function meowPost(postId: string, meowAmount: string) {
+  const endpoint = `/api/v2/posts/post/${postId}/meow`;
+
+  try {
+    return await post(endpoint).send({ amount: meowAmount });
+  } catch (e) {
+    console.error('Failed to upload post', e);
+    throw new Error('Failed to upload post');
+  }
 }

@@ -1,5 +1,6 @@
 import { takeLatest, call, select, put } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
+import BN from 'bn.js';
 
 import { SagaActionTypes, setError } from '.';
 import { MediaType, Message } from '../messages';
@@ -25,7 +26,9 @@ import {
   SignedMessagePayload,
   signPostPayload,
   uploadPost,
+  meowPost as meowPostApi,
 } from './utils';
+import { ethers } from 'ethers';
 
 export interface Payload {
   channelId: string;
@@ -359,6 +362,41 @@ export function* updatePostMessageReaction(roomId, { eventId, key, amount, postO
   }
 }
 
+function* meowPost(action) {
+  const { postId, meowAmount, channelId } = action.payload;
+  const user = yield select(currentUserSelector());
+
+  if (!postMessage || !meowAmount || !user?.id) {
+    return;
+  }
+
+  try {
+    const meowAmountWei = ethers.utils.parseEther(meowAmount.toString());
+
+    const existingPost = yield select(messageSelector(postId));
+    const meow = new BN(existingPost.reactions.MEOW ?? 0).add(new BN(meowAmount)).toString();
+    const updatedPost = { ...existingPost, reactions: { ...existingPost.reactions, MEOW: meow, VOTED: 1 } };
+
+    const existingMessages = yield select(rawMessagesSelector(channelId));
+    const updatedMessages = existingMessages.map((message) => (message === postId ? updatedPost : message));
+
+    yield call(receiveChannel, { id: channelId, messages: updatedMessages });
+    yield call(updateUserMeowBalance, existingPost.sender.userId, meowAmount);
+    yield call(updateUserMeowBalance, user.id, Number(meowAmount ?? 0) * -1);
+
+    const res = yield call(meowPostApi, postId, meowAmountWei.toString());
+
+    if (!res.ok) {
+      yield call(receiveChannel, { id: channelId, messages: existingMessages });
+      yield call(updateUserMeowBalance, existingPost.sender.userId, Number(meowAmount) * -1);
+      yield call(updateUserMeowBalance, user.id, Number(meowAmount));
+      throw new Error('Failed to submit post');
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 function* onPostMessageReactionChange(action) {
   const { roomId, reaction } = action.payload;
   yield call(updatePostMessageReaction, roomId, reaction);
@@ -374,6 +412,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.FetchPostsIrys, fetchPostsIrys);
   yield takeLatest(SagaActionTypes.SendPost, sendPost);
   yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
+  yield takeLatest(SagaActionTypes.MeowPost, meowPost);
   yield takeLatest(ChannelsEvents.OpenConversation, reset);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.PostMessageReactionChange, onPostMessageReactionChange);

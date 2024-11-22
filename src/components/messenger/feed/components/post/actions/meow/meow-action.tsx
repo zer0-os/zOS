@@ -5,6 +5,8 @@ import { MeowIcon } from './icon';
 import { useMeowAction } from './useMeow';
 
 import styles from './meow-action.module.scss';
+import { ethers } from 'ethers';
+import { featureFlags } from '../../../../../../../lib/feature-flags';
 
 export interface MeowActionProps {
   meows?: number;
@@ -13,14 +15,26 @@ export interface MeowActionProps {
   messageId: string;
 
   transferMeow: (postOwnerId, postMessageId, meowAmount) => void;
+  meowPost: (postId: string, meowAmount: string) => void;
 }
 
-export const MeowAction = ({ meows = 0, isDisabled, transferMeow, ownerUserId, messageId }: MeowActionProps) => {
+export const MeowAction = ({
+  meows = 0,
+  isDisabled,
+  transferMeow,
+  ownerUserId,
+  messageId,
+  meowPost,
+}: MeowActionProps) => {
   const { amount, backgroundOpacity, cancel, isActive, scale, start, stop } = useMeowAction();
 
   const handleStop = () => {
     if (amount) {
-      transferMeow(ownerUserId, messageId, amount.toString());
+      if (featureFlags.enableIrysPosting) {
+        meowPost(messageId, amount.toString());
+      } else {
+        transferMeow(ownerUserId, messageId, amount.toString());
+      }
     }
     stop();
   };

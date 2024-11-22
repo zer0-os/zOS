@@ -5,7 +5,6 @@ import { MeowIcon } from './icon';
 import { useMeowAction } from './useMeow';
 
 import styles from './meow-action.module.scss';
-import { ethers } from 'ethers';
 import { featureFlags } from '../../../../../../../lib/feature-flags';
 
 export interface MeowActionProps {

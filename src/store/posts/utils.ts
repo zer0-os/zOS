@@ -119,19 +119,23 @@ export function mapPostToMatrixMessage(post) {
  * @param worldZid The world ZID to upload the post to.
  */
 export async function uploadPost(formData: FormData, worldZid: string) {
-  const endpoint = `/api/v2/posts/channel/${worldZid}`;
+  return new Promise(async (resolve, reject) => {
+    const endpoint = `/api/v2/posts/channel/${worldZid}`;
 
-  try {
-    return await post(endpoint)
+    return post(endpoint)
       .field('text', formData.get('text'))
       .field('unsignedMessage', formData.get('unsignedMessage'))
       .field('signedMessage', formData.get('signedMessage'))
       .field('zid', formData.get('zid'))
-      .field('walletAddress', formData.get('walletAddress'));
-  } catch (e) {
-    console.error('Failed to upload post', e);
-    throw new Error('Failed to upload post');
-  }
+      .field('walletAddress', formData.get('walletAddress'))
+      .end((err, res) => {
+        if (err) {
+          reject(new Error(res.body.message ?? 'Failed to upload post'));
+        } else {
+          resolve(res.body);
+        }
+      });
+  });
 }
 
 export async function getWallet() {

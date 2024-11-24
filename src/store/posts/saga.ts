@@ -157,14 +157,22 @@ export function* sendPostIrys(action) {
     formData.append('zid', userZid);
     formData.append('walletAddress', connectedAddress);
 
-    const res = yield call(uploadPost, formData, channelZid);
+    let res;
 
-    if (!res.ok) {
-      throw new Error('Failed to submit post');
+    try {
+      res = yield call(uploadPost, formData, channelZid);
+
+      if (!res) {
+        throw new Error('Failed to submit post');
+      }
+    } catch (e) {
+      throw new Error((e as any).message ?? 'Failed to submit post');
     }
 
     const existingPosts = yield select(rawMessagesSelector(channelId));
     const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
+
+    console.log('hello', user);
 
     yield call(receiveChannel, {
       id: channelId,
@@ -172,14 +180,14 @@ export function* sendPostIrys(action) {
         ...filteredPosts,
         mapPostToMatrixMessage({
           createdAt,
-          id: res.body.id,
+          id: res.id,
           text: message,
           user: {
             profileSummary: {
               firstName: user.profileSummary?.firstName,
             },
-            userId: user.id,
           },
+          userId: user.id,
           zid: userZid,
         }),
       ],

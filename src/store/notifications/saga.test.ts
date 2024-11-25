@@ -10,18 +10,23 @@ import { mapNotificationSenders } from '../messages/utils.matrix';
 
 describe('notifications saga', () => {
   describe('fetchNotifications', () => {
-    it('fetches and sets notifications successfully', async () => {
+    it('fetches and sets notifications successfully when no existing notifications', async () => {
       const mockNotifications = [
-        { id: '1', content: 'notification 1' },
-        { id: '2', content: 'notification 2' },
+        { id: '1', content: 'notification 1', createdAt: Date.now() },
+        { id: '2', content: 'notification 2', createdAt: Date.now() },
       ];
 
       const mockNotificationsWithSenders = [
-        { id: '1', content: 'notification 1', sender: { id: 'sender1' } },
-        { id: '2', content: 'notification 2', sender: { id: 'sender2' } },
+        { id: '1', content: 'notification 1', sender: { id: 'sender1' }, createdAt: Date.now() },
+        { id: '2', content: 'notification 2', sender: { id: 'sender2' }, createdAt: Date.now() },
       ];
 
       await expectSaga(fetchNotifications)
+        .withState({
+          notifications: {
+            items: [],
+          },
+        })
         .provide([
           [call(getNotifications), mockNotifications],
           [call(mapNotificationSenders, mockNotifications), mockNotificationsWithSenders],
@@ -34,15 +39,44 @@ describe('notifications saga', () => {
         .run();
     });
 
-    it('handles errors when fetching notifications', async () => {
-      const error = new Error('Failed to fetch notifications');
+    it('uses existing notifications if they are recent and sufficient', async () => {
+      const now = Date.now();
+      const existingNotifications = Array.from({ length: 51 }, (_, i) => ({
+        id: `${i}`,
+        content: `notification ${i}`,
+        createdAt: now - i * 1000,
+      }));
 
       await expectSaga(fetchNotifications)
+        .withState({
+          notifications: {
+            items: existingNotifications,
+          },
+        })
+        .put(setLoading(true))
+        .put(setNotifications(existingNotifications.slice(0, 50))) // Only first 50 notifications
+        .put(setLoading(false))
+        .run();
+    });
+
+    it('handles errors when fetching notifications', async () => {
+      const error = new Error('Failed to fetch notifications');
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      await expectSaga(fetchNotifications)
+        .withState({
+          notifications: {
+            items: [],
+          },
+        })
         .provide([[call(getNotifications), Promise.reject(error)]])
         .put(setLoading(true))
         .put(setError(error.message))
         .put(setLoading(false))
         .run();
+
+      expect(consoleSpy).toHaveBeenCalledWith('Error fetching notifications:', error);
+      consoleSpy.mockRestore();
     });
   });
 

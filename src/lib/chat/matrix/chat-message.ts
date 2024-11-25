@@ -154,26 +154,21 @@ export async function mapEventToNotification(event) {
     },
   };
 
-  if (type === 'm.room.message' && content?.body) {
-    const mentions = content.body ? extractMentionsFromBody(content.body) : [];
-    if (mentions.length > 0) {
-      return {
-        ...baseNotification,
-        type: 'mention',
-        content: {
-          body: content.body,
-          mentions,
-          notificationType: 'mention',
-        },
-      };
-    }
+  if (type === 'm.room.message' && content?.body?.includes('@[')) {
+    return {
+      ...baseNotification,
+      type: 'mention',
+      content: {
+        body: content.body,
+        mentions: extractMentionsFromBody(content.body),
+        notificationType: 'mention',
+      },
+    };
   }
 
   if (type === MatrixConstants.REACTION && !event?.unsigned?.redacted_because) {
     const isMeowReaction = content['m.relates_to'].key.startsWith('MEOW_');
-    if (isMeowReaction) {
-      return null;
-    }
+    if (isMeowReaction) return null;
 
     return {
       ...baseNotification,
@@ -211,7 +206,7 @@ export async function mapEventToNotification(event) {
   return null;
 }
 
-function extractMentionsFromBody(body: string) {
+export function extractMentionsFromBody(body: string) {
   const mentionRegex = /@\[.*?\]\(user:(.*?)\)/g;
   const matches = [...body?.matchAll(mentionRegex)];
   return matches.map((match) => match[1]);

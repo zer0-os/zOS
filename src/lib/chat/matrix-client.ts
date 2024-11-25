@@ -1686,28 +1686,39 @@ export class MatrixClient implements IChatClient {
 
   private async getNotificationsFromRoom(events): Promise<any[]> {
     const currentUserId = this.matrix.getUserId();
+    const currentUserUuid = currentUserId.split(':')[0].substring(1);
 
-    const notificationEvents = events.filter((event) => {
+    const filteredEvents = events.filter((event) => {
       const relatesTo = event.content && event.content['m.relates_to'];
       const isDM = this.matrix.getRoom(event.room_id)?.getMembers().length === 2;
       const isFromCurrentUser = event.sender === currentUserId;
-      const hasMentions =
-        event.type === 'm.room.message' &&
-        event.content?.body?.includes('@[') &&
-        event.content?.body?.includes('](user:');
 
-      // Don't show notifications from the current user
+      // Don't process notifications from the current user
       if (isFromCurrentUser) return false;
 
-      return (
-        (relatesTo && relatesTo['m.in_reply_to']) ||
-        (event.type === MatrixConstants.REACTION && !event?.unsigned?.redacted_because) ||
-        (isDM && event.type === 'm.room.message') ||
-        hasMentions
-      );
+      if (
+        event.type === 'm.room.message' &&
+        event.content?.body?.includes('@[') &&
+        event.content?.body?.includes('](user:') &&
+        event.content.body.includes(currentUserUuid)
+      ) {
+        return true;
+      }
+
+      if (relatesTo?.['m.in_reply_to']) {
+        const originalEvent = events.find((e) => e.event_id === relatesTo['m.in_reply_to'].event_id);
+        return originalEvent?.sender === currentUserId;
+      }
+
+      if (event.type === MatrixConstants.REACTION && !event?.unsigned?.redacted_because) {
+        const targetEvent = events.find((e) => e.event_id === relatesTo.event_id);
+        return targetEvent?.sender === currentUserId;
+      }
+
+      return isDM && event.type === 'm.room.message';
     });
 
-    const notifications = await Promise.all(notificationEvents.map((event) => mapEventToNotification(event)));
+    const notifications = await Promise.all(filteredEvents.map((event) => mapEventToNotification(event)));
 
     return notifications.filter((notification) => notification !== null);
   }

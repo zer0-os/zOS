@@ -147,7 +147,7 @@ export class FeatureFlags {
   }
 
   get enableNotificationsApp() {
-    return this._getBoolean('enableNotificationsApp', false);
+    return this._getBoolean('enableNotificationsApp', true);
   }
 
   set enableNotificationsApp(value: boolean) {

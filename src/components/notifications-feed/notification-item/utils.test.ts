@@ -29,20 +29,7 @@ describe('Notification Feed Utils', () => {
       expect(getNotificationContent(notification)).toBe('Bob mentioned you in conversation');
     });
 
-    it('returns correct message for MEOW reaction notification', () => {
-      const notification = {
-        type: 'reaction',
-        sender: { firstName: 'Alice' },
-        content: {
-          reactionKey: 'MEOW_1',
-          amount: 100,
-        },
-      } as any;
-
-      expect(getNotificationContent(notification)).toBe('Alice reacted to your post with 100 MEOW');
-    });
-
-    it('returns correct message for non-MEOW reaction notification', () => {
+    it('returns correct message for reaction notification', () => {
       const notification = {
         type: 'reaction',
         sender: { firstName: 'Charlie' },

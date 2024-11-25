@@ -170,14 +170,12 @@ export async function mapEventToNotification(event) {
   }
 
   if (type === MatrixConstants.REACTION && !event?.unsigned?.redacted_because) {
-    const isMeowReaction = content['m.relates_to'].key.startsWith('MEOW_');
     return {
       ...baseNotification,
       type: 'reaction',
       content: {
         reactionKey: content['m.relates_to'].key,
         targetEventId: content['m.relates_to'].event_id,
-        amount: isMeowReaction ? content.amount : undefined,
       },
     };
   }

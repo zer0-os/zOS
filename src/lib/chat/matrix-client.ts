@@ -609,16 +609,39 @@ export class MatrixClient implements IChatClient {
   async getNotifications(): Promise<any[]> {
     await this.waitForConnection();
     const rooms = await this.getRoomsUserIsIn();
+    const CUTOFF_DAYS = 30;
+    const CUTOFF_TIMESTAMP = Date.now() - CUTOFF_DAYS * 24 * 60 * 60 * 1000;
     let allNotifications = [];
 
-    for (const room of rooms) {
-      const timeline = room.getLiveTimeline();
-      const events = timeline.getEvents().map((event) => event.getEffectiveEvent());
+    const roomNotifications = await Promise.all(
+      rooms.map(async (room) => {
+        const timeline = room.getLiveTimeline();
+        const events = timeline.getEvents();
 
-      const notifications = await this.getNotificationsFromRoom(events);
-      allNotifications = [...allNotifications, ...notifications];
-    }
+        const mostRecentEvent = events[events.length - 1];
+        const oldestEvent = events[0];
 
+        if (!oldestEvent || !mostRecentEvent || (oldestEvent.getTs() > CUTOFF_TIMESTAMP && events.length < 50)) {
+          await this.matrix.paginateEventTimeline(timeline, {
+            backwards: true,
+            limit: 50,
+          });
+        }
+
+        if (room.hasEncryptionStateEvent() && events.some((e) => e.getTs() > CUTOFF_TIMESTAMP)) {
+          await room.decryptAllEvents();
+        }
+
+        const filteredEvents = timeline
+          .getEvents()
+          .filter((event) => event.getTs() > CUTOFF_TIMESTAMP)
+          .map((event) => event.getEffectiveEvent());
+
+        return this.getNotificationsFromRoom(filteredEvents);
+      })
+    );
+
+    allNotifications = roomNotifications.flat();
     return allNotifications.sort((a, b) => b.createdAt - a.createdAt);
   }
 

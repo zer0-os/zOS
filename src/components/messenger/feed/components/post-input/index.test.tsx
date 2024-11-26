@@ -17,6 +17,7 @@ describe('PostInput', () => {
         addPasteListener: (_) => {},
         removePasteListener: (_) => {},
       },
+      isWalletConnected: true,
       ...props,
     };
 
@@ -101,6 +102,14 @@ describe('PostInput', () => {
 
     expect(onPostInputRendered).toHaveBeenCalledWith({
       current: null,
+    });
+  });
+
+  describe('when wallet is not connected', () => {
+    it('does not render submit button', () => {
+      const wrapper = subject({ isWalletConnected: false });
+
+      expect(wrapper.find(Button)).toHaveLength(0);
     });
   });
 });

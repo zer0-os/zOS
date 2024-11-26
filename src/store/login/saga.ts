@@ -1,10 +1,9 @@
-import { call, put, race, spawn, take, takeLatest } from 'redux-saga/effects';
+import { call, put, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import { EmailLoginErrors, SagaActionTypes, Web3LoginErrors, reset, setErrors, setLoading, setStage } from '.';
 import { getSignedToken, isWeb3AccountConnected } from '../web3/saga';
 import { authenticateByEmail, forceLogout, nonceOrAuthorize, terminate } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
-import { Web3Events, getWeb3Channel } from '../web3/channels';
 import { getHistory } from '../../lib/browser';
 
 export function* emailLogin(action) {
@@ -101,20 +100,25 @@ export function* web3ChangeAccount() {
   }
 }
 
-function* listenForWeb3AccountChanges() {
-  const authChannel = yield call(getAuthChannel);
-  const web3Channel = yield call(getWeb3Channel);
-  const result = yield race({
-    accountChanged: take(web3Channel, Web3Events.AddressChanged),
-    logout: take(authChannel, AuthEvents.UserLogout),
-  });
+/*
+ * @note 26 Nov 2024
+ * This is commented out as it is currently not the desired functionality.
+ * User state should persist between web3 account changes.
+ */
+// function* listenForWeb3AccountChanges() {
+//   const authChannel = yield call(getAuthChannel);
+//   const web3Channel = yield call(getWeb3Channel);
+//   const result = yield race({
+//     accountChanged: take(web3Channel, Web3Events.AddressChanged),
+//     logout: take(authChannel, AuthEvents.UserLogout),
+//   });
 
-  if (result.logout) {
-    return;
-  }
+//   if (result.logout) {
+//     return;
+//   }
 
-  yield call(web3ChangeAccount);
-}
+//   yield call(web3ChangeAccount);
+// }
 
 function* listenForUserLogin() {
   // This might be a little dicey. We dont' currently verify that your session
@@ -125,7 +129,12 @@ function* listenForUserLogin() {
     yield take(authChannel, AuthEvents.UserLogin);
 
     if (yield call(isWeb3AccountConnected)) {
-      yield spawn(listenForWeb3AccountChanges);
+      /*
+       * @note 26 Nov 2024
+       * This is commented out as it is currently not the desired functionality.
+       * User state should persist between web3 account changes.
+       */
+      // yield spawn(listenForWeb3AccountChanges);
     }
   }
 }

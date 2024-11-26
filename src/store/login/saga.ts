@@ -101,20 +101,25 @@ export function* web3ChangeAccount() {
   }
 }
 
-function* listenForWeb3AccountChanges() {
-  const authChannel = yield call(getAuthChannel);
-  const web3Channel = yield call(getWeb3Channel);
-  const result = yield race({
-    accountChanged: take(web3Channel, Web3Events.AddressChanged),
-    logout: take(authChannel, AuthEvents.UserLogout),
-  });
+/*
+ * @note 26 Nov 2024
+ * This is commented out as it is currently not the desired functionality.
+ * User state should persist between web3 account changes.
+ */
+// function* listenForWeb3AccountChanges() {
+//   const authChannel = yield call(getAuthChannel);
+//   const web3Channel = yield call(getWeb3Channel);
+//   const result = yield race({
+//     accountChanged: take(web3Channel, Web3Events.AddressChanged),
+//     logout: take(authChannel, AuthEvents.UserLogout),
+//   });
 
-  if (result.logout) {
-    return;
-  }
+//   if (result.logout) {
+//     return;
+//   }
 
-  yield call(web3ChangeAccount);
-}
+//   yield call(web3ChangeAccount);
+// }
 
 function* listenForUserLogin() {
   // This might be a little dicey. We dont' currently verify that your session

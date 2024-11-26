@@ -5,7 +5,6 @@ import { Key } from '../../../../../lib/keyboard-search';
 import Dropzone from 'react-dropzone';
 import { config } from '../../../../../config';
 import { Button } from '@zero-tech/zui/components';
-import { RainbowKitConnectButton } from '../../../../../lib/web3/rainbowkit/button';
 import { ViewModes } from '../../../../../shared-components/theme-engine';
 
 describe('PostInput', () => {

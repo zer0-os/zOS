@@ -139,7 +139,7 @@ export class FeatureFlags {
   }
 
   get enableIrysPosting() {
-    return this._getBoolean('enableIrysPosting', false);
+    return this._getBoolean('enableIrysPosting', true);
   }
 
   set enableIrysPosting(value: boolean) {

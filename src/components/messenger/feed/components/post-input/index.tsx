@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React, { ReactNode, RefObject } from 'react';
 import Dropzone from 'react-dropzone';
 
 import { featureFlags } from '../../../../../lib/feature-flags';
@@ -181,6 +181,7 @@ export class PostInput extends React.Component<Properties, State> {
           noClick
           accept={this.mimeTypes}
           maxSize={config.cloudinary.max_file_size}
+          disabled={featureFlags.enableIrysPosting}
         >
           {({ getRootProps }) => (
             <div {...getRootProps({ ...cn('drop-zone-text-area') })}>

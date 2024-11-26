@@ -5,6 +5,7 @@ import { Key } from '../../../../../lib/keyboard-search';
 import Dropzone from 'react-dropzone';
 import { config } from '../../../../../config';
 import { Button } from '@zero-tech/zui/components';
+import { RainbowKitConnectButton } from '../../../../../lib/web3/rainbowkit/button';
 import { ViewModes } from '../../../../../shared-components/theme-engine';
 
 describe('PostInput', () => {
@@ -17,6 +18,7 @@ describe('PostInput', () => {
         addPasteListener: (_) => {},
         removePasteListener: (_) => {},
       },
+      isWalletConnected: true,
       ...props,
     };
 
@@ -101,6 +103,14 @@ describe('PostInput', () => {
 
     expect(onPostInputRendered).toHaveBeenCalledWith({
       current: null,
+    });
+  });
+
+  describe('when wallet is not connected', () => {
+    it('does not render submit button', () => {
+      const wrapper = subject({ isWalletConnected: false });
+
+      expect(wrapper.find(Button)).toHaveLength(0);
     });
   });
 });

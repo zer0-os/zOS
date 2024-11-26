@@ -19,6 +19,7 @@ import Menu from '../../../../message-input/menu/menu';
 import { MediaType } from '../../../../../store/messages';
 import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../../../message-input/utils';
 import { EmojiPicker } from '../../../../message-input/emoji-picker/emoji-picker';
+import { RainbowKitConnectButton } from '../../../../../lib/web3/rainbowkit/button';
 
 const cn = bemClassName('post-input-container');
 
@@ -33,6 +34,7 @@ export interface Properties extends PublicPropertiesContainer {
   };
 
   dropzoneToMedia?: (files: any[]) => Media[];
+  isWalletConnected: boolean;
 }
 
 interface State {
@@ -229,14 +231,18 @@ export class PostInput extends React.Component<Properties, State> {
 
                     <div {...cn('wrapper')}>
                       <p {...cn('error')}>{this.props.error}</p>
-                      <Button
-                        {...cn('button')}
-                        isDisabled={isDisabled}
-                        isLoading={this.props.isSubmitting}
-                        onPress={this.onSubmit}
-                      >
-                        Create
-                      </Button>
+                      {this.props.isWalletConnected ? (
+                        <Button
+                          {...cn('button')}
+                          isDisabled={isDisabled}
+                          isLoading={this.props.isSubmitting}
+                          onPress={this.onSubmit}
+                        >
+                          Create
+                        </Button>
+                      ) : (
+                        <RainbowKitConnectButton />
+                      )}
                     </div>
                   </div>
 

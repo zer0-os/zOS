@@ -125,7 +125,12 @@ function* listenForUserLogin() {
     yield take(authChannel, AuthEvents.UserLogin);
 
     if (yield call(isWeb3AccountConnected)) {
-      yield spawn(listenForWeb3AccountChanges);
+      /*
+       * @note 26 Nov 2024
+       * This is commented out as it is currently not the desired functionality.
+       * User state should persist between web3 account changes.
+       */
+      // yield spawn(listenForWeb3AccountChanges);
     }
   }
 }

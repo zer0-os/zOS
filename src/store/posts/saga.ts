@@ -90,7 +90,7 @@ export function* sendPostIrys(action) {
 
   try {
     const user = yield select(currentUserSelector());
-    const userZid = user.primaryZID.split('0://')[1];
+    const userZid = user.primaryZID?.split('0://')?.[1];
 
     // If user does not have a primary ZID
     if (!userZid || userZid.trim() === '') {

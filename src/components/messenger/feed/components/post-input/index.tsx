@@ -1,4 +1,4 @@
-import React, { ReactNode, RefObject } from 'react';
+import React, { RefObject } from 'react';
 import Dropzone from 'react-dropzone';
 
 import { featureFlags } from '../../../../../lib/feature-flags';

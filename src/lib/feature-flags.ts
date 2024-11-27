@@ -138,14 +138,6 @@ export class FeatureFlags {
     this._setBoolean('enableTokenGatedChat', value);
   }
 
-  get enableIrysPosting() {
-    return this._getBoolean('enableIrysPosting', true);
-  }
-
-  set enableIrysPosting(value: boolean) {
-    this._setBoolean('enableIrysPosting', value);
-  }
-
   get enableNotificationsApp() {
     return this._getBoolean('enableNotificationsApp', true);
   }

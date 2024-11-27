@@ -1,7 +1,6 @@
 import React, { RefObject } from 'react';
 import Dropzone from 'react-dropzone';
 
-import { featureFlags } from '../../../../../lib/feature-flags';
 import { config } from '../../../../../config';
 import { Key } from '../../../../../lib/keyboard-search';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +14,6 @@ import { bemClassName } from '../../../../../lib/bem';
 import './styles.scss';
 
 // should move these to a shared location
-import Menu from '../../../../message-input/menu/menu';
 import { MediaType } from '../../../../../store/messages';
 import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../../../message-input/utils';
 import { EmojiPicker } from '../../../../message-input/emoji-picker/emoji-picker';
@@ -181,7 +179,7 @@ export class PostInput extends React.Component<Properties, State> {
           noClick
           accept={this.mimeTypes}
           maxSize={config.cloudinary.max_file_size}
-          disabled={featureFlags.enableIrysPosting}
+          disabled={true}
         >
           {({ getRootProps }) => (
             <div {...getRootProps({ ...cn('drop-zone-text-area') })}>
@@ -219,14 +217,6 @@ export class PostInput extends React.Component<Properties, State> {
 
                   <div {...cn('actions')}>
                     <div {...cn('icon-wrapper')}>
-                      {!featureFlags.enableIrysPosting && (
-                        <Menu
-                          onSelected={this.mediaSelected}
-                          mimeTypes={this.mimeTypes}
-                          maxSize={config.cloudinary.max_file_size}
-                        />
-                      )}
-
                       <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
                     </div>
 

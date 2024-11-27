@@ -142,13 +142,14 @@ export async function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKM
   };
 }
 
-export async function mapEventToNotification(event) {
+export async function mapEventToNotification(event, isRead: boolean = false) {
   const { event_id, room_id, origin_server_ts, sender, content, type } = event;
 
   const baseNotification = {
     id: event_id,
     roomId: room_id,
     createdAt: origin_server_ts,
+    isRead,
     sender: {
       userId: sender,
     },

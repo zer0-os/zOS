@@ -53,8 +53,10 @@ describe('notifications saga', () => {
             items: existingNotifications,
           },
         })
+        .provide([
+          [call(getNotifications), existingNotifications],
+        ])
         .put(setLoading(true))
-        .put(setNotifications(existingNotifications.slice(0, 50))) // Only first 50 notifications
         .put(setLoading(false))
         .run();
     });

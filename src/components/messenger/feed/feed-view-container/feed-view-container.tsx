@@ -4,7 +4,7 @@ import { connectContainer } from '../../../../store/redux-container';
 import { Payload as PayloadFetchPost } from '../../../../store/posts/saga';
 import { Channel, denormalize } from '../../../../store/channels';
 import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
-import { fetchPostsIrys, meowPost } from '../../../../store/posts';
+import { fetchPosts, meowPost } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
 import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../chat-view-container/utils';
@@ -51,7 +51,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      fetchPosts: fetchPostsIrys,
+      fetchPosts: fetchPosts,
       loadAttachmentDetails,
       transferMeow,
       meowPost,

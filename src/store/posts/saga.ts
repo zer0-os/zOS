@@ -44,7 +44,7 @@ export interface PostPayload {
   optimisticId?: string;
 }
 
-export function* sendPostIrys(action) {
+export function* sendPost(action) {
   const { channelId, message } = action.payload;
 
   const channel = yield select(rawChannelSelector(channelId));
@@ -165,7 +165,7 @@ export function* sendPostIrys(action) {
   yield put(setIsSubmitting(false));
 }
 
-export function* fetchPostsIrys(action) {
+export function* fetchPosts(action) {
   const { channelId } = action.payload;
   const channel = yield select(rawChannelSelector(action.payload.channelId));
 
@@ -256,8 +256,8 @@ function* reset() {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.SendPostIrys, sendPostIrys);
-  yield takeLatest(SagaActionTypes.FetchPostsIrys, fetchPostsIrys);
+  yield takeLatest(SagaActionTypes.SendPost, sendPost);
+  yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
   yield takeLatest(SagaActionTypes.MeowPost, meowPost);
   yield takeLatest(ChannelsEvents.OpenConversation, reset);
 }

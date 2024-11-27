@@ -4,7 +4,7 @@ import { connectContainer } from '../../../store/redux-container';
 import { ScrollbarContainer } from '../../scrollbar-container';
 import { PostPayload as PayloadPostMessage } from '../../../store/posts/saga';
 import { Channel, denormalize } from '../../../store/channels';
-import { sendPostIrys } from '../../../store/posts';
+import { sendPost } from '../../../store/posts';
 import { FeedViewContainer } from './feed-view-container/feed-view-container';
 import { PostInputContainer as PostInput } from './components/post-input/container';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
@@ -55,7 +55,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(): Partial<Properties> {
     return {
-      sendPost: sendPostIrys,
+      sendPost: sendPost,
       setLeaveGroupStatus,
     };
   }

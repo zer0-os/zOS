@@ -2,14 +2,7 @@ import { Post } from '../post';
 
 import styles from './styles.module.scss';
 
-export const Posts = ({
-  postMessages,
-  loadAttachmentDetails,
-  transferMeow,
-  userMeowBalance,
-  currentUserId,
-  meowPost,
-}) => {
+export const Posts = ({ postMessages, loadAttachmentDetails, userMeowBalance, currentUserId, meowPost }) => {
   return (
     <ol className={styles.Posts}>
       {postMessages.map((post) => (
@@ -25,7 +18,6 @@ export const Posts = ({
             author={post.sender.displaySubHandle}
             loadAttachmentDetails={loadAttachmentDetails}
             ownerUserId={post.sender.userId}
-            transferMeow={transferMeow}
             userMeowBalance={userMeowBalance}
             reactions={post.reactions}
             meowPost={meowPost}

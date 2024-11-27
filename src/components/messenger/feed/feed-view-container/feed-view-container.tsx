@@ -4,14 +4,12 @@ import { connectContainer } from '../../../../store/redux-container';
 import { Payload as PayloadFetchPost } from '../../../../store/posts/saga';
 import { Channel, denormalize } from '../../../../store/channels';
 import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
-import { fetchPosts, fetchPostsIrys, meowPost } from '../../../../store/posts';
+import { fetchPostsIrys, meowPost } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
 import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../chat-view-container/utils';
 import { compareDatesAsc } from '../../../../lib/date';
 import { transferMeow } from '../../../../store/rewards';
-import { featureFlags } from '../../../../lib/feature-flags';
-
 interface PublicProperties {
   channelId: string;
 }
@@ -53,7 +51,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(_props: Properties): Partial<Properties> {
     return {
-      fetchPosts: featureFlags.enableIrysPosting ? fetchPostsIrys : fetchPosts,
+      fetchPosts: fetchPostsIrys,
       loadAttachmentDetails,
       transferMeow,
       meowPost,
@@ -112,16 +110,6 @@ export class Container extends React.Component<Properties> {
     return posts.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt)).reverse();
   }
 
-  transferMeow = (postOwnerId, postMessageId, meowAmount) => {
-    this.props.transferMeow({
-      meowSenderId: this.props.user.data.id,
-      postOwnerId,
-      postMessageId,
-      meowAmount,
-      roomId: this.props.channelId,
-    });
-  };
-
   meowPost = (postId, meowAmount) => {
     this.props.meowPost({ postId, meowAmount, channelId: this.props.channelId });
   };
@@ -139,7 +127,6 @@ export class Container extends React.Component<Properties> {
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           messagesFetchStatus={this.channel.messagesFetchStatus}
           loadAttachmentDetails={this.props.loadAttachmentDetails}
-          transferMeow={this.transferMeow}
           userMeowBalance={this.props.userMeowBalance}
           meowPost={this.meowPost}
         />

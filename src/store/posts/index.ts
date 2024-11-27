@@ -9,8 +9,6 @@ export interface PostsResponse {
 }
 
 export enum SagaActionTypes {
-  SendPost = 'posts/saga/sendPost',
-  FetchPosts = 'posts/saga/fetchPosts',
   SendPostIrys = 'posts/saga/sendPostIrys',
   FetchPostsIrys = 'posts/saga/fetchPostsIrys',
   MeowPost = 'posts/saga/meowPost',
@@ -26,8 +24,6 @@ export const initialState: PostsState = {
   isSubmitting: false,
 };
 
-export const sendPost = createAction<PostPayload>(SagaActionTypes.SendPost);
-export const fetchPosts = createAction<Payload>(SagaActionTypes.FetchPosts);
 export const sendPostIrys = createAction<PostPayload>(SagaActionTypes.SendPostIrys);
 export const fetchPostsIrys = createAction<Payload>(SagaActionTypes.FetchPostsIrys);
 export const meowPost = createAction<{

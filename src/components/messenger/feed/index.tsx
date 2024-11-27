@@ -4,14 +4,12 @@ import { connectContainer } from '../../../store/redux-container';
 import { ScrollbarContainer } from '../../scrollbar-container';
 import { PostPayload as PayloadPostMessage } from '../../../store/posts/saga';
 import { Channel, denormalize } from '../../../store/channels';
-import { MessageSendStatus } from '../../../store/messages';
-import { sendPost, sendPostIrys } from '../../../store/posts';
+import { sendPostIrys } from '../../../store/posts';
 import { FeedViewContainer } from './feed-view-container/feed-view-container';
 import { PostInputContainer as PostInput } from './components/post-input/container';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
-import { featureFlags } from '../../../lib/feature-flags';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -57,7 +55,7 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(): Partial<Properties> {
     return {
-      sendPost: featureFlags.enableIrysPosting ? sendPostIrys : sendPost,
+      sendPost: sendPostIrys,
       setLeaveGroupStatus,
     };
   }
@@ -75,13 +73,7 @@ export class Container extends React.Component<Properties> {
   };
 
   get isSubmitting() {
-    if (featureFlags.enableIrysPosting) {
-      return this.props.isSubmittingPost;
-    } else {
-      return this.props.channel?.messages
-        .filter((message) => message.isPost)
-        .some((message) => message.sendStatus === MessageSendStatus.IN_PROGRESS);
-    }
+    return this.props.isSubmittingPost;
   }
 
   get isLeaveGroupDialogOpen() {

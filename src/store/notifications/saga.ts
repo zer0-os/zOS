@@ -1,5 +1,5 @@
 import { takeLatest, call, put, select } from 'redux-saga/effects';
-import { SagaActionTypes, setNotifications, setLoading, setError, markAsRead } from '.';
+import { SagaActionTypes, setNotifications, setLoading, setError, markAsRead, setMostRecentTimestamp } from '.';
 import { openConversation } from '../channels/saga';
 import { getNotifications, setNotificationReadStatus } from '../../lib/chat';
 import { getHistory } from '../../lib/browser';
@@ -27,19 +27,29 @@ export function* fetchNotifications() {
     const CUTOFF_TIMESTAMP = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
     const currentNotifications = yield select((state) => state.notifications.items);
-    const notifications = yield call(getNotifications);
+    const mostRecentTimestamp = yield select((state) => state.notifications.mostRecentTimestamp);
+
+    const notifications = yield call(getNotifications, mostRecentTimestamp);
 
     if (notifications.length !== currentNotifications.length) {
-      const notificationsWithSenders = yield call(mapNotificationSenders, notifications);
-
-      const recentNotifications = notificationsWithSenders.filter((n) => n.createdAt > CUTOFF_TIMESTAMP);
+      // Check if there are any recent notifications to process
+      const recentNotifications = notifications.filter((n) => n.createdAt > CUTOFF_TIMESTAMP);
 
       if (recentNotifications.length > 0) {
-        const sortedNotifications = recentNotifications
+        const notificationsWithSenders = yield call(mapNotificationSenders, notifications);
+        const combinedNotifications = [...currentNotifications, ...notificationsWithSenders];
+
+        // Remove duplicates based on notification ID
+        const uniqueNotifications = Array.from(
+          new Map(combinedNotifications.map((notification) => [notification.id, notification])).values()
+        );
+
+        const sortedNotifications = uniqueNotifications
           .sort((a, b) => b.createdAt - a.createdAt)
           .slice(0, NOTIFICATION_LIMIT);
 
         yield put(setNotifications(sortedNotifications));
+        yield put(setMostRecentTimestamp(sortedNotifications[0].createdAt));
       }
     }
   } catch (error: any) {

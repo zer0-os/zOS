@@ -25,14 +25,15 @@ describe('notifications saga', () => {
         .withState({
           notifications: {
             items: [],
+            mostRecentTimestamp: 0,
           },
         })
         .provide([
-          [call(getNotifications), mockNotifications],
+          [call(getNotifications, 0), mockNotifications],
           [call(mapNotificationSenders, mockNotifications), mockNotificationsWithSenders],
         ])
         .put(setLoading(true))
-        .call(getNotifications)
+        .call(getNotifications, 0)
         .call(mapNotificationSenders, mockNotifications)
         .put(setNotifications(mockNotificationsWithSenders))
         .put(setLoading(false))
@@ -51,10 +52,11 @@ describe('notifications saga', () => {
         .withState({
           notifications: {
             items: existingNotifications,
+            mostRecentTimestamp: 0,
           },
         })
         .provide([
-          [call(getNotifications), existingNotifications],
+          [call(getNotifications, 0), existingNotifications],
         ])
         .put(setLoading(true))
         .put(setLoading(false))
@@ -69,9 +71,10 @@ describe('notifications saga', () => {
         .withState({
           notifications: {
             items: [],
+            mostRecentTimestamp: 0,
           },
         })
-        .provide([[call(getNotifications), Promise.reject(error)]])
+        .provide([[call(getNotifications, 0), Promise.reject(error)]])
         .put(setLoading(true))
         .put(setError(error.message))
         .put(setLoading(false))

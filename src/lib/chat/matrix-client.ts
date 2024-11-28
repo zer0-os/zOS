@@ -636,7 +636,7 @@ export class MatrixClient implements IChatClient {
     return result;
   }
 
-  async getNotifications(): Promise<any[]> {
+  async getNotifications(mostRecentTimestamp: number): Promise<any[]> {
     await this.waitForConnection();
     const rooms = await this.getRoomsUserIsIn();
     const CUTOFF_DAYS = 30;
@@ -646,26 +646,59 @@ export class MatrixClient implements IChatClient {
     const roomNotifications = await Promise.all(
       rooms.map(async (room) => {
         const timeline = room.getLiveTimeline();
-        const events = timeline.getEvents();
+        let events = timeline.getEvents();
 
-        const mostRecentEvent = events[events.length - 1];
+        // Determine the oldest event timestamp
         const oldestEvent = events[0];
+        const oldestTimestamp = oldestEvent ? oldestEvent.getTs() : 0;
 
-        if (!oldestEvent || !mostRecentEvent || (oldestEvent.getTs() > CUTOFF_TIMESTAMP && events.length < 50)) {
-          await this.matrix.paginateEventTimeline(timeline, {
-            backwards: true,
-            limit: 50,
-          });
+        // Check if we can skip pagination and processing
+        if (mostRecentTimestamp >= oldestTimestamp) {
+          return this.getNotificationsFromRoom(events.map((event) => event.getEffectiveEvent()));
+        }
+
+        // Keep paginating until we either:
+        // 1. Reach an event older than the cutoff
+        // 2. Run out of events to load
+        let shouldPaginate = true;
+        while (shouldPaginate) {
+          // Stop if we've reached events older than cutoff
+          if (oldestEvent && oldestEvent.getTs() < CUTOFF_TIMESTAMP) {
+            shouldPaginate = false;
+            continue;
+          }
+
+          try {
+            const paginationResult = await this.matrix.paginateEventTimeline(timeline, {
+              backwards: true,
+              limit: 100,
+            });
+            // Stop if no more events to load
+            if (!paginationResult) {
+              shouldPaginate = false;
+              continue;
+            }
+            events = timeline.getEvents();
+          } catch (error) {
+            console.error('Error paginating timeline:', error);
+            shouldPaginate = false;
+          }
         }
 
         if (room.hasEncryptionStateEvent() && events.some((e) => e.getTs() > CUTOFF_TIMESTAMP)) {
           await room.decryptAllEvents();
         }
 
-        const filteredEvents = timeline
-          .getEvents()
+        // Filter out events that are older than the last notification timestamp
+        const filteredEvents = events
+          .filter((event) => event.getTs() > (mostRecentTimestamp || 0))
           .filter((event) => event.getTs() > CUTOFF_TIMESTAMP)
           .map((event) => event.getEffectiveEvent());
+
+        // If no new events, return an empty array
+        if (filteredEvents.length === 0) {
+          return [];
+        }
 
         return this.getNotificationsFromRoom(filteredEvents);
       })

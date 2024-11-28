@@ -10,7 +10,6 @@ import { rawChannelSelector, receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
 import { SagaActionTypes as ChannelsEvents } from '../channels';
 import { updateUserMeowBalance } from '../rewards/saga';
-import { get } from '../../lib/api/rest';
 import { POSTS_PAGE_SIZE } from './constants';
 import { setIsSubmitting } from '.';
 import {
@@ -20,6 +19,7 @@ import {
   signPostPayload,
   uploadPost,
   meowPost as meowPostApi,
+  getPostsInChannel,
 } from './utils';
 import { ethers } from 'ethers';
 
@@ -182,22 +182,10 @@ export function* fetchPosts(action) {
     const existingPosts = yield select(rawMessagesSelector(channelId));
     const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
     const currentPage = Math.floor(filteredPosts.length / POSTS_PAGE_SIZE);
+    const skip = currentPage * POSTS_PAGE_SIZE;
+    const limit = POSTS_PAGE_SIZE;
 
-    const res = yield call(get, `/api/v2/posts/channel/${channelZna}`, undefined, {
-      limit: POSTS_PAGE_SIZE,
-      skip: currentPage * POSTS_PAGE_SIZE,
-    });
-
-    if (!res.ok) {
-      return yield call(receiveChannel, {
-        id: channelId,
-        hasMorePosts: false,
-        hasLoadedMessages: true,
-        messagesFetchStatus: MessagesFetchState.FAILED,
-      });
-    }
-
-    const fetchedPosts = res.body.posts;
+    const fetchedPosts = yield call(getPostsInChannel, channelZna, limit, skip);
     const posts = uniqBy([...fetchedPosts.map(mapPostToMatrixMessage), ...filteredPosts], (p) => p.id ?? p);
     const hasMorePosts = fetchedPosts.length === POSTS_PAGE_SIZE;
 

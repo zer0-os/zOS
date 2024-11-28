@@ -428,11 +428,3 @@ export function getProfileInfo(userId: string): Promise<{
 export function getNotifications(): Promise<any[]> {
   return chat.get().matrix.getNotifications();
 }
-
-export async function getNotificationReadStatus() {
-  return await chat.get().matrix.getNotificationReadStatus();
-}
-
-export async function setNotificationReadStatus(roomId: string) {
-  return await chat.get().matrix.setNotificationReadStatus(roomId);
-}

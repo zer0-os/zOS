@@ -145,14 +145,6 @@ export class FeatureFlags {
   set enableNotificationsApp(value: boolean) {
     this._setBoolean('enableNotificationsApp', value);
   }
-
-  get enableNotificationsReadStatus() {
-    return this._getBoolean('enableNotificationsReadStatus', false);
-  }
-
-  set enableNotificationsReadStatus(value: boolean) {
-    this._setBoolean('enableNotificationsReadStatus', value);
-  }
 }
 
 export const featureFlags = new FeatureFlags();

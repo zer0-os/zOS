@@ -425,8 +425,8 @@ export function getProfileInfo(userId: string): Promise<{
   return chat.get().matrix.getProfileInfo(userId);
 }
 
-export function getNotifications(mostRecentTimestamp: number): Promise<any[]> {
-  return chat.get().matrix.getNotifications(mostRecentTimestamp);
+export function getNotifications(): Promise<any[]> {
+  return chat.get().matrix.getNotifications();
 }
 
 export async function getNotificationReadStatus() {

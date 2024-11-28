@@ -30,14 +30,12 @@ export interface NotificationsState {
   items: Notification[];
   loading: boolean;
   error: string | null;
-  mostRecentTimestamp: number;
 }
 
 export const initialState: NotificationsState = {
   items: [],
   loading: false,
   error: null,
-  mostRecentTimestamp: 0,
 };
 
 export const fetchNotifications = createAction(SagaActionTypes.FetchNotifications);
@@ -60,10 +58,6 @@ const slice = createSlice({
       state.error = action.payload;
     },
 
-    setMostRecentTimestamp: (state, action) => {
-      state.mostRecentTimestamp = action.payload;
-    },
-
     markAsRead: (state, action) => {
       const roomId = action.payload;
       const hasUnreadNotifications = state.items.some(
@@ -82,5 +76,5 @@ const slice = createSlice({
   },
 });
 
-export const { setNotifications, setLoading, setError, markAsRead, setMostRecentTimestamp } = slice.actions;
+export const { setNotifications, setLoading, setError, markAsRead } = slice.actions;
 export const { reducer } = slice;

@@ -147,7 +147,7 @@ export class FeatureFlags {
   }
 
   get enableNotificationsReadStatus() {
-    return this._getBoolean('enableNotificationsReadStatus', true);
+    return this._getBoolean('enableNotificationsReadStatus', false);
   }
 
   set enableNotificationsReadStatus(value: boolean) {

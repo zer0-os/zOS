@@ -31,7 +31,6 @@ describe('NotificationsFeed', () => {
       error: null,
       fetchNotifications: jest.fn(),
       openNotificationConversation: jest.fn(),
-      markNotificationsAsRead: jest.fn(),
       ...props,
     };
 

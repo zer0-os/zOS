@@ -39,7 +39,7 @@ describe('notifications saga', () => {
         .run();
     });
 
-    it('uses existing notifications if they are recent and sufficient', async () => {
+    it('uses existing notifications if they are recent and they are sufficient', async () => {
       const now = Date.now();
       const existingNotifications = Array.from({ length: 51 }, (_, i) => ({
         id: `${i}`,
@@ -53,10 +53,8 @@ describe('notifications saga', () => {
             items: existingNotifications,
           },
         })
-        .provide([
-          [call(getNotifications), existingNotifications],
-        ])
         .put(setLoading(true))
+        .put(setNotifications(existingNotifications.slice(0, 50))) // Only first 50 notifications
         .put(setLoading(false))
         .run();
     });

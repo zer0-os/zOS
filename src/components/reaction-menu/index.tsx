@@ -52,8 +52,13 @@ export class ReactionMenu extends React.Component<Properties, State> {
         (this.emojiPickerRef.current && this.emojiPickerRef.current.contains(event.target))
       )
     ) {
-      this.setState({ isReactionTrayOpen: false, isEmojiPickerOpen: false });
-      this.props.onOpenChange?.(false);
+      // Only update state if the tray or picker is actually open
+      if (this.state.isReactionTrayOpen || this.state.isEmojiPickerOpen) {
+        this.setState({ isReactionTrayOpen: false, isEmojiPickerOpen: false }, () => {
+          // Call onOpenChange in the setState callback to ensure state is updated first
+          this.props.onOpenChange?.(false);
+        });
+      }
     }
   };
 

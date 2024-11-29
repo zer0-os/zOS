@@ -69,6 +69,8 @@ export class MatrixClient implements IChatClient {
   private initializationTimestamp: number;
   private secretStorageKey: string;
 
+  private readonly NOTIFICATION_READ_EVENT = 'org.zero.notifications.read';
+
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
   }
@@ -343,6 +345,34 @@ export class MatrixClient implements IChatClient {
       .then((response) => response?.body || []);
   }
 
+  async getNotificationReadStatus(): Promise<Record<string, number>> {
+    await this.waitForConnection();
+    try {
+      const event = await this.matrix.getAccountData(this.NOTIFICATION_READ_EVENT);
+      return event?.getContent()?.readNotifications || {};
+    } catch (error) {
+      console.error('Error getting notification read status:', error);
+      return {};
+    }
+  }
+
+  async setNotificationReadStatus(roomId: string): Promise<void> {
+    await this.waitForConnection();
+    try {
+      const currentContent = await this.getNotificationReadStatus();
+      const updatedContent = {
+        readNotifications: {
+          ...currentContent,
+          [roomId]: Date.now(),
+        },
+      };
+
+      await this.matrix.setAccountData(this.NOTIFICATION_READ_EVENT, updatedContent);
+    } catch (error) {
+      console.error('Error setting notification read status:', error);
+    }
+  }
+
   async searchMentionableUsersForChannel(channelId: string, search: string, channelMembers: UserModel[]) {
     const searchResults = await getFilteredMembersForAutoComplete(channelMembers, search);
     return searchResults.map((u) => ({
@@ -613,6 +643,11 @@ export class MatrixClient implements IChatClient {
     const CUTOFF_TIMESTAMP = Date.now() - CUTOFF_DAYS * 24 * 60 * 60 * 1000;
     let allNotifications = [];
 
+    let readStatus = {};
+    if (featureFlags.enableNotificationsReadStatus) {
+      readStatus = await this.getNotificationReadStatus();
+    }
+
     const roomNotifications = await Promise.all(
       rooms.map(async (room) => {
         const timeline = room.getLiveTimeline();
@@ -637,7 +672,7 @@ export class MatrixClient implements IChatClient {
           .filter((event) => event.getTs() > CUTOFF_TIMESTAMP)
           .map((event) => event.getEffectiveEvent());
 
-        return this.getNotificationsFromRoom(filteredEvents);
+        return this.getNotificationsFromRoom(filteredEvents, readStatus);
       })
     );
 
@@ -1684,7 +1719,7 @@ export class MatrixClient implements IChatClient {
     return event.type === CustomEventType.ROOM_POST;
   }
 
-  private async getNotificationsFromRoom(events): Promise<any[]> {
+  private async getNotificationsFromRoom(events, readStatus = {}): Promise<any[]> {
     const currentUserId = this.matrix.getUserId();
     const currentUserUuid = currentUserId.split(':')[0].substring(1);
 
@@ -1718,7 +1753,14 @@ export class MatrixClient implements IChatClient {
       return isDM && event.type === 'm.room.message';
     });
 
-    const notifications = await Promise.all(filteredEvents.map((event) => mapEventToNotification(event)));
+    const notifications = await Promise.all(
+      filteredEvents.map((event) => {
+        const roomReadTimestamp = readStatus[event.room_id] || 0;
+        const isRead = featureFlags.enableNotificationsReadStatus ? event.origin_server_ts <= roomReadTimestamp : false;
+
+        return mapEventToNotification(event, isRead);
+      })
+    );
 
     return notifications.filter((notification) => notification !== null);
   }

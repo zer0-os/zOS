@@ -46,15 +46,16 @@ describe('notifications saga', () => {
         content: `notification ${i}`,
         createdAt: now - i * 1000,
       }));
-
       await expectSaga(fetchNotifications)
         .withState({
           notifications: {
             items: existingNotifications,
           },
         })
+        .provide([
+          [call(getNotifications), existingNotifications],
+        ])
         .put(setLoading(true))
-        .put(setNotifications(existingNotifications.slice(0, 50))) // Only first 50 notifications
         .put(setLoading(false))
         .run();
     });

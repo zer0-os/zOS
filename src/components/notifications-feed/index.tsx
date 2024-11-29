@@ -2,12 +2,13 @@ import React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { Notification } from '../../store/notifications';
-import { fetchNotifications, openNotificationConversation } from '../../store/notifications';
+import { fetchNotifications, openNotificationConversation, markNotificationsAsRead } from '../../store/notifications';
 
 import { Header } from '../header';
 import { IconBell1 } from '@zero-tech/zui/icons';
 import { NotificationItem } from './notification-item';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { featureFlags } from '../../lib/feature-flags';
 
 import styles from './styles.module.scss';
 
@@ -20,6 +21,7 @@ export interface Properties extends PublicProperties {
 
   fetchNotifications: () => void;
   openNotificationConversation: (roomId: string) => void;
+  markNotificationsAsRead: (roomId: string) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -39,6 +41,7 @@ export class Container extends React.Component<Properties> {
     return {
       fetchNotifications,
       openNotificationConversation,
+      markNotificationsAsRead,
     };
   }
 
@@ -47,6 +50,9 @@ export class Container extends React.Component<Properties> {
   }
 
   onNotificationClick = (roomId: string) => {
+    if (featureFlags.enableNotificationsReadStatus) {
+      this.props.markNotificationsAsRead(roomId);
+    }
     this.props.openNotificationConversation(roomId);
   };
 

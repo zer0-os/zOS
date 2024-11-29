@@ -6,6 +6,7 @@ import { MessagesFetchState } from '../../../../store/channels';
 import { Media, Message as MessageModel } from '../../../../store/messages';
 import { Payload as PayloadFetchPosts } from '../../../../store/posts/saga';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { LoadMoreButton } from '../components/load-more';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
@@ -29,6 +30,7 @@ export class FeedView extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
+        <LoadMoreButton />
         {this.props.hasLoadedMessages && (
           <>
             {this.props.postMessages.length > 0 ? (

@@ -50,6 +50,10 @@
         padding: 16px 18px 16px 18px;
 
         border-bottom: 1px solid rgba(52, 56, 60, 0.75);
+
+        &:hover {
+          background-color: rgba(253, 252, 253, 0.05);
+        }
       }
     }
   }

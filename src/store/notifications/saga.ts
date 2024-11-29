@@ -1,10 +1,19 @@
 import { takeLatest, call, put, select } from 'redux-saga/effects';
-import { SagaActionTypes, setNotifications, setLoading, setError } from '.';
+import { SagaActionTypes, setNotifications, setLoading, setError, markAsRead } from '.';
 import { openConversation } from '../channels/saga';
-import { getNotifications } from '../../lib/chat';
+import { getNotifications, setNotificationReadStatus } from '../../lib/chat';
 import { getHistory } from '../../lib/browser';
 import { mapNotificationSenders } from '../messages/utils.matrix';
 
+function* markNotificationsAsReadSaga(action) {
+  const roomId = action.payload;
+  try {
+    yield call(setNotificationReadStatus, roomId);
+    yield put(markAsRead(roomId));
+  } catch (error) {
+    console.error('Error marking notifications as read:', error);
+  }
+}
 export function* fetchNotifications() {
   try {
     yield put(setLoading(true));
@@ -62,4 +71,5 @@ export function* openNotificationConversation(action) {
 export function* saga() {
   yield takeLatest(SagaActionTypes.FetchNotifications, fetchNotifications);
   yield takeLatest(SagaActionTypes.OpenNotificationConversation, openNotificationConversation);
+  yield takeLatest(SagaActionTypes.MarkNotificationsAsRead, markNotificationsAsReadSaga);
 }

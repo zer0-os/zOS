@@ -69,6 +69,8 @@ export class MatrixClient implements IChatClient {
   private initializationTimestamp: number;
   private secretStorageKey: string;
 
+  private readonly NOTIFICATION_READ_EVENT = 'org.zero.notifications.read';
+
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
   }
@@ -341,6 +343,34 @@ export class MatrixClient implements IChatClient {
     return await get('/api/v2/users/searchInNetworksByName', { filter, limit: 50, isMatrixEnabled: true })
       .catch((_error) => null)
       .then((response) => response?.body || []);
+  }
+
+  async getNotificationReadStatus(): Promise<Record<string, number>> {
+    await this.waitForConnection();
+    try {
+      const event = await this.matrix.getAccountData(this.NOTIFICATION_READ_EVENT);
+      return event?.getContent()?.readNotifications || {};
+    } catch (error) {
+      console.error('Error getting notification read status:', error);
+      return {};
+    }
+  }
+
+  async setNotificationReadStatus(roomId: string): Promise<void> {
+    await this.waitForConnection();
+    try {
+      const currentContent = await this.getNotificationReadStatus();
+      const updatedContent = {
+        readNotifications: {
+          ...currentContent,
+          [roomId]: Date.now(),
+        },
+      };
+
+      await this.matrix.setAccountData(this.NOTIFICATION_READ_EVENT, updatedContent);
+    } catch (error) {
+      console.error('Error setting notification read status:', error);
+    }
   }
 
   async searchMentionableUsersForChannel(channelId: string, search: string, channelMembers: UserModel[]) {

@@ -140,4 +140,30 @@ describe('Message Menu', () => {
       expect(onInfo).toHaveBeenCalled();
     });
   });
+
+  describe('Download Button', () => {
+    it('should render when canDownload is true and onDownload is provided', () => {
+      const onDownload = jest.fn();
+      const wrapper = subject({ canDownload: true, onDownload }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const downloadItem = items.find((item) => item.id === 'download');
+
+      expect(downloadItem).toBeDefined();
+    });
+
+    it('should call onDownload when download button is clicked', () => {
+      const onDownload = jest.fn();
+      const wrapper = subject({ canDownload: true, onDownload }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const downloadItem = items.find((item) => item.id === 'download');
+
+      downloadItem.onSelect();
+
+      expect(onDownload).toHaveBeenCalled();
+    });
+  });
 });

@@ -114,6 +114,17 @@ export class Message extends React.Component<Properties, State> {
     download(attachment.url);
   };
 
+  downloadImage = (media) => () => {
+    if (!media || !media.url) return;
+
+    const link = document.createElement('a');
+    link.href = media.url;
+    link.download = media.name || 'image';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   renderAttachment(attachment) {
     return (
       <div {...cn('attachment')} onClick={this.openAttachment.bind(this, attachment)}>
@@ -385,6 +396,10 @@ export class Message extends React.Component<Properties, State> {
     );
   };
 
+  canDownload = (): boolean => {
+    return this.props.media?.type === MediaType.Image;
+  };
+
   onInfo = () => {
     this.props.onInfo(this.props.messageId);
   };
@@ -405,10 +420,12 @@ export class Message extends React.Component<Properties, State> {
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
       canViewInfo: this.canViewInfo(),
+      canDownload: this.canDownload(),
       onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
       onInfo: this.onInfo,
+      onDownload: this.downloadImage(this.props.media),
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isMessageMenuOpen,
       onOpenChange: this.handleOpenMenu,
@@ -450,10 +467,12 @@ export class Message extends React.Component<Properties, State> {
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
       canViewInfo: this.canViewInfo(),
+      canDownload: this.canDownload(),
       onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
       onInfo: this.onInfo,
+      onDownload: this.downloadImage(this.props.media),
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isDropdownMenuOpen,
       onOpenChange: this.handleOpenMenu,

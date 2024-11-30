@@ -2,7 +2,14 @@ import React, { createRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { DropdownMenu } from '@zero-tech/zui/components';
-import { IconDotsHorizontal, IconEdit5, IconFlipBackward, IconInfoCircle, IconTrash4 } from '@zero-tech/zui/icons';
+import {
+  IconDotsHorizontal,
+  IconEdit5,
+  IconFlipBackward,
+  IconInfoCircle,
+  IconTrash4,
+  IconDownload2,
+} from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
 import './styles.scss';
@@ -13,6 +20,7 @@ export interface Properties {
   canDelete: boolean;
   canReply?: boolean;
   canViewInfo?: boolean;
+  canDownload?: boolean;
   isMenuOpen?: boolean;
   isMenuFlying?: boolean;
 
@@ -22,6 +30,7 @@ export interface Properties {
   onEdit?: () => void;
   onReply?: () => void;
   onInfo?: () => void;
+  onDownload?: () => void;
 }
 
 export class MessageMenu extends React.Component<Properties> {
@@ -68,6 +77,13 @@ export class MessageMenu extends React.Component<Properties> {
         id: 'info',
         label: this.renderMenuOption(<IconInfoCircle size={20} />, 'Info'),
         onSelect: this.onInfo,
+      });
+    }
+    if (this.props.onDownload && this.props.canDownload) {
+      menuItems.push({
+        id: 'download',
+        label: this.renderMenuOption(<IconDownload2 size={20} />, 'Download'),
+        onSelect: this.props.onDownload,
       });
     }
     if (this.props.onDelete && this.props.canDelete) {

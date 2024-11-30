@@ -9,6 +9,7 @@ import {
   IconInfoCircle,
   IconTrash4,
   IconDownload2,
+  IconCopy2,
 } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
@@ -21,6 +22,7 @@ export interface Properties {
   canReply?: boolean;
   canViewInfo?: boolean;
   canDownload?: boolean;
+  canCopy?: boolean;
   isMenuOpen?: boolean;
   isMenuFlying?: boolean;
 
@@ -31,6 +33,7 @@ export interface Properties {
   onReply?: () => void;
   onInfo?: () => void;
   onDownload?: () => void;
+  onCopy?: () => void;
 }
 
 export class MessageMenu extends React.Component<Properties> {
@@ -84,6 +87,13 @@ export class MessageMenu extends React.Component<Properties> {
         id: 'download',
         label: this.renderMenuOption(<IconDownload2 size={20} />, 'Download'),
         onSelect: this.props.onDownload,
+      });
+    }
+    if (this.props.onCopy && this.props.canCopy) {
+      menuItems.push({
+        id: 'copy',
+        label: this.renderMenuOption(<IconCopy2 size={20} />, 'Copy'),
+        onSelect: this.props.onCopy,
       });
     }
     if (this.props.onDelete && this.props.canDelete) {

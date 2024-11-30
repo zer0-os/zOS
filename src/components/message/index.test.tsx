@@ -626,5 +626,30 @@ describe('message', () => {
       expect(messageMenuProps.canDownload).toBe(false);
       expect(messageMenuProps.isMediaMessage).toBe(true);
     });
+
+    it('enables copy option for media messages', () => {
+      const wrapper = subject({
+        message: 'the message',
+        media: { url: 'https://image.com/image.png', type: MediaType.Image },
+      });
+
+      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+      wrapper.simulate('contextmenu', mockEvent);
+
+      const messageMenuProps = wrapper.find(MessageMenu).props();
+      expect(messageMenuProps.canCopy).toBe(true);
+    });
+
+    it('does not enable copy option for non-media messages', () => {
+      const wrapper = subject({
+        message: 'the message',
+      });
+
+      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+      wrapper.simulate('contextmenu', mockEvent);
+
+      const messageMenuProps = wrapper.find(MessageMenu).props();
+      expect(messageMenuProps.canCopy).toBe(false);
+    });
   });
 });

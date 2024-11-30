@@ -125,6 +125,22 @@ export class Message extends React.Component<Properties, State> {
     document.body.removeChild(link);
   };
 
+  copyImage = (media) => async () => {
+    if (!media?.url) return;
+
+    try {
+      const response = await fetch(media.url);
+      const blob = await response.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob,
+        }),
+      ]);
+    } catch (err) {
+      console.error('Failed to copy image:', err);
+    }
+  };
+
   renderAttachment(attachment) {
     return (
       <div {...cn('attachment')} onClick={this.openAttachment.bind(this, attachment)}>
@@ -400,6 +416,10 @@ export class Message extends React.Component<Properties, State> {
     return this.props.media?.type === MediaType.Image && this.props.media?.mimetype !== 'image/gif';
   };
 
+  canCopy = (): boolean => {
+    return this.props.media?.type === MediaType.Image && this.props.media?.mimetype !== 'image/gif';
+  };
+
   onInfo = () => {
     this.props.onInfo(this.props.messageId);
   };
@@ -421,11 +441,13 @@ export class Message extends React.Component<Properties, State> {
       canReply: this.canReply(),
       canViewInfo: this.canViewInfo(),
       canDownload: this.canDownload(),
+      canCopy: this.canCopy(),
       onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
       onInfo: this.onInfo,
       onDownload: this.downloadImage(this.props.media),
+      onCopy: this.copyImage(this.props.media),
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isMessageMenuOpen,
       onOpenChange: this.handleOpenMenu,
@@ -468,11 +490,13 @@ export class Message extends React.Component<Properties, State> {
       canReply: this.canReply(),
       canViewInfo: this.canViewInfo(),
       canDownload: this.canDownload(),
+      canCopy: this.canCopy(),
       onDelete: this.deleteMessage,
       onEdit: this.toggleEdit,
       onReply: this.onReply,
       onInfo: this.onInfo,
       onDownload: this.downloadImage(this.props.media),
+      onCopy: this.copyImage(this.props.media),
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isDropdownMenuOpen,
       onOpenChange: this.handleOpenMenu,

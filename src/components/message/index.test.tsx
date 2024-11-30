@@ -612,5 +612,19 @@ describe('message', () => {
       expect(messageMenuProps.canDownload).toBe(false);
       expect(messageMenuProps.isMediaMessage).toBe(false);
     });
+
+    it('disables download option for gif images', () => {
+      const wrapper = subject({
+        message: 'the message',
+        media: { url: 'https://image.com/image.gif', type: MediaType.Image, mimetype: 'image/gif' },
+      });
+
+      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+      wrapper.simulate('contextmenu', mockEvent);
+
+      const messageMenuProps = wrapper.find(MessageMenu).props();
+      expect(messageMenuProps.canDownload).toBe(false);
+      expect(messageMenuProps.isMediaMessage).toBe(true);
+    });
   });
 });

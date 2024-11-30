@@ -397,7 +397,7 @@ export class Message extends React.Component<Properties, State> {
   };
 
   canDownload = (): boolean => {
-    return this.props.media?.type === MediaType.Image;
+    return this.props.media?.type === MediaType.Image && this.props.media?.mimetype !== 'image/gif';
   };
 
   onInfo = () => {

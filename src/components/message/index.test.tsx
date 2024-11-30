@@ -584,4 +584,47 @@ describe('message', () => {
       expect(onImageClick).not.toHaveBeenCalled();
     });
   });
+
+  describe('MessageMenu', () => {
+    it('enables download option for media messages', () => {
+      const wrapper = subject({
+        message: 'the message',
+        media: { url: 'https://image.com/image.png', type: MediaType.Image },
+      });
+
+      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+      wrapper.simulate('contextmenu', mockEvent);
+
+      const messageMenuProps = wrapper.find(MessageMenu).props();
+      expect(messageMenuProps.canDownload).toBe(true);
+      expect(messageMenuProps.isMediaMessage).toBe(true);
+    });
+
+    it('disables download option for non-media messages', () => {
+      const wrapper = subject({
+        message: 'the message',
+      });
+
+      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+      wrapper.simulate('contextmenu', mockEvent);
+
+      const messageMenuProps = wrapper.find(MessageMenu).props();
+      expect(messageMenuProps.canDownload).toBe(false);
+      expect(messageMenuProps.isMediaMessage).toBe(false);
+    });
+
+    it('disables download option for gif images', () => {
+      const wrapper = subject({
+        message: 'the message',
+        media: { url: 'https://image.com/image.gif', type: MediaType.Image, mimetype: 'image/gif' },
+      });
+
+      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
+      wrapper.simulate('contextmenu', mockEvent);
+
+      const messageMenuProps = wrapper.find(MessageMenu).props();
+      expect(messageMenuProps.canDownload).toBe(false);
+      expect(messageMenuProps.isMediaMessage).toBe(true);
+    });
+  });
 });

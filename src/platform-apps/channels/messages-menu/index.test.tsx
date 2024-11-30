@@ -166,4 +166,30 @@ describe('Message Menu', () => {
       expect(onDownload).toHaveBeenCalled();
     });
   });
+
+  describe('Copy Button', () => {
+    it('should render when canCopy is true and onCopy is provided', () => {
+      const onCopy = jest.fn();
+      const wrapper = subject({ canCopy: true, onCopy }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const copyItem = items.find((item) => item.id === 'copy');
+
+      expect(copyItem).toBeDefined();
+    });
+
+    it('should call onCopy when copy button is clicked', () => {
+      const onCopy = jest.fn();
+      const wrapper = subject({ canCopy: true, onCopy }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const copyItem = items.find((item) => item.id === 'copy');
+
+      copyItem.onSelect();
+
+      expect(onCopy).toHaveBeenCalled();
+    });
+  });
 });

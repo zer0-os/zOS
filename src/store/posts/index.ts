@@ -12,6 +12,7 @@ export enum SagaActionTypes {
   SendPost = 'posts/saga/sendPost',
   FetchPosts = 'posts/saga/fetchPosts',
   MeowPost = 'posts/saga/meowPost',
+  RefetchPosts = 'posts/saga/refetchPosts',
 }
 
 export type PostsState = {
@@ -31,6 +32,9 @@ export const meowPost = createAction<{
   meowAmount: string;
   channelId: string;
 }>(SagaActionTypes.MeowPost);
+export const refetchPosts = createAction<{
+  channelId: string;
+}>(SagaActionTypes.RefetchPosts);
 
 const slice = createSlice({
   name: 'posts',

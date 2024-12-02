@@ -238,6 +238,18 @@ function* meowPost(action) {
   }
 }
 
+function* refetchPosts(action) {
+  const { channelId } = action.payload;
+  yield call(receiveChannel, {
+    id: channelId,
+    messages: [],
+    hasMorePosts: true,
+    hasLoadedMessages: false,
+  });
+
+  yield put({ type: SagaActionTypes.FetchPosts, payload: { channelId } });
+}
+
 function* reset() {
   yield put(setError(undefined));
   yield put(setIsSubmitting(false));
@@ -247,5 +259,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.SendPost, sendPost);
   yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
   yield takeLatest(SagaActionTypes.MeowPost, meowPost);
+  yield takeLatest(SagaActionTypes.RefetchPosts, refetchPosts);
   yield takeLatest(ChannelsEvents.OpenConversation, reset);
 }

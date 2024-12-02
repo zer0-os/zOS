@@ -19,7 +19,7 @@ export interface Properties {
   hasLoadedMessages: boolean;
   messagesFetchStatus: MessagesFetchState;
   userMeowBalance: string;
-
+  channelId?: string;
   fetchPosts: (payload: PayloadFetchPosts) => void;
   onFetchMore: () => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
@@ -30,7 +30,7 @@ export class FeedView extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
-        <LoadMoreButton />
+        {this.props.channelId && <LoadMoreButton channelId={this.props.channelId} />}
         {this.props.hasLoadedMessages && (
           <>
             {this.props.postMessages.length > 0 ? (

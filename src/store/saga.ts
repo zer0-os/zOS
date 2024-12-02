@@ -25,7 +25,7 @@ import { saga as background } from './background/saga';
 import { saga as accountManagement } from './account-management/saga';
 import { saga as posts } from './posts/saga';
 import { saga as notifications } from './notifications/saga';
-
+import { saga as reportUser } from './report-user/saga';
 export function* rootSaga() {
   const allSagas = {
     pageLoad,
@@ -53,6 +53,7 @@ export function* rootSaga() {
     accountManagement,
     posts,
     notifications,
+    reportUser,
   };
 
   yield all(

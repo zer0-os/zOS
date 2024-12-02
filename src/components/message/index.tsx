@@ -131,11 +131,45 @@ export class Message extends React.Component<Properties, State> {
     try {
       const response = await fetch(media.url);
       const blob = await response.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          [blob.type]: blob,
-        }),
-      ]);
+
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            [blob.type]: blob,
+          }),
+        ]);
+      } catch (writeError) {
+        // Fallback: Create a temporary canvas to handle image copying
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = media.url;
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        try {
+          await canvas.toBlob(async (blob) => {
+            if (blob) {
+              await navigator.clipboard.write([
+                new ClipboardItem({
+                  'image/png': blob,
+                }),
+              ]);
+            }
+          }, 'image/png');
+        } catch (canvasError) {
+          throw new Error('Failed to copy image using canvas fallback');
+        }
+      }
     } catch (err) {
       console.error('Failed to copy image:', err);
     }

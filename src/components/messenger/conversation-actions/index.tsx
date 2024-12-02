@@ -14,12 +14,14 @@ const cn = bemClassName('conversation-actions');
 export interface Properties {
   className?: string;
   canAddMembers: boolean;
+  canReportUser: boolean;
   canLeaveRoom: boolean;
   canEdit: boolean;
   canViewDetails: boolean;
   isSecondarySidekickOpen: boolean;
   isRoomMuted: boolean;
   onAddMember: () => void;
+  onReportUser: () => void;
   onEdit: () => void;
   onLeaveRoom: () => void;
   onViewDetails: () => void;
@@ -31,6 +33,10 @@ export interface Properties {
 export class ConversationActions extends React.Component<Properties> {
   editGroup = () => {
     this.props.onEdit();
+  };
+
+  reportUser = () => {
+    this.props.onReportUser();
   };
 
   addMember = () => {
@@ -68,6 +74,8 @@ export class ConversationActions extends React.Component<Properties> {
           isRoomMuted={this.props.isRoomMuted}
           onEdit={this.editGroup}
           onLeave={this.leaveGroup}
+          canReportUser={this.props.canReportUser}
+          onReportUser={this.reportUser}
           onMute={this.muteRoom}
           onStartAddMember={this.addMember}
           onUnmute={this.unmuteRoom}

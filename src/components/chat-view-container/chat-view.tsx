@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions, Media } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
-import { Lightbox } from '@zer0-os/zos-component-library';
+import { Lightbox } from '@zero-tech/zui/components';
 import { User } from '../../store/authentication/types';
 import { User as ChannelMember } from '../../store/channels';
 import { ParentMessage } from '../../lib/chat/types';

@@ -12,7 +12,7 @@ import {
   toggleSecondarySidekick,
 } from '../../../store/group-management';
 import { ConversationActions } from '.';
-
+import { openReportUserModal } from '../../../store/report-user';
 import './styles.scss';
 
 export interface PublicProperties {
@@ -28,6 +28,8 @@ export interface Properties extends PublicProperties {
   canAddMembers: boolean;
   canViewDetails: boolean;
   isSecondarySidekickOpen: boolean;
+  canReportUser: boolean;
+
   startAddGroupMember: () => void;
   startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -36,6 +38,7 @@ export interface Properties extends PublicProperties {
   toggleSecondarySidekick: () => void;
   onAddLabel: (payload: { roomId: string; label: string }) => void;
   onRemoveLabel: (payload: { roomId: string; label: string }) => void;
+  openReportUserModal: (payload: { reportedUserId: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -57,6 +60,7 @@ export class Container extends React.Component<Properties> {
       (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && (!directMessage?.isOneOnOne || isSocialChannel);
     const canAddMembers = isCurrentUserRoomAdmin && (!directMessage?.isOneOnOne || isSocialChannel);
     const canViewDetails = !directMessage?.isOneOnOne || isSocialChannel;
+    const canReportUser = directMessage?.isOneOnOne && !isSocialChannel;
 
     return {
       activeConversationId,
@@ -67,6 +71,7 @@ export class Container extends React.Component<Properties> {
       canEdit,
       canAddMembers,
       canViewDetails,
+      canReportUser,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }
@@ -80,11 +85,16 @@ export class Container extends React.Component<Properties> {
       toggleSecondarySidekick,
       onAddLabel,
       onRemoveLabel,
+      openReportUserModal,
     };
   }
 
   openLeaveGroupDialog = () => {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.OPEN);
+  };
+
+  openReportUserDialog = () => {
+    this.props.openReportUserModal({ reportedUserId: this.props.directMessage.otherMembers[0].userId });
   };
 
   muteRoom = () => {
@@ -114,6 +124,8 @@ export class Container extends React.Component<Properties> {
         canLeaveRoom={this.props.canLeaveRoom}
         canEdit={this.props.canEdit}
         canViewDetails={this.props.canViewDetails}
+        canReportUser={this.props.canReportUser}
+        onReportUser={this.openReportUserDialog}
         onLeaveRoom={this.openLeaveGroupDialog}
         onViewDetails={this.props.viewGroupInformation}
         onAddMember={this.props.startAddGroupMember}

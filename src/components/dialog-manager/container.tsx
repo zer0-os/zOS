@@ -8,18 +8,21 @@ import { RewardsModalContainer } from '../rewards-modal/container';
 import { closeRewardsDialog } from '../../store/rewards';
 import { DeleteMessageContainer } from '../delete-message-dialog/container';
 import { closeDeleteMessage } from '../../store/dialogs';
-
+import { ReportUserContainer } from '../report-user-dialog/container';
+import { closeReportUserModal } from '../../store/report-user';
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   displayLogoutModal: boolean;
   isBackupDialogOpen: boolean;
   isRewardsDialogOpen: boolean;
+  isReportUserModalOpen: boolean;
   deleteMessageId: number;
 
   closeBackupDialog: () => void;
   closeRewardsDialog: () => void;
   closeDeleteMessage: () => void;
+  closeReportUserModal: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -28,6 +31,7 @@ export class Container extends React.Component<Properties> {
       authentication: { displayLogoutModal },
       matrix: { isBackupDialogOpen },
       dialogs: { deleteMessageId },
+      reportUser: { isReportUserModalOpen },
       rewards,
     } = state;
 
@@ -36,11 +40,12 @@ export class Container extends React.Component<Properties> {
       isBackupDialogOpen,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
       deleteMessageId,
+      isReportUserModalOpen,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { closeBackupDialog, closeRewardsDialog, closeDeleteMessage };
+    return { closeBackupDialog, closeRewardsDialog, closeDeleteMessage, closeReportUserModal };
   }
 
   closeBackup = () => {
@@ -53,6 +58,10 @@ export class Container extends React.Component<Properties> {
 
   closeDeleteMessage = () => {
     this.props.closeDeleteMessage();
+  };
+
+  closeReportUserModal = () => {
+    this.props.closeReportUserModal();
   };
 
   renderSecureBackupDialog = (): JSX.Element => {
@@ -71,6 +80,10 @@ export class Container extends React.Component<Properties> {
     return <DeleteMessageContainer onClose={this.closeDeleteMessage} />;
   };
 
+  renderReportUserDialog = (): JSX.Element => {
+    return <ReportUserContainer onClose={this.closeReportUserModal} />;
+  };
+
   render() {
     return (
       <>
@@ -78,6 +91,7 @@ export class Container extends React.Component<Properties> {
         {this.props.displayLogoutModal && this.renderLogoutDialog()}
         {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         {this.props.deleteMessageId && this.renderDeleteMessageDialog()}
+        {this.props.isReportUserModalOpen && this.renderReportUserDialog()}
       </>
     );
   }

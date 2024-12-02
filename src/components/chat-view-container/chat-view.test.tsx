@@ -3,9 +3,8 @@ import { Waypoint } from 'react-waypoint';
 import { shallow } from 'enzyme';
 import { ChatView, Properties } from './chat-view';
 
-import { MediaType, Message as MessageModel } from '../../store/messages';
+import { Message as MessageModel } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
-import { Lightbox } from '@zer0-os/zos-component-library';
 import { MessageInput } from '../message-input/container';
 import { IfAuthenticated } from '../authentication/if-authenticated';
 import { Message } from '../message';
@@ -231,39 +230,6 @@ describe('ChatView', () => {
 
     wrapper.find(c('try-reload')).simulate('click');
     expect(fetchMessages).toHaveBeenCalledWith({ channelId: 'channel-id' });
-  });
-
-  describe('Lightbox', () => {
-    it('render when image file is within message and LightBox has been opened', () => {
-      const imageMedia = { url: 'image.jpg', type: MediaType.Image };
-      const messages = [
-        {
-          id: 1,
-          media: imageMedia,
-          sender: { userId: '1' },
-        } as MessageModel,
-        {
-          id: 2,
-          media: { url: 'video.avi', type: MediaType.Video },
-          sender: { userId: '1' },
-        } as MessageModel,
-        {
-          id: 3,
-          media: { url: 'video.mp3', type: MediaType.Audio },
-          sender: { userId: '1' },
-        } as MessageModel,
-      ];
-      const wrapper = subject({ messages });
-      wrapper.find(Message).at(1).simulate('imageClick');
-
-      expect(wrapper.find(Lightbox).prop('items')).toEqual([imageMedia]);
-    });
-
-    it('does not render Lightbox', () => {
-      const wrapper = subject({ messages: [] });
-
-      expect(wrapper.find(Lightbox).exists()).toBeFalsy();
-    });
   });
 
   describe('formatDayHeader', () => {

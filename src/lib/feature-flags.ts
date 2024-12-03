@@ -153,6 +153,14 @@ export class FeatureFlags {
   set enableNotificationsReadStatus(value: boolean) {
     this._setBoolean('enableNotificationsReadStatus', value);
   }
+
+  get enableLoadMore() {
+    return this._getBoolean('enableLoadMore', false);
+  }
+
+  set enableLoadMore(value: boolean) {
+    this._setBoolean('enableLoadMore', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

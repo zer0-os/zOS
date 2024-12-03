@@ -10,6 +10,8 @@ import { LoadMoreButton } from '../components/load-more';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
+import { FeatureFlag } from '../../../feature-flag';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 const cn = bemClassName('feed-view');
 
@@ -30,7 +32,11 @@ export class FeedView extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
-        {this.props.channelId && <LoadMoreButton channelId={this.props.channelId} />}
+        {this.props.channelId && (
+          <FeatureFlag featureFlag='enableLoadMore'>
+            <LoadMoreButton channelId={this.props.channelId} />
+          </FeatureFlag>
+        )}
         {this.props.hasLoadedMessages && (
           <>
             {this.props.postMessages.length > 0 ? (

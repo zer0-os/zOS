@@ -1,0 +1,20 @@
+.Button {
+  all: unset;
+  background: none;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+
+  border-left: 1px solid var(--color-greyscale-6);
+  border-right: 1px solid var(--color-greyscale-6);
+
+  color: var(--color-secondary-11);
+  background: var(--color-secondary-transparency-4);
+
+  box-sizing: border-box;
+}

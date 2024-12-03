@@ -13,16 +13,21 @@ export enum SagaActionTypes {
   FetchPosts = 'posts/saga/fetchPosts',
   MeowPost = 'posts/saga/meowPost',
   RefetchPosts = 'posts/saga/refetchPosts',
+  PollPosts = 'posts/saga/pollPosts',
 }
 
 export type PostsState = {
   error?: string;
   isSubmitting: boolean;
+  initialCount?: number;
+  count?: number;
 };
 
 export const initialState: PostsState = {
   error: undefined,
   isSubmitting: false,
+  initialCount: undefined,
+  count: undefined,
 };
 
 export const sendPost = createAction<PostPayload>(SagaActionTypes.SendPost);
@@ -35,6 +40,9 @@ export const meowPost = createAction<{
 export const refetchPosts = createAction<{
   channelId: string;
 }>(SagaActionTypes.RefetchPosts);
+export const pollPosts = createAction<{
+  channelId: string;
+}>(SagaActionTypes.PollPosts);
 
 const slice = createSlice({
   name: 'posts',
@@ -46,8 +54,14 @@ const slice = createSlice({
     setIsSubmitting: (state, action) => {
       state.isSubmitting = action.payload;
     },
+    setInitialCount: (state, action) => {
+      state.initialCount = action.payload;
+    },
+    setCount: (state, action) => {
+      state.count = action.payload;
+    },
   },
 });
 
-export const { setError, setIsSubmitting } = slice.actions;
+export const { setError, setIsSubmitting, setInitialCount, setCount } = slice.actions;
 export const { reducer } = slice;

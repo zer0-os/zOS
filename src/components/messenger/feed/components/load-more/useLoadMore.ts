@@ -1,18 +1,20 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { refetchPosts } from '../../../../../store/posts';
+import { RootState } from '../../../../../store';
 
 export const useLoadMore = (channelId: string) => {
   const dispatch = useDispatch();
-
-  const count = 10;
+  const difference = useSelector(
+    (state: RootState) => (state.posts.count ?? state.posts.initialCount ?? 0) - (state.posts.initialCount ?? 0)
+  );
 
   const handleLoadMore = () => {
     dispatch(refetchPosts({ channelId }));
   };
 
   return {
-    hasMore: count > 0,
-    count,
+    hasMore: difference > 0,
+    count: difference,
     handleLoadMore,
   };
 };

@@ -1,8 +1,8 @@
-import { takeLatest, call, select, put } from 'redux-saga/effects';
+import { takeLatest, call, select, put, delay } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
 import BN from 'bn.js';
 
-import { SagaActionTypes, setError } from '.';
+import { SagaActionTypes, setCount, setError, setInitialCount } from '.';
 import { MediaType } from '../messages';
 import { messageSelector, rawMessagesSelector } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
@@ -22,6 +22,7 @@ import {
   getPostsInChannel,
 } from './utils';
 import { ethers } from 'ethers';
+import { get } from '../../lib/api/rest';
 
 export interface Payload {
   channelId: string;
@@ -158,6 +159,11 @@ export function* sendPost(action) {
         }),
       ],
     });
+
+    const initialCount = yield select((state) => state.posts.initialCount);
+    if (initialCount !== undefined) {
+      yield put(setInitialCount(initialCount + 1));
+    }
   } catch (e) {
     yield put(setError((e as any).message ?? 'Failed to submit post'));
   }
@@ -175,6 +181,10 @@ export function* fetchPosts(action) {
 
   const channelZna = channel.name?.split('0://')[1];
 
+  if (!channelZna) {
+    return;
+  }
+
   try {
     /* Grab existing posts from state, and filter out any Matrix posts.
      * This is a temporary work around so we can continue to use the existing
@@ -188,6 +198,13 @@ export function* fetchPosts(action) {
     const fetchedPosts = yield call(getPostsInChannel, channelZna, limit, skip);
     const posts = uniqBy([...fetchedPosts.map(mapPostToMatrixMessage), ...filteredPosts], (p) => p.id ?? p);
     const hasMorePosts = fetchedPosts.length === POSTS_PAGE_SIZE;
+
+    // Start polling for new posts
+    if (currentPage === 0) {
+      yield put(setInitialCount(undefined));
+      yield put(setCount(undefined));
+      yield put({ type: SagaActionTypes.PollPosts, payload: { channelId } });
+    }
 
     // Updates the channel's state with the fetched posts and existing non-post messages
     yield call(receiveChannel, {
@@ -238,6 +255,31 @@ function* meowPost(action) {
   }
 }
 
+function* pollPosts(action) {
+  const { channelId } = action.payload;
+
+  const channel = yield select(rawChannelSelector(channelId));
+  const channelZna = channel.name?.split('0://')[1];
+
+  if (!channelZna) {
+    return;
+  }
+
+  const res = yield call(get, `/api/v2/posts/channel/${channelZna}/count`);
+  const count = res.body?.count;
+
+  if (count !== undefined) {
+    const initialCount = yield select((state) => state.posts.initialCount);
+    if (initialCount === undefined) {
+      yield put(setInitialCount(count));
+    } else {
+      yield put(setCount(count));
+    }
+    yield delay(5000);
+    yield put({ type: SagaActionTypes.PollPosts, payload: { channelId } });
+  }
+}
+
 function* refetchPosts(action) {
   const { channelId } = action.payload;
   yield call(receiveChannel, {
@@ -246,13 +288,23 @@ function* refetchPosts(action) {
     hasMorePosts: true,
     hasLoadedMessages: false,
   });
+  yield put(setInitialCount(undefined));
+  yield put(setCount(undefined));
 
   yield put({ type: SagaActionTypes.FetchPosts, payload: { channelId } });
 }
 
-function* reset() {
+function* reset(action) {
+  yield call(receiveChannel, {
+    id: action.payload.conversationId,
+    messages: [],
+    hasMorePosts: true,
+    hasLoadedMessages: false,
+  });
   yield put(setError(undefined));
   yield put(setIsSubmitting(false));
+  yield put(setInitialCount(undefined));
+  yield put(setCount(undefined));
 }
 
 export function* saga() {
@@ -260,5 +312,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.FetchPosts, fetchPosts);
   yield takeLatest(SagaActionTypes.MeowPost, meowPost);
   yield takeLatest(SagaActionTypes.RefetchPosts, refetchPosts);
+  yield takeLatest(SagaActionTypes.PollPosts, pollPosts);
   yield takeLatest(ChannelsEvents.OpenConversation, reset);
 }

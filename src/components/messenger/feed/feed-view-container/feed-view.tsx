@@ -11,7 +11,6 @@ import { LoadMoreButton } from '../components/load-more';
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
 import { FeatureFlag } from '../../../feature-flag';
-import { featureFlags } from '../../../../lib/feature-flags';
 
 const cn = bemClassName('feed-view');
 

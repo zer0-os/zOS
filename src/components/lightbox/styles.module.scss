@@ -1,0 +1,51 @@
+.Lightbox {
+  :global {
+    .ril__loadingContainer .ril__loadingCircle {
+      width: 350px;
+      height: 350px;
+      animation: fadein var(--animation-duration-quadruple, 1200ms) ease-out forwards;
+    }
+
+    .ril__loadingContainer .ril__loadingCirclePoint {
+      display: none;
+    }
+
+    .ril__image {
+      animation: fadein var(--animation-duration-default, 300ms) ease-out forwards;
+    }
+
+    .ril__toolbar {
+      background: none;
+    }
+  }
+}
+
+.DownloadButton {
+  width: 40px;
+  height: 35px;
+  cursor: pointer;
+  border: none;
+  opacity: 0.7;
+  color: white;
+  background: none;
+  transition: opacity 0.2s;
+
+  vertical-align: middle;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

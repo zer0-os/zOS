@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions, Media } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
-import { Lightbox } from '@zero-tech/zui/components';
 import { User } from '../../store/authentication/types';
 import { User as ChannelMember } from '../../store/channels';
 import { ParentMessage } from '../../lib/chat/types';
@@ -17,6 +16,7 @@ import { ChatSkeleton } from './chat-skeleton';
 import { createMessageGroups, filterAdminMessages, getMessageRenderProps } from './utils';
 import { MessagesFetchState } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
+import { Lightbox } from '../lightbox';
 
 // Note: this is the component convention. Existing styles reference channel-view which
 // is old and can be migrated to this component.

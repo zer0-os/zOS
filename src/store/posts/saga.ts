@@ -297,7 +297,7 @@ function* refetchPosts(action) {
 function* reset(action) {
   yield call(receiveChannel, {
     id: action.payload.conversationId,
-    messages: [],
+    // messages: [],
     hasMorePosts: true,
     hasLoadedMessages: false,
   });

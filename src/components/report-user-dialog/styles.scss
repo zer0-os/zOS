@@ -1,0 +1,50 @@
+.report-user-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 528px;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    h2 {
+      margin: 0;
+      line-height: 29px;
+    }
+  }
+
+  &__text-content {
+    line-height: 24px;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__reason-select-menu {
+    max-height: 220px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    width: 242px;
+  }
+
+  &__label-text {
+    margin-bottom: 2px;
+  }
+
+  &__alert-small {
+    display: flex;
+    margin-top: 8px;
+    padding: 4px 8px 4px 8px;
+  }
+
+  &__alert-text {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}

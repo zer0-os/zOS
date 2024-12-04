@@ -54,6 +54,7 @@ export interface Properties {
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (messageId, key) => void;
+  onReportUser: (payload: { reportedUserId: string }) => void;
 }
 
 export interface State {
@@ -170,6 +171,7 @@ export class ChatView extends React.Component<Properties, State> {
                 onDelete={this.props.deleteMessage}
                 onEdit={this.props.editMessage}
                 onReply={this.props.onReply}
+                onReportUser={this.props.onReportUser}
                 onInfo={this.openMessageInfo}
                 parentMessageText={message.parentMessageText}
                 parentSenderIsCurrentUser={this.isUserOwnerOfMessage(message.parentMessage)}

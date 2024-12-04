@@ -27,7 +27,8 @@ const subject = (props: Partial<Properties> = {}) => {
     toggleSecondarySidekick: () => null,
     onMuteRoom: () => null,
     onUnmuteRoom: () => null,
-
+    canReportUser: false,
+    onReportUser: () => null,
     ...props,
   };
 
@@ -100,6 +101,15 @@ describe(ConversationActions, () => {
       lastCall.onUnmute();
 
       expect(onUnmuteRoom).toHaveBeenCalled();
+    });
+
+    it('onReportUser', function () {
+      const onReportUser = vi.fn();
+      render(subject({ onReportUser, canReportUser: true }));
+      const lastCall = mockGroupManagementMenu.mock.lastCall[0];
+      lastCall.onReportUser();
+
+      expect(onReportUser).toHaveBeenCalled();
     });
   });
 });

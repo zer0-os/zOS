@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 
 import { DropdownMenu } from '@zero-tech/zui/components';
 import {
+  IconAlertCircle,
   IconDotsHorizontal,
   IconEdit5,
   IconFlipBackward,
@@ -20,6 +21,7 @@ export interface Properties {
   canEdit: boolean;
   canDelete: boolean;
   canReply?: boolean;
+  canReportUser?: boolean;
   canViewInfo?: boolean;
   canDownload?: boolean;
   canCopy?: boolean;
@@ -34,6 +36,7 @@ export interface Properties {
   onInfo?: () => void;
   onDownload?: () => void;
   onCopy?: () => void;
+  onReportUser?: () => void;
 }
 
 export class MessageMenu extends React.Component<Properties> {
@@ -101,6 +104,13 @@ export class MessageMenu extends React.Component<Properties> {
         id: 'delete',
         label: this.renderMenuOption(<IconTrash4 size={20} />, 'Delete'),
         onSelect: this.props.onDelete,
+      });
+    }
+    if (this.props.onReportUser && this.props.canReportUser) {
+      menuItems.push({
+        id: 'reportUser',
+        label: this.renderMenuOption(<IconAlertCircle color='red' size={20} />, 'Report'),
+        onSelect: this.props.onReportUser,
       });
     }
 

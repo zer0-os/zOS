@@ -62,6 +62,7 @@ interface Properties extends MessageModel {
   onHiddenMessageInfoClick: () => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (messageId, key) => void;
+  onReportUser: (payload: { reportedUserId: string }) => void;
 }
 
 export interface State {
@@ -373,6 +374,10 @@ export class Message extends React.Component<Properties, State> {
     return this.props.isOwner && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
   };
 
+  canReportUser = (): boolean => {
+    return !this.props.isOwner && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
+  };
+
   isMediaMessage = (): boolean => {
     return !!this.props.media;
   };
@@ -404,6 +409,10 @@ export class Message extends React.Component<Properties, State> {
     };
 
     this.props.onReply({ reply });
+  };
+
+  onReportUser = () => {
+    this.props.onReportUser({ reportedUserId: this.props.sender.userId });
   };
 
   editActions = (value: string, mentionedUserIds: string[]) => {
@@ -473,6 +482,7 @@ export class Message extends React.Component<Properties, State> {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
+      canReportUser: this.canReportUser(),
       canViewInfo: this.canViewInfo(),
       canDownload: this.canDownload(),
       canCopy: this.canCopy(),
@@ -486,6 +496,7 @@ export class Message extends React.Component<Properties, State> {
       isMenuOpen: isMessageMenuOpen,
       onOpenChange: this.handleOpenMenu,
       onCloseMenu: this.handleCloseMenu,
+      onReportUser: this.onReportUser,
     };
 
     const reactionProps = {
@@ -522,6 +533,7 @@ export class Message extends React.Component<Properties, State> {
       canEdit: this.canEditMessage(),
       canDelete: this.canDeleteMessage(),
       canReply: this.canReply(),
+      canReportUser: this.canReportUser(),
       canViewInfo: this.canViewInfo(),
       canDownload: this.canDownload(),
       canCopy: this.canCopy(),
@@ -531,6 +543,7 @@ export class Message extends React.Component<Properties, State> {
       onInfo: this.onInfo,
       onDownload: this.downloadImage(this.props.media),
       onCopy: this.copyImage(this.props.media),
+      onReportUser: this.onReportUser,
       isMediaMessage: this.isMediaMessage(),
       isMenuOpen: isDropdownMenuOpen,
       onOpenChange: this.handleOpenMenu,

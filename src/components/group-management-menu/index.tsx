@@ -8,6 +8,7 @@ import {
   IconPlus,
   IconUserRight1,
   IconDotsHorizontal,
+  IconAlertCircle,
 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components/DropdownMenu';
 
@@ -15,6 +16,7 @@ import './styles.scss';
 
 export interface Properties {
   canAddMembers: boolean;
+  canReportUser: boolean;
   canLeaveRoom: boolean;
   canEdit: boolean;
   canViewGroupInformation: boolean;
@@ -26,6 +28,7 @@ export interface Properties {
   onViewGroupInformation: () => void;
   onMute: () => void;
   onUnmute: () => void;
+  onReportUser: () => void;
 }
 
 interface State {}
@@ -56,6 +59,10 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     } else {
       this.props.onMute();
     }
+  };
+
+  reportUser = () => {
+    this.props.onReportUser();
   };
 
   renderMenuItem(icon, label) {
@@ -99,6 +106,14 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
         id: 'edit_group',
         label: this.renderMenuItem(<IconEdit5 size={20} />, 'Edit Group'),
         onSelect: this.editGroup,
+      });
+    }
+
+    if (this.props.canReportUser) {
+      menuItems.push({
+        id: 'report_user',
+        label: this.renderMenuItem(<IconAlertCircle color='red' size={20} />, 'Report User'),
+        onSelect: this.reportUser,
       });
     }
 

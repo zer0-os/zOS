@@ -22,7 +22,7 @@ describe('ChannelViewContainer', () => {
       uploadFileMessage: () => undefined,
       openDeleteMessage: () => undefined,
       loadAttachmentDetails: () => undefined,
-
+      openReportUserModal: () => undefined,
       editMessage: () => undefined,
       context: {
         isAuthenticated: false,

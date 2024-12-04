@@ -9,6 +9,7 @@ describe(GroupManagementMenu, () => {
       canAddMembers: true,
       canLeaveRoom: true,
       canEdit: true,
+      canReportUser: true,
       canViewGroupInformation: true,
       isRoomMuted: false,
       onStartAddMember: () => {},
@@ -17,6 +18,7 @@ describe(GroupManagementMenu, () => {
       onViewGroupInformation: () => {},
       onMute: () => {},
       onUnmute: () => {},
+      onReportUser: () => {},
       ...props,
     };
 
@@ -29,6 +31,7 @@ describe(GroupManagementMenu, () => {
       canLeaveRoom: false,
       canEdit: false,
       canViewGroupInformation: false,
+      canReportUser: false,
     });
 
     expect(wrapper).toHaveElement(DropdownMenu);
@@ -132,6 +135,22 @@ describe(GroupManagementMenu, () => {
       const unmuteNotificationsItem = menuItem(wrapper, 'mute_notifications');
 
       expectLabelToContainText(unmuteNotificationsItem, 'Unmute Notifications');
+    });
+  });
+
+  describe('Report User', () => {
+    it('calls onReportUser when the report user menu item is selected', () => {
+      const onReportUser = jest.fn();
+      const wrapper = subject({ onReportUser, canReportUser: true });
+
+      selectItem(wrapper, 'report_user');
+
+      expect(onReportUser).toHaveBeenCalled();
+    });
+
+    it('does not render item when canReportUser is false', function () {
+      const wrapper = subject({ canReportUser: false });
+      expect(menuItem(wrapper, 'report_user')).toBeFalsy();
     });
   });
 });

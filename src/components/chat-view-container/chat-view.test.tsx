@@ -49,7 +49,7 @@ describe('ChatView', () => {
       openMessageInfo: () => null,
       loadAttachmentDetails: () => null,
       sendEmojiReaction: () => null,
-
+      onReportUser: () => null,
       ...props,
     };
 

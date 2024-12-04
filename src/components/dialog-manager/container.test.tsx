@@ -9,6 +9,8 @@ import { RewardsModalContainer } from '../rewards-modal/container';
 import { closeRewardsDialog } from '../../store/rewards';
 import { DeleteMessageContainer } from '../delete-message-dialog/container';
 import { closeDeleteMessage } from '../../store/dialogs';
+import { ReportUserContainer } from '../report-user-dialog/container';
+import { closeReportUserModal } from '../../store/report-user';
 
 describe('DialogManager', () => {
   const subject = (props: Partial<Properties>) => {
@@ -17,10 +19,11 @@ describe('DialogManager', () => {
       isBackupDialogOpen: false,
       isRewardsDialogOpen: false,
       deleteMessageId: null,
-
+      isReportUserModalOpen: false,
       closeBackupDialog: () => null,
       closeRewardsDialog: () => null,
       closeDeleteMessage: () => null,
+      closeReportUserModal: () => null,
 
       ...props,
     };
@@ -85,6 +88,18 @@ describe('DialogManager', () => {
     expect(wrapper).not.toHaveElement(DeleteMessageContainer);
   });
 
+  it('renders ReportUserContainer when isReportUserModalOpen is true', () => {
+    const wrapper = subject({ isReportUserModalOpen: true });
+
+    expect(wrapper).toHaveElement(ReportUserContainer);
+  });
+
+  it('does not render ReportUserContainer when isReportUserModalOpen is false', () => {
+    const wrapper = subject({ isReportUserModalOpen: false });
+
+    expect(wrapper).not.toHaveElement(ReportUserContainer);
+  });
+
   describe('mapState', () => {
     const stateMock: RootState = {
       authentication: {
@@ -98,6 +113,9 @@ describe('DialogManager', () => {
       },
       dialogs: {
         deleteMessageId: 123,
+      },
+      reportUser: {
+        isReportUserModalOpen: true,
       },
     } as RootState;
 
@@ -124,6 +142,12 @@ describe('DialogManager', () => {
 
       expect(props.deleteMessageId).toBe(123);
     });
+
+    it('returns isReportUserModalOpen', () => {
+      const props = Container.mapState(stateMock);
+
+      expect(props.isReportUserModalOpen).toBe(true);
+    });
   });
 
   describe('mapActions', () => {
@@ -146,6 +170,13 @@ describe('DialogManager', () => {
 
       expect(actions.closeDeleteMessage).toBeDefined();
       expect(actions.closeDeleteMessage).toEqual(closeDeleteMessage);
+    });
+
+    it('returns closeReportUserModal action', () => {
+      const actions = Container.mapActions({} as any);
+
+      expect(actions.closeReportUserModal).toBeDefined();
+      expect(actions.closeReportUserModal).toEqual(closeReportUserModal);
     });
   });
 });

@@ -254,5 +254,37 @@ describe('ConversationActionsContainer', () => {
         );
       });
     });
+
+    describe('canReportUser', () => {
+      it('is true when the conversation is one on one', () => {
+        const state = new StoreBuilder().withActiveConversation(
+          stubConversation({ isOneOnOne: true, isSocialChannel: false })
+        );
+
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canReportUser: true })
+        );
+      });
+
+      it('is false when the conversation is not one on one ', () => {
+        const state = new StoreBuilder().withActiveConversation(
+          stubConversation({ isOneOnOne: false, isSocialChannel: false })
+        );
+
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canReportUser: false })
+        );
+      });
+
+      it('is false when the conversation is a social channel', () => {
+        const state = new StoreBuilder().withActiveConversation(
+          stubConversation({ isOneOnOne: false, isSocialChannel: true })
+        );
+
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canReportUser: false })
+        );
+      });
+    });
   });
 });

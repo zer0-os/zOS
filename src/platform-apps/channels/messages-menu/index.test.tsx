@@ -9,12 +9,14 @@ describe('Message Menu', () => {
       canEdit: false,
       canDelete: false,
       canReply: false,
+      canReportUser: false,
       canViewInfo: false,
       isMenuOpen: false,
       onDelete: undefined,
       onEdit: undefined,
       onReply: undefined,
       onInfo: undefined,
+      onReportUser: undefined,
       onOpenChange: undefined,
       onCloseMenu: undefined,
       ...props,
@@ -112,6 +114,38 @@ describe('Message Menu', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(onReply).toHaveBeenCalled();
+    });
+  });
+
+  describe('Report Button', () => {
+    it('should render when canReportUser is true and onReportUser is provided', () => {
+      const onReportUser = jest.fn();
+      const wrapper = subject({ canReportUser: true, onReportUser }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const reportItem = items.find((item) => item.id === 'reportUser');
+
+      expect(reportItem).toBeDefined();
+    });
+
+    it('should not render when canReportUser is false', () => {
+      const wrapper = subject({ canReportUser: false }) as ShallowWrapper;
+
+      expect(wrapper.find('DropdownMenu').exists()).toBe(false);
+    });
+
+    it('should call onReportUser when report button is clicked', () => {
+      const onReportUser = jest.fn();
+      const wrapper = subject({ canReportUser: true, onReportUser }) as ShallowWrapper;
+
+      const dropdownMenu = wrapper.find('DropdownMenu');
+      const items = dropdownMenu.prop('items') as { id: string; onSelect: () => void }[];
+      const reportItem = items.find((item) => item.id === 'reportUser');
+
+      reportItem.onSelect();
+
+      expect(onReportUser).toHaveBeenCalled();
     });
   });
 

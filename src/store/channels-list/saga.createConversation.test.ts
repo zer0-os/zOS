@@ -130,7 +130,7 @@ describe(createOptimisticConversation, () => {
     expect(denormalizeChannel(newChannelId, storeState)).toEqual(
       expect.objectContaining({
         hasMore: false,
-        unreadCount: 0,
+        unreadCount: { total: 0, highlight: 0 },
         hasLoadedMessages: true,
         messagesFetchStatus: MessagesFetchState.SUCCESS,
       })

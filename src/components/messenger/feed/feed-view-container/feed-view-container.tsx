@@ -120,6 +120,7 @@ export class Container extends React.Component<Properties> {
     return (
       <>
         <FeedView
+          channelId={this.props.activeConversationId}
           currentUserId={this.props.user?.data?.id}
           postMessages={this.postMessages}
           fetchPosts={this.props.fetchPosts}

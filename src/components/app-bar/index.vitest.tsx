@@ -25,6 +25,7 @@ vi.mock('./world-panel-item', () => ({
 
 const DEFAULT_PROPS: Properties = {
   activeApp: undefined,
+  hasUnreadNotifications: false,
 };
 
 const renderComponent = (props: Partial<Properties>) => {

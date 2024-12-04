@@ -21,6 +21,7 @@ import { getLocalZeroUsersMap } from '../messages/saga';
 import { userByMatrixIdSelector } from '../users/selectors';
 import { rawChannel } from './selectors';
 import cloneDeep from 'lodash/cloneDeep';
+import { getHistory } from '../../lib/browser';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -42,7 +43,12 @@ export function* markAllMessagesAsRead(channelId, userId) {
 export function* markConversationAsRead(conversationId) {
   const currentUser = yield select(currentUserSelector());
   const conversationInfo = yield select(rawChannelSelector(conversationId));
-  if (conversationInfo?.unreadCount > 0) {
+
+  // We should only mark as read if the user is in the messenger app and not in the notifications feed
+  const history = yield call(getHistory);
+  const isMessengerAppActive = history.location.pathname.startsWith('/conversation/');
+
+  if (conversationInfo?.unreadCount > 0 && isMessengerAppActive) {
     yield call(markAllMessagesAsRead, conversationId, currentUser.id);
   }
 }

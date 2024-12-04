@@ -18,6 +18,7 @@ import { rootReducer } from '../reducer';
 import { ConversationStatus, DefaultRoomLabels, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { addRoomToLabel, chat, removeRoomFromLabel, sendTypingEvent } from '../../lib/chat';
+import { getHistory } from '../../lib/browser';
 
 const userId = 'user-id';
 
@@ -52,6 +53,13 @@ describe('channels list saga', () => {
         .provide([
           [matchers.call.fn(chat.get), mockChatClient],
           [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+          [
+            matchers.call.fn(getHistory),
+            {
+              push: jest.fn(),
+              location: { pathname: '/conversation/channel-id' },
+            },
+          ],
         ])
         .withReducer(rootReducer, state)
         .call(markAllMessagesAsRead, channelId, userId)
@@ -69,6 +77,13 @@ describe('channels list saga', () => {
         .provide([
           [matchers.call.fn(chat.get), mockChatClient],
           [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
+          [
+            matchers.call.fn(getHistory),
+            {
+              push: jest.fn(),
+              location: { pathname: '/conversation/channel-id' },
+            },
+          ],
         ])
         .withReducer(rootReducer, state)
         .not.call(markAllMessagesAsRead, channelId, userId)

@@ -15,6 +15,7 @@ const cn = bemClassName('app-bar');
 
 export interface Properties {
   activeApp: string | undefined;
+  hasUnreadNotifications: boolean;
 }
 
 interface State {
@@ -27,6 +28,17 @@ export class AppBar extends React.Component<Properties, State> {
   openModal = () => this.setState({ isModalOpen: true });
   closeModal = () => this.setState({ isModalOpen: false });
 
+  renderNotificationIcon = () => {
+    const { hasUnreadNotifications } = this.props;
+
+    return (
+      <div {...cn('notification-icon-wrapper')}>
+        <IconBell1 size={24} />
+        {hasUnreadNotifications && <div {...cn('notification-dot')} />}
+      </div>
+    );
+  };
+
   render() {
     const { activeApp } = this.props;
     const isActive = checkActive(activeApp);
@@ -37,7 +49,12 @@ export class AppBar extends React.Component<Properties, State> {
           <AppLink Icon={IconMessageSquare2} isActive={isActive('conversation')} label='Messenger' to='/conversation' />
           <AppLink Icon={IconGlobe3} isActive={isActive('explorer')} label='Explorer' to='/explorer' />
           {featureFlags.enableNotificationsApp && (
-            <AppLink Icon={IconBell1} isActive={isActive('notifications')} label='Notifications' to='/notifications' />
+            <AppLink
+              Icon={this.renderNotificationIcon}
+              isActive={isActive('notifications')}
+              label='Notifications'
+              to='/notifications'
+            />
           )}
           <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
         </div>

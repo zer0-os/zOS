@@ -1,35 +1,50 @@
 import { Avatar } from '@zero-tech/zui/components';
-import { Notification } from '../../../store/notifications';
-import { getNotificationContent } from './utils';
-import classNames from 'classnames';
-import { featureFlags } from '../../../lib/feature-flags';
-
+import { Channel } from '../../../store/channels';
+import { otherMembersToString } from '../../../platform-apps/channels/util';
 import styles from './styles.module.scss';
 
 export interface NotificationProps {
-  notification: Notification;
+  conversation: Channel;
 
   onClick: (roomId: string) => void;
 }
 
-export const NotificationItem = ({ notification, onClick }: NotificationProps) => {
-  const content = getNotificationContent(notification);
-  const timestamp = new Date(notification.createdAt).toLocaleString();
+export const NotificationItem = ({ conversation, onClick }: NotificationProps) => {
+  const getName = () => {
+    return conversation.name || otherMembersToString(conversation.otherMembers);
+  };
 
-  const notificationClasses = classNames(styles.NotificationItem, {
-    [styles.NotificationItemUnread]: !notification.isRead,
-  });
+  const getAvatarUrl = () => {
+    if (conversation.icon) {
+      return conversation.icon;
+    }
+    if (conversation.isOneOnOne && conversation.otherMembers[0]?.profileImage) {
+      return conversation.otherMembers[0].profileImage;
+    }
+    return undefined;
+  };
+
+  const notificationMessage = getNotificationMessage(conversation.unreadCount, getName(), conversation.isOneOnOne);
 
   return (
-    <div className={notificationClasses} onClick={() => onClick(notification.roomId)}>
-      <Avatar size='medium' imageURL={notification.sender?.profileImage} />
+    <div className={styles.NotificationItem} onClick={() => onClick(conversation.id)}>
+      <Avatar size='regular' imageURL={getAvatarUrl()} isGroup={!conversation.isOneOnOne} />
       <div className={styles.Content}>
         <div>
-          <div className={styles.Message}>{content}</div>
-          <div className={styles.Timestamp}>{timestamp}</div>
+          <div className={styles.Message}>{notificationMessage}</div>
         </div>
       </div>
-      {featureFlags.enableNotificationsReadStatus && <div className={styles.UnreadDot} />}
+      <div className={styles.UnreadDot} />
     </div>
   );
+};
+
+const getNotificationMessage = (unreadCount: number, roomName: string, isOneOnOne: boolean) => {
+  const notificationText = unreadCount === 1 ? 'notification' : 'notifications';
+
+  if (isOneOnOne) {
+    return `${unreadCount} unread ${notificationText} in your conversation with ${roomName}`;
+  }
+
+  return `${unreadCount} unread ${notificationText} in the ${roomName} channel`;
 };

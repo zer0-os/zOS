@@ -9,9 +9,11 @@ import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
 import { AppBar } from './components/app-bar/container';
 import { DialogManager } from './components/dialog-manager/container';
 import { ThemeEngine } from './components/theme-engine';
+import { denormalizeConversations } from './store/channels-list';
+import { DefaultRoomLabels } from './store/channels';
 
 export const App = () => {
-  const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName } = useAppMain();
+  const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName, hasUnreadNotifications } = useAppMain();
 
   return (
     // See: ZOS-115
@@ -23,7 +25,7 @@ export const App = () => {
             {videoBackgroundSrc && <VideoBackground src={videoBackgroundSrc} />}
             <div className={wrapperClassName}>
               <DialogManager />
-              <AppBar />
+              <AppBar hasUnreadNotifications={hasUnreadNotifications} />
               <AppRouter />
             </div>
           </>
@@ -37,8 +39,18 @@ export const App = () => {
 const useAppMain = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
   const background = useSelector((state: RootState) => state.background.selectedMainBackground);
-  const videoBackgroundSrc = getMainBackgroundVideoSrc(background);
 
+  const hasUnreadNotifications = useSelector((state: RootState) => {
+    const conversations = denormalizeConversations(state);
+    return conversations.some(
+      (channel) =>
+        channel.unreadCount > 0 &&
+        !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+        !channel.labels?.includes(DefaultRoomLabels.MUTE)
+    );
+  });
+
+  const videoBackgroundSrc = getMainBackgroundVideoSrc(background);
   const mainClassName = classNames('main', 'messenger-full-screen', getMainBackgroundClass(background), {
     'sidekick-panel-open': isAuthenticated,
     background: isAuthenticated,
@@ -51,6 +63,7 @@ const useAppMain = () => {
     mainClassName,
     videoBackgroundSrc,
     wrapperClassName,
+    hasUnreadNotifications,
   };
 };
 

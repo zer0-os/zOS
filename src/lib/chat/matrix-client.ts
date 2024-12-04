@@ -23,7 +23,6 @@ import {
 import { RealtimeChatEvents, IChatClient } from './';
 import {
   mapEventToAdminMessage,
-  mapEventToNotification,
   mapEventToPostMessage,
   mapMatrixMessage,
   mapToLiveRoomEvent,
@@ -68,8 +67,6 @@ export class MatrixClient implements IChatClient {
   private roomTagHandlers = [];
   private initializationTimestamp: number;
   private secretStorageKey: string;
-
-  private readonly NOTIFICATION_READ_EVENT = 'org.zero.notifications.read';
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
@@ -345,34 +342,6 @@ export class MatrixClient implements IChatClient {
       .then((response) => response?.body || []);
   }
 
-  async getNotificationReadStatus(): Promise<Record<string, number>> {
-    await this.waitForConnection();
-    try {
-      const event = await this.matrix.getAccountData(this.NOTIFICATION_READ_EVENT);
-      return event?.getContent()?.readNotifications || {};
-    } catch (error) {
-      console.error('Error getting notification read status:', error);
-      return {};
-    }
-  }
-
-  async setNotificationReadStatus(roomId: string): Promise<void> {
-    await this.waitForConnection();
-    try {
-      const currentContent = await this.getNotificationReadStatus();
-      const updatedContent = {
-        readNotifications: {
-          ...currentContent,
-          [roomId]: Date.now(),
-        },
-      };
-
-      await this.matrix.setAccountData(this.NOTIFICATION_READ_EVENT, updatedContent);
-    } catch (error) {
-      console.error('Error setting notification read status:', error);
-    }
-  }
-
   async searchMentionableUsersForChannel(channelId: string, search: string, channelMembers: UserModel[]) {
     const searchResults = await getFilteredMembersForAutoComplete(channelMembers, search);
     return searchResults.map((u) => ({
@@ -634,50 +603,6 @@ export class MatrixClient implements IChatClient {
       .filter((reaction) => reaction !== null);
 
     return result;
-  }
-
-  async getNotifications(): Promise<any[]> {
-    await this.waitForConnection();
-    const rooms = await this.getRoomsUserIsIn();
-    const CUTOFF_DAYS = 30;
-    const CUTOFF_TIMESTAMP = Date.now() - CUTOFF_DAYS * 24 * 60 * 60 * 1000;
-    let allNotifications = [];
-
-    let readStatus = {};
-    if (featureFlags.enableNotificationsReadStatus) {
-      readStatus = await this.getNotificationReadStatus();
-    }
-
-    const roomNotifications = await Promise.all(
-      rooms.map(async (room) => {
-        const timeline = room.getLiveTimeline();
-        const events = timeline.getEvents();
-
-        const mostRecentEvent = events[events.length - 1];
-        const oldestEvent = events[0];
-
-        if (!oldestEvent || !mostRecentEvent || (oldestEvent.getTs() > CUTOFF_TIMESTAMP && events.length < 50)) {
-          await this.matrix.paginateEventTimeline(timeline, {
-            backwards: true,
-            limit: 50,
-          });
-        }
-
-        if (room.hasEncryptionStateEvent() && events.some((e) => e.getTs() > CUTOFF_TIMESTAMP)) {
-          await room.decryptAllEvents();
-        }
-
-        const filteredEvents = timeline
-          .getEvents()
-          .filter((event) => event.getTs() > CUTOFF_TIMESTAMP)
-          .map((event) => event.getEffectiveEvent());
-
-        return this.getNotificationsFromRoom(filteredEvents, readStatus);
-      })
-    );
-
-    allNotifications = roomNotifications.flat();
-    return allNotifications.sort((a, b) => b.createdAt - a.createdAt);
   }
 
   async getMessageByRoomId(channelId: string, messageId: string) {
@@ -1717,52 +1642,6 @@ export class MatrixClient implements IChatClient {
 
   private isPostEvent(event): boolean {
     return event.type === CustomEventType.ROOM_POST;
-  }
-
-  private async getNotificationsFromRoom(events, readStatus = {}): Promise<any[]> {
-    const currentUserId = this.matrix.getUserId();
-    const currentUserUuid = currentUserId.split(':')[0].substring(1);
-
-    const filteredEvents = events.filter((event) => {
-      const relatesTo = event.content && event.content['m.relates_to'];
-      const isDM = this.matrix.getRoom(event.room_id)?.getMembers().length === 2;
-      const isFromCurrentUser = event.sender === currentUserId;
-
-      // Don't process notifications from the current user
-      if (isFromCurrentUser) return false;
-
-      if (
-        event.type === 'm.room.message' &&
-        event.content?.body?.includes('@[') &&
-        event.content?.body?.includes('](user:') &&
-        event.content.body.includes(currentUserUuid)
-      ) {
-        return true;
-      }
-
-      if (relatesTo?.['m.in_reply_to']) {
-        const originalEvent = events.find((e) => e.event_id === relatesTo['m.in_reply_to'].event_id);
-        return originalEvent?.sender === currentUserId;
-      }
-
-      if (event.type === MatrixConstants.REACTION && !event?.unsigned?.redacted_because) {
-        const targetEvent = events.find((e) => e.event_id === relatesTo.event_id);
-        return targetEvent?.sender === currentUserId;
-      }
-
-      return isDM && event.type === 'm.room.message';
-    });
-
-    const notifications = await Promise.all(
-      filteredEvents.map((event) => {
-        const roomReadTimestamp = readStatus[event.room_id] || 0;
-        const isRead = featureFlags.enableNotificationsReadStatus ? event.origin_server_ts <= roomReadTimestamp : false;
-
-        return mapEventToNotification(event, isRead);
-      })
-    );
-
-    return notifications.filter((notification) => notification !== null);
   }
 
   // Performance improvement: Fetches only the latest user message to avoid processing large image files and other attachments

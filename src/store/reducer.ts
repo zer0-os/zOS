@@ -23,7 +23,6 @@ import { reducer as userProfile } from './user-profile';
 import { reducer as background } from './background';
 import { reducer as accountManagement } from './account-management';
 import { reducer as posts } from './posts';
-import { reducer as notifications } from './notifications';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -49,7 +48,6 @@ export const rootReducer = combineReducers({
   background,
   accountManagement,
   posts,
-  notifications,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

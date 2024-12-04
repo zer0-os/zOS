@@ -16,6 +16,7 @@ const cn = bemClassName('app-bar');
 export interface Properties {
   activeApp: string | undefined;
   hasUnreadNotifications: boolean;
+  hasUnreadHighlights: boolean;
 }
 
 interface State {
@@ -29,12 +30,13 @@ export class AppBar extends React.Component<Properties, State> {
   closeModal = () => this.setState({ isModalOpen: false });
 
   renderNotificationIcon = () => {
-    const { hasUnreadNotifications } = this.props;
+    const { hasUnreadNotifications, hasUnreadHighlights } = this.props;
 
     return (
       <div {...cn('notification-icon-wrapper')}>
-        <IconBell1 size={24} />
-        {hasUnreadNotifications && <div {...cn('notification-dot')} />}
+        <IconBell1 size={24} {...cn('notification-icon', hasUnreadHighlights && 'highlight')} />
+        {hasUnreadNotifications && !hasUnreadHighlights && <div {...cn('notification-dot')} />}
+        {hasUnreadHighlights && <div {...cn('highlight-dot')} />}
       </div>
     );
   };

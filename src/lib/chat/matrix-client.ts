@@ -1290,7 +1290,10 @@ export class MatrixClient implements IChatClient {
 
   private handleUnreadNotifications = (roomId, unreadNotifications) => {
     if (unreadNotifications) {
-      this.events.receiveUnreadCount(roomId, unreadNotifications?.total || 0);
+      this.events.receiveUnreadCount(roomId, {
+        total: unreadNotifications?.total || 0,
+        highlight: unreadNotifications?.highlight || 0,
+      });
     }
   };
 
@@ -1564,6 +1567,7 @@ export class MatrixClient implements IChatClient {
     featureFlags.enableTimerLogs && console.timeEnd(`xxxgetUpToLatestUserMessageFromRoom${room.roomId}`);
 
     const unreadCount = room.getUnreadNotificationCount(NotificationCountType.Total);
+    const highlightCount = room.getUnreadNotificationCount(NotificationCountType.Highlight);
 
     const [admins, mods] = this.getRoomAdminsAndMods(room);
     const isSocialChannel = groupType === 'social';
@@ -1579,7 +1583,7 @@ export class MatrixClient implements IChatClient {
       memberHistory: memberHistory,
       lastMessage: null,
       messages,
-      unreadCount,
+      unreadCount: { total: unreadCount, highlight: highlightCount },
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: admins,

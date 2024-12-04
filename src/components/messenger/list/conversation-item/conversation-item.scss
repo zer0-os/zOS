@@ -135,6 +135,28 @@
     letter-spacing: 0.32px;
   }
 
+  &__unread-highlight {
+    @include glass-state-default-color;
+    @include glass-glow-highlight-small;
+    @include glass-materials-raised;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+    color: rgba(255 132 49);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 11px;
+    margin-left: 3px;
+    letter-spacing: 0.32px;
+  }
+
   &__content {
     display: flex;
     align-items: center;

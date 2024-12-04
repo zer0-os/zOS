@@ -28,7 +28,7 @@ export class Container extends React.Component<Properties> {
 
     const conversations = denormalizeConversations(state).filter(
       (conversation) =>
-        conversation.unreadCount > 0 &&
+        (conversation.unreadCount.total > 0 || conversation.unreadCount?.highlight > 0) &&
         !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
         !conversation.labels?.includes(DefaultRoomLabels.MUTE)
     );
@@ -60,11 +60,27 @@ export class Container extends React.Component<Properties> {
   renderNotifications() {
     const { conversations } = this.props;
 
-    return conversations.map((conversation) => (
-      <li key={conversation.id}>
-        <NotificationItem conversation={conversation} onClick={this.onNotificationClick} />
-      </li>
-    ));
+    return conversations.flatMap((conversation) => {
+      const notifications = [];
+
+      if (conversation.unreadCount?.total > 0) {
+        notifications.push(
+          <li key={`${conversation.id}-total`}>
+            <NotificationItem conversation={conversation} onClick={this.onNotificationClick} type='total' />
+          </li>
+        );
+      }
+
+      if (conversation.unreadCount?.highlight > 0) {
+        notifications.push(
+          <li key={`${conversation.id}-highlight`}>
+            <NotificationItem conversation={conversation} onClick={this.onNotificationClick} type='highlight' />
+          </li>
+        );
+      }
+
+      return notifications;
+    });
   }
 
   renderNoNotifications() {

@@ -77,7 +77,10 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
     const receiveDeleteMessage = (channelId, messageId) =>
       emit({ type: Events.MessageDeleted, payload: { channelId, messageId } });
     const receiveUnreadCount = (channelId, unreadCount) =>
-      emit({ type: Events.UnreadCountChanged, payload: { channelId, unreadCount } });
+      emit({
+        type: Events.UnreadCountChanged,
+        payload: { channelId, unreadCount: { total: unreadCount.total, highlight: unreadCount.highlight } },
+      });
     const onUserLeft = (channelId, userId) => emit({ type: Events.UserLeftChannel, payload: { channelId, userId } });
     const onUserJoinedChannel = (channel) => emit({ type: Events.UserJoinedChannel, payload: { channel } });
     const onRoomNameChanged = (roomId, name) => emit({ type: Events.RoomNameChanged, payload: { id: roomId, name } });

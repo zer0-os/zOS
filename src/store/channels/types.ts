@@ -5,5 +5,5 @@ export interface MarkAsReadPayload {
 
 export interface UnreadCountUpdatedPayload {
   channelId: string;
-  unreadCount: number;
+  unreadCount: { total: number; highlight: number };
 }

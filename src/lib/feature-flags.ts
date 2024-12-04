@@ -155,7 +155,7 @@ export class FeatureFlags {
   }
 
   get enableLoadMore() {
-    return this._getBoolean('enableLoadMore', false);
+    return this._getBoolean('enableLoadMore', true);
   }
 
   set enableLoadMore(value: boolean) {

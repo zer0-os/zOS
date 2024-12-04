@@ -20,6 +20,12 @@
     position: relative;
   }
 
+  &__notification-icon {
+    &--highlight {
+      color: rgba(255 132 49);
+    }
+  }
+
   &__notification-dot {
     position: absolute;
     top: -2px;
@@ -28,5 +34,15 @@
     height: 8px;
     border-radius: 50%;
     background-color: theme.$color-secondary-11;
+  }
+
+  &__highlight-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255 132 49);
   }
 }

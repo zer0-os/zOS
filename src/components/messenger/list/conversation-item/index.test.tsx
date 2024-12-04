@@ -92,27 +92,39 @@ describe(ConversationItem, () => {
 
   it('does not show unread count if there are no unread messages', function () {
     const wrapper = subject({
-      conversation: { id: 'id', unreadCount: 0, otherMembers: [] } as any,
+      conversation: { id: 'id', unreadCount: { total: 0, highlight: 0 }, otherMembers: [] } as any,
     });
 
     expect(wrapper).not.toHaveElement(c('unread-count'));
   });
 
   it('shows unread message count', function () {
-    const wrapper = subject({ conversation: { id: 'id', unreadCount: 7, otherMembers: [] } as any });
+    const wrapper = subject({
+      conversation: { id: 'id', unreadCount: { total: 7, highlight: 0 }, otherMembers: [] } as any,
+    });
 
     expect(wrapper.find(c('unread-count'))).toHaveText('7');
   });
 
   it('renders the message preview', function () {
-    const wrapper = subject({ conversation: { messagePreview: 'I said something here', otherMembers: [] } as any });
+    const wrapper = subject({
+      conversation: {
+        messagePreview: 'I said something here',
+        otherMembers: [],
+        unreadCount: { total: 0, highlight: 0 },
+      } as any,
+    });
 
     expect(wrapper.find(ContentHighlighter)).toHaveProp('message', 'I said something here');
   });
 
   it('renders the otherMembersTyping', function () {
     const wrapper = subject({
-      conversation: { otherMembersTyping: ['Johnny'], otherMembers: [] } as any,
+      conversation: {
+        otherMembersTyping: ['Johnny'],
+        otherMembers: [],
+        unreadCount: { total: 0, highlight: 0 },
+      } as any,
     });
 
     expect(wrapper.find(ContentHighlighter)).toHaveProp('message', 'Johnny is typing...');
@@ -124,6 +136,7 @@ describe(ConversationItem, () => {
         messagePreview: 'I said something here',
         otherMembersTyping: ['Dale', 'Dom'],
         otherMembers: [],
+        unreadCount: { total: 0, highlight: 0 },
       } as any,
     });
 
@@ -131,7 +144,13 @@ describe(ConversationItem, () => {
   });
 
   it('renders the previewDisplayDate', function () {
-    const wrapper = subject({ conversation: { previewDisplayDate: 'Aug 1, 2021', otherMembers: [] } as any });
+    const wrapper = subject({
+      conversation: {
+        previewDisplayDate: 'Aug 1, 2021',
+        otherMembers: [],
+        unreadCount: { total: 0, highlight: 0 },
+      } as any,
+    });
 
     expect(wrapper.find(c('timestamp'))).toHaveText('Aug 1, 2021');
   });
@@ -145,5 +164,6 @@ function convoWith(...otherMembers): any {
   return {
     id: 'convo-id',
     otherMembers,
+    unreadCount: { total: 0, highlight: 0 },
   };
 }

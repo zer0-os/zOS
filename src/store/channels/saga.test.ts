@@ -42,11 +42,11 @@ describe('channels list saga', () => {
   });
 
   describe('markConversationAsReadIfActive', () => {
-    it('mark all messages as read', async () => {
+    it('does not mark all messages as read if conversation is not active', async () => {
       const channelId = 'channel-id';
       const state = new StoreBuilder()
         .withCurrentUserId(userId)
-        .withActiveConversation({ id: channelId, unreadCount: 3 })
+        .withActiveConversation({ id: 'other-channel-id', unreadCount: { total: 0, highlight: 0 } })
         .build();
 
       await expectSaga(markConversationAsRead, channelId)
@@ -57,31 +57,7 @@ describe('channels list saga', () => {
             matchers.call.fn(getHistory),
             {
               push: jest.fn(),
-              location: { pathname: '/conversation/channel-id' },
-            },
-          ],
-        ])
-        .withReducer(rootReducer, state)
-        .call(markAllMessagesAsRead, channelId, userId)
-        .run();
-    });
-
-    it('does not mark all messages as read if unreadCount is 0', async () => {
-      const channelId = 'channel-id';
-      const state = new StoreBuilder()
-        .withCurrentUserId(userId)
-        .withActiveConversation({ id: channelId, unreadCount: 0 })
-        .build();
-
-      await expectSaga(markConversationAsRead, channelId)
-        .provide([
-          [matchers.call.fn(chat.get), mockChatClient],
-          [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
-          [
-            matchers.call.fn(getHistory),
-            {
-              push: jest.fn(),
-              location: { pathname: '/conversation/channel-id' },
+              location: { pathname: '/conversation/other-channel-id' },
             },
           ],
         ])
@@ -95,9 +71,11 @@ describe('channels list saga', () => {
 describe(unreadCountUpdated, () => {
   it('updates the unread count for the channel', async () => {
     const channelId = 'channel-id';
-    const updatedUnreadCount = 4;
+    const updatedUnreadCount = { total: 4, highlight: 0 };
 
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, unreadCount: 3 }).build();
+    const initialState = new StoreBuilder()
+      .withConversationList({ id: channelId, unreadCount: { total: 3, highlight: 0 } })
+      .build();
     const { storeState } = await expectSaga(unreadCountUpdated, {
       payload: { channelId, unreadCount: updatedUnreadCount },
     })
@@ -111,27 +89,33 @@ describe(unreadCountUpdated, () => {
 
 describe(receiveChannel, () => {
   it('puts only the provided values if channel already exists', async () => {
-    const initialChannel = { id: 'channel-id', unreadCount: 5, name: 'channel-name' };
+    const initialChannel = { id: 'channel-id', unreadCount: { total: 5, highlight: 0 }, name: 'channel-name' };
     const initialState = new StoreBuilder().withConversationList(initialChannel);
-    const { storeState } = await expectSaga(receiveChannel, { id: 'channel-id', unreadCount: 3 })
+    const { storeState } = await expectSaga(receiveChannel, {
+      id: 'channel-id',
+      unreadCount: { total: 3, highlight: 0 },
+    })
       .withReducer(rootReducer, initialState.build())
       .run();
 
     const channel = denormalizeChannel('channel-id', storeState);
     // Clean up because full comparison is important here
     delete channel.__denormalized;
-    expect(channel).toEqual({ ...initialChannel, unreadCount: 3 });
+    expect(channel).toEqual({ ...initialChannel, unreadCount: { total: 3, highlight: 0 } });
   });
 
   it('defaults the conversation state if channel does not exist yet', async () => {
-    const { storeState } = await expectSaga(receiveChannel, { id: 'channel-id', unreadCount: 3 })
+    const { storeState } = await expectSaga(receiveChannel, {
+      id: 'channel-id',
+      unreadCount: { total: 3, highlight: 0 },
+    })
       .withReducer(rootReducer)
       .run();
 
     const channel = denormalizeChannel('channel-id', storeState);
     // Clean up because full comparison is important here
     delete channel.__denormalized;
-    expect(channel).toEqual({ ...CHANNEL_DEFAULTS, id: 'channel-id', unreadCount: 3 });
+    expect(channel).toEqual({ ...CHANNEL_DEFAULTS, id: 'channel-id', unreadCount: { total: 3, highlight: 0 } });
   });
 });
 
@@ -327,7 +311,7 @@ const CHANNEL_DEFAULTS = {
   hasMorePosts: true,
   createdAt: 0,
   lastMessage: null,
-  unreadCount: 0,
+  unreadCount: { total: 0, highlight: 0 },
   icon: '',
   isOneOnOne: true,
   hasLoadedMessages: false,

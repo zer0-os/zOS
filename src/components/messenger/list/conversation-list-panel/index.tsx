@@ -182,7 +182,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   getUnreadCount(conversations: Channel[]) {
     const count = conversations
       .filter((c) => !c.labels?.includes(DefaultRoomLabels.ARCHIVED))
-      .reduce((acc, c) => acc + c.unreadCount, 0);
+      .reduce((acc, c) => acc + c.unreadCount.total, 0);
     return count < 99 ? count : '99+';
   }
 

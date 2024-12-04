@@ -9,13 +9,13 @@ describe('NotificationsFeed', () => {
   const mockConversations: Channel[] = [
     {
       id: 'channel-1',
-      unreadCount: 3,
+      unreadCount: { total: 3, highlight: 0 },
       name: 'Conversation 1',
       lastMessage: { content: 'Hello' },
     },
     {
       id: 'channel-2',
-      unreadCount: 1,
+      unreadCount: { total: 1, highlight: 0 },
       name: 'Conversation 2',
       lastMessage: { content: 'Hi there' },
     },

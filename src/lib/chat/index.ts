@@ -9,7 +9,7 @@ export interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message) => void;
   receiveDeleteMessage: (roomId: string, messageId: string) => void;
   onMessageUpdated: (channelId: string, message: Message) => void;
-  receiveUnreadCount: (channelId: string, unreadCount: number) => void;
+  receiveUnreadCount: (channelId: string, unreadCount: { total: number; highlight: number }) => void;
   onUserJoinedChannel: (conversation) => void;
   onUserLeft: (channelId: string, userId: string) => void;
   onRoomNameChanged: (channelId: string, name: string) => void;

@@ -5,11 +5,11 @@ import styles from './styles.module.scss';
 
 export interface NotificationProps {
   conversation: Channel;
-
   onClick: (roomId: string) => void;
+  type: 'total' | 'highlight';
 }
 
-export const NotificationItem = ({ conversation, onClick }: NotificationProps) => {
+export const NotificationItem = ({ conversation, onClick, type }: NotificationProps) => {
   const getName = () => {
     return conversation.name || otherMembersToString(conversation.otherMembers);
   };
@@ -24,27 +24,21 @@ export const NotificationItem = ({ conversation, onClick }: NotificationProps) =
     return undefined;
   };
 
-  const notificationMessage = getNotificationMessage(conversation.unreadCount, getName(), conversation.isOneOnOne);
+  const count = type === 'total' ? conversation.unreadCount.total : conversation.unreadCount.highlight;
+  const text = type === 'total' ? 'message' : 'highlight';
+  const notificationText = count === 1 ? text : `${text}s`;
+
+  const message = conversation.isOneOnOne
+    ? `${count} unread ${notificationText} in your conversation with ${getName()}`
+    : `${count} unread ${notificationText} in the ${getName()} channel`;
 
   return (
     <div className={styles.NotificationItem} onClick={() => onClick(conversation.id)}>
       <Avatar size='regular' imageURL={getAvatarUrl()} isGroup={!conversation.isOneOnOne} />
       <div className={styles.Content}>
-        <div>
-          <div className={styles.Message}>{notificationMessage}</div>
-        </div>
+        <div className={styles.Message}>{message}</div>
       </div>
-      <div className={styles.UnreadDot} />
+      <div className={type === 'highlight' ? styles.UnreadDotHighlight : styles.UnreadDot} />
     </div>
   );
-};
-
-const getNotificationMessage = (unreadCount: number, roomName: string, isOneOnOne: boolean) => {
-  const notificationText = unreadCount === 1 ? 'notification' : 'notifications';
-
-  if (isOneOnOne) {
-    return `${unreadCount} unread ${notificationText} in your conversation with ${roomName}`;
-  }
-
-  return `${unreadCount} unread ${notificationText} in the ${roomName} channel`;
 };

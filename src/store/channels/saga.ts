@@ -35,7 +35,7 @@ export function* markAllMessagesAsRead(channelId, userId) {
   const chatClient = yield call(chat.get);
   try {
     yield call([chatClient, chatClient.markRoomAsRead], channelId, userId);
-    yield call(receiveChannel, { id: channelId, unreadCount: 0 });
+    yield call(receiveChannel, { id: channelId, unreadCount: { total: 0, highlight: 0 } });
   } catch (error) {}
 }
 
@@ -48,7 +48,10 @@ export function* markConversationAsRead(conversationId) {
   const history = yield call(getHistory);
   const isMessengerAppActive = history.location.pathname.startsWith('/conversation/');
 
-  if (conversationInfo?.unreadCount > 0 && isMessengerAppActive) {
+  if (
+    (conversationInfo?.unreadCount?.total > 0 || conversationInfo?.unreadCount?.highlight > 0) &&
+    isMessengerAppActive
+  ) {
     yield call(markAllMessagesAsRead, conversationId, currentUser.id);
   }
 }
@@ -74,7 +77,10 @@ export function* openConversation(conversationId) {
 }
 
 export function* unreadCountUpdated(action) {
-  const { channelId, unreadCount } = action.payload;
+  const {
+    channelId,
+    unreadCount: { total, highlight },
+  } = action.payload;
 
   const channel = yield select(rawChannelSelector(channelId));
 
@@ -82,7 +88,7 @@ export function* unreadCountUpdated(action) {
     return;
   }
 
-  yield call(receiveChannel, { id: channelId, unreadCount: unreadCount });
+  yield call(receiveChannel, { id: channelId, unreadCount: { total, highlight } });
 }
 
 export function* onReply(reply: ParentMessage) {

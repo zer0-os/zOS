@@ -122,7 +122,8 @@ export class ConversationItem extends React.Component<Properties, State> {
   render() {
     const { conversation, activeConversationId } = this.props;
     const { previewDisplayDate, otherMembersTyping } = conversation;
-    const hasUnreadMessages = conversation.unreadCount !== 0;
+    const hasUnreadMessages = conversation.unreadCount.total !== 0;
+    const hasUnreadHighlights = conversation.unreadCount.highlight !== 0;
     const isUnread = hasUnreadMessages ? 'true' : 'false';
     const isActive = conversation.id === activeConversationId ? 'true' : 'false';
     const isTyping = (otherMembersTyping || []).length > 0 ? 'true' : 'false';
@@ -161,7 +162,10 @@ export class ConversationItem extends React.Component<Properties, State> {
               <div {...cn('message')} is-unread={isUnread} is-typing={isTyping}>
                 <ContentHighlighter message={this.getMessagePreview()} variant='negative' tabIndex={-1} />
               </div>
-              {hasUnreadMessages && <div {...cn('unread-count')}>{conversation.unreadCount}</div>}
+              {hasUnreadMessages && !hasUnreadHighlights && (
+                <div {...cn('unread-count')}>{conversation.unreadCount.total}</div>
+              )}
+              {hasUnreadHighlights && <div {...cn('unread-highlight')}>{conversation.unreadCount.highlight}</div>}
             </div>
           </div>
         )}

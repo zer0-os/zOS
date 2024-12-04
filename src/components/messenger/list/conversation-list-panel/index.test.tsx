@@ -33,6 +33,7 @@ describe('ConversationListPanel', () => {
         {
           id: 'test-conversation-id',
           otherMembers: [],
+          unreadCount: { total: 0, highlight: 0 },
         } as any,
       ],
     });
@@ -44,9 +45,24 @@ describe('ConversationListPanel', () => {
 
   it('renders filtered conversation list', function () {
     const conversations = [
-      { id: 'convo-id-1', name: 'convo-1', otherMembers: [{ firstName: 'jack', primaryZID: '0://world.jack' }] },
-      { id: 'convo-id-2', name: 'convo-2', otherMembers: [{ firstName: 'bob', primaryZID: 'world.bob' }] },
-      { id: 'convo-id-3', name: 'convo-3', otherMembers: [{ firstName: 'jacklyn' }] },
+      {
+        id: 'convo-id-1',
+        name: 'convo-1',
+        otherMembers: [{ firstName: 'jack', primaryZID: '0://world.jack' }],
+        unreadCount: { total: 0, highlight: 0 },
+      },
+      {
+        id: 'convo-id-2',
+        name: 'convo-2',
+        otherMembers: [{ firstName: 'bob', primaryZID: 'world.bob' }],
+        unreadCount: { total: 0, highlight: 0 },
+      },
+      {
+        id: 'convo-id-3',
+        name: 'convo-3',
+        otherMembers: [{ firstName: 'jacklyn' }],
+        unreadCount: { total: 0, highlight: 0 },
+      },
     ];
 
     const wrapper = subject({ conversations: conversations as any });
@@ -69,10 +85,14 @@ describe('ConversationListPanel', () => {
 
   it('renders conversations based on selected tab', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1' }),
-      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.WORK] }),
-      stubConversation({ name: 'convo-3', labels: [DefaultRoomLabels.WORK] }),
-      stubConversation({ name: 'convo-4', labels: [DefaultRoomLabels.FAMILY] }),
+      stubConversation({ name: 'convo-1', unreadCount: { total: 0, highlight: 0 } }),
+      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.WORK], unreadCount: { total: 0, highlight: 0 } }),
+      stubConversation({ name: 'convo-3', labels: [DefaultRoomLabels.WORK], unreadCount: { total: 0, highlight: 0 } }),
+      stubConversation({
+        name: 'convo-4',
+        labels: [DefaultRoomLabels.FAMILY],
+        unreadCount: { total: 0, highlight: 0 },
+      }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -93,8 +113,12 @@ describe('ConversationListPanel', () => {
 
   it('renders Favorites tab first', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.FAVORITE], unreadCount: 0 }),
-      stubConversation({ name: 'convo-2', unreadCount: 0 }),
+      stubConversation({
+        name: 'convo-1',
+        labels: [DefaultRoomLabels.FAVORITE],
+        unreadCount: { total: 0, highlight: 0 },
+      }),
+      stubConversation({ name: 'convo-2', unreadCount: { total: 0, highlight: 0 } }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -105,8 +129,16 @@ describe('ConversationListPanel', () => {
 
   it('sets selectedTab to Favorites if there are favorite and non-archived conversations', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.FAVORITE] }),
-      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.FAVORITE, DefaultRoomLabels.ARCHIVED] }),
+      stubConversation({
+        name: 'convo-1',
+        labels: [DefaultRoomLabels.FAVORITE],
+        unreadCount: { total: 0, highlight: 0 },
+      }),
+      stubConversation({
+        name: 'convo-2',
+        labels: [DefaultRoomLabels.FAVORITE, DefaultRoomLabels.ARCHIVED],
+        unreadCount: { total: 0, highlight: 0 },
+      }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -115,8 +147,12 @@ describe('ConversationListPanel', () => {
 
   it('sets selectedTab to All if there are no favorite and non-archived conversations', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1' }),
-      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.ARCHIVED] }),
+      stubConversation({ name: 'convo-1', unreadCount: { total: 0, highlight: 0 } }),
+      stubConversation({
+        name: 'convo-2',
+        labels: [DefaultRoomLabels.ARCHIVED],
+        unreadCount: { total: 0, highlight: 0 },
+      }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -124,7 +160,7 @@ describe('ConversationListPanel', () => {
   });
 
   it('renders default state when label list is empty', function () {
-    const conversations = [stubConversation({ name: 'convo-1' })];
+    const conversations = [stubConversation({ name: 'convo-1', unreadCount: { total: 0, highlight: 0 } })];
     const wrapper = subject({ conversations: conversations as any });
 
     selectTab(wrapper, 'Work');
@@ -133,7 +169,13 @@ describe('ConversationListPanel', () => {
   });
 
   it('does not render default state when label list is empty', function () {
-    const conversations = [stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.FAVORITE] })];
+    const conversations = [
+      stubConversation({
+        name: 'convo-1',
+        labels: [DefaultRoomLabels.FAVORITE],
+        unreadCount: { total: 0, highlight: 0 },
+      }),
+    ];
     const wrapper = subject({ conversations: conversations as any });
 
     selectTab(wrapper, 'All');
@@ -143,11 +185,19 @@ describe('ConversationListPanel', () => {
 
   it('renders tab unread counts', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1', unreadCount: 3 }),
-      stubConversation({ name: 'convo-2', unreadCount: 11, labels: [DefaultRoomLabels.FAMILY] }),
-      stubConversation({ name: 'convo-3', unreadCount: 17, labels: [DefaultRoomLabels.FAMILY] }),
-      stubConversation({ name: 'convo-4', unreadCount: 7 }),
-      stubConversation({ name: 'convo-5', unreadCount: 13, labels: [DefaultRoomLabels.WORK] }),
+      stubConversation({ name: 'convo-1', unreadCount: { total: 3, highlight: 0 } }),
+      stubConversation({
+        name: 'convo-2',
+        unreadCount: { total: 11, highlight: 0 },
+        labels: [DefaultRoomLabels.FAMILY],
+      }),
+      stubConversation({
+        name: 'convo-3',
+        unreadCount: { total: 17, highlight: 0 },
+        labels: [DefaultRoomLabels.FAMILY],
+      }),
+      stubConversation({ name: 'convo-4', unreadCount: { total: 7, highlight: 0 } }),
+      stubConversation({ name: 'convo-5', unreadCount: { total: 13, highlight: 0 }, labels: [DefaultRoomLabels.WORK] }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -163,8 +213,8 @@ describe('ConversationListPanel', () => {
 
   it('does not render unread count if count is zero', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1', unreadCount: 0 }),
-      stubConversation({ name: 'convo-2', unreadCount: 0, labels: [DefaultRoomLabels.WORK] }),
+      stubConversation({ name: 'convo-1', unreadCount: { total: 0, highlight: 0 } }),
+      stubConversation({ name: 'convo-2', unreadCount: { total: 0, highlight: 0 }, labels: [DefaultRoomLabels.WORK] }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -174,10 +224,10 @@ describe('ConversationListPanel', () => {
 
   it('does not render unread count if count if conversation is archived', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1', unreadCount: 3 }),
+      stubConversation({ name: 'convo-1', unreadCount: { total: 3, highlight: 0 } }),
       stubConversation({
         name: 'convo-2',
-        unreadCount: 5,
+        unreadCount: { total: 5, highlight: 0 },
         labels: [DefaultRoomLabels.ARCHIVED, DefaultRoomLabels.WORK],
       }),
     ];
@@ -192,7 +242,11 @@ describe('ConversationListPanel', () => {
 
   it('does not render unread count for archived label', function () {
     const conversations = [
-      stubConversation({ name: 'convo-2', unreadCount: 5, labels: [DefaultRoomLabels.ARCHIVED] }),
+      stubConversation({
+        name: 'convo-2',
+        unreadCount: { total: 5, highlight: 0 },
+        labels: [DefaultRoomLabels.ARCHIVED],
+      }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -202,9 +256,13 @@ describe('ConversationListPanel', () => {
 
   it('does not include archived conversations in All unread count total', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1', unreadCount: 3 }),
-      stubConversation({ name: 'convo-2', unreadCount: 5, labels: [DefaultRoomLabels.ARCHIVED] }),
-      stubConversation({ name: 'convo-3', unreadCount: 2, labels: [DefaultRoomLabels.WORK] }),
+      stubConversation({ name: 'convo-1', unreadCount: { total: 3, highlight: 0 } }),
+      stubConversation({
+        name: 'convo-2',
+        unreadCount: { total: 5, highlight: 0 },
+        labels: [DefaultRoomLabels.ARCHIVED],
+      }),
+      stubConversation({ name: 'convo-3', unreadCount: { total: 2, highlight: 0 }, labels: [DefaultRoomLabels.WORK] }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -217,8 +275,12 @@ describe('ConversationListPanel', () => {
 
   it('renders conversations in the archived tab', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.ARCHIVED] }),
-      stubConversation({ name: 'convo-2' }),
+      stubConversation({
+        name: 'convo-1',
+        labels: [DefaultRoomLabels.ARCHIVED],
+        unreadCount: { total: 0, highlight: 0 },
+      }),
+      stubConversation({ name: 'convo-2', unreadCount: { total: 0, highlight: 0 } }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -228,8 +290,12 @@ describe('ConversationListPanel', () => {
 
   it('does not render archived conversations in other tabs', function () {
     const conversations = [
-      stubConversation({ name: 'convo-1', labels: [DefaultRoomLabels.ARCHIVED, DefaultRoomLabels.WORK] }),
-      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.WORK] }),
+      stubConversation({
+        name: 'convo-1',
+        labels: [DefaultRoomLabels.ARCHIVED, DefaultRoomLabels.WORK],
+        unreadCount: { total: 0, highlight: 0 },
+      }),
+      stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.WORK], unreadCount: { total: 0, highlight: 0 } }),
     ];
     const wrapper = subject({ conversations: conversations as any });
 
@@ -242,8 +308,8 @@ describe('ConversationListPanel', () => {
 
   it('renders conversation group names as well in the filtered conversation list', function () {
     const conversations = [
-      { id: 'convo-id-1', name: '', otherMembers: [{ firstName: 'test' }] },
-      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }] },
+      { id: 'convo-id-1', name: '', otherMembers: [{ firstName: 'test' }], unreadCount: { total: 0, highlight: 0 } },
+      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }], unreadCount: { total: 0, highlight: 0 } },
       {
         id: 'convo-id-3',
         name: 'Test Group',
@@ -251,6 +317,7 @@ describe('ConversationListPanel', () => {
           { firstName: 'name-1' },
           { firstName: 'name-2' },
         ],
+        unreadCount: { total: 0, highlight: 0 },
       },
       {
         id: 'convo-id-4',
@@ -259,6 +326,7 @@ describe('ConversationListPanel', () => {
           { firstName: 'name-1' },
           { firstName: 'name-2' },
         ],
+        unreadCount: { total: 0, highlight: 0 },
       },
     ];
 
@@ -295,16 +363,19 @@ describe('ConversationListPanel', () => {
         id: 'convo-id-1',
         name: 'convo-1',
         otherMembers: [{ firstName: 'jack', primaryZID: '0://world.iamjack' }],
+        unreadCount: { total: 0, highlight: 0 },
       },
       {
         id: 'convo-id-2',
         name: 'convo-2',
         otherMembers: [{ firstName: 'bob', primaryZID: '0://world.bob' }],
+        unreadCount: { total: 0, highlight: 0 },
       },
       {
         id: 'convo-id-3',
         name: 'convo-3',
         otherMembers: [{ firstName: 'jacklyn', primaryZID: '0://world.jacklyn' }],
+        unreadCount: { total: 0, highlight: 0 },
       },
       {
         id: 'convo-id-4',
@@ -313,6 +384,7 @@ describe('ConversationListPanel', () => {
           { firstName: 'user1', primaryZID: '0://world.user1' },
           { firstName: 'user2' },
         ],
+        unreadCount: { total: 0, highlight: 0 },
       },
       {
         id: 'convo-id-5',
@@ -321,6 +393,7 @@ describe('ConversationListPanel', () => {
           { firstName: 'user1', primaryZID: '0://world.user1' },
           { firstName: 'user2', primaryZID: '0://world.user2' },
         ],
+        unreadCount: { total: 0, highlight: 0 },
       },
     ];
 
@@ -383,9 +456,17 @@ describe('ConversationListPanel', () => {
 
     it('filters archived conversations', () => {
       const archivedConversations = [
-        stubConversation({ name: 'convo-1', labels: [] }),
-        stubConversation({ name: 'convo-2', labels: [DefaultRoomLabels.ARCHIVED] }),
-        stubConversation({ name: 'convo-3', labels: [DefaultRoomLabels.ARCHIVED] }),
+        stubConversation({ name: 'convo-1', unreadCount: { total: 0, highlight: 0 } }),
+        stubConversation({
+          name: 'convo-2',
+          labels: [DefaultRoomLabels.ARCHIVED],
+          unreadCount: { total: 0, highlight: 0 },
+        }),
+        stubConversation({
+          name: 'convo-3',
+          labels: [DefaultRoomLabels.ARCHIVED],
+          unreadCount: { total: 0, highlight: 0 },
+        }),
       ];
       const wrapper = subject({ conversations: archivedConversations as any });
 
@@ -398,7 +479,7 @@ describe('ConversationListPanel', () => {
   it('selecting an existing conversation announces click event', async function () {
     const onConversationClick = jest.fn();
     const conversations = [
-      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }] },
+      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }], unreadCount: { total: 0, highlight: 0 } },
     ] as any;
     const wrapper = subject({ conversations, onConversationClick });
 
@@ -412,8 +493,8 @@ describe('ConversationListPanel', () => {
   it('selecting an existing conversation clears the filtered state', async function () {
     const onConversationClick = jest.fn();
     const conversations = [
-      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }] },
-      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'jack' }] },
+      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }], unreadCount: { total: 0, highlight: 0 } },
+      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'jack' }], unreadCount: { total: 0, highlight: 0 } },
     ] as any;
     const wrapper = subject({ conversations, onConversationClick });
 

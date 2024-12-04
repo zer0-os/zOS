@@ -13,7 +13,14 @@ import { denormalizeConversations } from './store/channels-list';
 import { DefaultRoomLabels } from './store/channels';
 
 export const App = () => {
-  const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName, hasUnreadNotifications } = useAppMain();
+  const {
+    isAuthenticated,
+    mainClassName,
+    videoBackgroundSrc,
+    wrapperClassName,
+    hasUnreadNotifications,
+    hasUnreadHighlights,
+  } = useAppMain();
 
   return (
     // See: ZOS-115
@@ -25,7 +32,7 @@ export const App = () => {
             {videoBackgroundSrc && <VideoBackground src={videoBackgroundSrc} />}
             <div className={wrapperClassName}>
               <DialogManager />
-              <AppBar hasUnreadNotifications={hasUnreadNotifications} />
+              <AppBar hasUnreadNotifications={hasUnreadNotifications} hasUnreadHighlights={hasUnreadHighlights} />
               <AppRouter />
             </div>
           </>
@@ -44,7 +51,17 @@ const useAppMain = () => {
     const conversations = denormalizeConversations(state);
     return conversations.some(
       (channel) =>
-        channel.unreadCount > 0 &&
+        channel.unreadCount?.total > 0 &&
+        !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+        !channel.labels?.includes(DefaultRoomLabels.MUTE)
+    );
+  });
+
+  const hasUnreadHighlights = useSelector((state: RootState) => {
+    const conversations = denormalizeConversations(state);
+    return conversations.some(
+      (channel) =>
+        channel.unreadCount?.highlight > 0 &&
         !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
         !channel.labels?.includes(DefaultRoomLabels.MUTE)
     );
@@ -64,6 +81,7 @@ const useAppMain = () => {
     videoBackgroundSrc,
     wrapperClassName,
     hasUnreadNotifications,
+    hasUnreadHighlights,
   };
 };
 

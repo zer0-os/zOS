@@ -8,6 +8,7 @@ import {
   IconPlus,
   IconUserRight1,
   IconDotsHorizontal,
+  IconAlertCircle,
 } from '@zero-tech/zui/icons';
 import { DropdownMenu } from '@zero-tech/zui/components/DropdownMenu';
 
@@ -111,7 +112,7 @@ export class GroupManagementMenu extends React.Component<Properties, State> {
     if (this.props.canReportUser) {
       menuItems.push({
         id: 'report_user',
-        label: this.renderMenuItem(<IconEdit5 size={20} />, 'Report User'),
+        label: this.renderMenuItem(<IconAlertCircle color='red' size={20} />, 'Report User'),
         onSelect: this.reportUser,
       });
     }

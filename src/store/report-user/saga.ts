@@ -1,4 +1,4 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import {
   SagaActionTypes,
   setErrorMessage,
@@ -32,6 +32,10 @@ export function* reportUser(action) {
 
     if (response.success) {
       yield put(setSuccessMessage('User reported successfully'));
+      yield put(setLoading(false));
+
+      yield delay(1000);
+      yield call(closeReportUserModal);
     } else {
       yield put(setErrorMessage(response.error));
     }

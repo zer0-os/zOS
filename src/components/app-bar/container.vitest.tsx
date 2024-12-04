@@ -15,7 +15,7 @@ vi.mock('./', () => ({
 const renderComponent = (route: string | undefined = '/') => {
   render(
     <MemoryRouter initialEntries={[route]}>
-      <AppBar />
+      <AppBar hasUnreadNotifications={false} />
     </MemoryRouter>
   );
 };

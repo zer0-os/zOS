@@ -1,37 +1,38 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Container, Properties } from './index';
+import { Container } from './index';
 import { NotificationItem } from './notification-item';
 import { Header } from '../header';
+import { Channel } from '../../store/channels';
 
 describe('NotificationsFeed', () => {
-  const mockNotifications = [
+  const mockConversations: Channel[] = [
     {
-      id: '1',
-      content: { body: 'notification 1' },
-      sender: { userId: 'user-1', firstName: 'Test' },
-      createdAt: 1678861267433,
-      roomId: 'room-1',
-      type: 'reply' as any,
+      id: 'channel-1',
+      unreadCount: 3,
+      name: 'Conversation 1',
+      lastMessage: { content: 'Hello' },
     },
     {
-      id: '2',
-      content: { body: 'notification 2' },
-      sender: { userId: 'user-2', firstName: 'User' },
-      createdAt: 1678861267434,
-      roomId: 'room-2',
-      type: 'reply' as any,
+      id: 'channel-2',
+      unreadCount: 1,
+      name: 'Conversation 2',
+      lastMessage: { content: 'Hi there' },
     },
-  ];
+  ] as any;
 
-  const subject = (props: Partial<Properties> = {}) => {
+  const subject = (
+    props: Partial<{
+      conversations: Channel[];
+      isConversationsLoaded: boolean;
+      openNotificationConversation: (roomId: string) => void;
+    }> = {}
+  ) => {
     const allProps = {
-      notifications: [],
-      loading: false,
-      error: null,
-      fetchNotifications: jest.fn(),
+      conversations: [],
+      isConversationsLoaded: false,
       openNotificationConversation: jest.fn(),
-      markNotificationsAsRead: jest.fn(),
+
       ...props,
     };
 
@@ -47,38 +48,40 @@ describe('NotificationsFeed', () => {
     expect(header.prop('icon')).toBeTruthy();
   });
 
-  it('renders notifications when they exist', () => {
-    const wrapper = subject({ notifications: mockNotifications } as any);
-    const notificationItems = wrapper.find(NotificationItem);
+  it('renders notifications when conversations exist', () => {
+    const wrapper = subject({
+      conversations: mockConversations,
+      isConversationsLoaded: true,
+    });
 
+    const notificationItems = wrapper.find(NotificationItem);
     expect(notificationItems).toHaveLength(2);
-    expect(notificationItems.at(0).prop('notification')).toEqual(mockNotifications[0]);
-    expect(notificationItems.at(1).prop('notification')).toEqual(mockNotifications[1]);
+    expect(notificationItems.at(0).prop('conversation')).toEqual(mockConversations[0]);
+    expect(notificationItems.at(1).prop('conversation')).toEqual(mockConversations[1]);
   });
 
-  it('calls fetchNotifications on mount', () => {
-    const fetchNotifications = jest.fn();
-    subject({ fetchNotifications });
+  it('shows loading state when conversations are not loaded', () => {
+    const wrapper = subject({ isConversationsLoaded: false });
+    expect(wrapper.find('Spinner').exists()).toBe(true);
+  });
 
-    expect(fetchNotifications).toHaveBeenCalled();
+  it('shows empty state when no conversations and loaded', () => {
+    const wrapper = subject({
+      conversations: [],
+      isConversationsLoaded: true,
+    });
+    expect(wrapper.text()).toContain('No new notifications');
   });
 
   it('calls openNotificationConversation when notification is clicked', () => {
     const openNotificationConversation = jest.fn();
     const wrapper = subject({
-      notifications: mockNotifications,
+      conversations: mockConversations,
+      isConversationsLoaded: true,
       openNotificationConversation,
-    } as any);
+    });
 
-    wrapper.find(NotificationItem).first().prop('onClick')('room-1');
-
-    expect(openNotificationConversation).toHaveBeenCalledWith('room-1');
-  });
-
-  it('gets correct oldest timestamp from notifications', () => {
-    const wrapper = subject({ notifications: mockNotifications } as any);
-    const instance = wrapper.instance() as Container;
-
-    expect(instance.getOldestTimestamp(mockNotifications)).toBe(1678861267433);
+    wrapper.find(NotificationItem).first().prop('onClick')('channel-1');
+    expect(openNotificationConversation).toHaveBeenCalledWith('channel-1');
   });
 });

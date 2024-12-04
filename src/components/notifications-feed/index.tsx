@@ -1,66 +1,53 @@
 import React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { Notification } from '../../store/notifications';
-import { fetchNotifications, openNotificationConversation, markNotificationsAsRead } from '../../store/notifications';
-
+import { Channel, DefaultRoomLabels } from '../../store/channels';
+import { denormalizeConversations } from '../../store/channels-list';
 import { Header } from '../header';
 import { IconBell1 } from '@zero-tech/zui/icons';
 import { NotificationItem } from './notification-item';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
-import { featureFlags } from '../../lib/feature-flags';
+import { openNotificationConversation } from '../../store/notifications';
 
 import styles from './styles.module.scss';
 
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
-  notifications: Notification[];
-  loading: boolean;
-  error: string | null;
+  conversations: Channel[];
+  isConversationsLoaded: boolean;
 
-  fetchNotifications: () => void;
   openNotificationConversation: (roomId: string) => void;
-  markNotificationsAsRead: (roomId: string) => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
-      notifications: { items, loading, error },
+      chat: { isConversationsLoaded },
     } = state;
 
+    const conversations = denormalizeConversations(state).filter(
+      (conversation) =>
+        conversation.unreadCount > 0 &&
+        !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+        !conversation.labels?.includes(DefaultRoomLabels.MUTE)
+    );
+
     return {
-      notifications: items,
-      loading,
-      error,
+      conversations,
+      isConversationsLoaded,
     };
   }
 
   static mapActions(): Partial<Properties> {
     return {
-      fetchNotifications,
       openNotificationConversation,
-      markNotificationsAsRead,
     };
   }
 
-  componentDidMount() {
-    this.props.fetchNotifications();
-  }
-
   onNotificationClick = (roomId: string) => {
-    if (featureFlags.enableNotificationsReadStatus) {
-      this.props.markNotificationsAsRead(roomId);
-    }
     this.props.openNotificationConversation(roomId);
   };
-
-  getOldestTimestamp(notifications: Notification[] = []): number {
-    return notifications.reduce((previousTimestamp, notification: any) => {
-      return notification.createdAt < previousTimestamp ? notification.createdAt : previousTimestamp;
-    }, Date.now());
-  }
 
   renderHeaderIcon() {
     return <IconBell1 className={styles.HeaderIcon} size={18} isFilled />;
@@ -71,17 +58,17 @@ export class Container extends React.Component<Properties> {
   }
 
   renderNotifications() {
-    const { notifications } = this.props;
+    const { conversations } = this.props;
 
-    return notifications.map((notification) => (
-      <li key={notification.id}>
-        <NotificationItem notification={notification} onClick={this.onNotificationClick} />
+    return conversations.map((conversation) => (
+      <li key={conversation.id}>
+        <NotificationItem conversation={conversation} onClick={this.onNotificationClick} />
       </li>
     ));
   }
 
   renderNoNotifications() {
-    return <div className={styles.NoNotifications}>No notifications</div>;
+    return <div className={styles.NoNotifications}>No new notifications</div>;
   }
 
   renderLoading() {
@@ -92,13 +79,11 @@ export class Container extends React.Component<Properties> {
     );
   }
 
-  renderError() {
-    const { error } = this.props;
-    return error ? <div className={styles.Error}>{error}</div> : null;
-  }
-
   render() {
-    const { notifications, loading, error } = this.props;
+    const { conversations, isConversationsLoaded } = this.props;
+
+    const isEmptyState = conversations.length === 0 && isConversationsLoaded;
+    const isLoadingState = !isConversationsLoaded;
 
     return (
       <div className={styles.NotificationsFeed}>
@@ -108,11 +93,10 @@ export class Container extends React.Component<Properties> {
           </div>
 
           <div className={styles.Body}>
-            <ol className={styles.Notifications}>{notifications.length > 0 && this.renderNotifications()}</ol>
+            <ol className={styles.Notifications}>{!isEmptyState && this.renderNotifications()}</ol>
 
-            {notifications.length === 0 && !loading && !error && this.renderNoNotifications()}
-            {loading && this.renderLoading()}
-            {error && this.renderError()}
+            {isEmptyState && this.renderNoNotifications()}
+            {isLoadingState && this.renderLoading()}
           </div>
         </div>
       </div>

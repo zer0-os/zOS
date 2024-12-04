@@ -15,4 +15,18 @@
   pointer-events: all;
 
   @include main-background;
+
+  &__notification-icon-wrapper {
+    position: relative;
+  }
+
+  &__notification-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: theme.$color-secondary-11;
+  }
 }

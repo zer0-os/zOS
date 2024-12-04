@@ -278,6 +278,7 @@ describe('message', () => {
     expect(messageMenuProps.canReply).toBe(false);
     expect(messageMenuProps.canDelete).toBe(false);
     expect(messageMenuProps.canViewInfo).toBe(false);
+    expect(messageMenuProps.canReportUser).toBe(false);
   });
 
   it('allows reply when parent message is set', () => {
@@ -650,6 +651,35 @@ describe('message', () => {
 
       const messageMenuProps = wrapper.find(MessageMenu).props();
       expect(messageMenuProps.canCopy).toBe(false);
+    });
+  });
+
+  describe('Report Button', () => {
+    it('should not renders report button when message is owned by current user', () => {
+      const wrapper = subject({
+        message: 'the message',
+        isOwner: true,
+      });
+
+      expect(wrapper.find(MessageMenu).props().canReportUser).toBe(false);
+    });
+
+    it('should renders report button when message is not owned by current user', () => {
+      const wrapper = subject({
+        message: 'the message',
+        isOwner: false,
+      });
+
+      expect(wrapper.find(MessageMenu).props().canReportUser).toBe(true);
+    });
+
+    it('should call onReportUser when report button is clicked', () => {
+      const onReportUser = jest.fn();
+      const wrapper = subject({ message: 'the message', isOwner: false, onReportUser });
+
+      wrapper.find(MessageMenu).simulate('reportUser');
+
+      expect(onReportUser).toHaveBeenCalledWith({ reportedUserId: sender.userId });
     });
   });
 });

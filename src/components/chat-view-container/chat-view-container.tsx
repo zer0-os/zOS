@@ -24,6 +24,7 @@ import { openDeleteMessage } from '../../store/dialogs';
 import { openMessageInfo } from '../../store/message-info';
 import { toggleSecondarySidekick } from '../../store/group-management';
 import { linkMessages, mapMessagesById, mapMessagesByRootId } from './utils';
+import { openReportUserModal } from '../../store/report-user';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -42,6 +43,7 @@ export interface Properties extends PublicProperties {
   openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (payload: { roomId: string; messageId: string; key: string }) => void;
+  openReportUserModal: (payload: { reportedUserId: string }) => void;
 }
 
 interface PublicProperties {
@@ -86,6 +88,7 @@ export class Container extends React.Component<Properties> {
       toggleSecondarySidekick,
       loadAttachmentDetails,
       sendEmojiReaction,
+      openReportUserModal,
     };
   }
 
@@ -212,6 +215,10 @@ export class Container extends React.Component<Properties> {
     return this.props.channel?.isOneOnOne;
   }
 
+  onReportUser = ({ reportedUserId }: { reportedUserId: string }) => {
+    this.props.openReportUserModal({ reportedUserId });
+  };
+
   render() {
     if (!this.props.channel) return null;
 
@@ -233,6 +240,7 @@ export class Container extends React.Component<Properties> {
           showSenderAvatar={this.props.showSenderAvatar}
           isOneOnOne={this.isOneOnOne}
           onReply={this.props.onReply}
+          onReportUser={this.onReportUser}
           conversationErrorMessage={this.conversationErrorMessage}
           onHiddenMessageInfoClick={this.props.openBackupDialog}
           ref={this.chatViewRef}

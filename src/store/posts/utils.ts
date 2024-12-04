@@ -1,5 +1,5 @@
 import { WalletClient } from 'viem';
-import { post } from '../../lib/api/rest';
+import { get, post } from '../../lib/api/rest';
 import { getWagmiConfig } from '../../lib/web3/wagmi-config';
 import { getWalletClient } from '@wagmi/core';
 import { ethers } from 'ethers';
@@ -110,5 +110,28 @@ export async function meowPost(postId: string, meowAmount: string) {
   } catch (e) {
     console.error('Failed to upload post', e);
     throw new Error('Failed to upload post');
+  }
+}
+
+/**
+ * Gets posts in a channel from the API.
+ * @param channelZna the channel to get posts from
+ * @param limit the maximum number of posts to get
+ * @param skip the number of posts to skip
+ */
+export async function getPostsInChannel(channelZna: string, limit: number, skip: number) {
+  const endpoint = `/api/v2/posts/channel/${channelZna}`;
+
+  try {
+    const res = await get(endpoint, undefined, { limit, skip });
+
+    if (!res.ok || !res.body) {
+      throw new Error(res);
+    }
+
+    return res.body.posts;
+  } catch (e) {
+    console.error('Failed to fetch posts', e);
+    throw new Error('Failed to fetch posts');
   }
 }

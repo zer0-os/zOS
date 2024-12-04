@@ -6,9 +6,11 @@ import { MessagesFetchState } from '../../../../store/channels';
 import { Media, Message as MessageModel } from '../../../../store/messages';
 import { Payload as PayloadFetchPosts } from '../../../../store/posts/saga';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { LoadMoreButton } from '../components/load-more';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';
+import { FeatureFlag } from '../../../feature-flag';
 
 const cn = bemClassName('feed-view');
 
@@ -18,7 +20,7 @@ export interface Properties {
   hasLoadedMessages: boolean;
   messagesFetchStatus: MessagesFetchState;
   userMeowBalance: string;
-
+  channelId?: string;
   fetchPosts: (payload: PayloadFetchPosts) => void;
   onFetchMore: () => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
@@ -29,6 +31,11 @@ export class FeedView extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('')}>
+        {this.props.channelId && (
+          <FeatureFlag featureFlag='enableLoadMore'>
+            <LoadMoreButton channelId={this.props.channelId} />
+          </FeatureFlag>
+        )}
         {this.props.hasLoadedMessages && (
           <>
             {this.props.postMessages.length > 0 ? (

@@ -22,6 +22,7 @@ import { userByMatrixIdSelector } from '../users/selectors';
 import { rawChannel } from './selectors';
 import cloneDeep from 'lodash/cloneDeep';
 import { getHistory } from '../../lib/browser';
+import { startPollingPosts } from '../posts/saga';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -74,6 +75,7 @@ export function* openConversation(conversationId) {
   yield call(setActiveConversation, conversationId);
   yield spawn(markConversationAsRead, conversationId);
   yield call(resetConversationManagement);
+  yield call(startPollingPosts, conversationId);
 }
 
 export function* unreadCountUpdated(action) {

@@ -294,13 +294,7 @@ function* refetchPosts(action) {
   yield put({ type: SagaActionTypes.FetchPosts, payload: { channelId } });
 }
 
-function* reset(action) {
-  yield call(receiveChannel, {
-    id: action.payload.conversationId,
-    // messages: [],
-    hasMorePosts: true,
-    hasLoadedMessages: false,
-  });
+function* reset(_action) {
   yield put(setError(undefined));
   yield put(setIsSubmitting(false));
   yield put(setInitialCount(undefined));

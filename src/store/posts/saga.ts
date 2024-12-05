@@ -275,7 +275,19 @@ function* pollPosts(action) {
     } else {
       yield put(setCount(count));
     }
-    yield delay(5000);
+
+    const activeConversationId = yield select((state) => state.chat.activeConversationId);
+    // Only continue polling if we're still in the same conversation
+    if (activeConversationId === channelId) {
+      yield delay(5000);
+      yield put({ type: SagaActionTypes.PollPosts, payload: { channelId } });
+    }
+  }
+}
+
+export function* startPollingPosts(channelId: string) {
+  const channel = yield select(rawChannelSelector(channelId));
+  if (channel?.conversationStatus === ConversationStatus.CREATED) {
     yield put({ type: SagaActionTypes.PollPosts, payload: { channelId } });
   }
 }

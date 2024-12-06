@@ -23,7 +23,7 @@ function createWindow() {
         protocol: 'file:',
         slashes: true,
       })
-    : 'http://localhost:3000';
+    : 'http://localhost:5173';
   mainWindow.loadURL(appURL);
 
   // Automatically open Chrome's DevTools in development mode.

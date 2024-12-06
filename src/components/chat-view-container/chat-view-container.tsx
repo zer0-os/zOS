@@ -157,12 +157,12 @@ export class Container extends React.Component<Properties> {
     }
   };
 
-  sendEmojiReaction = (messageId, key) => {
-    this.props.sendEmojiReaction({
-      roomId: this.props.channelId,
-      messageId,
-      key,
-    });
+  sendEmojiReaction = async (messageId, key) => {
+    try {
+      await this.props.sendEmojiReaction({ roomId: this.props.channelId, messageId, key });
+    } catch (error) {
+      console.error('Failed to send emoji reaction:', error);
+    }
   };
 
   get messages() {

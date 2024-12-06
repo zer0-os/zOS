@@ -16,6 +16,7 @@ export interface Properties {
 export interface State {
   isReactionTrayOpen: boolean;
   isEmojiPickerOpen: boolean;
+  isProcessing: boolean;
 }
 
 const commonEmojiMapping = {
@@ -34,6 +35,7 @@ export class ReactionMenu extends React.Component<Properties, State> {
   state = {
     isReactionTrayOpen: false,
     isEmojiPickerOpen: false,
+    isProcessing: false,
   };
 
   componentDidMount() {
@@ -45,6 +47,8 @@ export class ReactionMenu extends React.Component<Properties, State> {
   }
 
   onClickOutside = (event) => {
+    if (this.state.isProcessing) return;
+
     if (
       !(
         (this.ref.current && this.ref.current.contains(event.target)) ||
@@ -52,22 +56,41 @@ export class ReactionMenu extends React.Component<Properties, State> {
         (this.emojiPickerRef.current && this.emojiPickerRef.current.contains(event.target))
       )
     ) {
-      // Only update state if the tray or picker is actually open
-      if (this.state.isReactionTrayOpen || this.state.isEmojiPickerOpen) {
-        this.setState({ isReactionTrayOpen: false, isEmojiPickerOpen: false }, () => {
-          // Call onOpenChange in the setState callback to ensure state is updated first
+      this.setState(
+        {
+          isReactionTrayOpen: false,
+          isEmojiPickerOpen: false,
+          isProcessing: false,
+        },
+        () => {
           this.props.onOpenChange?.(false);
-        });
-      }
+        }
+      );
     }
   };
 
   onSelect = (emojiId) => {
-    const emojiCharacter = commonEmojiMapping[emojiId];
-    if (emojiCharacter) {
-      this.props.onSelectReaction(emojiCharacter);
-      this.toggleReactionTray();
-    }
+    if (this.state.isProcessing) return;
+
+    this.setState({ isProcessing: true }, async () => {
+      try {
+        const emojiCharacter = commonEmojiMapping[emojiId];
+        if (emojiCharacter) {
+          await this.props.onSelectReaction(emojiCharacter);
+          this.setState(
+            {
+              isReactionTrayOpen: false,
+              isEmojiPickerOpen: false,
+            },
+            () => {
+              this.props.onOpenChange?.(false);
+            }
+          );
+        }
+      } finally {
+        this.setState({ isProcessing: false });
+      }
+    });
   };
 
   toggleReactionTray = () => {
@@ -79,13 +102,10 @@ export class ReactionMenu extends React.Component<Properties, State> {
   };
 
   toggleEmojiPicker = () => {
-    this.setState((prevState) => {
-      const isEmojiPickerOpen = !prevState.isEmojiPickerOpen;
-      if (isEmojiPickerOpen) {
-        this.setState({ isReactionTrayOpen: false });
-      }
-      return { isEmojiPickerOpen };
-    });
+    this.setState((prevState) => ({
+      isEmojiPickerOpen: !prevState.isEmojiPickerOpen,
+      isReactionTrayOpen: false,
+    }));
   };
 
   renderCommonReactions() {

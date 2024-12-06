@@ -10,7 +10,7 @@ export interface LightboxProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: any[];
   startingIndex?: number;
-  onClose?: () => void;
+  onClose?: (e?: React.MouseEvent) => void;
   provider: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fitWithinBox: (media: any) => any;
@@ -133,12 +133,28 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
       onMoveNextRequest={() => setIndex(getNextItemIndex(index))}
       toolbarButtons={[
         !isCurrentItemGif && (
-          <button key='copy' onClick={copyImage} className={styles.DownloadButton} aria-label='Copy image'>
+          <button
+            key='copy'
+            onClick={(e) => {
+              e.stopPropagation();
+              copyImage();
+            }}
+            className={styles.DownloadButton}
+            aria-label='Copy image'
+          >
             <IconCopy2 size={28} isFilled={isCopied} />
           </button>
         ),
         !isCurrentItemGif && (
-          <button key='download' onClick={downloadImage} className={styles.DownloadButton} aria-label='Download image'>
+          <button
+            key='download'
+            onClick={(e) => {
+              e.stopPropagation();
+              downloadImage();
+            }}
+            className={styles.DownloadButton}
+            aria-label='Download image'
+          >
             <IconDownload2 size={28} />
           </button>
         ),

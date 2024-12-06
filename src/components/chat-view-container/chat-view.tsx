@@ -107,7 +107,8 @@ export class ChatView extends React.Component<Properties, State> {
     this.setState({ lightboxMedia, lightboxStartIndex, isLightboxOpen: true });
   };
 
-  closeLightBox = () => {
+  closeLightBox = (e) => {
+    e?.stopPropagation?.();
     this.setState({ isLightboxOpen: false });
   };
 

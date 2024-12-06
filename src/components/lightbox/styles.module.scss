@@ -15,12 +15,23 @@
     }
 
     .ril__toolbar {
+      z-index: 10000;
       background: none;
+    }
+
+    .ril__toolbarRightSide {
+      position: relative;
+      z-index: 10001;
+    }
+
+    .ril__outer {
+      z-index: 9999;
     }
   }
 }
 
 .DownloadButton {
+  z-index: 10001;
   width: 40px;
   height: 35px;
   cursor: pointer;

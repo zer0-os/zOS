@@ -16,6 +16,8 @@ describe(ParentMessage, () => {
       senderLastName: '',
       mediaUrl: '',
       mediaName: '',
+      messageId: 'message-id',
+      onMessageClick: () => {},
 
       ...props,
     };
@@ -63,5 +65,13 @@ describe(ParentMessage, () => {
     const wrapper = subject({ senderIsCurrentUser: true, senderFirstName: 'Jackie', senderLastName: 'Chan' });
 
     expect(wrapper.find(c('header'))).toHaveText('You');
+  });
+
+  it('calls onMessageClick when the parent message is clicked', function () {
+    const onMessageClick = jest.fn();
+    const wrapper = subject({ messageId: 'message-id', onMessageClick });
+
+    wrapper.simulate('click');
+    expect(onMessageClick).toHaveBeenCalledWith('message-id');
   });
 });

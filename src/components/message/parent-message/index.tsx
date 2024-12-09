@@ -15,9 +15,17 @@ export interface Properties {
   senderLastName: string;
   mediaUrl: string;
   mediaName: string;
+  messageId: string;
+  onMessageClick: (messageId: string) => void;
 }
 
 export class ParentMessage extends React.PureComponent<Properties> {
+  onClick = () => {
+    if (this.props.messageId) {
+      this.props.onMessageClick(this.props.messageId);
+    }
+  };
+
   get name() {
     if (this.props.senderIsCurrentUser) {
       return 'You';
@@ -32,7 +40,7 @@ export class ParentMessage extends React.PureComponent<Properties> {
     }
 
     return (
-      <div {...cn('')}>
+      <div {...cn('')} onClick={this.onClick} role='button' tabIndex={0}>
         <div {...cn('parent-message')}>
           <IconCornerDownRight size={16} />
 

@@ -176,6 +176,22 @@ export class Message extends React.Component<Properties, State> {
     }
   };
 
+  scrollToMessage = (messageId: string) => {
+    const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+    const messageBlock = messageElement?.querySelector('.message__block');
+    if (messageBlock) {
+      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      messageBlock.classList.add('message__block--parent-message-highlight');
+      setTimeout(() => {
+        messageBlock.classList.remove('message__block--parent-message-highlight');
+      }, 3000);
+    }
+  };
+
+  onParentMessageClick = (messageId: string) => {
+    this.scrollToMessage(messageId);
+  };
+
   renderAttachment(attachment) {
     return (
       <div {...cn('attachment')} onClick={this.openAttachment.bind(this, attachment)}>
@@ -639,6 +655,8 @@ export class Message extends React.Component<Properties, State> {
         senderLastName={this.props.parentSenderLastName}
         mediaUrl={this.props.parentMessageMediaUrl}
         mediaName={this.props.parentMessageMediaName}
+        messageId={this.props.parentMessageId}
+        onMessageClick={this.onParentMessageClick}
       />
     );
   }
@@ -652,6 +670,7 @@ export class Message extends React.Component<Properties, State> {
         })}
         onContextMenu={this.handleContextMenu}
         ref={this.wrapperRef}
+        data-message-id={this.props.messageId}
       >
         {this.props.showSenderAvatar && (
           <div {...cn('left')}>

@@ -15,6 +15,7 @@ export interface Properties {
   senderLastName: string;
   mediaUrl: string;
   mediaName: string;
+  mediaType: string;
 
   onRemove?: () => void;
 }
@@ -41,9 +42,15 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
       <div {...cn()}>
         <IconCornerDownRight size={16} />
 
-        {this.props.mediaUrl && (
+        {this.props.mediaUrl && this.props.mediaType === 'image' && (
           <div {...cn('media-container')}>
             <img {...cn('media')} src={this.props.mediaUrl} alt={this.props.mediaName} />
+          </div>
+        )}
+
+        {this.props.mediaUrl && this.props.mediaType === 'video' && (
+          <div {...cn('media-container')}>
+            <video {...cn('media')} src={this.props.mediaUrl} />
           </div>
         )}
 

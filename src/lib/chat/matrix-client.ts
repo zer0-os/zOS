@@ -872,27 +872,17 @@ export class MatrixClient implements IChatClient {
     const room = this.matrix.getRoom(roomId);
     const isEncrypted = room?.hasEncryptionStateEvent();
 
-    const { width, height } = await getImageDimensions(media);
-
-    let file;
-    let url;
-
-    if (isEncrypted) {
-      // For encrypted rooms, encrypt the file and use the `file` object
-      const encryptedFileInfo = await encryptFile(media);
-      url = await this.uploadFile(encryptedFileInfo.file);
-      file = {
-        url,
-        ...encryptedFileInfo.info,
-      };
-    } else {
-      // For unencrypted rooms, directly upload the file and use `url`
-      url = await this.uploadFile(media);
-    }
-
-    // Generate the blurhash for the image
+    // Get dimensions for images only
+    let width = 0;
+    let height = 0;
     let blurhash = null;
+
     if (media.type.startsWith('image/')) {
+      const dimensions = await getImageDimensions(media);
+      width = dimensions.width;
+      height = dimensions.height;
+
+      // Generate blurhash for images only
       try {
         blurhash = await generateBlurhash(media);
       } catch (error) {
@@ -900,21 +890,37 @@ export class MatrixClient implements IChatClient {
       }
     }
 
+    let file;
+    let url;
+
+    if (isEncrypted) {
+      const encryptedFileInfo = await encryptFile(media);
+      url = await this.uploadFile(encryptedFileInfo.file);
+      file = {
+        url,
+        ...encryptedFileInfo.info,
+      };
+    } else {
+      url = await this.uploadFile(media);
+    }
+
     const content: any = {
       body: '',
-      msgtype: MsgType.Image,
+      msgtype: media.type.startsWith('image/') ? MsgType.Image : MsgType.Video,
       info: {
         mimetype: media.type,
         size: media.size,
         name: media.name,
         optimisticId,
         rootMessageId,
-        width,
-        height,
-        w: width,
-        h: height,
-        // Optional: blurhash and thumbnail fields
-        'xyz.amorgan.blurhash': blurhash,
+        // Only include dimension-related fields for images
+        ...(media.type.startsWith('image/') && {
+          width,
+          height,
+          w: width,
+          h: height,
+          'xyz.amorgan.blurhash': blurhash,
+        }),
         thumbnail_url: null,
         thumbnail_info: null,
       },
@@ -935,7 +941,6 @@ export class MatrixClient implements IChatClient {
       this.recordMessageSent(roomId);
     }
 
-    // Don't return a full message, only the pertinent attributes that changed.
     return {
       id: messageResult.event_id,
       optimisticId,

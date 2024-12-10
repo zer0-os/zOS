@@ -19,6 +19,7 @@ describe('ReplyCard', () => {
       senderLastName: '',
       mediaName: '',
       mediaUrl: '',
+      mediaType: '',
       onRemove: jest.fn(),
       ...props,
     };
@@ -38,10 +39,16 @@ describe('ReplyCard', () => {
     expect(wrapper).not.toHaveElement(ContentHighlighter);
   });
 
-  it('renders media when media url is present', function () {
-    const wrapper = subject({ mediaName: 'test-media-name', mediaUrl: 'test-media-url' });
+  it('renders video when media type is video and url is present', function () {
+    const wrapper = subject({ mediaName: 'test-video.mp4', mediaUrl: 'test-video-url', mediaType: 'video' });
 
-    expect(wrapper).toHaveElement(c('media-container'));
+    expect(wrapper.find('video')).toHaveProp('src', 'test-video-url');
+  });
+
+  it('renders image when media type is image and url is present', function () {
+    const wrapper = subject({ mediaName: 'test-image.jpg', mediaUrl: 'test-image-url', mediaType: 'image' });
+
+    expect(wrapper.find('img')).toHaveProp('src', 'test-image-url');
   });
 
   it('does not render media when media url is NOT present', function () {

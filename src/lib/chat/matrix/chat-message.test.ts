@@ -1,6 +1,7 @@
 import { AdminMessageType } from '../../../store/messages';
 import { PowerLevels } from '../types';
-import { getRoomPowerLevelsChangedAdminData } from './chat-message';
+import { getRoomPowerLevelsChangedAdminData, parseMediaData, buildMediaObject } from './chat-message';
+import { MsgType } from 'matrix-js-sdk';
 
 describe(getRoomPowerLevelsChangedAdminData, () => {
   it('returns null if previous content is not present', () => {
@@ -96,5 +97,90 @@ describe(getRoomPowerLevelsChangedAdminData, () => {
       }
     );
     expect(result).toEqual({ type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId: 'user-matrix-id' });
+  });
+});
+
+describe(parseMediaData, () => {
+  it('parses video message data correctly', async () => {
+    const matrixMessage = {
+      content: {
+        msgtype: MsgType.Video,
+        url: 'mxc://example.com/video123',
+        info: {
+          mimetype: 'video/mp4',
+          size: 5000,
+          name: 'test-video.mp4',
+        },
+      },
+    };
+
+    const result = await parseMediaData(matrixMessage);
+
+    expect(result).toEqual({
+      media: {
+        url: 'mxc://example.com/video123',
+        type: 'video',
+        mimetype: 'video/mp4',
+        size: 5000,
+        name: 'test-video.mp4',
+      },
+      image: undefined,
+      rootMessageId: '',
+    });
+  });
+});
+
+describe(buildMediaObject, () => {
+  it('builds video media object correctly', async () => {
+    const content = {
+      msgtype: MsgType.Video,
+      url: 'mxc://example.com/video123',
+      info: {
+        mimetype: 'video/mp4',
+        size: 5000,
+        name: 'test-video.mp4',
+      },
+    };
+
+    const result = await buildMediaObject(content);
+
+    expect(result).toEqual({
+      url: 'mxc://example.com/video123',
+      type: 'video',
+      mimetype: 'video/mp4',
+      size: 5000,
+      name: 'test-video.mp4',
+    });
+  });
+
+  it('builds encrypted video media object correctly', async () => {
+    const content = {
+      msgtype: MsgType.Video,
+      file: {
+        url: 'mxc://example.com/video123',
+        key: { key: 'test-key' },
+        iv: 'test-iv',
+      },
+      info: {
+        mimetype: 'video/mp4',
+        size: 5000,
+        name: 'test-video.mp4',
+      },
+    };
+
+    const result = await buildMediaObject(content);
+
+    expect(result).toEqual({
+      url: null,
+      type: 'video',
+      file: {
+        url: 'mxc://example.com/video123',
+        key: { key: 'test-key' },
+        iv: 'test-iv',
+      },
+      mimetype: 'video/mp4',
+      size: 5000,
+      name: 'test-video.mp4',
+    });
   });
 });

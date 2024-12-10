@@ -1119,6 +1119,60 @@ describe('matrix client', () => {
         optimisticId: optimisticId,
       });
     });
+
+    it('sends a video message successfully in a non-encrypted room', async () => {
+      const roomId = '!testRoomId';
+      const optimisticId = 'optimistic-id';
+      const rootMessageId = 'root-message-id';
+      const media = { name: 'test-video.mp4', size: 1000, type: 'video/mp4' };
+
+      const sendMessage = jest.fn(() =>
+        Promise.resolve({
+          event_id: 'new-message-id',
+        })
+      );
+
+      const uploadContent = jest.fn().mockResolvedValue({ content_uri: 'upload-url' });
+      const mxcUrlToHttp = jest.fn().mockReturnValue('upload-url');
+
+      const client = subject({
+        createClient: jest.fn(() =>
+          getSdkClient({
+            getRoom: jest.fn().mockReturnValue(stubRoom({ hasEncryptionStateEvent: jest.fn(() => false) })),
+            sendMessage,
+            uploadContent,
+            mxcUrlToHttp,
+          })
+        ),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.uploadFileMessage(roomId, media as File, rootMessageId, optimisticId);
+
+      expect(sendMessage).toBeCalledWith(
+        roomId,
+        expect.objectContaining({
+          body: '',
+          msgtype: 'm.video',
+          url: 'upload-url',
+          info: {
+            mimetype: 'video/mp4',
+            size: 1000,
+            name: 'test-video.mp4',
+            optimisticId: 'optimistic-id',
+            rootMessageId: 'root-message-id',
+            thumbnail_url: null,
+            thumbnail_info: null,
+          },
+          optimisticId: 'optimistic-id',
+        })
+      );
+
+      expect(result).toMatchObject({
+        id: 'new-message-id',
+        optimisticId: optimisticId,
+      });
+    });
   });
 
   describe('uploadImageUrl', () => {

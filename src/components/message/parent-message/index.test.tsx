@@ -16,6 +16,7 @@ describe(ParentMessage, () => {
       senderLastName: '',
       mediaUrl: '',
       mediaName: '',
+      mediaType: '',
       messageId: 'message-id',
       onMessageClick: () => {},
 
@@ -37,10 +38,16 @@ describe(ParentMessage, () => {
     expect(wrapper).not.toHaveElement(ContentHighlighter);
   });
 
-  it('renders media when media url is present', function () {
-    const wrapper = subject({ mediaName: 'test-media-name', mediaUrl: 'test-media-url' });
+  it('renders video when media type is video and url is present', function () {
+    const wrapper = subject({ mediaName: 'test-media-name', mediaUrl: 'test-media-url', mediaType: 'video' });
 
-    expect(wrapper).toHaveElement(c('media-container'));
+    expect(wrapper.find('video')).toHaveProp('src', 'test-media-url');
+  });
+
+  it('renders image when media type is image and url is present', function () {
+    const wrapper = subject({ mediaName: 'test-media-name', mediaUrl: 'test-media-url', mediaType: 'image' });
+
+    expect(wrapper.find('img')).toHaveProp('src', 'test-media-url');
   });
 
   it('does not render media when media url is NOT present', function () {

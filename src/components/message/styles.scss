@@ -125,11 +125,19 @@
   }
 
   &__block-video {
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+
     video {
-      min-height: 186px;
-      width: 100%;
-      border-radius: 8px;
+      display: block;
+      margin: auto;
+      max-width: 100%;
+      max-height: 640px;
+      animation: fadein 1s ease-in forwards;
     }
+
+    animation: fadein 1s ease-in forwards;
   }
 
   &__block-edit {

@@ -16,6 +16,7 @@ export interface Properties {
   mediaUrl: string;
   mediaName: string;
   messageId: string;
+  mediaType: string;
   onMessageClick: (messageId: string) => void;
 }
 
@@ -46,7 +47,14 @@ export class ParentMessage extends React.PureComponent<Properties> {
 
           {this.props?.mediaName && (
             <div {...cn('media-container')}>
-              {this.props?.mediaUrl && <img {...cn('media')} src={this.props?.mediaUrl} alt={this.props?.mediaName} />}
+              {this.props?.mediaUrl && this.props?.mediaType === 'image' && (
+                <img {...cn('media')} src={this.props?.mediaUrl} alt={this.props?.mediaName} />
+              )}
+
+              {this.props?.mediaUrl && this.props?.mediaType === 'video' && (
+                <video {...cn('media')} src={this.props?.mediaUrl} />
+              )}
+
               {!this.props.mediaUrl && <div {...cn('image-placeholder')} />}
             </div>
           )}

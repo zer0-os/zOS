@@ -657,6 +657,7 @@ export class Message extends React.Component<Properties, State> {
         mediaName={this.props.parentMessageMediaName}
         messageId={this.props.parentMessageId}
         onMessageClick={this.onParentMessageClick}
+        mediaType={this.props.parentMessageMedia?.type}
       />
     );
   }

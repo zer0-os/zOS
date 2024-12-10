@@ -100,7 +100,7 @@ export class MessageInput extends React.Component<Properties, State> {
     return {
       'image/*': [],
       // 'text/*': [],
-      // 'video/*': [],
+      'video/*': [],
       // 'application/pdf': [],
       // 'application/zip': [],
       // 'application/msword': [],
@@ -278,6 +278,7 @@ export class MessageInput extends React.Component<Properties, State> {
               mediaUrl={reply?.media?.url}
               mediaName={reply?.media?.name}
               onRemove={this.props.onRemoveReply}
+              mediaType={reply?.media?.type}
             />
           )}
         </div>

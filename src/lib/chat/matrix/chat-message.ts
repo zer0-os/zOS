@@ -4,12 +4,12 @@ import { AdminMessageType, Message, MessageSendStatus } from '../../../store/mes
 import { getObjectDiff, parsePlainBody } from './utils';
 import { PowerLevels } from '../types';
 
-async function parseMediaData(matrixMessage) {
+export async function parseMediaData(matrixMessage) {
   const { content } = matrixMessage;
 
   let media = null;
   try {
-    if (content?.msgtype === MsgType.Image) {
+    if (content?.msgtype === MsgType.Image || content?.msgtype === MsgType.Video) {
       media = await buildMediaObject(content);
     }
   } catch (e) {
@@ -23,18 +23,20 @@ async function parseMediaData(matrixMessage) {
   };
 }
 
-async function buildMediaObject(content) {
+export async function buildMediaObject(content) {
+  const mediaType = content.msgtype === MsgType.Image ? 'image' : 'video';
+
   if (content.file && content.info) {
     return {
       url: null,
-      type: 'image',
+      type: mediaType,
       file: { ...content.file },
       ...content.info,
     };
   } else if (content.url) {
     return {
       url: content.url,
-      type: 'image',
+      type: mediaType,
       ...content.info,
     };
   }
@@ -54,7 +56,7 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
 
   return {
     id: event_id,
-    message: content.msgtype === 'm.image' ? '' : messageContent,
+    message: content.msgtype === MsgType.Image || content.msgtype === MsgType.Video ? '' : messageContent,
     createdAt: origin_server_ts,
     updatedAt: updatedAt,
     sender: {

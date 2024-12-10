@@ -37,7 +37,6 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
 
   render() {
     const { message } = this.props;
-    console.log('XXXX', this.props.mediaType);
 
     return (
       <div {...cn()}>

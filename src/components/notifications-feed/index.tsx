@@ -8,10 +8,21 @@ import { IconBell1 } from '@zero-tech/zui/icons';
 import { NotificationItem } from './notification-item';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { openNotificationConversation } from '../../store/notifications';
+import { ToggleGroup } from '@zero-tech/zui/components';
 
 import styles from './styles.module.scss';
 
+enum Tab {
+  All = 'all',
+  Highlights = 'highlights',
+  Muted = 'muted',
+}
+
 export interface PublicProperties {}
+
+interface State {
+  selectedTab: Tab;
+}
 
 export interface Properties extends PublicProperties {
   conversations: Channel[];
@@ -20,7 +31,11 @@ export interface Properties extends PublicProperties {
   openNotificationConversation: (roomId: string) => void;
 }
 
-export class Container extends React.Component<Properties> {
+export class Container extends React.Component<Properties, State> {
+  state = {
+    selectedTab: Tab.All,
+  };
+
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { isConversationsLoaded },
@@ -29,8 +44,7 @@ export class Container extends React.Component<Properties> {
     const conversations = denormalizeConversations(state).filter(
       (conversation) =>
         (conversation.unreadCount.total > 0 || conversation.unreadCount?.highlight > 0) &&
-        !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-        !conversation.labels?.includes(DefaultRoomLabels.MUTE)
+        !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED)
     );
 
     return {
@@ -45,6 +59,33 @@ export class Container extends React.Component<Properties> {
     };
   }
 
+  getFilteredConversations() {
+    const { conversations } = this.props;
+
+    switch (this.state.selectedTab) {
+      case Tab.Highlights:
+        return conversations.filter(
+          (conversation) =>
+            conversation.unreadCount?.highlight > 0 &&
+            !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+            !conversation.labels?.includes(DefaultRoomLabels.MUTE)
+        );
+      case Tab.Muted:
+        return conversations.filter(
+          (conversation) =>
+            conversation.labels?.includes(DefaultRoomLabels.MUTE) &&
+            !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+            (conversation.unreadCount?.total > 0 || conversation.unreadCount?.highlight > 0)
+        );
+      case Tab.All:
+      default:
+        return conversations.filter(
+          (conversation) =>
+            !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+            !conversation.labels?.includes(DefaultRoomLabels.MUTE)
+        );
+    }
+  }
   onNotificationClick = (roomId: string) => {
     this.props.openNotificationConversation(roomId);
   };
@@ -57,26 +98,55 @@ export class Container extends React.Component<Properties> {
     return <div className={styles.HeaderTitle}>Notifications</div>;
   }
 
-  renderNotifications() {
-    const { conversations } = this.props;
+  renderTabs() {
+    const options = [
+      { key: Tab.All, label: 'All' },
+      { key: Tab.Highlights, label: 'Highlights' },
+      { key: Tab.Muted, label: 'Muted' },
+    ];
 
+    return (
+      <div className={styles.TabContainer}>
+        <ToggleGroup
+          className={styles.ToggleGroup}
+          options={options}
+          variant='default'
+          onSelectionChange={(selected) => this.setState({ selectedTab: selected as Tab })}
+          selection={this.state.selectedTab}
+          selectionType='single'
+          isRequired
+        />
+      </div>
+    );
+  }
+
+  renderNotifications(conversations: Channel[]) {
     return conversations.flatMap((conversation) => {
       const notifications = [];
 
-      if (conversation.unreadCount?.total > 0) {
-        notifications.push(
-          <li key={`${conversation.id}-total`}>
-            <NotificationItem conversation={conversation} onClick={this.onNotificationClick} type='total' />
-          </li>
-        );
-      }
-
-      if (conversation.unreadCount?.highlight > 0) {
-        notifications.push(
-          <li key={`${conversation.id}-highlight`}>
-            <NotificationItem conversation={conversation} onClick={this.onNotificationClick} type='highlight' />
-          </li>
-        );
+      if (this.state.selectedTab === Tab.Highlights) {
+        if (conversation.unreadCount?.highlight > 0) {
+          notifications.push(
+            <li key={`${conversation.id}-highlight`}>
+              <NotificationItem conversation={conversation} onClick={this.onNotificationClick} type='highlight' />
+            </li>
+          );
+        }
+      } else {
+        if (conversation.unreadCount?.total > 0) {
+          notifications.push(
+            <li key={`${conversation.id}-total`}>
+              <NotificationItem conversation={conversation} onClick={this.onNotificationClick} type='total' />
+            </li>
+          );
+        }
+        if (conversation.unreadCount?.highlight > 0) {
+          notifications.push(
+            <li key={`${conversation.id}-highlight`}>
+              <NotificationItem conversation={conversation} onClick={this.onNotificationClick} type='highlight' />
+            </li>
+          );
+        }
       }
 
       return notifications;
@@ -84,7 +154,13 @@ export class Container extends React.Component<Properties> {
   }
 
   renderNoNotifications() {
-    return <div className={styles.NoNotifications}>No new notifications</div>;
+    const message = {
+      [Tab.All]: 'No new notifications',
+      [Tab.Highlights]: 'No new highlights',
+      [Tab.Muted]: 'No notifications in muted conversations',
+    }[this.state.selectedTab];
+
+    return <div className={styles.NoNotifications}>{message}</div>;
   }
 
   renderLoading() {
@@ -96,9 +172,10 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    const { conversations, isConversationsLoaded } = this.props;
+    const { isConversationsLoaded } = this.props;
+    const filteredConversations = this.getFilteredConversations();
 
-    const isEmptyState = conversations.length === 0 && isConversationsLoaded;
+    const isEmptyState = filteredConversations.length === 0 && isConversationsLoaded;
     const isLoadingState = !isConversationsLoaded;
 
     return (
@@ -109,7 +186,8 @@ export class Container extends React.Component<Properties> {
           </div>
 
           <div className={styles.Body}>
-            <ol className={styles.Notifications}>{!isEmptyState && this.renderNotifications()}</ol>
+            {this.renderTabs()}
+            <ol className={styles.Notifications}>{!isEmptyState && this.renderNotifications(filteredConversations)}</ol>
 
             {isEmptyState && this.renderNoNotifications()}
             {isLoadingState && this.renderLoading()}

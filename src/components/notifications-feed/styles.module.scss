@@ -89,4 +89,28 @@
     padding: 24px;
     border-bottom: 1px solid rgba(52, 56, 60, 0.75);
   }
+
+  .TabContainer {
+    border-bottom: 1px solid rgb(52, 56, 60);
+  }
+
+  .ToggleGroup {
+    background-color: transparent;
+
+    & > button {
+      font-size: 14px;
+      background-color: transparent;
+      padding: 16px;
+      border-radius: 0 !important;
+
+      &:hover {
+        background-color: rgba(253, 252, 253, 0.05);
+      }
+
+      &[data-state='on'] {
+        background-color: rgba(253, 252, 253, 0.05);
+        color: theme.$color-secondary-11;
+      }
+    }
+  }
 }

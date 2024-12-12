@@ -263,7 +263,7 @@ describe('ChatView', () => {
       ];
 
       const wrapper = subject({ messages });
-      expect(wrapper.find('.message__header-date').text()).toEqual('Wed, Dec 11');
+      expect(wrapper.find('.message__header-date').text()).toEqual('Dec 11, 2025');
     });
 
     it('returns the formatted date for previous years', () => {

@@ -12,7 +12,6 @@ import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { bemClassName } from '../../lib/bem';
 import './login.scss';
 
-import { FeatureFlag } from '../../components/feature-flag';
 import { assertAllValuesConsumed } from '../../lib/enum';
 
 const cn = bemClassName('login-main');
@@ -65,13 +64,11 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
         <span>
           Not on ZERO? <Link to='/get-access'>Create account</Link>
         </span>
-        <FeatureFlag featureFlag={'resetPasswordPage'}>
-          {stage === LoginStage.EmailLogin && (
-            <span>
-              Forgot your password? <Link to='/reset-password'>Reset</Link>
-            </span>
-          )}
-        </FeatureFlag>
+        {stage === LoginStage.EmailLogin && (
+          <span>
+            Forgot your password? <Link to='/reset-password'>Reset</Link>
+          </span>
+        )}
       </div>
     );
   }

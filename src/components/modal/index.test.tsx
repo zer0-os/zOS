@@ -9,6 +9,7 @@ const c = bem('.modal');
 describe(Modal, () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
+      className: 'stub-class',
       title: 'stub title',
       primaryVariant: Variant.Primary,
       primaryColor: Color.Highlight,

@@ -21,6 +21,7 @@ export enum Color {
 }
 
 export interface Properties {
+  className?: string;
   children?: React.ReactNode;
   title: string;
   primaryText?: string;
@@ -57,7 +58,7 @@ export class Modal extends React.Component<Properties> {
 
   render() {
     return (
-      <ZuiModal open={true} onOpenChange={this.publishIfClosing}>
+      <ZuiModal open={true} onOpenChange={this.publishIfClosing} className={this.props.className}>
         <div {...cn('')}>
           <div {...cn('title-bar')}>
             <h3 {...cn('title')}>{this.props.title}</h3>

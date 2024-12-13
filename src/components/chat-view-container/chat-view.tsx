@@ -16,7 +16,6 @@ import { ChatSkeleton } from './chat-skeleton';
 import { createMessageGroups, filterAdminMessages, getMessageRenderProps } from './utils';
 import { MessagesFetchState } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
-import { Lightbox } from '../lightbox';
 
 // Note: this is the component convention. Existing styles reference channel-view which
 // is old and can be migrated to this component.
@@ -55,18 +54,16 @@ export interface Properties {
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (messageId, key) => void;
   onReportUser: (payload: { reportedUserId: string }) => void;
+  openLightbox: (payload: { media: any[]; startingIndex: number }) => void;
 }
 
 export interface State {
-  lightboxMedia: any[];
-  lightboxStartIndex: number;
-  isLightboxOpen: boolean;
   rendered: boolean;
 }
 
 export class ChatView extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<InvertedScroll>;
-  state = { lightboxMedia: [], lightboxStartIndex: 0, isLightboxOpen: false, rendered: false };
+  state = { rendered: false };
 
   constructor(props) {
     super(props);
@@ -104,12 +101,7 @@ export class ChatView extends React.Component<Properties, State> {
 
     const lightboxStartIndex = lightboxMedia.indexOf(media);
 
-    this.setState({ lightboxMedia, lightboxStartIndex, isLightboxOpen: true });
-  };
-
-  closeLightBox = (e) => {
-    e?.stopPropagation?.();
-    this.setState({ isLightboxOpen: false });
+    this.props.openLightbox({ media: lightboxMedia, startingIndex: lightboxStartIndex });
   };
 
   openMessageInfo = (messageId: number) => {
@@ -244,23 +236,8 @@ export class ChatView extends React.Component<Properties, State> {
   }
 
   render() {
-    const { isLightboxOpen, lightboxMedia, lightboxStartIndex } = this.state;
-
     return (
       <div className={classNames('channel-view', this.props.className)}>
-        {isLightboxOpen && (
-          <Lightbox
-            // since we are displaying images from a local blob url (instead of a cloudinary url),
-            // we need to provide a custom provider which just returns the src directly.
-            provider={{
-              fitWithinBox: () => {},
-              getSource: ({ src }) => src,
-            }}
-            items={lightboxMedia}
-            startingIndex={lightboxStartIndex}
-            onClose={this.closeLightBox}
-          />
-        )}
         <InvertedScroll
           className='channel-view__inverted-scroll'
           isScrollbarHidden={this.props.isSecondarySidekickOpen}

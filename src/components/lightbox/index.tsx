@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { default as ReactImageLightbox } from 'react-image-lightbox';
-import { useEscapeManager } from './useEscapeManager';
-import { IconCopy2, IconDownload2 } from '@zero-tech/zui/components/Icons';
+import React, { useState } from 'react';
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconCopy2,
+  IconDownload2,
+  IconXClose,
+} from '@zero-tech/zui/components/Icons';
+import { IconButton, Modal as ZuiModal } from '@zero-tech/zui/components';
 
-import 'react-image-lightbox/style.css';
 import styles from './styles.module.scss';
 
 export interface LightboxProps {
@@ -22,14 +26,8 @@ export interface LightboxProps {
 export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: LightboxProps) => {
   const [index, setIndex] = useState(startingIndex);
   const [isCopied, setIsCopied] = useState(false);
-  const escapeManager = useEscapeManager();
   const currentItem = items[index];
   const isCurrentItemGif = currentItem?.mimetype === 'image/gif';
-
-  useEffect(() => {
-    escapeManager?.register(onClose);
-    return () => escapeManager?.unregister();
-  }, [escapeManager, onClose]);
 
   const copyImage = async () => {
     const currentItem = items[index];
@@ -116,49 +114,45 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
     return media.url;
   });
 
-  const activeItem = processedItems[index];
-  const previousItem = processedItems.length > 1 ? processedItems[getPreviousItemIndex(index)] : null;
-  const nextItem = processedItems.length > 1 ? processedItems[getNextItemIndex(index)] : null;
-
   return (
-    <ReactImageLightbox
-      mainSrc={activeItem}
-      nextSrc={nextItem}
-      prevSrc={previousItem}
-      animationOnKeyInput
-      enableZoom={false}
-      wrapperClassName={styles.Lightbox}
-      onCloseRequest={onClose}
-      onMovePrevRequest={() => setIndex(getPreviousItemIndex(index))}
-      onMoveNextRequest={() => setIndex(getNextItemIndex(index))}
-      toolbarButtons={[
-        !isCurrentItemGif && (
-          <button
-            key='copy'
-            onClick={(e) => {
-              e.stopPropagation();
-              copyImage();
-            }}
-            className={styles.DownloadButton}
-            aria-label='Copy image'
-          >
-            <IconCopy2 size={28} isFilled={isCopied} />
-          </button>
-        ),
-        !isCurrentItemGif && (
-          <button
-            key='download'
-            onClick={(e) => {
-              e.stopPropagation();
-              downloadImage();
-            }}
-            className={styles.DownloadButton}
-            aria-label='Download image'
-          >
-            <IconDownload2 size={28} />
-          </button>
-        ),
-      ].filter(Boolean)}
-    />
+    <ZuiModal open={true} onOpenChange={() => onClose?.()} className={styles.Lightbox}>
+      <div className={styles.Container}>
+        <div className={styles.TopBar}>
+          <div className={styles.Tools}>
+            {!isCurrentItemGif && (
+              <>
+                <IconButton onClick={copyImage} Icon={IconCopy2} size='large' isFilled={isCopied} />
+                <IconButton onClick={downloadImage} Icon={IconDownload2} size='large' />
+              </>
+            )}
+          </div>
+          <IconButton onClick={onClose} Icon={IconXClose} size='large' />
+        </div>
+
+        <div className={styles.Content}>
+          {items.length > 1 && (
+            <IconButton
+              className={styles.NavButton}
+              onClick={() => setIndex(getPreviousItemIndex(index))}
+              Icon={IconChevronLeft}
+              size='large'
+            />
+          )}
+
+          <div className={styles.ImageContainer}>
+            <img src={processedItems[index]} alt='' className={styles.Image} />
+          </div>
+
+          {items.length > 1 && (
+            <IconButton
+              className={styles.NavButton}
+              onClick={() => setIndex(getNextItemIndex(index))}
+              Icon={IconChevronRight}
+              size='large'
+            />
+          )}
+        </div>
+      </div>
+    </ZuiModal>
   );
 };

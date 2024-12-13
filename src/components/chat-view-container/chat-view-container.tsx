@@ -20,7 +20,7 @@ import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messag
 import { openBackupDialog } from '../../store/matrix';
 import { ParentMessage } from '../../lib/chat/types';
 import { compareDatesAsc } from '../../lib/date';
-import { openDeleteMessage } from '../../store/dialogs';
+import { openDeleteMessage, openLightbox } from '../../store/dialogs';
 import { openMessageInfo } from '../../store/message-info';
 import { toggleSecondarySidekick } from '../../store/group-management';
 import { linkMessages, mapMessagesById, mapMessagesByRootId } from './utils';
@@ -44,6 +44,7 @@ export interface Properties extends PublicProperties {
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (payload: { roomId: string; messageId: string; key: string }) => void;
   openReportUserModal: (payload: { reportedUserId: string }) => void;
+  openLightbox: (payload: { media: any[]; startingIndex: number }) => void;
 }
 
 interface PublicProperties {
@@ -89,6 +90,7 @@ export class Container extends React.Component<Properties> {
       loadAttachmentDetails,
       sendEmojiReaction,
       openReportUserModal,
+      openLightbox,
     };
   }
 
@@ -249,6 +251,7 @@ export class Container extends React.Component<Properties> {
           openMessageInfo={this.props.openMessageInfo}
           loadAttachmentDetails={this.props.loadAttachmentDetails}
           sendEmojiReaction={this.sendEmojiReaction}
+          openLightbox={this.props.openLightbox}
         />
       </>
     );

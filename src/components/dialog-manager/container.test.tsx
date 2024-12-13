@@ -8,9 +8,10 @@ import { LogoutConfirmationModalContainer } from '../logout-confirmation-modal/c
 import { RewardsModalContainer } from '../rewards-modal/container';
 import { closeRewardsDialog } from '../../store/rewards';
 import { DeleteMessageContainer } from '../delete-message-dialog/container';
-import { closeDeleteMessage } from '../../store/dialogs';
+import { closeDeleteMessage, closeLightbox } from '../../store/dialogs';
 import { ReportUserContainer } from '../report-user-dialog/container';
 import { closeReportUserModal } from '../../store/report-user';
+import { Lightbox } from '../lightbox';
 
 describe('DialogManager', () => {
   const subject = (props: Partial<Properties>) => {
@@ -20,10 +21,16 @@ describe('DialogManager', () => {
       isRewardsDialogOpen: false,
       deleteMessageId: null,
       isReportUserModalOpen: false,
+      lightbox: {
+        isOpen: false,
+        media: [],
+        startingIndex: 0,
+      },
       closeBackupDialog: () => null,
       closeRewardsDialog: () => null,
       closeDeleteMessage: () => null,
       closeReportUserModal: () => null,
+      closeLightbox: () => null,
 
       ...props,
     };
@@ -100,6 +107,22 @@ describe('DialogManager', () => {
     expect(wrapper).not.toHaveElement(ReportUserContainer);
   });
 
+  it('renders Lightbox when lightbox.isOpen is true', () => {
+    const wrapper = subject({
+      lightbox: { isOpen: true, media: [], startingIndex: 0 },
+    });
+
+    expect(wrapper).toHaveElement(Lightbox);
+  });
+
+  it('does not render Lightbox when lightbox.isOpen is false', () => {
+    const wrapper = subject({
+      lightbox: { isOpen: false, media: [], startingIndex: 0 },
+    });
+
+    expect(wrapper).not.toHaveElement(Lightbox);
+  });
+
   describe('mapState', () => {
     const stateMock: RootState = {
       authentication: {
@@ -113,6 +136,11 @@ describe('DialogManager', () => {
       },
       dialogs: {
         deleteMessageId: 123,
+        lightbox: {
+          isOpen: true,
+          media: [],
+          startingIndex: 0,
+        },
       },
       reportUser: {
         isReportUserModalOpen: true,
@@ -148,6 +176,16 @@ describe('DialogManager', () => {
 
       expect(props.isReportUserModalOpen).toBe(true);
     });
+
+    it('returns lightbox', () => {
+      const props = Container.mapState(stateMock);
+
+      expect(props.lightbox).toEqual({
+        isOpen: true,
+        media: [],
+        startingIndex: 0,
+      });
+    });
   });
 
   describe('mapActions', () => {
@@ -177,6 +215,13 @@ describe('DialogManager', () => {
 
       expect(actions.closeReportUserModal).toBeDefined();
       expect(actions.closeReportUserModal).toEqual(closeReportUserModal);
+    });
+
+    it('returns closeLightbox action', () => {
+      const actions = Container.mapActions({} as any);
+
+      expect(actions.closeLightbox).toBeDefined();
+      expect(actions.closeLightbox).toEqual(closeLightbox);
     });
   });
 });

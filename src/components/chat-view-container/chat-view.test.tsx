@@ -50,6 +50,7 @@ describe('ChatView', () => {
       loadAttachmentDetails: () => null,
       sendEmojiReaction: () => null,
       onReportUser: () => null,
+      openLightbox: () => null,
       ...props,
     };
 

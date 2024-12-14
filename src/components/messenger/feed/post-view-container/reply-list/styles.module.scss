@@ -1,0 +1,17 @@
+.Replies {
+  width: 100%;
+
+  ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.Reply {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--color-greyscale-7);
+  border-top: none;
+  padding: 16px;
+}

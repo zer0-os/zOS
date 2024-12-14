@@ -15,7 +15,7 @@ const redirectToRoot = () => <Redirect to={'/'} />;
 export const AppRouter = () => {
   return (
     <Switch>
-      <Route path='/conversation/:conversationId' exact component={MessengerApp} />
+      <Route path='/conversation/:conversationId' component={MessengerApp} />
       <Route path='/' exact component={MessengerApp} />
       <Route path='/explorer' component={ExplorerApp} />
       {featureFlags.enableNotificationsApp && <Route path='/notifications' component={NotificationsApp} />}

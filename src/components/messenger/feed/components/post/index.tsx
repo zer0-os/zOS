@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import moment from 'moment';
 import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
 import { Avatar } from '@zero-tech/zui/components';
@@ -6,11 +7,16 @@ import { MeowAction } from './actions/meow';
 import { featureFlags } from '../../../../../lib/feature-flags';
 import { Media, MediaDownloadStatus, MediaType } from '../../../../../store/messages';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
-
-import styles from './styles.module.scss';
+import { ReplyAction } from './actions/reply/reply-action';
 import { formatWeiAmount } from '../../../../../lib/number';
 
+import classNames from 'classnames';
+import styles from './styles.module.scss';
+
+type Variant = 'default' | 'expanded';
+
 export interface PostProps {
+  className?: string;
   currentUserId?: string;
   messageId: string;
   avatarUrl?: string;
@@ -22,12 +28,15 @@ export interface PostProps {
   ownerUserId?: string;
   userMeowBalance?: string;
   reactions?: { [key: string]: number };
+  variant?: Variant;
+  numberOfReplies?: number;
 
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   meowPost: (postId: string, meowAmount: string) => void;
 }
 
 export const Post = ({
+  className,
   currentUserId,
   messageId,
   avatarUrl,
@@ -41,11 +50,14 @@ export const Post = ({
   reactions,
   loadAttachmentDetails,
   meowPost,
+  variant = 'default',
+  numberOfReplies = 0,
 }: PostProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const isMeowsEnabled = featureFlags.enableMeows;
-  const isDisabled = formatWeiAmount(userMeowBalance) <= '0' || ownerUserId === currentUserId;
+  const isDisabled =
+    formatWeiAmount(userMeowBalance) <= '0' || ownerUserId?.toLowerCase() === currentUserId?.toLowerCase();
 
   const multilineText = useMemo(
     () =>
@@ -139,16 +151,21 @@ export const Post = ({
   );
 
   return (
-    <div className={styles.Container} has-author={author ? '' : null}>
-      <div className={styles.Avatar}>
-        <Avatar size='regular' imageURL={avatarUrl} />
-      </div>
+    <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
+      {variant === 'default' && (
+        <div className={styles.Avatar}>
+          <Avatar size='regular' imageURL={avatarUrl} />
+        </div>
+      )}
       <ZUIPost
         className={styles.Post}
         body={
           <div className={styles.Body}>
             {multilineText}
             {media && renderMedia(media)}
+            {variant === 'expanded' && (
+              <span className={styles.Date}>{moment(timestamp).format('h:mm A - D MMM YYYY')}</span>
+            )}
           </div>
         }
         details={
@@ -167,19 +184,30 @@ export const Post = ({
             )}
           </>
         }
-        options={<Timestamp className={styles.Date} timestamp={timestamp} />}
+        options={variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
         actions={
           isMeowsEnabled && (
-            <MeowAction
-              meows={reactions?.MEOW || 0}
-              isDisabled={isDisabled}
-              messageId={messageId}
-              meowPost={meowPost}
-              hasUserVoted={reactions?.VOTED > 0}
-            />
+            <Actions variant={variant}>
+              <MeowAction
+                meows={reactions?.MEOW || 0}
+                isDisabled={isDisabled}
+                messageId={messageId}
+                meowPost={meowPost}
+                hasUserVoted={reactions?.VOTED > 0}
+              />
+              {featureFlags.enableComments && <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />}
+            </Actions>
           )
         }
       />
+    </div>
+  );
+};
+
+export const Actions = ({ children, variant }: { children: React.ReactNode; variant: Variant }) => {
+  return (
+    <div className={styles.Actions} data-variant={variant}>
+      {children}
     </div>
   );
 };

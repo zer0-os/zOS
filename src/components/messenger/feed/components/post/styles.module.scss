@@ -18,6 +18,12 @@
       margin-top: 4px;
     }
   }
+
+  &[data-variant='expanded'] {
+    article {
+      gap: 16px;
+    }
+  }
 }
 
 .Post {
@@ -113,4 +119,20 @@
   filter: none;
   border: none;
   color: theme.$color-failure-11;
+}
+
+.Actions {
+  display: inherit;
+  gap: inherit;
+
+  width: 100%;
+
+  &[data-variant='expanded'] {
+    padding: 16px 0;
+    gap: 16px;
+
+    border: 1px solid rgba(52, 56, 60, 0.5);
+    border-left: none;
+    border-right: none;
+  }
 }

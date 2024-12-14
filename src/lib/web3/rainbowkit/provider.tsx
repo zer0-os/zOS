@@ -6,7 +6,7 @@ import { getWagmiConfig } from '../wagmi-config';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RainbowKitProvider as RKProvider, darkTheme } from '@rainbow-me/rainbowkit';
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 export interface RainbowKitProviderProps {
   children: ReactNode;

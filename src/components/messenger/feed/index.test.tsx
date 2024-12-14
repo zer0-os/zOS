@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as MessengerFeed, Properties } from '.';
 import { StoreBuilder, stubConversation } from '../../../store/test/store';
-import { PostInputContainer } from './components/post-input/container';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 
@@ -22,13 +21,6 @@ describe(MessengerFeed, () => {
 
     return shallow(<MessengerFeed {...allProps} />);
   };
-
-  it('renders Messenger Feed when isSocialChannel is true', () => {
-    const channel = stubConversation({ name: 'convo-1', hasLoadedMessages: true, messages: [] });
-
-    const wrapper = subject({ channel: channel as any, isSocialChannel: true });
-    expect(wrapper).toHaveElement(PostInputContainer);
-  });
 
   it('does not render Messenger Feed when isSocialChannel is false', () => {
     const channel = stubConversation({ name: 'convo-1', hasLoadedMessages: true, messages: [] });

@@ -62,6 +62,8 @@ export function mapPostToMatrixMessage(post) {
       firstName: post.user?.profileSummary?.firstName,
       displaySubHandle: '0://' + post.zid,
     },
+    replyTo: post.replyToPost,
+    numberOfReplies: post.replies?.length ?? 0,
   };
 }
 
@@ -74,19 +76,25 @@ export async function uploadPost(formData: FormData, worldZid: string) {
   return new Promise(async (resolve, reject) => {
     const endpoint = `/api/v2/posts/channel/${worldZid}`;
 
-    return post(endpoint)
+    let request = post(endpoint)
       .field('text', formData.get('text'))
       .field('unsignedMessage', formData.get('unsignedMessage'))
       .field('signedMessage', formData.get('signedMessage'))
       .field('zid', formData.get('zid'))
-      .field('walletAddress', formData.get('walletAddress'))
-      .end((err, res) => {
-        if (err) {
-          reject(new Error(res.body.message ?? 'Failed to upload post'));
-        } else {
-          resolve(res.body);
-        }
-      });
+      .field('walletAddress', formData.get('walletAddress'));
+
+    const replyTo = formData.get('replyTo');
+    if (replyTo) {
+      request = request.field('replyTo', replyTo);
+    }
+
+    request.end((err, res) => {
+      if (err) {
+        reject(new Error(res.body.message ?? 'Failed to upload post'));
+      } else {
+        resolve(res.body);
+      }
+    });
   });
 }
 
@@ -123,7 +131,7 @@ export async function getPostsInChannel(channelZna: string, limit: number, skip:
   const endpoint = `/api/v2/posts/channel/${channelZna}`;
 
   try {
-    const res = await get(endpoint, undefined, { limit, skip });
+    const res = await get(endpoint, undefined, { limit, skip, include_replies: true });
 
     if (!res.ok || !res.body) {
       throw new Error(res);
@@ -134,4 +142,26 @@ export async function getPostsInChannel(channelZna: string, limit: number, skip:
     console.error('Failed to fetch posts', e);
     throw new Error('Failed to fetch posts');
   }
+}
+
+/**
+ * Gets a post from the API.
+ * @param postId the post to fetch
+ */
+export async function getPost(postId: string) {
+  const endpoint = `/api/v2/posts/${postId}`;
+
+  try {
+    const res = await get(endpoint, undefined, { include_replies: true });
+    return res.body;
+  } catch (e) {
+    console.error('Failed to fetch post', e);
+    throw new Error('Failed to fetch post');
+  }
+}
+
+export async function getPostReplies(postId: string, { limit, skip }: { limit: number; skip: number }) {
+  const endpoint = `/api/v2/posts/${postId}/replies`;
+  const res = await get(endpoint, undefined, { limit, skip, include_replies: true });
+  return res.body;
 }

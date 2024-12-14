@@ -14,6 +14,7 @@ export enum SagaActionTypes {
   MeowPost = 'posts/saga/meowPost',
   RefetchPosts = 'posts/saga/refetchPosts',
   PollPosts = 'posts/saga/pollPosts',
+  FetchPost = 'posts/saga/fetchPost',
 }
 
 export type PostsState = {
@@ -21,6 +22,8 @@ export type PostsState = {
   isSubmitting: boolean;
   initialCount?: number;
   count?: number;
+  loadedPost?: Message;
+  isLoadingPost: boolean;
 };
 
 export const initialState: PostsState = {
@@ -28,6 +31,7 @@ export const initialState: PostsState = {
   isSubmitting: false,
   initialCount: undefined,
   count: undefined,
+  isLoadingPost: false,
 };
 
 export const sendPost = createAction<PostPayload>(SagaActionTypes.SendPost);
@@ -35,7 +39,7 @@ export const fetchPosts = createAction<Payload>(SagaActionTypes.FetchPosts);
 export const meowPost = createAction<{
   postId: string;
   meowAmount: string;
-  channelId: string;
+  channelId?: string;
 }>(SagaActionTypes.MeowPost);
 export const refetchPosts = createAction<{
   channelId: string;
@@ -43,6 +47,9 @@ export const refetchPosts = createAction<{
 export const pollPosts = createAction<{
   channelId: string;
 }>(SagaActionTypes.PollPosts);
+export const fetchPost = createAction<{
+  postId: string;
+}>(SagaActionTypes.FetchPost);
 
 const slice = createSlice({
   name: 'posts',
@@ -60,8 +67,14 @@ const slice = createSlice({
     setCount: (state, action) => {
       state.count = action.payload;
     },
+    setPost: (state, action) => {
+      state.loadedPost = action.payload;
+    },
+    setIsLoadingPost: (state, action) => {
+      state.isLoadingPost = action.payload;
+    },
   },
 });
 
-export const { setError, setIsSubmitting, setInitialCount, setCount } = slice.actions;
+export const { setError, setIsSubmitting, setInitialCount, setCount, setPost, setIsLoadingPost } = slice.actions;
 export const { reducer } = slice;

@@ -21,6 +21,7 @@ export const Posts = ({ postMessages, loadAttachmentDetails, userMeowBalance, cu
             userMeowBalance={userMeowBalance}
             reactions={post.reactions}
             meowPost={meowPost}
+            numberOfReplies={post.numberOfReplies}
           />
         </li>
       ))}

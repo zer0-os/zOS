@@ -1,21 +1,21 @@
 import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { ScrollbarContainer } from '../../scrollbar-container';
 import { PostPayload as PayloadPostMessage } from '../../../store/posts/saga';
 import { Channel, denormalize } from '../../../store/channels';
 import { sendPost } from '../../../store/posts';
-import { FeedViewContainer } from './feed-view-container/feed-view-container';
-import { PostInputContainer as PostInput } from './components/post-input/container';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
+import { Switch, Route } from 'react-router-dom';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 
 // should move this to a shared location
 import { Media } from '../../message-input/utils';
+import { PostView } from './post-view-container';
+import { MainFeed } from './components/main-feed';
 
 const cn = bemClassName('messenger-feed');
 
@@ -109,12 +109,14 @@ export class Container extends React.Component<Properties> {
           </div>
         </div>
 
-        <ScrollbarContainer variant='on-hover'>
-          <PostInput id={activeConversationId} onSubmit={this.submitPost} isSubmitting={this.isSubmitting} />
-
-          <FeedViewContainer channelId={activeConversationId} />
-        </ScrollbarContainer>
-
+        <Switch>
+          <Route
+            path='/conversation/:conversationId/:postId'
+            exact
+            render={(props) => <PostView postId={props.match.params.postId} />}
+          />
+          <Route path='/conversation/:conversationId' exact component={MainFeed} />
+        </Switch>
         {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
       </div>
     );

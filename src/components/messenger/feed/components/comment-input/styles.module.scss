@@ -1,0 +1,11 @@
+.Input {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-top: 0;
+  border: none;
+
+  [class*='__create-outer'] {
+    padding: 0;
+    border: none;
+  }
+}

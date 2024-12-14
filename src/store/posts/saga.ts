@@ -2,7 +2,7 @@ import { takeLatest, call, select, put, delay } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
 import BN from 'bn.js';
 
-import { SagaActionTypes, setCount, setError, setInitialCount } from '.';
+import { SagaActionTypes, setCount, setError, setInitialCount, setIsLoadingPost, setPost } from '.';
 import { MediaType } from '../messages';
 import { messageSelector, rawMessagesSelector } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
@@ -20,9 +20,11 @@ import {
   uploadPost,
   meowPost as meowPostApi,
   getPostsInChannel,
+  getPost,
 } from './utils';
 import { ethers } from 'ethers';
 import { get } from '../../lib/api/rest';
+import { queryClient } from '../../lib/web3/rainbowkit/provider';
 
 export interface Payload {
   channelId: string;
@@ -43,10 +45,27 @@ export interface PostPayload {
   message?: string;
   files?: MediaInfo[];
   optimisticId?: string;
+  replyToId?: string;
+}
+
+export function* fetchPost(action) {
+  yield put(setIsLoadingPost(true));
+  yield put(setPost(undefined));
+  try {
+    const { postId } = action.payload;
+    const res = yield call(getPost, postId);
+    const post = mapPostToMatrixMessage(res.post);
+    yield put(setPost(post));
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    yield put(setPost(undefined));
+  } finally {
+    yield put(setIsLoadingPost(false));
+  }
 }
 
 export function* sendPost(action) {
-  const { channelId, message } = action.payload;
+  const { channelId, message, replyToId } = action.payload;
 
   const channel = yield select(rawChannelSelector(channelId));
 
@@ -125,6 +144,9 @@ export function* sendPost(action) {
     formData.append('signedMessage', signedPost);
     formData.append('zid', userZid);
     formData.append('walletAddress', connectedAddress);
+    if (replyToId) {
+      formData.append('replyTo', replyToId);
+    }
 
     let res;
 
@@ -141,24 +163,31 @@ export function* sendPost(action) {
     const existingPosts = yield select(rawMessagesSelector(channelId));
     const filteredPosts = existingPosts.filter((m) => !m.startsWith('$'));
 
-    yield call(receiveChannel, {
-      id: channelId,
-      messages: [
-        ...filteredPosts,
-        mapPostToMatrixMessage({
-          createdAt,
-          id: res.id,
-          text: message,
-          user: {
-            profileSummary: {
-              firstName: user.profileSummary?.firstName,
+    if (!replyToId) {
+      yield call(receiveChannel, {
+        id: channelId,
+        messages: [
+          ...filteredPosts,
+          mapPostToMatrixMessage({
+            createdAt,
+            id: res.id,
+            text: message,
+            user: {
+              profileSummary: {
+                firstName: user.profileSummary?.firstName,
+              },
             },
-          },
-          userId: user.id,
-          zid: userZid,
-        }),
-      ],
-    });
+            userId: user.id,
+            zid: userZid,
+          }),
+        ],
+      });
+    } else {
+      // We're using a weird combination of react-query and redux-saga here...
+      // This is temporary until we separate the Feed app from the Messenger app.
+      queryClient.invalidateQueries({ queryKey: ['posts', { postId: replyToId }] });
+      queryClient.invalidateQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
+    }
 
     const initialCount = yield select((state) => state.posts.initialCount);
     if (initialCount !== undefined) {
@@ -231,25 +260,32 @@ function* meowPost(action) {
   try {
     const meowAmountWei = ethers.utils.parseEther(meowAmount.toString());
 
-    const existingPost = yield select(messageSelector(postId));
-    const meow = new BN(existingPost.reactions.MEOW ?? 0).add(new BN(meowAmount)).toString();
-    const updatedPost = { ...existingPost, reactions: { ...existingPost.reactions, MEOW: meow, VOTED: 1 } };
+    let existingPost, existingMessages;
 
-    const existingMessages = yield select(rawMessagesSelector(channelId));
-    const updatedMessages = existingMessages.map((message) => (message === postId ? updatedPost : message));
+    if (channelId) {
+      existingPost = yield select(messageSelector(postId));
+      const meow = new BN(existingPost.reactions.MEOW ?? 0).add(new BN(meowAmount)).toString();
+      const updatedPost = { ...existingPost, reactions: { ...existingPost.reactions, MEOW: meow, VOTED: 1 } };
 
-    yield call(receiveChannel, { id: channelId, messages: updatedMessages });
-    yield call(updateUserMeowBalance, existingPost.sender.userId, meowAmount);
-    yield call(updateUserMeowBalance, user.id, Number(meowAmount ?? 0) * -1);
+      existingMessages = yield select(rawMessagesSelector(channelId));
+      const updatedMessages = existingMessages.map((message) => (message === postId ? updatedPost : message));
+
+      yield call(receiveChannel, { id: channelId, messages: updatedMessages });
+      yield call(updateUserMeowBalance, existingPost.sender.userId, meowAmount);
+      yield call(updateUserMeowBalance, user.id, Number(meowAmount ?? 0) * -1);
+    }
 
     const res = yield call(meowPostApi, postId, meowAmountWei.toString());
 
-    if (!res.ok) {
+    if (!res.ok && channelId) {
       yield call(receiveChannel, { id: channelId, messages: existingMessages });
       yield call(updateUserMeowBalance, existingPost.sender.userId, Number(meowAmount) * -1);
       yield call(updateUserMeowBalance, user.id, Number(meowAmount));
-      throw new Error('Failed to submit post');
+      throw new Error('Failed to MEOW post');
     }
+
+    queryClient.invalidateQueries({ queryKey: ['posts', { postId }] });
+    queryClient.invalidateQueries({ queryKey: ['posts', 'replies', { postId }] });
   } catch (e) {
     console.error(e);
   }
@@ -313,5 +349,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.MeowPost, meowPost);
   yield takeLatest(SagaActionTypes.RefetchPosts, refetchPosts);
   yield takeLatest(SagaActionTypes.PollPosts, pollPosts);
+  yield takeLatest(SagaActionTypes.FetchPost, fetchPost);
   yield takeLatest(ChannelsEvents.OpenConversation, reset);
 }

@@ -11,6 +11,7 @@ import { ViewModes } from '../../../../../shared-components/theme-engine';
 import { IconFaceSmile } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../../lib/bem';
+import classNames from 'classnames';
 import './styles.scss';
 
 // should move these to a shared location
@@ -204,7 +205,7 @@ export class PostInput extends React.Component<Properties, State> {
                       {...cn('input')}
                       onChange={this.onChange}
                       onKeyDown={this.onKeyDown}
-                      placeholder='Write a Post...'
+                      placeholder={this.props.variant === 'comment' ? 'Write a Comment...' : 'Write a Post...'}
                       ref={this.textareaRef}
                       rows={2}
                       value={this.state.value}
@@ -258,6 +259,6 @@ export class PostInput extends React.Component<Properties, State> {
   }
 
   render() {
-    return <div {...cn('')}>{this.renderInput()}</div>;
+    return <div className={classNames(cn('').className, this.props.className)}>{this.renderInput()}</div>;
   }
 }

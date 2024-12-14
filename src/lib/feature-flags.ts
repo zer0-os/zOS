@@ -161,6 +161,14 @@ export class FeatureFlags {
   set enableLoadMore(value: boolean) {
     this._setBoolean('enableLoadMore', value);
   }
+
+  get enableComments() {
+    return this._getBoolean('enableComments', false);
+  }
+
+  set enableComments(value: boolean) {
+    this._setBoolean('enableComments', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

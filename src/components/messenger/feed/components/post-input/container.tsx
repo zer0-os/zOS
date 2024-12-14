@@ -16,6 +16,8 @@ export interface PublicProperties {
   initialValue?: string;
   isSubmitting?: boolean;
   error?: string;
+  className?: string;
+  variant?: 'comment' | 'post';
 
   onSubmit: (message: string, media: Media[]) => void;
   onPostInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
@@ -58,6 +60,7 @@ export class Container extends React.Component<Properties> {
     return (
       <PostInput
         id={this.props.id}
+        className={this.props.className}
         error={this.props.error}
         initialValue={this.props.initialValue}
         isSubmitting={this.props.isSubmitting}
@@ -66,6 +69,7 @@ export class Container extends React.Component<Properties> {
         avatarUrl={this.props.user.data?.profileSummary.profileImage}
         viewMode={this.props.viewMode}
         isWalletConnected={this.props.isWalletConnected}
+        variant={this.props.variant ?? 'post'}
       />
     );
   }

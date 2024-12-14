@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container as MessengerFeed, Properties } from '.';
 import { StoreBuilder, stubConversation } from '../../../store/test/store';
-import { MainFeed } from './components/main-feed';
 import { LeaveGroupDialogStatus } from '../../../store/group-management';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 

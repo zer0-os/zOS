@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -6,7 +6,7 @@ import {
   IconDownload2,
   IconXClose,
 } from '@zero-tech/zui/components/Icons';
-import { IconButton, Modal as ZuiModal } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
 
 import styles from './styles.module.scss';
 
@@ -98,13 +98,19 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
     document.body.removeChild(link);
   };
 
-  const getPreviousItemIndex = (currentIndex: number) => {
-    return (currentIndex + items.length - 1) % items.length;
-  };
+  const getPreviousItemIndex = useCallback(
+    (currentIndex: number) => {
+      return (currentIndex + items.length - 1) % items.length;
+    },
+    [items]
+  );
 
-  const getNextItemIndex = (currentIndex: number) => {
-    return (currentIndex + items.length + 1) % items.length;
-  };
+  const getNextItemIndex = useCallback(
+    (currentIndex: number) => {
+      return (currentIndex + items.length + 1) % items.length;
+    },
+    [items]
+  );
 
   const processedItems = items.map((media) => {
     if (media.type === 'image') {
@@ -114,9 +120,44 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
     return media.url;
   });
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose?.(e);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowLeft':
+          if (items.length > 1) {
+            setIndex(getPreviousItemIndex(index));
+          }
+          break;
+        case 'ArrowRight':
+          if (items.length > 1) {
+            setIndex(getNextItemIndex(index));
+          }
+          break;
+        case 'Escape':
+          onClose?.();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    getNextItemIndex,
+    getPreviousItemIndex,
+    index,
+    items.length,
+    onClose,
+  ]);
+
   return (
-    <ZuiModal open={true} onOpenChange={() => onClose?.()} className={styles.Lightbox}>
-      <div className={styles.Container}>
+    <div className={styles.Overlay} onClick={handleOverlayClick}>
+      <div className={styles.Controls}>
         <div className={styles.TopBar}>
           <div className={styles.Tools}>
             {!isCurrentItemGif && (
@@ -129,30 +170,31 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
           <IconButton onClick={onClose} Icon={IconXClose} size='large' />
         </div>
 
-        <div className={styles.Content}>
-          {items.length > 1 && (
+        {items.length > 1 && (
+          <>
             <IconButton
-              className={styles.NavButton}
+              className={`${styles.NavButton} ${styles.NavButtonLeft}`}
               onClick={() => setIndex(getPreviousItemIndex(index))}
               Icon={IconChevronLeft}
               size='large'
             />
-          )}
-
-          <div className={styles.ImageContainer}>
-            <img src={processedItems[index]} alt='' className={styles.Image} />
-          </div>
-
-          {items.length > 1 && (
             <IconButton
-              className={styles.NavButton}
+              className={`${styles.NavButton} ${styles.NavButtonRight}`}
               onClick={() => setIndex(getNextItemIndex(index))}
               Icon={IconChevronRight}
               size='large'
             />
-          )}
+          </>
+        )}
+      </div>
+
+      <div className={styles.Container}>
+        <div className={styles.Content}>
+          <div className={styles.ImageContainer}>
+            <img src={processedItems[index]} alt='' className={styles.Image} />
+          </div>
         </div>
       </div>
-    </ZuiModal>
+    </div>
   );
 };

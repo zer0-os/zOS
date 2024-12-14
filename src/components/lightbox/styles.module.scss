@@ -1,13 +1,34 @@
-.Lightbox {
-  padding: 16px 24px 72px 24px;
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.925);
+  z-index: 10005;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+
+.Controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10006;
 }
 
 .TopBar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   display: flex;
-  align-self: flex-end;
-  margin-bottom: 16px;
   gap: 8px;
-  z-index: 1;
+  pointer-events: auto;
 }
 
 .Tools {
@@ -15,17 +36,32 @@
   gap: 8px;
 }
 
+.NavButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+}
+
+.NavButtonLeft {
+  left: 12px;
+}
+
+.NavButtonRight {
+  right: 12px;
+}
+
 .Container {
   position: relative;
-  width: 100%;
-  height: 100%;
+  max-width: 90vw;
+  max-height: 90vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
 .Content {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,27 +73,15 @@
   align-items: center;
   justify-content: center;
   max-width: 90vw;
-  max-height: 75vh;
+  max-height: 85vh;
 }
 
 .Image {
   max-width: 90vw;
-  max-height: 70vh;
+  max-height: 85vh;
   object-fit: contain;
   animation: fadein var(--animation-duration-default, 300ms) ease-out forwards;
   border-radius: 8px;
-}
-
-.NavButton {
-  z-index: 1;
-
-  &:first-child {
-    margin-right: 24px;
-  }
-
-  &:last-child {
-    margin-left: 24px;
-  }
 }
 
 @keyframes fadein {

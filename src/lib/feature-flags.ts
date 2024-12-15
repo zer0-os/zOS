@@ -163,7 +163,7 @@ export class FeatureFlags {
   }
 
   get enableComments() {
-    return this._getBoolean('enableComments', false);
+    return this._getBoolean('enableComments', true);
   }
 
   set enableComments(value: boolean) {

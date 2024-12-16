@@ -389,7 +389,7 @@ function addLastMessageMeta(state: RootState): any {
     return {
       ...conversation,
       mostRecentMessage,
-      messagePreview: getMessagePreview(mostRecentMessage, state),
+      messagePreview: getMessagePreview(mostRecentMessage, state, conversation.isOneOnOne),
       previewDisplayDate: previewDisplayDate(mostRecentMessage?.createdAt),
     };
   };

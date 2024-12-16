@@ -22,13 +22,13 @@ export function previewDisplayDate(timestamp: number, currentDate = moment()) {
   return messageDate.format('MMM D, YYYY');
 }
 
-export function getMessagePreview(message: Message, state: RootState) {
+export function getMessagePreview(message: Message, state: RootState, isOneOnOne: boolean = false) {
   if (!message) {
     return 'Admin: System update or change occurred';
   }
 
   if (message.sendStatus === MessageSendStatus.FAILED) {
-    return 'You: Failed to send';
+    return isOneOnOne ? 'Failed to send' : 'You: Failed to send';
   }
 
   if (message.isAdmin) {
@@ -36,15 +36,21 @@ export function getMessagePreview(message: Message, state: RootState) {
   }
 
   if (message.isPost) {
-    let prefix = previewPrefix(message.sender, state);
-    return `${prefix}: shared a new post`;
+    let prefix = previewPrefix(message.sender, state, isOneOnOne);
+    return prefix ? `${prefix}: shared a new post` : 'shared a new post';
   }
 
-  let prefix = previewPrefix(message.sender, state);
-  return `${prefix}: ${message.message || getMediaPreview(message)}`;
+  let prefix = previewPrefix(message.sender, state, isOneOnOne);
+  return prefix
+    ? `${prefix}: ${message.message || getMediaPreview(message)}`
+    : `${message.message || getMediaPreview(message)}`;
 }
 
-function previewPrefix(sender: Message['sender'], state: RootState) {
+function previewPrefix(sender: Message['sender'], state: RootState, isOneOnOne: boolean) {
+  if (isOneOnOne) {
+    return '';
+  }
+
   const user = currentUserSelector()(state);
   return sender.userId === user.id ? 'You' : sender.firstName;
 }

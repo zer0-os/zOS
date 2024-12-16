@@ -389,6 +389,30 @@ describe(getMessagePreview, () => {
 
     expect(preview).toEqual('Admin: System update or change occurred');
   });
+
+  it('does not add prefix for one-on-one conversations', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: 'some message', sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
+      state,
+      true // isOneOnOne
+    );
+
+    expect(preview).toEqual('some message');
+  });
+
+  it('adds prefix for group conversations', function () {
+    const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+
+    const preview = getMessagePreview(
+      { message: 'some message', sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
+      state,
+      false // isOneOnOne
+    );
+
+    expect(preview).toEqual('Jack: some message');
+  });
 });
 
 describe(previewDisplayDate, () => {

@@ -70,13 +70,20 @@ export class ReactionMenu extends React.Component<Properties, State> {
   };
 
   onSelect = (emojiId) => {
-    if (this.state.isProcessing) return;
+    console.log('Reaction clicked:', emojiId);
+    if (this.state.isProcessing) {
+      console.log('Processing state prevented click');
+      return;
+    }
 
     this.setState({ isProcessing: true }, async () => {
+      console.log('Starting reaction processing');
       try {
         const emojiCharacter = commonEmojiMapping[emojiId];
         if (emojiCharacter) {
+          console.log('Sending reaction:', emojiCharacter);
           await this.props.onSelectReaction(emojiCharacter);
+          console.log('Reaction sent successfully');
           this.setState(
             {
               isReactionTrayOpen: false,
@@ -87,7 +94,10 @@ export class ReactionMenu extends React.Component<Properties, State> {
             }
           );
         }
+      } catch (error) {
+        console.error('Error processing reaction:', error);
       } finally {
+        console.log('Finishing reaction processing');
         this.setState({ isProcessing: false });
       }
     });
@@ -118,7 +128,14 @@ export class ReactionMenu extends React.Component<Properties, State> {
     ];
 
     return commonReactions.map((emojiId) => (
-      <span className='reaction-tray-item' key={emojiId} onClick={() => this.onSelect(emojiId)}>
+      <span
+        className='reaction-tray-item'
+        key={emojiId}
+        onClick={(e) => {
+          e.stopPropagation(); // Stop event from reaching the underlay
+          this.onSelect(emojiId);
+        }}
+      >
         <Emoji emoji={emojiId} size={20} />
       </span>
     ));
@@ -157,7 +174,10 @@ export class ReactionMenu extends React.Component<Properties, State> {
               className='emoji-picker-trigger-icon'
               Icon={IconDotsHorizontal}
               size={20}
-              onClick={this.toggleEmojiPicker}
+              onClick={(e) => {
+                e.stopPropagation();
+                this.toggleEmojiPicker();
+              }}
             />
           </div>
         </div>

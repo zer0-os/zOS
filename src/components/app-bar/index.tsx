@@ -49,7 +49,6 @@ export class AppBar extends React.Component<Properties, State> {
       <>
         <div {...cn('')}>
           <AppLink Icon={IconMessageSquare2} isActive={isActive('conversation')} label='Messenger' to='/conversation' />
-          <AppLink Icon={IconGlobe3} isActive={isActive('explorer')} label='Explorer' to='/explorer' />
           {featureFlags.enableNotificationsApp && (
             <AppLink
               Icon={this.renderNotificationIcon}
@@ -58,6 +57,7 @@ export class AppBar extends React.Component<Properties, State> {
               to='/notifications'
             />
           )}
+          <AppLink Icon={IconGlobe3} isActive={isActive('explorer')} label='Explorer' to='/explorer' />
           <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
         </div>
         {this.state.isModalOpen && <MoreAppsModal onClose={this.closeModal} />}

@@ -13,6 +13,7 @@ import { formatWeiAmount } from '../../../../../lib/number';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
+import { usePostRoute } from './lib/usePostRoute';
 type Variant = 'default' | 'expanded';
 
 export interface PostProps {
@@ -151,56 +152,64 @@ export const Post = ({
   );
 
   return (
-    <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
-      {variant === 'default' && (
-        <div className={styles.Avatar}>
-          <Avatar size='regular' imageURL={avatarUrl} />
-        </div>
-      )}
-      <ZUIPost
-        className={styles.Post}
-        body={
-          <div className={styles.Body}>
-            {multilineText}
-            {media && renderMedia(media)}
-            {variant === 'expanded' && (
-              <span className={styles.Date}>{moment(timestamp).format('h:mm A - D MMM YYYY')}</span>
-            )}
+    <Wrapper postId={messageId} variant={variant}>
+      <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
+        {variant === 'default' && (
+          <div className={styles.Avatar}>
+            <Avatar size='regular' imageURL={avatarUrl} />
           </div>
-        }
-        details={
-          <>
-            {/* @ts-ignore */}
-            <Name className={styles.Name} variant='name'>
-              {nickname}
-            </Name>
-            {author && (
-              <>
-                {/* @ts-ignore */}
-                <Name className={styles.UserName} variant='username'>
-                  {author}
-                </Name>
-              </>
-            )}
-          </>
-        }
-        options={variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
-        actions={
-          isMeowsEnabled && (
-            <Actions variant={variant}>
-              <MeowAction
-                meows={reactions?.MEOW || 0}
-                isDisabled={isDisabled}
-                messageId={messageId}
-                meowPost={meowPost}
-                hasUserVoted={reactions?.VOTED > 0}
-              />
-              {featureFlags.enableComments && <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />}
-            </Actions>
-          )
-        }
-      />
-    </div>
+        )}
+        <ZUIPost
+          className={styles.Post}
+          body={
+            <div className={styles.Body}>
+              {multilineText}
+              {media && renderMedia(media)}
+              {variant === 'expanded' && (
+                <span className={styles.Date}>{moment(timestamp).format('h:mm A - D MMM YYYY')}</span>
+              )}
+            </div>
+          }
+          details={
+            <>
+              {/* @ts-ignore */}
+              <Name className={styles.Name} variant='name'>
+                {nickname}
+              </Name>
+              {author && (
+                <>
+                  {/* @ts-ignore */}
+                  <Name className={styles.UserName} variant='username'>
+                    {author}
+                  </Name>
+                </>
+              )}
+            </>
+          }
+          options={variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
+          actions={
+            isMeowsEnabled && (
+              <Actions variant={variant}>
+                <PreventPropagation>
+                  <MeowAction
+                    meows={reactions?.MEOW || 0}
+                    isDisabled={isDisabled}
+                    messageId={messageId}
+                    meowPost={meowPost}
+                    hasUserVoted={reactions?.VOTED > 0}
+                  />
+                </PreventPropagation>
+                {featureFlags.enableComments && (
+                  <PreventPropagation>
+                    <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
+                  </PreventPropagation>
+                )}
+              </Actions>
+            )
+          }
+        />
+      </div>
+    </Wrapper>
   );
 };
 
@@ -210,4 +219,24 @@ export const Actions = ({ children, variant }: { children: React.ReactNode; vari
       {children}
     </div>
   );
+};
+
+const Wrapper = ({ children, postId, variant }: { children: React.ReactNode; postId: string; variant: Variant }) => {
+  const { navigateToPost } = usePostRoute(postId);
+
+  const handleOnClick = () => {
+    if (variant === 'default') {
+      navigateToPost();
+    }
+  };
+
+  return (
+    <div className={styles.Wrapper} data-variant={variant} onClick={handleOnClick} tabIndex={0} role='button'>
+      {children}
+    </div>
+  );
+};
+
+const PreventPropagation = ({ children }: { children: React.ReactNode }) => {
+  return <div onClick={(e) => e.stopPropagation()}>{children}</div>;
 };

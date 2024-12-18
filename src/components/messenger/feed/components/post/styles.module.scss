@@ -24,6 +24,14 @@
       gap: 16px;
     }
   }
+
+  &[data-variant='default'] {
+    padding: 12px 18px 12px 18px;
+
+    &:hover {
+      background-color: rgba(52, 56, 60, 0.2);
+    }
+  }
 }
 
 .Post {
@@ -134,5 +142,11 @@
     border: 1px solid rgba(52, 56, 60, 0.5);
     border-left: none;
     border-right: none;
+  }
+}
+
+.Wrapper {
+  &[data-variant='default'] {
+    cursor: pointer;
   }
 }

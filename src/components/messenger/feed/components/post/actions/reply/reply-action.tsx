@@ -1,8 +1,8 @@
 import { Action } from '@zero-tech/zui/components/Post';
 import { IconMessageChatSquare } from '@zero-tech/zui/components/Icons';
+import { useReplyAction } from './useReplyAction';
 
 import styles from './reply-action.module.scss';
-import { useReplyAction } from './useReplyAction';
 
 export interface ReplyActionProps {
   postId: string;

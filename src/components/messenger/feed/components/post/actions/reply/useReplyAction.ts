@@ -1,16 +1,9 @@
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { usePostRoute } from '../../lib/usePostRoute';
 
 export const useReplyAction = (postId: string) => {
-  const history = useHistory();
-  const route = useRouteMatch();
-
-  const handleOnClick = () => {
-    const params = route.params;
-    const { conversationId } = params;
-    history.push(`/conversation/${conversationId}/${postId}`);
-  };
+  const { navigateToPost } = usePostRoute(postId);
 
   return {
-    handleOnClick,
+    handleOnClick: navigateToPost,
   };
 };

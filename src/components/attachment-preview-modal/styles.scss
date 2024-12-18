@@ -1,0 +1,28 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.attachment-preview-modal {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+
+  &__preview {
+    width: 100%;
+    height: 60vh;
+    border: none;
+    border-radius: 8px;
+    background: var(--color-background-secondary);
+  }
+
+  &__info {
+    display: flex;
+    justify-content: center;
+    color: theme.$color-greyscale-11;
+  }
+
+  &__alert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: theme.$color-error-transparency-11;
+  }
+}

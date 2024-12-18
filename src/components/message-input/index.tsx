@@ -99,11 +99,8 @@ export class MessageInput extends React.Component<Properties, State> {
   get mimeTypes() {
     return {
       'image/*': [],
-      // 'text/*': [],
       'video/*': [],
-      // 'application/pdf': [],
-      // 'application/zip': [],
-      // 'application/msword': [],
+      'application/pdf': [],
     };
   }
 

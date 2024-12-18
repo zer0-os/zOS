@@ -906,7 +906,7 @@ export class MatrixClient implements IChatClient {
 
     const content: any = {
       body: '',
-      msgtype: media.type.startsWith('image/') ? MsgType.Image : MsgType.Video,
+      msgtype: this.getMsgType(media.type),
       info: {
         mimetype: media.type,
         size: media.size,
@@ -945,6 +945,13 @@ export class MatrixClient implements IChatClient {
       id: messageResult.event_id,
       optimisticId,
     } as unknown as Message;
+  }
+
+  private getMsgType(mimeType: string): string {
+    if (mimeType.startsWith('image/')) return MsgType.Image;
+    if (mimeType.startsWith('video/')) return MsgType.Video;
+    if (mimeType.startsWith('audio/')) return MsgType.Audio;
+    return MsgType.File;
   }
 
   async uploadImageUrl(

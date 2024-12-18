@@ -28,6 +28,7 @@ import { Blurhash } from 'react-blurhash';
 import { ParentMessage } from './parent-message';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { ReactionMenu } from '../reaction-menu';
+import { AttachmentPreviewModal } from '../attachment-preview-modal';
 
 import './styles.scss';
 
@@ -74,6 +75,13 @@ export interface State {
   menuY: number;
   isImageLoaded: boolean;
   isReactionMenuOpen: boolean;
+  isAttachmentPreviewOpen: boolean;
+  attachmentPreview: {
+    name: string;
+    url: string;
+    type: string;
+    mimetype?: string;
+  } | null;
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -86,6 +94,8 @@ export class Message extends React.Component<Properties, State> {
     menuY: 0,
     isImageLoaded: false,
     isReactionMenuOpen: false,
+    isAttachmentPreviewOpen: false,
+    attachmentPreview: null,
   } as State;
 
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -111,8 +121,17 @@ export class Message extends React.Component<Properties, State> {
     }
   };
 
-  openAttachment = async (attachment): Promise<void> => {
-    download(attachment.url);
+  openAttachmentPreview = async (attachment): Promise<void> => {
+    this.setState({ isAttachmentPreviewOpen: true, attachmentPreview: attachment });
+  };
+
+  closeAttachmentPreview = () => {
+    this.setState({ isAttachmentPreviewOpen: false, attachmentPreview: null });
+  };
+
+  downloadAttachment = async () => {
+    if (!this.state.attachmentPreview) return;
+    await download(this.state.attachmentPreview.url);
   };
 
   downloadImage = (media) => () => {
@@ -194,8 +213,11 @@ export class Message extends React.Component<Properties, State> {
 
   renderAttachment(attachment) {
     return (
-      <div {...cn('attachment')} onClick={this.openAttachment.bind(this, attachment)}>
-        <AttachmentCards attachments={[attachment]} onAttachmentClicked={this.openAttachment.bind(this, attachment)} />
+      <div {...cn('attachment')} onClick={this.openAttachmentPreview.bind(this, attachment)}>
+        <AttachmentCards
+          attachments={[attachment]}
+          onAttachmentClicked={this.openAttachmentPreview.bind(this, attachment)}
+        />
       </div>
     );
   }
@@ -272,7 +294,7 @@ export class Message extends React.Component<Properties, State> {
   }
 
   renderMedia(media) {
-    const { type, url, name, downloadStatus } = media;
+    const { type, url, name, downloadStatus, mimetype } = media;
     const blurhash = media['xyz.amorgan.blurhash'];
 
     const { width, height } = this.getPlaceholderDimensions(media.width, media.height);
@@ -287,11 +309,17 @@ export class Message extends React.Component<Properties, State> {
       }
 
       return (
-        <div {...cn('placeholder-container')} style={{ width, height }}>
-          <div {...cn('placeholder-content')}>
-            {this.renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height)}
-          </div>
-        </div>
+        <>
+          {mimetype?.includes('application') ? (
+            <AttachmentCards attachments={[{ name, url: '', type: '' }]} onAttachmentClicked={() => {}} />
+          ) : (
+            <div {...cn('placeholder-container')} style={{ width, height }}>
+              <div {...cn('placeholder-content')}>
+                {this.renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height)}
+              </div>
+            </div>
+          )}
+        </>
       );
     }
 
@@ -315,7 +343,7 @@ export class Message extends React.Component<Properties, State> {
         </div>
       );
     } else if (MediaType.File === type) {
-      return this.renderAttachment({ url, name, type });
+      return this.renderAttachment({ url, name, type, mimetype });
     } else if (MediaType.Audio === type) {
       return (
         <div {...cn('block-audio')}>
@@ -721,6 +749,9 @@ export class Message extends React.Component<Properties, State> {
         </div>
         {this.renderMenu()}
         {this.renderFloatMenu()}
+        {this.state.isAttachmentPreviewOpen && (
+          <AttachmentPreviewModal attachment={this.state.attachmentPreview} onClose={this.closeAttachmentPreview} />
+        )}
       </div>
     );
   }

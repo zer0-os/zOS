@@ -10,6 +10,7 @@ import { ContentHighlighter } from '../content-highlighter';
 import { ParentMessage } from './parent-message';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
+import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 
 describe('message', () => {
   const sender = {
@@ -67,23 +68,37 @@ describe('message', () => {
     expect(wrapper.find('.message__block-image').exists()).toBe(true);
   });
 
-  it('renders placeholder if no media url', () => {
-    const loadAttachmentDetails = jest.fn();
-
-    const wrapper = subject({ loadAttachmentDetails, media: { id: '1', url: null, type: MediaType.Image } });
-
-    expect(wrapper.find('.message__placeholder-container').exists()).toBe(true);
-  });
-
-  it('renders placeholder if matrix media url', () => {
+  it('renders placeholder if no media url and mimetype is not application', () => {
     const loadAttachmentDetails = jest.fn();
 
     const wrapper = subject({
       loadAttachmentDetails,
-      media: { id: '1', url: 'mxc://some-test-matrix-url', type: MediaType.Image },
+      media: { id: '1', url: null, type: MediaType.Image, mimetype: 'image/png' },
     });
 
     expect(wrapper.find('.message__placeholder-container').exists()).toBe(true);
+  });
+
+  it('renders placeholder if matrix media url and mimetype is not application', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    const wrapper = subject({
+      loadAttachmentDetails,
+      media: { id: '1', url: 'mxc://some-test-matrix-url', type: MediaType.Image, mimetype: 'image/png' },
+    });
+
+    expect(wrapper.find('.message__placeholder-container').exists()).toBe(true);
+  });
+
+  it('renders attachment cards if mimetype is application and url is null', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    const wrapper = subject({
+      loadAttachmentDetails,
+      media: { id: '1', url: null, type: MediaType.Image, mimetype: 'application/pdf' },
+    });
+
+    expect(wrapper.find(AttachmentCards).exists()).toBe(true);
   });
 
   it('renders failed alert icon if media download status is failed', () => {

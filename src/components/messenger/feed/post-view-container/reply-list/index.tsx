@@ -26,7 +26,7 @@ export const Replies = ({ postId }: { postId: string }) => {
                 meowPost={meowPost}
                 currentUserId={userId}
                 reactions={reply.reactions}
-                ownerUserId={reply.walletAddress}
+                ownerUserId={reply.sender?.userId}
                 userMeowBalance={userMeowBalance}
                 numberOfReplies={reply.numberOfReplies}
               />

@@ -189,7 +189,7 @@ describe('MessageInput', () => {
       'image/*': [],
       // 'text/*': [],
       'video/*': [],
-      // 'application/pdf': [],
+      'application/pdf': [],
       // 'application/zip': [],
       // 'application/msword': [],
     };

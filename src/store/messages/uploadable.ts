@@ -58,9 +58,17 @@ export class UploadableGiphy implements Uploadable {
 
 export class UploadableAttachment implements Uploadable {
   public optimisticMessage: Message;
+
   constructor(public file) {}
-  *upload(_channelId, _rootMessageId) {
-    yield;
-    throw new Error('Attachment upload is not supported yet.');
+
+  *upload(channelId, rootMessageId, isPost = false) {
+    return yield call(
+      uploadFileMessage,
+      channelId,
+      this.file.nativeFile,
+      rootMessageId,
+      this.optimisticMessage?.id?.toString(),
+      isPost
+    );
   }
 }

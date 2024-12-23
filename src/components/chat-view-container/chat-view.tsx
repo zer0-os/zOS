@@ -180,6 +180,7 @@ export class ChatView extends React.Component<Properties, State> {
                 loadAttachmentDetails={this.props.loadAttachmentDetails}
                 sendEmojiReaction={this.props.sendEmojiReaction}
                 reactions={message.reactions}
+                messagesFetchStatus={this.props.messagesFetchStatus}
                 {...message}
               />
             </div>

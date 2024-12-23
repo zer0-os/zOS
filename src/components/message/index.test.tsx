@@ -11,6 +11,7 @@ import { ParentMessage } from './parent-message';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
+import { MessagesFetchState } from '../../store/channels';
 
 describe('message', () => {
   const sender = {
@@ -125,23 +126,42 @@ describe('message', () => {
     expect(wrapper).toHaveElement(Spinner);
   });
 
-  it('calls loadAttachmentDetails if no media url', () => {
+  it('calls loadAttachmentDetails if no media url and messagesFetchStatus is success', () => {
     const loadAttachmentDetails = jest.fn();
 
-    subject({ messageId: 'test-id', loadAttachmentDetails, media: { url: null, type: MediaType.Image } });
+    subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: null, type: MediaType.Image },
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
+    });
 
     expect(loadAttachmentDetails).toHaveBeenCalled();
   });
 
-  it('calls loadAttachmentDetails if url is a matrix media url', () => {
+  it('calls loadAttachmentDetails if url is a matrix media url and messagesFetchStatus is success', () => {
     const loadAttachmentDetails = jest.fn();
     subject({
       messageId: 'test-id',
       loadAttachmentDetails,
       media: { url: 'mxc://some-test-matrix-url', type: MediaType.Image },
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
 
     expect(loadAttachmentDetails).toHaveBeenCalled();
+  });
+
+  it('does not call loadAttachmentDetails if messagesFetchStatus is not success', () => {
+    const loadAttachmentDetails = jest.fn();
+
+    subject({
+      messageId: 'test-id',
+      loadAttachmentDetails,
+      media: { url: null, type: MediaType.Image },
+      messagesFetchStatus: MessagesFetchState.FAILED,
+    });
+
+    expect(loadAttachmentDetails).not.toHaveBeenCalled();
   });
 
   it('does not call loadAttachmentDetails if url is defined and not a matrix media url', () => {
@@ -151,6 +171,7 @@ describe('message', () => {
       messageId: 'test-id',
       loadAttachmentDetails,
       media: { url: 'some-test-url', type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
 
     expect(loadAttachmentDetails).not.toHaveBeenCalled();
@@ -163,6 +184,7 @@ describe('message', () => {
       messageId: 'test-id',
       loadAttachmentDetails,
       media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
 
     expect(loadAttachmentDetails).not.toHaveBeenCalled();
@@ -175,6 +197,7 @@ describe('message', () => {
       messageId: 'test-id',
       loadAttachmentDetails,
       media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Loading },
+      messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
 
     expect(loadAttachmentDetails).not.toHaveBeenCalled();

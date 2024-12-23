@@ -14,7 +14,7 @@ import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
-import { User } from '../../store/channels';
+import { MessagesFetchState, User } from '../../store/channels';
 import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
@@ -64,6 +64,7 @@ interface Properties extends MessageModel {
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (messageId, key) => void;
   onReportUser: (payload: { reportedUserId: string }) => void;
+  messagesFetchStatus: MessagesFetchState;
 }
 
 export interface State {
@@ -304,7 +305,7 @@ export class Message extends React.Component<Properties, State> {
       const isLoading = downloadStatus === MediaDownloadStatus.Loading;
       const hasFailed = downloadStatus === MediaDownloadStatus.Failed;
 
-      if (!hasFailed && !isLoading) {
+      if (!hasFailed && !isLoading && this.props.messagesFetchStatus === MessagesFetchState.SUCCESS) {
         this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
       }
 

@@ -547,6 +547,7 @@ export class Message extends React.Component<Properties, State> {
     const reactionProps = {
       onOpenChange: this.handleOpenReactionMenu,
       onSelectReaction: this.onEmojiReaction,
+      isOwner: this.props.isOwner,
     };
 
     const onClose = () => {

@@ -494,7 +494,7 @@
 .emoji-mart-dark {
   @include glass-text-primary-color;
   border-color: #000;
-  background-color: #0a0a0abf;
+  background-color: rgba(10, 10, 10, 1);
 }
 
 .emoji-mart-dark .emoji-mart-bar {
@@ -505,7 +505,7 @@
   @include glass-text-primary-color;
 
   border-color: #000;
-  background-color: #0a0a0abf;
+  background-color: rgba(10, 10, 10, 1);
 }
 
 .emoji-mart-dark .emoji-mart-search-icon svg {
@@ -519,7 +519,7 @@
 .emoji-mart-dark .emoji-mart-category-label span {
   @include glass-text-primary-color;
 
-  background-color: #0a0a0abf;
+  background-color: rgba(10, 10, 10, 1);
 }
 
 .emoji-mart-dark .emoji-mart-skin-swatches {

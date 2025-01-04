@@ -1,53 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @import '../../glass';
 
-.reaction-tray {
-  @include flat-thick;
-  @include glass-shadow-and-blur;
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 4px;
-  border-radius: 8px;
-  min-width: 128px;
-  max-width: 256px;
-  position: fixed;
-  z-index: 1002;
-}
-
-.reaction-tray-item {
-  @include glass-text-primary-color;
-
-  display: flex;
-  align-items: center;
-  outline: none;
-  border-radius: 8px;
-  user-select: none;
-  cursor: pointer;
-  padding: 8px;
-
-  &:hover {
-    @include glass-state-hover-color;
-  }
-
-  &:active {
-    background: rgba(163, 162, 163, 0.1);
-  }
-}
-
-.reaction-menu__underlay {
-  z-index: 1000;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: block;
-  pointer-events: auto;
-  background: transparent;
-}
-
 .reaction-menu-trigger {
   z-index: 1003;
   outline: none;
@@ -55,12 +8,13 @@
 
 .emoji-picker {
   position: absolute;
-  right: 65px;
   bottom: 75px;
+  left: 390px;
   z-index: 1010;
   color: var(--color-greyscale-11);
 }
 
-.emoji-picker-trigger-icon {
-  background: theme.$color-greyscale-transparency-3;
+.emoji-picker--owner {
+  right: 65px;
+  left: auto;
 }

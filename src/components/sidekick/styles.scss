@@ -55,7 +55,9 @@
     flex-shrink: 0;
     pointer-events: auto;
     max-width: $width-sidekick;
-    border: 1px solid rgba(52, 56, 60);
+
+    // note: removing border for now to make it look better
+    //border: 1px solid rgba(52, 56, 60);
 
     @include glass-outer;
   }

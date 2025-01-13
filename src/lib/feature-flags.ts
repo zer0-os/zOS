@@ -169,6 +169,14 @@ export class FeatureFlags {
   set enableComments(value: boolean) {
     this._setBoolean('enableComments', value);
   }
+
+  get enableFeedApp() {
+    return this._getBoolean('enableFeedApp', true);
+  }
+
+  set enableFeedApp(value: boolean) {
+    this._setBoolean('enableFeedApp', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

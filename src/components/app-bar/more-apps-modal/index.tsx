@@ -70,7 +70,7 @@ export class MoreAppsModal extends React.Component<Properties> {
                 Icon={IconCoinsSwap1}
                 name='Trade'
                 description='Buy & sell NFTs'
-                footer={<div>View {this.link('https://app.wilderworld.com/market', 'Wilder Marketplace↗')}</div>}
+                footer={<div>View {this.link('https://market.wilderworld.com/', 'Wilder Marketplace↗')}</div>}
               />
               <App
                 Icon={IconSafe}

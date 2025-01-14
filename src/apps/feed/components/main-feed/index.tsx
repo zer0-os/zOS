@@ -1,8 +1,8 @@
 import { useMainFeed } from './useMainFeed';
 
 import { PostInputContainer as PostInput } from '../post-input/container';
-import { FeedViewContainer } from '../../feed-view-container/feed-view-container';
-import { ScrollbarContainer } from '../../../../scrollbar-container';
+import { FeedViewContainer } from '../feed-view-container/feed-view-container';
+import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 
 export const MainFeed = () => {
   const { activeConversationId, isSubmittingPost, onSubmitPost } = useMainFeed();

@@ -1,15 +1,15 @@
 import React, { RefObject } from 'react';
 
-import { RootState } from '../../../../../store/reducer';
-import { connectContainer } from '../../../../../store/redux-container';
-import { AuthenticationState } from '../../../../../store/authentication/types';
-import { ViewModes } from '../../../../../shared-components/theme-engine';
-import { ConnectionStatus } from '../../../../../lib/web3';
+import { RootState } from '../../../../store/reducer';
+import { connectContainer } from '../../../../store/redux-container';
+import { AuthenticationState } from '../../../../store/authentication/types';
+import { ViewModes } from '../../../../shared-components/theme-engine';
+import { ConnectionStatus } from '../../../../lib/web3';
 
 import { PostInput } from '.';
 
 // should move this to a shared location
-import { Media } from '../../../../message-input/utils';
+import { Media } from '../../../../components/message-input/utils';
 
 export interface PublicProperties {
   id?: string;

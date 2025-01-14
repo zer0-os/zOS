@@ -1,24 +1,24 @@
 import React, { RefObject } from 'react';
 import Dropzone from 'react-dropzone';
 
-import { config } from '../../../../../config';
-import { Key } from '../../../../../lib/keyboard-search';
+import { config } from '../../../../config';
+import { Key } from '../../../../lib/keyboard-search';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, Button, IconButton } from '@zero-tech/zui/components';
-import ImageCards from '../../../../../platform-apps/channels/image-cards';
+import ImageCards from '../../../../platform-apps/channels/image-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
-import { ViewModes } from '../../../../../shared-components/theme-engine';
+import { ViewModes } from '../../../../shared-components/theme-engine';
 import { IconFaceSmile } from '@zero-tech/zui/icons';
 
-import { bemClassName } from '../../../../../lib/bem';
+import { bemClassName } from '../../../../lib/bem';
 import classNames from 'classnames';
 import './styles.scss';
 
 // should move these to a shared location
-import { MediaType } from '../../../../../store/messages';
-import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../../../message-input/utils';
-import { EmojiPicker } from '../../../../message-input/emoji-picker/emoji-picker';
-import { RainbowKitConnectButton } from '../../../../../lib/web3/rainbowkit/button';
+import { MediaType } from '../../../../store/messages';
+import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../../../components/message-input/utils';
+import { EmojiPicker } from '../../../../components/message-input/emoji-picker/emoji-picker';
+import { RainbowKitConnectButton } from '../../../../lib/web3/rainbowkit/button';
 
 const cn = bemClassName('post-input-container');
 

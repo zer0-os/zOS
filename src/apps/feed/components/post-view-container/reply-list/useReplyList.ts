@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getPostReplies, mapPostToMatrixMessage } from '../../../../../store/posts/utils';
-import { useMeowPost } from '../../lib/useMeowPost';
+import { useMeowPost } from '../../../lib/useMeowPost';
 
 const PAGE_SIZE = 10;
 

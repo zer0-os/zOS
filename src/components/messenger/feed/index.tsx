@@ -14,8 +14,8 @@ import './styles.scss';
 
 // should move this to a shared location
 import { Media } from '../../message-input/utils';
-import { PostView } from './post-view-container';
-import { MainFeed } from './components/main-feed';
+import { PostView } from '../../../apps/feed/components/post-view-container';
+import { MainFeed } from '../../../apps/feed/components/main-feed';
 
 const cn = bemClassName('messenger-feed');
 

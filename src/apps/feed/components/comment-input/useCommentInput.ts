@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { SagaActionTypes } from '../../../../../store/posts';
-import { RootState } from '../../../../../store';
+import { SagaActionTypes } from '../../../../store/posts';
+import { RootState } from '../../../../store';
 import { useAccount } from 'wagmi';
 
 export const useCommentInput = (postId: string) => {

@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { SagaActionTypes } from '../../../../store/posts';
+import { SagaActionTypes } from '../../../store/posts';
 
 export const useMeowPost = () => {
   const dispatch = useDispatch();

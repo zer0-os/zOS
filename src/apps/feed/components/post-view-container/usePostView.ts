@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { getPost } from '../../../../store/posts/utils';
 import { mapPostToMatrixMessage } from '../../../../store/posts/utils';
 import { RootState } from '../../../../store';
-import { useMeowPost } from '../lib/useMeowPost';
+import { useMeowPost } from '../../lib/useMeowPost';
 
 export const usePostView = (postId: string) => {
   const userId = useSelector((state: RootState) => state.authentication.user.data.id);

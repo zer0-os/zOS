@@ -1,11 +1,11 @@
 import { usePostView } from './usePostView';
 
-import { Post } from '../components/post';
-import { CommentInput } from '../components/comment-input';
+import { Post } from '../post';
+import { CommentInput } from '../comment-input';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { BackButton } from './back-button';
 import { Replies } from './reply-list';
-import { ScrollbarContainer } from '../../../scrollbar-container';
+import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 
 import styles from './styles.module.scss';
 

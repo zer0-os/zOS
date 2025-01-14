@@ -56,6 +56,13 @@
     }
   }
 
+  &__reaction-picker-container {
+    position: absolute;
+    bottom: 75px;
+    z-index: 12;
+    color: theme.$color-greyscale-11;
+  }
+
   &__block {
     position: relative;
     padding: 0px;
@@ -223,10 +230,6 @@
     .message__author-avatar {
       visibility: visible;
     }
-  }
-
-  .emoji-mart-emoji {
-    height: 19px;
   }
 
   &__user-mention {

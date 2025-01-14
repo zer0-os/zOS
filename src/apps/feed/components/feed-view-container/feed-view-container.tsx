@@ -7,7 +7,7 @@ import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../sto
 import { fetchPosts, meowPost } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
-import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../chat-view-container/utils';
+import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../../components/chat-view-container/utils';
 import { compareDatesAsc } from '../../../../lib/date';
 import { transferMeow } from '../../../../store/rewards';
 interface PublicProperties {

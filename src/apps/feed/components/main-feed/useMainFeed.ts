@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { SagaActionTypes } from '../../../../../store/posts';
-import { RootState } from '../../../../../store';
-import { Media } from '../../../../message-input/utils';
+import { SagaActionTypes } from '../../../../store/posts';
+import { RootState } from '../../../../store';
+import { Media } from '../../../../components/message-input/utils';
 
 export const useMainFeed = () => {
   const dispatch = useDispatch();

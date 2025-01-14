@@ -1,6 +1,6 @@
 import { useReplyList } from './useReplyList';
 
-import { Post } from '../../components/post';
+import { Post } from '../../post';
 import { Waypoint } from 'react-waypoint';
 
 import styles from './styles.module.scss';

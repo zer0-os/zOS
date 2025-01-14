@@ -1,6 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@import '../../../../../glass';
-@import '../../../../../animation';
+@import '../../../../glass';
+@import '../../../../animation';
 
 .Container {
   display: flex;

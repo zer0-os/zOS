@@ -1,4 +1,4 @@
-import { ViewModes } from '../../../../../shared-components/theme-engine';
+import { ViewModes } from '../../../../shared-components/theme-engine';
 import { PostInput } from '../post-input';
 
 import styles from './styles.module.scss';

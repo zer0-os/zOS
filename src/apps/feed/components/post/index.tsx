@@ -4,11 +4,11 @@ import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
 import { Avatar } from '@zero-tech/zui/components';
 import { MeowAction } from './actions/meow';
-import { featureFlags } from '../../../../../lib/feature-flags';
-import { Media, MediaDownloadStatus, MediaType } from '../../../../../store/messages';
+import { featureFlags } from '../../../../lib/feature-flags';
+import { Media, MediaDownloadStatus, MediaType } from '../../../../store/messages';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { ReplyAction } from './actions/reply/reply-action';
-import { formatWeiAmount } from '../../../../../lib/number';
+import { formatWeiAmount } from '../../../../lib/number';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { refetchPosts } from '../../../../../store/posts';
-import { RootState } from '../../../../../store';
+import { refetchPosts } from '../../../../store/posts';
+import { RootState } from '../../../../store';
 
 export const useLoadMore = (channelId: string) => {
   const dispatch = useDispatch();

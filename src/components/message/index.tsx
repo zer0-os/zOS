@@ -20,15 +20,15 @@ import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle } from '@zero-tech/zui/icons';
-import { Avatar } from '@zero-tech/zui/components';
+import { IconAlertCircle, IconHeart } from '@zero-tech/zui/icons';
+import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 import { Blurhash } from 'react-blurhash';
 import { ParentMessage } from './parent-message';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
-import { ReactionMenu } from '../reaction-menu';
 import { AttachmentPreviewModal } from '../attachment-preview-modal';
+import { ReactionPicker } from './reaction-picker/reaction-picker';
 
 import './styles.scss';
 
@@ -75,7 +75,6 @@ export interface State {
   menuX: number;
   menuY: number;
   isImageLoaded: boolean;
-  isReactionMenuOpen: boolean;
   isAttachmentPreviewOpen: boolean;
   attachmentPreview: {
     name: string;
@@ -83,6 +82,7 @@ export interface State {
     type: string;
     mimetype?: string;
   } | null;
+  isReactionPickerOpen: boolean;
 }
 
 export class Message extends React.Component<Properties, State> {
@@ -94,9 +94,9 @@ export class Message extends React.Component<Properties, State> {
     menuX: 0,
     menuY: 0,
     isImageLoaded: false,
-    isReactionMenuOpen: false,
     isAttachmentPreviewOpen: false,
     attachmentPreview: null,
+    isReactionPickerOpen: false,
   } as State;
 
   wrapperRef = React.createRef<HTMLDivElement>();
@@ -480,14 +480,6 @@ export class Message extends React.Component<Properties, State> {
     this.setState({ isMessageMenuOpen: false, isDropdownMenuOpen: false });
   };
 
-  handleOpenReactionMenu = (isReactionMenuOpen: boolean) => {
-    this.setState({ isReactionMenuOpen });
-  };
-
-  handleCloseReactionMenu = () => {
-    this.setState({ isReactionMenuOpen: false });
-  };
-
   canReply = () => {
     return (
       this.props.sendStatus !== MessageSendStatus.IN_PROGRESS && this.props.sendStatus !== MessageSendStatus.FAILED
@@ -516,8 +508,12 @@ export class Message extends React.Component<Properties, State> {
     return this.props.sendStatus === MessageSendStatus.FAILED;
   };
 
+  openReactionPicker = () => this.setState({ isReactionPickerOpen: true });
+  closeReactionPicker = () => this.setState({ isReactionPickerOpen: false });
+
   onEmojiReaction = (key) => {
     this.props.sendEmojiReaction(this.props.messageId, key);
+    this.closeReactionPicker();
   };
 
   renderMenu(): React.ReactElement {
@@ -544,28 +540,21 @@ export class Message extends React.Component<Properties, State> {
       onReportUser: this.onReportUser,
     };
 
-    const reactionProps = {
-      onOpenChange: this.handleOpenReactionMenu,
-      onSelectReaction: this.onEmojiReaction,
-      isOwner: this.props.isOwner,
-    };
-
     const onClose = () => {
       this.handleCloseMenu();
-      this.handleCloseReactionMenu();
     };
 
     return (
       <div
         {...cn(
           classNames('menu', {
-            'menu--open': this.state.isMessageMenuOpen || this.state.isReactionMenuOpen,
+            'menu--open': this.state.isMessageMenuOpen || this.state.isReactionPickerOpen,
             'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
           })
         )}
         onClick={onClose}
       >
-        <ReactionMenu {...cn('menu-item')} {...reactionProps} />
+        <IconButton {...cn('menu-item')} onClick={this.openReactionPicker} Icon={IconHeart} size={32} />
         <MessageMenu {...cn('menu-item')} {...messageMenuProps} />
       </div>
     );
@@ -676,6 +665,19 @@ export class Message extends React.Component<Properties, State> {
     }
   }
 
+  renderReactionPicker() {
+    return (
+      <div {...cn('reaction-picker-container')}>
+        <ReactionPicker
+          isOpen={this.state.isReactionPickerOpen}
+          onOpen={this.openReactionPicker}
+          onClose={this.closeReactionPicker}
+          onSelect={this.onEmojiReaction}
+        />
+      </div>
+    );
+  }
+
   renderParentMessage() {
     return (
       <ParentMessage
@@ -751,6 +753,7 @@ export class Message extends React.Component<Properties, State> {
         </div>
         {this.renderMenu()}
         {this.renderFloatMenu()}
+        {this.state.isReactionPickerOpen && this.renderReactionPicker()}
         {this.state.isAttachmentPreviewOpen && (
           <AttachmentPreviewModal attachment={this.state.attachmentPreview} onClose={this.closeAttachmentPreview} />
         )}

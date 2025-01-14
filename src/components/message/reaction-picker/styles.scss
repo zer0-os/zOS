@@ -1,0 +1,14 @@
+@import '../../../glass';
+
+.reaction-picker {
+  &__border-outer {
+    @include glass-outer;
+  }
+
+  &__border-inner {
+    @include glass-inner;
+
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+  }
+}

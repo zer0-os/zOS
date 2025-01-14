@@ -9,7 +9,7 @@ import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { LoadMoreButton } from '../../../../apps/feed/components/load-more';
 
 import { bemClassName } from '../../../../lib/bem';
-import './styles.scss';
+import '../styles.scss';
 import { FeatureFlag } from '../../../../components/feature-flag';
 
 const cn = bemClassName('feed-view');

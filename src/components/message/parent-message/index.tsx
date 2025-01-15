@@ -4,7 +4,7 @@ import { ContentHighlighter } from '../../content-highlighter';
 import { bemClassName } from '../../../lib/bem';
 
 import './styles.scss';
-import { IconCornerDownRight } from '@zero-tech/zui/icons';
+import { IconCornerDownRight, IconPaperclip, IconVolumeMax } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('parent-message-container');
 
@@ -46,13 +46,30 @@ export class ParentMessage extends React.PureComponent<Properties> {
           <IconCornerDownRight size={16} />
 
           {this.props?.mediaName && (
-            <div {...cn('media-container')}>
+            <div
+              {...cn(
+                'media-container',
+                (this.props?.mediaType === 'file' || this.props?.mediaType === 'audio') && 'file'
+              )}
+            >
               {this.props?.mediaUrl && this.props?.mediaType === 'image' && (
                 <img {...cn('media')} src={this.props?.mediaUrl} alt={this.props?.mediaName} />
               )}
 
               {this.props?.mediaUrl && this.props?.mediaType === 'video' && (
                 <video {...cn('media')} src={this.props?.mediaUrl} />
+              )}
+
+              {this.props?.mediaUrl && this.props?.mediaType === 'audio' && (
+                <div {...cn('media', 'file')}>
+                  <IconVolumeMax {...cn('audio-icon')} isFilled size={18} />
+                </div>
+              )}
+
+              {this.props?.mediaUrl && this.props?.mediaType === 'file' && (
+                <div {...cn('media', 'file')}>
+                  <IconPaperclip {...cn('file-icon')} isFilled size={18} />
+                </div>
               )}
 
               {!this.props.mediaUrl && <div {...cn('image-placeholder')} />}

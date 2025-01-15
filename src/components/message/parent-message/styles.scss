@@ -60,6 +60,12 @@
 
     width: 40px;
     height: 40px;
+
+    &--file {
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+    }
   }
 
   &__media {
@@ -69,6 +75,20 @@
     object-fit: cover;
 
     animation: fadein 1s ease-in forwards;
+
+    &--file {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  &__audio-icon {
+    color: theme.$color-greyscale-12;
+  }
+
+  &__file-icon {
+    color: theme.$color-greyscale-12;
   }
 
   &__image-placeholder {

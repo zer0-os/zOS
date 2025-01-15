@@ -171,7 +171,7 @@ export class FeatureFlags {
   }
 
   get enableFeedApp() {
-    return this._getBoolean('enableFeedApp', true);
+    return this._getBoolean('enableFeedApp', false);
   }
 
   set enableFeedApp(value: boolean) {

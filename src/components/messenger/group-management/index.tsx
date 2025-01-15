@@ -20,6 +20,7 @@ export interface Properties {
   currentUser: User;
   otherMembers: User[];
   editConversationState: EditConversationState;
+  isSocialChannel: boolean;
   canAddMembers: boolean;
   canEditGroup: boolean;
   canLeaveGroup: boolean;
@@ -62,6 +63,7 @@ export class GroupManagement extends React.PureComponent<Properties> {
             onBack={this.props.onBack}
             onEdit={this.props.onEditConversation}
             state={this.props.editConversationState}
+            isSocialChannel={this.props.isSocialChannel}
           />
         )}
         {this.props.stage === Stage.ViewGroupInformation && (

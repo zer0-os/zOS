@@ -18,6 +18,7 @@ describe(GroupManagement, () => {
       name: '',
       icon: '',
       isOneOnOne: false,
+      isSocialChannel: false,
       errors: {},
       editConversationState: EditConversationState.NONE,
       conversationAdminIds: [],

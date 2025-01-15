@@ -21,6 +21,7 @@ describe(EditConversationPanel, () => {
       icon: '',
       conversationAdminIds: [],
       conversationModeratorIds: [],
+      isSocialChannel: false,
       ...props,
     };
 
@@ -113,6 +114,17 @@ describe(EditConversationPanel, () => {
       const wrapper = subject({ state: EditConversationState.NONE });
 
       expect(wrapper.find(Alert).exists()).toBe(false);
+    });
+
+    it('disables edit input when isSocialChannel is true', () => {
+      const wrapper = subject({
+        name: 'Display Name',
+        icon: 'icon-url',
+        conversationAdminIds: ['matrix-id'],
+        isSocialChannel: true,
+      });
+
+      expect(wrapper.find('Input[name="name"]').prop('isDisabled')).toBe(true);
     });
   });
 

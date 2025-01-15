@@ -125,9 +125,44 @@
   }
 
   &__block-audio {
+    padding: 12px 8px 0 8px;
+
     audio {
-      width: 100%;
       min-width: 300px;
+      border: 1px solid theme.$color-secondary-11;
+      border-radius: 30px;
+      height: 40px;
+      width: 100%;
+
+      &::-webkit-media-controls-panel {
+        background-color: #111213;
+      }
+
+      &::-webkit-media-controls-current-time-display,
+      &::-webkit-media-controls-time-remaining-display {
+        color: theme.$color-secondary-11;
+        font-size: 12px;
+        text-shadow: none;
+      }
+
+      &::-webkit-media-controls-play-button {
+        background-color: theme.$color-secondary-11;
+        border-radius: 8px;
+        height: 18px;
+      }
+
+      &::-webkit-media-controls-timeline {
+        background-color: theme.$color-secondary-11;
+        border-radius: 8px;
+        margin: 0 8px;
+        padding: 8px;
+      }
+
+      &::-webkit-media-controls-mute-button,
+      &::-webkit-media-controls-volume-slider,
+      &::-webkit-media-controls-volume-control-container {
+        display: none;
+      }
     }
   }
 

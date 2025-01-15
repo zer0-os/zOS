@@ -311,7 +311,7 @@ export class Message extends React.Component<Properties, State> {
 
       return (
         <>
-          {mimetype?.includes('application') ? (
+          {mimetype?.includes('application') || mimetype?.includes('audio') ? (
             <AttachmentCards attachments={[{ name, url: '', type: '' }]} onAttachmentClicked={() => {}} />
           ) : (
             <div {...cn('placeholder-container')} style={{ width, height }}>
@@ -345,11 +345,11 @@ export class Message extends React.Component<Properties, State> {
       );
     } else if (MediaType.File === type) {
       return this.renderAttachment({ url, name, type, mimetype });
-    } else if (MediaType.Audio === type) {
+    } else if (MediaType.Audio === type && !this.state.isEditing) {
       return (
         <div {...cn('block-audio')}>
-          <audio controls>
-            <source src={url} type='audio/mpeg' />
+          <audio controls controlsList='nodownload nofullscreen noplaybackrate'>
+            <source src={url} type={mimetype} />
           </audio>
         </div>
       );

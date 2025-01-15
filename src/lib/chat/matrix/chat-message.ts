@@ -9,7 +9,12 @@ export async function parseMediaData(matrixMessage) {
 
   let media = null;
   try {
-    if (content?.msgtype === MsgType.Image || content?.msgtype === MsgType.Video || content?.msgtype === MsgType.File) {
+    if (
+      content?.msgtype === MsgType.Image ||
+      content?.msgtype === MsgType.Video ||
+      content?.msgtype === MsgType.File ||
+      content?.msgtype === MsgType.Audio
+    ) {
       media = await buildMediaObject(content);
     }
   } catch (e) {
@@ -28,7 +33,7 @@ export async function buildMediaObject(content) {
   if (content.msgtype === MsgType.Image) mediaType = 'image';
   else if (content.msgtype === MsgType.Video) mediaType = 'video';
   else if (content.msgtype === MsgType.File) mediaType = 'file';
-
+  else if (content.msgtype === MsgType.Audio) mediaType = 'audio';
   if (content.file && content.info) {
     return {
       url: null,

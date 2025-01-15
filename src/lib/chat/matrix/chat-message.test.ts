@@ -128,6 +128,34 @@ describe(parseMediaData, () => {
       rootMessageId: '',
     });
   });
+
+  it('parses audio message data correctly', async () => {
+    const matrixMessage = {
+      content: {
+        msgtype: MsgType.Audio,
+        url: 'mxc://example.com/audio123',
+        info: {
+          mimetype: 'audio/mpeg',
+          size: 3000,
+          name: 'test-audio.mp3',
+        },
+      },
+    };
+
+    const result = await parseMediaData(matrixMessage);
+
+    expect(result).toEqual({
+      media: {
+        url: 'mxc://example.com/audio123',
+        type: 'audio',
+        mimetype: 'audio/mpeg',
+        size: 3000,
+        name: 'test-audio.mp3',
+      },
+      image: undefined,
+      rootMessageId: '',
+    });
+  });
 });
 
 describe(buildMediaObject, () => {
@@ -181,6 +209,59 @@ describe(buildMediaObject, () => {
       mimetype: 'video/mp4',
       size: 5000,
       name: 'test-video.mp4',
+    });
+  });
+
+  it('builds audio media object correctly', async () => {
+    const content = {
+      msgtype: MsgType.Audio,
+      url: 'mxc://example.com/audio123',
+      info: {
+        mimetype: 'audio/mpeg',
+        size: 3000,
+        name: 'test-audio.mp3',
+      },
+    };
+
+    const result = await buildMediaObject(content);
+
+    expect(result).toEqual({
+      url: 'mxc://example.com/audio123',
+      type: 'audio',
+      mimetype: 'audio/mpeg',
+      size: 3000,
+      name: 'test-audio.mp3',
+    });
+  });
+
+  it('builds encrypted audio media object correctly', async () => {
+    const content = {
+      msgtype: MsgType.Audio,
+      file: {
+        url: 'mxc://example.com/audio123',
+        key: { key: 'test-key' },
+        iv: 'test-iv',
+      },
+      info: {
+        mimetype: 'audio/mpeg',
+        size: 3000,
+        name: 'test-audio.mp3',
+      },
+    };
+
+    const result = await buildMediaObject(content);
+
+    expect(result).toEqual({
+      url: null,
+      type: 'audio',
+      file: {
+        url: 'mxc://example.com/audio123',
+        key: { key: 'test-key' },
+        iv: 'test-iv',
+      },
+      mimetype: 'audio/mpeg',
+      size: 3000,
+      name: 'test-audio.mp3',
     });
   });
 });

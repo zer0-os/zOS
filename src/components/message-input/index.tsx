@@ -101,6 +101,7 @@ export class MessageInput extends React.Component<Properties, State> {
       'image/*': [],
       'video/*': [],
       'application/pdf': [],
+      'audio/*': [],
     };
   }
 

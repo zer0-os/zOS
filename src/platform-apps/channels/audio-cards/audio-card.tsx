@@ -2,6 +2,9 @@ import { IconTrash4 } from '@zero-tech/zui/icons';
 import React from 'react';
 import { IconButton } from '@zero-tech/zui/components';
 import { AudioModel } from './types';
+import { bemClassName } from '../../../lib/bem';
+
+const cn = bemClassName('audio-card');
 
 export interface Properties {
   audio: AudioModel;
@@ -14,8 +17,8 @@ export default class AudioCard extends React.Component<Properties> {
 
     if (onRemove) {
       return (
-        <div className='audio__cards-card__actions'>
-          <IconButton onClick={onRemove} Icon={IconTrash4} size={28} className='audio__cards-card__actions-delete' />
+        <div {...cn('actions')}>
+          <IconButton onClick={onRemove} Icon={IconTrash4} size={20} {...cn('actions-delete')} />
         </div>
       );
     }
@@ -25,13 +28,13 @@ export default class AudioCard extends React.Component<Properties> {
     const { audio } = this.props;
 
     return (
-      <div className='audio__cards-card'>
+      <div {...cn()}>
         {this.deleteIcon()}
-        <span className='audio__cards-card__preview'>
-          <audio controls controlsList='nodownload nofullscreen noremoteplayback' className='audio__cards-card__audio'>
+        <div {...cn('block-audio')}>
+          <audio controls controlsList='nodownload nofullscreen noplaybackrate'>
             <source src={audio.url} />
           </audio>
-        </span>
+        </div>
       </div>
     );
   }

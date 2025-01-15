@@ -1,10 +1,10 @@
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../../store';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
+
+import { PAGE_SIZE } from '../../../lib/constants';
+import { RootState } from '../../../../../store';
 import { getPostReplies, mapPostToMatrixMessage } from '../../../../../store/posts/utils';
 import { useMeowPost } from '../../../lib/useMeowPost';
-
-const PAGE_SIZE = 10;
 
 export const useReplyList = (postId: string) => {
   const userId = useSelector((state: RootState) => state.authentication.user.data.id);

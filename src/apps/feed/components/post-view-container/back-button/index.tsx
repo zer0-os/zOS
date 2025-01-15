@@ -13,12 +13,20 @@ export const BackButton = ({ backToId }: BackButtonProps) => {
 
   const handleOnClick = () => {
     const params = route.params;
-    const { conversationId } = params;
+    const { conversationId, zid } = params;
 
     if (backToId) {
-      history.push(`/conversation/${conversationId}/${backToId}`);
+      if (conversationId) {
+        history.push(`/conversation/${conversationId}/${backToId}`);
+      } else if (zid) {
+        history.push(`/feed/${zid}/${backToId}`);
+      }
     } else {
-      history.push(`/conversation/${conversationId}`);
+      if (conversationId) {
+        history.push(`/conversation/${conversationId}`);
+      } else if (zid) {
+        history.push(`/feed/${zid}`);
+      }
     }
   };
 

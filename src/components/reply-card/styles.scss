@@ -53,6 +53,12 @@
 
     width: 48px;
     height: 48px;
+
+    &--file {
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+    }
   }
 
   &__media {
@@ -60,5 +66,13 @@
     height: 100%;
     border-radius: 4px;
     object-fit: cover;
+  }
+
+  &__audio-icon {
+    color: theme.$color-greyscale-12;
+  }
+
+  &__file-icon {
+    color: theme.$color-greyscale-12;
   }
 }

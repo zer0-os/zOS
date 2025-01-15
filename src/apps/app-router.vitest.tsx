@@ -7,7 +7,7 @@ import { renderWithProviders } from '../test-utils';
 beforeEach(() => {
   vi.resetModules();
   vi.mock('../lib/feature-flags', () => ({
-    featureFlags: { enableNotificationsApp: false },
+    featureFlags: { enableNotificationsApp: true, enableFeedApp: true },
   }));
 });
 
@@ -20,6 +20,12 @@ vi.mock('./messenger', () => ({
 vi.mock('./notifications', () => ({
   NotificationsApp: () => {
     return <div data-testid='notifications-app' />;
+  },
+}));
+
+vi.mock('./feed', () => ({
+  FeedApp: () => {
+    return <div data-testid='feed-app' />;
   },
 }));
 
@@ -48,11 +54,12 @@ describe(AppRouter, () => {
   });
 
   it('should render NotificationsApp component when route is /notifications', () => {
-    vi.mock('../lib/feature-flags', () => ({
-      featureFlags: { enableNotificationsApp: true },
-    }));
-
     renderComponent('/notifications');
     expect(screen.getByTestId('notifications-app')).toBeTruthy();
+  });
+
+  it('should render FeedApp component when route is /feed', () => {
+    renderComponent('/feed');
+    expect(screen.getByTestId('feed-app')).toBeTruthy();
   });
 });

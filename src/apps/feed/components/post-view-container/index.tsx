@@ -6,6 +6,7 @@ import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { BackButton } from './back-button';
 import { Replies } from './reply-list';
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
+import { Header } from '../header';
 
 import styles from './styles.module.scss';
 
@@ -31,7 +32,9 @@ export const PostView = ({ postId }: PostViewProps) => {
       <Wrapper>
         {post !== undefined && (
           <>
-            <BackButton backToId={post.replyTo?.id} />
+            <Header>
+              <BackButton backToId={post.replyTo?.id} />
+            </Header>
             <div className={styles.Details}>
               <Post
                 variant='expanded'

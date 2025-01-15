@@ -50,6 +50,7 @@ export interface Properties extends PublicProperties {
   conversationModeratorIds: string[];
   isOneOnOne: boolean;
   existingConversations: Channel[];
+  isSocialChannel: boolean;
   users: { [id: string]: User };
 
   back: () => void;
@@ -87,6 +88,7 @@ export class Container extends React.Component<Properties> {
       addMemberError: groupManagement.addMemberError,
       errors: groupManagement.errors,
       name: conversation?.name || '',
+      isSocialChannel: conversation?.isSocialChannel || false,
       conversationIcon: conversation?.icon || '',
       currentUser: {
         userId: currentUser?.id,
@@ -198,6 +200,7 @@ export class Container extends React.Component<Properties> {
           setLeaveGroupStatus={this.props.setLeaveGroupStatus}
           onMemberClick={this.processMemberConversation}
           openUserProfile={this.props.openUserProfile}
+          isSocialChannel={this.props.isSocialChannel}
         />
         <MemberManagementDialogContainer />
       </>

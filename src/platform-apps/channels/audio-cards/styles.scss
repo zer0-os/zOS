@@ -1,36 +1,59 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 
-.audio__cards {
-  display: inline-block;
-  background-color: theme.$color-primary-2;
-  border: 1px solid theme.$color-primary-4;
-  border-radius: 8px;
+.audio-card {
+  display: flex;
+  align-items: center;
   padding: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
+  gap: 8px;
 
-  &-card {
+  &__actions {
     display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-    justify-content: flex-start;
+    justify-content: flex-end;
 
-    &__preview {
-      flex-grow: 1;
-      max-width: 350px;
+    &-delete {
+      color: theme.$color-failure-11;
+      border: 1px solid theme.$color-failure-11;
+      border-radius: 50%;
     }
+  }
 
-    &__audio {
-      outline: none;
-    }
+  &__block-audio {
+    audio {
+      min-width: 300px;
+      border: 1px solid theme.$color-secondary-11;
+      border-radius: 30px;
+      height: 40px;
+      width: 100%;
 
-    &__actions {
-      margin-right: 15px;
+      &::-webkit-media-controls-panel {
+        background-color: #111213;
+      }
 
-      &-delete {
-        color: theme.$color-failure-11;
-        border: 1px solid theme.$color-failure-11;
-        border-radius: 50%;
-        padding: 5px;
+      &::-webkit-media-controls-current-time-display,
+      &::-webkit-media-controls-time-remaining-display {
+        color: theme.$color-secondary-11;
+        font-size: 12px;
+        text-shadow: none;
+      }
+
+      &::-webkit-media-controls-play-button {
+        background-color: theme.$color-secondary-11;
+        border-radius: 8px;
+        height: 18px;
+      }
+
+      &::-webkit-media-controls-timeline {
+        background-color: theme.$color-secondary-11;
+        border-radius: 8px;
+        margin: 0 8px;
+        padding: 8px;
+      }
+
+      &::-webkit-media-controls-mute-button,
+      &::-webkit-media-controls-volume-slider,
+      &::-webkit-media-controls-volume-control-container {
+        display: none;
       }
     }
   }

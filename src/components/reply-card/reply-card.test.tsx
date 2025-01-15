@@ -51,6 +51,18 @@ describe('ReplyCard', () => {
     expect(wrapper.find('img')).toHaveProp('src', 'test-image-url');
   });
 
+  it('renders audio icon when media type is audio', function () {
+    const wrapper = subject({ mediaName: 'test-audio.mp3', mediaUrl: 'test-audio-url', mediaType: 'audio' });
+
+    expect(wrapper).toHaveElement('IconVolumeMax');
+  });
+
+  it('renders file icon when media type is file', function () {
+    const wrapper = subject({ mediaName: 'test-file.pdf', mediaUrl: 'test-file-url', mediaType: 'file' });
+
+    expect(wrapper).toHaveElement('IconPaperclip');
+  });
+
   it('does not render media when media url is NOT present', function () {
     const wrapper = subject({ message: 'hello' });
 

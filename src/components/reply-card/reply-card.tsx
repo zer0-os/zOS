@@ -1,7 +1,7 @@
 import React from 'react';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
-import { IconCornerDownRight, IconXClose } from '@zero-tech/zui/icons';
+import { IconCornerDownRight, IconPaperclip, IconVolumeMax, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
 
 import './styles.scss';
@@ -51,6 +51,18 @@ export default class ReplyCard extends React.Component<Properties, undefined> {
         {this.props.mediaUrl && this.props.mediaType === 'video' && (
           <div {...cn('media-container')}>
             <video {...cn('media')} src={this.props.mediaUrl} />
+          </div>
+        )}
+
+        {this.props.mediaUrl && this.props.mediaType === 'audio' && (
+          <div {...cn('media-container', 'file')}>
+            <IconVolumeMax {...cn('audio-icon')} isFilled size={18} />
+          </div>
+        )}
+
+        {this.props.mediaUrl && this.props.mediaType === 'file' && (
+          <div {...cn('media-container', 'file')}>
+            <IconPaperclip {...cn('file-icon')} isFilled size={18} />
           </div>
         )}
 

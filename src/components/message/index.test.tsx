@@ -63,6 +63,18 @@ describe('message', () => {
     expect(wrapper.find('.message__block-audio audio source').prop('src')).toStrictEqual('https://image.com/audio.mp3');
   });
 
+  it('passes correct mime type to audio source', () => {
+    const wrapper = subject({
+      media: {
+        url: 'https://image.com/audio.m4a',
+        type: MediaType.Audio,
+        mimetype: 'audio/x-m4a',
+      },
+    });
+
+    expect(wrapper.find('.message__block-audio audio source').prop('type')).toStrictEqual('audio/x-m4a');
+  });
+
   it('renders message image', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', type: MediaType.Image } });
 

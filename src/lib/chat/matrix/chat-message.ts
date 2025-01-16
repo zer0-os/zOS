@@ -62,9 +62,14 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
     messageContent = parsePlainBody(content.body);
   }
 
+  const message =
+    content.msgtype === MsgType.Image || content.msgtype === MsgType.Video || content.msgtype === MsgType.Audio
+      ? ''
+      : messageContent;
+
   return {
     id: event_id,
-    message: content.msgtype === MsgType.Image || content.msgtype === MsgType.Video ? '' : messageContent,
+    message,
     createdAt: origin_server_ts,
     updatedAt: updatedAt,
     sender: {

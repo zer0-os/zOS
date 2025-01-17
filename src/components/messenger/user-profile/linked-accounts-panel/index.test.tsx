@@ -2,6 +2,9 @@ import { shallow } from 'enzyme';
 
 import { LinkedAccountsPanel, Properties } from '.';
 import { PanelHeader } from '../../list/panel-header';
+import { bemClassName } from '../../../../lib/bem';
+
+const cn = bemClassName('linked-accounts-panel');
 
 describe(LinkedAccountsPanel, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -28,7 +31,7 @@ describe(LinkedAccountsPanel, () => {
     const onTelegramLink = jest.fn();
     const wrapper = subject({ onTelegramLink });
 
-    wrapper.find(PanelHeader).simulate('back');
+    wrapper.find(cn('section-header')).simulate('click');
 
     expect(onTelegramLink).toHaveBeenCalled();
   });

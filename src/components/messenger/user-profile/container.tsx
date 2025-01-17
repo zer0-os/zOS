@@ -15,6 +15,7 @@ import {
   openSettings,
   openDownloads,
   openAccountManagement,
+  openLinkedAccounts,
 } from '../../../store/user-profile';
 import { logout } from '../../../store/authentication';
 import { openBackupDialog } from '../../../store/matrix';
@@ -35,6 +36,7 @@ export interface Properties extends PublicProperties {
   openSettings: () => void;
   openDownloads: () => void;
   openAccountManagement: () => void;
+  openLinkedAccounts: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -63,6 +65,7 @@ export class Container extends React.Component<Properties> {
       openSettings,
       openDownloads,
       openAccountManagement,
+      openLinkedAccounts,
     };
   }
 
@@ -82,6 +85,7 @@ export class Container extends React.Component<Properties> {
         onSettings={this.props.openSettings}
         onDownloads={this.props.openDownloads}
         onManageAccounts={this.props.openAccountManagement}
+        onOpenLinkedAccounts={this.props.openLinkedAccounts}
       />
     );
   }

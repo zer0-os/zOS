@@ -11,7 +11,7 @@ import { bem } from '../../../../lib/bem';
 
 const c = bem('.overview-panel');
 
-const featureFlags = { enableRewards: false, enableUserSettings: false };
+const featureFlags = { enableRewards: false, enableUserSettings: false, enableLinkedAccounts: false };
 
 jest.mock('../../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
@@ -32,6 +32,7 @@ describe(OverviewPanel, () => {
       onOpenSettings: () => {},
       onOpenDownloads: () => {},
       onManageAccounts: () => {},
+      onOpenLinkedAccounts: () => {},
 
       ...props,
     };
@@ -115,6 +116,17 @@ describe(OverviewPanel, () => {
     wrapper.find(Button).at(2).simulate('press');
 
     expect(onOpenAccountManagement).toHaveBeenCalled();
+  });
+
+  it('publishes onOpenLinkedAccounts event', () => {
+    featureFlags.enableLinkedAccounts = true;
+
+    const onOpenLinkedAccounts = jest.fn();
+    const wrapper = subject({ onOpenLinkedAccounts });
+
+    wrapper.find(Button).at(6).simulate('press');
+
+    expect(onOpenLinkedAccounts).toHaveBeenCalled();
   });
 
   it('opens the invite dialog', () => {

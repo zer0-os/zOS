@@ -7,6 +7,7 @@ import { Image, Modal } from '@zero-tech/zui/components';
 import { Button, Variant as ButtonVariant, Color as ButtonColor } from '@zero-tech/zui/components/Button';
 import {
   IconCurrencyEthereum,
+  IconLink1,
   IconDownload2,
   IconLock1,
   IconLogOut3,
@@ -37,6 +38,7 @@ export interface Properties {
   onOpenSettings: () => void;
   onOpenDownloads: () => void;
   onManageAccounts: () => void;
+  onOpenLinkedAccounts: () => void;
 }
 
 interface State {
@@ -94,6 +96,10 @@ export class OverviewPanel extends React.Component<Properties, State> {
 
   onManageAccounts = () => {
     this.props.onManageAccounts();
+  };
+
+  openLinkedAccounts = () => {
+    this.props.onOpenLinkedAccounts();
   };
 
   renderDetails = () => {
@@ -180,6 +186,18 @@ export class OverviewPanel extends React.Component<Properties, State> {
         >
           Download
         </Button>
+
+        {featureFlags.enableLinkedAccounts && (
+          <Button
+            {...cn('action-button')}
+            variant={ButtonVariant.Secondary}
+            onPress={this.openLinkedAccounts}
+            startEnhancer={<IconLink1 size={20} />}
+            color={ButtonColor.Greyscale}
+          >
+            Linked Accounts
+          </Button>
+        )}
       </div>
     );
   }

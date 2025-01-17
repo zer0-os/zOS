@@ -26,4 +26,5 @@ export const config = {
   appleAppStorePath: process.env.REACT_APP_APPLE_APP_STORE_PATH,
   googlePlayStorePath: process.env.REACT_APP_GOOGLE_PLAY_STORE_PATH,
   webAppDownloadPath: process.env.REACT_APP_WEB_APP_DOWNLOAD_PATH,
+  telegramBotUserId: process.env.REACT_APP_TELEGRAM_BOT_USER_ID,
 };

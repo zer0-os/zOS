@@ -177,6 +177,14 @@ export class FeatureFlags {
   set enableFeedApp(value: boolean) {
     this._setBoolean('enableFeedApp', value);
   }
+
+  get enableLinkedAccounts() {
+    return this._getBoolean('enableLinkedAccounts', false);
+  }
+
+  set enableLinkedAccounts(value: boolean) {
+    this._setBoolean('enableLinkedAccounts', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

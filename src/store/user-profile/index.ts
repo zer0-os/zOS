@@ -7,6 +7,7 @@ export enum SagaActionTypes {
   OpenSettings = 'user-profile/openSettings',
   OpenDownloads = 'user-profile/openDownloads',
   OpenAccountManagement = 'user-profile/openAccountManagement',
+  OpenLinkedAccounts = 'user-profile/openLinkedAccounts',
   PrivateReadReceipts = 'user-profile/privateReadReceipts',
   PublicReadReceipts = 'user-profile/publicReadReceipts',
 }
@@ -18,6 +19,7 @@ export enum Stage {
   Settings = 'settings',
   AccountManagement = 'account_management',
   Downloads = 'downloads',
+  LinkedAccounts = 'linked_accounts',
 }
 
 export type UserProfileState = {
@@ -36,6 +38,7 @@ export const openEditProfile = createAction(SagaActionTypes.OpenEditProfile);
 export const openSettings = createAction(SagaActionTypes.OpenSettings);
 export const openDownloads = createAction(SagaActionTypes.OpenDownloads);
 export const openAccountManagement = createAction(SagaActionTypes.OpenAccountManagement);
+export const openLinkedAccounts = createAction(SagaActionTypes.OpenLinkedAccounts);
 export const privateReadReceipts = createAction(SagaActionTypes.PrivateReadReceipts);
 export const publicReadReceipts = createAction(SagaActionTypes.PublicReadReceipts);
 

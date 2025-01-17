@@ -7,7 +7,7 @@ import { EditProfileContainer } from '../../edit-profile/container';
 import { SettingsPanelContainer } from './settings-panel/container';
 import { AccountManagementContainer } from './account-management-panel/container';
 import { DownloadsPanel } from './downloads-panel';
-
+import { LinkedAccountsPanelContainer } from './linked-accounts-panel/container';
 describe(UserProfile, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
@@ -25,6 +25,7 @@ describe(UserProfile, () => {
       onSettings: () => {},
       onDownloads: () => {},
       onManageAccounts: () => {},
+      onOpenLinkedAccounts: () => {},
       ...props,
     };
 
@@ -59,6 +60,12 @@ describe(UserProfile, () => {
     const wrapper = subject({ stage: Stage.AccountManagement });
 
     expect(wrapper).toHaveElement(AccountManagementContainer);
+  });
+
+  it('renders Linked Accounts Panel Container when stage is Linked Accounts', () => {
+    const wrapper = subject({ stage: Stage.LinkedAccounts });
+
+    expect(wrapper).toHaveElement(LinkedAccountsPanelContainer);
   });
 
   it('renders nothing when stage None', () => {

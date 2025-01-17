@@ -28,6 +28,10 @@ export function* openAccountManagement() {
   yield put(setStage(Stage.AccountManagement));
 }
 
+export function* openLinkedAccounts() {
+  yield put(setStage(Stage.LinkedAccounts));
+}
+
 export function* onPrivateReadReceipts() {
   try {
     yield call(setReadReceiptPreference, 'private');
@@ -63,7 +67,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OpenSettings, openSettings);
   yield takeLatest(SagaActionTypes.OpenDownloads, openDownloads);
   yield takeLatest(SagaActionTypes.OpenAccountManagement, openAccountManagement);
-
+  yield takeLatest(SagaActionTypes.OpenLinkedAccounts, openLinkedAccounts);
   yield takeLatest(SagaActionTypes.PrivateReadReceipts, onPrivateReadReceipts);
   yield takeLatest(SagaActionTypes.PublicReadReceipts, onPublicReadReceipts);
 }

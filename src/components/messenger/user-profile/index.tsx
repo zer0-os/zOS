@@ -6,6 +6,7 @@ import { EditProfileContainer } from '../../edit-profile/container';
 import { SettingsPanelContainer } from './settings-panel/container';
 import { AccountManagementContainer } from './account-management-panel/container';
 import { DownloadsPanel } from './downloads-panel';
+import { LinkedAccountsPanelContainer } from './linked-accounts-panel/container';
 
 export interface Properties {
   stage: Stage;
@@ -22,6 +23,7 @@ export interface Properties {
   onSettings: () => void;
   onDownloads: () => void;
   onManageAccounts: () => void;
+  onOpenLinkedAccounts: () => void;
 }
 
 export class UserProfile extends React.Component<Properties> {
@@ -41,6 +43,7 @@ export class UserProfile extends React.Component<Properties> {
             onOpenSettings={this.props.onSettings}
             onOpenDownloads={this.props.onDownloads}
             onManageAccounts={this.props.onManageAccounts}
+            onOpenLinkedAccounts={this.props.onOpenLinkedAccounts}
           />
         )}
 
@@ -49,6 +52,9 @@ export class UserProfile extends React.Component<Properties> {
         {this.props.stage === Stage.Downloads && <DownloadsPanel onClose={this.props.onBackToOverview} />}
         {this.props.stage === Stage.AccountManagement && (
           <AccountManagementContainer onClose={this.props.onBackToOverview} />
+        )}
+        {this.props.stage === Stage.LinkedAccounts && (
+          <LinkedAccountsPanelContainer onClose={this.props.onBackToOverview} />
         )}
       </>
     );

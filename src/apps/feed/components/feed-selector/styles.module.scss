@@ -1,0 +1,32 @@
+.List {
+  list-style: none;
+  padding: 16px;
+  margin: 24px 0;
+
+  width: 100%;
+  max-width: 236px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    padding: 8px;
+    width: 100%;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    a {
+      width: 100%;
+    }
+
+    &:hover {
+      background-color: rgba(253, 252, 253, 0.05);
+    }
+  }
+}
+
+.Scroll > div {
+  overflow-x: hidden;
+}

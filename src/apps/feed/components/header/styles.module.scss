@@ -1,7 +1,16 @@
 .Header {
+  position: sticky;
+  top: 0;
+
   display: flex;
   padding: 12px 18px;
   width: 100%;
-  border-inline: 1px solid rgb(52, 56, 60);
+
+  backdrop-filter: blur(64px);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgb(52, 56, 60);
+  border-top: none;
+
   box-sizing: border-box;
+  z-index: 10;
 }

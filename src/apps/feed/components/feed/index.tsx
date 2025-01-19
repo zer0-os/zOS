@@ -38,6 +38,7 @@ export const Feed = ({ zid }: FeedProps) => {
             page.map((reply) => (
               <li key={reply.id}>
                 <Post
+                  channelZid={reply.channelZid}
                   author={reply.sender?.displaySubHandle}
                   currentUserId={userId}
                   loadAttachmentDetails={() => {}}

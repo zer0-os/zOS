@@ -27,6 +27,7 @@ export interface PostProps {
   text?: string;
   media?: any;
   ownerUserId?: string;
+  channelZid?: string;
   userMeowBalance?: string;
   reactions?: { [key: string]: number };
   variant?: Variant;
@@ -47,6 +48,7 @@ export const Post = ({
   timestamp,
   media,
   ownerUserId,
+  channelZid,
   userMeowBalance,
   reactions,
   loadAttachmentDetails,
@@ -152,7 +154,7 @@ export const Post = ({
   );
 
   return (
-    <Wrapper postId={messageId} variant={variant}>
+    <Wrapper postId={messageId} variant={variant} channelZid={channelZid}>
       <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
         {variant === 'default' && (
           <div className={styles.Avatar}>
@@ -221,8 +223,15 @@ export const Actions = ({ children, variant }: { children: React.ReactNode; vari
   );
 };
 
-const Wrapper = ({ children, postId, variant }: { children: React.ReactNode; postId: string; variant: Variant }) => {
-  const { navigateToPost } = usePostRoute(postId);
+interface WrapperProps {
+  channelZid?: string;
+  children: React.ReactNode;
+  postId: string;
+  variant: Variant;
+}
+
+const Wrapper = ({ children, postId, variant, channelZid }: WrapperProps) => {
+  const { navigateToPost } = usePostRoute(postId, channelZid);
 
   const handleOnClick = () => {
     if (variant === 'default') {

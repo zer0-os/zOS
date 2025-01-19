@@ -15,7 +15,7 @@ export const FeedApp = () => {
         <Switch>
           <Route path='/feed/:zid/:postId' component={({ match }: any) => <PostView postId={match.params.postId} />} />
           <Route path='/feed/:zid' component={({ match }: any) => <Feed zid={match.params.zid} />} />
-          <Redirect to='/feed/16test' />
+          <Route path='/feed' component={Feed} />
         </Switch>
       </ScrollbarContainer>
     </div>

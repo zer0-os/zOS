@@ -1,24 +1,31 @@
+import { useCommentInput } from './useCommentInput';
 import { ViewModes } from '../../../../shared-components/theme-engine';
+
 import { PostInput } from '../post-input';
 
 import styles from './styles.module.scss';
-import { useCommentInput } from './useCommentInput';
 
 export interface CommentInputProps {
+  channelZid?: string;
+  isFeed?: boolean;
   postId: string;
 }
 
-export const CommentInput = ({ postId }: CommentInputProps) => {
-  const { error, isConnected, onSubmit } = useCommentInput(postId);
+export const CommentInput = ({ channelZid, isFeed, postId }: CommentInputProps) => {
+  const { error, errorFeed, isConnected, isLoading, isLoadingFeed, onSubmit, onSubmitFeed } = useCommentInput(
+    postId,
+    channelZid
+  );
 
   return (
     <PostInput
       className={styles.Input}
-      viewMode={ViewModes.Dark}
+      error={error ?? errorFeed?.message}
+      isSubmitting={isLoadingFeed || isLoading}
       isWalletConnected={isConnected}
-      onSubmit={onSubmit}
+      onSubmit={isFeed ? onSubmitFeed : onSubmit}
       variant='comment'
-      error={error}
+      viewMode={ViewModes.Dark}
     />
   );
 };

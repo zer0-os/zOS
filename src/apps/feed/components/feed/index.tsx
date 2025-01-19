@@ -3,6 +3,7 @@ import { useFeed } from './lib/useFeed';
 import { Header } from '../header';
 import { Message } from '../message';
 import { Post } from '../post';
+import { PostInput } from '../post-input-hook';
 import { Waypoint } from 'react-waypoint';
 
 import styles from './styles.module.scss';
@@ -16,6 +17,7 @@ export const Feed = ({ zid }: FeedProps) => {
     fetchNextPage,
     hasLoadedMessages,
     hasNextPage,
+    headerText,
     isEmpty,
     isError,
     isFetchingNextPage,
@@ -24,12 +26,12 @@ export const Feed = ({ zid }: FeedProps) => {
     posts,
     userId,
     userMeowBalance,
-    headerText,
   } = useFeed(zid);
 
   return (
     <div className={styles.Feed}>
       <Header>{headerText}</Header>
+      {zid && <PostInput channelZid={zid} />}
       {isLoading && <Message>Loading posts</Message>}
       {isEmpty && <Message>This feed is empty</Message>}
       {hasLoadedMessages && (
@@ -38,8 +40,8 @@ export const Feed = ({ zid }: FeedProps) => {
             page.map((reply) => (
               <li key={reply.id}>
                 <Post
-                  channelZid={reply.channelZid}
                   author={reply.sender?.displaySubHandle}
+                  channelZid={reply.channelZid}
                   currentUserId={userId}
                   loadAttachmentDetails={() => {}}
                   meowPost={meowPost}

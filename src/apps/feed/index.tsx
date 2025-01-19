@@ -1,4 +1,4 @@
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 
 import { Feed } from './components/feed';
 import { FeedSelector } from './components/feed-selector';

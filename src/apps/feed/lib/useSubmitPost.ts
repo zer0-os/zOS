@@ -47,8 +47,6 @@ export const useSubmitPost = () => {
         throw new Error('Post is empty');
       }
 
-      console.log('BOSH');
-
       if (!userWallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
         throw new Error('Wallet is not linked to your account');
       }

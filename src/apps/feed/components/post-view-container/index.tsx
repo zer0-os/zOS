@@ -1,20 +1,21 @@
 import { usePostView } from './usePostView';
 
-import { Post } from '../post';
-import { CommentInput } from '../comment-input';
-import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { BackButton } from './back-button';
+import { CommentInput } from '../comment-input';
+import { Header } from '../header';
+import { IconAlertCircle } from '@zero-tech/zui/icons';
+import { Post } from '../post';
 import { Replies } from './reply-list';
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
-import { Header } from '../header';
 
 import styles from './styles.module.scss';
 
 export interface PostViewProps {
+  isFeed?: boolean;
   postId: string;
 }
 
-export const PostView = ({ postId }: PostViewProps) => {
+export const PostView = ({ postId, isFeed }: PostViewProps) => {
   const { isLoadingPost, meowPost, post, userId, userMeowBalance } = usePostView(postId);
 
   if (!isLoadingPost && !post) {
@@ -37,23 +38,23 @@ export const PostView = ({ postId }: PostViewProps) => {
             </Header>
             <div className={styles.Details}>
               <Post
-                variant='expanded'
-                className={styles.Post}
-                messageId={post.id.toString()}
-                timestamp={post.createdAt}
                 author={post.sender?.displaySubHandle}
-                nickname={post.sender?.firstName}
-                text={post.message}
-                loadAttachmentDetails={() => {}}
-                meowPost={meowPost}
+                className={styles.Post}
                 currentUserId={userId}
-                ownerUserId={post.sender?.userId}
-                userMeowBalance={userMeowBalance}
-                reactions={post.reactions}
+                loadAttachmentDetails={() => {}}
                 media={post.media}
+                meowPost={meowPost}
+                messageId={post.id.toString()}
+                nickname={post.sender?.firstName}
                 numberOfReplies={post.numberOfReplies}
+                ownerUserId={post.sender?.userId}
+                reactions={post.reactions}
+                text={post.message}
+                timestamp={post.createdAt}
+                userMeowBalance={userMeowBalance}
+                variant='expanded'
               />
-              <CommentInput postId={postId} />
+              <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
             </div>
             <Replies postId={postId} />
           </>

@@ -13,7 +13,10 @@ export const FeedApp = () => {
       <FeedSelector />
       <ScrollbarContainer className={styles.Scroll} variant='on-hover'>
         <Switch>
-          <Route path='/feed/:zid/:postId' component={({ match }: any) => <PostView postId={match.params.postId} />} />
+          <Route
+            path='/feed/:zid/:postId'
+            component={({ match }: any) => <PostView postId={match.params.postId} isFeed={true} />}
+          />
           <Route path='/feed/:zid' component={({ match }: any) => <Feed zid={match.params.zid} />} />
           <Route path='/feed' component={Feed} />
         </Switch>

@@ -1,4 +1,4 @@
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 
 import { Feed } from './components/feed';
 import { FeedSelector } from './components/feed-selector';
@@ -15,7 +15,7 @@ export const FeedApp = () => {
         <Switch>
           <Route path='/feed/:zid/:postId' component={({ match }: any) => <PostView postId={match.params.postId} />} />
           <Route path='/feed/:zid' component={({ match }: any) => <Feed zid={match.params.zid} />} />
-          <Redirect to='/feed/16test' />
+          <Route path='/feed' component={Feed} />
         </Switch>
       </ScrollbarContainer>
     </div>

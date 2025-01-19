@@ -8,7 +8,7 @@ import { Waypoint } from 'react-waypoint';
 import styles from './styles.module.scss';
 
 export interface FeedProps {
-  zid: string;
+  zid?: string;
 }
 
 export const Feed = ({ zid }: FeedProps) => {
@@ -24,11 +24,12 @@ export const Feed = ({ zid }: FeedProps) => {
     posts,
     userId,
     userMeowBalance,
+    headerText,
   } = useFeed(zid);
 
   return (
     <div className={styles.Feed}>
-      <Header>0://{zid}</Header>
+      <Header>{headerText}</Header>
       {isLoading && <Message>Loading posts</Message>}
       {isEmpty && <Message>This feed is empty</Message>}
       {hasLoadedMessages && (
@@ -37,6 +38,7 @@ export const Feed = ({ zid }: FeedProps) => {
             page.map((reply) => (
               <li key={reply.id}>
                 <Post
+                  channelZid={reply.channelZid}
                   author={reply.sender?.displaySubHandle}
                   currentUserId={userId}
                   loadAttachmentDetails={() => {}}

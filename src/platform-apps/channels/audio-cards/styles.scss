@@ -21,10 +21,12 @@
   &__block-audio {
     audio {
       min-width: 300px;
-      border: 1px solid theme.$color-secondary-11;
-      border-radius: 30px;
       height: 40px;
       width: 100%;
+
+      &::-webkit-media-controls-enclosure {
+        background: transparent;
+      }
 
       &::-webkit-media-controls-panel {
         background-color: #111213;

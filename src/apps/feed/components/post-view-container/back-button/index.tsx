@@ -15,6 +15,11 @@ export const BackButton = ({ backToId }: BackButtonProps) => {
     const params = route.params;
     const { conversationId, zid } = params;
 
+    if (history.length > 1) {
+      history.goBack();
+      return;
+    }
+
     if (backToId) {
       if (conversationId) {
         history.push(`/conversation/${conversationId}/${backToId}`);

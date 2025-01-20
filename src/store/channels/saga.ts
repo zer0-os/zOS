@@ -23,6 +23,7 @@ import { rawChannel } from './selectors';
 import cloneDeep from 'lodash/cloneDeep';
 import { getHistory } from '../../lib/browser';
 import { startPollingPosts } from '../posts/saga';
+import { setLastActiveConversation, getLastActiveConversation } from '../../lib/last-conversation';
 
 export const rawChannelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
@@ -58,6 +59,16 @@ export function* markConversationAsRead(conversationId) {
 }
 
 export function* openFirstConversation() {
+  const lastConversationId = yield call(getLastActiveConversation);
+
+  if (lastConversationId) {
+    const conversation = yield select(rawChannelSelector(lastConversationId));
+    if (conversation) {
+      yield call(openConversation, lastConversationId);
+      return;
+    }
+  }
+
   const conversation = yield select(mostRecentConversation);
   if (conversation) {
     yield call(openConversation, conversation.id);
@@ -72,6 +83,7 @@ export function* openConversation(conversationId) {
     return;
   }
 
+  yield call(setLastActiveConversation, conversationId);
   yield call(setActiveConversation, conversationId);
   yield spawn(markConversationAsRead, conversationId);
   yield call(resetConversationManagement);

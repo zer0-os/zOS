@@ -65,6 +65,7 @@ export function mapPostToMatrixMessage(post) {
     replyTo: post.replyToPost,
     numberOfReplies: post.replies?.length ?? 0,
     channelZid: post.worldZid,
+    arweaveId: post.arweaveId,
   };
 }
 

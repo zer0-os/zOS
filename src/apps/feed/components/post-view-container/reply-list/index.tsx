@@ -16,6 +16,7 @@ export const Replies = ({ postId }: { postId: string }) => {
           page.map((reply) => (
             <li key={reply.id} className={styles.Reply}>
               <Post
+                arweaveId={reply.arweaveId}
                 variant='default'
                 messageId={reply.id.toString()}
                 timestamp={reply.createdAt}

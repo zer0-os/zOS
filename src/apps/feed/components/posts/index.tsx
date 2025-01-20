@@ -8,6 +8,7 @@ export const Posts = ({ postMessages, loadAttachmentDetails, userMeowBalance, cu
       {postMessages.map((post) => (
         <li key={post.id}>
           <Post
+            arweaveId={post.arweaveId}
             currentUserId={currentUserId}
             messageId={post.id}
             media={post.media}

@@ -38,6 +38,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
             </Header>
             <div className={styles.Details}>
               <Post
+                arweaveId={post.arweaveId}
                 author={post.sender?.displaySubHandle}
                 className={styles.Post}
                 currentUserId={userId}

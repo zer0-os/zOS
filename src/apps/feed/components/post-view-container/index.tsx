@@ -53,6 +53,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
                 timestamp={post.createdAt}
                 userMeowBalance={userMeowBalance}
                 variant='expanded'
+                channelZid={post.channelZid}
               />
               <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
             </div>

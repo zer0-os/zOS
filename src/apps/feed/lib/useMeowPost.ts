@@ -27,23 +27,27 @@ export const useMeowPost = () => {
           return data;
         }
 
+        const updatePostReactions = (post) => {
+          if (post.id !== postId) {
+            return post;
+          }
+
+          const currentMeowCount = post.reactions?.MEOW || 0;
+          const newMeowCount = currentMeowCount + Number(meowAmount);
+
+          return {
+            ...post,
+            reactions: {
+              ...post.reactions,
+              MEOW: newMeowCount,
+              VOTED: 1,
+            },
+          };
+        };
+
         return {
           ...data,
-          pages: data.pages.map((page) =>
-            page.map((post) => {
-              if (post.id === postId) {
-                return {
-                  ...post,
-                  reactions: {
-                    ...post.reactions,
-                    MEOW: (post.reactions?.MEOW || 0) + Number(meowAmount),
-                    VOTED: 1,
-                  },
-                };
-              }
-              return post;
-            })
-          ),
+          pages: data.pages.map((page) => page.map(updatePostReactions)),
         };
       });
     },

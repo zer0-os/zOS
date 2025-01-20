@@ -9,4 +9,8 @@
 .Scroll {
   flex: 1;
   width: 100%;
+
+  > div {
+    scrollbar-gutter: stable both-edges;
+  }
 }

@@ -1,7 +1,7 @@
 export const useArweaveAction = (arweaveId: string) => {
   const handleOnClick = () => {
     // @note this is temporarily hardcoded, and will not work on devnet
-    window.open(`https://irys.xyz/${arweaveId}`, '_blank');
+    window.open(`https://arweave.net/${arweaveId}`, '_blank');
   };
 
   return {

@@ -4,7 +4,7 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../../../config';
 import { Key } from '../../../../lib/keyboard-search';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Avatar, Button, IconButton } from '@zero-tech/zui/components';
+import { Button, IconButton } from '@zero-tech/zui/components';
 import ImageCards from '../../../../platform-apps/channels/image-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { ViewModes } from '../../../../shared-components/theme-engine';

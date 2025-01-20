@@ -18,9 +18,34 @@ export const useMeowPost = () => {
         throw new Error('Failed to meow post');
       }
     },
-    onSuccess: (_data, { postId }) => {
+    onSuccess: (_data, { postId, meowAmount }) => {
       queryClient.invalidateQueries({ queryKey: ['posts', { postId }] });
-      queryClient.invalidateQueries({ queryKey: ['posts', 'replies', { postId }] });
+
+      // Updates the post in whatever grouped queries it's part of
+      queryClient.setQueriesData({ queryKey: ['posts'] }, (data: any) => {
+        if (!data?.pages) {
+          return data;
+        }
+
+        return {
+          ...data,
+          pages: data.pages.map((page) =>
+            page.map((post) => {
+              if (post.id === postId) {
+                return {
+                  ...post,
+                  reactions: {
+                    ...post.reactions,
+                    MEOW: (post.reactions?.MEOW || 0) + Number(meowAmount),
+                    VOTED: 1,
+                  },
+                };
+              }
+              return post;
+            })
+          ),
+        };
+      });
     },
   });
 

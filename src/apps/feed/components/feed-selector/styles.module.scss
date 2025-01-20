@@ -16,6 +16,12 @@
     border-radius: 8px;
     font-size: 14px;
     color: #fdfdffed;
+    box-sizing: border-box;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 
     cursor: pointer;
 
@@ -29,6 +35,11 @@
 
     span {
       color: var(--color-greyscale-11);
+    }
+
+    &[data-is-selected],
+    &:active {
+      background-color: rgba(253, 252, 253, 0.07);
     }
   }
 }

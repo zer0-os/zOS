@@ -33,6 +33,7 @@ import { completePendingUserProfile } from '../registration/saga';
 import { StoreBuilder } from '../test/store';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { closeUserProfile } from '../user-profile/saga';
+import { clearLastActiveConversation } from '../../lib/last-conversation';
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
@@ -249,6 +250,10 @@ describe(forceLogout, () => {
     const { storeState } = await expectLogoutSaga().withReducer(rootReducer, state.build()).run();
 
     expect(storeState.authentication.displayLogoutModal).toEqual(false);
+  });
+
+  it('clears the last active conversation', async () => {
+    await expectLogoutSaga().call(clearLastActiveConversation).call(terminate).run();
   });
 
   it('clears the user session', async () => {

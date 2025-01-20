@@ -26,6 +26,7 @@ import { getUserReadReceiptPreference } from '../user-profile/saga';
 import { featureFlags } from '../../lib/feature-flags';
 import { createUnencryptedConversation as createUnencryptedMatrixConversation } from '../../lib/chat';
 import { isFileUploadedToMatrix } from '../../lib/chat/matrix/media';
+import { clearLastActiveConversation } from '../../lib/last-conversation';
 
 export function* parseProfileImagesForMembers(channels: any[]) {
   // Create a map of users that need profile image downloads
@@ -384,6 +385,7 @@ function* currentUserLeftChannel(channelId) {
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   if (activeConversationId === channelId) {
+    yield call(clearLastActiveConversation);
     yield call(openFirstConversation);
   }
 }

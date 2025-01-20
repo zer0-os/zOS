@@ -30,6 +30,7 @@ import { getZEROUsers } from './api';
 import { mapAdminUserIdToZeroUserId, mapChannelMembers } from './utils';
 import { openFirstConversation } from '../channels/saga';
 import { getUserReadReceiptPreference } from '../user-profile/saga';
+import { clearLastActiveConversation } from '../../lib/last-conversation';
 
 const mockConversation = (id: string) => ({
   id: `conversation_${id}`,
@@ -201,6 +202,40 @@ describe('channels list saga', () => {
       await expectSaga(userLeftChannel, roomId, 'matrix-id')
         .provide([[matchers.call.fn(openFirstConversation), null]])
         .withReducer(rootReducer, initialState)
+        .call(openFirstConversation)
+        .run();
+    });
+
+    it('clears last active conversation when user leaves the active conversation', async () => {
+      const roomId = 'conversation-id';
+      const userId = 'user-id';
+
+      const initialState = new StoreBuilder()
+        .withCurrentUser({ id: userId, matrixId: 'matrix-id' })
+        .withUsers({ userId, matrixId: 'matrix-id' })
+        .withConversationList(
+          {
+            id: 'conversation-1',
+            lastMessage: { createdAt: 10000000 } as any,
+            messages: [{ id: '1', createdAt: 10000000 }] as any,
+          },
+          { id: roomId },
+          {
+            id: 'conversation-2',
+            lastMessage: { createdAt: 10000001 } as any,
+            messages: [{ id: '2', createdAt: 10000001 }] as any,
+          }
+        )
+        .withActiveConversation({ id: roomId })
+        .build();
+
+      await expectSaga(userLeftChannel, roomId, 'matrix-id')
+        .provide([
+          [matchers.call.fn(openFirstConversation), null],
+          [matchers.call.fn(clearLastActiveConversation), null],
+        ])
+        .withReducer(rootReducer, initialState)
+        .call(clearLastActiveConversation)
         .call(openFirstConversation)
         .run();
     });

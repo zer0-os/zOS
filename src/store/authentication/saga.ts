@@ -14,6 +14,7 @@ import { Events, getAuthChannel } from './channels';
 import { getHistory } from '../../lib/browser';
 import { completePendingUserProfile } from '../registration/saga';
 import { closeUserProfile } from '../user-profile/saga';
+import { clearLastActiveConversation } from '../../lib/last-conversation';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -108,6 +109,7 @@ export function* closeLogoutModal() {
 
 export function* forceLogout() {
   yield closeLogoutModal();
+  yield call(clearLastActiveConversation);
   yield call(terminate);
 }
 

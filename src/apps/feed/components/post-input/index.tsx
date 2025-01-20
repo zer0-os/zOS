@@ -19,6 +19,7 @@ import { MediaType } from '../../../../store/messages';
 import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../../../components/message-input/utils';
 import { EmojiPicker } from '../../../../components/message-input/emoji-picker/emoji-picker';
 import { RainbowKitConnectButton } from '../../../../lib/web3/rainbowkit/button';
+import { MatrixAvatar } from '../../../../components/matrix-avatar';
 
 const cn = bemClassName('post-input-container');
 
@@ -186,7 +187,7 @@ export class PostInput extends React.Component<Properties, State> {
             <div {...getRootProps({ ...cn('drop-zone-text-area') })}>
               <div {...cn('create-outer')}>
                 <div>
-                  <Avatar {...cn('avatar')} imageURL={this.props.avatarUrl} size={'regular'} />
+                  <MatrixAvatar imageURL={this.props.avatarUrl} size={'regular'} />
                 </div>
                 <div {...cn('create-inner')}>
                   <div {...cn('input')}>

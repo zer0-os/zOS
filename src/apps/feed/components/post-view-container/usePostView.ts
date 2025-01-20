@@ -8,7 +8,7 @@ import { useMeowPost } from '../../lib/useMeowPost';
 export const usePostView = (postId: string) => {
   const userId = useSelector((state: RootState) => state.authentication.user.data.id);
   const userMeowBalance = useSelector((state: RootState) => state.rewards.meow);
-  const { meowPost } = useMeowPost();
+  const { meowPost, meowPostFeed } = useMeowPost();
 
   const { data, isLoading: isLoadingPost } = useQuery({
     queryKey: ['posts', { postId }],
@@ -21,6 +21,7 @@ export const usePostView = (postId: string) => {
   return {
     isLoadingPost,
     meowPost,
+    meowPostFeed,
     post: data,
     userId,
     userMeowBalance,

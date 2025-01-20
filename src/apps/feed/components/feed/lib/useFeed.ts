@@ -31,7 +31,7 @@ export const useFeed = (zid?: string) => {
     initialPageParam: 0,
   });
 
-  const { meowPost } = useMeowPost();
+  const { meowPostFeed } = useMeowPost();
 
   const hasLoadedMessages = data?.pages.some((page) => page.length > 0);
 
@@ -45,7 +45,7 @@ export const useFeed = (zid?: string) => {
     isError,
     isFetchingNextPage,
     isLoading,
-    meowPost,
+    meowPostFeed,
     posts: data,
     userId,
     userMeowBalance,
@@ -59,6 +59,6 @@ interface Options {
 }
 
 async function getPosts(endpoint: string, options: Options) {
-  const res = await get(endpoint, undefined, { ...options, include_replies: true });
+  const res = await get(endpoint, undefined, { ...options, include_replies: true, include_meows: true });
   return res.body;
 }

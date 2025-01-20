@@ -16,7 +16,7 @@ export interface PostViewProps {
 }
 
 export const PostView = ({ postId, isFeed }: PostViewProps) => {
-  const { isLoadingPost, meowPost, post, userId, userMeowBalance } = usePostView(postId);
+  const { isLoadingPost, meowPost, meowPostFeed, post, userId, userMeowBalance } = usePostView(postId);
 
   if (!isLoadingPost && !post) {
     return (
@@ -44,7 +44,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
                 currentUserId={userId}
                 loadAttachmentDetails={() => {}}
                 media={post.media}
-                meowPost={meowPost}
+                meowPost={isFeed ? meowPostFeed : meowPost}
                 messageId={post.id.toString()}
                 nickname={post.sender?.firstName}
                 numberOfReplies={post.numberOfReplies}
@@ -58,7 +58,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
               />
               <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
             </div>
-            <Replies postId={postId} />
+            <Replies postId={postId} isFeed={isFeed} />
           </>
         )}
       </Wrapper>

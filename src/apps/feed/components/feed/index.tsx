@@ -22,7 +22,7 @@ export const Feed = ({ zid }: FeedProps) => {
     isError,
     isFetchingNextPage,
     isLoading,
-    meowPost,
+    meowPostFeed,
     posts,
     userId,
     userMeowBalance,
@@ -46,7 +46,7 @@ export const Feed = ({ zid }: FeedProps) => {
                   channelZid={reply.channelZid}
                   currentUserId={userId}
                   loadAttachmentDetails={() => {}}
-                  meowPost={meowPost}
+                  meowPost={meowPostFeed}
                   messageId={reply.id.toString()}
                   nickname={reply.sender?.firstName}
                   numberOfReplies={reply.numberOfReplies}

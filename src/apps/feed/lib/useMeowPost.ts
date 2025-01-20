@@ -19,7 +19,9 @@ export const useMeowPost = () => {
       }
     },
     onSuccess: (_data, { postId, meowAmount }) => {
-      queryClient.invalidateQueries({ queryKey: ['posts', { postId }] });
+      queryClient.setQueryData(['posts', { postId }], (data: any) => {
+        return updatePostReactions(data, postId, meowAmount);
+      });
 
       // Updates the post in whatever grouped queries it's part of
       queryClient.setQueriesData({ queryKey: ['posts'] }, (data: any) => {
@@ -27,27 +29,9 @@ export const useMeowPost = () => {
           return data;
         }
 
-        const updatePostReactions = (post) => {
-          if (post.id !== postId) {
-            return post;
-          }
-
-          const currentMeowCount = post.reactions?.MEOW || 0;
-          const newMeowCount = currentMeowCount + Number(meowAmount);
-
-          return {
-            ...post,
-            reactions: {
-              ...post.reactions,
-              MEOW: newMeowCount,
-              VOTED: 1,
-            },
-          };
-        };
-
         return {
           ...data,
-          pages: data.pages.map((page) => page.map(updatePostReactions)),
+          pages: data.pages.map((page) => page.map((post) => updatePostReactions(post, postId, meowAmount))),
         };
       });
     },
@@ -64,5 +48,23 @@ export const useMeowPost = () => {
   return {
     meowPost,
     meowPostFeed,
+  };
+};
+
+const updatePostReactions = (post, postId: string, meowAmount: string) => {
+  if (post.id !== postId) {
+    return post;
+  }
+
+  const currentMeowCount = post.reactions?.MEOW || 0;
+  const newMeowCount = currentMeowCount + Number(meowAmount);
+
+  return {
+    ...post,
+    reactions: {
+      ...post.reactions,
+      MEOW: newMeowCount,
+      VOTED: 1,
+    },
   };
 };

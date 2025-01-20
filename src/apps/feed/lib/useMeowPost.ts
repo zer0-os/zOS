@@ -10,7 +10,6 @@ export const useMeowPost = () => {
 
   const { mutate } = useMutation({
     mutationFn: async ({ postId, meowAmount }: { postId: string; meowAmount: string }) => {
-      console.log('triggered: mutationFn');
       const meowAmountWei = ethers.utils.parseEther(meowAmount.toString());
       const res = await meowPostApi(postId, meowAmountWei.toString());
 

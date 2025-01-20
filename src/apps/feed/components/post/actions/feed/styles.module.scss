@@ -1,0 +1,8 @@
+.Container > *:active {
+  background: none !important;
+}
+
+.Disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

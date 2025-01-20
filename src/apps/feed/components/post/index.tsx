@@ -9,6 +9,7 @@ import { Media, MediaDownloadStatus, MediaType } from '../../../../store/message
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { ReplyAction } from './actions/reply/reply-action';
 import { formatWeiAmount } from '../../../../lib/number';
+import { FeedAction } from './actions/feed';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -206,6 +207,9 @@ export const Post = ({
                     <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
                   </PreventPropagation>
                 )}
+                <PreventPropagation>
+                  <FeedAction channelZid={channelZid} />
+                </PreventPropagation>
               </Actions>
             )
           }

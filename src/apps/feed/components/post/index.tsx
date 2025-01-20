@@ -177,20 +177,27 @@ export const Post = ({
             </div>
           }
           details={
-            <>
-              {/* @ts-ignore */}
-              <Name className={styles.Name} variant='name'>
-                {nickname}
-              </Name>
-              {author && (
-                <>
-                  {/* @ts-ignore */}
-                  <Name className={styles.UserName} variant='username'>
-                    {author}
-                  </Name>
-                </>
+            <div className={styles.Details}>
+              {variant === 'expanded' && (
+                <div className={styles.Avatar}>
+                  <MatrixAvatar size='regular' imageURL={avatarUrl} />
+                </div>
               )}
-            </>
+              <div className={styles.Wrapper}>
+                {/* @ts-ignore */}
+                <Name className={styles.Name} variant='name'>
+                  {nickname}
+                </Name>
+                {author && (
+                  <>
+                    {/* @ts-ignore */}
+                    <Name className={styles.UserName} variant='username'>
+                      {author}
+                    </Name>
+                  </>
+                )}
+              </div>
+            </div>
           }
           options={variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
           actions={

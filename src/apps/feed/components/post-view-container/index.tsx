@@ -39,6 +39,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
             <div className={styles.Details}>
               <Post
                 arweaveId={post.arweaveId}
+                avatarUrl={post.sender?.avatarUrl}
                 author={post.sender?.displaySubHandle}
                 className={styles.Post}
                 currentUserId={userId}

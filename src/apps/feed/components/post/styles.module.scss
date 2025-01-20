@@ -56,18 +56,30 @@
   word-break: break-word;
 }
 
+.Details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .Wrapper {
+    display: flex;
+    gap: 4px;
+    flex-direction: column;
+  }
+}
+
 .Avatar {
   pointer-events: none;
 }
 
 .Name {
-  font-size: 14px;
+  font-size: 14px !important;
   font-weight: 600;
   line-height: 14px;
 }
 
 .UserName {
-  font-size: 12px;
+  font-size: 12px !important;
   line-height: normal;
 
   @include glass-text-secondary-color;

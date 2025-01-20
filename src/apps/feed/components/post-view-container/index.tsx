@@ -20,7 +20,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
 
   if (!isLoadingPost && !post) {
     return (
-      <Wrapper>
+      <Wrapper isFeed={isFeed}>
         <Message>
           <IconAlertCircle size={16} /> Failed to load post
         </Message>
@@ -29,8 +29,8 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
   }
 
   return (
-    <ScrollbarContainer variant='on-hover'>
-      <Wrapper>
+    <ScrollbarContainer variant='on-hover' className={styles.Scroll}>
+      <Wrapper isFeed={isFeed}>
         {post !== undefined && (
           <>
             <Header>
@@ -68,6 +68,10 @@ const Message = ({ children }: { children: React.ReactNode }) => {
   return <div className={styles.Message}>{children}</div>;
 };
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => {
-  return <div className={styles.Wrapper}>{children}</div>;
+const Wrapper = ({ children, isFeed }: { children: React.ReactNode; isFeed?: boolean }) => {
+  return (
+    <div className={styles.Wrapper} data-is-feed={isFeed ? '' : undefined}>
+      {children}
+    </div>
+  );
 };

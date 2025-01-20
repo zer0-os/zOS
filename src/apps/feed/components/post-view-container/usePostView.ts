@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getPost } from '../../../../store/posts/utils';
 import { mapPostToMatrixMessage } from '../../../../store/posts/utils';

@@ -2,8 +2,13 @@ import { useAccount } from 'wagmi';
 
 import { useSubmitPost } from '../../lib/useSubmitPost';
 import { Media } from '../../../../components/message-input/utils';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../store';
 
 export const usePostInput = (channelZid: string, replyToId?: string) => {
+  const userProfileImageUrl = useSelector(
+    (state: RootState) => state.authentication.user.data?.profileSummary?.profileImage
+  );
   const { isConnected } = useAccount();
   const { error, handleOnSubmit: handleOnSubmitPost, isLoading } = useSubmitPost();
 
@@ -16,5 +21,6 @@ export const usePostInput = (channelZid: string, replyToId?: string) => {
     handleOnSubmit,
     isLoading,
     isWalletConnected: isConnected,
+    userProfileImageUrl,
   };
 };

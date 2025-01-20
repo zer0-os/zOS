@@ -9,7 +9,7 @@ import { useMeowPost } from '../../../lib/useMeowPost';
 export const useReplyList = (postId: string) => {
   const userId = useSelector((state: RootState) => state.authentication.user.data.id);
   const userMeowBalance = useSelector((state: RootState) => state.rewards.meow);
-  const { meowPost } = useMeowPost();
+  const { meowPost, meowPostFeed } = useMeowPost();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['posts', 'replies', { postId }],
@@ -31,5 +31,6 @@ export const useReplyList = (postId: string) => {
     userId,
     userMeowBalance,
     meowPost,
+    meowPostFeed,
   };
 };

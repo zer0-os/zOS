@@ -5,8 +5,8 @@ import { Waypoint } from 'react-waypoint';
 
 import styles from './styles.module.scss';
 
-export const Replies = ({ postId }: { postId: string }) => {
-  const { fetchNextPage, hasNextPage, isFetchingNextPage, replies, userId, userMeowBalance, meowPost } =
+export const Replies = ({ postId, isFeed }: { postId: string; isFeed?: boolean }) => {
+  const { fetchNextPage, hasNextPage, isFetchingNextPage, replies, userId, userMeowBalance, meowPost, meowPostFeed } =
     useReplyList(postId);
 
   return (
@@ -24,7 +24,7 @@ export const Replies = ({ postId }: { postId: string }) => {
                 nickname={reply.sender?.firstName}
                 text={reply.message}
                 loadAttachmentDetails={() => {}}
-                meowPost={meowPost}
+                meowPost={isFeed ? meowPostFeed : meowPost}
                 currentUserId={userId}
                 reactions={reply.reactions}
                 ownerUserId={reply.sender?.userId}

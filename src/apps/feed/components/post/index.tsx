@@ -10,6 +10,7 @@ import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { ReplyAction } from './actions/reply/reply-action';
 import { formatWeiAmount } from '../../../../lib/number';
 import { FeedAction } from './actions/feed';
+import { ArweaveAction } from './actions/arweave';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -18,6 +19,7 @@ import { usePostRoute } from './lib/usePostRoute';
 type Variant = 'default' | 'expanded';
 
 export interface PostProps {
+  arweaveId: string;
   className?: string;
   currentUserId?: string;
   messageId: string;
@@ -39,6 +41,7 @@ export interface PostProps {
 }
 
 export const Post = ({
+  arweaveId,
   className,
   currentUserId,
   messageId,
@@ -193,23 +196,30 @@ export const Post = ({
           actions={
             isMeowsEnabled && (
               <Actions variant={variant}>
-                <PreventPropagation>
-                  <MeowAction
-                    meows={reactions?.MEOW || 0}
-                    isDisabled={isDisabled}
-                    messageId={messageId}
-                    meowPost={meowPost}
-                    hasUserVoted={reactions?.VOTED > 0}
-                  />
-                </PreventPropagation>
-                {featureFlags.enableComments && (
+                <div>
                   <PreventPropagation>
-                    <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
+                    <MeowAction
+                      meows={reactions?.MEOW || 0}
+                      isDisabled={isDisabled}
+                      messageId={messageId}
+                      meowPost={meowPost}
+                      hasUserVoted={reactions?.VOTED > 0}
+                    />
                   </PreventPropagation>
-                )}
-                <PreventPropagation>
-                  <FeedAction channelZid={channelZid} />
-                </PreventPropagation>
+                  {featureFlags.enableComments && (
+                    <PreventPropagation>
+                      <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
+                    </PreventPropagation>
+                  )}
+                </div>
+                <div>
+                  <PreventPropagation>
+                    <FeedAction channelZid={channelZid} />
+                  </PreventPropagation>
+                  <PreventPropagation>
+                    <ArweaveAction arweaveId={arweaveId} />
+                  </PreventPropagation>
+                </div>
               </Actions>
             )
           }

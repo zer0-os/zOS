@@ -132,6 +132,12 @@
 .Actions {
   display: inherit;
   gap: inherit;
+  justify-content: space-between;
+
+  > div {
+    display: inherit;
+    gap: inherit;
+  }
 
   width: 100%;
 

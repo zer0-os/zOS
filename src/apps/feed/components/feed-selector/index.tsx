@@ -20,7 +20,8 @@ export const FeedSelector = () => {
         {isErrorZids && <li>Error loading Feeds</li>}
         {zids?.map((zid) => (
           <FeedItem key={zid} route={`/feed/${zid}`}>
-            0://{zid}
+            <span>0://</span>
+            {zid}
           </FeedItem>
         ))}
       </ScrollbarContainer>

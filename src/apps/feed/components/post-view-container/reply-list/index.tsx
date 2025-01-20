@@ -30,6 +30,7 @@ export const Replies = ({ postId }: { postId: string }) => {
                 ownerUserId={reply.sender?.userId}
                 userMeowBalance={userMeowBalance}
                 numberOfReplies={reply.numberOfReplies}
+                channelZid={reply.channelZid}
               />
             </li>
           ))

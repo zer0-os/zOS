@@ -39,6 +39,7 @@ import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 import { AdminMessageType } from '../../../store/messages';
+import { config } from '../../../config';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -151,9 +152,11 @@ export class Container extends React.Component<Properties, State> {
   usersInMyNetworks = async (search: string) => {
     const { users: usersFromState, myUserId, receiveSearchResults } = this.props;
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
+    const isTelegramBotUser = (user) => user.id === config.telegramBotUserId;
 
     const mappedFilteredUsers = users
       ?.filter((user) => user.id !== myUserId)
+      ?.filter((user) => !isTelegramBotUser(user))
       .map((user) => ({
         ...user,
         // since redux state has local blob url image

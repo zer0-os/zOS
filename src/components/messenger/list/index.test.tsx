@@ -14,6 +14,7 @@ import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { UserHeader } from './user-header';
 import { ErrorDialog } from '../../error-dialog';
 import { bem } from '../../../lib/bem';
+import { config } from '../../../config';
 
 const c = bem('.direct-message-members');
 
@@ -256,6 +257,7 @@ describe('messenger-list', () => {
       { id: 'user-1', name: 'Jack', profileImage: 'image-url-1' },
       { id: myUserId, name: 'Janet', profileImage: 'image-url-2' }, // Current user
       { id: 'user-3', name: 'Jake', profileImage: 'image-url-3' },
+      { id: config.telegramBotUserId, name: 'Telegram Bridge Bot', profileImage: 'image-url-4' },
     ];
 
     const stages = [
@@ -275,6 +277,23 @@ describe('messenger-list', () => {
         const searchResults = await wrapper.find(component).prop(searchProp)('Ja');
 
         expect(searchResults).toEqual(expect.not.arrayContaining([{ id: myUserId }]));
+        expect(searchResults).toEqual([
+          { id: 'user-1', name: 'Jack', image: 'image-url-1', profileImage: 'image-url-1' },
+          { id: 'user-3', name: 'Jake', image: 'image-url-3', profileImage: 'image-url-3' },
+        ]);
+      });
+
+      it(`excludes the telegram bot user from search results in stage: ${stage}`, async () => {
+        when(mockSearchMyNetworksByName).calledWith('Telegram').mockResolvedValue(mockSearchResults);
+
+        const wrapper = subject({
+          stage: Stage.None,
+          myUserId: myUserId,
+        });
+
+        const searchResults = await wrapper.find(ConversationListPanel).prop('search')('Telegram');
+
+        expect(searchResults).toEqual(expect.not.arrayContaining([{ id: config.telegramBotUserId }]));
         expect(searchResults).toEqual([
           { id: 'user-1', name: 'Jack', image: 'image-url-1', profileImage: 'image-url-1' },
           { id: 'user-3', name: 'Jake', image: 'image-url-3', profileImage: 'image-url-3' },

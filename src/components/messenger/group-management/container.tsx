@@ -29,6 +29,7 @@ import { denormalizeConversations } from '../../../store/channels-list';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { createConversation } from '../../../store/create-conversation';
 import { openUserProfile } from '../../../store/user-profile';
+import { config } from '../../../config';
 
 export interface PublicProperties {}
 
@@ -132,9 +133,11 @@ export class Container extends React.Component<Properties> {
     const myUserId = this.props.currentUser.userId;
 
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
+    const isTelegramBotUser = (user) => user.id === config.telegramBotUserId;
 
     const mappedFilteredUsers = users
       ?.filter((user) => user.id !== myUserId)
+      ?.filter((user) => !isTelegramBotUser(user))
       .map((user) => ({
         ...user,
         image: usersFromState[user.id]?.profileImage ?? user.profileImage, // since redux state has local blob url image

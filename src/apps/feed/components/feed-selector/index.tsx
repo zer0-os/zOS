@@ -14,13 +14,14 @@ export const FeedSelector = () => {
     <ul className={styles.List}>
       <ScrollbarContainer variant='on-hover' className={styles.Scroll}>
         <FeedItem key={'everything'} route={'/feed'}>
-          All
+          Everything
         </FeedItem>
         {isLoadingZids && <li>Loading Feeds...</li>}
         {isErrorZids && <li>Error loading Feeds</li>}
         {zids?.map((zid) => (
           <FeedItem key={zid} route={`/feed/${zid}`}>
-            0://{zid}
+            <span>0://</span>
+            {zid}
           </FeedItem>
         ))}
       </ScrollbarContainer>

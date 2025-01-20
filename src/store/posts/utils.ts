@@ -138,7 +138,7 @@ export async function getPostsInChannel(channelZna: string, limit: number, skip:
   const endpoint = `/api/v2/posts/channel/${channelZna}`;
 
   try {
-    const res = await get(endpoint, undefined, { limit, skip, include_replies: true });
+    const res = await get(endpoint, undefined, { limit, skip, include_replies: true, include_meows: true });
 
     if (!res.ok || !res.body) {
       throw new Error(res);
@@ -159,7 +159,7 @@ export async function getPost(postId: string) {
   const endpoint = `/api/v2/posts/${postId}`;
 
   try {
-    const res = await get(endpoint, undefined, { include_replies: true });
+    const res = await get(endpoint, undefined, { include_replies: true, include_meows: true });
     return res.body;
   } catch (e) {
     console.error('Failed to fetch post', e);
@@ -169,6 +169,6 @@ export async function getPost(postId: string) {
 
 export async function getPostReplies(postId: string, { limit, skip }: { limit: number; skip: number }) {
   const endpoint = `/api/v2/posts/${postId}/replies`;
-  const res = await get(endpoint, undefined, { limit, skip, include_replies: true });
+  const res = await get(endpoint, undefined, { limit, skip, include_replies: true, include_meows: true });
   return res.body;
 }

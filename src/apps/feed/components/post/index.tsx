@@ -213,9 +213,11 @@ export const Post = ({
                   )}
                 </div>
                 <div>
-                  <PreventPropagation>
-                    <FeedAction channelZid={channelZid} />
-                  </PreventPropagation>
+                  {channelZid && (
+                    <PreventPropagation>
+                      <FeedAction channelZid={channelZid} />
+                    </PreventPropagation>
+                  )}
                   <PreventPropagation>
                     <ArweaveAction arweaveId={arweaveId} />
                   </PreventPropagation>

@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import moment from 'moment';
 import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
-import { Avatar } from '@zero-tech/zui/components';
+import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { MeowAction } from './actions/meow';
 import { featureFlags } from '../../../../lib/feature-flags';
 import { Media, MediaDownloadStatus, MediaType } from '../../../../store/messages';
@@ -162,7 +162,7 @@ export const Post = ({
       <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
         {variant === 'default' && (
           <div className={styles.Avatar}>
-            <Avatar size='regular' imageURL={avatarUrl} />
+            <MatrixAvatar size='regular' imageURL={avatarUrl} />
           </div>
         )}
         <ZUIPost

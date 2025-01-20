@@ -31,6 +31,7 @@ export const Replies = ({ postId }: { postId: string }) => {
                 userMeowBalance={userMeowBalance}
                 numberOfReplies={reply.numberOfReplies}
                 channelZid={reply.channelZid}
+                avatarUrl={reply.sender?.avatarUrl}
               />
             </li>
           ))

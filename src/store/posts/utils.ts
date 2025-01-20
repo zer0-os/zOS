@@ -3,6 +3,7 @@ import { get, post } from '../../lib/api/rest';
 import { getWagmiConfig } from '../../lib/web3/wagmi-config';
 import { getWalletClient } from '@wagmi/core';
 import { ethers } from 'ethers';
+import { mxcUrlToHttp } from '../../lib/chat';
 
 export interface SignedMessagePayload {
   created_at: string;
@@ -39,6 +40,9 @@ export async function signPostPayload(
 export function mapPostToMatrixMessage(post) {
   const meowCount = Math.round(Number(ethers.utils.formatEther(post.postsMeowsSummary?.totalMeowAmount ?? 0)));
 
+  const mxcUrl = post.user?.profileSummary?.profileImage;
+  const avatarUrl = mxcUrl ? mxcUrlToHttp(mxcUrl) : undefined;
+
   return {
     createdAt: post.createdAt,
     hidePreview: false,
@@ -61,6 +65,7 @@ export function mapPostToMatrixMessage(post) {
       userId: post.userId,
       firstName: post.user?.profileSummary?.firstName,
       displaySubHandle: '0://' + post.zid,
+      avatarUrl,
     },
     replyTo: post.replyToPost,
     numberOfReplies: post.replies?.length ?? 0,

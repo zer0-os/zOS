@@ -41,6 +41,7 @@ export const Feed = ({ zid }: FeedProps) => {
               <li key={reply.id}>
                 <Post
                   arweaveId={reply.arweaveId}
+                  avatarUrl={reply.sender?.avatarUrl}
                   author={reply.sender?.displaySubHandle}
                   channelZid={reply.channelZid}
                   currentUserId={userId}

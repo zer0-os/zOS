@@ -10,6 +10,7 @@ export const useMeowPost = () => {
 
   const { mutate } = useMutation({
     mutationFn: async ({ postId, meowAmount }: { postId: string; meowAmount: string }) => {
+      console.log('triggered: mutationFn');
       const meowAmountWei = ethers.utils.parseEther(meowAmount.toString());
       const res = await meowPostApi(postId, meowAmountWei.toString());
 
@@ -26,11 +27,16 @@ export const useMeowPost = () => {
       const previousPosts = queryClient.getQueryData(['posts']);
 
       queryClient.setQueryData(['posts', { postId }], (data: any) => {
+        if (!data) {
+          return;
+        }
+
         return updatePostReactions(data, postId, meowAmount);
       });
 
       queryClient.setQueriesData({ queryKey: ['posts'] }, (data: any) => {
         if (!data?.pages) return data;
+
         return {
           ...data,
           pages: data.pages.map((page) => page.map((post) => updatePostReactions(post, postId, meowAmount))),

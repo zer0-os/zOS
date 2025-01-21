@@ -198,9 +198,14 @@ export const Post = ({
                   </>
                 )}
               </div>
+              {variant === 'default' && (
+                <>
+                  <span>⋅</span>
+                  <Timestamp className={styles.Date} timestamp={timestamp} />
+                </>
+              )}
             </div>
           }
-          options={variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
           actions={
             isMeowsEnabled && (
               <Actions variant={variant}>

@@ -11,6 +11,7 @@ import { ReplyAction } from './actions/reply/reply-action';
 import { formatWeiAmount } from '../../../../lib/number';
 import { FeedAction } from './actions/feed';
 import { ArweaveAction } from './actions/arweave';
+import Linkify from 'linkify-react';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -169,7 +170,7 @@ export const Post = ({
           className={styles.Post}
           body={
             <div className={styles.Body}>
-              {multilineText}
+              <Linkify options={{ render: renderLink }}>{multilineText}</Linkify>
               {media && renderMedia(media)}
               {variant === 'expanded' && (
                 <span className={styles.Date}>{moment(timestamp).format('h:mm A - D MMM YYYY')}</span>
@@ -271,4 +272,20 @@ const Wrapper = ({ children, postId, variant, channelZid }: WrapperProps) => {
 
 const PreventPropagation = ({ children }: { children: React.ReactNode }) => {
   return <div onClick={(e) => e.stopPropagation()}>{children}</div>;
+};
+
+const renderLink = ({ attributes, content }) => {
+  const { href, ...props } = attributes;
+  return (
+    <a
+      onClick={(e) => e.stopPropagation()}
+      className={styles.Link}
+      href={href}
+      target='_blank'
+      rel='noreferrer'
+      {...props}
+    >
+      {content}
+    </a>
+  );
 };

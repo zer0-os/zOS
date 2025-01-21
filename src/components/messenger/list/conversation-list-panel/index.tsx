@@ -9,10 +9,11 @@ import { itemToOption } from '../../lib/utils';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import escapeRegExp from 'lodash/escapeRegExp';
 import { getDirectMatches, getIndirectMatches } from './utils';
+import { IconStar1 } from '@zero-tech/zui/icons';
+import { getLastActiveTab, setLastActiveTab } from '../../../../lib/last-tab';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
-import { IconStar1 } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('messages-list');
 
@@ -30,7 +31,7 @@ export interface Properties {
   onRemoveLabel: (payload: { roomId: string; label: string }) => void;
 }
 
-enum Tab {
+export enum Tab {
   All = 'all',
   Favorites = 'favorites',
   Work = 'work',
@@ -61,12 +62,22 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       this.tabListRef.current.addEventListener('wheel', this.horizontalScroll, { passive: false });
     }
 
-    this.setInitialTab();
+    const lastActiveTab = getLastActiveTab();
+    if (lastActiveTab) {
+      this.setState({ selectedTab: lastActiveTab as Tab });
+    } else {
+      this.setInitialTab();
+    }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.isLabelDataLoaded !== this.props.isLabelDataLoaded) {
-      this.setInitialTab();
+      const lastActiveTab = getLastActiveTab();
+      if (lastActiveTab) {
+        this.setState({ selectedTab: lastActiveTab as Tab });
+      } else {
+        this.setInitialTab();
+      }
     }
   }
 
@@ -161,6 +172,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
   selectTab = (tab) => {
     this.setState({ selectedTab: tab });
+    setLastActiveTab(tab);
   };
 
   onAddLabel = (roomId: string, label) => {

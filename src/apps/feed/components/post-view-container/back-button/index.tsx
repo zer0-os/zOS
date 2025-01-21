@@ -37,7 +37,7 @@ export const BackButton = ({ backToId }: BackButtonProps) => {
 
   return (
     <button className={styles.Back} onClick={handleOnClick}>
-      <IconArrowLeft size={16} isFilled={true} /> Back
+      <IconArrowLeft size={18} isFilled={false} /> Back
     </button>
   );
 };

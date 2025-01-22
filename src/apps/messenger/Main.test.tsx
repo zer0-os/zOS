@@ -6,6 +6,13 @@ import { MessengerChat } from '../../components/messenger/chat';
 import { MessengerFeed } from '../../components/messenger/feed';
 import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
 
+jest.mock('../../lib/web3/thirdweb/client', () => ({
+  getThirdWebClient: jest.fn(),
+  getChain: jest.fn(() => ({
+    blockExplorers: [{ url: 'https://sepolia.etherscan.io' }],
+  })),
+}));
+
 describe(Main, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {

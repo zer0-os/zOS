@@ -188,6 +188,8 @@ export const Post = ({
                 {/* @ts-ignore */}
                 <Name className={styles.Name} variant='name'>
                   {nickname}
+                  <span>⋅</span>
+                  {variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
                 </Name>
                 {author && (
                   <>
@@ -198,12 +200,6 @@ export const Post = ({
                   </>
                 )}
               </div>
-              {variant === 'default' && (
-                <>
-                  <span>⋅</span>
-                  <Timestamp className={styles.Date} timestamp={timestamp} />
-                </>
-              )}
             </div>
           }
           actions={

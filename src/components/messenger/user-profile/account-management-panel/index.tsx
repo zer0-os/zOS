@@ -15,6 +15,8 @@ import { ScrollbarContainer } from '../../../scrollbar-container';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Color, Modal, Variant } from '../../../modal';
 import { State as AddWalletState } from '../../../../store/account-management';
+import { getChain } from '../../../../lib/web3/thirdweb/client';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 const cn = bemClassName('account-management-panel');
 
@@ -51,6 +53,12 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
     this.props.onBack();
   };
 
+  getSelfCustodyWallets = () => {
+    const { currentUser } = this.props;
+    const wallets = currentUser?.wallets || [];
+    return wallets.filter((w) => !w.isThirdWeb);
+  };
+
   renderAddNewWalletButton = () => {
     const handleAddWallet = (account, openConnectModal) => {
       this.setIsUserLinkingNewWallet(true);
@@ -83,14 +91,13 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
     );
   };
 
-  renderWalletsSection = () => {
-    const { currentUser } = this.props;
-    const wallets = currentUser?.wallets || [];
+  renderSelfCustodyWalletsSection = () => {
+    const wallets = this.getSelfCustodyWallets();
 
     return (
       <div>
         <div {...cn('wallets-header')}>
-          <span>{wallets.length || 'no'}</span> wallet{wallets.length === 1 ? '' : 's'}
+          <span>{wallets.length || 'no'}</span> self-custody wallet{wallets.length === 1 ? '' : 's'}
         </div>
         {wallets.length > 0 ? (
           wallets.map((w) => <WalletListItem key={w.id} wallet={w}></WalletListItem>)
@@ -103,6 +110,38 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
         )}
 
         {wallets.length === 0 && this.renderAddNewWalletButton()}
+      </div>
+    );
+  };
+
+  getThirdWebWallets = () => {
+    const { currentUser } = this.props;
+    const wallets = currentUser?.wallets || [];
+    return wallets.filter((w) => w.isThirdWeb === true);
+  };
+
+  renderThirdWebWalletsSection = () => {
+    if (!featureFlags.enableAccountAbstraction) {
+      return null;
+    }
+
+    const wallets = this.getThirdWebWallets();
+    if (wallets.length === 0) {
+      return null;
+    }
+
+    const chain = getChain();
+    const explorerUrl = chain?.blockExplorers[0]?.url || 'https://etherscan.io';
+    return (
+      <div {...cn('thirdweb-wallets-container')}>
+        <div {...cn('wallets-header')}>
+          <span>ZERO Wallet</span>
+        </div>
+        {wallets.map((w) => (
+          <a key={w.id} href={`${explorerUrl}/address/${w.publicAddress}`} target='_blank' rel='noopener noreferrer'>
+            <WalletListItem wallet={w}></WalletListItem>
+          </a>
+        ))}
       </div>
     );
   };
@@ -222,8 +261,9 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
         <ScrollbarContainer variant='on-hover'>
           <div {...cn('panel-content-wrapper')}>
             <div {...cn('content')}>
-              {this.renderWalletsSection()}
+              {this.renderSelfCustodyWalletsSection()}
               {this.renderEmailSection()}
+              {this.renderThirdWebWalletsSection()}
 
               {this.props.error && (
                 <Alert variant='error' isFilled>

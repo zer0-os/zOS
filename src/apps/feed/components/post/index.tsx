@@ -188,6 +188,8 @@ export const Post = ({
                 {/* @ts-ignore */}
                 <Name className={styles.Name} variant='name'>
                   {nickname}
+                  <span>⋅</span>
+                  {variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
                 </Name>
                 {author && (
                   <>
@@ -200,7 +202,6 @@ export const Post = ({
               </div>
             </div>
           }
-          options={variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
           actions={
             isMeowsEnabled && (
               <Actions variant={variant}>

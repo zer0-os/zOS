@@ -8,6 +8,14 @@ import { SettingsPanelContainer } from './settings-panel/container';
 import { AccountManagementContainer } from './account-management-panel/container';
 import { DownloadsPanel } from './downloads-panel';
 import { LinkedAccountsPanelContainer } from './linked-accounts-panel/container';
+
+jest.mock('../../../lib/web3/thirdweb/client', () => ({
+  getThirdWebClient: jest.fn(),
+  getChain: jest.fn(() => ({
+    blockExplorers: [{ url: 'https://sepolia.etherscan.io' }],
+  })),
+}));
+
 describe(UserProfile, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {

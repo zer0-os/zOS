@@ -7,11 +7,23 @@ import { Button } from '@zero-tech/zui/components/Button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { State } from '../../../../store/account-management';
 
+const featureFlags = { enableAccountAbstraction: false };
+jest.mock('../../../../lib/feature-flags', () => ({
+  featureFlags: featureFlags,
+}));
+
 // Mock the ConnectButton from rainbowkit
 jest.mock('@rainbow-me/rainbowkit', () => ({
   ConnectButton: {
     Custom: ({ children }) => children({ account: { address: '0x123' }, openConnectModal: jest.fn() }),
   },
+}));
+
+jest.mock('../../../../lib/web3/thirdweb/client', () => ({
+  getThirdWebClient: jest.fn(),
+  getChain: jest.fn(() => ({
+    blockExplorers: [{ url: 'https://sepolia.etherscan.io' }],
+  })),
 }));
 
 const c = bem('.account-management-panel');
@@ -67,23 +79,23 @@ describe(AccountManagementPanel, () => {
     expect(props.text()).toEqual('Email added successfully');
   });
 
-  describe('wallets section', () => {
+  describe('self-custody wallets section', () => {
     it('renders wallets header (no wallet)', () => {
       const wrapper = subject({ currentUser: { wallets: [], primaryEmail: 'test@zero.tech' } });
 
-      expect(wrapper.find(c('wallets-header')).text()).toEqual('no wallets');
+      expect(wrapper.find(c('wallets-header')).first().text()).toEqual('no self-custody wallets');
     });
 
     it('renders wallets header (1 wallet)', () => {
       const wrapper = subject({ currentUser: { wallets: [{ id: 'wallet-id-1' }] } });
 
-      expect(wrapper.find(c('wallets-header')).text()).toEqual('1 wallet');
+      expect(wrapper.find(c('wallets-header')).first().text()).toEqual('1 self-custody wallet');
     });
 
     it('renders wallets header (multiple wallets)', () => {
       const wrapper = subject({ currentUser: { wallets: [{ id: 'wallet-id-1' }, { id: 'wallet-id-2' }] } });
 
-      expect(wrapper.find(c('wallets-header')).text()).toEqual('2 wallets');
+      expect(wrapper.find(c('wallets-header')).text()).toEqual('2 self-custody wallets');
     });
 
     it('renders wallet list items', () => {
@@ -286,6 +298,106 @@ describe(AccountManagementPanel, () => {
 
       const linkWalletModal = wrapper.find('Modal').at(1);
       expect(linkWalletModal.prop('isProcessing')).toEqual(true);
+    });
+  });
+
+  describe('thirdweb wallets section', () => {
+    beforeEach(() => {
+      featureFlags.enableAccountAbstraction = true;
+    });
+
+    it('returns null if feature flag is disabled', () => {
+      featureFlags.enableAccountAbstraction = false;
+      const wrapper = subject({
+        currentUser: {
+          wallets: [{ id: 'wallet-id-1', isThirdWeb: true, publicAddress: '0x123' }],
+          primaryEmail: 'test@zero.tech',
+        },
+      });
+
+      const thirdWebWallet = wrapper.find(c('wallets-header')).at(1);
+      expect(thirdWebWallet.length).toEqual(0);
+    });
+
+    it('does not render thirdweb section when no thirdweb wallets exist', () => {
+      const wrapper = subject({
+        currentUser: {
+          wallets: [],
+          primaryEmail: 'test@zero.tech',
+        },
+      });
+
+      const thirdWebWallet = wrapper.find(c('wallets-header')).at(1);
+      expect(thirdWebWallet.length).toEqual(0);
+    });
+
+    it('renders thirdweb wallets', () => {
+      const wrapper = subject({
+        currentUser: {
+          wallets: [{ id: 'wallet-id-1', isThirdWeb: true, publicAddress: '0x123' }],
+          primaryEmail: 'test@zero.tech',
+        },
+      });
+
+      const thirdWebWallet = wrapper.find(c('wallets-header')).at(1);
+      expect(thirdWebWallet.length).toEqual(1);
+      expect(thirdWebWallet.text()).toEqual('ZERO Wallet');
+      expect(wrapper.find('WalletListItem')).toHaveLength(1);
+      expect(wrapper.find('WalletListItem').at(0).prop('wallet')).toEqual({
+        id: 'wallet-id-1',
+        publicAddress: '0x123',
+        isThirdWeb: true,
+      });
+    });
+
+    it('renders both self-custody and thirdweb wallets', () => {
+      const wrapper = subject({
+        currentUser: {
+          wallets: [
+            { id: 'thirdweb-wallet-id-1', isThirdWeb: true, publicAddress: '0x123' },
+            { id: 'self-custody-wallet-id-1', isThirdWeb: false, publicAddress: '0x456' },
+          ],
+          primaryEmail: 'test@zero.tech',
+        },
+      });
+
+      // 2 wallets in total
+      expect(wrapper.find('WalletListItem')).toHaveLength(2);
+
+      // 1 self-custody wallet
+      const selfCustodyWallet = wrapper.find(c('wallets-header')).at(0);
+      expect(selfCustodyWallet.length).toEqual(1);
+      expect(selfCustodyWallet.text()).toEqual('1 self-custody wallet');
+      expect(wrapper.find('WalletListItem').at(0).prop('wallet')).toEqual({
+        id: 'self-custody-wallet-id-1',
+        publicAddress: '0x456',
+        isThirdWeb: false,
+      });
+
+      // 1 thirdweb wallet
+      const thirdWebWallet = wrapper.find(c('wallets-header')).at(1);
+      expect(thirdWebWallet.length).toEqual(1);
+      expect(thirdWebWallet.text()).toEqual('ZERO Wallet');
+      expect(wrapper.find('WalletListItem').at(1).prop('wallet')).toEqual({
+        id: 'thirdweb-wallet-id-1',
+        publicAddress: '0x123',
+        isThirdWeb: true,
+      });
+    });
+
+    it('renders wallet with correct etherscan link', () => {
+      const wallet = { id: 'wallet-id-1', isThirdWeb: true, publicAddress: '0x123' };
+      const wrapper = subject({
+        currentUser: {
+          wallets: [wallet],
+          primaryEmail: 'test@zero.tech',
+        },
+      });
+
+      const walletLink = wrapper.find('a');
+      expect(walletLink.prop('href')).toEqual(`https://etherscan.io/address/${wallet.publicAddress}`);
+      expect(walletLink.prop('target')).toEqual('_blank');
+      expect(walletLink.prop('rel')).toEqual('noopener noreferrer');
     });
   });
 });

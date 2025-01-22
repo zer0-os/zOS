@@ -2,6 +2,13 @@ import { Container } from './container';
 import { Errors, AccountManagementState, State } from '../../../../store/account-management';
 import { RootState } from '../../../../store/reducer';
 
+jest.mock('../../../../lib/web3/thirdweb/client', () => ({
+  getThirdWebClient: jest.fn(),
+  getChain: jest.fn(() => ({
+    blockExplorers: [{ url: 'https://sepolia.etherscan.io' }],
+  })),
+}));
+
 describe('Container', () => {
   describe('mapState', () => {
     const subject = (inputState: Partial<RootState> = {}) => {

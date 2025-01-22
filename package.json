@@ -68,6 +68,7 @@
     "sass": "^1.49.7",
     "stream-browserify": "^3.0.0",
     "superagent": "^6.1.0",
+    "thirdweb": "^5.84.0",
     "typescript": "^5.0.4",
     "util": "^0.12.5",
     "viem": "^2.16.5",

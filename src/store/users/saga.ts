@@ -91,7 +91,7 @@ export function* updateUserProfileImageFromCache(currentUser: User) {
   Also handles the case where the user is logging in for the first time.
 */
 export function* fetchCurrentUserProfileImage() {
-  const currentUser: User = cloneDeep(yield select(currentUserSelector()));
+  let currentUser: User = cloneDeep(yield select(currentUserSelector()));
   let profileImageUrl: string | undefined;
 
   const isFirstTimeLogin = yield select((state) => state.registration.isFirstTimeLogin);
@@ -113,9 +113,14 @@ export function* fetchCurrentUserProfileImage() {
   // Download the profile image after getting the url
   const downloadedImageUrl = yield call(downloadFile, profileImageUrl);
 
+  // just get the refreshed state from the store
+  // (since there are other sagas that might update the user state at the same time)
+  currentUser = cloneDeep(yield select(currentUserSelector()));
+
   // Update the profile image in the store
   const updatedUser = {
     ...currentUser,
+    wallets: currentUser.wallets || [],
     profileSummary: {
       ...currentUser.profileSummary,
       profileImage: downloadedImageUrl,

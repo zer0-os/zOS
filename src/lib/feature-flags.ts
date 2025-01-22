@@ -179,11 +179,19 @@ export class FeatureFlags {
   }
 
   get enableLinkedAccounts() {
-    return this._getBoolean('enableLinkedAccounts', false);
+    return this._getBoolean('enableLinkedAccounts', true);
   }
 
   set enableLinkedAccounts(value: boolean) {
     this._setBoolean('enableLinkedAccounts', value);
+  }
+
+  get enableAccountAbstraction() {
+    return this._getBoolean('enableAccountAbstraction', false);
+  }
+
+  set enableAccountAbstraction(value: boolean) {
+    this._setBoolean('enableAccountAbstraction', value);
   }
 }
 

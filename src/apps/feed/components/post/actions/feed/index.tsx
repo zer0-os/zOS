@@ -1,6 +1,5 @@
 import { useFeedAction } from './useFeedAction';
 
-import { IconList } from '@zero-tech/zui/components/Icons';
 import { Action } from '@zero-tech/zui/components/Post';
 
 import styles from './styles.module.scss';
@@ -14,7 +13,6 @@ export const FeedAction = ({ channelZid }: FeedActionProps) => {
 
   return (
     <Action className={styles.Container} onClick={handleOnClick}>
-      <IconList size={16} />
       <span>0://{channelZid}</span>
     </Action>
   );

@@ -96,6 +96,11 @@ export const useSubmitPost = () => {
     onSuccess: (_data, { replyToId, channelZid }) => {
       queryClient.invalidateQueries({ queryKey: ['posts', { zid: channelZid }] });
       queryClient.invalidateQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
+
+      // Also invalidate the "Everything" feed. This is a bit of a hack! Ideally we shouldn't
+      // invalidate this feed every time a post is submitted. We should only invalidate it when
+      // the user posts in the "Everything" feed.
+      queryClient.invalidateQueries({ queryKey: ['posts', { zid: undefined }] });
     },
   });
 

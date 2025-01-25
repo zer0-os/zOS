@@ -13,8 +13,8 @@ export const FeedSelector = () => {
   return (
     <ul className={styles.List}>
       <ScrollbarContainer variant='on-hover' className={styles.Scroll}>
-        <FeedItem key={'everything'} route={'/feed'} isSelected={selectedZId === undefined}>
-          Everything
+        <FeedItem key={'explore'} route={'/feed'} isSelected={selectedZId === undefined}>
+          Explore
         </FeedItem>
         {isLoadingZids && <li>Loading Feeds...</li>}
         {isErrorZids && <li>Error loading Feeds</li>}

@@ -16,7 +16,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Color, Modal, Variant } from '../../../modal';
 import { State as AddWalletState } from '../../../../store/account-management';
 import { getChain } from '../../../../lib/web3/thirdweb/client';
-import { featureFlags } from '../../../../lib/feature-flags';
 
 const cn = bemClassName('account-management-panel');
 
@@ -121,10 +120,6 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
   };
 
   renderThirdWebWalletsSection = () => {
-    if (!featureFlags.enableAccountAbstraction) {
-      return null;
-    }
-
     const wallets = this.getThirdWebWallets();
     if (wallets.length === 0) {
       return null;

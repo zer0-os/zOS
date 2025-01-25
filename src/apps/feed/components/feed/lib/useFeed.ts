@@ -10,6 +10,7 @@ import { useMeowPost } from '../../../lib/useMeowPost';
 export const useFeed = (zid?: string) => {
   const userId = useSelector((state: RootState) => state.authentication.user.data.id);
   const userMeowBalance = useSelector((state: RootState) => state.rewards.meow);
+  const primaryZID = useSelector((state: RootState) => state.authentication.user.data.primaryZID)?.replace('0://', '');
 
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['posts', { zid }],
@@ -38,9 +39,11 @@ export const useFeed = (zid?: string) => {
   const isEmpty = data?.pages.every((page) => page.length === 0);
 
   return {
+    channelZid: zid ?? primaryZID,
     fetchNextPage,
     hasLoadedMessages,
     hasNextPage,
+    headerText: zid ? `0://${zid}` : 'All',
     isEmpty,
     isError,
     isFetchingNextPage,
@@ -49,7 +52,6 @@ export const useFeed = (zid?: string) => {
     posts: data,
     userId,
     userMeowBalance,
-    headerText: zid ? `0://${zid}` : 'All',
   };
 };
 

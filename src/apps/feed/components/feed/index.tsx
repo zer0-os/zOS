@@ -14,6 +14,7 @@ export interface FeedProps {
 
 export const Feed = ({ zid }: FeedProps) => {
   const {
+    channelZid,
     fetchNextPage,
     hasLoadedMessages,
     hasNextPage,
@@ -31,7 +32,7 @@ export const Feed = ({ zid }: FeedProps) => {
   return (
     <div className={styles.Feed}>
       <Header>{headerText}</Header>
-      {zid && <PostInput className={styles.Input} channelZid={zid} />}
+      {channelZid && <PostInput className={styles.Input} channelZid={channelZid} />}
       {isLoading && <Message>Loading posts</Message>}
       {isEmpty && <Message>This feed is empty</Message>}
       {hasLoadedMessages && (

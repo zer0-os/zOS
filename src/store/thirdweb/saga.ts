@@ -8,7 +8,6 @@ import { linkThirdwebWallet } from './api';
 import { accountManager } from './account-manager';
 import { getChain, getThirdWebClient } from '../../lib/web3/thirdweb/client';
 import { setUser } from '../authentication';
-import { featureFlags } from '../../lib/feature-flags';
 
 export function* getLinkedThirdWebWallet() {
   const currentUser = yield select(currentUserSelector());
@@ -103,9 +102,7 @@ function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, AuthEvents.UserLogin);
-    if (featureFlags.enableAccountAbstraction) {
-      yield call(initThirWebWallet);
-    }
+    yield call(initThirWebWallet);
   }
 }
 

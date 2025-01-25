@@ -7,11 +7,6 @@ import { Button } from '@zero-tech/zui/components/Button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { State } from '../../../../store/account-management';
 
-const featureFlags = { enableAccountAbstraction: false };
-jest.mock('../../../../lib/feature-flags', () => ({
-  featureFlags: featureFlags,
-}));
-
 // Mock the ConnectButton from rainbowkit
 jest.mock('@rainbow-me/rainbowkit', () => ({
   ConnectButton: {
@@ -302,23 +297,6 @@ describe(AccountManagementPanel, () => {
   });
 
   describe('thirdweb wallets section', () => {
-    beforeEach(() => {
-      featureFlags.enableAccountAbstraction = true;
-    });
-
-    it('returns null if feature flag is disabled', () => {
-      featureFlags.enableAccountAbstraction = false;
-      const wrapper = subject({
-        currentUser: {
-          wallets: [{ id: 'wallet-id-1', isThirdWeb: true, publicAddress: '0x123' }],
-          primaryEmail: 'test@zero.tech',
-        },
-      });
-
-      const thirdWebWallet = wrapper.find(c('wallets-header')).at(1);
-      expect(thirdWebWallet.length).toEqual(0);
-    });
-
     it('does not render thirdweb section when no thirdweb wallets exist', () => {
       const wrapper = subject({
         currentUser: {

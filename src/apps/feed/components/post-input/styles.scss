@@ -48,13 +48,13 @@
   &__icon-wrapper {
     display: flex;
     gap: 4px;
+    align-items: center;
   }
 
   &__actions {
     display: flex;
     width: 100%;
     justify-content: space-between;
-    align-items: center;
 
     svg {
       color: var(--color-secondary-11) !important;
@@ -98,5 +98,15 @@
 
   &__input {
     position: relative;
+  }
+
+  &__characters {
+    color: var(--color-secondary-11);
+    font-size: 12px;
+    margin: 0;
+
+    &[data-is-too-long] {
+      color: var(--color-failure-11);
+    }
   }
 }

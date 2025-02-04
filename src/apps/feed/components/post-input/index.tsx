@@ -20,6 +20,9 @@ import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../
 import { EmojiPicker } from '../../../../components/message-input/emoji-picker/emoji-picker';
 import { RainbowKitConnectButton } from '../../../../lib/web3/rainbowkit/button';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
+import { POST_MAX_LENGTH } from '../../lib/constants';
+
+const SHOW_MAX_LABEL_THRESHOLD = 0.8 * POST_MAX_LENGTH;
 
 const cn = bemClassName('post-input-container');
 
@@ -172,7 +175,9 @@ export class PostInput extends React.Component<Properties, State> {
   };
 
   renderInput() {
-    const isDisabled = (!this.state.value.trim() && !this.state.media.length) || this.props.isSubmitting;
+    const isPostTooLong = this.state.value.length > POST_MAX_LENGTH;
+    const isDisabled =
+      (!this.state.value.trim() && !this.state.media.length) || this.props.isSubmitting || isPostTooLong;
 
     return (
       <div>
@@ -220,6 +225,20 @@ export class PostInput extends React.Component<Properties, State> {
                   <div {...cn('actions')}>
                     <div {...cn('icon-wrapper')}>
                       <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
+                      <AnimatePresence>
+                        {this.state.value.length > SHOW_MAX_LABEL_THRESHOLD && (
+                          <motion.div
+                            initial={{ y: -8, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 8, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            {...cn('characters')}
+                            data-is-too-long={isPostTooLong ? '' : null}
+                          >
+                            {this.state.value.length} / {POST_MAX_LENGTH}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
 
                     <div {...cn('wrapper')}>

@@ -2,7 +2,6 @@ import React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 
-import { Sidekick } from '../../components/sidekick/index';
 import { withContext as withAuthenticationContext } from '../../components/authentication/context';
 import { MessengerChat } from '../../components/messenger/chat';
 import { MessengerFeed } from '../../components/messenger/feed';
@@ -10,6 +9,8 @@ import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
 import { denormalize } from '../../store/channels';
 import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
+import { ConversationsSidekick } from '../../components/sidekick/variants/conversations-sidekick';
+import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
 
 import styles from './Main.module.scss';
 
@@ -48,7 +49,7 @@ export class Container extends React.Component<Properties> {
       <>
         {this.props.context.isAuthenticated && (
           <>
-            <Sidekick />
+            <ConversationsSidekick />
             <div className={styles.Split}>
               {this.props.isJoiningConversation && <JoiningConversationDialog />}
 
@@ -56,7 +57,7 @@ export class Container extends React.Component<Properties> {
                 this.props.isValidConversation &&
                 (this.props.isSocialChannel ? <MessengerFeed /> : <MessengerChat />)}
             </div>
-            {this.props.isConversationsLoaded && <Sidekick variant='secondary' />}
+            {this.props.isConversationsLoaded && <MembersSidekick />}
 
             <FeatureFlag featureFlag='enableDevPanel'>
               <DevPanelContainer />

@@ -14,7 +14,6 @@ import {
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
-import { logout } from '../../../store/authentication';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { closeConversationErrorDialog } from '../../../store/chat';
 
@@ -25,20 +24,22 @@ import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components/IconButton';
+import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
 import { ErrorDialog } from '../../error-dialog';
 import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
-import { UserHeader } from './user-header';
+import { UserDetails } from '../../sidekick/components/user-details';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
-import { closeRewardsDialog, totalRewardsViewed } from '../../../store/rewards';
+import { closeRewardsDialog } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
-import { openUserProfile } from '../../../store/user-profile';
 import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 import { AdminMessageType } from '../../../store/messages';
+import { Header, Group } from '../../sidekick/components/header';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -52,7 +53,6 @@ export interface Properties extends PublicProperties {
   groupUsers: Option[];
   conversations: (Channel & { messagePreview?: string; previewDisplayDate?: string })[];
   isFetchingExistingConversations: boolean;
-  isFirstTimeLogin: boolean;
   userName: string;
   userHandle: string;
   userAvatarUrl: string;
@@ -61,7 +61,6 @@ export interface Properties extends PublicProperties {
   activeConversationId?: string;
   joinRoomErrorContent: ErrorDialogContent;
   isRewardsDialogOpen: boolean;
-  showRewardsTooltip: boolean;
   hasUnviewedRewards: boolean;
   isSecondaryConversationDataLoaded: boolean;
   users: { [id: string]: User };
@@ -72,12 +71,9 @@ export interface Properties extends PublicProperties {
   createConversation: (payload: CreateMessengerConversation) => void;
   createUnencryptedConversation: (payload: CreateMessengerConversation) => void;
   onConversationClick: (payload: { conversationId: string }) => void;
-  logout: () => void;
   receiveSearchResults: (data) => void;
   closeConversationErrorDialog: () => void;
   closeRewardsDialog: () => void;
-  openUserProfile: () => void;
-  totalRewardsViewed: () => void;
   onAddLabel: () => void;
   onRemoveLabel: () => void;
 }
@@ -93,7 +89,6 @@ export class Container extends React.Component<Properties, State> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       createConversation,
-      registration,
       authentication: { user },
       chat: { activeConversationId, joinRoomErrorContent, isSecondaryConversationDataLoaded },
       rewards,
@@ -107,7 +102,6 @@ export class Container extends React.Component<Properties, State> {
       stage: createConversation.stage,
       groupUsers: createConversation.groupUsers,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
-      isFirstTimeLogin: registration.isFirstTimeLogin,
       userName: user?.data?.profileSummary?.firstName || '',
       userHandle,
       userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
@@ -115,7 +109,6 @@ export class Container extends React.Component<Properties, State> {
       myUserId: user?.data?.id,
       joinRoomErrorContent,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
-      showRewardsTooltip: rewards.showRewardsInTooltip,
       hasUnviewedRewards: rewards.showNewRewardsIndicator,
       isSecondaryConversationDataLoaded,
       users: state.normalized['users'] || {},
@@ -130,12 +123,9 @@ export class Container extends React.Component<Properties, State> {
       startCreateConversation,
       back,
       membersSelected,
-      logout,
       receiveSearchResults,
       closeConversationErrorDialog,
       closeRewardsDialog,
-      openUserProfile,
-      totalRewardsViewed,
       onAddLabel,
       onRemoveLabel,
     };
@@ -282,21 +272,16 @@ export class Container extends React.Component<Properties, State> {
 
   renderUserHeader() {
     return (
-      <UserHeader
-        userIsOnline={this.props.userIsOnline}
-        userName={this.props.userName}
-        userHandle={this.props.userHandle}
-        userAvatarUrl={this.props.userAvatarUrl}
-        startConversation={this.startCreateConversation}
-        onLogout={this.props.logout}
-        onVerifyId={this.openVerifyIdDialog}
-        showRewardsTooltip={this.props.showRewardsTooltip}
-        openUserProfile={this.props.openUserProfile}
-        hasUnviewedRewards={this.props.hasUnviewedRewards}
-        totalRewardsViewed={this.props.totalRewardsViewed}
-        onToggleExpand={this.state.isCollapsed ? this.expand : this.collapse}
-        isCollapsed={this.state.isCollapsed}
-      />
+      <Header className={this.state.isCollapsed ? { ...cn('collapsed') }.className : ''}>
+        {!this.state.isCollapsed && <UserDetails />}
+        <Group>
+          <IconButton
+            Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}
+            onClick={this.state.isCollapsed ? this.expand : this.collapse}
+          />
+          {!this.state.isCollapsed && <IconButton Icon={IconPlus} onClick={this.startCreateConversation} />}
+        </Group>
+      </Header>
     );
   }
 

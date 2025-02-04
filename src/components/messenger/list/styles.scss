@@ -42,8 +42,11 @@ $side-padding: 16px;
     }
   }
 
-  &__collapse {
-    margin: 16px auto 0 auto;
+  // This is a quick hack to get centering working on a collapsed header.
+  // We're doing it here because the Header component should not need to know
+  // whether or not it is collapsed.
+  &__collapsed {
+    justify-content: center !important;
   }
 }
 

@@ -31,6 +31,10 @@
     &:hover {
       background-color: rgba(52, 56, 60, 0.2);
     }
+
+    .Body {
+      padding-top: 4px;
+    }
   }
 }
 
@@ -158,6 +162,7 @@
   display: inherit;
   gap: inherit;
   justify-content: space-between;
+  padding-top: 8px;
 
   > div {
     display: inherit;

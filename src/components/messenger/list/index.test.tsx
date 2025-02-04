@@ -10,7 +10,7 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
-import { UserDetails } from '../../sidekick/components/user-details';
+import { CurrentUserDetails } from '../../sidekick/components/current-user-details';
 import { ErrorDialog } from '../../error-dialog';
 import { bem } from '../../../lib/bem';
 import { IconButton } from '@zero-tech/zui/components/IconButton';
@@ -73,13 +73,13 @@ describe('messenger-list', () => {
   it('renders user UserDetails when stage is equal to none', function () {
     const wrapper = subject({ stage: Stage.None });
 
-    expect(wrapper).toHaveElement(UserDetails);
+    expect(wrapper).toHaveElement(CurrentUserDetails);
   });
 
   it('does not render UserDetails when stage is not equal to none', function () {
     const wrapper = subject({ stage: Stage.InitiateConversation });
 
-    expect(wrapper).not.toHaveElement(UserDetails);
+    expect(wrapper).not.toHaveElement(CurrentUserDetails);
   });
 
   it('renders CreateConversationPanel', function () {

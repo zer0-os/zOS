@@ -1,10 +1,10 @@
-import { useUserDetails } from './lib/useUserDetails';
+import { useCurrentUserDetails } from './lib/useCurrentUserDetails';
 
 import { Modal } from '@zero-tech/zui/components/Modal';
 import { UserHeader as UserHeaderComponent } from './components/user-header';
 import { VerifyIdDialog } from '../../../verify-id-dialog';
 
-export const UserDetails = () => {
+export const CurrentUserDetails = () => {
   const {
     hasUnviewedRewards,
     isVerifyIdDialogOpen,
@@ -16,7 +16,7 @@ export const UserDetails = () => {
     userAvatarUrl,
     userHandle,
     userName,
-  } = useUserDetails();
+  } = useCurrentUserDetails();
 
   return (
     <>

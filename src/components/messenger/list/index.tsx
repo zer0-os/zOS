@@ -29,7 +29,7 @@ import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
 import { ErrorDialog } from '../../error-dialog';
 import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
-import { UserDetails } from '../../sidekick/components/user-details';
+import { CurrentUserDetails } from '../../sidekick/components/current-user-details';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
@@ -273,7 +273,7 @@ export class Container extends React.Component<Properties, State> {
   renderUserHeader() {
     return (
       <Header className={this.state.isCollapsed ? { ...cn('collapsed') }.className : ''}>
-        {!this.state.isCollapsed && <UserDetails />}
+        {!this.state.isCollapsed && <CurrentUserDetails />}
         <Group>
           <IconButton
             Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}

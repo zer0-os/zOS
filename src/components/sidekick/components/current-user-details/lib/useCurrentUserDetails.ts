@@ -5,7 +5,7 @@ import { totalRewardsViewed } from '../../../../../store/rewards';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 
-export const useUserDetails = () => {
+export const useCurrentUserDetails = () => {
   const dispatch = useDispatch();
 
   const rewards = useSelector((state: RootState) => state.rewards);

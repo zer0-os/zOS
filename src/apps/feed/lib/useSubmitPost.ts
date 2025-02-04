@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Media } from '../../../components/message-input/utils';
 import { RootState } from '../../../store';
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
+import { POST_MAX_LENGTH } from './constants';
 
 interface SubmitPostParams {
   channelZid: string;
@@ -45,6 +46,10 @@ export const useSubmitPost = () => {
 
       if (!message || message.trim() === '') {
         throw new Error('Post is empty');
+      }
+
+      if (message.length > POST_MAX_LENGTH) {
+        throw new Error(`Post must be less than ${POST_MAX_LENGTH} characters`);
       }
 
       if (!userWallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {

@@ -5,7 +5,7 @@
  * This component is a workaround to cache the image in the browser.
  */
 
-import { Avatar, AvatarProps } from '@zero-tech/zui/components';
+import { Avatar, AvatarProps } from '@zero-tech/zui/components/Avatar';
 import { useMatrixImage } from '../../lib/hooks/useMatrixImage';
 
 interface MatrixAvatarProps extends AvatarProps {

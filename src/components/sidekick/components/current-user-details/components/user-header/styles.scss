@@ -1,17 +1,12 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@import '../../../../variables';
-@import '../../../../glass';
+@import '../../../../../../variables';
+@import '../../../../../../glass';
 
 .user-header {
   display: flex;
   align-items: center;
-  padding: 16px 16px 0;
   height: 32px;
   gap: 8px;
-
-  &[is-collapsed] {
-    justify-content: center;
-  }
 
   &__avatar-container {
     cursor: pointer;

@@ -9,12 +9,11 @@ import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
-import { RegistrationState } from '../../../store/registration';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
-import { UserHeader } from './user-header';
+import { CurrentUserDetails } from '../../sidekick/components/current-user-details';
 import { ErrorDialog } from '../../error-dialog';
 import { bem } from '../../../lib/bem';
-
+import { IconButton } from '@zero-tech/zui/components/IconButton';
 const c = bem('.direct-message-members');
 
 const mockSearchMyNetworksByName = jest.fn();
@@ -29,7 +28,6 @@ describe('messenger-list', () => {
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
-      isFirstTimeLogin: false,
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
@@ -39,7 +37,6 @@ describe('messenger-list', () => {
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
       isRewardsDialogOpen: false,
-      showRewardsTooltip: false,
       hasUnviewedRewards: false,
       isSecondaryConversationDataLoaded: true,
       closeConversationErrorDialog: () => null,
@@ -47,10 +44,7 @@ describe('messenger-list', () => {
       membersSelected: () => null,
       back: () => null,
       receiveSearchResults: () => null,
-      logout: () => null,
       closeRewardsDialog: () => null,
-      openUserProfile: () => null,
-      totalRewardsViewed: () => null,
       onAddLabel: () => null,
       onRemoveLabel: () => null,
       createUnencryptedConversation: () => null,
@@ -71,21 +65,21 @@ describe('messenger-list', () => {
     const startCreateConversation = jest.fn();
     const wrapper = subject({ startCreateConversation });
 
-    wrapper.find(UserHeader).prop('startConversation')();
+    wrapper.find(IconButton).at(1).prop('onClick')(undefined);
 
-    expect(startCreateConversation).toHaveBeenCalledOnce();
+    expect(startCreateConversation).toHaveBeenCalled();
   });
 
-  it('renders user UserHeader when stage is equal to none', function () {
+  it('renders user UserDetails when stage is equal to none', function () {
     const wrapper = subject({ stage: Stage.None });
 
-    expect(wrapper).toHaveElement(UserHeader);
+    expect(wrapper).toHaveElement(CurrentUserDetails);
   });
 
-  it('does not render UserHeader when stage is not equal to none', function () {
+  it('does not render UserDetails when stage is not equal to none', function () {
     const wrapper = subject({ stage: Stage.InitiateConversation });
 
-    expect(wrapper).not.toHaveElement(UserHeader);
+    expect(wrapper).not.toHaveElement(CurrentUserDetails);
   });
 
   it('renders CreateConversationPanel', function () {
@@ -440,15 +434,6 @@ describe('messenger-list', () => {
       });
 
       expect(state.isFetchingExistingConversations).toEqual(true);
-    });
-
-    test('isFirstTimeLogin', async () => {
-      const state = DirectMessageChat.mapState({
-        ...getState([]),
-        registration: { isFirstTimeLogin: true } as RegistrationState,
-      });
-
-      expect(state.isFirstTimeLogin).toEqual(true);
     });
   });
 });

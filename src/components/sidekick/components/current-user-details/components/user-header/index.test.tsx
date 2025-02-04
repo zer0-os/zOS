@@ -1,10 +1,9 @@
 import { shallow } from 'enzyme';
 import { Properties, UserHeader } from '.';
-import { IconButton } from '@zero-tech/zui/components';
 import { Button } from '@zero-tech/zui/components/Button';
 
-import { bem } from '../../../../lib/bem';
-import { RewardsToolTipContainer } from '../rewards-tooltip/container';
+import { bem } from '../../../../../../lib/bem';
+import { RewardsToolTipContainer } from '../../../../../messenger/list/rewards-tooltip/container';
 const c = bem('.user-header');
 
 describe(UserHeader, () => {
@@ -13,15 +12,10 @@ describe(UserHeader, () => {
       userName: '',
       userHandle: '',
       userAvatarUrl: '',
-      userIsOnline: true,
       showRewardsTooltip: false,
       hasUnviewedRewards: false,
-      isCollapsed: false,
 
-      onToggleExpand: () => null,
-      onLogout: () => null,
       onVerifyId: () => null,
-      startConversation: () => null,
       openUserProfile: () => null,
       totalRewardsViewed: () => null,
       ...props,
@@ -38,21 +32,6 @@ describe(UserHeader, () => {
   it('does not render userHandle when user handle is empty', function () {
     const wrapper = subject({ userHandle: '' });
     expect(wrapper).not.toHaveElement(c('handle'));
-  });
-
-  it('renders IconButton', function () {
-    const wrapper = subject();
-    expect(wrapper).toHaveElement(IconButton);
-  });
-
-  it('calls startConversation when IconButton is clicked', function () {
-    const startConversationMock = jest.fn();
-    const wrapper = subject({ startConversation: startConversationMock });
-
-    const buttons = wrapper.find(IconButton);
-
-    buttons.at(1).simulate('click');
-    expect(startConversationMock).toHaveBeenCalled();
   });
 
   it('renders verify id button when user handle is a wallet address', function () {

@@ -4,9 +4,8 @@ import { PostInput, Properties } from '.';
 import { Key } from '../../../../lib/keyboard-search';
 import Dropzone from 'react-dropzone';
 import { config } from '../../../../config';
-import { Button } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
 import { ViewModes } from '../../../../shared-components/theme-engine';
-import { POST_MAX_LENGTH } from '../../lib/constants';
 
 describe('PostInput', () => {
   const subject = (props: Partial<Properties>, child: any = <div />) => {

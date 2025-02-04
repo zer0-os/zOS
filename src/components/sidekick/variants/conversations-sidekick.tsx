@@ -6,7 +6,6 @@ import { MessengerList } from '../../messenger/list';
 import { UserProfileContainer } from '../../messenger/user-profile/container';
 import { Stage as ProfileStage } from '../../../store/user-profile';
 import { Stage as MessageInfoStage } from '../../../store/message-info';
-import { Stage as GroupManagementStage } from '../../../store/group-management';
 
 interface PublicProperties {
   className?: string;
@@ -15,17 +14,15 @@ interface PublicProperties {
 export interface Properties extends PublicProperties {
   profileStage: ProfileStage;
   messageInfoStage: MessageInfoStage;
-  groupManagementStage: GroupManagementStage;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { groupManagement, userProfile, messageInfo } = state;
+    const { userProfile, messageInfo } = state;
 
     return {
       profileStage: userProfile.stage,
       messageInfoStage: messageInfo.stage,
-      groupManagementStage: groupManagement.stage,
     };
   }
 

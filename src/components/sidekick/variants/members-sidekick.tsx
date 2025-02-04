@@ -2,7 +2,6 @@ import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import { GroupManagementContainer } from '../../messenger/group-management/container';
-import { Stage as ProfileStage } from '../../../store/user-profile';
 import { Stage as MessageInfoStage } from '../../../store/message-info';
 import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { MessageInfoContainer } from '../../messenger/message-info/container';
@@ -17,17 +16,15 @@ interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   isSecondarySidekickOpen: boolean;
-  profileStage: ProfileStage;
   messageInfoStage: MessageInfoStage;
   groupManagementStage: GroupManagementStage;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { groupManagement, userProfile, messageInfo } = state;
+    const { groupManagement, messageInfo } = state;
 
     return {
-      profileStage: userProfile.stage,
       messageInfoStage: messageInfo.stage,
       groupManagementStage: groupManagement.stage,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,

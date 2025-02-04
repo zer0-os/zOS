@@ -4,7 +4,8 @@ import Dropzone from 'react-dropzone';
 import { config } from '../../../../config';
 import { Key } from '../../../../lib/keyboard-search';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button, IconButton } from '@zero-tech/zui/components';
+import { Button } from '@zero-tech/zui/components/Button';
+import { IconButton } from '@zero-tech/zui/components/IconButton';
 import ImageCards from '../../../../platform-apps/channels/image-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { ViewModes } from '../../../../shared-components/theme-engine';
@@ -227,16 +228,17 @@ export class PostInput extends React.Component<Properties, State> {
                       <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
                       <AnimatePresence>
                         {this.state.value.length > SHOW_MAX_LABEL_THRESHOLD && (
-                          <motion.div
+                          <motion.span
                             initial={{ y: -8, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: 8, opacity: 0 }}
                             transition={{ duration: 0.2 }}
                             {...cn('characters')}
                             data-is-too-long={isPostTooLong ? '' : null}
+                            data-testid='character-count'
                           >
                             {this.state.value.length} / {POST_MAX_LENGTH}
-                          </motion.div>
+                          </motion.span>
                         )}
                       </AnimatePresence>
                     </div>

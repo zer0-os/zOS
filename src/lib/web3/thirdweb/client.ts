@@ -15,5 +15,5 @@ function createClient(): ThirdwebClient {
 }
 
 export function getChain() {
-  return process.env.NODE_ENV === 'development' ? sepolia : mainnet;
+  return config.supportedChainId === '1' ? mainnet : sepolia;
 }

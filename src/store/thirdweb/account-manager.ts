@@ -27,3 +27,7 @@ class ThirdwebAccountManager {
 }
 
 export const accountManager = ThirdwebAccountManager.getInstance();
+
+export function useThirdwebAccount(): Account | null {
+  return accountManager.getAccount();
+}

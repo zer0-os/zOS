@@ -1,11 +1,11 @@
 import { useSelector } from 'react-redux';
-import { useAccount, useSignMessage } from 'wagmi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Media } from '../../../components/message-input/utils';
 import { RootState } from '../../../store';
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
 import { POST_MAX_LENGTH } from './constants';
+import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
 
 interface SubmitPostParams {
   channelZid: string;
@@ -22,8 +22,7 @@ export const useSubmitPost = () => {
     userWallets: state.authentication.user.data?.wallets,
   }));
 
-  const { address: connectedAddress } = useAccount();
-  const { signMessageAsync } = useSignMessage();
+  const account = useThirdwebAccount();
 
   const {
     error,
@@ -35,6 +34,10 @@ export const useSubmitPost = () => {
      */
     mutationFn: async ({ message, replyToId, channelZid }: SubmitPostParams) => {
       const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
+
+      if (!account) {
+        throw new Error('Failed to connect to ZERO wallet');
+      }
 
       if (!formattedUserPrimaryZid) {
         throw new Error('Please set a primary ZID in your profile');
@@ -52,7 +55,7 @@ export const useSubmitPost = () => {
         throw new Error(`Post must be less than ${POST_MAX_LENGTH} characters`);
       }
 
-      if (!userWallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
+      if (!userWallets.find((w) => w.publicAddress.toLowerCase() === account.address.toLowerCase())) {
         throw new Error('Wallet is not linked to your account');
       }
 
@@ -61,7 +64,7 @@ export const useSubmitPost = () => {
       const payloadToSign: SignedMessagePayload = {
         created_at: createdAt.toString(),
         text: message,
-        wallet_address: connectedAddress,
+        wallet_address: account.address,
         zid: formattedUserPrimaryZid,
       };
 
@@ -69,7 +72,7 @@ export const useSubmitPost = () => {
       let signedPost;
 
       try {
-        signedPost = await signMessageAsync({ account: connectedAddress, message: unsignedPost });
+        signedPost = await account.signMessage({ message: unsignedPost });
       } catch (e) {
         console.error(e);
         throw new Error('Failed to sign post');
@@ -81,7 +84,7 @@ export const useSubmitPost = () => {
       formData.append('unsignedMessage', unsignedPost);
       formData.append('signedMessage', signedPost);
       formData.append('zid', formattedUserPrimaryZid);
-      formData.append('walletAddress', connectedAddress);
+      formData.append('walletAddress', account.address);
       if (replyToId) {
         formData.append('replyTo', replyToId);
       }

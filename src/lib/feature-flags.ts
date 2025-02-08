@@ -185,6 +185,14 @@ export class FeatureFlags {
   set enableLinkedAccounts(value: boolean) {
     this._setBoolean('enableLinkedAccounts', value);
   }
+
+  get enableZeroWalletSigning() {
+    return this._getBoolean('enableZeroWalletSigning', false);
+  }
+
+  set enableZeroWalletSigning(value: boolean) {
+    this._setBoolean('enableZeroWalletSigning', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

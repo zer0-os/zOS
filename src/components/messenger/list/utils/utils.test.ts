@@ -28,6 +28,27 @@ describe('sortMembers', () => {
 
     expect(sortedMembers).toStrictEqual(expectedOrder);
   });
+
+  it('sorts alphabetically by firstName', () => {
+    const members = [
+      { firstName: 'Zeb' },
+      { firstName: '' },
+      { firstName: 'Charlie' },
+      { firstName: null },
+      { firstName: 'Adam' },
+    ] as any;
+
+    const sortedMembers = sortMembers(members, [], []);
+    const expectedOrder = [
+      { firstName: '' },
+      { firstName: null },
+      { firstName: 'Adam' },
+      { firstName: 'Charlie' },
+      { firstName: 'Zeb' },
+    ];
+
+    expect(sortedMembers).toStrictEqual(expectedOrder);
+  });
 });
 
 describe('isUserAdmin', () => {

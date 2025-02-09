@@ -3,7 +3,6 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 
 import { NotificationsFeed } from '../../components/notifications-feed';
-import { Provider as AuthenticationContextProvider } from '../../components/authentication/context';
 import { ScrollbarContainer } from '../../components/scrollbar-container';
 import { ConversationsSidekick } from '../../components/sidekick/variants/conversations-sidekick';
 
@@ -33,15 +32,13 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <AuthenticationContextProvider value={this.authenticationContext}>
-        <div className={styles.NotificationsContainer}>
-          <ConversationsSidekick />
-          <ScrollbarContainer variant='on-hover'>
-            <NotificationsFeed />
-          </ScrollbarContainer>
-          <div />
-        </div>
-      </AuthenticationContextProvider>
+      <div className={styles.NotificationsContainer}>
+        <ConversationsSidekick />
+        <ScrollbarContainer variant='on-hover'>
+          <NotificationsFeed />
+        </ScrollbarContainer>
+        <div />
+      </div>
     );
   }
 }

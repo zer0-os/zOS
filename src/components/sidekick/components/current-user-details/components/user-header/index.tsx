@@ -65,7 +65,7 @@ export class UserHeader extends React.Component<Properties> {
           <span {...cn('name')}>{this.props.userName}</span>
           {this.props.userHandle && (
             <div {...cn('handle')}>
-              <span>{this.props.userHandle}</span>
+              <span title={this.props.userHandle}>{this.props.userHandle}</span>
               <span>{this.isWalletAddress && this.renderVerifyIdButton()}</span>
             </div>
           )}

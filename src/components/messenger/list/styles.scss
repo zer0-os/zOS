@@ -48,6 +48,10 @@ $side-padding: 16px;
   &__collapsed {
     justify-content: center !important;
   }
+
+  &__collapse-button {
+    margin-left: auto;
+  }
 }
 
 .highlighted-text {

@@ -274,13 +274,12 @@ export class Container extends React.Component<Properties, State> {
     return (
       <Header className={this.state.isCollapsed ? { ...cn('collapsed') }.className : ''}>
         {!this.state.isCollapsed && <CurrentUserDetails />}
-        <Group>
-          <IconButton
-            Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}
-            onClick={this.state.isCollapsed ? this.expand : this.collapse}
-          />
-          {!this.state.isCollapsed && <IconButton Icon={IconPlus} onClick={this.startCreateConversation} />}
-        </Group>
+        <IconButton
+          {...cn('collapse-button')}
+          Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}
+          onClick={this.state.isCollapsed ? this.expand : this.collapse}
+        />
+        {!this.state.isCollapsed && <IconButton Icon={IconPlus} onClick={this.startCreateConversation} />}
       </Header>
     );
   }

@@ -1,13 +1,17 @@
+.Container {
+  width: 100%;
+  max-width: 270px;
+}
+
 .List {
   list-style: none;
-  padding: 16px;
-  margin: 24px 0;
 
   width: 100%;
-  max-width: 236px;
+  padding: 0 16px 16px 16px;
 
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 
   li {
     padding: 6px 8px;

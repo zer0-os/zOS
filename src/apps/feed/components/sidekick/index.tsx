@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { useFeedSelector } from './lib/useFeedSelector';
+import { useSidekick } from './lib/useSidekick';
 import { Container as SidekickContainer } from '../../../../components/sidekick/components/container';
 import { UserProfileContainer } from '../../../../components/messenger/user-profile/container';
 import { Header } from '../../../../components/sidekick/components/header';
@@ -11,7 +11,7 @@ import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 import styles from './styles.module.scss';
 
 export const Sidekick = () => {
-  const { isErrorZids, isLoadingZids, isProfileOpen, selectedZId, zids } = useFeedSelector();
+  const { isErrorZids, isLoadingZids, isProfileOpen, selectedZId, zids } = useSidekick();
 
   return (
     <SidekickContainer className={styles.Container}>

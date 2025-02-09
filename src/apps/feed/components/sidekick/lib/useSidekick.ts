@@ -4,7 +4,8 @@ import { useOwnedZids } from '../../../../../lib/hooks/useOwnedZids';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/reducer';
 import { Stage as ProfileStage } from '../../../../../store/user-profile';
-interface UseFeedSelectorReturn {
+
+interface UseSidekickReturn {
   isErrorZids: boolean;
   isLoadingZids: boolean;
   isProfileOpen: boolean;
@@ -12,7 +13,7 @@ interface UseFeedSelectorReturn {
   zids?: string[];
 }
 
-export const useFeedSelector = (): UseFeedSelectorReturn => {
+export const useSidekick = (): UseSidekickReturn => {
   const route = useRouteMatch('/feed/:zid');
   const selectedZId = route?.params?.zid;
 

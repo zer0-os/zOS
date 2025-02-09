@@ -10,7 +10,7 @@ import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 
 import styles from './styles.module.scss';
 
-export const FeedSelector = () => {
+export const Sidekick = () => {
   const { isErrorZids, isLoadingZids, isProfileOpen, selectedZId, zids } = useFeedSelector();
 
   return (

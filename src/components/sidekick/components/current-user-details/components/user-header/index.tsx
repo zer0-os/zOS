@@ -49,21 +49,6 @@ export class UserHeader extends React.Component<Properties> {
     );
   }
 
-  renderUserDetails() {
-    return (
-      <div {...cn('user-details')}>
-        <div {...cn('name')}>{this.props.userName}</div>
-
-        {this.props.userHandle && (
-          <div {...cn('handle')}>
-            {this.props.userHandle}
-            {this.isWalletAddress && this.renderVerifyIdButton()}
-          </div>
-        )}
-      </div>
-    );
-  }
-
   render() {
     return (
       <div {...cn('')}>
@@ -77,11 +62,11 @@ export class UserHeader extends React.Component<Properties> {
         </div>
         {this.props.showRewardsTooltip && <RewardsToolTipContainer />}
         <div {...cn('user-details')}>
-          <div {...cn('name')}>{this.props.userName}</div>
+          <span {...cn('name')}>{this.props.userName}</span>
           {this.props.userHandle && (
             <div {...cn('handle')}>
-              {this.props.userHandle}
-              {this.isWalletAddress && this.renderVerifyIdButton()}
+              <span title={this.props.userHandle}>{this.props.userHandle}</span>
+              <span>{this.isWalletAddress && this.renderVerifyIdButton()}</span>
             </div>
           )}
         </div>

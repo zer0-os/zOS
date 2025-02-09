@@ -39,7 +39,7 @@ import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 import { AdminMessageType } from '../../../store/messages';
-import { Header, Group } from '../../sidekick/components/header';
+import { Header } from '../../sidekick/components/header';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -274,13 +274,12 @@ export class Container extends React.Component<Properties, State> {
     return (
       <Header className={this.state.isCollapsed ? { ...cn('collapsed') }.className : ''}>
         {!this.state.isCollapsed && <CurrentUserDetails />}
-        <Group>
-          <IconButton
-            Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}
-            onClick={this.state.isCollapsed ? this.expand : this.collapse}
-          />
-          {!this.state.isCollapsed && <IconButton Icon={IconPlus} onClick={this.startCreateConversation} />}
-        </Group>
+        <IconButton
+          {...cn('collapse-button')}
+          Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}
+          onClick={this.state.isCollapsed ? this.expand : this.collapse}
+        />
+        {!this.state.isCollapsed && <IconButton Icon={IconPlus} onClick={this.startCreateConversation} />}
       </Header>
     );
   }

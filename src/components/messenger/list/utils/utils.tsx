@@ -42,7 +42,7 @@ export function sortMembers(members: User[], adminIds: string[], conversationMod
     if (!a.isOnline && b.isOnline) return 1;
 
     // Finally sort alphabetically by firstName
-    return a.firstName!.localeCompare(b.firstName);
+    return (a.firstName || '').localeCompare(b.firstName || '');
   });
 }
 

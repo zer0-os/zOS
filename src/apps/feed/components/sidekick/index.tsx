@@ -7,11 +7,13 @@ import { UserProfileContainer } from '../../../../components/messenger/user-prof
 import { Header } from '../../../../components/sidekick/components/header';
 import { CurrentUserDetails } from '../../../../components/sidekick/components/current-user-details';
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
+import { Input } from '@zero-tech/zui/components/Input/Input';
+import { IconSearchMd } from '@zero-tech/zui/icons';
 
 import styles from './styles.module.scss';
 
 export const Sidekick = () => {
-  const { isErrorZids, isLoadingZids, isProfileOpen, selectedZId, zids } = useSidekick();
+  const { isErrorZids, isLoadingZids, isProfileOpen, selectedZId, zids, search, setSearch } = useSidekick();
 
   return (
     <SidekickContainer className={styles.Container}>
@@ -22,21 +24,34 @@ export const Sidekick = () => {
           <Header>
             <CurrentUserDetails />
           </Header>
-          <ScrollbarContainer variant='on-hover' className={styles.Scroll}>
-            <ul className={styles.List}>
-              <FeedItem key={'explore'} route={'/feed'} isSelected={selectedZId === undefined}>
-                Explore
-              </FeedItem>
-              {isLoadingZids && <li>Loading Feeds...</li>}
-              {isErrorZids && <li>Error loading Feeds</li>}
-              {zids?.map((zid) => (
-                <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
-                  <span>0://</span>
-                  {zid}
-                </FeedItem>
-              ))}
-            </ul>
-          </ScrollbarContainer>
+          <div className={styles.Sidekick}>
+            <Input
+              className={styles.Search}
+              onChange={setSearch}
+              size={'small'}
+              startEnhancer={<IconSearchMd size={16} color={'var(--color-greyscale-11)'} />}
+              type={'search'}
+              value={search}
+              wrapperClassName={styles.SearchWrapper}
+            />
+            <ScrollbarContainer variant='on-hover' className={styles.Scroll}>
+              <ul className={styles.List}>
+                {search.length === 0 && (
+                  <FeedItem key={'explore'} route={'/feed'} isSelected={selectedZId === undefined}>
+                    Explore
+                  </FeedItem>
+                )}
+                {isLoadingZids && <li>Loading Feeds...</li>}
+                {isErrorZids && <li>Error loading Feeds</li>}
+                {zids?.map((zid) => (
+                  <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
+                    <span>0://</span>
+                    {zid}
+                  </FeedItem>
+                ))}
+              </ul>
+            </ScrollbarContainer>
+          </div>
         </>
       )}
     </SidekickContainer>

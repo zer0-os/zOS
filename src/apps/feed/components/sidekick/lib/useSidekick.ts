@@ -4,6 +4,7 @@ import { useOwnedZids } from '../../../../../lib/hooks/useOwnedZids';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/reducer';
 import { Stage as ProfileStage } from '../../../../../store/user-profile';
+import { useState } from 'react';
 
 interface UseSidekickReturn {
   isErrorZids: boolean;
@@ -11,9 +12,13 @@ interface UseSidekickReturn {
   isProfileOpen: boolean;
   selectedZId?: string;
   zids?: string[];
+  search: string;
+  setSearch: (search: string) => void;
 }
 
 export const useSidekick = (): UseSidekickReturn => {
+  const [search, setSearch] = useState('');
+
   const route = useRouteMatch('/feed/:zid');
   const selectedZId = route?.params?.zid;
 
@@ -24,11 +29,15 @@ export const useSidekick = (): UseSidekickReturn => {
   const worldZids = zids?.map((zid) => zid.split('.')[0]);
   const uniqueWorldZids = worldZids ? ([...new Set(worldZids)] as string[]) : undefined;
 
+  const filteredZids = uniqueWorldZids?.filter((zid) => zid.toLowerCase().includes(search.toLowerCase()));
+
   return {
     isErrorZids: isError,
     isLoadingZids: isLoading,
     isProfileOpen,
     selectedZId,
-    zids: uniqueWorldZids,
+    zids: filteredZids,
+    search,
+    setSearch,
   };
 };

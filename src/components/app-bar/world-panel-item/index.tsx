@@ -20,10 +20,9 @@ export class WorldPanelItem extends React.Component<Properties> {
   render() {
     return (
       <div {...cn('', this.props.isActive && 'active')} onClick={this.publishClick}>
-        <div {...cn('icon')}>
-          <this.props.Icon size={'24px'} />
+        <div title={this.props.label} {...cn('icon')}>
+          <this.props.Icon size={'18px'} isFilled={this.props.isActive} />
         </div>
-        <span {...cn('label')}>{this.props.label}</span>
       </div>
     );
   }

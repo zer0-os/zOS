@@ -34,7 +34,11 @@ export class AppBar extends React.Component<Properties, State> {
 
     return (
       <div {...cn('notification-icon-wrapper')}>
-        <IconBell1 size={24} {...cn('notification-icon', hasUnreadHighlights && 'highlight')} />
+        <IconBell1
+          {...cn('notification-icon', hasUnreadHighlights && 'highlight')}
+          isFilled={checkActive(this.props.activeApp)('notifications')}
+          size={18}
+        />
         {hasUnreadNotifications && !hasUnreadHighlights && <div {...cn('notification-dot')} />}
         {hasUnreadHighlights && <div {...cn('highlight-dot')} />}
       </div>
@@ -48,20 +52,27 @@ export class AppBar extends React.Component<Properties, State> {
     return (
       <>
         <div {...cn('')}>
-          <AppLink Icon={IconMessageSquare2} isActive={isActive('conversation')} label='Messenger' to='/conversation' />
-          {featureFlags.enableFeedApp && (
-            <AppLink Icon={IconList} isActive={isActive('feed')} label='Feed' to='/feed' />
-          )}
-          {featureFlags.enableNotificationsApp && (
+          <ul {...cn('container')}>
             <AppLink
-              Icon={this.renderNotificationIcon}
-              isActive={isActive('notifications')}
-              label='Notifications'
-              to='/notifications'
+              Icon={IconMessageSquare2}
+              isActive={isActive('conversation')}
+              label='Messenger'
+              to='/conversation'
             />
-          )}
-          <AppLink Icon={IconGlobe3} isActive={isActive('explorer')} label='Explorer' to='/explorer' />
-          <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
+            {featureFlags.enableFeedApp && (
+              <AppLink Icon={IconList} isActive={isActive('feed')} label='Feed' to='/feed' />
+            )}
+            {featureFlags.enableNotificationsApp && (
+              <AppLink
+                Icon={this.renderNotificationIcon}
+                isActive={isActive('notifications')}
+                label='Notifications'
+                to='/notifications'
+              />
+            )}
+            <AppLink Icon={IconGlobe3} isActive={isActive('explorer')} label='Explorer' to='/explorer' />
+            <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
+          </ul>
         </div>
         {this.state.isModalOpen && <MoreAppsModal onClose={this.closeModal} />}
       </>

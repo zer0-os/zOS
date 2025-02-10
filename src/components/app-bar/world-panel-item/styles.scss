@@ -1,54 +1,23 @@
-@use '~@zero-tech/zui/styles/theme' as theme;
-
-@import '../../../glass';
-
 .world-panel-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-
   &__icon {
     border-radius: 9999px;
-    padding: 8px;
+    padding: 6px;
 
-    @include glass-text-secondary-color;
-    background-color: $glass-state-default-color;
+    color: var(--color-greyscale-11);
   }
 
   &--active,
   &:hover {
     .world-panel-item__icon {
-      color: $glass-highlight-color;
-      @include glass-state-hover-color;
-      @include glass-materials-raised;
-      @include glass-shadow-low;
+      color: var(--color-primary-12);
     }
   }
 
   &:hover {
     cursor: pointer;
-
-    .world-panel-item__label {
-      visibility: visible;
-    }
   }
 
   &--active:hover {
     cursor: auto;
-  }
-
-  &__label {
-    visibility: hidden;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 9.68px;
-    text-align: center;
-
-    padding: 3px 8px;
-    border-radius: 9999px;
-    background-color: $flat-thick-color;
-
-    @include glass-text-primary-color;
   }
 }

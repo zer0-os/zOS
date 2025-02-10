@@ -20,9 +20,9 @@ const cn = bemClassName('content-highlighter');
 
 export class ContentHighlighter extends React.Component<Properties> {
   renderContent(message) {
-    const parts = message.split(/(@\[.*?\]\([a-z]+:[A-Za-z0-9_-]+\))/gi);
+    const parts = message.split(/(@\[.*?\]\([a-z]+:[A-Za-z0-9_@:.-]+\))/gi);
     return parts.map((part, index) => {
-      const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_-]+)\)/i);
+      const match = part.match(/@\[(.*?)\]\(([a-z]+):([A-Za-z0-9_@:.-]+)\)/i);
 
       if (!match) {
         return textToPlainEmojis(part);
@@ -41,7 +41,6 @@ export class ContentHighlighter extends React.Component<Properties> {
           </span>
         );
       }
-
       return part;
     });
   }

@@ -3,21 +3,16 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 
 import { Main } from './Main';
-import { Provider as AuthenticationContextProvider } from '../../components/authentication/context';
 import { setActiveConversationId } from '../../store/chat';
 
 export interface Properties {
-  isAuthenticated: boolean;
-
   match: { params: { conversationId: string } };
   setActiveConversationId: ({ id }: { id: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
-  static mapState(state: RootState): Partial<Properties> {
-    return {
-      isAuthenticated: !!state.authentication.user?.data,
-    };
+  static mapState(_state: RootState): Partial<Properties> {
+    return {};
   }
 
   static mapActions() {
@@ -36,13 +31,6 @@ export class Container extends React.Component<Properties> {
     }
   }
 
-  get authenticationContext() {
-    const { isAuthenticated } = this.props;
-    return {
-      isAuthenticated,
-    };
-  }
-
   get conversationId() {
     return this.idFrom(this.props);
   }
@@ -56,11 +44,7 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    return (
-      <AuthenticationContextProvider value={this.authenticationContext}>
-        <Main />
-      </AuthenticationContextProvider>
-    );
+    return <Main />;
   }
 }
 

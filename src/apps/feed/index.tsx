@@ -1,7 +1,7 @@
 import { Switch, Route } from 'react-router-dom';
 
 import { Feed } from './components/feed';
-import { FeedSelector } from './components/feed-selector';
+import { Sidekick } from './components/sidekick';
 import { PostView } from './components/post-view-container';
 import { ScrollbarContainer } from '../../components/scrollbar-container';
 
@@ -10,7 +10,7 @@ import styles from './styles.module.scss';
 export const FeedApp = () => {
   return (
     <div className={styles.Feed}>
-      <FeedSelector />
+      <Sidekick />
       <ScrollbarContainer className={styles.Scroll} variant='on-hover'>
         <Switch>
           <Route

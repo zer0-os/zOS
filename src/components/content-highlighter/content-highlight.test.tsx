@@ -32,9 +32,16 @@ describe('ContentHighlighter', () => {
     expect(wrapper.text()).toContain('Hello, world! 🙂');
   });
 
-  it('renders content with a user mention', () => {
+  it('renders content with a user mention (ZERO user ID)', () => {
     const wrapper = render({
       message: 'Hello, @[John Doe](user:123)!',
+    });
+    expect(wrapper.find('.content-highlighter__user-mention').text()).toEqual('John Doe');
+  });
+
+  it('renders content with a user mention (matrix user ID)', () => {
+    const wrapper = render({
+      message: 'Hello, @[John Doe](user:@123:zos.zer0.io)!',
     });
     expect(wrapper.find('.content-highlighter__user-mention').text()).toEqual('John Doe');
   });

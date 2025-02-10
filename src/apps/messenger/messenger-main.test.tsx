@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './messenger-main';
-import { Provider as AuthenticationContextProvider } from '../../components/authentication/context';
 import { Main } from './Main';
 
 jest.mock('../../lib/web3/thirdweb/client', () => ({
@@ -14,7 +13,6 @@ jest.mock('../../lib/web3/thirdweb/client', () => ({
 describe('MessengerMain', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {
-      isAuthenticated: false,
       match: { params: { conversationId: '' } },
       setActiveConversationId: () => null,
       ...props,
@@ -22,13 +20,6 @@ describe('MessengerMain', () => {
 
     return shallow(<Container {...allProps} />);
   };
-
-  it('contains AuthenticationContextProvider with the correct context', () => {
-    const wrapper = subject({ isAuthenticated: true });
-    const provider = wrapper.find(AuthenticationContextProvider);
-    expect(provider).toHaveLength(1);
-    expect(provider.prop('value')).toEqual({ isAuthenticated: true });
-  });
 
   it('renders the Main component', () => {
     const wrapper = subject();
@@ -61,13 +52,12 @@ describe('MessengerMain', () => {
     const wrapper = subject({
       setActiveConversationId,
       match: { params: { conversationId: '123' } },
-      isAuthenticated: true, // To allow us to force a property change
     });
 
     expect(setActiveConversationId).toHaveBeenCalledWith({ id: '123' });
     jest.clearAllMocks();
 
-    wrapper.setProps({ isAuthenticated: false }); // force prop change without changing `match`
+    wrapper.setProps({ setActiveConversationId: jest.fn() }); // force prop change without changing `match`
     expect(setActiveConversationId).not.toHaveBeenCalled();
   });
 });

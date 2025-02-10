@@ -26,9 +26,9 @@ describe(WorldPanelItem, () => {
     expect(subject({ isActive: true })).toHaveClassName('world-panel-item--active');
   });
 
-  it('renders the label', function () {
+  it('shows a label on hover (default HTML title)', function () {
     const wrapper = subject({ label: 'my app' });
 
-    expect(wrapper.find('.world-panel-item__label')).toHaveText('my app');
+    expect(wrapper.find('.world-panel-item__icon')).toHaveProp('title', 'my app');
   });
 });

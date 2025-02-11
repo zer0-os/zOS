@@ -117,7 +117,6 @@ export function* validateActiveConversation(conversationId: string) {
 
   const isLoaded = yield call(waitForChatConnectionCompletion);
   if (isLoaded) {
-    yield call(rawSetActiveConversationId, null);
     yield call(performValidateActiveConversation, conversationId);
     yield spawn(openSidekickForSocialChannel, conversationId);
   }
@@ -134,6 +133,7 @@ export function* joinRoom(roomIdOrAlias: string) {
     const error = translateJoinRoomApiError(response, domain);
 
     yield put(setJoinRoomErrorContent(error));
+    yield put(rawSetActiveConversationId(null));
   } else {
     yield put(clearJoinRoomErrorContent());
     yield call(setWhenUserJoinedRoom, response.roomId);

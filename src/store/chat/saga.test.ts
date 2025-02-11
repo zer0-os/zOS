@@ -246,6 +246,8 @@ describe(validateActiveConversation, () => {
       .next()
       .call(waitForChatConnectionCompletion)
       .next(true)
+      .call(rawSetActiveConversationId, null)
+      .next()
       .call(performValidateActiveConversation, 'convo-1')
       .next()
       .spawn(openSidekickForSocialChannel, 'convo-1')

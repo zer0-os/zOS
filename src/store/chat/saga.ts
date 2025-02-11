@@ -117,6 +117,7 @@ export function* validateActiveConversation(conversationId: string) {
 
   const isLoaded = yield call(waitForChatConnectionCompletion);
   if (isLoaded) {
+    yield call(rawSetActiveConversationId, null);
     yield call(performValidateActiveConversation, conversationId);
     yield spawn(openSidekickForSocialChannel, conversationId);
   }
@@ -208,6 +209,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
     validateActiveConversation(payload.id)
   );
+  yield takeLatest(SagaActionTypes.ValidateFeedChat, ({ payload }: any) => validateActiveConversation(payload.id));
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);

@@ -14,10 +14,12 @@ export enum SagaActionTypes {
   CloseConversationErrorDialog = 'chat/saga/closeConversationErrorDialog',
   setActiveConversationId = 'chat/saga/setActiveConversationId',
   SetIsJoiningConversation = 'chat/saga/setIsJoiningConversation',
+  ValidateFeedChat = 'chat/saga/validateFeedChat',
 }
 
 const closeConversationErrorDialog = createAction(SagaActionTypes.CloseConversationErrorDialog);
 export const setActiveConversationId = createAction<{ id: string }>(SagaActionTypes.setActiveConversationId);
+export const validateFeedChat = createAction<{ id: string }>(SagaActionTypes.ValidateFeedChat);
 
 const slice = createSlice({
   name: 'chat',

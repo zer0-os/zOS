@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useAccount } from 'wagmi';
 
 import { Media } from '../../../../components/message-input/utils';
 import { RootState } from '../../../../store';
@@ -17,8 +16,6 @@ export const useCommentInput = (postId: string, channelZid?: string) => {
   const error = useSelector((state: RootState) => state.posts.error);
   const isLoading = useSelector((state: RootState) => state.posts.isSubmitting);
 
-  const { isConnected } = useAccount();
-
   const { handleOnSubmit: handleOnSubmitPost, isLoading: isLoadingFeed, error: errorFeed } = useSubmitPost();
 
   const onSubmit = (message: string) => {
@@ -32,7 +29,6 @@ export const useCommentInput = (postId: string, channelZid?: string) => {
   return {
     error,
     errorFeed,
-    isConnected,
     isLoading,
     isLoadingFeed,
     onSubmit,

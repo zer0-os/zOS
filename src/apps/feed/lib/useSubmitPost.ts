@@ -57,6 +57,10 @@ export const useSubmitPost = () => {
         throw new Error(`Post must be less than ${POST_MAX_LENGTH} characters`);
       }
 
+      if (!authorAddress) {
+        throw new Error('ZERO wallet is not connected');
+      }
+
       if (!userWallets.find((w) => w.publicAddress.toLowerCase() === authorAddress.toLowerCase())) {
         throw new Error('Wallet is not linked to your account');
       }

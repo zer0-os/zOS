@@ -12,7 +12,7 @@ vi.mock('../../../../components/matrix-avatar', () => ({
 
 describe('PostInput', () => {
   it('should only show the character count when the post is too long', () => {
-    render(<PostInput viewMode={ViewModes.Dark} isWalletConnected={true} onSubmit={() => {}} />);
+    render(<PostInput viewMode={ViewModes.Dark} onSubmit={() => {}} />);
 
     const textarea = screen.getByRole('textbox');
 

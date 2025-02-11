@@ -4,7 +4,6 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { ViewModes } from '../../../../shared-components/theme-engine';
-import { ConnectionStatus } from '../../../../lib/web3';
 
 import { PostInput } from '.';
 
@@ -26,7 +25,6 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   viewMode: ViewModes;
-  isWalletConnected: boolean;
 }
 
 export class Container extends React.Component<Properties> {
@@ -36,11 +34,10 @@ export class Container extends React.Component<Properties> {
       theme: {
         value: { viewMode },
       },
-      web3: { status },
       posts: { error },
     } = state;
 
-    return { user, error, viewMode, isWalletConnected: status === ConnectionStatus.Connected };
+    return { user, error, viewMode };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -68,7 +65,6 @@ export class Container extends React.Component<Properties> {
         onPostInputRendered={this.onPostInputRendered}
         avatarUrl={this.props.user.data?.profileSummary.profileImage}
         viewMode={this.props.viewMode}
-        isWalletConnected={this.props.isWalletConnected}
         variant={this.props.variant ?? 'post'}
       />
     );

@@ -187,7 +187,7 @@ export class FeatureFlags {
   }
 
   get enableZeroWalletSigning() {
-    return this._getBoolean('enableZeroWalletSigning', false);
+    return this._getBoolean('enableZeroWalletSigning', true);
   }
 
   set enableZeroWalletSigning(value: boolean) {

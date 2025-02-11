@@ -12,8 +12,10 @@ export interface CommentInputProps {
 }
 
 export const CommentInput = ({ channelZid, isFeed, postId }: CommentInputProps) => {
-  const { error, errorFeed, isConnected, isLoading, isLoadingFeed, onSubmit, onSubmitFeed, userProfileImageUrl } =
-    useCommentInput(postId, channelZid);
+  const { error, errorFeed, isLoading, isLoadingFeed, onSubmit, onSubmitFeed, userProfileImageUrl } = useCommentInput(
+    postId,
+    channelZid
+  );
 
   return (
     <PostInput
@@ -21,7 +23,6 @@ export const CommentInput = ({ channelZid, isFeed, postId }: CommentInputProps) 
       className={styles.Input}
       error={error ?? errorFeed?.message}
       isSubmitting={isLoadingFeed || isLoading}
-      isWalletConnected={isConnected}
       onSubmit={isFeed ? onSubmitFeed : onSubmit}
       variant='comment'
       viewMode={ViewModes.Dark}

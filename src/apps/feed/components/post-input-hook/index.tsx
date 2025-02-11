@@ -10,10 +10,7 @@ export interface PostInputProps {
 }
 
 export const PostInput = ({ className, channelZid, replyToId }: PostInputProps) => {
-  const { error, handleOnSubmit, isLoading, isWalletConnected, userProfileImageUrl } = usePostInput(
-    channelZid,
-    replyToId
-  );
+  const { error, handleOnSubmit, isLoading, userProfileImageUrl } = usePostInput(channelZid, replyToId);
 
   return (
     <PostInputComponent
@@ -21,7 +18,6 @@ export const PostInput = ({ className, channelZid, replyToId }: PostInputProps) 
       className={className}
       error={error?.message}
       isSubmitting={isLoading}
-      isWalletConnected={isWalletConnected}
       onSubmit={handleOnSubmit}
       viewMode={ViewModes.Dark}
     />

@@ -9,6 +9,7 @@ import { send as sendMessage } from '../../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../../store/messages/saga';
 import { searchMentionableUsersForChannel } from '../../../../platform-apps/channels/util/api';
 import { Media } from '../../../../components/message-input/utils';
+import { config } from '../../../../config';
 
 interface Properties {
   zid?: string;
@@ -48,8 +49,7 @@ export class Container extends React.Component<Properties> {
 
   componentDidMount(): void {
     if (this.props.zid) {
-      // replace with dev and prod env var domains (add to config)
-      const roomAlias = `${this.props.zid}:zero-synapse-development.zer0.io`;
+      const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
       this.props.validateFeedChat(roomAlias);
     }
   }
@@ -57,8 +57,7 @@ export class Container extends React.Component<Properties> {
   componentDidUpdate(prevProps: Properties): void {
     if (this.props.zid !== prevProps.zid) {
       if (this.props.zid) {
-        // replace with dev and prod env var domains (add to config)
-        const roomAlias = `${this.props.zid}:zero-synapse-development.zer0.io`;
+        const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
         this.props.validateFeedChat(roomAlias);
       }
     }

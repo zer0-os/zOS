@@ -5,6 +5,7 @@ import { MessageInput } from '../../../../components/message-input/container';
 import { RootState } from '../../../../store/reducer';
 import { validateFeedChat } from '../../../../store/chat';
 import { send } from '../../../../store/messages';
+import { config } from '../../../../config';
 
 describe('FeedChatContainer', () => {
   const subject = (props: any = {}) => {
@@ -64,7 +65,7 @@ describe('FeedChatContainer', () => {
       validateFeedChat,
     });
 
-    expect(validateFeedChat).toHaveBeenCalledWith('test-zid:zero-synapse-development.zer0.io');
+    expect(validateFeedChat).toHaveBeenCalledWith(`test-zid:${config.matrixHomeServerName}`);
   });
 
   it('calls validateFeedChat when zid prop changes', () => {
@@ -76,7 +77,7 @@ describe('FeedChatContainer', () => {
 
     wrapper.setProps({ zid: 'new-zid' });
 
-    expect(validateFeedChat).toHaveBeenLastCalledWith('new-zid:zero-synapse-development.zer0.io');
+    expect(validateFeedChat).toHaveBeenLastCalledWith(`new-zid:${config.matrixHomeServerName}`);
   });
 
   describe('mapState', () => {

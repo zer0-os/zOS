@@ -242,6 +242,8 @@ describe(validateActiveConversation, () => {
   it('waits for channel load before validating', async () => {
     testSaga(validateActiveConversation, 'convo-1')
       .next()
+      .put(clearJoinRoomErrorContent())
+      .next()
       .put(setIsJoiningConversation(true))
       .next()
       .call(waitForChatConnectionCompletion)
@@ -257,6 +259,8 @@ describe(validateActiveConversation, () => {
 
   it('does not validate if channel load fails', async () => {
     testSaga(validateActiveConversation, 'convo-1')
+      .next()
+      .put(clearJoinRoomErrorContent())
       .next()
       .put(setIsJoiningConversation(true))
       .next()

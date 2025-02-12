@@ -48,6 +48,7 @@ jobs:
       REACT_APP_APPLE_APP_STORE_PATH: ${{vars.APPLE_APP_STORE_PATH}}
       REACT_APP_GOOGLE_PLAY_STORE_PATH: ${{vars.GOOGLE_PLAY_STORE_PATH}}
       REACT_APP_WEB_APP_DOWNLOAD_PATH: ${{vars.WEB_APP_DOWNLOAD_PATH}}
+      REACT_APP_MATRIX_HOME_SERVER_NAME: ${{vars.MATRIX_HOME_SERVER_NAME}}
     steps:
       - uses: actions/checkout@v4
       - name: Common Setup

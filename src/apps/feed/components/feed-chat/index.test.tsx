@@ -3,6 +3,8 @@ import { Container as FeedChatContainer } from './index';
 import { ChatViewContainer } from '../../../../components/chat-view-container/chat-view-container';
 import { MessageInput } from '../../../../components/message-input/container';
 import { RootState } from '../../../../store/reducer';
+import { validateFeedChat } from '../../../../store/chat';
+import { send } from '../../../../store/messages';
 
 describe('FeedChatContainer', () => {
   const subject = (props: any = {}) => {
@@ -104,6 +106,34 @@ describe('FeedChatContainer', () => {
         name: 'test channel',
       });
       expect(props.activeConversationId).toBe('1');
+    });
+  });
+
+  describe('mapActions', () => {
+    it('maps validateFeedChat and sendMessage actions', () => {
+      const actions = FeedChatContainer.mapActions();
+
+      expect(actions.validateFeedChat).toBeDefined();
+      expect(actions.sendMessage).toBeDefined();
+    });
+
+    it('maps validateFeedChat to dispatch validateFeedChat action', () => {
+      const actions = FeedChatContainer.mapActions();
+      const id = 'test-id';
+
+      expect(actions.validateFeedChat(id)).toEqual(validateFeedChat({ id }));
+    });
+
+    it('maps sendMessage to dispatch send action', () => {
+      const actions = FeedChatContainer.mapActions();
+      const payload = {
+        channelId: 'channel-id',
+        message: 'test message',
+        mentionedUserIds: [],
+        files: [],
+      };
+
+      expect(actions.sendMessage(payload)).toEqual(send(payload));
     });
   });
 });

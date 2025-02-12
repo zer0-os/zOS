@@ -10,11 +10,15 @@ import { SendPayload as PayloadSendMessage } from '../../../../store/messages/sa
 import { searchMentionableUsersForChannel } from '../../../../platform-apps/channels/util/api';
 import { Media } from '../../../../components/message-input/utils';
 import { config } from '../../../../config';
+import { ErrorDialogContent } from '../../../../store/chat/types';
 
 interface Properties {
   zid?: string;
   channel: Channel | null;
   activeConversationId: string | null;
+  isJoiningConversation: boolean;
+  isConversationsLoaded: boolean;
+  joinRoomErrorContent: ErrorDialogContent;
   validateFeedChat: (id: string) => void;
   sendMessage: (payload: PayloadSendMessage) => void;
 }
@@ -29,7 +33,7 @@ export class Container extends React.Component<Properties> {
 
   static mapState(state: RootState): Partial<Properties> {
     const {
-      chat: { activeConversationId },
+      chat: { activeConversationId, joinRoomErrorContent, isJoiningConversation, isConversationsLoaded },
     } = state;
 
     const channel = denormalize(activeConversationId, state) || null;
@@ -37,6 +41,9 @@ export class Container extends React.Component<Properties> {
     return {
       channel,
       activeConversationId,
+      joinRoomErrorContent,
+      isJoiningConversation,
+      isConversationsLoaded,
     };
   }
 
@@ -89,7 +96,14 @@ export class Container extends React.Component<Properties> {
   };
 
   render() {
-    if (!this.props.zid || !this.props.channel || !this.props.activeConversationId) {
+    if (
+      !this.props.zid ||
+      !this.props.channel ||
+      !this.props.activeConversationId ||
+      this.props.joinRoomErrorContent ||
+      this.props.isJoiningConversation ||
+      !this.props.isConversationsLoaded
+    ) {
       return null;
     }
 

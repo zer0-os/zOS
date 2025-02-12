@@ -13,6 +13,9 @@ describe('FeedChatContainer', () => {
       zid: undefined,
       channel: null,
       activeConversationId: null,
+      isJoiningConversation: false,
+      isConversationsLoaded: true,
+      joinRoomErrorContent: null,
       validateFeedChat: () => undefined,
       sendMessage: () => undefined,
       ...props,
@@ -40,6 +43,45 @@ describe('FeedChatContainer', () => {
       zid: 'test-zid',
       channel: { id: 'channel-id' },
       activeConversationId: null,
+    });
+
+    expect(wrapper.find(ChatViewContainer).exists()).toStrictEqual(false);
+    expect(wrapper.find(MessageInput).exists()).toStrictEqual(false);
+  });
+
+  it('does not render child components when isJoiningConversation is true', () => {
+    const wrapper = subject({
+      zid: 'test-zid',
+      channel: { id: 'channel-id' },
+      activeConversationId: 'conversation-id',
+      isJoiningConversation: true,
+    });
+
+    expect(wrapper.find(ChatViewContainer).exists()).toStrictEqual(false);
+    expect(wrapper.find(MessageInput).exists()).toStrictEqual(false);
+  });
+
+  it('does not render child components when isConversationsLoaded is false', () => {
+    const wrapper = subject({
+      zid: 'test-zid',
+      channel: { id: 'channel-id' },
+      activeConversationId: 'conversation-id',
+      isConversationsLoaded: false,
+    });
+
+    expect(wrapper.find(ChatViewContainer).exists()).toStrictEqual(false);
+    expect(wrapper.find(MessageInput).exists()).toStrictEqual(false);
+  });
+
+  it('does not render child components when joinRoomErrorContent is present', () => {
+    const wrapper = subject({
+      zid: 'test-zid',
+      channel: { id: 'channel-id' },
+      activeConversationId: 'conversation-id',
+      joinRoomErrorContent: {
+        header: 'Error',
+        body: 'Access denied',
+      },
     });
 
     expect(wrapper.find(ChatViewContainer).exists()).toStrictEqual(false);

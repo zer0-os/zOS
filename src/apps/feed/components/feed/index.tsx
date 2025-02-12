@@ -6,6 +6,7 @@ import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
 import { Waypoint } from 'react-waypoint';
 import { FeedChatContainer } from '../feed-chat';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 import styles from './styles.module.scss';
 
@@ -72,7 +73,7 @@ export const Feed = ({ zid }: FeedProps) => {
         )}
       </div>
 
-      <FeedChatContainer zid={zid} />
+      {featureFlags.enableFeedChat && <FeedChatContainer zid={zid} />}
     </div>
   );
 };

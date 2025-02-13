@@ -12,6 +12,9 @@ import { Media } from '../../../../components/message-input/utils';
 import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
 
+import classNames from 'classnames';
+import styles from './styles.module.scss';
+
 interface Properties {
   zid?: string;
   channel: Channel | null;
@@ -96,32 +99,46 @@ export class Container extends React.Component<Properties> {
   };
 
   render() {
-    if (
-      !this.props.zid ||
-      !this.props.channel ||
-      !this.props.activeConversationId ||
-      this.props.joinRoomErrorContent ||
-      this.props.isJoiningConversation ||
-      !this.props.isConversationsLoaded
-    ) {
-      return null;
-    }
+    const shouldRender = !!(
+      this.props.zid &&
+      this.props.channel &&
+      this.props.activeConversationId &&
+      !this.props.joinRoomErrorContent &&
+      !this.props.isJoiningConversation &&
+      this.props.isConversationsLoaded
+    );
 
     return (
-      <div>
-        <ChatViewContainer
-          channelId={this.props.activeConversationId}
-          showSenderAvatar={true}
-          ref={this.chatViewContainerRef}
-        />
-        <div>
-          <MessageInput
-            id={this.props.activeConversationId}
-            onSubmit={this.handleSendMessage}
-            getUsersForMentions={this.searchMentionableUsers}
-          />
-        </div>
-      </div>
+      <>
+        {shouldRender && (
+          <div className={styles.FeedChat}>
+            <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
+              <div className='direct-message-chat__content'>
+                <>
+                  <ChatViewContainer
+                    channelId={this.props.activeConversationId}
+                    showSenderAvatar={true}
+                    ref={this.chatViewContainerRef}
+                    className='direct-message-chat__channel'
+                  />
+
+                  <div className='direct-message-chat__footer-position'>
+                    <div className='direct-message-chat__footer'>
+                      <div className={styles.FeedChatMessageInput}>
+                        <MessageInput
+                          id={this.props.activeConversationId}
+                          onSubmit={this.handleSendMessage}
+                          getUsersForMentions={this.searchMentionableUsers}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 }

@@ -94,7 +94,10 @@ export class Container extends React.Component<Properties, State> {
       rewards,
     } = state;
 
-    const conversations = denormalizeConversations(state).map(addLastMessageMeta(state)).sort(byLastMessageOrCreation);
+    const conversations = denormalizeConversations(state)
+      .filter((c) => !c.isSocialChannel)
+      .map(addLastMessageMeta(state))
+      .sort(byLastMessageOrCreation);
     const userHandle = getUserSubHandle(user?.data?.primaryZID, user?.data?.primaryWalletAddress);
     return {
       conversations,

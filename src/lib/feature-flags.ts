@@ -195,7 +195,7 @@ export class FeatureFlags {
   }
 
   get enableFeedChat() {
-    return this._getBoolean('enableFeedChat', false);
+    return this._getBoolean('enableFeedChat', true);
   }
 
   set enableFeedChat(value: boolean) {

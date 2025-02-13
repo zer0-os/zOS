@@ -64,7 +64,7 @@ export const Feed = ({ zid }: FeedProps) => {
         </ol>
       )}
       {isError && <Message>Failed to load posts</Message>}
-      {isFetchingNextPage && <Message>Loading more posts</Message>}
+      {isFetchingNextPage && <Message>Loading more posts...</Message>}
       {hasNextPage && !isFetchingNextPage && !isError && (
         <Waypoint onEnter={() => fetchNextPage()} bottomOffset={'-90%'} />
       )}

@@ -193,6 +193,14 @@ export class FeatureFlags {
   set enableZeroWalletSigning(value: boolean) {
     this._setBoolean('enableZeroWalletSigning', value);
   }
+
+  get enableFeedChat() {
+    return this._getBoolean('enableFeedChat', false);
+  }
+
+  set enableFeedChat(value: boolean) {
+    this._setBoolean('enableFeedChat', value);
+  }
 }
 
 export const featureFlags = new FeatureFlags();

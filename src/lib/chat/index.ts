@@ -424,3 +424,7 @@ export function getProfileInfo(userId: string): Promise<{
 }> {
   return chat.get().matrix.getProfileInfo(userId);
 }
+
+export async function getAliasForRoomId(roomId: string) {
+  return chat.get().matrix.getAliasForRoomId(roomId);
+}

@@ -1178,6 +1178,24 @@ export class MatrixClient implements IChatClient {
     await this.matrix.redactEvent(roomId, messageId);
   }
 
+  async getAliasForRoomId(roomId: string): Promise<string | undefined> {
+    await this.waitForConnection();
+    return await this.matrix
+      .getLocalAliases(roomId)
+      .catch((err) => {
+        if (err.errcode === 'M_FORBIDDEN' || err.errcode === 'M_UNKNOWN') {
+          return Promise.resolve(undefined);
+        }
+      })
+      .then((response) => {
+        const alias = response?.aliases?.[0];
+        if (!alias) return undefined;
+
+        const match = alias.match(/#(.+?):/);
+        return match?.[1];
+      });
+  }
+
   async getRoomIdForAlias(alias: string): Promise<string | undefined> {
     await this.waitForConnection();
     return await this.matrix

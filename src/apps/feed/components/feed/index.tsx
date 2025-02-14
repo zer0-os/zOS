@@ -36,7 +36,7 @@ export const Feed = ({ zid }: FeedProps) => {
       <div className={styles.Feed}>
         <Header>{headerText}</Header>
         {channelZid && <PostInput className={styles.Input} channelZid={channelZid} />}
-        {isLoading && <Message>Loading posts</Message>}
+        {isLoading && <Message>Loading posts...</Message>}
         {isEmpty && <Message>This feed is empty</Message>}
         {hasLoadedMessages && (
           <ol>

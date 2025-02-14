@@ -435,5 +435,49 @@ describe('messenger-list', () => {
 
       expect(state.isFetchingExistingConversations).toEqual(true);
     });
+
+    test('filters out social channels from conversations', () => {
+      const state = subject([
+        { id: 'convo-1', isSocialChannel: true },
+        { id: 'convo-2', isSocialChannel: false },
+        { id: 'convo-3', isSocialChannel: true },
+        { id: 'convo-4', isSocialChannel: false },
+      ]);
+
+      expect(state.conversations.map((c) => c.id)).toEqual([
+        'convo-2',
+        'convo-4',
+      ]);
+    });
+
+    test('maintains sort order after filtering social channels', () => {
+      const state = subject([
+        {
+          id: 'convo-1',
+          isSocialChannel: true,
+          lastMessage: { createdAt: moment('2023-03-05').valueOf(), sender: {} },
+        },
+        {
+          id: 'convo-2',
+          isSocialChannel: false,
+          lastMessage: { createdAt: moment('2023-03-04').valueOf(), sender: {} },
+        },
+        {
+          id: 'convo-3',
+          isSocialChannel: true,
+          lastMessage: { createdAt: moment('2023-03-03').valueOf(), sender: {} },
+        },
+        {
+          id: 'convo-4',
+          isSocialChannel: false,
+          lastMessage: { createdAt: moment('2023-03-02').valueOf(), sender: {} },
+        },
+      ]);
+
+      expect(state.conversations.map((c) => c.id)).toEqual([
+        'convo-2',
+        'convo-4',
+      ]);
+    });
   });
 });

@@ -113,6 +113,7 @@ export function* setActiveConversation(id: string) {
 }
 
 export function* validateActiveConversation(conversationId: string) {
+  yield put(clearJoinRoomErrorContent());
   yield put(setIsJoiningConversation(true));
 
   const isLoaded = yield call(waitForChatConnectionCompletion);
@@ -133,6 +134,7 @@ export function* joinRoom(roomIdOrAlias: string) {
     const error = translateJoinRoomApiError(response, domain);
 
     yield put(setJoinRoomErrorContent(error));
+    yield put(rawSetActiveConversationId(null));
   } else {
     yield put(clearJoinRoomErrorContent());
     yield call(setWhenUserJoinedRoom, response.roomId);
@@ -208,6 +210,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
     validateActiveConversation(payload.id)
   );
+  yield takeLatest(SagaActionTypes.ValidateFeedChat, ({ payload }: any) => validateActiveConversation(payload.id));
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);

@@ -28,9 +28,12 @@ export const NotificationItem = ({ conversation, onClick, type }: NotificationPr
   const text = type === 'total' ? 'message' : 'highlight';
   const notificationText = count === 1 ? text : `${text}s`;
 
+  const isSocialChannel = conversation.isSocialChannel;
+  const channelType = isSocialChannel ? 'feed channel' : 'channel';
+
   const message = conversation.isOneOnOne
     ? `${count} unread ${notificationText} in your conversation with ${getName()}`
-    : `${count} unread ${notificationText} in the ${getName()} channel`;
+    : `${count} unread ${notificationText} in the ${getName()} ${channelType}`;
 
   return (
     <div className={styles.NotificationItem} onClick={() => onClick(conversation.id)}>

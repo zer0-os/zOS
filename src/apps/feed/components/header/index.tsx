@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 
+import { Panel } from '../../../../components/layout/panel';
+
 import styles from './styles.module.scss';
 
 export interface HeaderProps {
@@ -7,5 +9,5 @@ export interface HeaderProps {
 }
 
 export const Header = ({ children }: HeaderProps) => {
-  return <div className={styles.Header}>{children}</div>;
+  return <Panel className={styles.Header}>{children}</Panel>;
 };

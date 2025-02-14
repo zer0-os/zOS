@@ -1,6 +1,6 @@
 .Header {
   position: sticky;
-  top: 0;
+  top: 24px;
 
   display: flex;
   align-items: center;
@@ -10,11 +10,5 @@
 
   font-size: 14px;
 
-  backdrop-filter: blur(64px);
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgb(52, 56, 60);
-  border-top: none;
-
-  box-sizing: border-box;
   z-index: 10;
 }

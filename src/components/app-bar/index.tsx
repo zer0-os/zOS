@@ -10,6 +10,7 @@ import { featureFlags } from '../../lib/feature-flags';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
+import { Panel } from '../layout/panel';
 
 const cn = bemClassName('app-bar');
 
@@ -52,7 +53,7 @@ export class AppBar extends React.Component<Properties, State> {
     return (
       <>
         <div {...cn('')}>
-          <ul {...cn('container')}>
+          <Panel {...cn('container')}>
             <AppLink
               Icon={IconMessageSquare2}
               isActive={isActive('conversation')}
@@ -72,7 +73,7 @@ export class AppBar extends React.Component<Properties, State> {
             )}
             <AppLink Icon={IconGlobe3} isActive={isActive('explorer')} label='Explorer' to='/explorer' />
             <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
-          </ul>
+          </Panel>
         </div>
         {this.state.isModalOpen && <MoreAppsModal onClose={this.closeModal} />}
       </>

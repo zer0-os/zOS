@@ -7,7 +7,7 @@ import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Post } from '../post';
 import { Replies } from './reply-list';
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
-
+import { Panel } from '../../../../components/layout/panel';
 import styles from './styles.module.scss';
 
 export interface PostViewProps {
@@ -21,9 +21,11 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
   if (!isLoadingPost && !post) {
     return (
       <Wrapper isFeed={isFeed}>
-        <Message>
-          <IconAlertCircle size={16} /> Failed to load post
-        </Message>
+        <Panel>
+          <Message>
+            <IconAlertCircle size={16} /> Failed to load post
+          </Message>
+        </Panel>
       </Wrapper>
     );
   }
@@ -37,27 +39,31 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
               <BackButton backToId={post.replyTo?.id} />
             </Header>
             <div className={styles.Details}>
-              <Post
-                arweaveId={post.arweaveId}
-                avatarUrl={post.sender?.avatarUrl}
-                author={post.sender?.displaySubHandle}
-                className={styles.Post}
-                currentUserId={userId}
-                loadAttachmentDetails={() => {}}
-                media={post.media}
-                meowPost={isFeed ? meowPostFeed : meowPost}
-                messageId={post.id.toString()}
-                nickname={post.sender?.firstName}
-                numberOfReplies={post.numberOfReplies}
-                ownerUserId={post.sender?.userId}
-                reactions={post.reactions}
-                text={post.message}
-                timestamp={post.createdAt}
-                userMeowBalance={userMeowBalance}
-                variant='expanded'
-                channelZid={post.channelZid}
-              />
-              <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
+              <Panel>
+                <Post
+                  arweaveId={post.arweaveId}
+                  avatarUrl={post.sender?.avatarUrl}
+                  author={post.sender?.displaySubHandle}
+                  className={styles.Post}
+                  currentUserId={userId}
+                  loadAttachmentDetails={() => {}}
+                  media={post.media}
+                  meowPost={isFeed ? meowPostFeed : meowPost}
+                  messageId={post.id.toString()}
+                  nickname={post.sender?.firstName}
+                  numberOfReplies={post.numberOfReplies}
+                  ownerUserId={post.sender?.userId}
+                  reactions={post.reactions}
+                  text={post.message}
+                  timestamp={post.createdAt}
+                  userMeowBalance={userMeowBalance}
+                  variant='expanded'
+                  channelZid={post.channelZid}
+                />
+              </Panel>
+              <Panel>
+                <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
+              </Panel>
             </div>
             <Replies postId={postId} isFeed={isFeed} />
           </>

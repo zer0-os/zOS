@@ -35,11 +35,7 @@
   pointer-events: auto;
   max-width: $width-sidekick;
   width: 100%;
-
-  // note: removing border for now to make it look better
-  //border: 1px solid rgba(52, 56, 60);
-
-  @include glass-outer;
+  padding: 0;
 }
 
 .Content {

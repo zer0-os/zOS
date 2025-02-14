@@ -1,6 +1,7 @@
 import { useReplyList } from './useReplyList';
 
 import { Post } from '../../post';
+import { Panel } from '../../../../../components/layout/panel';
 import { Waypoint } from 'react-waypoint';
 
 import styles from './styles.module.scss';
@@ -15,24 +16,26 @@ export const Replies = ({ postId, isFeed }: { postId: string; isFeed?: boolean }
         {replies?.pages.map((page) =>
           page.map((reply) => (
             <li key={reply.id} className={styles.Reply}>
-              <Post
-                arweaveId={reply.arweaveId}
-                variant='default'
-                messageId={reply.id.toString()}
-                timestamp={reply.createdAt}
-                author={reply.sender?.displaySubHandle}
-                nickname={reply.sender?.firstName}
-                text={reply.message}
-                loadAttachmentDetails={() => {}}
-                meowPost={isFeed ? meowPostFeed : meowPost}
-                currentUserId={userId}
-                reactions={reply.reactions}
-                ownerUserId={reply.sender?.userId}
-                userMeowBalance={userMeowBalance}
-                numberOfReplies={reply.numberOfReplies}
-                channelZid={reply.channelZid}
-                avatarUrl={reply.sender?.avatarUrl}
-              />
+              <Panel className={styles.Panel}>
+                <Post
+                  arweaveId={reply.arweaveId}
+                  variant='default'
+                  messageId={reply.id.toString()}
+                  timestamp={reply.createdAt}
+                  author={reply.sender?.displaySubHandle}
+                  nickname={reply.sender?.firstName}
+                  text={reply.message}
+                  loadAttachmentDetails={() => {}}
+                  meowPost={isFeed ? meowPostFeed : meowPost}
+                  currentUserId={userId}
+                  reactions={reply.reactions}
+                  ownerUserId={reply.sender?.userId}
+                  userMeowBalance={userMeowBalance}
+                  numberOfReplies={reply.numberOfReplies}
+                  channelZid={reply.channelZid}
+                  avatarUrl={reply.sender?.avatarUrl}
+                />
+              </Panel>
             </li>
           ))
         )}

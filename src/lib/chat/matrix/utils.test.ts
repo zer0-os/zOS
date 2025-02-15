@@ -45,7 +45,7 @@ describe('getFilteredMembersForAutoComplete', () => {
     // Expect members with 'ratik21' in display name
     expect(result).toEqual([
       {
-        id: '@domw:zero-synapse-development.zer0.io',
+        id: 'domw',
         displayName: 'domw ',
         profileImage: '',
       },
@@ -58,7 +58,7 @@ describe('getFilteredMembersForAutoComplete', () => {
     // Expect all members
     expect(result).toEqual([
       {
-        id: '@domw:zero-synapse-development.zer0.io',
+        id: 'domw',
         displayName: 'domw ',
         profileImage: '',
       },
@@ -78,8 +78,33 @@ describe('getFilteredMembersForAutoComplete', () => {
     // Expect members with 'do' in display name
     expect(result).toEqual([
       {
-        id: '@domw:zero-synapse-development.zer0.io',
+        id: 'domw',
         displayName: 'DOMW ',
+        profileImage: '',
+      },
+    ]);
+  });
+
+  it('should correctly parse matrix IDs with server suffix', async () => {
+    const testMembers = [
+      ...roomMembers,
+      {
+        // Test case with matrixId in @uuid:server format
+        userId: undefined, // seems like desktop app isn't sending userId?
+        matrixId: '@a72a05d0-babe-47ca-b168-f4eb18f7acdc:zos-dev.zer0.io',
+        firstName: 'serveruser',
+        lastName: '',
+        profileImage: '',
+      },
+    ];
+
+    const filter = 'ser';
+    const result = await getFilteredMembersForAutoComplete(testMembers, filter);
+
+    expect(result).toEqual([
+      {
+        id: 'a72a05d0-babe-47ca-b168-f4eb18f7acdc', // Should extract UUID from matrixId
+        displayName: 'serveruser ',
         profileImage: '',
       },
     ]);

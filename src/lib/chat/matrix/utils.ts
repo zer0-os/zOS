@@ -48,8 +48,13 @@ export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMemb
   for (const member of roomMembers) {
     let displayName = `${member.firstName || ''} ${member.lastName || ''}`.toLowerCase();
     if (displayName.includes(normalizedFilter)) {
+      let id = member.userId || member.matrixId;
+      if (id.startsWith('@')) {
+        // Safely extract UUID from both formats: @uuid:server and plain uuid
+        id = id.replace(/^@([^:]+).*$/, '$1');
+      }
       filteredResults.push({
-        id: member.userId || member.matrixId,
+        id,
         displayName: `${member.firstName || ''} ${member.lastName || ''}`,
         profileImage: member.profileImage,
         displayHandle: member.displaySubHandle,

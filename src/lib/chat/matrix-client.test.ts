@@ -1571,6 +1571,58 @@ describe('matrix client', () => {
     });
   });
 
+  describe('getAliasForRoomId', () => {
+    it('returns alias for room ID', async () => {
+      const aliases = { aliases: ['#test-room:zos-dev.zero.io'] };
+      const getLocalAliases = jest.fn().mockResolvedValue(aliases);
+
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getLocalAliases })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.getAliasForRoomId('!heExvpcoNDAMAPMsRd:zos-dev.zero.io');
+
+      expect(result).toEqual('test-room');
+    });
+
+    it('returns undefined if room has no aliases', async () => {
+      const getLocalAliases = jest.fn().mockResolvedValue({ aliases: [] });
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getLocalAliases })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.getAliasForRoomId('!heExvpcoNDAMAPMsRd:zos-dev.zero.io');
+
+      expect(result).toBeUndefined();
+    });
+
+    it('returns undefined if forbidden to access room (M_FORBIDDEN)', async () => {
+      const getLocalAliases = jest.fn().mockRejectedValue({ errcode: 'M_FORBIDDEN' });
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getLocalAliases })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.getAliasForRoomId('!heExvpcoNDAMAPMsRd:zos-dev.zero.io');
+
+      expect(result).toBeUndefined();
+    });
+
+    it('returns undefined if room is unknown (M_UNKNOWN)', async () => {
+      const getLocalAliases = jest.fn().mockRejectedValue({ errcode: 'M_UNKNOWN' });
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({ getLocalAliases })),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.getAliasForRoomId('!heExvpcoNDAMAPMsRd:zos-dev.zero.io');
+
+      expect(result).toBeUndefined();
+    });
+  });
+
   describe('getRoomIdForAlias', () => {
     it('returns room ID for alias', async () => {
       const roomId = '!heExvpcoNDAMAPMsRd:zos-dev.zero.io';

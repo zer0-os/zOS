@@ -1,16 +1,28 @@
+@use '../../../../../variables' as variables;
+
 .Replies {
   width: 100%;
 
   ol {
+    display: flex;
+    flex-direction: column;
+
     list-style: none;
     padding: 0;
     margin: 0;
+
+    li:not(:last-child) {
+      border-bottom: 1px solid var(--color-greyscale-3);
+
+      .Post {
+        padding-top: 24px;
+        padding-bottom: 24px;
+      }
+    }
   }
 }
 
 .Reply {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid var(--color-greyscale-7);
-  border-top: none;
 }

@@ -1,0 +1,22 @@
+@use '../../../variables' as variables;
+
+.Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  width: 100%;
+  padding: calc(variables.$default-padding / 2) variables.$default-padding;
+
+  box-sizing: border-box;
+  border-radius: variables.$border-radius;
+
+  background-color: #111213e6;
+}
+
+.Title {
+  color: var(--color-greyscale-11);
+}

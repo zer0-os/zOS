@@ -1,7 +1,26 @@
-.FeedChat {
-  width: 386px;
+.Container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
 }
 
-.FeedChatMessageInput {
-  border-bottom: 1px solid rgba(52, 56, 60);
+.FeedChat {
+  width: 386px;
+
+  :global(.direct-message-chat) {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.Panel {
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.Scroll {
+  height: 100%;
 }

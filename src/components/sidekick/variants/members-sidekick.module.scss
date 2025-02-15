@@ -1,14 +1,21 @@
+@use '../../../layout' as layout;
+@use '../../../variables' as variables;
+
+.Header {
+  max-width: layout.$width-sidekick;
+}
+
 .Members {
   overflow-y: auto;
   max-width: 0;
   overflow: hidden;
+  gap: variables.$default-gap;
 
   &.Open {
     transform: translateX(0);
-    max-width: 286px;
+    max-width: calc(layout.$width-sidekick + 16px);
     padding: 24px 0;
     width: 100%;
-    margin-left: 18px;
   }
 
   &.Closed {

@@ -18,11 +18,8 @@
     justify-content: center;
     box-sizing: border-box;
     gap: 6px;
-    padding: 5px;
+    padding: 6px;
 
-    background: linear-gradient(180deg, #1e2124 0%, rgba(30, 33, 36, 0.12) 100%);
-    border: 1px solid var(--Border-border-primary, rgba(33, 36, 38, 1));
-    border-radius: 12px;
     backdrop-filter: blur(30px);
 
     list-style: none;

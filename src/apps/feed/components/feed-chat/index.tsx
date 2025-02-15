@@ -11,7 +11,9 @@ import { searchMentionableUsersForChannel } from '../../../../platform-apps/chan
 import { Media } from '../../../../components/message-input/utils';
 import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
-
+import { Panel } from '../../../../components/layout/panel';
+import { Header, Title } from '../../../../components/layout/header';
+import { InvertedScroll } from '../../../../components/inverted-scroll';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
@@ -111,31 +113,43 @@ export class Container extends React.Component<Properties> {
     return (
       <>
         {shouldRender && (
-          <div className={styles.FeedChat}>
-            <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
-              <div className='direct-message-chat__content'>
-                <>
-                  <ChatViewContainer
-                    channelId={this.props.activeConversationId}
-                    showSenderAvatar={true}
-                    ref={this.chatViewContainerRef}
-                    className='direct-message-chat__channel'
-                  />
-
-                  <div className='direct-message-chat__footer-position'>
-                    <div className='direct-message-chat__footer'>
-                      <div className={styles.FeedChatMessageInput}>
-                        <MessageInput
-                          id={this.props.activeConversationId}
-                          onSubmit={this.handleSendMessage}
-                          getUsersForMentions={this.searchMentionableUsers}
+          <div className={styles.Container}>
+            <Header>
+              <Title>Global Chat</Title>
+            </Header>
+            <Panel className={styles.Panel}>
+              <InvertedScroll
+                className={classNames('channel-view__inverted-scroll', styles.Scroll)}
+                isScrollbarHidden={true}
+              >
+                <div className={styles.FeedChat}>
+                  <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
+                    <div className='direct-message-chat__content'>
+                      <div>
+                        <ChatViewContainer
+                          channelId={this.props.activeConversationId}
+                          showSenderAvatar={true}
+                          ref={this.chatViewContainerRef}
+                          className='direct-message-chat__channel'
                         />
+
+                        <div className='direct-message-chat__footer-position'>
+                          <div className='direct-message-chat__footer'>
+                            <div className={styles.FeedChatMessageInput}>
+                              <MessageInput
+                                id={this.props.activeConversationId}
+                                onSubmit={this.handleSendMessage}
+                                getUsersForMentions={this.searchMentionableUsers}
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </>
-              </div>
-            </div>
+                </div>
+              </InvertedScroll>
+            </Panel>
           </div>
         )}
       </>

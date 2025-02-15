@@ -1,21 +1,25 @@
-import classNames from 'classnames';
 import { IfAuthenticated } from '../../../authentication/if-authenticated';
+import { Panel } from '../../../layout/panel';
+
+import classNames from 'classnames';
 import styles from './styles.module.scss';
 
 export interface ContainerProps {
   className?: string;
   children?: React.ReactNode;
+  header?: React.ReactNode;
 }
 
-export const Container = ({ className, children }: ContainerProps) => {
+export const Container = ({ className, children, header }: ContainerProps) => {
   return (
     <IfAuthenticated showChildren>
       <div className={classNames(styles.Container, className)}>
-        <div className={styles.Wrapper}>
+        {header}
+        <Panel className={styles.Wrapper}>
           <div className={styles.Content}>
             <div className={styles.Messages}>{children}</div>
           </div>
-        </div>
+        </Panel>
       </div>
     </IfAuthenticated>
   );

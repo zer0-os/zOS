@@ -1,0 +1,10 @@
+@use '../../../variables' as variables;
+
+.Panel {
+  box-sizing: border-box;
+  backdrop-filter: variables.$default-background-blur;
+  border-radius: variables.$border-radius;
+  padding: variables.$default-padding;
+  // @todo CHANGE THIS TO CORRECT COLOR
+  background-color: rgba(17, 18, 19, 0.5);
+}

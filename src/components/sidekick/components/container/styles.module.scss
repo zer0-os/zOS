@@ -23,6 +23,7 @@
   position: relative;
   pointer-events: auto;
   display: flex;
+  flex-direction: column;
 
   flex-shrink: 0;
   padding: 24px 18px 24px 0px;
@@ -36,6 +37,7 @@
   max-width: $width-sidekick;
   width: 100%;
   padding: 0;
+  flex: 1;
 }
 
 .Content {
@@ -43,7 +45,6 @@
 
   border-radius: 16px;
   overflow: hidden;
-  background: rgba(17, 18, 19, 0.24);
 
   .Messages {
     height: 100%;

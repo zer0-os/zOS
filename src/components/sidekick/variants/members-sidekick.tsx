@@ -6,6 +6,7 @@ import { Stage as MessageInfoStage } from '../../../store/message-info';
 import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { MessageInfoContainer } from '../../messenger/message-info/container';
 import { Container as SidekickContainer } from '../components/container';
+import { Header, Title } from '../../layout/header';
 
 import classNames from 'classnames';
 import styles from './members-sidekick.module.scss';
@@ -49,6 +50,11 @@ export class Container extends React.Component<Properties> {
     return (
       <SidekickContainer
         className={classNames(styles.Members, this.props.isSecondarySidekickOpen ? styles.Open : styles.Closed)}
+        header={
+          <Header className={styles.Header}>
+            <Title>Members</Title>
+          </Header>
+        }
       >
         {this.renderSecondarySidekickContent()}
       </SidekickContainer>

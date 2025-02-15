@@ -1,16 +1,22 @@
+@use '../../../../variables' as variables;
+
 .Wrapper {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  gap: variables.$default-gap;
+  flex: 1;
 
   box-sizing: border-box;
 
-  margin: 56px auto 0 auto;
+  margin: 24px auto 24px auto;
   max-width: 600px;
+}
 
-  &[data-is-feed=''] {
-    margin: 0 auto;
-  }
+.Panel {
+  width: 100%;
+  overflow-y: hidden;
+  padding: 0;
 }
 
 .Details {
@@ -18,8 +24,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  gap: 16px;
-  border: 1px solid var(--color-greyscale-7);
+  gap: calc(variables.$default-gap * 2);
   border-top: none;
   padding: 16px;
 }

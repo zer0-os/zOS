@@ -2,12 +2,11 @@ import { usePostView } from './usePostView';
 
 import { BackButton } from './back-button';
 import { CommentInput } from '../comment-input';
-import { Header } from '../header';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Post } from '../post';
 import { Replies } from './reply-list';
-import { ScrollbarContainer } from '../../../../components/scrollbar-container';
-import { LegacyPanel } from '../../../../components/layout/panel';
+import { LegacyPanel, Panel, PanelBody, PanelHeader } from '../../../../components/layout/panel';
+
 import styles from './styles.module.scss';
 
 export interface PostViewProps {
@@ -31,43 +30,41 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
   }
 
   return (
-    <Wrapper isFeed={isFeed}>
+    <Panel className={styles.Wrapper}>
       {post !== undefined && (
         <>
-          <Header>
+          <PanelHeader>
             <BackButton backToId={post.replyTo?.id} />
-          </Header>
-          <LegacyPanel className={styles.Panel}>
-            <ScrollbarContainer isScrollbarHidden={true}>
-              <div className={styles.Details}>
-                <Post
-                  arweaveId={post.arweaveId}
-                  avatarUrl={post.sender?.avatarUrl}
-                  author={post.sender?.displaySubHandle}
-                  className={styles.Post}
-                  currentUserId={userId}
-                  loadAttachmentDetails={() => {}}
-                  media={post.media}
-                  meowPost={isFeed ? meowPostFeed : meowPost}
-                  messageId={post.id.toString()}
-                  nickname={post.sender?.firstName}
-                  numberOfReplies={post.numberOfReplies}
-                  ownerUserId={post.sender?.userId}
-                  reactions={post.reactions}
-                  text={post.message}
-                  timestamp={post.createdAt}
-                  userMeowBalance={userMeowBalance}
-                  variant='expanded'
-                  channelZid={post.channelZid}
-                />
-                <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
-              </div>
-              <Replies postId={postId} isFeed={isFeed} />
-            </ScrollbarContainer>
-          </LegacyPanel>
+          </PanelHeader>
+          <PanelBody className={styles.Panel}>
+            <div className={styles.Details}>
+              <Post
+                arweaveId={post.arweaveId}
+                avatarUrl={post.sender?.avatarUrl}
+                author={post.sender?.displaySubHandle}
+                className={styles.Post}
+                currentUserId={userId}
+                loadAttachmentDetails={() => {}}
+                media={post.media}
+                meowPost={isFeed ? meowPostFeed : meowPost}
+                messageId={post.id.toString()}
+                nickname={post.sender?.firstName}
+                numberOfReplies={post.numberOfReplies}
+                ownerUserId={post.sender?.userId}
+                reactions={post.reactions}
+                text={post.message}
+                timestamp={post.createdAt}
+                userMeowBalance={userMeowBalance}
+                variant='expanded'
+                channelZid={post.channelZid}
+              />
+              <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
+            </div>
+            <Replies postId={postId} isFeed={isFeed} />
+          </PanelBody>
         </>
       )}
-    </Wrapper>
+    </Panel>
   );
 };
 

@@ -1,6 +1,6 @@
 @use '../../../variables' as variables;
 
-.Panel {
+.Legacy {
   box-sizing: border-box;
   backdrop-filter: variables.$default-background-blur;
   border-radius: variables.$border-radius;

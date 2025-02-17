@@ -23,7 +23,7 @@ import { ConversationHeaderContainer as ConversationHeader } from '../conversati
 import './styles.scss';
 import { rawChannelSelector } from '../../../store/channels/saga';
 import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
-import { Panel } from '../../layout/panel';
+import { LegacyPanel } from '../../layout/panel';
 
 export interface PublicProperties {}
 
@@ -154,7 +154,7 @@ export class Container extends React.Component<Properties> {
     }
 
     return (
-      <Panel className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
+      <LegacyPanel className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
         <div className='direct-message-chat__content'>
           {!this.props.isJoiningConversation && (
             <>
@@ -191,7 +191,7 @@ export class Container extends React.Component<Properties> {
 
           {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
         </div>
-      </Panel>
+      </LegacyPanel>
     );
   }
 }

@@ -7,7 +7,7 @@ import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Post } from '../post';
 import { Replies } from './reply-list';
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
-import { Panel } from '../../../../components/layout/panel';
+import { LegacyPanel } from '../../../../components/layout/panel';
 import styles from './styles.module.scss';
 
 export interface PostViewProps {
@@ -21,11 +21,11 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
   if (!isLoadingPost && !post) {
     return (
       <Wrapper isFeed={isFeed}>
-        <Panel>
+        <LegacyPanel>
           <Message>
             <IconAlertCircle size={16} /> Failed to load post
           </Message>
-        </Panel>
+        </LegacyPanel>
       </Wrapper>
     );
   }
@@ -37,7 +37,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
           <Header>
             <BackButton backToId={post.replyTo?.id} />
           </Header>
-          <Panel className={styles.Panel}>
+          <LegacyPanel className={styles.Panel}>
             <ScrollbarContainer isScrollbarHidden={true}>
               <div className={styles.Details}>
                 <Post
@@ -64,7 +64,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
               </div>
               <Replies postId={postId} isFeed={isFeed} />
             </ScrollbarContainer>
-          </Panel>
+          </LegacyPanel>
         </>
       )}
     </Wrapper>

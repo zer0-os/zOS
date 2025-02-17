@@ -7,7 +7,7 @@ import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
 import { Waypoint } from 'react-waypoint';
 import { featureFlags } from '../../../../lib/feature-flags';
-import { Panel } from '../../../../components/layout/panel';
+import { LegacyPanel } from '../../../../components/layout/panel';
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 import { FeedChat } from '../feed-chat/container';
 
@@ -40,7 +40,7 @@ export const Feed = ({ zid }: FeedProps) => {
         <Header>
           <Title>{headerText}</Title>
         </Header>
-        <Panel className={styles.Panel}>
+        <LegacyPanel className={styles.Panel}>
           <ScrollbarContainer className={styles.Scroll} isScrollbarHidden={true}>
             {channelZid && <PostInput className={styles.Input} channelZid={channelZid} />}
             {isLoading && <Message>Loading posts...</Message>}
@@ -80,7 +80,7 @@ export const Feed = ({ zid }: FeedProps) => {
               <Waypoint onEnter={() => fetchNextPage()} bottomOffset={'-90%'} />
             )}
           </ScrollbarContainer>
-        </Panel>
+        </LegacyPanel>
       </div>
 
       {featureFlags.enableFeedChat && <FeedChat />}

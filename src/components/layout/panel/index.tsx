@@ -9,6 +9,6 @@ export interface PanelProps {
   children: ReactNode;
 }
 
-export const Panel = ({ children, className }: PanelProps) => {
-  return <div className={cn(styles.Panel, className)}>{children}</div>;
+export const LegacyPanel = ({ children, className }: PanelProps) => {
+  return <div className={cn(styles.Legacy, className)}>{children}</div>;
 };

@@ -18,7 +18,7 @@ export const Sidekick = () => {
 
   return (
     <SidekickContainer className={styles.Container}>
-      <Panel className={isProfileOpen && styles.ProfileOpen}>
+      <Panel className={styles.Panel}>
         <PanelHeader>
           <PanelTitle>Channel List</PanelTitle>
         </PanelHeader>

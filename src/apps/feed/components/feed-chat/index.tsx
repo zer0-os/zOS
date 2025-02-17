@@ -114,7 +114,7 @@ export class Container extends React.Component<Properties> {
         {shouldRender && (
           <Panel className={styles.Container}>
             <PanelHeader>
-              <PanelTitle>Global Chat</PanelTitle>
+              <PanelTitle>Chat</PanelTitle>
             </PanelHeader>
             <PanelBody className={styles.Panel}>
               <InvertedScroll

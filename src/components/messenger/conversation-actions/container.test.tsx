@@ -47,6 +47,22 @@ describe('ConversationActionsContainer', () => {
         );
       });
 
+      it('is false when the conversation is social channel', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(
+            stubConversation({
+              otherMembers: [stubUser(), stubUser()],
+              adminMatrixIds: ['other-user-matrix-id'],
+              isSocialChannel: true,
+            })
+          )
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canLeaveRoom: false })
+        );
+      });
+
       it('is true when user is not admin and more than one other member', () => {
         const state = new StoreBuilder()
           .withActiveConversation(
@@ -59,9 +75,9 @@ describe('ConversationActionsContainer', () => {
         );
       });
 
-      it('is true when the conversation is a social channel and has multiple members', () => {
+      it('is true when the conversation has multiple members', () => {
         const state = new StoreBuilder()
-          .withActiveConversation(stubConversation({ otherMembers: [stubUser(), stubUser()], isSocialChannel: true }))
+          .withActiveConversation(stubConversation({ otherMembers: [stubUser(), stubUser()] }))
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
         expect(ConversationActionsContainer.mapState(state.build())).toEqual(
@@ -127,19 +143,25 @@ describe('ConversationActionsContainer', () => {
         );
       });
 
-      it('is true when the conversation is a social channel and user is an admin', () => {
+      it('is true when the user is an admin', () => {
         const state = new StoreBuilder()
-          .withActiveConversation(
-            stubConversation({
-              isOneOnOne: true,
-              adminMatrixIds: ['current-user-matrix-id'],
-              isSocialChannel: true,
-            })
-          )
+          .withActiveConversation(stubConversation({ isOneOnOne: false, adminMatrixIds: ['current-user-matrix-id'] }))
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
         expect(ConversationActionsContainer.mapState(state.build())).toEqual(
           expect.objectContaining({ canEdit: true })
+        );
+      });
+
+      it('is false when the conversation is a social channel and current user is admin', () => {
+        const state = new StoreBuilder()
+          .withActiveConversation(
+            stubConversation({ isOneOnOne: false, adminMatrixIds: ['current-user-matrix-id'], isSocialChannel: true })
+          )
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
+
+        expect(ConversationActionsContainer.mapState(state.build())).toEqual(
+          expect.objectContaining({ canEdit: false })
         );
       });
 
@@ -191,19 +213,15 @@ describe('ConversationActionsContainer', () => {
         );
       });
 
-      it('is true when the conversation is a social channel and user is an admin', () => {
+      it('is false when the conversation is a social channel', () => {
         const state = new StoreBuilder()
           .withActiveConversation(
-            stubConversation({
-              isOneOnOne: true,
-              adminMatrixIds: ['current-user-matrix-id'],
-              isSocialChannel: true,
-            })
+            stubConversation({ isOneOnOne: false, adminMatrixIds: ['current-user-matrix-id'], isSocialChannel: true })
           )
           .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
         expect(ConversationActionsContainer.mapState(state.build())).toEqual(
-          expect.objectContaining({ canAddMembers: true })
+          expect.objectContaining({ canAddMembers: false })
         );
       });
 

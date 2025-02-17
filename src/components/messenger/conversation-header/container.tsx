@@ -5,6 +5,7 @@ import { Channel, denormalize } from '../../../store/channels';
 import { toggleSecondarySidekick } from '../../../store/group-management';
 import { ConversationHeader } from '.';
 import { ConversationActionsContainer as ConversationActions } from '../conversation-actions/container';
+import { PanelHeader } from '../../layout/panel';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -60,10 +61,9 @@ export class Container extends React.Component<Properties> {
     }
 
     return (
-      <div {...cn('')}>
+      <PanelHeader {...cn('')}>
         <ConversationHeader
           className={this.props.className}
-          icon={this.props.directMessage.icon}
           name={this.props.directMessage.name}
           isOneOnOne={this.isOneOnOne()}
           otherMembers={this.props.directMessage.otherMembers || []}
@@ -72,7 +72,7 @@ export class Container extends React.Component<Properties> {
         <div {...cn('actions-container')}>
           <ConversationActions />
         </div>
-      </div>
+      </PanelHeader>
     );
   }
 }

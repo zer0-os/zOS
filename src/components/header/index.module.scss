@@ -1,23 +1,11 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@import '../../glass';
 
 .Header {
   box-sizing: border-box;
   display: flex;
   gap: 8px;
-  padding: 12px 18px;
   width: 100%;
   overflow: hidden;
-
-  .Avatar {
-    pointer-events: none;
-  }
-
-  .Description {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
 
   .Details {
     all: unset;
@@ -48,16 +36,5 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-  }
-
-  .Subtitle {
-    flex: 1 0;
-    font-family: 'Roboto Mono';
-    font-size: 10px;
-    font-weight: 400;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    @include glass-text-tertiary-color;
   }
 }

@@ -156,6 +156,10 @@ $title-bar-border-radius: 8px 8px 0px 0px;
     background-color: #111213e6;
     backdrop-filter: blur(64px);
   }
+
+  &__panel {
+    padding: 0 !important;
+  }
 }
 
 // Message sizing

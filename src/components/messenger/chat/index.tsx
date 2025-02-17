@@ -23,7 +23,7 @@ import { ConversationHeaderContainer as ConversationHeader } from '../conversati
 import './styles.scss';
 import { rawChannelSelector } from '../../../store/channels/saga';
 import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
-import { LegacyPanel } from '../../layout/panel';
+import { Panel, PanelBody } from '../../layout/panel';
 
 export interface PublicProperties {}
 
@@ -154,44 +154,39 @@ export class Container extends React.Component<Properties> {
     }
 
     return (
-      <LegacyPanel className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
-        <div className='direct-message-chat__content'>
-          {!this.props.isJoiningConversation && (
-            <>
-              {!this.props.directMessage.isSocialChannel && (
-                <div className='direct-message-chat__header-position'>
-                  <div className='direct-message-chat__header'>
-                    <ConversationHeader />
-                  </div>
-                </div>
-              )}
+      <Panel className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
+        {!this.props.isJoiningConversation && <ConversationHeader />}
+        <PanelBody className='direct-message-chat__panel'>
+          <div className='direct-message-chat__content'>
+            {!this.props.isJoiningConversation && (
+              <>
+                <ChatViewContainer
+                  key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
+                  channelId={this.props.activeConversationId}
+                  className='direct-message-chat__channel'
+                  showSenderAvatar={!this.isOneOnOne()}
+                  ref={this.chatViewContainerRef}
+                />
+              </>
+            )}
 
-              <ChatViewContainer
-                key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
-                channelId={this.props.activeConversationId}
-                className='direct-message-chat__channel'
-                showSenderAvatar={!this.isOneOnOne()}
-                ref={this.chatViewContainerRef}
-              />
-            </>
-          )}
-
-          <div className='direct-message-chat__footer-position'>
-            <div className='direct-message-chat__footer'>
-              <MessageInput
-                id={this.props.activeConversationId}
-                onSubmit={this.handleSendMessage}
-                getUsersForMentions={this.searchMentionableUsers}
-                reply={this.props.directMessage?.reply}
-                onRemoveReply={this.props.onRemoveReply}
-              />
-              {this.renderTypingIndicators()}
+            <div className='direct-message-chat__footer-position'>
+              <div className='direct-message-chat__footer'>
+                <MessageInput
+                  id={this.props.activeConversationId}
+                  onSubmit={this.handleSendMessage}
+                  getUsersForMentions={this.searchMentionableUsers}
+                  reply={this.props.directMessage?.reply}
+                  onRemoveReply={this.props.onRemoveReply}
+                />
+                {this.renderTypingIndicators()}
+              </div>
             </div>
-          </div>
 
-          {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
-        </div>
-      </LegacyPanel>
+            {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
+          </div>
+        </PanelBody>
+      </Panel>
     );
   }
 }

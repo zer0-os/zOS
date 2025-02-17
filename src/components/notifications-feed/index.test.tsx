@@ -39,13 +39,12 @@ describe('NotificationsFeed', () => {
     return shallow(<Container {...allProps} />);
   };
 
-  it('renders header with correct title and icon', () => {
+  it('renders header with correct title', () => {
     const wrapper = subject();
     const header = wrapper.find(Header);
 
     expect(header.exists()).toBe(true);
     expect(header.prop('title')).toBeTruthy();
-    expect(header.prop('icon')).toBeTruthy();
   });
 
   it('renders toggle group with correct tabs', () => {

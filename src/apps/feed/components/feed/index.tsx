@@ -1,7 +1,5 @@
 import { useFeed } from './lib/useFeed';
 
-import { Header } from '../header';
-import { Title } from '../../../../components/layout/header';
 import { Message } from '../message';
 import { Post } from '../post';
 import { PostInput } from '../post-input-hook';

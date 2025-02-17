@@ -17,7 +17,6 @@ const subject = (props: Partial<Properties> = {}) => {
   const allProps: Properties = {
     isOneOnOne: false,
     otherMembers: [],
-    icon: '',
     name: '',
     toggleSecondarySidekick: () => null,
 
@@ -51,17 +50,6 @@ describe(ConversationHeader, () => {
       );
 
       expect(screen.getByText('Johnny Sanderson')).toBeTruthy();
-    });
-
-    it('renders a formatted subtitle', function () {
-      render(
-        subject({
-          isOneOnOne: true,
-          otherMembers: [stubUser({ displaySubHandle: '0://arc:vet', lastSeenAt: null })],
-        })
-      );
-
-      expect(screen.getByText('0://arc:vet')).toBeTruthy();
     });
   });
 

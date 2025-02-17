@@ -9,7 +9,6 @@ export interface Properties {
   className?: string;
   isOneOnOne: boolean;
   otherMembers: User[];
-  icon: string;
   name: string;
 
   toggleSecondarySidekick: () => void;
@@ -27,10 +26,6 @@ export class ConversationHeader extends React.Component<Properties> {
   avatarUrl() {
     if (!this.props.otherMembers) {
       return '';
-    }
-
-    if (this.props.icon) {
-      return this.props.icon;
     }
 
     if (this.isOneOnOne() && this.props.otherMembers[0]) {
@@ -67,14 +62,6 @@ export class ConversationHeader extends React.Component<Properties> {
   }
 
   render() {
-    return (
-      <Header
-        icon={this.renderAvatar()}
-        title={this.renderTitle()}
-        subtitle={this.renderSubTitle()}
-        onClick={this.toggleSidekick}
-        className={this.props.className}
-      />
-    );
+    return <Header title={this.renderTitle()} onClick={this.toggleSidekick} className={this.props.className} />;
   }
 }

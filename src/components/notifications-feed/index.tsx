@@ -182,7 +182,7 @@ export class Container extends React.Component<Properties, State> {
       <div className={styles.NotificationsFeed}>
         <div>
           <div className={styles.HeaderContainer}>
-            <Header title={this.renderHeaderTitle()} icon={this.renderHeaderIcon()} />
+            <Header title={this.renderHeaderTitle()} />
           </div>
 
           <div className={styles.Body}>

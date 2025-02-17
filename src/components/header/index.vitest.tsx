@@ -5,9 +5,7 @@ import { Header, HeaderProps } from './';
 const DEFAULT_PROPS: HeaderProps = {
   className: undefined,
   end: undefined,
-  icon: undefined,
   onClick: undefined,
-  subtitle: undefined,
   title: '',
 };
 
@@ -21,18 +19,6 @@ describe(Header, () => {
     renderComponent({ title: 'foo' });
 
     expect(screen.getByText('foo')).toBeVisible();
-  });
-
-  it('should render the subtitle', async () => {
-    renderComponent({ subtitle: 'bar' });
-
-    expect(screen.getByText('bar')).toBeVisible();
-  });
-
-  it('should render the avatar', async () => {
-    renderComponent({ icon: 'baz' });
-
-    expect(screen.getByText('baz')).toBeVisible();
   });
 
   it('should render the end', async () => {

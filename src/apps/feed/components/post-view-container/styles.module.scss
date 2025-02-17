@@ -1,21 +1,11 @@
 @use '../../../../variables' as variables;
 
 .Wrapper {
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  gap: variables.$default-gap;
-  flex: 1;
-
-  box-sizing: border-box;
-
   margin: 24px auto 24px auto;
   max-width: 600px;
 }
 
 .Panel {
-  width: 100%;
-  overflow-y: hidden;
   padding: 0;
 }
 

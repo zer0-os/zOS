@@ -1,5 +1,5 @@
 import { IfAuthenticated } from '../../../authentication/if-authenticated';
-import { Panel } from '../../../layout/panel';
+import { LegacyPanel } from '../../../layout/panel';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -15,11 +15,11 @@ export const Container = ({ className, children, header }: ContainerProps) => {
     <IfAuthenticated showChildren>
       <div className={classNames(styles.Container, className)}>
         {header}
-        <Panel className={styles.Wrapper}>
+        <LegacyPanel className={styles.Wrapper}>
           <div className={styles.Content}>
             <div className={styles.Messages}>{children}</div>
           </div>
-        </Panel>
+        </LegacyPanel>
       </div>
     </IfAuthenticated>
   );

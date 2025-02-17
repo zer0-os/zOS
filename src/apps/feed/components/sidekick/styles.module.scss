@@ -1,6 +1,24 @@
 .Container {
   width: 100%;
   max-width: 288px;
+
+  [class*='Legacy'] {
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  [class*='_Content'] {
+    border-radius: unset;
+  }
+}
+
+.Panel {
+  height: 100%;
+}
+
+.Body {
+  height: 100%;
+  padding: 0;
 }
 
 .Sidekick {

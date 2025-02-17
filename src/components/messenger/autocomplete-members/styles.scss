@@ -20,8 +20,6 @@
     margin-top: 16px;
     flex-grow: 1;
     overflow-y: auto;
-    // Forcing a height here allows the flex-grow to fill the size without growing too big
-    height: 1px;
   }
 
   &__search-results {

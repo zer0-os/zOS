@@ -21,8 +21,6 @@ $side-padding: 16px;
   &__selected-tags {
     flex-grow: 99;
     overflow-y: auto;
-    // Forcing a height here allows the flex-grow to fill the size without growing too big
-    height: 1px;
   }
 
   &__search {

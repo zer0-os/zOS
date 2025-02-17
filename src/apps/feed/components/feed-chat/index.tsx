@@ -11,8 +11,7 @@ import { searchMentionableUsersForChannel } from '../../../../platform-apps/chan
 import { Media } from '../../../../components/message-input/utils';
 import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
-import { Panel } from '../../../../components/layout/panel';
-import { Header, Title } from '../../../../components/layout/header';
+import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 import { InvertedScroll } from '../../../../components/inverted-scroll';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -113,11 +112,11 @@ export class Container extends React.Component<Properties> {
     return (
       <>
         {shouldRender && (
-          <div className={styles.Container}>
-            <Header>
-              <Title>Global Chat</Title>
-            </Header>
-            <Panel className={styles.Panel}>
+          <Panel className={styles.Container}>
+            <PanelHeader>
+              <PanelTitle>Global Chat</PanelTitle>
+            </PanelHeader>
+            <PanelBody className={styles.Panel}>
               <InvertedScroll
                 className={classNames('channel-view__inverted-scroll', styles.Scroll)}
                 isScrollbarHidden={true}
@@ -149,8 +148,8 @@ export class Container extends React.Component<Properties> {
                   </div>
                 </div>
               </InvertedScroll>
-            </Panel>
-          </div>
+            </PanelBody>
+          </Panel>
         )}
       </>
     );

@@ -3,10 +3,12 @@
   flex-direction: column;
   gap: 8px;
   height: 100%;
+  max-width: 386px;
+  width: 100%;
 }
 
 .FeedChat {
-  width: 386px;
+  width: 100%;
 
   :global(.direct-message-chat) {
     margin: 0;

@@ -52,7 +52,5 @@
   &__member-list {
     padding-top: 8px;
     flex-grow: 1;
-    // Forcing a height here allows the flex-grow to fill the size without growing too big
-    height: 1px;
   }
 }

@@ -18,9 +18,6 @@
     flex-grow: 1;
     gap: 24px;
     margin: 0 16px 16px 16px;
-
-    // Forcing a height here allows the flex-grow to fill the size without growing too big
-    height: 1px;
   }
 
   &__section-header {

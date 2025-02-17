@@ -1,10 +1,63 @@
 @use '../../../variables' as variables;
 
-.Legacy {
+$header-height: 42px;
+$header-background: #111213e6;
+$header-color: var(--color-greyscale-11);
+
+$panel-background: rgba(17, 18, 19, 0.5);
+
+@mixin panel-base {
   box-sizing: border-box;
   backdrop-filter: variables.$default-background-blur;
   border-radius: variables.$border-radius;
   padding: variables.$default-padding;
-  // @todo CHANGE THIS TO CORRECT COLOR
-  background-color: rgba(17, 18, 19, 0.5);
+  background-color: $panel-background;
+}
+
+.Legacy {
+  @include panel-base;
+
+  max-height: 100%;
+}
+
+.Panel {
+  display: flex;
+  flex-direction: column;
+  gap: variables.$default-gap;
+  width: 100%;
+
+  max-height: 100%;
+}
+
+.Body {
+  @include panel-base;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  height: $header-height;
+  min-height: $header-height;
+  max-height: $header-height;
+  width: 100%;
+  padding: calc(variables.$default-padding / 2) variables.$default-padding;
+
+  box-sizing: border-box;
+  border-radius: variables.$border-radius;
+
+  background: $header-background;
+}
+
+.Title {
+  color: $header-color;
 }

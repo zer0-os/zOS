@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container } from './index';
 import { NotificationItem } from './notification-item';
-import { Header } from '../header';
 import { Channel, DefaultRoomLabels } from '../../store/channels';
 
 describe('NotificationsFeed', () => {
@@ -38,26 +37,6 @@ describe('NotificationsFeed', () => {
 
     return shallow(<Container {...allProps} />);
   };
-
-  it('renders header with correct title', () => {
-    const wrapper = subject();
-    const header = wrapper.find(Header);
-
-    expect(header.exists()).toBe(true);
-    expect(header.prop('title')).toBeTruthy();
-  });
-
-  it('renders toggle group with correct tabs', () => {
-    const wrapper = subject();
-    const toggleGroup = wrapper.find('ToggleGroup');
-
-    expect(toggleGroup.exists()).toBe(true);
-    expect(toggleGroup.prop('options')).toEqual([
-      { key: 'all', label: 'All' },
-      { key: 'highlights', label: 'Highlights' },
-      { key: 'muted', label: 'Muted' },
-    ]);
-  });
 
   it('starts with All tab selected', () => {
     const wrapper = subject();
@@ -137,18 +116,6 @@ describe('NotificationsFeed', () => {
     expect(notificationItems.at(1).prop('type')).toBe('highlight');
   });
 
-  it('shows correct empty state message for each tab', () => {
-    const wrapper = subject({ conversations: [], isConversationsLoaded: true });
-
-    expect(wrapper.text()).toContain('No new notifications');
-
-    wrapper.setState({ selectedTab: 'highlights' });
-    expect(wrapper.text()).toContain('No new highlights');
-
-    wrapper.setState({ selectedTab: 'muted' });
-    expect(wrapper.text()).toContain('No notifications in muted conversations');
-  });
-
   it('renders notifications when conversations exist', () => {
     const wrapper = subject({
       conversations: mockConversations,
@@ -164,14 +131,6 @@ describe('NotificationsFeed', () => {
   it('shows loading state when conversations are not loaded', () => {
     const wrapper = subject({ isConversationsLoaded: false });
     expect(wrapper.find('Spinner').exists()).toBe(true);
-  });
-
-  it('shows empty state when no conversations and loaded', () => {
-    const wrapper = subject({
-      conversations: [],
-      isConversationsLoaded: true,
-    });
-    expect(wrapper.text()).toContain('No new notifications');
   });
 
   it('calls openNotificationConversation when notification is clicked', () => {

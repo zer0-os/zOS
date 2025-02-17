@@ -1,4 +1,4 @@
-import { Avatar } from '@zero-tech/zui/components';
+import { Avatar } from '@zero-tech/zui/components/Avatar';
 import { Channel } from '../../../store/channels';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import styles from './styles.module.scss';

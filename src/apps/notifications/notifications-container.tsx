@@ -3,7 +3,6 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 
 import { NotificationsFeed } from '../../components/notifications-feed';
-import { ScrollbarContainer } from '../../components/scrollbar-container';
 import { ConversationsSidekick } from '../../components/sidekick/variants/conversations-sidekick';
 
 import styles from './notifications-container.module.scss';
@@ -34,10 +33,7 @@ export class Container extends React.Component<Properties> {
     return (
       <div className={styles.NotificationsContainer}>
         <ConversationsSidekick />
-        <ScrollbarContainer variant='on-hover'>
-          <NotificationsFeed />
-        </ScrollbarContainer>
-        <div />
+        <NotificationsFeed />
       </div>
     );
   }

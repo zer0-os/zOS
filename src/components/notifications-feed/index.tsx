@@ -3,12 +3,12 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { Channel, DefaultRoomLabels } from '../../store/channels';
 import { denormalizeConversations } from '../../store/channels-list';
-import { Header } from '../header';
 import { IconBell1 } from '@zero-tech/zui/icons';
 import { NotificationItem } from './notification-item';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { openNotificationConversation } from '../../store/notifications';
-import { ToggleGroup } from '@zero-tech/zui/components';
+import { ToggleGroup } from '@zero-tech/zui/components/ToggleGroup';
+import { Panel, PanelBody, PanelHeader, PanelTitle } from '../layout/panel';
 
 import styles from './styles.module.scss';
 
@@ -17,6 +17,18 @@ enum Tab {
   Highlights = 'highlights',
   Muted = 'muted',
 }
+
+const MESSAGES: Record<Tab, string> = {
+  [Tab.All]: 'No new notifications',
+  [Tab.Highlights]: 'No new highlights',
+  [Tab.Muted]: 'No notifications in muted conversations',
+};
+
+const TABS: { key: Tab; label: string }[] = [
+  { key: Tab.All, label: 'All' },
+  { key: Tab.Highlights, label: 'Highlights' },
+  { key: Tab.Muted, label: 'Muted' },
+];
 
 export interface PublicProperties {}
 
@@ -94,29 +106,18 @@ export class Container extends React.Component<Properties, State> {
     return <IconBell1 className={styles.HeaderIcon} size={18} isFilled />;
   }
 
-  renderHeaderTitle() {
-    return <div className={styles.HeaderTitle}>Notifications</div>;
-  }
-
   renderTabs() {
-    const options = [
-      { key: Tab.All, label: 'All' },
-      { key: Tab.Highlights, label: 'Highlights' },
-      { key: Tab.Muted, label: 'Muted' },
-    ];
-
     return (
-      <div className={styles.TabContainer}>
-        <ToggleGroup
-          className={styles.ToggleGroup}
-          options={options}
-          variant='default'
-          onSelectionChange={(selected) => this.setState({ selectedTab: selected as Tab })}
-          selection={this.state.selectedTab}
-          selectionType='single'
-          isRequired
-        />
-      </div>
+      <ToggleGroup
+        data-testid='toggle-group'
+        className={styles.Tabs}
+        options={TABS}
+        variant='default'
+        onSelectionChange={(selected) => this.setState({ selectedTab: selected as Tab })}
+        selection={this.state.selectedTab}
+        selectionType='single'
+        isRequired
+      />
     );
   }
 
@@ -154,11 +155,7 @@ export class Container extends React.Component<Properties, State> {
   }
 
   renderNoNotifications() {
-    const message = {
-      [Tab.All]: 'No new notifications',
-      [Tab.Highlights]: 'No new highlights',
-      [Tab.Muted]: 'No notifications in muted conversations',
-    }[this.state.selectedTab];
+    const message = MESSAGES[this.state.selectedTab];
 
     return <div className={styles.NoNotifications}>{message}</div>;
   }
@@ -179,21 +176,18 @@ export class Container extends React.Component<Properties, State> {
     const isLoadingState = !isConversationsLoaded;
 
     return (
-      <div className={styles.NotificationsFeed}>
-        <div>
-          <div className={styles.HeaderContainer}>
-            <Header title={this.renderHeaderTitle()} />
-          </div>
+      <Panel className={styles.Container}>
+        <PanelHeader>
+          <PanelTitle>Notifications</PanelTitle>
+        </PanelHeader>
+        <PanelBody className={styles.Body}>
+          {this.renderTabs()}
+          <ol className={styles.Notifications}>{!isEmptyState && this.renderNotifications(filteredConversations)}</ol>
 
-          <div className={styles.Body}>
-            {this.renderTabs()}
-            <ol className={styles.Notifications}>{!isEmptyState && this.renderNotifications(filteredConversations)}</ol>
-
-            {isEmptyState && this.renderNoNotifications()}
-            {isLoadingState && this.renderLoading()}
-          </div>
-        </div>
-      </div>
+          {isEmptyState && this.renderNoNotifications()}
+          {isLoadingState && this.renderLoading()}
+        </PanelBody>
+      </Panel>
     );
   }
 }

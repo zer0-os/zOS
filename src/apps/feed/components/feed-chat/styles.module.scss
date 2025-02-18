@@ -3,8 +3,9 @@
   flex-direction: column;
   gap: 8px;
   height: 100%;
-  max-width: 386px;
-  width: 100%;
+  min-width: 386px;
+  max-width: 482px;
+  flex-shrink: 2;
 }
 
 .FeedChat {

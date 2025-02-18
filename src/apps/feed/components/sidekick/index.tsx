@@ -39,11 +39,6 @@ export const Sidekick = () => {
                 />
                 <ScrollbarContainer variant='on-hover' className={styles.Scroll}>
                   <ul className={styles.List}>
-                    {search.length === 0 && (
-                      <FeedItem key={'explore'} route={'/feed'} isSelected={selectedZId === undefined}>
-                        Explore
-                      </FeedItem>
-                    )}
                     {isLoadingZids && <li>Loading Feeds...</li>}
                     {isErrorZids && <li>Error loading Feeds</li>}
                     {zids?.map((zid) => (

@@ -9,7 +9,7 @@ import { CurrentUserDetails } from '../../../../components/sidekick/components/c
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 import { Input } from '@zero-tech/zui/components/Input/Input';
 import { IconSearchMd } from '@zero-tech/zui/icons';
-import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
+import { Panel, PanelBody } from '../../../../components/layout/panel';
 
 import styles from './styles.module.scss';
 
@@ -19,9 +19,6 @@ export const Sidekick = () => {
   return (
     <SidekickContainer className={styles.Container}>
       <Panel className={styles.Panel}>
-        <PanelHeader>
-          <PanelTitle>Channel List</PanelTitle>
-        </PanelHeader>
         <PanelBody className={styles.Body}>
           {isProfileOpen ? (
             <UserProfileContainer />

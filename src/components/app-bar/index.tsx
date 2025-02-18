@@ -54,6 +54,7 @@ export class AppBar extends React.Component<Properties, State> {
       <>
         <div {...cn('')}>
           <LegacyPanel {...cn('container')}>
+            <AppLink Icon={IconGlobe3} isActive={isActive('home')} label='Home' to='/home' />
             <AppLink
               Icon={IconMessageSquare2}
               isActive={isActive('conversation')}

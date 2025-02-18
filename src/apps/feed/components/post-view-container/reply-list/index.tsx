@@ -5,7 +5,13 @@ import { Waypoint } from 'react-waypoint';
 
 import styles from './styles.module.scss';
 
-export const Replies = ({ postId, isFeed }: { postId: string; isFeed?: boolean }) => {
+export interface RepliesProps {
+  postId: string;
+  isFeed?: boolean;
+  hideZidAction?: boolean;
+}
+
+export const Replies = ({ postId, isFeed, hideZidAction }: RepliesProps) => {
   const { fetchNextPage, hasNextPage, isFetchingNextPage, replies, userId, userMeowBalance, meowPost, meowPostFeed } =
     useReplyList(postId);
 
@@ -32,6 +38,7 @@ export const Replies = ({ postId, isFeed }: { postId: string; isFeed?: boolean }
                 numberOfReplies={reply.numberOfReplies}
                 channelZid={reply.channelZid}
                 avatarUrl={reply.sender?.avatarUrl}
+                hideZidAction={hideZidAction}
               />
             </li>
           ))

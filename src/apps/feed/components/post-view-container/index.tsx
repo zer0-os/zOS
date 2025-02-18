@@ -12,9 +12,10 @@ import styles from './styles.module.scss';
 export interface PostViewProps {
   isFeed?: boolean;
   postId: string;
+  hideZidAction?: boolean;
 }
 
-export const PostView = ({ postId, isFeed }: PostViewProps) => {
+export const PostView = ({ postId, isFeed, hideZidAction }: PostViewProps) => {
   const { isLoadingPost, meowPost, meowPostFeed, post, userId, userMeowBalance } = usePostView(postId);
 
   if (!isLoadingPost && !post) {
@@ -57,10 +58,11 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
                 userMeowBalance={userMeowBalance}
                 variant='expanded'
                 channelZid={post.channelZid}
+                hideZidAction={hideZidAction}
               />
               <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
             </div>
-            <Replies postId={postId} isFeed={isFeed} />
+            <Replies postId={postId} isFeed={isFeed} hideZidAction={hideZidAction} />
           </PanelBody>
         </>
       )}

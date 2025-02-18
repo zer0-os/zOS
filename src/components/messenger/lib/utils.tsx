@@ -40,6 +40,10 @@ export const highlightFilter = (text, filter) => {
 export const getOtherMembersTypingDisplayJSX = (otherMembersTypingInRoom: string[]) => {
   let text = <></>;
 
+  if (!otherMembersTypingInRoom) {
+    return;
+  }
+
   switch (otherMembersTypingInRoom.length) {
     case 0:
       break;

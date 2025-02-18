@@ -3,7 +3,7 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { ChatViewContainer } from '../../../../components/chat-view-container/chat-view-container';
 import { validateFeedChat } from '../../../../store/chat';
-import { Channel, denormalize } from '../../../../store/channels';
+import { Channel, denormalize, onRemoveReply } from '../../../../store/channels';
 import { MessageInput } from '../../../../components/message-input/container';
 import { send as sendMessage } from '../../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../../store/messages/saga';
@@ -13,17 +13,22 @@ import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 import { InvertedScroll } from '../../../../components/inverted-scroll';
+import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
+import { rawChannelSelector } from '../../../../store/channels/saga';
+
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
 interface Properties {
   zid?: string;
-  channel: Channel | null;
-  activeConversationId: string | null;
+  channel: Channel;
+  activeConversationId: string;
   isJoiningConversation: boolean;
   isConversationsLoaded: boolean;
   joinRoomErrorContent: ErrorDialogContent;
+  otherMembersTypingInRoom: string[];
   validateFeedChat: (id: string) => void;
+  onRemoveReply: () => void;
   sendMessage: (payload: PayloadSendMessage) => void;
 }
 
@@ -40,7 +45,8 @@ export class Container extends React.Component<Properties> {
       chat: { activeConversationId, joinRoomErrorContent, isJoiningConversation, isConversationsLoaded },
     } = state;
 
-    const channel = denormalize(activeConversationId, state) || null;
+    const channel = denormalize(activeConversationId, state);
+    const rawChannel = rawChannelSelector(activeConversationId)(state);
 
     return {
       channel,
@@ -48,13 +54,15 @@ export class Container extends React.Component<Properties> {
       joinRoomErrorContent,
       isJoiningConversation,
       isConversationsLoaded,
+      otherMembersTypingInRoom: rawChannel?.otherMembersTyping || [],
     };
   }
 
   static mapActions(): Partial<Properties> {
     return {
-      validateFeedChat: (id: string) => validateFeedChat({ id }),
       sendMessage,
+      onRemoveReply,
+      validateFeedChat: (id: string) => validateFeedChat({ id }),
     };
   }
 
@@ -74,21 +82,8 @@ export class Container extends React.Component<Properties> {
     }
   }
 
-  handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
-    const { activeConversationId } = this.props;
-
-    const payloadSendMessage = {
-      channelId: activeConversationId,
-      message,
-      mentionedUserIds,
-      files: media,
-    };
-
-    this.props.sendMessage(payloadSendMessage);
-
-    if (this.chatViewContainerRef?.current) {
-      this.chatViewContainerRef.current.scrollToBottom();
-    }
+  isNotEmpty = (message: string): boolean => {
+    return !!message && message.trim() !== '';
   };
 
   searchMentionableUsers = async (search: string) => {
@@ -97,6 +92,34 @@ export class Container extends React.Component<Properties> {
       search,
       this.props.channel.otherMembers
     );
+  };
+
+  handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
+    const { activeConversationId } = this.props;
+
+    const payloadSendMessage = {
+      channelId: activeConversationId,
+      message,
+      mentionedUserIds,
+      parentMessage: this.props.channel.reply,
+      files: media,
+    };
+
+    this.props.sendMessage(payloadSendMessage);
+
+    if (this.isNotEmpty(message)) {
+      this.props.onRemoveReply();
+    }
+
+    if (this.chatViewContainerRef?.current) {
+      this.chatViewContainerRef.current.scrollToBottom();
+    }
+  };
+
+  renderTypingIndicators = () => {
+    const { otherMembersTypingInRoom } = this.props;
+    const text = getOtherMembersTypingDisplayJSX(otherMembersTypingInRoom);
+    return <div className='direct-message-chat__typing-indicator'>{text}</div>;
   };
 
   render() {
@@ -126,6 +149,7 @@ export class Container extends React.Component<Properties> {
                     <div className='direct-message-chat__content'>
                       <div>
                         <ChatViewContainer
+                          key={this.props.channel.optimisticId || this.props.channel.id} // Render new component for a new chat
                           channelId={this.props.activeConversationId}
                           showSenderAvatar={true}
                           ref={this.chatViewContainerRef}
@@ -139,7 +163,10 @@ export class Container extends React.Component<Properties> {
                                 id={this.props.activeConversationId}
                                 onSubmit={this.handleSendMessage}
                                 getUsersForMentions={this.searchMentionableUsers}
+                                reply={this.props.channel?.reply}
+                                onRemoveReply={this.props.onRemoveReply}
                               />
+                              {this.renderTypingIndicators()}
                             </div>
                           </div>
                         </div>

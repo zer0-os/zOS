@@ -4,9 +4,8 @@ import { Message } from '../message';
 import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
 import { Waypoint } from 'react-waypoint';
-import { featureFlags } from '../../../../lib/feature-flags';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
-import { FeedChat } from '../feed-chat/container';
+import { FeedChatContainer } from '../feed-chat';
 
 import styles from './styles.module.scss';
 
@@ -78,7 +77,7 @@ export const Feed = ({ zid }: FeedProps) => {
         </PanelBody>
       </Panel>
 
-      {featureFlags.enableFeedChat && <FeedChat />}
+      <FeedChatContainer zid={zid} />
     </div>
   );
 };

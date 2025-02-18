@@ -2,14 +2,12 @@ import React from 'react';
 import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { ChatViewContainer } from '../../../../components/chat-view-container/chat-view-container';
-import { validateFeedChat } from '../../../../store/chat';
 import { Channel, denormalize } from '../../../../store/channels';
 import { MessageInput } from '../../../../components/message-input/container';
 import { send as sendMessage } from '../../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../../store/messages/saga';
 import { searchMentionableUsersForChannel } from '../../../../platform-apps/channels/util/api';
 import { Media } from '../../../../components/message-input/utils';
-import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 import { InvertedScroll } from '../../../../components/inverted-scroll';
@@ -23,7 +21,6 @@ interface Properties {
   isJoiningConversation: boolean;
   isConversationsLoaded: boolean;
   joinRoomErrorContent: ErrorDialogContent;
-  validateFeedChat: (id: string) => void;
   sendMessage: (payload: PayloadSendMessage) => void;
 }
 
@@ -53,25 +50,8 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(): Partial<Properties> {
     return {
-      validateFeedChat: (id: string) => validateFeedChat({ id }),
       sendMessage,
     };
-  }
-
-  componentDidMount(): void {
-    if (this.props.zid) {
-      const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
-      this.props.validateFeedChat(roomAlias);
-    }
-  }
-
-  componentDidUpdate(prevProps: Properties): void {
-    if (this.props.zid !== prevProps.zid) {
-      if (this.props.zid) {
-        const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
-        this.props.validateFeedChat(roomAlias);
-      }
-    }
   }
 
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {

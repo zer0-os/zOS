@@ -49,10 +49,11 @@ export function* markConversationAsRead(conversationId) {
   // We should only mark as read if the user is in the messenger app and not in the notifications feed
   const history = yield call(getHistory);
   const isMessengerAppActive = history.location?.pathname?.startsWith('/conversation/');
+  const isFeedAppActive = history.location?.pathname?.startsWith('/feed/');
 
   if (
     (conversationInfo?.unreadCount?.total > 0 || conversationInfo?.unreadCount?.highlight > 0) &&
-    isMessengerAppActive
+    (isMessengerAppActive || isFeedAppActive)
   ) {
     yield call(markAllMessagesAsRead, conversationId, currentUser.id);
   }

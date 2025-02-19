@@ -1,3 +1,5 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
 .Container {
   display: flex;
   flex-direction: column;
@@ -26,4 +28,20 @@
 
 .Scroll {
   height: 100%;
+}
+
+.PanelHeader {
+  cursor: pointer;
+}
+
+.GroupButton {
+  color: rgba(113, 117, 122, 1);
+
+  &--is-active {
+    background-color: theme.$color-greyscale-transparency-3;
+  }
+}
+
+.MembersSidekick {
+  padding: 0 !important;
 }

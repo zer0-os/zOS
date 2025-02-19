@@ -15,6 +15,10 @@ import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../component
 import { InvertedScroll } from '../../../../components/inverted-scroll';
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
 import { rawChannelSelector } from '../../../../store/channels/saga';
+import { IconButton } from '@zero-tech/zui/components/IconButton';
+import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
+import { toggleSecondarySidekick } from '../../../../store/group-management';
+import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -27,9 +31,11 @@ interface Properties {
   isConversationsLoaded: boolean;
   joinRoomErrorContent: ErrorDialogContent;
   otherMembersTypingInRoom: string[];
+  isSecondarySidekickOpen: boolean;
   validateFeedChat: (id: string) => void;
   onRemoveReply: () => void;
   sendMessage: (payload: PayloadSendMessage) => void;
+  toggleSecondarySidekick: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -43,6 +49,7 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId, joinRoomErrorContent, isJoiningConversation, isConversationsLoaded },
+      groupManagement,
     } = state;
 
     const channel = denormalize(activeConversationId, state);
@@ -55,6 +62,7 @@ export class Container extends React.Component<Properties> {
       isJoiningConversation,
       isConversationsLoaded,
       otherMembersTypingInRoom: rawChannel?.otherMembersTyping || [],
+      isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }
 
@@ -62,6 +70,7 @@ export class Container extends React.Component<Properties> {
     return {
       sendMessage,
       onRemoveReply,
+      toggleSecondarySidekick,
       validateFeedChat: (id: string) => validateFeedChat({ id }),
     };
   }
@@ -122,6 +131,64 @@ export class Container extends React.Component<Properties> {
     return <div className='direct-message-chat__typing-indicator'>{text}</div>;
   };
 
+  toggleSidekick = () => {
+    this.props.toggleSecondarySidekick();
+  };
+
+  renderHeader = () => {
+    return (
+      <PanelHeader className={styles.PanelHeader} toggleSidekick={this.toggleSidekick}>
+        <PanelTitle>Chat</PanelTitle>
+        <IconButton
+          className={classNames(styles.GroupButton, this.props.isSecondarySidekickOpen && 'is-active')}
+          Icon={this.props.isSecondarySidekickOpen ? IconChevronRight : IconChevronLeft}
+          size={32}
+          onClick={this.toggleSidekick}
+          isFilled
+        />
+      </PanelHeader>
+    );
+  };
+
+  renderBody = () => {
+    return (
+      <PanelBody className={styles.Panel}>
+        <InvertedScroll className={classNames('channel-view__inverted-scroll', styles.Scroll)} isScrollbarHidden={true}>
+          <div className={styles.FeedChat}>
+            <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
+              <div className='direct-message-chat__content'>
+                <div>
+                  <ChatViewContainer
+                    key={this.props.channel.optimisticId || this.props.channel.id} // Render new component for a new chat
+                    channelId={this.props.activeConversationId}
+                    showSenderAvatar={true}
+                    ref={this.chatViewContainerRef}
+                    className='direct-message-chat__channel'
+                  />
+
+                  <div className='direct-message-chat__footer-position'>
+                    <div className='direct-message-chat__footer'>
+                      <div className={styles.FeedChatMessageInput}>
+                        <MessageInput
+                          id={this.props.activeConversationId}
+                          onSubmit={this.handleSendMessage}
+                          getUsersForMentions={this.searchMentionableUsers}
+                          reply={this.props.channel?.reply}
+                          onRemoveReply={this.props.onRemoveReply}
+                        />
+                        {this.renderTypingIndicators()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </InvertedScroll>
+      </PanelBody>
+    );
+  };
+
   render() {
     const shouldRender = !!(
       this.props.zid &&
@@ -135,48 +202,12 @@ export class Container extends React.Component<Properties> {
     return (
       <>
         {shouldRender && (
-          <Panel className={styles.Container}>
-            <PanelHeader>
-              <PanelTitle>Chat</PanelTitle>
-            </PanelHeader>
-            <PanelBody className={styles.Panel}>
-              <InvertedScroll
-                className={classNames('channel-view__inverted-scroll', styles.Scroll)}
-                isScrollbarHidden={true}
-              >
-                <div className={styles.FeedChat}>
-                  <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
-                    <div className='direct-message-chat__content'>
-                      <div>
-                        <ChatViewContainer
-                          key={this.props.channel.optimisticId || this.props.channel.id} // Render new component for a new chat
-                          channelId={this.props.activeConversationId}
-                          showSenderAvatar={true}
-                          ref={this.chatViewContainerRef}
-                          className='direct-message-chat__channel'
-                        />
-
-                        <div className='direct-message-chat__footer-position'>
-                          <div className='direct-message-chat__footer'>
-                            <div className={styles.FeedChatMessageInput}>
-                              <MessageInput
-                                id={this.props.activeConversationId}
-                                onSubmit={this.handleSendMessage}
-                                getUsersForMentions={this.searchMentionableUsers}
-                                reply={this.props.channel?.reply}
-                                onRemoveReply={this.props.onRemoveReply}
-                              />
-                              {this.renderTypingIndicators()}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </InvertedScroll>
-            </PanelBody>
-          </Panel>
+          <>
+            <Panel className={styles.Container}>
+              {this.renderHeader()} {this.renderBody()}
+            </Panel>
+            <MembersSidekick className={styles.MembersSidekick} />
+          </>
         )}
       </>
     );

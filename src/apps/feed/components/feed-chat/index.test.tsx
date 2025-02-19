@@ -128,6 +128,9 @@ describe('FeedChatContainer', () => {
         normalized: {
           ...(state.normalized || {}),
         },
+        groupManagement: {
+          ...(state.groupManagement || {}),
+        },
         chat: {
           activeConversationId: '1',
         },

@@ -94,6 +94,14 @@ describe(Container, () => {
 
         expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
       });
+
+      test('gets false when conversation is social channel', () => {
+        const state = new StoreBuilder()
+          .managingGroup({})
+          .withActiveConversation({ id: 'user-id', isSocialChannel: true });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
+      });
     });
 
     describe('canEditGroup', () => {
@@ -117,6 +125,14 @@ describe(Container, () => {
 
       test('gets false when user is not admin or moderator', () => {
         const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'user-id' });
+
+        expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canEditGroup: false }));
+      });
+
+      test('gets false when conversation is social channel', () => {
+        const state = new StoreBuilder()
+          .managingGroup({})
+          .withActiveConversation({ id: 'user-id', isSocialChannel: true });
 
         expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canEditGroup: false }));
       });

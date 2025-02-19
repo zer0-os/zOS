@@ -1,6 +1,7 @@
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { useOwnedZids } from '../../lib/hooks/useOwnedZids';
+import { parseWorldZid } from '../../lib/zid';
 
 import { Feed } from './components/feed';
 import { Sidekick } from './components/sidekick';
@@ -45,5 +46,5 @@ const Loading = () => {
     );
   }
 
-  return <Redirect to={`/feed/${zids?.[0]}`} />;
+  return <Redirect to={`/feed/${parseWorldZid(zids[0])}`} />;
 };

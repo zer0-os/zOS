@@ -8,6 +8,7 @@ import { Header } from '../../../../components/sidekick/components/header';
 import { CurrentUserDetails } from '../../../../components/sidekick/components/current-user-details';
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 import { Input } from '@zero-tech/zui/components/Input/Input';
+import { LoadingIndicator } from '@zero-tech/zui/components/LoadingIndicator';
 import { IconSearchMd } from '@zero-tech/zui/icons';
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 
@@ -39,8 +40,8 @@ export const Sidekick = () => {
                 />
                 <ScrollbarContainer variant='on-hover' className={styles.Scroll}>
                   <ul className={styles.List}>
-                    {isLoadingZids && <li>Loading Feeds...</li>}
-                    {isErrorZids && <li>Error loading Feeds</li>}
+                    {isLoadingZids && <LoadingIndicator />}
+                    {isErrorZids && <li>Error loading channels</li>}
                     {zids?.map((zid) => (
                       <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
                         <span>0://</span>

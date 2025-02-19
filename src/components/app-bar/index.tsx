@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { WorldPanelItem } from './world-panel-item';
-import { IconBell1, IconDotsGrid, IconGlobe3, IconList, IconMessageSquare2 } from '@zero-tech/zui/icons';
+import { IconBell1, IconDotsGrid, IconGlobe3, IconHome, IconMessageSquare2, IconSlashes } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
 import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
@@ -54,6 +54,7 @@ export class AppBar extends React.Component<Properties, State> {
       <>
         <div {...cn('')}>
           <LegacyPanel {...cn('container')}>
+            <AppLink Icon={IconHome} isActive={isActive('home')} label='Home' to='/home' />
             <AppLink
               Icon={IconMessageSquare2}
               isActive={isActive('conversation')}
@@ -61,7 +62,7 @@ export class AppBar extends React.Component<Properties, State> {
               to='/conversation'
             />
             {featureFlags.enableFeedApp && (
-              <AppLink Icon={IconList} isActive={isActive('feed')} label='Feed' to='/feed' />
+              <AppLink Icon={IconSlashes} isActive={isActive('feed')} label='Feed' to='/feed' />
             )}
             {featureFlags.enableNotificationsApp && (
               <AppLink

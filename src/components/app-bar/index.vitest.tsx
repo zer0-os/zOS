@@ -5,6 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppBar, Properties } from '.';
 
 vi.mock('@zero-tech/zui/icons', () => ({
+  IconHome: 'IconHome',
+  IconSlashes: 'IconSlashes',
   IconDotsGrid: 'IconDotsGrid',
   IconGlobe3: 'IconGlobe3',
   IconMessageSquare2: 'IconMessageSquare2',

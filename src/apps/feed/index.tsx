@@ -45,5 +45,5 @@ const Loading = () => {
     );
   }
 
-  return <Redirect to={`/feed/${zids?.[0]}`} />;
+  return <Redirect to={`/feed/${zids?.[0]?.split('.')[0]}`} />;
 };

@@ -4,7 +4,6 @@ import { Message } from '../message';
 import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
 import { Waypoint } from 'react-waypoint';
-import { featureFlags } from '../../../../lib/feature-flags';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 import { FeedChat } from '../feed-chat/container';
 
@@ -80,7 +79,7 @@ export const Feed = ({ zid, hideZidAction }: FeedProps) => {
         </PanelBody>
       </Panel>
 
-      {featureFlags.enableFeedChat && <FeedChat />}
+      <FeedChat />
     </div>
   );
 };

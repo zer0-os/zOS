@@ -49,7 +49,11 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <SidekickContainer
-        className={classNames(styles.Members, this.props.isSecondarySidekickOpen ? styles.Open : styles.Closed)}
+        className={classNames(
+          styles.Members,
+          this.props.className,
+          this.props.isSecondarySidekickOpen ? styles.Open : styles.Closed
+        )}
         header={
           <Header className={styles.Header}>
             <Title>Members</Title>

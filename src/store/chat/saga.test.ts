@@ -10,7 +10,7 @@ import {
   setWhenUserJoinedRoom,
   waitForChatConnectionCompletion,
 } from './saga';
-import { openFirstConversation } from '../channels/saga';
+import { markConversationAsRead, openFirstConversation } from '../channels/saga';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
 import { User } from '../channels';
@@ -21,6 +21,7 @@ import { getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { joinRoom as apiJoinRoom } from './api';
 import { call } from 'redux-saga/effects';
 import { openSidekickForSocialChannel } from '../group-management/saga';
+import { getHistory } from '../../lib/browser';
 
 describe(performValidateActiveConversation, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
@@ -64,10 +65,18 @@ describe(performValidateActiveConversation, () => {
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(getRoomIdForAlias), conversationId],
+        [matchers.call.fn(markConversationAsRead), undefined],
+        [
+          matchers.call.fn(getHistory),
+          {
+            location: { pathname: '/conversation/some-id' },
+          },
+        ],
       ])
       .call(getRoomIdForAlias, '#' + alias)
       .not.call(apiJoinRoom, conversationId)
       .put(rawSetActiveConversationId(conversationId))
+      .call(markConversationAsRead, conversationId)
       .run();
 
     expect(storeState.chat.activeConversationId).toBe(conversationId);

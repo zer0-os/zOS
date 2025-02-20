@@ -9,18 +9,9 @@ import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
 import { AppBar } from './components/app-bar/container';
 import { DialogManager } from './components/dialog-manager/container';
 import { ThemeEngine } from './components/theme-engine';
-import { denormalizeConversations } from './store/channels-list';
-import { DefaultRoomLabels } from './store/channels';
 
 export const App = () => {
-  const {
-    isAuthenticated,
-    mainClassName,
-    videoBackgroundSrc,
-    wrapperClassName,
-    hasUnreadNotifications,
-    hasUnreadHighlights,
-  } = useAppMain();
+  const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName } = useAppMain();
 
   return (
     // See: ZOS-115
@@ -32,7 +23,7 @@ export const App = () => {
             {videoBackgroundSrc && <VideoBackground src={videoBackgroundSrc} />}
             <div className={wrapperClassName}>
               <DialogManager />
-              <AppBar hasUnreadNotifications={hasUnreadNotifications} hasUnreadHighlights={hasUnreadHighlights} />
+              <AppBar />
               <AppRouter />
             </div>
           </>
@@ -47,26 +38,6 @@ const useAppMain = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
   const background = useSelector((state: RootState) => state.background.selectedMainBackground);
 
-  const hasUnreadNotifications = useSelector((state: RootState) => {
-    const conversations = denormalizeConversations(state);
-    return conversations.some(
-      (channel) =>
-        channel.unreadCount?.total > 0 &&
-        !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-        !channel.labels?.includes(DefaultRoomLabels.MUTE)
-    );
-  });
-
-  const hasUnreadHighlights = useSelector((state: RootState) => {
-    const conversations = denormalizeConversations(state);
-    return conversations.some(
-      (channel) =>
-        channel.unreadCount?.highlight > 0 &&
-        !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-        !channel.labels?.includes(DefaultRoomLabels.MUTE)
-    );
-  });
-
   const videoBackgroundSrc = getMainBackgroundVideoSrc(background);
   const mainClassName = classNames('main', 'messenger-full-screen', getMainBackgroundClass(background), {
     'sidekick-panel-open': isAuthenticated,
@@ -80,8 +51,6 @@ const useAppMain = () => {
     mainClassName,
     videoBackgroundSrc,
     wrapperClassName,
-    hasUnreadNotifications,
-    hasUnreadHighlights,
   };
 };
 

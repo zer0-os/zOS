@@ -19,7 +19,7 @@ import { receive } from '../users';
 import { chat, getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
-import { openFirstConversation } from '../channels/saga';
+import { markConversationAsRead, openFirstConversation } from '../channels/saga';
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 import { rawConversationsList } from '../channels-list/selectors';
@@ -198,6 +198,9 @@ export function* performValidateActiveConversation(activeConversationId: string)
   }
 
   yield put(rawSetActiveConversationId(conversationId));
+
+  // Mark conversation as read, now that it has been set as active
+  yield call(markConversationAsRead, conversationId);
 }
 
 export function* closeErrorDialog() {

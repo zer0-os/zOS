@@ -213,7 +213,6 @@ export function* publishUserStoppedTypingEvent(roomId) {
 
 // publishes a user stopped typing event when a message is sent
 function* listenForMessageSent() {
-  console.log('message sent');
   const chatBus = yield call(getChatMessageBus);
   while (true) {
     const { channelId } = yield take(chatBus, ChatMessageEvents.Sent);

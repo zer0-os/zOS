@@ -1,7 +1,7 @@
-import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import { AppBar } from './container';
+import { renderWithProviders } from '../../test-utils';
 
 const mockAppBar = vi.fn();
 
@@ -13,9 +13,9 @@ vi.mock('./', () => ({
 }));
 
 const renderComponent = (route: string | undefined = '/') => {
-  render(
+  renderWithProviders(
     <MemoryRouter initialEntries={[route]}>
-      <AppBar hasUnreadNotifications={false} hasUnreadHighlights={false} />
+      <AppBar />
     </MemoryRouter>
   );
 };

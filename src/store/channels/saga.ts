@@ -46,13 +46,14 @@ export function* markConversationAsRead(conversationId) {
   const currentUser = yield select(currentUserSelector());
   const conversationInfo = yield select(rawChannelSelector(conversationId));
 
-  // We should only mark as read if the user is in the messenger app and not in the notifications feed
+  // We should only mark as read if the user is in the Messenger or Feed app and not in the notifications feed
   const history = yield call(getHistory);
   const isMessengerAppActive = history.location?.pathname?.startsWith('/conversation/');
+  const isFeedAppActive = history.location?.pathname?.startsWith('/feed/');
 
   if (
     (conversationInfo?.unreadCount?.total > 0 || conversationInfo?.unreadCount?.highlight > 0) &&
-    isMessengerAppActive
+    (isMessengerAppActive || isFeedAppActive)
   ) {
     yield call(markAllMessagesAsRead, conversationId, currentUser.id);
   }
@@ -212,6 +213,7 @@ export function* publishUserStoppedTypingEvent(roomId) {
 
 // publishes a user stopped typing event when a message is sent
 function* listenForMessageSent() {
+  console.log('message sent');
   const chatBus = yield call(getChatMessageBus);
   while (true) {
     const { channelId } = yield take(chatBus, ChatMessageEvents.Sent);

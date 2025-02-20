@@ -23,8 +23,11 @@ import { MembersSidekick } from '../../../../components/sidekick/variants/member
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
-interface Properties {
+export interface PublicProperties {
   zid?: string;
+}
+
+export interface Properties extends PublicProperties {
   channel: Channel;
   activeConversationId: string;
   isJoiningConversation: boolean;
@@ -214,4 +217,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const FeedChatContainer = connectContainer<{ zid?: string }>(Container);
+export const FeedChatContainer = connectContainer<PublicProperties>(Container);

@@ -29,6 +29,12 @@ describe(performValidateActiveConversation, () => {
       [matchers.call.fn(getRoomIdForAlias), 'room-id'],
       [matchers.call.fn(joinRoom), undefined],
       [matchers.call.fn(openFirstConversation), null],
+      [
+        matchers.call.fn(getHistory),
+        {
+          location: { pathname: '/conversation/some-id' },
+        },
+      ],
     ]);
   }
 
@@ -120,6 +126,53 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(joinRoom), undefined],
       ])
       .call(joinRoom, '#some-other-convo:matrix.org')
+      .run();
+  });
+
+  it('opens first conversation when social channel is accessed from messenger app', async () => {
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' }).withConversationList({
+      id: 'social-channel',
+      name: 'Social Channel',
+      isSocialChannel: true,
+    });
+
+    await subject(performValidateActiveConversation, 'social-channel')
+      .withReducer(rootReducer, initialState.build())
+      .provide([
+        [matchers.call.fn(getRoomIdForAlias), 'social-channel'],
+        [
+          matchers.call.fn(getHistory),
+          {
+            location: { pathname: '/conversation/social-channel' },
+          },
+        ],
+      ])
+      .call(openFirstConversation)
+      .run();
+  });
+
+  it('does not redirect social channel when accessed from feed app', async () => {
+    const initialState = new StoreBuilder().withCurrentUser({ id: 'current-user' }).withConversationList({
+      id: 'social-channel',
+      name: 'Social Channel',
+      isSocialChannel: true,
+    });
+
+    await subject(performValidateActiveConversation, 'social-channel')
+      .withReducer(rootReducer, initialState.build())
+      .provide([
+        [matchers.call.fn(getRoomIdForAlias), 'social-channel'],
+        [
+          matchers.call.fn(getHistory),
+          {
+            location: { pathname: '/feed/social-channel' },
+          },
+        ],
+        [matchers.call.fn(markConversationAsRead), undefined],
+      ])
+      .put(rawSetActiveConversationId('social-channel'))
+      .call(markConversationAsRead, 'social-channel')
+      .not.call(openFirstConversation)
       .run();
   });
 });

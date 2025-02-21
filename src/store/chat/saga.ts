@@ -113,16 +113,18 @@ export function* setActiveConversation(id: string) {
 }
 
 export function* validateActiveConversation(conversationId: string) {
-  yield put(clearJoinRoomErrorContent());
-  yield put(setIsJoiningConversation(true));
+  try {
+    yield put(clearJoinRoomErrorContent());
+    yield put(setIsJoiningConversation(true));
 
-  const isLoaded = yield call(waitForChatConnectionCompletion);
-  if (isLoaded) {
-    yield call(performValidateActiveConversation, conversationId);
-    yield spawn(openSidekickForSocialChannel, conversationId);
+    const isLoaded = yield call(waitForChatConnectionCompletion);
+    if (isLoaded) {
+      yield call(performValidateActiveConversation, conversationId);
+      yield spawn(openSidekickForSocialChannel, conversationId);
+    }
+  } finally {
+    yield put(setIsJoiningConversation(false));
   }
-
-  yield put(setIsJoiningConversation(false));
 }
 
 export function* joinRoom(roomIdOrAlias: string) {

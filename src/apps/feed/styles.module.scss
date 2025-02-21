@@ -1,3 +1,5 @@
+@use '../../variables' as variables;
+
 .Feed {
   display: flex;
   width: 100%;
@@ -12,4 +14,13 @@
   margin: auto auto;
   padding: 32px;
   color: var(--color-greyscale-11);
+}
+
+.Wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  flex: 1;
+  gap: variables.$default-gap;
+  padding: 24px variables.$default-gap;
 }

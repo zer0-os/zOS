@@ -1,0 +1,10 @@
+@use '../../variables' as variables;
+
+.Home {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 24px variables.$default-gap;
+
+  pointer-events: all;
+}

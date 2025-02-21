@@ -19,7 +19,7 @@ import { receive } from '../users';
 import { chat, getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
-import { markConversationAsRead, openFirstConversation } from '../channels/saga';
+import { markConversationAsRead, openFirstConversation, rawChannelSelector } from '../channels/saga';
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 import { rawConversationsList } from '../channels-list/selectors';
@@ -182,6 +182,10 @@ export function* setWhenUserJoinedRoom(conversationId: string) {
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {
+  const history = yield call(getHistory);
+  const currentPath = history.location.pathname;
+  const isMessengerApp = currentPath.startsWith('/conversation');
+
   if (!activeConversationId) {
     yield put(clearJoinRoomErrorContent());
     yield call(openFirstConversation);
@@ -192,6 +196,13 @@ export function* performValidateActiveConversation(activeConversationId: string)
   if (isAlias(activeConversationId)) {
     activeConversationId = parseAlias(activeConversationId);
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
+  }
+
+  const conversation = yield select(rawChannelSelector(conversationId));
+  if (conversation?.isSocialChannel && isMessengerApp) {
+    // If it's a social channel and accessed from messenger app, open the last active conversation instead
+    yield call(openFirstConversation);
+    return;
   }
 
   if (!conversationId || !(yield call(isMemberOfActiveConversation, conversationId))) {

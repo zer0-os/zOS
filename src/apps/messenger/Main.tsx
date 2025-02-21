@@ -51,7 +51,7 @@ export class Container extends React.Component<Properties> {
           <>
             <ConversationsSidekick />
             <div className={styles.Split}>
-              {this.props.isJoiningConversation && <JoiningConversationDialog />}
+              {this.props.isJoiningConversation && !this.props.isValidConversation && <JoiningConversationDialog />}
 
               {this.props.isConversationsLoaded &&
                 this.props.isValidConversation &&

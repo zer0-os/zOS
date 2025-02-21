@@ -29,14 +29,22 @@ describe(Main, () => {
     return shallow(<Main {...allProps} />);
   };
 
-  it('renders JoiningConversationDialog when isJoiningConversation is true', () => {
-    const wrapper = subject({ context: { isAuthenticated: true }, isJoiningConversation: true });
+  it('renders JoiningConversationDialog when isJoiningConversation is true and isValidConversation is false', () => {
+    const wrapper = subject({
+      context: { isAuthenticated: true },
+      isJoiningConversation: true,
+      isValidConversation: false,
+    });
 
     expect(wrapper).toHaveElement(JoiningConversationDialog);
   });
 
-  it('does not render JoiningConversationDialog when isJoiningConversation is false', () => {
-    const wrapper = subject({ context: { isAuthenticated: true }, isJoiningConversation: false });
+  it('does not render JoiningConversationDialog when isJoiningConversation is false and isValidConversation is true', () => {
+    const wrapper = subject({
+      context: { isAuthenticated: true },
+      isJoiningConversation: false,
+      isValidConversation: true,
+    });
 
     expect(wrapper).not.toHaveElement(JoiningConversationDialog);
   });

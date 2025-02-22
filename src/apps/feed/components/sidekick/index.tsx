@@ -15,7 +15,8 @@ import { Panel, PanelBody } from '../../../../components/layout/panel';
 import styles from './styles.module.scss';
 
 export const Sidekick = () => {
-  const { isErrorZids, isLoadingZids, isProfileOpen, selectedZId, zids, search, setSearch } = useSidekick();
+  const { isErrorZids, isLoadingZids, isProfileOpen, selectedZId, zids, search, setSearch, unreadCounts } =
+    useSidekick();
 
   return (
     <SidekickContainer className={styles.Container}>
@@ -42,12 +43,25 @@ export const Sidekick = () => {
                   <ul className={styles.List}>
                     {isLoadingZids && <LoadingIndicator />}
                     {isErrorZids && <li>Error loading channels</li>}
-                    {zids?.map((zid) => (
-                      <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
-                        <span>0://</span>
-                        {zid}
-                      </FeedItem>
-                    ))}
+                    {zids?.map((zid) => {
+                      const hasUnreadHighlights = unreadCounts[zid]?.highlight > 0;
+                      const hasUnreadTotal = unreadCounts[zid]?.total > 0;
+
+                      return (
+                        <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
+                          <div className={styles.FeedName}>
+                            <span>0://</span>
+                            <div>{zid}</div>
+                          </div>
+                          {!hasUnreadHighlights && hasUnreadTotal && (
+                            <div className={styles.UnreadCount}>{unreadCounts[zid]?.total}</div>
+                          )}
+                          {hasUnreadHighlights && (
+                            <div className={styles.UnreadHighlight}>{unreadCounts[zid]?.highlight}</div>
+                          )}
+                        </FeedItem>
+                      );
+                    })}
                   </ul>
                 </ScrollbarContainer>
               </div>
@@ -67,7 +81,7 @@ const FeedItem = ({ route, children, isSelected }: { route: string; children: Re
   };
 
   return (
-    <li tabIndex={0} onClick={handleOnClick} data-is-selected={isSelected ? '' : undefined}>
+    <li className={styles.FeedItem} tabIndex={0} onClick={handleOnClick} data-is-selected={isSelected ? '' : undefined}>
       {children}
     </li>
   );

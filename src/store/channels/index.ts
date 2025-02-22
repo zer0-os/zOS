@@ -67,6 +67,7 @@ export interface Channel {
   otherMembersTyping: string[];
   labels?: string[];
   isSocialChannel?: boolean;
+  zid?: string;
 }
 
 export const CHANNEL_DEFAULTS = {
@@ -90,6 +91,7 @@ export const CHANNEL_DEFAULTS = {
   otherMembersTyping: [],
   labels: [],
   isSocialChannel: false,
+  zid: null,
 };
 
 export enum SagaActionTypes {

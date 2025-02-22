@@ -5,6 +5,12 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/reducer';
 import { Stage as ProfileStage } from '../../../../../store/user-profile';
 import { useState } from 'react';
+import { selectSocialChannelsUnreadCounts } from './selectors';
+
+export interface UnreadCount {
+  total: number;
+  highlight: number;
+}
 
 interface UseSidekickReturn {
   isErrorZids: boolean;
@@ -13,6 +19,7 @@ interface UseSidekickReturn {
   selectedZId?: string;
   zids?: string[];
   search: string;
+  unreadCounts: { [zid: string]: UnreadCount };
   setSearch: (search: string) => void;
 }
 
@@ -31,6 +38,9 @@ export const useSidekick = (): UseSidekickReturn => {
 
   const filteredZids = uniqueWorldZids?.filter((zid) => zid.toLowerCase().includes(search.toLowerCase()));
 
+  const unreadCounts = useSelector(selectSocialChannelsUnreadCounts);
+  console.log('XXX unreadCounts', unreadCounts);
+
   return {
     isErrorZids: isError,
     isLoadingZids: isLoading,
@@ -39,5 +49,6 @@ export const useSidekick = (): UseSidekickReturn => {
     zids: filteredZids,
     search,
     setSearch,
+    unreadCounts,
   };
 };

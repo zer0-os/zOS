@@ -115,7 +115,12 @@ describe(receiveChannel, () => {
     const channel = denormalizeChannel('channel-id', storeState);
     // Clean up because full comparison is important here
     delete channel.__denormalized;
-    expect(channel).toEqual({ ...CHANNEL_DEFAULTS, id: 'channel-id', unreadCount: { total: 3, highlight: 0 } });
+    expect(channel).toEqual({
+      ...CHANNEL_DEFAULTS,
+      id: 'channel-id',
+      unreadCount: { total: 3, highlight: 0 },
+      zid: '',
+    });
   });
 });
 
@@ -322,4 +327,5 @@ const CHANNEL_DEFAULTS = {
   otherMembersTyping: [],
   labels: [],
   isSocialChannel: false,
+  zid: null,
 };

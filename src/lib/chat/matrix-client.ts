@@ -1620,6 +1620,8 @@ export class MatrixClient implements IChatClient {
       moderatorIds: mods,
       labels: [],
       isSocialChannel,
+      // this isn't the best way to get the zid as it relies on the name format, but it's a quick fix
+      zid: isSocialChannel ? name?.split('://')[1] : null,
     };
 
     featureFlags.enableTimerLogs && console.timeEnd(`xxxmapConversation${room.roomId}`);

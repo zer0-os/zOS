@@ -39,7 +39,6 @@ export const useSidekick = (): UseSidekickReturn => {
   const filteredZids = uniqueWorldZids?.filter((zid) => zid.toLowerCase().includes(search.toLowerCase()));
 
   const unreadCounts = useSelector(selectSocialChannelsUnreadCounts);
-  console.log('XXX unreadCounts', unreadCounts);
 
   return {
     isErrorZids: isError,

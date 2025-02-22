@@ -108,6 +108,7 @@ describe(receiveChannel, () => {
     const { storeState } = await expectSaga(receiveChannel, {
       id: 'channel-id',
       unreadCount: { total: 3, highlight: 0 },
+      zid: null,
     })
       .withReducer(rootReducer)
       .run();
@@ -119,7 +120,7 @@ describe(receiveChannel, () => {
       ...CHANNEL_DEFAULTS,
       id: 'channel-id',
       unreadCount: { total: 3, highlight: 0 },
-      zid: '',
+      zid: null,
     });
   });
 });

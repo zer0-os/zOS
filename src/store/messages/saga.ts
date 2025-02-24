@@ -70,6 +70,7 @@ export interface SendPayload {
   file?: FileUploadResult;
   optimisticId?: string;
   files?: MediaInfo[];
+  isSocialChannel?: boolean;
 }
 
 interface MediaInfo {
@@ -209,7 +210,7 @@ export function* fetch(action) {
 }
 
 export function* send(action) {
-  const { channelId, message, mentionedUserIds, parentMessage, files = [] } = action.payload;
+  const { channelId, message, mentionedUserIds, parentMessage, files = [], isSocialChannel = false } = action.payload;
 
   const processedFiles: Uploadable[] = files.map(createUploadableFile);
 
@@ -231,7 +232,8 @@ export function* send(action) {
       message,
       mentionedUserIds,
       parentMessage,
-      optimisticRootMessage.id
+      optimisticRootMessage.id,
+      isSocialChannel
     );
 
     if (textMessage) {
@@ -300,7 +302,14 @@ export function* createOptimisticPreview(channelId: string, optimisticMessage) {
   }
 }
 
-export function* performSend(channelId, message, mentionedUserIds, parentMessage, optimisticId) {
+export function* performSend(
+  channelId,
+  message,
+  mentionedUserIds,
+  parentMessage,
+  optimisticId,
+  isSocialChannel: boolean = false
+) {
   const chatClient = yield call(chat.get);
 
   const messageCall = call(
@@ -313,7 +322,8 @@ export function* performSend(channelId, message, mentionedUserIds, parentMessage
     mentionedUserIds,
     parentMessage,
     null,
-    optimisticId
+    optimisticId,
+    isSocialChannel
   );
 
   const result = yield sendMessage(messageCall, channelId, optimisticId);

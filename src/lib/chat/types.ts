@@ -40,3 +40,8 @@ export enum PowerLevels {
   Moderator = 50, // "Moderator" or ~PL50
   Owner = 100, // "Admin" or PL100
 }
+
+export enum ChatMessageType {
+  GENERAL = 'general',
+  SOCIAL = 'social',
+}

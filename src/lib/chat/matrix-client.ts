@@ -30,7 +30,7 @@ import {
 import { ConversationStatus, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
-import { MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
+import { ChatMessageType, MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
@@ -819,7 +819,8 @@ export class MatrixClient implements IChatClient {
     _mentionedUserIds: string[],
     parentMessage?: ParentMessage,
     _file?: FileUploadResult,
-    optimisticId?: string
+    optimisticId?: string,
+    isSocialChannel?: boolean
   ): Promise<any> {
     await this.waitForConnection();
 
@@ -842,7 +843,7 @@ export class MatrixClient implements IChatClient {
     }
 
     const messageResult = await this.matrix.sendMessage(channelId, content);
-    this.recordMessageSent(channelId);
+    this.recordMessageSent(channelId, isSocialChannel);
 
     // Don't return a full message, only the pertinent attributes that changed.
     return {
@@ -990,8 +991,9 @@ export class MatrixClient implements IChatClient {
     } as unknown as Message;
   }
 
-  async recordMessageSent(roomId: string): Promise<void> {
-    const data = { roomId, sentAt: new Date().valueOf() };
+  async recordMessageSent(roomId: string, isSocialChannel: boolean = false): Promise<void> {
+    let messageType = isSocialChannel ? ChatMessageType.SOCIAL : ChatMessageType.GENERAL;
+    const data = { roomId, sentAt: new Date().valueOf(), type: messageType };
 
     await post<any>('/matrix/message')
       .send(data)

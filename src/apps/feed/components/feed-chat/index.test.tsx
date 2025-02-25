@@ -6,6 +6,7 @@ import { RootState } from '../../../../store/reducer';
 import { validateFeedChat } from '../../../../store/chat';
 import { send } from '../../../../store/messages';
 import { config } from '../../../../config';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 describe('FeedChatContainer', () => {
   const subject = (props: any = {}) => {
@@ -71,6 +72,18 @@ describe('FeedChatContainer', () => {
 
     expect(wrapper.find(ChatViewContainer).exists()).toStrictEqual(false);
     expect(wrapper.find(MessageInput).exists()).toStrictEqual(false);
+  });
+
+  it('renders spinner when loading', () => {
+    const wrapper = subject({
+      zid: 'test-zid',
+      channel: { id: 'channel-id' },
+      activeConversationId: 'conversation-id',
+      isConversationsLoaded: false,
+      isJoiningConversation: true,
+    });
+
+    expect(wrapper.find(Spinner).exists()).toStrictEqual(true);
   });
 
   it('does not render child components when joinRoomErrorContent is present', () => {

@@ -19,6 +19,7 @@ import { IconButton } from '@zero-tech/zui/components/IconButton';
 import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
 import { toggleSecondarySidekick } from '../../../../store/group-management';
 import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -153,32 +154,41 @@ export class Container extends React.Component<Properties> {
     );
   };
 
-  renderBody = () => {
+  renderBody = (isLoading: boolean) => {
     return (
       <PanelBody className={styles.Panel}>
+        {isLoading && (
+          <div className={styles.Loading}>
+            <Spinner />
+          </div>
+        )}
         <InvertedScroll className={classNames('channel-view__inverted-scroll', styles.Scroll)} isScrollbarHidden={true}>
           <div className={styles.FeedChat}>
             <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
               <div className='direct-message-chat__content'>
                 <div>
-                  <ChatViewContainer
-                    key={this.props.channel.optimisticId || this.props.channel.id} // Render new component for a new chat
-                    channelId={this.props.activeConversationId}
-                    showSenderAvatar={true}
-                    ref={this.chatViewContainerRef}
-                    className='direct-message-chat__channel'
-                  />
+                  {!isLoading && (
+                    <ChatViewContainer
+                      key={this.props.channel.optimisticId || this.props.channel.id} // Render new component for a new chat
+                      channelId={this.props.activeConversationId}
+                      showSenderAvatar={true}
+                      ref={this.chatViewContainerRef}
+                      className='direct-message-chat__channel'
+                    />
+                  )}
 
                   <div className='direct-message-chat__footer-position'>
                     <div className='direct-message-chat__footer'>
                       <div className={styles.FeedChatMessageInput}>
-                        <MessageInput
-                          id={this.props.activeConversationId}
-                          onSubmit={this.handleSendMessage}
-                          getUsersForMentions={this.searchMentionableUsers}
-                          reply={this.props.channel?.reply}
-                          onRemoveReply={this.props.onRemoveReply}
-                        />
+                        {!isLoading && (
+                          <MessageInput
+                            id={this.props.activeConversationId}
+                            onSubmit={this.handleSendMessage}
+                            getUsersForMentions={this.searchMentionableUsers}
+                            reply={this.props.channel?.reply}
+                            onRemoveReply={this.props.onRemoveReply}
+                          />
+                        )}
                         {this.renderTypingIndicators()}
                       </div>
                     </div>
@@ -197,9 +207,7 @@ export class Container extends React.Component<Properties> {
       this.props.zid &&
       this.props.channel &&
       this.props.activeConversationId &&
-      !this.props.joinRoomErrorContent &&
-      !this.props.isJoiningConversation &&
-      this.props.isConversationsLoaded
+      !this.props.joinRoomErrorContent
     );
 
     return (
@@ -207,7 +215,8 @@ export class Container extends React.Component<Properties> {
         {shouldRender && (
           <>
             <Panel className={styles.Container}>
-              {this.renderHeader()} {this.renderBody()}
+              {this.renderHeader()}{' '}
+              {this.renderBody(this.props.isJoiningConversation || !this.props.isConversationsLoaded)}
             </Panel>
             <MembersSidekick className={styles.MembersSidekick} />
           </>

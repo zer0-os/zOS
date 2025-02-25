@@ -215,7 +215,8 @@ export class Container extends React.Component<Properties> {
         {shouldRender && (
           <>
             <Panel className={styles.Container}>
-              {this.renderHeader()} {this.renderBody(this.props.isJoiningConversation)}
+              {this.renderHeader()}{' '}
+              {this.renderBody(this.props.isJoiningConversation || !this.props.isConversationsLoaded)}
             </Panel>
             <MembersSidekick className={styles.MembersSidekick} />
           </>

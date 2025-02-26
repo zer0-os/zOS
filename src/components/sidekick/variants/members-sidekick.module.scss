@@ -6,10 +6,13 @@
 }
 
 .Members {
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   max-width: 0;
   overflow: hidden;
   gap: variables.$default-gap;
+  height: 100%;
+  max-height: 100vh;
 
   &.Open {
     transform: translateX(0);
@@ -25,4 +28,15 @@
   }
 
   transition: transform 0.1s ease-out, max-width 0.1s ease-out, padding 0.1s ease-out;
+}
+
+.Content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  max-height: calc(100vh - 120px);
+  margin: 4px 4px 0 0;
+
+  scrollbar-width: none;
 }

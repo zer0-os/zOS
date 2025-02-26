@@ -60,7 +60,7 @@ export class Container extends React.Component<Properties> {
           </Header>
         }
       >
-        {this.renderSecondarySidekickContent()}
+        <div className={styles.Content}>{this.renderSecondarySidekickContent()}</div>
       </SidekickContainer>
     );
   }

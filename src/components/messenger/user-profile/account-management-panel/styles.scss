@@ -20,6 +20,8 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+
+    // Forcing a height here allows the flex-grow to fill the size without growing too big
     height: 1px;
   }
 

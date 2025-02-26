@@ -4,7 +4,7 @@
 
 $padding: 12px;
 $container-padding: 6px;
-$width: 42px;
+$width: 46px;
 
 .app-bar {
   position: relative;
@@ -31,7 +31,7 @@ $width: 42px;
     justify-content: center;
     gap: 6px;
     padding: $container-padding;
-    width: 42px;
+    width: $width;
 
     box-sizing: border-box;
 

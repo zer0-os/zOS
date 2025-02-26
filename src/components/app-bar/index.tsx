@@ -38,7 +38,7 @@ export class AppBar extends React.Component<Properties, State> {
         <IconBell1
           {...cn('notification-icon', hasUnreadHighlights && 'highlight')}
           isFilled={checkActive(this.props.activeApp)('notifications')}
-          size={18}
+          size={22}
         />
         {hasUnreadNotifications && !hasUnreadHighlights && <div {...cn('notification-dot')} />}
         {hasUnreadHighlights && <div {...cn('highlight-dot')} />}

@@ -992,7 +992,7 @@ export class MatrixClient implements IChatClient {
   }
 
   async recordMessageSent(roomId: string, isSocialChannel: boolean = false): Promise<void> {
-    let messageType = isSocialChannel ? ChatMessageType.SOCIAL : ChatMessageType.GENERAL;
+    let messageType = isSocialChannel ? ChatMessageType.CHANNEL : ChatMessageType.GROUP;
     const data = { roomId, sentAt: new Date().valueOf(), type: messageType };
 
     await post<any>('/matrix/message')

@@ -42,6 +42,6 @@ export enum PowerLevels {
 }
 
 export enum ChatMessageType {
-  GENERAL = 'general',
-  SOCIAL = 'social',
+  GROUP = 'group', // encrpyted/unencrypted group chats
+  CHANNEL = 'channel', // token gated (social) chats
 }

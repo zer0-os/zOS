@@ -116,6 +116,7 @@ export class Container extends React.Component<Properties> {
       mentionedUserIds,
       parentMessage: this.props.channel.reply,
       files: media,
+      isSocialChannel: true,
     };
 
     this.props.sendMessage(payloadSendMessage);

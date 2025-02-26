@@ -62,7 +62,8 @@ export interface IChatClient {
     mentionedUserIds: string[],
     parentMessage?: ParentMessage,
     file?: FileUploadResult,
-    optimisticId?: string
+    optimisticId?: string,
+    isSocialChannel?: boolean
   ) => Promise<MessagesResponse>;
   fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
   deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
@@ -170,9 +171,18 @@ export class Chat {
     mentionedUserIds: string[],
     parentMessage?: ParentMessage,
     file?: FileUploadResult,
-    optimisticId?: string
+    optimisticId?: string,
+    isSocialChannel?: boolean
   ): Promise<any> {
-    return this.client.sendMessagesByChannelId(channelId, message, mentionedUserIds, parentMessage, file, optimisticId);
+    return this.client.sendMessagesByChannelId(
+      channelId,
+      message,
+      mentionedUserIds,
+      parentMessage,
+      file,
+      optimisticId,
+      isSocialChannel || false
+    );
   }
 
   async fetchConversationsWithUsers(users: User[]): Promise<any[]> {

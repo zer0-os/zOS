@@ -42,7 +42,7 @@ describe(send, () => {
       .next({ optimisticRootMessage: { id: 'optimistic-message-id' } })
       .spawn(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
       .next()
-      .call(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id')
+      .call(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id', false)
       .next({ id: 'message-id' })
       .next()
       .next()
@@ -250,8 +250,9 @@ describe(performSend, () => {
       'user-id2',
     ];
     const parentMessage = { id: 'parent' };
+    const isSocialChannel = true;
 
-    await expectSaga(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-id')
+    await expectSaga(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-id', isSocialChannel)
       .provide([
         stubResponse(matchers.call.fn(chat.get), chatClient),
         stubResponse(matchers.call.fn(chatClient.sendMessagesByChannelId), {}),
@@ -265,6 +266,7 @@ describe(performSend, () => {
           parentMessage,
           null,
           'optimistic-id',
+          isSocialChannel,
         ],
       })
       .run();

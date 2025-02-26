@@ -2,28 +2,46 @@
 
 @import '../../glass';
 
-.app-bar {
-  flex-shrink: 0;
-  flex-grow: 0;
+$padding: 12px;
+$container-padding: 6px;
+$width: 42px;
 
-  padding: 12px;
+.app-bar {
+  position: relative;
 
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  flex-grow: 0;
+
+  padding: $padding;
+  width: $width;
+
+  pointer-events: all;
+  z-index: 10;
 
   &__container {
+    position: absolute;
+    top: 50%;
+    left: $padding;
+    transform: translateY(-50%);
+
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    box-sizing: border-box;
     gap: 6px;
-    padding: 6px;
+    padding: $container-padding;
+    width: 42px;
+
+    box-sizing: border-box;
 
     backdrop-filter: blur(30px);
-
     list-style: none;
-    pointer-events: all;
+    transition: width 0.15s ease-in-out;
+  }
+
+  &:hover &__container {
+    width: calc(200px);
   }
 
   &__notification-icon-wrapper {
@@ -54,5 +72,37 @@
     height: 8px;
     border-radius: 50%;
     background-color: #9054f1;
+  }
+
+  &__link {
+    position: relative;
+
+    width: 100%;
+    overflow: hidden;
+
+    cursor: pointer;
+
+    &:hover {
+      span {
+        color: white;
+      }
+    }
+
+    span {
+      position: absolute;
+      left: 34px; // 30px icon + 4px padding
+      top: 50%;
+      transform: translateY(-50%);
+
+      color: var(--color-greyscale-11);
+
+      pointer-events: none;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &[data-active] {
+        color: white;
+      }
+    }
   }
 }

@@ -10,6 +10,7 @@ import { Option } from '../../lib/types';
 import { bemClassName } from '../../../../lib/bem';
 
 import './create-conversation-panel.scss';
+import { ScrollbarContainer } from '../../../scrollbar-container';
 
 const cn = bemClassName('create-conversation');
 
@@ -129,23 +130,28 @@ export default class CreateConversationPanel extends React.Component<Properties,
     const hasSelectedOptions = selectedOptions.length > 0;
 
     return (
-      <>
+      <div {...cn()}>
         <PanelHeader title='New Conversation' onBack={this.props.onBack} />
-        <div {...cn('search')}>
-          <AutocompleteMembers
-            inputRef={this.inputRef}
-            search={this.props.search}
-            onSelect={this.selectOption}
-            selectedOptions={selectedOptions}
-            onSearchChange={this.onSearchChange}
-          >
-            {!isSearching && hasSelectedOptions && this.renderSelectedUserTags(selectedOptions)}
-            {!isSearching && !hasSelectedOptions && this.renderInviteButton()}
-          </AutocompleteMembers>
-        </div>
 
-        {!isSearching && hasSelectedOptions && this.renderSubmitButton()}
-      </>
+        <ScrollbarContainer variant='on-hover'>
+          <div {...cn('panel-content-wrapper')}>
+            <div {...cn('search')}>
+              <AutocompleteMembers
+                inputRef={this.inputRef}
+                search={this.props.search}
+                onSelect={this.selectOption}
+                selectedOptions={selectedOptions}
+                onSearchChange={this.onSearchChange}
+              >
+                {!isSearching && hasSelectedOptions && this.renderSelectedUserTags(selectedOptions)}
+                {!isSearching && !hasSelectedOptions && this.renderInviteButton()}
+              </AutocompleteMembers>
+            </div>
+
+            {!isSearching && hasSelectedOptions && this.renderSubmitButton()}
+          </div>
+        </ScrollbarContainer>
+      </div>
     );
   }
 }

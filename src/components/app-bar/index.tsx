@@ -62,7 +62,7 @@ export class AppBar extends React.Component<Properties, State> {
               to='/conversation'
             />
             {featureFlags.enableFeedApp && (
-              <AppLink Icon={IconSlashes} isActive={isActive('feed')} label='Feed' to='/feed' />
+              <AppLink Icon={IconSlashes} isActive={isActive('feed')} label='Channels' to='/feed' />
             )}
             {featureFlags.enableNotificationsApp && (
               <AppLink
@@ -73,7 +73,10 @@ export class AppBar extends React.Component<Properties, State> {
               />
             )}
             <AppLink Icon={IconGlobe3} isActive={isActive('explorer')} label='Explorer' to='/explorer' />
-            <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
+            <div {...cn('link')} title='More Apps'>
+              <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
+              <span>More Apps</span>
+            </div>
           </LegacyPanel>
         </div>
         {this.state.isModalOpen && <MoreAppsModal onClose={this.closeModal} />}
@@ -91,8 +94,9 @@ interface AppLinkProps {
 
 const AppLink = ({ Icon, isActive, to, label }: AppLinkProps) => {
   return (
-    <Link to={to}>
+    <Link title={label} {...cn('link')} to={!isActive && to}>
       <WorldPanelItem Icon={Icon} label={label} isActive={isActive} />
+      <span data-active={isActive ? '' : null}>{label}</span>
     </Link>
   );
 };

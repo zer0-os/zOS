@@ -9,6 +9,8 @@ import {
   sendTypingEvent as matrixSendUserTypingEvent,
   addRoomToLabel,
   removeRoomFromLabel,
+  muteRoom,
+  unmuteRoom,
 } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
@@ -173,6 +175,34 @@ export function* roomLabelChange(action) {
   }
 }
 
+export function* onMuteRoom(action) {
+  const { roomId } = action.payload;
+  try {
+    yield call(muteRoom, roomId);
+  } catch (error) {
+    console.error(`Failed to mute room ${roomId}:`, error);
+  }
+}
+
+export function* onUnmuteRoom(action) {
+  const { roomId } = action.payload;
+  try {
+    yield call(unmuteRoom, roomId);
+  } catch (error) {
+    console.error(`Failed to unmute room ${roomId}:`, error);
+  }
+}
+
+export function* receivedRoomMuteStatusChanged(action) {
+  const { roomId, isMuted } = action.payload;
+
+  try {
+    yield call(receiveChannel, { id: roomId, isMuted });
+  } catch (error) {
+    console.error(`Failed to update mute status for room ${roomId}:`, error);
+  }
+}
+
 export function* receivedRoomMembersTyping(action) {
   const { roomId, userIds: matrixIds } = action.payload;
 
@@ -255,10 +285,13 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
   yield takeLatest(SagaActionTypes.OnAddLabel, onAddLabel);
   yield takeLatest(SagaActionTypes.OnRemoveLabel, onRemoveLabel);
+  yield takeLatest(SagaActionTypes.OnMuteRoom, onMuteRoom);
+  yield takeLatest(SagaActionTypes.OnUnmuteRoom, onUnmuteRoom);
 
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.UnreadCountChanged, unreadCountUpdated);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMemberTyping, receivedRoomMembersTyping);
   yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomLabelChange, roomLabelChange);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.RoomMuteStatusChanged, receivedRoomMuteStatusChanged);
   yield takeEveryFromBus(
     yield call(getChatBus),
     ChatEvents.RoomMemberPowerLevelChanged,

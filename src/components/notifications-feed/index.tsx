@@ -80,21 +80,19 @@ export class Container extends React.Component<Properties, State> {
           (conversation) =>
             conversation.unreadCount?.highlight > 0 &&
             !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-            !conversation.labels?.includes(DefaultRoomLabels.MUTE)
+            !conversation.isMuted
         );
       case Tab.Muted:
         return conversations.filter(
           (conversation) =>
-            conversation.labels?.includes(DefaultRoomLabels.MUTE) &&
+            conversation.isMuted &&
             !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
             (conversation.unreadCount?.total > 0 || conversation.unreadCount?.highlight > 0)
         );
       case Tab.All:
       default:
         return conversations.filter(
-          (conversation) =>
-            !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-            !conversation.labels?.includes(DefaultRoomLabels.MUTE)
+          (conversation) => !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) && !conversation.isMuted
         );
     }
   }

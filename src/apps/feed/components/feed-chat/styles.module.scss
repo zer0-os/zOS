@@ -43,7 +43,14 @@
 }
 
 .PanelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.PanelTitle {
   cursor: pointer;
+  width: 100%;
 }
 
 .GroupButton {

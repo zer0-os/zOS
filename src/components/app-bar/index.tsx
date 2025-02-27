@@ -49,28 +49,34 @@ export class AppBar extends React.Component<Properties, State> {
   };
 
   /**
-   * Unhovers the container, and prevents another hover occuring until the mouse
+   * Unhovers the container and prevents another hover occurring until the mouse
    * leaves the container.
+   *
+   * This method:
+   * 1. Adds the 'no-hover' class to prevent expansion
+   * 2. Forces a reflow to ensure immediate width change
+   * 3. Sets up a one-time mouseleave listener to restore hover functionality
    */
   unhoverContainer = () => {
-    if (this.containerRef.current) {
-      this.containerRef.current.classList.add('no-hover');
+    const container = this.containerRef.current;
+    if (!container) return;
 
-      // Force a reflow to ensure the width change happens immediately
-      this.containerRef.current.getBoundingClientRect();
+    // Add the no-hover class to prevent expansion
+    container.classList.add('no-hover');
 
-      // Ensure we aren't adding multiple listeners
-      this.removeMouseLeaveListener();
+    // Force a reflow to ensure the width change happens immediately (prevent animation glitches)
+    container.getBoundingClientRect();
 
-      this.mouseLeaveHandler = (_event: MouseEvent) => {
-        if (this.containerRef.current) {
-          this.containerRef.current.classList.remove('no-hover');
-          this.removeMouseLeaveListener();
-        }
-      };
+    this.removeMouseLeaveListener();
 
-      this.containerRef.current.addEventListener('mouseleave', this.mouseLeaveHandler);
-    }
+    this.mouseLeaveHandler = () => {
+      if (this.containerRef.current) {
+        this.containerRef.current.classList.remove('no-hover');
+        this.removeMouseLeaveListener();
+      }
+    };
+
+    container.addEventListener('mouseleave', this.mouseLeaveHandler);
   };
 
   renderNotificationIcon = () => {

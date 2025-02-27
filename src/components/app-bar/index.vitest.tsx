@@ -55,20 +55,20 @@ describe(AppBar, () => {
     vi.clearAllMocks();
   });
 
-  describe('active app', () => {
-    it('should make conversation icon active when active app is conversation', () => {
+  describe('Active App State', () => {
+    it('should set the Messenger icon as active when activeApp is "conversation"', () => {
       renderComponent({ activeApp: 'conversation' });
       expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Messenger', isActive: true }));
     });
 
-    it('should not make conversation icon active when active app is anything else', () => {
+    it('should not set the Messenger icon as active when activeApp is something else', () => {
       renderComponent({ activeApp: 'foo' });
       expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Messenger', isActive: false }));
     });
   });
 
-  describe('unhover functionality', () => {
-    it('should add no-hover class when AppLink is clicked', () => {
+  describe('Unhover Functionality', () => {
+    it('should add the no-hover class when an AppLink is clicked', () => {
       const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
@@ -79,7 +79,7 @@ describe(AppBar, () => {
       expect(panel.classList.contains('no-hover')).toBe(true);
     });
 
-    it('should remove no-hover class when mouse leaves container', () => {
+    it('should remove the no-hover class when the mouse leaves the container', () => {
       const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
@@ -92,7 +92,7 @@ describe(AppBar, () => {
       expect(panel.classList.contains('no-hover')).toBe(false);
     });
 
-    it('should keep no-hover class when mouse moves within container after click', () => {
+    it('should maintain the no-hover class when the mouse moves within the container after clicking', () => {
       const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
@@ -105,7 +105,7 @@ describe(AppBar, () => {
       expect(panel.classList.contains('no-hover')).toBe(true);
     });
 
-    it('should allow hover again after mouse leaves and re-enters', () => {
+    it('should allow hovering again after the mouse leaves and re-enters the container', () => {
       const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');

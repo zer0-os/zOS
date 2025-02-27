@@ -42,6 +42,15 @@ $width: 46px;
     &:hover {
       width: calc(200px);
     }
+
+    &.no-hover {
+      width: $width !important;
+      transition: width 0.15s ease-in-out;
+
+      &:hover {
+        width: $width !important;
+      }
+    }
   }
 
   &__notification-icon-wrapper {

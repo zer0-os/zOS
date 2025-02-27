@@ -5,7 +5,6 @@
 $padding: 12px;
 $container-padding: 6px;
 $width: 46px;
-$gap-between-items: 16px;
 
 .app-bar {
   position: relative;
@@ -30,8 +29,8 @@ $gap-between-items: 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: $gap-between-items;
-    padding: calc($gap-between-items - 4px) $container-padding;
+    gap: 6px;
+    padding: $container-padding;
     width: $width;
 
     box-sizing: border-box;
@@ -102,7 +101,7 @@ $gap-between-items: 16px;
 
     span {
       position: absolute;
-      left: 34px; // 30px icon + 4px padding
+      left: 46px; // 30px icon + 16px padding
       top: 50%;
       transform: translateY(-50%);
 

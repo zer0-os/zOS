@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, forwardRef, Ref } from 'react';
 
 import cn from 'classnames';
 
@@ -10,9 +10,15 @@ export interface PanelProps {
   toggleSidekick?: () => void;
 }
 
-export const LegacyPanel = ({ children, className }: PanelProps) => {
-  return <div className={cn(styles.Legacy, className)}>{children}</div>;
-};
+export const LegacyPanel = forwardRef(({ children, className }: PanelProps, ref: Ref<HTMLDivElement>) => {
+  return (
+    <div ref={ref} className={cn(styles.Legacy, className)} data-testid='legacy-panel'>
+      {children}
+    </div>
+  );
+});
+
+LegacyPanel.displayName = 'LegacyPanel';
 
 export const Panel = ({ children, className }: PanelProps) => {
   return <div className={cn(styles.Panel, className)}>{children}</div>;

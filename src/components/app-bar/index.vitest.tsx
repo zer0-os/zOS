@@ -5,8 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppBar, Properties } from '.';
 
 vi.mock('react-router-dom', () => ({
-  Link: ({ children, onClick, ...props }: any) => (
-    <a onClick={onClick} {...props}>
+  Link: ({ children, onClick, to, ...props }: any) => (
+    <a onClick={onClick} to={to} {...props}>
       {children}
     </a>
   ),
@@ -68,60 +68,56 @@ describe(AppBar, () => {
   });
 
   describe('unhover functionality', () => {
-    let container: HTMLElement;
-
     it('should add no-hover class when AppLink is clicked', () => {
-      const { getByText, container: renderedContainer } = renderComponent({});
-      container = renderedContainer.querySelector('.app-bar__container') as HTMLElement;
+      const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
+      const panel = getByTestId('legacy-panel');
+
       fireEvent.click(link);
 
-      expect(container.classList.contains('no-hover')).toBe(true);
+      expect(panel.classList.contains('no-hover')).toBe(true);
     });
 
     it('should remove no-hover class when mouse leaves container', () => {
-      const { getByText, container: renderedContainer } = renderComponent({});
-      container = renderedContainer.querySelector('.app-bar__container') as HTMLElement;
+      const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
+      const panel = getByTestId('legacy-panel');
+
       fireEvent.click(link);
+      expect(panel.classList.contains('no-hover')).toBe(true);
 
-      expect(container.classList.contains('no-hover')).toBe(true);
-
-      fireEvent.mouseLeave(container);
-
-      expect(container.classList.contains('no-hover')).toBe(false);
+      fireEvent.mouseLeave(panel);
+      expect(panel.classList.contains('no-hover')).toBe(false);
     });
 
     it('should keep no-hover class when mouse moves within container after click', () => {
-      const { getByText, container: renderedContainer } = renderComponent({});
-      container = renderedContainer.querySelector('.app-bar__container') as HTMLElement;
+      const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
+      const panel = getByTestId('legacy-panel');
+
       fireEvent.click(link);
+      expect(panel.classList.contains('no-hover')).toBe(true);
 
-      expect(container.classList.contains('no-hover')).toBe(true);
-
-      fireEvent.mouseMove(container);
-
-      expect(container.classList.contains('no-hover')).toBe(true);
+      fireEvent.mouseMove(panel);
+      expect(panel.classList.contains('no-hover')).toBe(true);
     });
 
     it('should allow hover again after mouse leaves and re-enters', () => {
-      const { getByText, container: renderedContainer } = renderComponent({});
-      container = renderedContainer.querySelector('.app-bar__container') as HTMLElement;
+      const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
+      const panel = getByTestId('legacy-panel');
+
       fireEvent.click(link);
 
-      fireEvent.mouseLeave(container);
+      fireEvent.mouseLeave(panel);
+      expect(panel.classList.contains('no-hover')).toBe(false);
 
-      expect(container.classList.contains('no-hover')).toBe(false);
-
-      fireEvent.mouseEnter(container);
-
-      expect(container.classList.contains('no-hover')).toBe(false);
+      fireEvent.mouseEnter(panel);
+      expect(panel.classList.contains('no-hover')).toBe(false);
     });
   });
 });

@@ -26,17 +26,11 @@ interface State {
 
 export class AppBar extends React.Component<Properties, State> {
   state = { isModalOpen: false };
-  containerRef: HTMLDivElement | null = null;
-  appBarRef = React.createRef<HTMLDivElement>();
+  containerRef = React.createRef<HTMLDivElement>();
   mouseLeaveHandler: ((event: MouseEvent) => void) | null = null;
 
-  componentDidMount() {
-    if (this.appBarRef.current) {
-      this.containerRef = this.appBarRef.current.querySelector(`.${cn('container').className}`);
-    }
-  }
-
   componentWillUnmount() {
+    // Remove listener to prevent memory leaks
     this.removeMouseLeaveListener();
   }
 
@@ -48,8 +42,8 @@ export class AppBar extends React.Component<Properties, State> {
    * @dev mouse listener needs to be removed so we don't add multiple listeners.
    */
   removeMouseLeaveListener = () => {
-    if (this.containerRef && this.mouseLeaveHandler) {
-      this.containerRef.removeEventListener('mouseleave', this.mouseLeaveHandler);
+    if (this.containerRef.current && this.mouseLeaveHandler) {
+      this.containerRef.current.removeEventListener('mouseleave', this.mouseLeaveHandler);
       this.mouseLeaveHandler = null;
     }
   };
@@ -59,23 +53,23 @@ export class AppBar extends React.Component<Properties, State> {
    * leaves the container.
    */
   unhoverContainer = () => {
-    if (this.containerRef) {
-      this.containerRef.classList.add('no-hover');
+    if (this.containerRef.current) {
+      this.containerRef.current.classList.add('no-hover');
 
       // Force a reflow to ensure the width change happens immediately
-      this.containerRef.getBoundingClientRect();
+      this.containerRef.current.getBoundingClientRect();
 
       // Ensure we aren't adding multiple listeners
       this.removeMouseLeaveListener();
 
       this.mouseLeaveHandler = (_event: MouseEvent) => {
-        if (this.containerRef) {
-          this.containerRef.classList.remove('no-hover');
+        if (this.containerRef.current) {
+          this.containerRef.current.classList.remove('no-hover');
           this.removeMouseLeaveListener();
         }
       };
 
-      this.containerRef.addEventListener('mouseleave', this.mouseLeaveHandler);
+      this.containerRef.current.addEventListener('mouseleave', this.mouseLeaveHandler);
     }
   };
 
@@ -101,8 +95,8 @@ export class AppBar extends React.Component<Properties, State> {
 
     return (
       <>
-        <div {...cn('')} ref={this.appBarRef}>
-          <LegacyPanel {...cn('container')}>
+        <div {...cn('')}>
+          <LegacyPanel {...cn('container')} ref={this.containerRef}>
             <AppLink
               Icon={IconHome}
               isActive={isActive('home')}
@@ -170,7 +164,7 @@ const AppLink = ({ Icon, isActive, to, label, onLinkClick }: AppLinkProps) => {
   };
 
   return (
-    <Link title={label} {...cn('link')} to={!isActive && to} onClick={handleClick}>
+    <Link title={label} {...cn('link')} to={!isActive ? to : undefined} onClick={handleClick}>
       <WorldPanelItem Icon={Icon} label={label} isActive={isActive} />
       <span data-active={isActive ? '' : null}>{label}</span>
     </Link>

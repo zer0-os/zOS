@@ -30,8 +30,9 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config user.name "ZERO Actions Bot"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          echo "Configured Git as user: ${{ github.actor }}"
 
       - name: Increment version
         id: version
@@ -57,10 +58,10 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore: bump ${{ github.event.inputs.version_increment }} (${{ steps.version.outputs.current_version }} -> ${{ steps.version.outputs.new_version }})'
-          title: 'chore: bump ${{ github.event.inputs.version_increment }} (${{ steps.version.outputs.current_version }} -> ${{ steps.version.outputs.new_version }})'
+          commit-message: 'chore: bump ${{ github.event.inputs.version_increment }} (`${{ steps.version.outputs.current_version }}` -> `${{ steps.version.outputs.new_version }}`)'
+          title: 'chore: bump ${{ github.event.inputs.version_increment }} (`${{ steps.version.outputs.current_version }}` -> `${{ steps.version.outputs.new_version }}`)'
           body: |
-            This PR bumps the version from ${{ steps.version.outputs.current_version }} to ${{ steps.version.outputs.new_version }}.
+            This PR bumps the version from `${{ steps.version.outputs.current_version }}` to `${{ steps.version.outputs.new_version }}`.
 
             Automated version increment via GitHub Actions.
           branch: ${{ steps.version.outputs.branch_name }}

@@ -1419,7 +1419,6 @@ export class MatrixClient implements IChatClient {
 
     this.matrix.on(ClientEvent.AccountData, (event) => {
       if (event.getType() === EventType.PushRules) {
-        console.log('XXXX PUSH RULES EVENT', event);
         this.publishRoomMuteStatusChanged(event);
       }
     });

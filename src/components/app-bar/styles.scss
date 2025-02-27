@@ -38,10 +38,10 @@ $width: 46px;
     backdrop-filter: blur(30px);
     list-style: none;
     transition: width 0.15s ease-in-out;
-  }
 
-  &:hover &__container {
-    width: calc(200px);
+    &:hover {
+      width: calc(200px);
+    }
   }
 
   &__notification-icon-wrapper {

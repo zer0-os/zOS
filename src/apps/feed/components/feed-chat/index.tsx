@@ -12,7 +12,6 @@ import { Media } from '../../../../components/message-input/utils';
 import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
-import { InvertedScroll } from '../../../../components/inverted-scroll';
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
 import { rawChannelSelector } from '../../../../store/channels/saga';
 import { IconButton } from '@zero-tech/zui/components/IconButton';
@@ -163,42 +162,38 @@ export class Container extends React.Component<Properties> {
             <Spinner />
           </div>
         )}
-        <InvertedScroll className={classNames('channel-view__inverted-scroll', styles.Scroll)} isScrollbarHidden={true}>
-          <div className={styles.FeedChat}>
-            <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
-              <div className='direct-message-chat__content'>
-                <div>
-                  {!isLoading && (
-                    <ChatViewContainer
-                      key={this.props.channel.optimisticId || this.props.channel.id} // Render new component for a new chat
-                      channelId={this.props.activeConversationId}
-                      showSenderAvatar={true}
-                      ref={this.chatViewContainerRef}
-                      className='direct-message-chat__channel'
-                    />
-                  )}
+        <div className={styles.FeedChat}>
+          <div className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
+            <div className='direct-message-chat__content'>
+              {!isLoading && (
+                <ChatViewContainer
+                  key={this.props.channel.optimisticId || this.props.channel.id} // Render new component for a new chat
+                  channelId={this.props.activeConversationId}
+                  showSenderAvatar={true}
+                  ref={this.chatViewContainerRef}
+                  className='direct-message-chat__channel'
+                />
+              )}
 
-                  <div className='direct-message-chat__footer-position'>
-                    <div className='direct-message-chat__footer'>
-                      <div className={styles.FeedChatMessageInput}>
-                        {!isLoading && (
-                          <MessageInput
-                            id={this.props.activeConversationId}
-                            onSubmit={this.handleSendMessage}
-                            getUsersForMentions={this.searchMentionableUsers}
-                            reply={this.props.channel?.reply}
-                            onRemoveReply={this.props.onRemoveReply}
-                          />
-                        )}
-                        {this.renderTypingIndicators()}
-                      </div>
-                    </div>
+              <div className='direct-message-chat__footer-position'>
+                <div className='direct-message-chat__footer'>
+                  <div className={styles.FeedChatMessageInput}>
+                    {!isLoading && (
+                      <MessageInput
+                        id={this.props.activeConversationId}
+                        onSubmit={this.handleSendMessage}
+                        getUsersForMentions={this.searchMentionableUsers}
+                        reply={this.props.channel?.reply}
+                        onRemoveReply={this.props.onRemoveReply}
+                      />
+                    )}
+                    {this.renderTypingIndicators()}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </InvertedScroll>
+        </div>
       </PanelBody>
     );
   };

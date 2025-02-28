@@ -15,11 +15,10 @@ import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../component
 import { InvertedScroll } from '../../../../components/inverted-scroll';
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
 import { rawChannelSelector } from '../../../../store/channels/saga';
-import { IconButton } from '@zero-tech/zui/components/IconButton';
-import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
 import { toggleSecondarySidekick } from '../../../../store/group-management';
 import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { ConversationActionsContainer } from '../../../../components/messenger/conversation-actions/container';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -142,15 +141,11 @@ export class Container extends React.Component<Properties> {
 
   renderHeader = () => {
     return (
-      <PanelHeader className={styles.PanelHeader} toggleSidekick={this.toggleSidekick}>
-        <PanelTitle>Chat</PanelTitle>
-        <IconButton
-          className={classNames(styles.GroupButton, this.props.isSecondarySidekickOpen && 'is-active')}
-          Icon={this.props.isSecondarySidekickOpen ? IconChevronRight : IconChevronLeft}
-          size={32}
-          onClick={this.toggleSidekick}
-          isFilled
-        />
+      <PanelHeader className={styles.PanelHeader}>
+        <PanelTitle className={styles.PanelTitle} toggleSidekick={this.toggleSidekick}>
+          Chat
+        </PanelTitle>
+        <ConversationActionsContainer />
       </PanelHeader>
     );
   };

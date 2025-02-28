@@ -28,14 +28,14 @@ export const PanelBody = ({ children, className }: PanelProps) => {
   return <div className={cn(styles.Body, className)}>{children}</div>;
 };
 
-export const PanelHeader = ({ children, className, toggleSidekick }: PanelProps) => {
+export const PanelHeader = ({ children, className }: PanelProps) => {
+  return <div className={cn(styles.Header, className)}>{children}</div>;
+};
+
+export const PanelTitle = ({ children, className, toggleSidekick }: PanelProps) => {
   return (
-    <div className={cn(styles.Header, className)} onClick={toggleSidekick}>
+    <div className={cn(styles.Title, className)} onClick={toggleSidekick}>
       {children}
     </div>
   );
-};
-
-export const PanelTitle = ({ children, className }: PanelProps) => {
-  return <div className={cn(styles.Title, className)}>{children}</div>;
 };

@@ -26,7 +26,6 @@ describe('NotificationsFeed', () => {
         options: [
           { key: 'all', label: 'All' },
           { key: 'highlights', label: 'Highlights' },
-          { key: 'muted', label: 'Muted' },
         ],
       })
     );

@@ -38,14 +38,25 @@ $width: 46px;
     backdrop-filter: blur(30px);
     list-style: none;
     transition: width 0.15s ease-in-out;
-  }
 
-  &:hover &__container {
-    width: calc(200px);
+    &:hover {
+      width: calc(200px);
+    }
+
+    &.no-hover {
+      width: $width !important;
+      transition: width 0.15s ease-in-out;
+
+      &:hover {
+        width: $width !important;
+      }
+    }
   }
 
   &__notification-icon-wrapper {
     position: relative;
+    width: 22px;
+    height: 22px;
   }
 
   &__notification-icon {
@@ -90,7 +101,7 @@ $width: 46px;
 
     span {
       position: absolute;
-      left: 34px; // 30px icon + 4px padding
+      left: 46px; // 30px icon + 16px padding
       top: 50%;
       transform: translateY(-50%);
 

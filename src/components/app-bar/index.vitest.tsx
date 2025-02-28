@@ -1,8 +1,17 @@
 import { vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { AppBar, Properties } from '.';
+
+vi.mock('react-router-dom', () => ({
+  Link: ({ children, onClick, to, ...props }: any) => (
+    <a onClick={onClick} to={to} {...props}>
+      {children}
+    </a>
+  ),
+  MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 vi.mock('@zero-tech/zui/icons', () => ({
   IconHome: 'IconHome',
@@ -13,6 +22,7 @@ vi.mock('@zero-tech/zui/icons', () => ({
   IconList: 'IconList',
   IconBell1: 'IconBell1',
 }));
+
 vi.mock('./more-apps-modal', () => ({
   MoreAppsModal: () => <div data-testid='more-apps-modal' />,
 }));
@@ -45,15 +55,69 @@ describe(AppBar, () => {
     vi.clearAllMocks();
   });
 
-  describe('active app', () => {
-    it('should make conversation icon active when active app is conversation', () => {
+  describe('Active App State', () => {
+    it('should set the Messenger icon as active when activeApp is "conversation"', () => {
       renderComponent({ activeApp: 'conversation' });
       expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Messenger', isActive: true }));
     });
 
-    it('should not make conversation icon active when active app is anything else', () => {
+    it('should not set the Messenger icon as active when activeApp is something else', () => {
       renderComponent({ activeApp: 'foo' });
       expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Messenger', isActive: false }));
+    });
+  });
+
+  describe('Unhover Functionality', () => {
+    it('should add the no-hover class when an AppLink is clicked', () => {
+      const { getByText, getByTestId } = renderComponent({});
+
+      const link = getByText('Home');
+      const panel = getByTestId('legacy-panel');
+
+      fireEvent.click(link);
+
+      expect(panel.classList.contains('no-hover')).toBe(true);
+    });
+
+    it('should remove the no-hover class when the mouse leaves the container', () => {
+      const { getByText, getByTestId } = renderComponent({});
+
+      const link = getByText('Home');
+      const panel = getByTestId('legacy-panel');
+
+      fireEvent.click(link);
+      expect(panel.classList.contains('no-hover')).toBe(true);
+
+      fireEvent.mouseLeave(panel);
+      expect(panel.classList.contains('no-hover')).toBe(false);
+    });
+
+    it('should maintain the no-hover class when the mouse moves within the container after clicking', () => {
+      const { getByText, getByTestId } = renderComponent({});
+
+      const link = getByText('Home');
+      const panel = getByTestId('legacy-panel');
+
+      fireEvent.click(link);
+      expect(panel.classList.contains('no-hover')).toBe(true);
+
+      fireEvent.mouseMove(panel);
+      expect(panel.classList.contains('no-hover')).toBe(true);
+    });
+
+    it('should allow hovering again after the mouse leaves and re-enters the container', () => {
+      const { getByText, getByTestId } = renderComponent({});
+
+      const link = getByText('Home');
+      const panel = getByTestId('legacy-panel');
+
+      fireEvent.click(link);
+
+      fireEvent.mouseLeave(panel);
+      expect(panel.classList.contains('no-hover')).toBe(false);
+
+      fireEvent.mouseEnter(panel);
+      expect(panel.classList.contains('no-hover')).toBe(false);
     });
   });
 });

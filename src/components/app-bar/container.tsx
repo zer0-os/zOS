@@ -24,9 +24,7 @@ const useAppBar = () => {
     const conversations = denormalizeConversations(state);
     return conversations.some(
       (channel) =>
-        channel.unreadCount?.total > 0 &&
-        !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-        !channel.labels?.includes(DefaultRoomLabels.MUTE)
+        channel.unreadCount?.total > 0 && !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) && !channel.isMuted
     );
   });
 
@@ -34,9 +32,7 @@ const useAppBar = () => {
     const conversations = denormalizeConversations(state);
     return conversations.some(
       (channel) =>
-        channel.unreadCount?.highlight > 0 &&
-        !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-        !channel.labels?.includes(DefaultRoomLabels.MUTE)
+        channel.unreadCount?.highlight > 0 && !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) && !channel.isMuted
     );
   });
 

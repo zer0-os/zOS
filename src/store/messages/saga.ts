@@ -97,6 +97,10 @@ export const roomLabelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}'].labels`, []);
 };
 
+export const isMutedSelector = (roomId) => (state) => {
+  return getDeepProperty(state, `normalized.channels['${roomId}'].isMuted`, false);
+};
+
 export function* getLocalZeroUsersMap() {
   const users = yield select((state) => state.normalized.users || {});
   const zeroUsersMap: { [matrixId: string]: User } = {};
@@ -574,7 +578,8 @@ export function* sendBrowserNotification(eventData) {
   if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
 
   const roomLabels = yield select(roomLabelSelector(eventData?.roomId));
-  if (roomLabels?.includes(DefaultRoomLabels.MUTE) || roomLabels?.includes(DefaultRoomLabels.ARCHIVED)) return;
+  const isMuted = yield select(isMutedSelector(eventData?.roomId));
+  if (isMuted || roomLabels?.includes(DefaultRoomLabels.ARCHIVED)) return;
 
   if (eventData.type === NotifiableEventType.RoomMessage) {
     yield call(sendBrowserMessage, mapMessage(eventData));

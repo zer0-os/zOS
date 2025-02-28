@@ -12,12 +12,15 @@ import {
   onAddLabel,
   onRemoveLabel,
   roomLabelChange,
+  onMuteRoom,
+  onUnmuteRoom,
+  receivedRoomMuteStatusChanged,
 } from './saga';
 
 import { rootReducer } from '../reducer';
 import { ConversationStatus, DefaultRoomLabels, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
-import { addRoomToLabel, chat, removeRoomFromLabel, sendTypingEvent } from '../../lib/chat';
+import { addRoomToLabel, chat, muteRoom, removeRoomFromLabel, sendTypingEvent, unmuteRoom } from '../../lib/chat';
 import { getHistory } from '../../lib/browser';
 
 const userId = 'user-id';
@@ -189,6 +192,62 @@ describe(roomLabelChange, () => {
   });
 });
 
+describe(onMuteRoom, () => {
+  it('calls muteRoom with the roomId', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isMuted: false }).build();
+
+    await expectSaga(onMuteRoom, { payload: { roomId: 'room-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(muteRoom), undefined],
+      ])
+      .call(muteRoom, 'room-id')
+      .run();
+  });
+});
+
+describe(onUnmuteRoom, () => {
+  it('calls unmuteRoom with the roomId', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isMuted: true }).build();
+
+    await expectSaga(onUnmuteRoom, { payload: { roomId: 'room-id' } })
+      .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.call.fn(unmuteRoom), undefined],
+      ])
+      .call(unmuteRoom, 'room-id')
+      .run();
+  });
+});
+
+describe(receivedRoomMuteStatusChanged, () => {
+  it('updates room mute status to true', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isMuted: false }).build();
+
+    const { storeState } = await expectSaga(receivedRoomMuteStatusChanged, {
+      payload: { roomId: 'room-id', isMuted: true },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.isMuted).toEqual(true);
+  });
+
+  it('updates room mute status to false', async () => {
+    const initialState = new StoreBuilder().withConversationList({ id: 'room-id', isMuted: true }).build();
+
+    const { storeState } = await expectSaga(receivedRoomMuteStatusChanged, {
+      payload: { roomId: 'room-id', isMuted: false },
+    })
+      .withReducer(rootReducer, initialState)
+      .run();
+
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.isMuted).toEqual(false);
+  });
+});
+
 describe(publishUserTypingEvent, () => {
   it('sends typing event', async () => {
     const initialState = new StoreBuilder().withConversationList({ id: 'room-id' }).build();
@@ -328,5 +387,6 @@ const CHANNEL_DEFAULTS = {
   otherMembersTyping: [],
   labels: [],
   isSocialChannel: false,
+  isMuted: false,
   zid: null,
 };

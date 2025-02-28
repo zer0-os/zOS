@@ -24,6 +24,7 @@ export interface RealtimeChatEvents {
   roomLabelChange: (roomId: string, labels: string[]) => void;
   postMessageReactionChange: (roomId: string, reaction: any) => void;
   messageEmojiReactionChange: (roomId: string, reaction: any) => void;
+  roomMuteStatusChanged: (roomId: string, isMuted: boolean) => void;
 }
 
 export interface MatrixKeyBackupInfo {
@@ -437,4 +438,12 @@ export function getProfileInfo(userId: string): Promise<{
 
 export async function getAliasForRoomId(roomId: string) {
   return chat.get().matrix.getAliasForRoomId(roomId);
+}
+
+export async function muteRoom(roomId: string) {
+  return await chat.get().matrix.muteRoom(roomId);
+}
+
+export async function unmuteRoom(roomId: string) {
+  return await chat.get().matrix.unmuteRoom(roomId);
 }

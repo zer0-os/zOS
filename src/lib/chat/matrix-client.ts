@@ -1253,7 +1253,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
 
     const rule = {
-      actions: ['dont_notify'],
+      actions: [],
       conditions: [
         {
           kind: 'event_match' as any,
@@ -1270,7 +1270,7 @@ export class MatrixClient implements IChatClient {
       // If the rule already exists, update it
       if (error.errcode === 'M_UNKNOWN') {
         await this.matrix.setPushRuleEnabled('global', PushRuleKind.Override, roomId, true);
-        await this.matrix.setPushRuleActions('global', PushRuleKind.Override, roomId, ['dont_notify'] as any);
+        await this.matrix.setPushRuleActions('global', PushRuleKind.Override, roomId, []);
       } else {
         throw error;
       }
@@ -1639,7 +1639,7 @@ export class MatrixClient implements IChatClient {
         if (roomCondition) {
           const roomId = roomCondition.pattern;
           // A room is muted if the rule is enabled and has "dont_notify" action
-          const isMuted = rule.enabled && rule.actions.some((action) => action === 'dont_notify');
+          const isMuted = rule.enabled && rule.actions.length === 0;
 
           this.events.roomMuteStatusChanged(roomId, isMuted);
         }
@@ -1751,7 +1751,7 @@ export class MatrixClient implements IChatClient {
       );
 
       // A room is muted if there's a matching condition, the rule is enabled, and has "dont_notify" action
-      return roomCondition && rule.enabled && rule.actions.some((action) => action === 'dont_notify');
+      return roomCondition && rule.enabled && rule.actions.length === 0;
     });
 
     return !!muteRule;

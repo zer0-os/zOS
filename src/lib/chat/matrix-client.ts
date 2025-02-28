@@ -1253,7 +1253,7 @@ export class MatrixClient implements IChatClient {
     await this.waitForConnection();
 
     const rule = {
-      actions: [], // Empty actions means no notifications
+      actions: ['dont_notify'],
       conditions: [
         {
           kind: 'event_match' as any,
@@ -1261,7 +1261,7 @@ export class MatrixClient implements IChatClient {
           pattern: roomId,
         },
       ],
-    };
+    } as any;
 
     try {
       // Try to add a new push rule
@@ -1270,7 +1270,7 @@ export class MatrixClient implements IChatClient {
       // If the rule already exists, update it
       if (error.errcode === 'M_UNKNOWN') {
         await this.matrix.setPushRuleEnabled('global', PushRuleKind.Override, roomId, true);
-        await this.matrix.setPushRuleActions('global', PushRuleKind.Override, roomId, []);
+        await this.matrix.setPushRuleActions('global', PushRuleKind.Override, roomId, ['dont_notify'] as any);
       } else {
         throw error;
       }
@@ -1638,8 +1638,8 @@ export class MatrixClient implements IChatClient {
 
         if (roomCondition) {
           const roomId = roomCondition.pattern;
-          // A room is muted if the rule is enabled and has empty actions
-          const isMuted = rule.enabled && rule.actions.length === 0;
+          // A room is muted if the rule is enabled and has "dont_notify" action
+          const isMuted = rule.enabled && rule.actions.some((action) => action === 'dont_notify');
 
           this.events.roomMuteStatusChanged(roomId, isMuted);
         }
@@ -1750,8 +1750,8 @@ export class MatrixClient implements IChatClient {
           condition.kind === 'event_match' && condition.key === 'room_id' && condition.pattern === room.roomId
       );
 
-      // A room is muted if there's a matching condition, the rule is enabled, and actions is empty
-      return roomCondition && rule.enabled && rule.actions.length === 0;
+      // A room is muted if there's a matching condition, the rule is enabled, and has "dont_notify" action
+      return roomCondition && rule.enabled && rule.actions.some((action) => action === 'dont_notify');
     });
 
     return !!muteRule;

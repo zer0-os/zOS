@@ -24,7 +24,6 @@ export enum Events {
   RoomLabelChange = 'chat/channel/roomLabelChange',
   PostMessageReactionChange = 'chat/message/postMessageReactionChange',
   MessageEmojiReactionChange = 'chat/message/messageEmojiReactionChange',
-  RoomMuteStatusChanged = 'chat/channel/roomMuteStatusChanged',
 }
 
 let theBus;
@@ -103,8 +102,6 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       emit({ type: Events.PostMessageReactionChange, payload: { roomId, reaction } });
     const messageEmojiReactionChange = (roomId, reaction) =>
       emit({ type: Events.MessageEmojiReactionChange, payload: { roomId, reaction } });
-    const roomMuteStatusChanged = (roomId, isMuted) =>
-      emit({ type: Events.RoomMuteStatusChanged, payload: { roomId, isMuted } });
 
     chatClient.initChat({
       receiveNewMessage,
@@ -125,7 +122,6 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       roomLabelChange,
       postMessageReactionChange,
       messageEmojiReactionChange,
-      roomMuteStatusChanged,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

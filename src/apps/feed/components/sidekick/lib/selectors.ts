@@ -14,15 +14,3 @@ export const selectSocialChannelsUnreadCounts = createSelector(
       }, {} as { [zid: string]: UnreadCount });
   }
 );
-
-export const selectIsMutedChannels = createSelector(
-  [(state: RootState) => denormalizeConversations(state)],
-  (conversations) => {
-    return conversations
-      .filter((c) => c.isSocialChannel && c.zid)
-      .reduce((acc, channel) => {
-        acc[channel.zid!] = channel.isMuted;
-        return acc;
-      }, {} as { [zid: string]: boolean });
-  }
-);

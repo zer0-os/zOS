@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container } from './index';
 import { NotificationItem } from './notification-item';
-import { Channel } from '../../store/channels';
+import { Channel, DefaultRoomLabels } from '../../store/channels';
 
 describe('NotificationsFeed', () => {
   const mockConversations: Channel[] = [
@@ -49,13 +49,13 @@ describe('NotificationsFeed', () => {
         id: 'channel-1',
         unreadCount: { total: 3, highlight: 0 },
         name: 'Regular Chat',
-        isMuted: false,
+        labels: [],
       },
       {
         id: 'channel-2',
         unreadCount: { total: 1, highlight: 1 },
         name: 'Muted Chat',
-        isMuted: true,
+        labels: [DefaultRoomLabels.MUTE],
       },
     ] as Channel[];
 
@@ -95,13 +95,13 @@ describe('NotificationsFeed', () => {
         id: 'channel-1',
         unreadCount: { total: 3, highlight: 0 },
         name: 'Regular Chat',
-        isMuted: false,
+        labels: [],
       },
       {
         id: 'channel-2',
         unreadCount: { total: 1, highlight: 1 },
         name: 'Muted Chat',
-        isMuted: true,
+        labels: [DefaultRoomLabels.MUTE],
       },
     ] as Channel[];
 

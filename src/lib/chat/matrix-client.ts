@@ -19,7 +19,6 @@ import {
   IRoomTimelineData,
   RoomMember,
   ReceiptType,
-  PushRuleKind,
 } from 'matrix-js-sdk';
 import { RealtimeChatEvents, IChatClient } from './';
 import {
@@ -1249,52 +1248,6 @@ export class MatrixClient implements IChatClient {
     await this.matrix.deleteRoomTag(roomId, label);
   }
 
-  async muteRoom(roomId: string): Promise<void> {
-    await this.waitForConnection();
-
-    const rule = {
-      actions: ['dont_notify'],
-      conditions: [
-        {
-          kind: 'event_match' as any,
-          key: 'room_id',
-          pattern: roomId,
-        },
-      ],
-    } as any;
-
-    try {
-      // Try to add a new push rule
-      await this.matrix.addPushRule('global', PushRuleKind.Override, roomId, rule);
-    } catch (error: any) {
-      // If the rule already exists, update it
-      if (error.errcode === 'M_UNKNOWN') {
-        await this.matrix.setPushRuleEnabled('global', PushRuleKind.Override, roomId, true);
-        await this.matrix.setPushRuleActions('global', PushRuleKind.Override, roomId, ['dont_notify'] as any);
-      } else {
-        throw error;
-      }
-    }
-    this.events.roomMuteStatusChanged(roomId, true);
-  }
-
-  async unmuteRoom(roomId: string): Promise<void> {
-    await this.waitForConnection();
-
-    try {
-      // Try to delete the push rule
-      await this.matrix.deletePushRule('global', PushRuleKind.Override, roomId);
-    } catch (error: any) {
-      // If the rule doesn't exist, that's fine
-      if (error.errcode !== 'M_NOT_FOUND') {
-        // Try disabling the rule instead
-        await this.matrix.setPushRuleEnabled('global', PushRuleKind.Override, roomId, false);
-      }
-      // If M_NOT_FOUND, we don't need to do anything as the room is already unmuted
-    }
-    this.events.roomMuteStatusChanged(roomId, false);
-  }
-
   async sendTypingEvent(roomId: string, isTyping: boolean): Promise<void> {
     await this.waitForConnection();
 
@@ -1414,12 +1367,6 @@ export class MatrixClient implements IChatClient {
       const event = decryptedEvent.getEffectiveEvent();
       if (event.type === EventType.RoomMessage) {
         this.processMessageEvent(event);
-      }
-    });
-
-    this.matrix.on(ClientEvent.AccountData, (event) => {
-      if (event.getType() === EventType.PushRules) {
-        this.publishRoomMuteStatusChanged(event);
       }
     });
 
@@ -1627,26 +1574,6 @@ export class MatrixClient implements IChatClient {
     this.events.roomLabelChange(roomId, tagKeys);
   }
 
-  private publishRoomMuteStatusChanged = (event) => {
-    const pushRules = event.getContent();
-
-    if (pushRules?.global?.override) {
-      pushRules.global.override.forEach((rule) => {
-        const roomCondition = rule.conditions?.find(
-          (condition) => condition.kind === 'event_match' && condition.key === 'room_id'
-        );
-
-        if (roomCondition) {
-          const roomId = roomCondition.pattern;
-          // A room is muted if the rule is enabled and has "dont_notify" action
-          const isMuted = rule.enabled && rule.actions.some((action) => action === 'dont_notify');
-
-          this.events.roomMuteStatusChanged(roomId, isMuted);
-        }
-      });
-    }
-  };
-
   private publishReceiptEvent(event: MatrixEvent, room: Room) {
     const content = event.getContent();
     for (const eventId in content) {
@@ -1666,8 +1593,6 @@ export class MatrixClient implements IChatClient {
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
     const groupType = this.getRoomGroupType(room);
-    const isSocialChannel = groupType === 'social';
-    const isMuted = this.getRoomMuteStatus(room);
 
     featureFlags.enableTimerLogs && console.time(`xxxgetUpToLatestUserMessageFromRoom${room.roomId}`);
     const messages = await this.getUpToLatestUserMessageFromRoom(room);
@@ -1677,6 +1602,7 @@ export class MatrixClient implements IChatClient {
     const highlightCount = room.getUnreadNotificationCount(NotificationCountType.Highlight);
 
     const [admins, mods] = this.getRoomAdminsAndMods(room);
+    const isSocialChannel = groupType === 'social';
 
     const result = {
       id: room.roomId,
@@ -1696,7 +1622,6 @@ export class MatrixClient implements IChatClient {
       moderatorIds: mods,
       labels: [],
       isSocialChannel,
-      isMuted,
       // this isn't the best way to get the zid as it relies on the name format, but it's a quick fix
       zid: isSocialChannel ? name?.split('://')[1] : null,
     };
@@ -1737,24 +1662,6 @@ export class MatrixClient implements IChatClient {
   private getRoomAvatar(room: Room): string {
     const roomAvatarEvent = this.getLatestEvent(room, EventType.RoomAvatar);
     return roomAvatarEvent?.getContent()?.url;
-  }
-
-  private getRoomMuteStatus(room: Room): boolean {
-    if (!room.client?.pushRules?.global?.override) {
-      return false;
-    }
-
-    const muteRule = room.client.pushRules.global.override.find((rule) => {
-      const roomCondition = rule.conditions?.find(
-        (condition) =>
-          condition.kind === 'event_match' && condition.key === 'room_id' && condition.pattern === room.roomId
-      );
-
-      // A room is muted if there's a matching condition, the rule is enabled, and has "dont_notify" action
-      return roomCondition && rule.enabled && rule.actions.some((action) => action === 'dont_notify');
-    });
-
-    return !!muteRule;
   }
 
   private getRoomCreatedAt(room: Room): number {

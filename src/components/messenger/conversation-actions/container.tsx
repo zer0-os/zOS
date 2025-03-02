@@ -1,7 +1,7 @@
 import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel, denormalize, onMuteRoom, onUnmuteRoom } from '../../../store/channels';
+import { Channel, DefaultRoomLabels, denormalize, onAddLabel, onRemoveLabel } from '../../../store/channels';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import {
   startAddGroupMember,
@@ -36,8 +36,8 @@ export interface Properties extends PublicProperties {
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
   viewGroupInformation: () => void;
   toggleSecondarySidekick: () => void;
-  onMuteRoom: (payload: { roomId: string }) => void;
-  onUnmuteRoom: (payload: { roomId: string }) => void;
+  onAddLabel: (payload: { roomId: string; label: string }) => void;
+  onRemoveLabel: (payload: { roomId: string; label: string }) => void;
   openReportUserModal: (payload: { reportedUserId: string }) => void;
 }
 
@@ -83,8 +83,8 @@ export class Container extends React.Component<Properties> {
       setLeaveGroupStatus,
       viewGroupInformation,
       toggleSecondarySidekick,
-      onMuteRoom,
-      onUnmuteRoom,
+      onAddLabel,
+      onRemoveLabel,
       openReportUserModal,
     };
   }
@@ -98,15 +98,15 @@ export class Container extends React.Component<Properties> {
   };
 
   muteRoom = () => {
-    this.props.onMuteRoom({ roomId: this.props.activeConversationId });
+    this.props.onAddLabel({ roomId: this.props.activeConversationId, label: DefaultRoomLabels.MUTE });
   };
 
   unmuteRoom = () => {
-    this.props.onUnmuteRoom({ roomId: this.props.activeConversationId });
+    this.props.onRemoveLabel({ roomId: this.props.activeConversationId, label: DefaultRoomLabels.MUTE });
   };
 
   get isMuted() {
-    return this.props.directMessage.isMuted;
+    return this.props.directMessage.labels?.includes(DefaultRoomLabels.MUTE);
   }
 
   render() {

@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/reducer';
 import { Stage as ProfileStage } from '../../../../../store/user-profile';
 import { useState } from 'react';
-import { selectIsMutedChannels, selectSocialChannelsUnreadCounts } from './selectors';
+import { selectSocialChannelsUnreadCounts } from './selectors';
 
 export interface UnreadCount {
   total: number;
@@ -20,7 +20,6 @@ interface UseSidekickReturn {
   zids?: string[];
   search: string;
   unreadCounts: { [zid: string]: UnreadCount };
-  isMutedChannels: { [zid: string]: boolean };
   setSearch: (search: string) => void;
 }
 
@@ -40,7 +39,6 @@ export const useSidekick = (): UseSidekickReturn => {
   const filteredZids = uniqueWorldZids?.filter((zid) => zid.toLowerCase().includes(search.toLowerCase()));
 
   const unreadCounts = useSelector(selectSocialChannelsUnreadCounts);
-  const isMutedChannels = useSelector(selectIsMutedChannels);
 
   return {
     isErrorZids: isError,
@@ -51,6 +49,5 @@ export const useSidekick = (): UseSidekickReturn => {
     search,
     setSearch,
     unreadCounts,
-    isMutedChannels,
   };
 };

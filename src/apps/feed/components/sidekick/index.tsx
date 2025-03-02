@@ -9,23 +9,14 @@ import { CurrentUserDetails } from '../../../../components/sidekick/components/c
 import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 import { Input } from '@zero-tech/zui/components/Input/Input';
 import { LoadingIndicator } from '@zero-tech/zui/components/LoadingIndicator';
-import { IconBellOff1, IconSearchMd } from '@zero-tech/zui/icons';
+import { IconSearchMd } from '@zero-tech/zui/icons';
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 
 import styles from './styles.module.scss';
 
 export const Sidekick = () => {
-  const {
-    isErrorZids,
-    isLoadingZids,
-    isProfileOpen,
-    selectedZId,
-    zids,
-    search,
-    setSearch,
-    unreadCounts,
-    isMutedChannels,
-  } = useSidekick();
+  const { isErrorZids, isLoadingZids, isProfileOpen, selectedZId, zids, search, setSearch, unreadCounts } =
+    useSidekick();
 
   return (
     <SidekickContainer className={styles.Container}>
@@ -55,7 +46,6 @@ export const Sidekick = () => {
                     {zids?.map((zid) => {
                       const hasUnreadHighlights = unreadCounts[zid]?.highlight > 0;
                       const hasUnreadTotal = unreadCounts[zid]?.total > 0;
-                      const isMuted = isMutedChannels[zid];
 
                       return (
                         <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
@@ -63,8 +53,6 @@ export const Sidekick = () => {
                             <span>0://</span>
                             <div>{zid}</div>
                           </div>
-
-                          {isMuted && <IconBellOff1 className={styles.MutedIcon} size={16} />}
                           {!hasUnreadHighlights && hasUnreadTotal && (
                             <div className={styles.UnreadCount}>{unreadCounts[zid]?.total}</div>
                           )}

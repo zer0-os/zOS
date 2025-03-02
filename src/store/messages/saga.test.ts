@@ -135,7 +135,7 @@ describe('messages saga', () => {
     const initialState = {
       normalized: {
         channels: {
-          'room-id-1': { isMuted: true },
+          'room-id-1': { labels: [DefaultRoomLabels.MUTE] },
         },
       },
     };

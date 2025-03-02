@@ -12,6 +12,7 @@ import { LoadingIndicator } from '@zero-tech/zui/components/LoadingIndicator';
 import { IconBellOff1, IconSearchMd } from '@zero-tech/zui/icons';
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 
+import classNames from 'classnames';
 import styles from './styles.module.scss';
 
 export const Sidekick = () => {
@@ -56,20 +57,23 @@ export const Sidekick = () => {
                       const hasUnreadHighlights = unreadCounts[zid]?.highlight > 0;
                       const hasUnreadTotal = unreadCounts[zid]?.total > 0;
                       const isMuted = mutedChannels[zid];
-
+                      const isUnread = hasUnreadHighlights || hasUnreadTotal;
                       return (
                         <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
-                          <div className={styles.FeedName}>
+                          <div className={classNames(styles.FeedName, { [styles.Unread]: isUnread })}>
                             <span>0://</span>
                             <div>{zid}</div>
                           </div>
-                          {isMuted && <IconBellOff1 className={styles.MutedIcon} size={16} />}
-                          {!hasUnreadHighlights && hasUnreadTotal && (
-                            <div className={styles.UnreadCount}>{unreadCounts[zid]?.total}</div>
-                          )}
-                          {hasUnreadHighlights && (
-                            <div className={styles.UnreadHighlight}>{unreadCounts[zid]?.highlight}</div>
-                          )}
+
+                          <div className={styles.ItemIcons}>
+                            {isMuted && <IconBellOff1 className={styles.MutedIcon} size={16} />}
+                            {!hasUnreadHighlights && hasUnreadTotal && (
+                              <div className={styles.UnreadCount}>{unreadCounts[zid]?.total}</div>
+                            )}
+                            {hasUnreadHighlights && (
+                              <div className={styles.UnreadHighlight}>{unreadCounts[zid]?.highlight}</div>
+                            )}
+                          </div>
                         </FeedItem>
                       );
                     })}

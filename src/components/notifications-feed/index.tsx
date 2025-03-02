@@ -15,16 +15,19 @@ import styles from './styles.module.scss';
 enum Tab {
   All = 'all',
   Highlights = 'highlights',
+  Muted = 'muted',
 }
 
 const MESSAGES: Record<Tab, string> = {
   [Tab.All]: 'No new notifications',
   [Tab.Highlights]: 'No new highlights',
+  [Tab.Muted]: 'No notifications in muted conversations',
 };
 
 const TABS: { key: Tab; label: string }[] = [
   { key: Tab.All, label: 'All' },
   { key: Tab.Highlights, label: 'Highlights' },
+  { key: Tab.Muted, label: 'Muted' },
 ];
 
 export interface PublicProperties {}
@@ -78,6 +81,13 @@ export class Container extends React.Component<Properties, State> {
             conversation.unreadCount?.highlight > 0 &&
             !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
             !conversation.isMuted
+        );
+      case Tab.Muted:
+        return conversations.filter(
+          (conversation) =>
+            conversation.isMuted &&
+            !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+            (conversation.unreadCount?.total > 0 || conversation.unreadCount?.highlight > 0)
         );
       case Tab.All:
       default:

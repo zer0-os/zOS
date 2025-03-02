@@ -89,6 +89,33 @@ describe('NotificationsFeed', () => {
     expect(notificationItems.at(0).prop('type')).toBe('highlight');
   });
 
+  it('filters conversations correctly for Muted tab', () => {
+    const conversations = [
+      {
+        id: 'channel-1',
+        unreadCount: { total: 3, highlight: 0 },
+        name: 'Regular Chat',
+        isMuted: false,
+      },
+      {
+        id: 'channel-2',
+        unreadCount: { total: 1, highlight: 1 },
+        name: 'Muted Chat',
+        isMuted: true,
+      },
+    ] as Channel[];
+
+    const wrapper = subject({ conversations, isConversationsLoaded: true });
+    wrapper.setState({ selectedTab: 'muted' });
+
+    const notificationItems = wrapper.find(NotificationItem);
+    expect(notificationItems).toHaveLength(2);
+    expect(notificationItems.at(0).prop('conversation').id).toBe('channel-2');
+    expect(notificationItems.at(0).prop('type')).toBe('total');
+    expect(notificationItems.at(1).prop('conversation').id).toBe('channel-2');
+    expect(notificationItems.at(1).prop('type')).toBe('highlight');
+  });
+
   it('renders notifications when conversations exist', () => {
     const wrapper = subject({
       conversations: mockConversations,

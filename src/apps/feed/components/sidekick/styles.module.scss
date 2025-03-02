@@ -150,3 +150,13 @@
 
   align-self: center;
 }
+
+.ItemIcons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.Unread {
+  font-weight: 600;
+}

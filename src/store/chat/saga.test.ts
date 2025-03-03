@@ -174,6 +174,64 @@ describe(performValidateActiveConversation, () => {
       .not.call(openFirstConversation)
       .run();
   });
+
+  it('sets active conversation ID if URL path has not changed during validation', async () => {
+    const initialState = new StoreBuilder()
+      .withCurrentUser({ id: 'current-user' })
+      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] });
+
+    const history = {
+      location: { pathname: '/conversation/convo-1' },
+    };
+
+    await subject(performValidateActiveConversation, 'convo-1')
+      .withReducer(rootReducer, initialState.build())
+      .provide([
+        [matchers.call.fn(isMemberOfActiveConversation), true],
+        [matchers.call.fn(markConversationAsRead), undefined],
+        [matchers.call.fn(getRoomIdForAlias), 'convo-1'],
+        [matchers.call.fn(getHistory), history],
+      ])
+      .put(rawSetActiveConversationId('convo-1'))
+      .call(markConversationAsRead, 'convo-1')
+      .run();
+  });
+
+  it('does not set active conversation ID if URL path has changed during validation', async () => {
+    const initialState = new StoreBuilder()
+      .withCurrentUser({ id: 'current-user' })
+      .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] });
+
+    const originalHistory = {
+      location: { pathname: '/conversation/convo-1' },
+    };
+
+    const changedHistory = {
+      location: { pathname: '/conversation/convo-2' },
+    };
+
+    let historyCallCount = 0;
+
+    await expectSaga(performValidateActiveConversation, 'convo-1')
+      .withReducer(rootReducer, initialState.build())
+      .provide([
+        [matchers.call.fn(isMemberOfActiveConversation), true],
+        [matchers.call.fn(markConversationAsRead), undefined],
+        [matchers.call.fn(getRoomIdForAlias), 'convo-1'],
+        {
+          call(effect, next) {
+            if (effect.fn === getHistory) {
+              historyCallCount++;
+              return historyCallCount === 1 ? originalHistory : changedHistory;
+            }
+            return next();
+          },
+        },
+      ])
+      .not.put(rawSetActiveConversationId('convo-1'))
+      .call(markConversationAsRead, 'convo-1')
+      .run();
+  });
 });
 
 describe(isMemberOfActiveConversation, () => {
@@ -309,7 +367,7 @@ describe(validateActiveConversation, () => {
       .next()
       .call(waitForChatConnectionCompletion)
       .next(true)
-      .fork(performValidateActiveConversation, 'convo-1')
+      .call(performValidateActiveConversation, 'convo-1')
       .next()
       .put(setIsJoiningConversation(false))
       .next()

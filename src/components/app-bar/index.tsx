@@ -170,7 +170,7 @@ const AppLink = ({ Icon, isActive, to, label, onLinkClick }: AppLinkProps) => {
   };
 
   return (
-    <Link title={label} {...cn('link')} to={!isActive ? to : undefined} onClick={handleClick}>
+    <Link title={label} {...cn('link')} to={!isActive ? to : '#'} onClick={handleClick}>
       <WorldPanelItem Icon={Icon} label={label} isActive={isActive} />
       <span data-active={isActive ? '' : null}>{label}</span>
     </Link>

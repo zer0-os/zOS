@@ -1,4 +1,4 @@
-import { put, select, call, take, takeEvery, spawn, race, takeLatest, cancel, fork } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
 import {
@@ -111,24 +111,15 @@ export function* setActiveConversation(id: string) {
   history.push({ pathname: `/conversation/${id}` });
 }
 
-let activeValidationTask = null;
 export function* validateActiveConversation(conversationId: string) {
   try {
     yield put(clearJoinRoomErrorContent());
     yield put(setIsJoiningConversation(true));
 
     const isLoaded = yield call(waitForChatConnectionCompletion);
-
-    if (!isLoaded) {
-      return;
+    if (isLoaded) {
+      yield call(performValidateActiveConversation, conversationId);
     }
-
-    // Cancel any in-progress validation task to prevent race conditions
-    if (activeValidationTask) {
-      yield cancel(activeValidationTask);
-    }
-
-    activeValidationTask = yield fork(performValidateActiveConversation, conversationId);
   } finally {
     yield put(setIsJoiningConversation(false));
   }
@@ -189,44 +180,47 @@ export function* setWhenUserJoinedRoom(conversationId: string) {
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {
-  try {
-    const history = yield call(getHistory);
-    const currentPath = history.location.pathname;
-    const isMessengerApp = currentPath.startsWith('/conversation');
+  const history = yield call(getHistory);
+  const currentPath = history.location.pathname;
+  const isMessengerApp = currentPath.startsWith('/conversation');
 
-    if (!activeConversationId) {
-      yield put(clearJoinRoomErrorContent());
-      yield call(openFirstConversation);
-      return;
-    }
+  // Store the original path when validation starts
+  const originalPath = currentPath;
 
-    let conversationId = activeConversationId;
-    if (isAlias(activeConversationId)) {
-      activeConversationId = parseAlias(activeConversationId);
-      conversationId = yield call(getRoomIdForAlias, activeConversationId);
-    }
-
-    const conversation = yield select(rawChannelSelector(conversationId));
-    if (conversation?.isSocialChannel && isMessengerApp) {
-      // If it's a social channel and accessed from messenger app, open the last active conversation instead
-      yield call(openFirstConversation);
-      return;
-    }
-
-    if (!conversationId || !(yield call(isMemberOfActiveConversation, conversationId))) {
-      yield call(joinRoom, activeConversationId);
-      return;
-    }
-
-    yield put(rawSetActiveConversationId(conversationId));
-
-    // Mark conversation as read, now that it has been set as active
-    yield call(markConversationAsRead, conversationId);
-  } catch (error) {
-    console.error('Error validating active conversation', error);
-  } finally {
-    activeValidationTask = null;
+  if (!activeConversationId) {
+    yield put(clearJoinRoomErrorContent());
+    yield call(openFirstConversation);
+    return;
   }
+
+  let conversationId = activeConversationId;
+  if (isAlias(activeConversationId)) {
+    activeConversationId = parseAlias(activeConversationId);
+    conversationId = yield call(getRoomIdForAlias, activeConversationId);
+  }
+
+  const conversation = yield select(rawChannelSelector(conversationId));
+  if (conversation?.isSocialChannel && isMessengerApp) {
+    // If it's a social channel and accessed from messenger app, open the last active conversation instead
+    yield call(openFirstConversation);
+    return;
+  }
+
+  if (!conversationId || !(yield call(isMemberOfActiveConversation, conversationId))) {
+    yield call(joinRoom, activeConversationId);
+    return;
+  }
+
+  const currentHistory = yield call(getHistory);
+  const currentPathNow = currentHistory.location.pathname;
+
+  // check if path has changed before setting active conversation
+  if (currentPathNow === originalPath) {
+    yield put(rawSetActiveConversationId(conversationId));
+  }
+
+  // Mark conversation as read, now that it has been set as active
+  yield call(markConversationAsRead, conversationId);
 }
 
 export function* closeErrorDialog() {

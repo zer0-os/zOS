@@ -20,7 +20,6 @@ import { ERROR_DIALOG_CONTENT, JoinRoomApiErrorCode, translateJoinRoomApiError }
 import { getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { joinRoom as apiJoinRoom } from './api';
 import { call } from 'redux-saga/effects';
-import { openSidekickForSocialChannel } from '../group-management/saga';
 import { getHistory } from '../../lib/browser';
 
 describe(performValidateActiveConversation, () => {
@@ -310,9 +309,7 @@ describe(validateActiveConversation, () => {
       .next()
       .call(waitForChatConnectionCompletion)
       .next(true)
-      .call(performValidateActiveConversation, 'convo-1')
-      .next()
-      .spawn(openSidekickForSocialChannel, 'convo-1')
+      .fork(performValidateActiveConversation, 'convo-1')
       .next()
       .put(setIsJoiningConversation(false))
       .next()

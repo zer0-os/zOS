@@ -1,7 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { chat, getRoomTags } from '../../lib/chat';
+import { chat } from '../../lib/chat';
 
 import {
   fetchConversations,
@@ -59,7 +59,6 @@ describe('channels list saga', () => {
         [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
         [matchers.call.fn(mapToZeroUsers), null],
         [matchers.call.fn(getUserReadReceiptPreference), null],
-        [matchers.call.fn(getRoomTags), null],
       ]);
     }
 
@@ -136,7 +135,6 @@ describe('channels list saga', () => {
           [matchers.call.fn(chatClient.getConversations), MOCK_CONVERSATIONS],
           [matchers.call.fn(mapToZeroUsers), null],
           [matchers.call.fn(getUserReadReceiptPreference), null],
-          [matchers.call.fn(getRoomTags), null],
         ])
         .withReducer(rootReducer, { channelsList: { value: [] } } as RootState)
         .fork(loadSecondaryConversationData, [...MOCK_CONVERSATIONS])

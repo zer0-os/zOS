@@ -3,7 +3,7 @@ import getDeepProperty from 'lodash.get';
 import uniqBy from 'lodash.uniqby';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
 import { receive, denormalizeConversations, setStatus } from '.';
-import { batchDownloadFiles, chat, downloadFile, getRoomTags } from '../../lib/chat';
+import { batchDownloadFiles, chat, downloadFile } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
 import { toLocalChannel, mapChannelMembers, mapChannelMessages } from './utils';
@@ -176,13 +176,11 @@ export function* fetchConversations() {
 
 export function* loadSecondaryConversationData(conversations) {
   yield put(setIsSecondaryConversationDataLoaded(false));
-  yield call(getRoomTags, conversations);
   yield call(parseProfileImagesForMembers, conversations);
 
   const receiveCalls = conversations.map((conversation) =>
     call(receiveChannel, {
       id: conversation.id,
-      labels: conversation.labels,
       otherMembers: conversation.otherMembers,
       memberHistory: conversation.memberHistory,
     })

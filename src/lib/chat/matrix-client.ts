@@ -1227,17 +1227,6 @@ export class MatrixClient implements IChatClient {
     return await Promise.all(matches.map((r) => this.mapConversation(r)));
   }
 
-  async getRoomTags(conversations: Partial<Channel>[]): Promise<void> {
-    const tags = conversations.map(async (conversation) => {
-      featureFlags.enableTimerLogs && console.time(`xxxgetRoomTags${conversation.id}`);
-      const result = await this.matrix.getRoomTags(conversation.id);
-      conversation.labels = Object.keys(result.tags);
-      featureFlags.enableTimerLogs && console.timeEnd(`xxxgetRoomTags${conversation.id}`);
-    });
-
-    await Promise.all(tags);
-  }
-
   async addRoomToLabel(roomId: string, label: string): Promise<void> {
     await this.waitForConnection();
     await this.matrix.setRoomTag(roomId, label);
@@ -1593,6 +1582,7 @@ export class MatrixClient implements IChatClient {
     const avatarUrl = this.getRoomAvatar(room);
     const createdAt = this.getRoomCreatedAt(room);
     const groupType = this.getRoomGroupType(room);
+    const roomTags = Object.keys(room.tags || {});
 
     featureFlags.enableTimerLogs && console.time(`xxxgetUpToLatestUserMessageFromRoom${room.roomId}`);
     const messages = await this.getUpToLatestUserMessageFromRoom(room);
@@ -1620,7 +1610,7 @@ export class MatrixClient implements IChatClient {
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: admins,
       moderatorIds: mods,
-      labels: [],
+      labels: roomTags,
       isSocialChannel,
       // this isn't the best way to get the zid as it relies on the name format, but it's a quick fix
       zid: isSocialChannel ? name?.split('://')[1] : null,

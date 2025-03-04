@@ -73,7 +73,6 @@ const getSdkClient = (sdkClient = {}) => ({
   invite: jest.fn().mockResolvedValue({}),
   setRoomTag: jest.fn().mockResolvedValue({}),
   deleteRoomTag: jest.fn().mockResolvedValue({}),
-  getRoomTags: jest.fn().mockResolvedValue({}),
   ...sdkClient,
 });
 
@@ -1678,40 +1677,6 @@ describe('matrix client', () => {
       await client.removeRoomFromLabel('channel-id', DefaultRoomLabels.WORK);
 
       expect(deleteRoomTag).toHaveBeenCalledWith('channel-id', DefaultRoomLabels.WORK);
-    });
-  });
-
-  describe('getRoomTags', () => {
-    it('returns correct tags for all rooms', async () => {
-      const conversations = [
-        { id: 'room1', labels: [] },
-        { id: 'room2', labels: [] },
-      ];
-
-      const getRoomTags = jest
-        .fn()
-        .mockResolvedValueOnce({ tags: { 'm.favorite': {}, 'm.mute': {}, 'm.work': {}, 'm.family': {} } })
-        .mockResolvedValueOnce({ tags: {} });
-
-      const client = subject({ createClient: jest.fn(() => getSdkClient({ getRoomTags })) });
-
-      await client.connect(null, 'token');
-      await client.getRoomTags(conversations);
-
-      expect(getRoomTags).toHaveBeenCalledWith('room1');
-      expect(getRoomTags).toHaveBeenCalledWith('room2');
-      expect(conversations).toEqual([
-        {
-          id: 'room1',
-          labels: [
-            'm.favorite',
-            'm.mute',
-            'm.work',
-            'm.family',
-          ],
-        },
-        { id: 'room2', labels: [] },
-      ]);
     });
   });
 

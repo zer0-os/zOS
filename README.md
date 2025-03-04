@@ -5,7 +5,9 @@
 ## Getting Started
 
 1. clone the repo
-1. run `npm install`
+1. generate a [GitHub Personal Access Token](https://github.com/settings/tokens) with the `read:package` scope
+   1. add to npm by running `npm config set //npm.pkg.github.com/:\_authToken=YOUR_GITHUB_TOKEN`
+1. run `npm install --legacy-peer-deps`
 1. copy .env.example to .env and change/add the necessary values
 1. run `npm start` to run the app or
 1. `npm run test` to run the tests
@@ -20,10 +22,10 @@ The [ZERO Feed app](https://github.com/zer0-os/zOS-feed) is the first core app, 
 1. follow the getting started steps above and make sure you have a running zOS instance.
 1. add a repo for your new app. you can copy the feed app to get the basics, or just start from scratch.
 1. an app is just a component that conforms to the interface required by the platform. once you have the basics of your app in place, you can add it to the platform to make sure it loads correctly:
-   1. add your package, and import in [src/app-sandbox/index.tsx](src/app-sandbox/index.tsx)
-   1. add a conditional to the `renderSelectedApp` method that returns your component. if your app is covered by the default apps set, then use the corresponding member of the Apps enum.
-   1. add your app to the allApps array in [src/lib/apps/index.ts](src/lib/apps/index.ts)
-   1. make sure your app shows up in the menu, and that you can access it when the menu item is clicked.
+   1. create a new folder for your app in [src/apps](https://github.com/zer0-os/zOS/tree/main/src/apps)
+      - if your app is externally hosted, create an index.tsx file that uses the [ExternalApp](https://github.com/zer0-os/zOS/blob/main/src/apps/external-app/index.tsx) component and points to your app.
+   1. add your app component to the [AppRouter](https://github.com/zer0-os/zOS/blob/main/src/apps/app-router.tsx)
+   1. add a link to your app in the [AppBar](https://github.com/zer0-os/zOS/blob/3ace5002ed7561d3e0e3671982e3ee755fb97048/src/components/app-bar/index.tsx)
    1. once you have a stable version of your app, you can create a PR to the core zOS repo with the platform changes, and the version of your app you would like released.
 
 ### Contribute to the Platform
@@ -42,7 +44,7 @@ A high level overview of the Component, Connected Component, Redux Saga, Normali
 1. Create a PR and merge your version update
 1. View https://github.com/zer0-os/zOS/releases, find your new release and edit it, ensure that `Set as the latest release` is checked, and click the `Publish Release` button
 1. View https://github.com/zer0-os/zOS/actions, watch for your release deployment to complete
-1. View https://zos.zer0.io, open the Developer Tools Console, verify that your version number is correct (matches your version increment in package.json from the first step)
+1. View https://zos.zero.tech, open the Developer Tools Console, verify that your version number is correct (matches your version increment in package.json from the first step)
 
 #### Matrix
 

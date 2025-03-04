@@ -357,10 +357,6 @@ export async function removeRoomFromLabel(roomId: string, label: string) {
   return await chat.get().matrix.removeRoomFromLabel(roomId, label);
 }
 
-export async function getRoomTags(conversations: Partial<Channel>[]) {
-  return await chat.get().matrix.getRoomTags(conversations);
-}
-
 export async function createUnencryptedConversation(
   users: User[],
   name: string,

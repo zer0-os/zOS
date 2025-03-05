@@ -119,15 +119,6 @@
 .messages__container {
   padding-top: 100px;
 
-  // Use transition because nested elements can't background blur
-  // if a parent element has an animation attribute
-  // Note: background blur does not work during the `transition`
-  opacity: 0;
-  transition: opacity 200ms ease-out;
-  &--rendered {
-    opacity: 1;
-  }
-
   .message__header {
     display: flex;
     justify-content: center;

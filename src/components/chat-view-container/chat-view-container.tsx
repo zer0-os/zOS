@@ -13,7 +13,7 @@ import {
   AdminMessageType,
   sendEmojiReaction,
 } from '../../store/messages';
-import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
+import { Channel, ConversationStatus, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
@@ -25,6 +25,7 @@ import { openMessageInfo } from '../../store/message-info';
 import { toggleSecondarySidekick } from '../../store/group-management';
 import { linkMessages, mapMessagesById, mapMessagesByRootId } from './utils';
 import { openReportUserModal } from '../../store/report-user';
+import { denormalizedChannelSelector } from '../../store/channels/selectors';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -63,7 +64,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
-    const channel = denormalize(props.channelId, state) || null;
+    const channel = denormalizedChannelSelector(state, props.channelId) || null;
     const {
       authentication: { user },
       chat: { activeConversationId },

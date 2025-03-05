@@ -11,7 +11,6 @@ export const rawChannel = (state: RootState, channelId: string) => {
 export const denormalizedChannelSelector = createSelector(
   [(state: RootState) => state, (_state: RootState, channelId: string) => channelId],
   (state, channelId) => {
-    console.log('Recalculating denormalizedChannelSelector for', channelId);
     return denormalizeChannel(channelId, state);
   }
 );

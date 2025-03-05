@@ -2,7 +2,6 @@ import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel, onAddLabel, onRemoveLabel, openConversation, User } from '../../../store/channels';
-import { denormalizeConversations } from '../../../store/channels-list';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
@@ -40,6 +39,7 @@ import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 import { AdminMessageType } from '../../../store/messages';
 import { Header } from '../../sidekick/components/header';
+import { denormalizedConversationsSelector } from '../../../store/channels-list/selectors';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -94,10 +94,11 @@ export class Container extends React.Component<Properties, State> {
       rewards,
     } = state;
 
-    const conversations = denormalizeConversations(state)
+    const conversations = denormalizedConversationsSelector(state)
       .filter((c) => !c.isSocialChannel)
       .map(addLastMessageMeta(state))
       .sort(byLastMessageOrCreation);
+
     const userHandle = getUserSubHandle(user?.data?.primaryZID, user?.data?.primaryWalletAddress);
     return {
       conversations,

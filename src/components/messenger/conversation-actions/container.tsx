@@ -1,7 +1,7 @@
 import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel, DefaultRoomLabels, denormalize, onAddLabel, onRemoveLabel } from '../../../store/channels';
+import { Channel, DefaultRoomLabels, onAddLabel, onRemoveLabel } from '../../../store/channels';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import {
   startAddGroupMember,
@@ -13,6 +13,8 @@ import {
 } from '../../../store/group-management';
 import { ConversationActions } from '.';
 import { openReportUserModal } from '../../../store/report-user';
+import { denormalizedChannelSelector } from '../../../store/channels/selectors';
+
 import './styles.scss';
 
 export interface PublicProperties {
@@ -48,7 +50,7 @@ export class Container extends React.Component<Properties> {
       groupManagement,
     } = state;
 
-    const directMessage = denormalize(activeConversationId, state);
+    const directMessage = denormalizedChannelSelector(state, activeConversationId);
     const currentUser = currentUserSelector(state);
     const hasMultipleMembers = (directMessage?.otherMembers || []).length > 1;
     const isSocialChannel = directMessage?.isSocialChannel;

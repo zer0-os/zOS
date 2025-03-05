@@ -3,11 +3,12 @@ import * as React from 'react';
 import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { MemberManagementAction, openMemberManagement } from '../../../../store/group-management';
-import { User, denormalize as denormalizeChannel } from '../../../../store/channels';
+import { User } from '../../../../store/channels';
 
 import { MemberManagementMenu } from '.';
 import { isUserModerator } from '../../list/utils/utils';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { denormalizedChannelSelector } from '../../../../store/channels/selectors';
 
 export interface PublicProperties {
   user?: User;
@@ -30,7 +31,7 @@ export class Container extends React.Component<Properties> {
       chat: { activeConversationId },
     } = state;
 
-    const conversation = denormalizeChannel(activeConversationId, state);
+    const conversation = denormalizedChannelSelector(state, activeConversationId);
     const conversationModeratorIds = conversation?.moderatorIds;
 
     const currentUser = currentUserSelector(state);

@@ -2,6 +2,9 @@ import getDeepProperty from 'lodash.get';
 import { denormalize } from '../channels';
 import { compareDatesDesc } from '../../lib/date';
 import { AsyncListStatus } from '../normalized';
+import { createSelector } from 'reselect';
+import { denormalizeConversations } from '.';
+import { RootState } from '..';
 
 export function channelListStatus(state) {
   return getDeepProperty(state, 'channelsList.status', AsyncListStatus.Idle);
@@ -32,3 +35,7 @@ function byLastMessageOrCreation(a, b) {
   const bDate = b.lastMessage?.createdAt || b.createdAt;
   return compareDatesDesc(aDate, bDate);
 }
+
+export const denormalizedConversationsSelector = createSelector([(state: RootState) => state], (state) => {
+  return denormalizeConversations(state);
+});

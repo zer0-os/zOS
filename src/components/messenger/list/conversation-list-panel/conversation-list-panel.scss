@@ -37,7 +37,6 @@ $side-padding: 16px;
     overflow-x: auto;
     white-space: nowrap;
     padding: 8px 0;
-    margin: 0 16px;
 
     &::-webkit-scrollbar-thumb {
       display: none;
@@ -115,7 +114,6 @@ $side-padding: 16px;
     display: flex;
     gap: 16px;
     flex-direction: column;
-    padding: 16px 0 0;
 
     animation: conversation-slide-in 600ms ease-in forwards;
 
@@ -123,7 +121,6 @@ $side-padding: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 0 $side-padding;
     }
 
     &-conversations-search {
@@ -141,8 +138,6 @@ $side-padding: 16px;
     flex-grow: 1;
     // Forcing a height here allows the flex-grow to fill the size without growing too big
     height: 1px;
-    // accounts for 4px scrollbar width on right side of container
-    padding: 0 12px 0 16px;
   }
 
   &__empty {

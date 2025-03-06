@@ -49,6 +49,7 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <SidekickContainer
+        variant='secondary'
         className={classNames(
           styles.Members,
           this.props.className,

@@ -2,89 +2,66 @@ import { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { useSidekick } from './lib/useSidekick';
-import { Container as SidekickContainer } from '../../../../components/sidekick/components/container';
-import { UserProfileContainer } from '../../../../components/messenger/user-profile/container';
-import { Header } from '../../../../components/sidekick/components/header';
-import { CurrentUserDetails } from '../../../../components/sidekick/components/current-user-details';
-import { ScrollbarContainer } from '../../../../components/scrollbar-container';
 import { Input } from '@zero-tech/zui/components/Input/Input';
 import { LoadingIndicator } from '@zero-tech/zui/components/LoadingIndicator';
-import { IconBellOff1, IconSearchMd } from '@zero-tech/zui/icons';
-import { Panel, PanelBody } from '../../../../components/layout/panel';
+import { IconSearchMd, IconBellOff1 } from '@zero-tech/zui/icons';
+import {
+  ContentPortal as SidekickContentPortal,
+  Content as SidekickContent,
+  Scroll as SidekickScroll,
+} from '../../../../components/sidekick';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
 export const Sidekick = () => {
-  const {
-    isErrorZids,
-    isLoadingZids,
-    isProfileOpen,
-    selectedZId,
-    zids,
-    search,
-    setSearch,
-    unreadCounts,
-    mutedChannels,
-  } = useSidekick();
+  const { isErrorZids, isLoadingZids, selectedZId, zids, search, setSearch, unreadCounts, mutedChannels } =
+    useSidekick();
 
   return (
-    <SidekickContainer className={styles.Container}>
-      <Panel className={styles.Panel}>
-        <PanelBody className={styles.Body}>
-          {isProfileOpen ? (
-            <UserProfileContainer />
-          ) : (
-            <>
-              <Header>
-                <CurrentUserDetails />
-              </Header>
-              <div className={styles.Sidekick}>
-                <Input
-                  className={styles.Search}
-                  onChange={setSearch}
-                  size={'small'}
-                  startEnhancer={<IconSearchMd size={16} color={'var(--color-greyscale-11)'} />}
-                  type={'search'}
-                  value={search}
-                  wrapperClassName={styles.SearchWrapper}
-                />
-                <ScrollbarContainer variant='on-hover' className={styles.Scroll}>
-                  <ul className={styles.List}>
-                    {isLoadingZids && <LoadingIndicator />}
-                    {isErrorZids && <li>Error loading channels</li>}
-                    {zids?.map((zid) => {
-                      const hasUnreadHighlights = unreadCounts[zid]?.highlight > 0;
-                      const hasUnreadTotal = unreadCounts[zid]?.total > 0;
-                      const isMuted = mutedChannels[zid];
-                      const isUnread = hasUnreadHighlights || hasUnreadTotal;
-                      return (
-                        <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
-                          <div className={classNames(styles.FeedName, { [styles.Unread]: isUnread })}>
-                            <span>0://</span>
-                            <div>{zid}</div>
-                          </div>
+    <SidekickContentPortal>
+      <SidekickContent>
+        <Input
+          className={styles.Search}
+          onChange={setSearch}
+          size={'small'}
+          startEnhancer={<IconSearchMd size={16} color={'var(--color-greyscale-11)'} />}
+          type={'search'}
+          value={search}
+          wrapperClassName={styles.SearchWrapper}
+        />
+        <SidekickScroll>
+          <ul className={styles.List}>
+            {isLoadingZids && <LoadingIndicator />}
+            {isErrorZids && <li>Error loading channels</li>}
+            {zids?.map((zid) => {
+              const hasUnreadHighlights = unreadCounts[zid]?.highlight > 0;
+              const hasUnreadTotal = unreadCounts[zid]?.total > 0;
+              const isMuted = mutedChannels[zid];
+              const isUnread = hasUnreadHighlights || hasUnreadTotal;
+              return (
+                <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
+                  <div className={classNames(styles.FeedName, { [styles.Unread]: isUnread })}>
+                    <span>0://</span>
+                    <div>{zid}</div>
+                  </div>
 
-                          <div className={styles.ItemIcons}>
-                            {isMuted && <IconBellOff1 className={styles.MutedIcon} size={16} />}
-                            {!hasUnreadHighlights && hasUnreadTotal && (
-                              <div className={styles.UnreadCount}>{unreadCounts[zid]?.total}</div>
-                            )}
-                            {hasUnreadHighlights && (
-                              <div className={styles.UnreadHighlight}>{unreadCounts[zid]?.highlight}</div>
-                            )}
-                          </div>
-                        </FeedItem>
-                      );
-                    })}
-                  </ul>
-                </ScrollbarContainer>
-              </div>
-            </>
-          )}
-        </PanelBody>
-      </Panel>
-    </SidekickContainer>
+                  <div className={styles.ItemIcons}>
+                    {isMuted && <IconBellOff1 className={styles.MutedIcon} size={16} />}
+                    {!hasUnreadHighlights && hasUnreadTotal && (
+                      <div className={styles.UnreadCount}>{unreadCounts[zid]?.total}</div>
+                    )}
+                    {hasUnreadHighlights && (
+                      <div className={styles.UnreadHighlight}>{unreadCounts[zid]?.highlight}</div>
+                    )}
+                  </div>
+                </FeedItem>
+              );
+            })}
+          </ul>
+        </SidekickScroll>
+      </SidekickContent>
+    </SidekickContentPortal>
   );
 };
 

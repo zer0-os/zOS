@@ -8,6 +8,10 @@ import { send } from '../../../../store/messages';
 import { config } from '../../../../config';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
+jest.mock('../../../../components/sidekick/variants/members-sidekick', () => ({
+  MembersSidekick: () => <div data-testid='members-sidekick' />,
+}));
+
 describe('FeedChatContainer', () => {
   const subject = (props: any = {}) => {
     const allProps = {

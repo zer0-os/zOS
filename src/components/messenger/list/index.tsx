@@ -23,12 +23,9 @@ import { Option } from '../lib/types';
 import { MembersSelectedPayload } from '../../../store/create-conversation/types';
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal } from '@zero-tech/zui/components';
-import { IconButton } from '@zero-tech/zui/components/IconButton';
-import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
 import { ErrorDialog } from '../../error-dialog';
 import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
-import { CurrentUserDetails } from '../../sidekick/components/current-user-details';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
@@ -38,7 +35,7 @@ import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 import { AdminMessageType } from '../../../store/messages';
-import { Header } from '../../sidekick/components/header';
+import { Content as SidekickContent } from '../../sidekick/components/content';
 import { denormalizedConversationsSelector } from '../../../store/channels-list/selectors';
 
 import { bemClassName } from '../../../lib/bem';
@@ -274,20 +271,6 @@ export class Container extends React.Component<Properties, State> {
     return <RewardsModalContainer onClose={this.props.closeRewardsDialog} />;
   };
 
-  renderUserHeader() {
-    return (
-      <Header className={this.state.isCollapsed ? { ...cn('collapsed') }.className : ''}>
-        {!this.state.isCollapsed && <CurrentUserDetails />}
-        <IconButton
-          {...cn('collapse-button')}
-          Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}
-          onClick={this.state.isCollapsed ? this.expand : this.collapse}
-        />
-        {!this.state.isCollapsed && <IconButton Icon={IconPlus} onClick={this.startCreateConversation} />}
-      </Header>
-    );
-  }
-
   renderCreateConversation() {
     return (
       <>
@@ -348,14 +331,13 @@ export class Container extends React.Component<Properties, State> {
 
     return (
       <>
-        {this.props.stage === SagaStage.None && this.renderUserHeader()}
-        <div {...cn('')}>
+        <SidekickContent>
           {this.renderCreateConversation()}
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
           {this.state.isGroupTypeDialogOpen && this.renderGroupTypeDialog()}
-        </div>
+        </SidekickContent>
         {isExpanded && this.props.stage === SagaStage.None && this.renderFooterButton()}
         {this.renderInviteDialog()}
       </>

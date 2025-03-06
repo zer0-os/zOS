@@ -28,6 +28,10 @@
   }
 
   transition: transform 0.1s ease-out, max-width 0.1s ease-out, padding 0.1s ease-out;
+
+  > div {
+    flex-direction: column;
+  }
 }
 
 .Content {

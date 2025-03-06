@@ -8,8 +8,16 @@ import { useState } from 'react';
 export const useCurrentUserDetails = () => {
   const dispatch = useDispatch();
 
-  const rewards = useSelector((state: RootState) => state.rewards);
-  const user = useSelector((state: RootState) => state.authentication.user?.data);
+  const rewards = useSelector((state: RootState) => ({
+    showNewRewardsIndicator: state.rewards.showNewRewardsIndicator,
+    showRewardsInTooltip: state.rewards.showRewardsInTooltip,
+  }));
+
+  const user = useSelector((state: RootState) => ({
+    primaryZID: state.authentication.user?.data?.primaryZID,
+    firstName: state.authentication.user?.data?.profileSummary?.firstName,
+    profileImage: state.authentication.user?.data?.profileSummary?.profileImage,
+  }));
 
   const [isVerifyIdDialogOpen, setIsVerifyIdDialogOpen] = useState(false);
 
@@ -33,8 +41,8 @@ export const useCurrentUserDetails = () => {
     onOpenUserProfile: handleOnOpenUserProfile,
     showRewardsTooltip: rewards.showRewardsInTooltip,
     totalRewardsViewed: () => dispatch(totalRewardsViewed()),
-    userAvatarUrl: user?.profileSummary?.profileImage || '',
-    userHandle: user?.primaryZID || '',
-    userName: user?.profileSummary?.firstName || '',
+    userAvatarUrl: user.profileImage || '',
+    userHandle: user.primaryZID || '',
+    userName: user.firstName || '',
   };
 };

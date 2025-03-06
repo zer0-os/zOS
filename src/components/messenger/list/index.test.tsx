@@ -10,10 +10,8 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
-import { CurrentUserDetails } from '../../sidekick/components/current-user-details';
 import { ErrorDialog } from '../../error-dialog';
 import { bem } from '../../../lib/bem';
-import { IconButton } from '@zero-tech/zui/components/IconButton';
 const c = bem('.direct-message-members');
 
 const mockSearchMyNetworksByName = jest.fn();
@@ -54,33 +52,6 @@ describe('messenger-list', () => {
 
     return shallow(<DirectMessageChat {...allProps} />);
   };
-
-  it('render direct message members', function () {
-    const wrapper = subject({});
-
-    expect(wrapper.find('.direct-message-members').exists()).toBe(true);
-  });
-
-  it('starts create conversation saga', async function () {
-    const startCreateConversation = jest.fn();
-    const wrapper = subject({ startCreateConversation });
-
-    wrapper.find(IconButton).at(1).prop('onClick')(undefined);
-
-    expect(startCreateConversation).toHaveBeenCalled();
-  });
-
-  it('renders user UserDetails when stage is equal to none', function () {
-    const wrapper = subject({ stage: Stage.None });
-
-    expect(wrapper).toHaveElement(CurrentUserDetails);
-  });
-
-  it('does not render UserDetails when stage is not equal to none', function () {
-    const wrapper = subject({ stage: Stage.InitiateConversation });
-
-    expect(wrapper).not.toHaveElement(CurrentUserDetails);
-  });
 
   it('renders CreateConversationPanel', function () {
     const wrapper = subject({ stage: Stage.InitiateConversation });

@@ -1,7 +1,7 @@
 import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Container as SidekickContainer } from '../components/container';
+import { ContentPortal as SidekickContentPortal } from '../components/content-portal';
 import { MessengerList } from '../../messenger/list';
 import { UserProfileContainer } from '../../messenger/user-profile/container';
 import { Stage as ProfileStage } from '../../../store/user-profile';
@@ -38,7 +38,7 @@ export class Container extends React.Component<Properties> {
   }
 
   render() {
-    return <SidekickContainer>{this.renderPrimarySidekickContent()}</SidekickContainer>;
+    return <SidekickContentPortal>{this.renderPrimarySidekickContent()}</SidekickContentPortal>;
   }
 }
 

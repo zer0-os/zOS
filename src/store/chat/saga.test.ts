@@ -81,7 +81,7 @@ describe(performValidateActiveConversation, () => {
       .call(getRoomIdForAlias, '#' + alias)
       .not.call(apiJoinRoom, conversationId)
       .put(rawSetActiveConversationId(conversationId))
-      .call(markConversationAsRead, conversationId)
+      .spawn(markConversationAsRead, conversationId)
       .run();
 
     expect(storeState.chat.activeConversationId).toBe(conversationId);
@@ -170,7 +170,7 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(markConversationAsRead), undefined],
       ])
       .put(rawSetActiveConversationId('social-channel'))
-      .call(markConversationAsRead, 'social-channel')
+      .spawn(markConversationAsRead, 'social-channel')
       .not.call(openFirstConversation)
       .run();
   });
@@ -193,11 +193,11 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(getHistory), history],
       ])
       .put(rawSetActiveConversationId('convo-1'))
-      .call(markConversationAsRead, 'convo-1')
+      .spawn(markConversationAsRead, 'convo-1')
       .run();
   });
 
-  it('does not set active conversation ID if URL path has changed during validation', async () => {
+  it('does not set active conversation ID or mark conversation as read if URL path has changed during validation', async () => {
     const initialState = new StoreBuilder()
       .withCurrentUser({ id: 'current-user' })
       .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] });
@@ -229,7 +229,7 @@ describe(performValidateActiveConversation, () => {
         },
       ])
       .not.put(rawSetActiveConversationId('convo-1'))
-      .call(markConversationAsRead, 'convo-1')
+      .not.spawn(markConversationAsRead, 'convo-1')
       .run();
   });
 });

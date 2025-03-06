@@ -14,6 +14,9 @@ import { featureFlags } from '../lib/feature-flags';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
+import { Container as SidekickContainer } from '../components/sidekick/components/container';
+import { Header as SidekickHeader } from '../components/sidekick/components/header';
+import { CurrentUserDetails } from '../components/sidekick/components/current-user-details';
 
 const redirectToRoot = () => <Redirect to={'/'} />;
 
@@ -22,6 +25,11 @@ export const AppRouter = () => {
 
   return (
     <AuthenticationContextProvider value={{ isAuthenticated }}>
+      <SidekickContainer>
+        <SidekickHeader>
+          <CurrentUserDetails />
+        </SidekickHeader>
+      </SidekickContainer>
       <Switch>
         <Route path='/conversation/:conversationId' component={MessengerApp} />
         <Route path='/' exact component={MessengerApp} />

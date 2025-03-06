@@ -5,7 +5,6 @@ import { RootState } from '../../../store/reducer';
 import { ConfirmationDefinition, MemberManagementDialog } from '.';
 import { denormalize as denormalizeUser } from '../../../store/users';
 import { displayName } from '../../../lib/user';
-import { denormalize as denormalizeChannel } from '../../../store/channels';
 import {
   cancelMemberManagement,
   removeMember,
@@ -14,6 +13,7 @@ import {
   setMemberAsModerator,
   removeMemberAsModerator,
 } from '../../../store/group-management';
+import { denormalizedChannelSelector } from '../../../store/channels/selectors';
 
 export interface PublicProperties {}
 
@@ -38,7 +38,7 @@ export class Container extends React.Component<Properties> {
       groupManagement: { memberManagement },
     } = state;
     const user = denormalizeUser(memberManagement.userId, state);
-    const channel = denormalizeChannel(memberManagement.roomId, state);
+    const channel = denormalizedChannelSelector(state, memberManagement.roomId);
 
     return {
       type: memberManagement.type,

@@ -15,11 +15,8 @@ export const authenticateHandler = (event: MessageEvent<AuthenticateMessage>) =>
     return;
   }
 
-  const token =
-    document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('zos_access_token='))
-      ?.split('=')[1] || '';
+  // To implement getting user token
+  const token = '';
 
   const response: AuthenticateResponseMessage = {
     type: ZAppMessageType.Authenticate,

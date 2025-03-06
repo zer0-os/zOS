@@ -10,10 +10,10 @@ export interface UseSideKickContainerReturn {
   isSettingsOpen: boolean;
 }
 
-export const useSidekickContainer = (): UseSideKickContainerReturn => {
+export const useSidekickContainer = (variant?: 'primary' | 'secondary'): UseSideKickContainerReturn => {
   const userProfileStage = useSelector((state: RootState) => state.userProfile.stage);
 
   return {
-    isSettingsOpen: userProfileStage !== Stage.None,
+    isSettingsOpen: variant === 'primary' && userProfileStage !== Stage.None,
   };
 };

@@ -11,10 +11,11 @@ export interface ContainerProps {
   className?: string;
   children?: React.ReactNode;
   header?: React.ReactNode;
+  variant?: 'primary' | 'secondary';
 }
 
-export const Container = ({ className, children, header }: ContainerProps) => {
-  const { isSettingsOpen } = useSidekickContainer();
+export const Container = ({ className, children, header, variant = 'primary' }: ContainerProps) => {
+  const { isSettingsOpen } = useSidekickContainer(variant);
 
   return (
     <IfAuthenticated showChildren>

@@ -35,6 +35,7 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { closeUserProfile } from '../user-profile/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
+import { clearIndexedDBStorage } from '../../lib/storage/clear-idb';
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
@@ -263,6 +264,20 @@ describe(forceLogout, () => {
 
   it('clears the user session', async () => {
     await expectLogoutSaga().call(terminate).run();
+  });
+
+  it('clears IndexedDB storage', async () => {
+    const mockClearIndexedDB = jest.fn();
+
+    await expectSaga(forceLogout)
+      .provide([
+        [call(clearIndexedDBStorage), mockClearIndexedDB()],
+        [call(terminate), null],
+      ])
+      .call(terminate)
+      .run();
+
+    expect(mockClearIndexedDB).toHaveBeenCalled();
   });
 });
 

@@ -217,10 +217,9 @@ export function* performValidateActiveConversation(activeConversationId: string)
   // check if path has changed before setting active conversation
   if (currentPathNow === originalPath) {
     yield put(rawSetActiveConversationId(conversationId));
+    // Mark conversation as read, now that it has been set as active
+    yield spawn(markConversationAsRead, conversationId);
   }
-
-  // Mark conversation as read, now that it has been set as active
-  yield call(markConversationAsRead, conversationId);
 }
 
 export function* closeErrorDialog() {

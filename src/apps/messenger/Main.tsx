@@ -22,12 +22,14 @@ export interface Properties {
   isSocialChannel: boolean;
   isJoiningConversation: boolean;
   isConversationsLoaded: boolean;
+  isSecondarySidekickOpen: boolean;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId, isJoiningConversation, isConversationsLoaded },
+      groupManagement: { isSecondarySidekickOpen },
     } = state;
 
     const currentChannel = denormalize(activeConversationId, state) || null;
@@ -37,6 +39,7 @@ export class Container extends React.Component<Properties> {
       isSocialChannel: currentChannel?.isSocialChannel,
       isJoiningConversation,
       isConversationsLoaded,
+      isSecondarySidekickOpen,
     };
   }
 
@@ -57,7 +60,7 @@ export class Container extends React.Component<Properties> {
                 this.props.isValidConversation &&
                 (this.props.isSocialChannel ? <MessengerFeed /> : <MessengerChat />)}
             </div>
-            {this.props.isConversationsLoaded && <MembersSidekick />}
+            {this.props.isConversationsLoaded && this.props.isSecondarySidekickOpen && <MembersSidekick />}
 
             <FeatureFlag featureFlag='enableDevPanel'>
               <DevPanelContainer />

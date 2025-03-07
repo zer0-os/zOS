@@ -81,7 +81,7 @@ describe(performValidateActiveConversation, () => {
       .call(getRoomIdForAlias, '#' + alias)
       .not.call(apiJoinRoom, conversationId)
       .put(rawSetActiveConversationId(conversationId))
-      .spawn(markConversationAsRead, conversationId)
+      .call(markConversationAsRead, conversationId)
       .run();
 
     expect(storeState.chat.activeConversationId).toBe(conversationId);
@@ -170,7 +170,7 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(markConversationAsRead), undefined],
       ])
       .put(rawSetActiveConversationId('social-channel'))
-      .spawn(markConversationAsRead, 'social-channel')
+      .call(markConversationAsRead, 'social-channel')
       .not.call(openFirstConversation)
       .run();
   });
@@ -193,7 +193,7 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(getHistory), history],
       ])
       .put(rawSetActiveConversationId('convo-1'))
-      .spawn(markConversationAsRead, 'convo-1')
+      .call(markConversationAsRead, 'convo-1')
       .run();
   });
 
@@ -229,7 +229,7 @@ describe(performValidateActiveConversation, () => {
         },
       ])
       .not.put(rawSetActiveConversationId('convo-1'))
-      .not.spawn(markConversationAsRead, 'convo-1')
+      .call(markConversationAsRead, 'convo-1')
       .run();
   });
 });

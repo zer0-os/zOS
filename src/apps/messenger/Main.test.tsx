@@ -5,6 +5,7 @@ import { Container as Main, Properties } from './Main';
 import { MessengerChat } from '../../components/messenger/chat';
 import { MessengerFeed } from '../../components/messenger/feed';
 import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
+import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
 
 jest.mock('../../lib/web3/thirdweb/client', () => ({
   getThirdWebClient: jest.fn(),
@@ -23,6 +24,7 @@ describe(Main, () => {
       isSocialChannel: false,
       isJoiningConversation: false,
       isConversationsLoaded: true,
+      isSecondarySidekickOpen: false,
       ...props,
     };
 
@@ -104,5 +106,15 @@ describe(Main, () => {
     const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: true, isValidConversation: false });
 
     expect(wrapper).not.toHaveElement(MessengerFeed);
+  });
+
+  it('should render members sidekick when is secondary sidekick open', () => {
+    const wrapper = subject({
+      context: { isAuthenticated: true },
+      isSecondarySidekickOpen: true,
+      isConversationsLoaded: true,
+    });
+
+    expect(wrapper).toHaveElement(MembersSidekick);
   });
 });

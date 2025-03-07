@@ -6,7 +6,7 @@
  */
 
 import { Location, withRouter, History } from 'react-router-dom';
-import { Component } from 'react';
+import { Component, ComponentType } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch, AnyAction } from 'redux';
 import { IFrame } from '../iframe';
@@ -77,4 +77,4 @@ class ExternalAppComponent extends Component<Properties, State> {
 }
 
 const ConnectedExternalApp = connect()(ExternalAppComponent);
-export const ExternalApp = withRouter<PublicProperties>(ConnectedExternalApp);
+export const ExternalApp = withRouter<PublicProperties>(ConnectedExternalApp) as ComponentType<PublicProperties>;

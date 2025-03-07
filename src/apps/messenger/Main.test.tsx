@@ -3,8 +3,8 @@ import { shallow } from 'enzyme';
 
 import { Container as Main, Properties } from './Main';
 import { MessengerChat } from '../../components/messenger/chat';
-import { MessengerFeed } from '../../components/messenger/feed';
 import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
+import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
 
 jest.mock('../../lib/web3/thirdweb/client', () => ({
   getThirdWebClient: jest.fn(),
@@ -20,9 +20,9 @@ describe(Main, () => {
         isAuthenticated: false,
       },
       isValidConversation: false,
-      isSocialChannel: false,
       isJoiningConversation: false,
       isConversationsLoaded: true,
+      isSecondarySidekickOpen: false,
       ...props,
     };
 
@@ -49,7 +49,7 @@ describe(Main, () => {
     expect(wrapper).not.toHaveElement(JoiningConversationDialog);
   });
 
-  it('renders direct message chat component when not a social channel, conversations loaded and is valid', () => {
+  it('renders direct message chat component when conversations loaded and is valid', () => {
     const wrapper = subject({ context: { isAuthenticated: true }, isValidConversation: true });
 
     expect(wrapper).toHaveElement(MessengerChat);
@@ -58,7 +58,6 @@ describe(Main, () => {
   it('should not render messenger chat container when conversations have not loaded', () => {
     const wrapper = subject({
       context: { isAuthenticated: true },
-      isSocialChannel: true,
       isValidConversation: true,
       isConversationsLoaded: false,
     });
@@ -66,43 +65,13 @@ describe(Main, () => {
     expect(wrapper).not.toHaveElement(MessengerChat);
   });
 
-  it('should not render messenger chat container when is not valid conversation', () => {
+  it('should render members sidekick when is secondary sidekick open', () => {
     const wrapper = subject({
       context: { isAuthenticated: true },
-      isSocialChannel: false,
-      isValidConversation: false,
-      isConversationsLoaded: false,
+      isSecondarySidekickOpen: true,
+      isConversationsLoaded: true,
     });
 
-    expect(wrapper).not.toHaveElement(MessengerFeed);
-  });
-
-  it('renders messenger feed container when is social channel, conversations loaded and is valid conversation', () => {
-    const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: true, isValidConversation: true });
-
-    expect(wrapper).toHaveElement(MessengerFeed);
-  });
-
-  it('should not render messenger feed container when is not social channel ', () => {
-    const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: false, isValidConversation: true });
-
-    expect(wrapper).not.toHaveElement(MessengerFeed);
-  });
-
-  it('should not render messenger feed container when conversations have not loaded', () => {
-    const wrapper = subject({
-      context: { isAuthenticated: true },
-      isSocialChannel: true,
-      isValidConversation: true,
-      isConversationsLoaded: false,
-    });
-
-    expect(wrapper).not.toHaveElement(MessengerFeed);
-  });
-
-  it('should not render messenger feed container when is not valid conversation', () => {
-    const wrapper = subject({ context: { isAuthenticated: true }, isSocialChannel: true, isValidConversation: false });
-
-    expect(wrapper).not.toHaveElement(MessengerFeed);
+    expect(wrapper).toHaveElement(MembersSidekick);
   });
 });

@@ -2,10 +2,13 @@ import { expectSaga } from 'redux-saga-test-plan';
 
 import { setActiveZAppManifest, clearActiveZAppManifest } from './saga';
 import { setActiveZAppManifestAction, clearActiveZAppManifestAction } from './index';
+import { ZAppManifest } from '../../apps/external-app/types/manifest';
 
 describe('external-app saga', () => {
-  const mockManifest = {
-    name: 'ZApp',
+  const mockManifest: ZAppManifest = {
+    title: 'ZApp',
+    route: '/',
+    url: 'https://zapp.zero.tech/',
     features: [],
   };
 

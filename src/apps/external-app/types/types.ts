@@ -18,16 +18,11 @@ type RouteChangeMessage = {
   };
 };
 
-type SubmitManifestMessage = {
-  type: ZAppMessageType.SubmitManifest;
-  manifest: ZAppManifest;
-};
-
 type AuthenticateMessage = {
   type: ZAppMessageType.Authenticate;
 };
 
-type IncomingMessage = RouteChangeMessage | SubmitManifestMessage | AuthenticateMessage;
+type IncomingMessage = RouteChangeMessage | AuthenticateMessage;
 
 type ManifestResponseMessage = {
   type: ZOSMessageType.ManifestReceived;
@@ -47,7 +42,6 @@ export type {
   IncomingMessage,
   OutgoingMessage,
   RouteChangeMessage,
-  SubmitManifestMessage,
   AuthenticateMessage,
   ManifestResponseMessage,
   AuthenticateResponseMessage,

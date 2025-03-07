@@ -12,14 +12,13 @@ import { Dispatch, AnyAction } from 'redux';
 import { IFrame } from '../iframe';
 import { IncomingMessage } from './types/types';
 import { routeChangedHandler } from './message-handlers/routeChangeHandler';
-import { isAuthenticateEvent, isRouteChangeEvent, isSubmitManifestEvent } from './types/messageTypeGuard';
+import { isAuthenticateEvent, isRouteChangeEvent } from './types/messageTypeGuard';
 import { authenticateHandler } from './message-handlers/authenticateHandler';
-import { submitManifestHandler } from './message-handlers/submitManifestHandler';
-import { clearActiveZAppManifest } from '../../store/active-zapp';
+import { clearActiveZAppManifest, setActiveZAppManifest } from '../../store/active-zapp';
+import { ZAppManifest } from './types/manifest';
+
 export interface PublicProperties {
-  route: `/${string}`;
-  title: string;
-  url: string;
+  manifest: ZAppManifest;
 }
 
 interface Properties extends PublicProperties {
@@ -40,14 +39,17 @@ class ExternalAppComponent extends Component<Properties, State> {
   componentDidMount() {
     const {
       location: { pathname },
-      route,
-      url,
+      manifest: { route, url },
+      dispatch,
     } = this.props;
 
     const loadedUrl = new URL(pathname.replace(route, ''), url);
     this.setState({ loadedUrl: loadedUrl.href });
 
     window.addEventListener('message', this.onMessage);
+
+    // Register the manifest with the store
+    dispatch(setActiveZAppManifest(this.props.manifest));
   }
 
   componentWillUnmount(): void {
@@ -56,19 +58,21 @@ class ExternalAppComponent extends Component<Properties, State> {
   }
 
   onMessage = (event: MessageEvent<IncomingMessage>) => {
+    const {
+      history,
+      manifest: { route, url },
+    } = this.props;
+
     if (isRouteChangeEvent(event)) {
-      const handler = routeChangedHandler(this.props.history, this.props.route, this.props.url);
+      const handler = routeChangedHandler(history, route, url);
       handler(event);
     } else if (isAuthenticateEvent(event)) {
       authenticateHandler(event);
-    } else if (isSubmitManifestEvent(event)) {
-      const handler = submitManifestHandler(this.props.dispatch);
-      handler(event);
     }
   };
 
   render() {
-    return <IFrame src={this.state.loadedUrl} title={this.props.title} />;
+    return <IFrame src={this.state.loadedUrl} title={this.props.manifest.title} />;
   }
 }
 

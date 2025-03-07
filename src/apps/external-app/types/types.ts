@@ -1,3 +1,5 @@
+import { ZAppManifest } from './manifest';
+
 enum ZAppMessageType {
   RouteChange = 'zapp-route-changed',
   SubmitManifest = 'zapp-submit-manifest',
@@ -17,7 +19,7 @@ type RouteChangeMessage = {
 
 type SubmitManifestMessage = {
   type: ZAppMessageType.SubmitManifest;
-  manifest: string;
+  manifest: ZAppManifest;
 };
 
 type AuthenticateMessage = {

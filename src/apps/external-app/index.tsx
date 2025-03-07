@@ -7,13 +7,15 @@
 
 import { Location, withRouter, History } from 'react-router-dom';
 import { Component } from 'react';
+import { connect } from 'react-redux';
+import { Dispatch, AnyAction } from 'redux';
 import { IFrame } from '../iframe';
 import { IncomingMessage } from './types/types';
 import { routeChangedHandler } from './message-handlers/routeChangeHandler';
 import { isAuthenticateEvent, isRouteChangeEvent, isSubmitManifestEvent } from './types/messageTypeGuard';
 import { authenticateHandler } from './message-handlers/authenticateHandler';
 import { submitManifestHandler } from './message-handlers/submitManifestHandler';
-
+import { clearActiveZAppManifest } from '../../store/active-zapp';
 export interface PublicProperties {
   route: `/${string}`;
   title: string;
@@ -23,6 +25,7 @@ export interface PublicProperties {
 interface Properties extends PublicProperties {
   history: History;
   location: Location;
+  dispatch: Dispatch<AnyAction>;
 }
 
 interface State {
@@ -49,6 +52,7 @@ class ExternalAppComponent extends Component<Properties, State> {
 
   componentWillUnmount(): void {
     window.removeEventListener('message', this.onMessage);
+    this.props.dispatch(clearActiveZAppManifest());
   }
 
   onMessage = (event: MessageEvent<IncomingMessage>) => {
@@ -58,7 +62,8 @@ class ExternalAppComponent extends Component<Properties, State> {
     } else if (isAuthenticateEvent(event)) {
       authenticateHandler(event);
     } else if (isSubmitManifestEvent(event)) {
-      submitManifestHandler(event);
+      const handler = submitManifestHandler(this.props.dispatch);
+      handler(event);
     }
   };
 
@@ -67,4 +72,5 @@ class ExternalAppComponent extends Component<Properties, State> {
   }
 }
 
-export const ExternalApp = withRouter<PublicProperties>(ExternalAppComponent);
+const ConnectedExternalApp = connect()(ExternalAppComponent);
+export const ExternalApp = withRouter<PublicProperties>(ConnectedExternalApp);

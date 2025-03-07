@@ -1,8 +1,10 @@
 /**
  * A feature is a capability that can change the app's relationship with the zOS.
  */
+export type ZAppFeatureType = 'fullscreen';
+
 interface Feature {
-  type: string;
+  type: ZAppFeatureType;
 }
 
 /**
@@ -15,3 +17,5 @@ interface FullScreenFeature extends Feature {
 type ZAppFeature = FullScreenFeature;
 
 export type { ZAppFeature };
+
+export type ExtractFeatureType<T extends ZAppFeatureType> = T extends 'fullscreen' ? FullScreenFeature : never;

@@ -4,15 +4,17 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { DefaultRoomLabels } from '../../store/channels';
 import { denormalizedConversationsSelector } from '../../store/channels-list/selectors';
+import { activeZAppFeatureSelector } from '../../store/active-zapp/selectors';
 
 export const AppBar = () => {
-  const { activeApp, hasUnreadNotifications, hasUnreadHighlights } = useAppBar();
+  const { activeApp, hasUnreadNotifications, hasUnreadHighlights, zAppIsFullscreen } = useAppBar();
 
   return (
     <AppBarComponent
       activeApp={activeApp}
       hasUnreadNotifications={hasUnreadNotifications}
       hasUnreadHighlights={hasUnreadHighlights}
+      zAppIsFullscreen={zAppIsFullscreen}
     />
   );
 };
@@ -40,9 +42,15 @@ const useAppBar = () => {
     );
   });
 
+  const zAppIsFullscreen = useSelector((state: RootState) => {
+    const fullscreenFeature = activeZAppFeatureSelector(state, 'fullscreen');
+    return !!fullscreenFeature;
+  });
+
   return {
     activeApp: match?.params?.app ?? '',
     hasUnreadNotifications,
     hasUnreadHighlights,
+    zAppIsFullscreen,
   };
 };

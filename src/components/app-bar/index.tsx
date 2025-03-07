@@ -18,6 +18,7 @@ export interface Properties {
   activeApp: string | undefined;
   hasUnreadNotifications: boolean;
   hasUnreadHighlights: boolean;
+  zAppIsFullscreen: boolean;
 }
 
 interface State {
@@ -96,12 +97,12 @@ export class AppBar extends React.Component<Properties, State> {
   };
 
   render() {
-    const { activeApp } = this.props;
+    const { activeApp, zAppIsFullscreen } = this.props;
     const isActive = checkActive(activeApp);
 
     return (
       <>
-        <div {...cn('')}>
+        <div {...cn('', zAppIsFullscreen && 'zapp-fullscreen')}>
           <LegacyPanel {...cn('container')} ref={this.containerRef}>
             <AppLink
               Icon={IconHome}

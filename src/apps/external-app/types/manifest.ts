@@ -8,6 +8,7 @@ import { ZAppFeature } from './features';
  * it'll include other information like the name, description, version, url, auth scopes, etc.
  */
 type ZAppManifest = {
+  name: string;
   features: ZAppFeature[];
 };
 

@@ -1,5 +1,6 @@
-import { AuthenticateMessage, AuthenticateResponseMessage, ZAppMessageType } from '../types/types';
+import { AuthenticateMessage, AuthenticateResponseMessage, ZAppMessageType, ZOSMessageType } from '../types/types';
 import { WHITELISTED_APPS } from '../constants/whitelistedApps';
+import { get } from '../../../lib/api/rest';
 
 /**
  * Give the app access to the user's access token. This is only allowed for whitelisted apps.
@@ -8,23 +9,35 @@ import { WHITELISTED_APPS } from '../constants/whitelistedApps';
  *
  * @param event
  */
-export const authenticateHandler = (event: MessageEvent<AuthenticateMessage>) => {
+export const authenticateHandler = async (event: MessageEvent<AuthenticateMessage>) => {
   const { origin } = new URL(event.origin);
 
   if (!WHITELISTED_APPS.includes(origin)) {
     return;
   }
 
-  // To implement getting user token
-  const token = '';
+  try {
+    // todo: get the access token from the server
+    const responseMessage: AuthenticateResponseMessage = {
+      type: ZOSMessageType.Authenticate,
+      token: '',
+    };
 
-  const response: AuthenticateResponseMessage = {
-    type: ZAppMessageType.Authenticate,
-    token,
-  };
-
-  // Send the response back to the iframe that sent the message
-  if (event.source && event.source instanceof Window) {
-    event.source.postMessage(response, event.origin);
+    // Send the response back to the iframe that sent the message
+    if (event.source && event.source instanceof Window) {
+      event.source.postMessage(responseMessage, event.origin);
+    }
+  } catch (error) {
+    console.error('Failed to get access token:', error);
+    if (event.source && event.source instanceof Window) {
+      event.source.postMessage(
+        {
+          type: ZOSMessageType.Authenticate,
+          token: null,
+          error: 'Failed to get access token',
+        },
+        event.origin
+      );
+    }
   }
 };

@@ -1,6 +1,6 @@
 import { RootState } from '../reducer';
 import { createSelector } from 'reselect';
-import { ZAppFeature, ZAppFeatureType, ExtractFeatureType } from '../../apps/external-app/types/features';
+import { ZAppFeatureType, ExtractFeatureType } from '../../apps/external-app/types/features';
 
 export const rawActiveZAppManifest = (state: RootState) => state.activeZApp.manifest;
 

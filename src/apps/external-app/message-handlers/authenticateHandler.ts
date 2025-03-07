@@ -1,6 +1,5 @@
-import { AuthenticateMessage, AuthenticateResponseMessage, ZAppMessageType, ZOSMessageType } from '../types/types';
+import { AuthenticateMessage, AuthenticateResponseMessage, ZOSMessageType } from '../types/types';
 import { WHITELISTED_APPS } from '../constants/whitelistedApps';
-import { get } from '../../../lib/api/rest';
 
 /**
  * Give the app access to the user's access token. This is only allowed for whitelisted apps.

@@ -1,12 +1,11 @@
 import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel } from '../../../store/channels';
+import { Channel, denormalize } from '../../../store/channels';
 import { toggleSecondarySidekick } from '../../../store/group-management';
 import { ConversationHeader } from '.';
 import { ConversationActionsContainer as ConversationActions } from '../conversation-actions/container';
 import { PanelHeader } from '../../layout/panel';
-import { denormalizedChannelSelector } from '../../../store/channels/selectors';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -33,7 +32,7 @@ export class Container extends React.Component<Properties> {
       groupManagement,
     } = state;
 
-    const directMessage = denormalizedChannelSelector(state, activeConversationId);
+    const directMessage = denormalize(activeConversationId, state);
 
     return {
       activeConversationId,

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel, onAddLabel, onRemoveLabel, onRemoveReply } from '../../../store/channels';
+import { Channel, denormalize, onAddLabel, onRemoveLabel, onRemoveReply } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { send as sendMessage } from '../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
@@ -21,9 +21,9 @@ import { Media } from '../../message-input/utils';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 
 import './styles.scss';
+import { rawChannelSelector } from '../../../store/channels/saga';
 import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
 import { Panel, PanelBody } from '../../layout/panel';
-import { denormalizedChannelSelector } from '../../../store/channels/selectors';
 
 export interface PublicProperties {}
 
@@ -59,7 +59,8 @@ export class Container extends React.Component<Properties> {
       groupManagement,
     } = state;
 
-    const directMessage = denormalizedChannelSelector(state, activeConversationId);
+    const directMessage = denormalize(activeConversationId, state);
+    const channel = rawChannelSelector(activeConversationId)(state);
 
     return {
       activeConversationId,
@@ -67,7 +68,7 @@ export class Container extends React.Component<Properties> {
       isJoiningConversation,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
-      otherMembersTypingInRoom: directMessage?.otherMembersTyping || [],
+      otherMembersTypingInRoom: channel?.otherMembersTyping || [],
     };
   }
 

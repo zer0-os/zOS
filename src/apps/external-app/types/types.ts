@@ -1,8 +1,5 @@
-import { ZAppManifest } from './manifest';
-
 enum ZAppMessageType {
   RouteChange = 'zapp-route-changed',
-  SubmitManifest = 'zapp-submit-manifest',
   Authenticate = 'zapp-authenticate',
 }
 

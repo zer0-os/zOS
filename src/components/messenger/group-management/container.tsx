@@ -18,18 +18,17 @@ import { Option } from '../lib/types';
 import { GroupManagement } from '.';
 import { RootState } from '../../../store/reducer';
 import { GroupManagementErrors, EditConversationState } from '../../../store/group-management/types';
-import { User, openConversation, Channel } from '../../../store/channels';
+import { User, denormalize as denormalizeChannel, openConversation, Channel } from '../../../store/channels';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { MemberManagementDialogContainer } from '../../group-management/member-management-dialog/container';
 import { getUserSubHandle } from '../../../lib/user';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { receiveSearchResults } from '../../../store/users';
+import { denormalizeConversations } from '../../../store/channels-list';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { createConversation } from '../../../store/create-conversation';
 import { openUserProfile } from '../../../store/user-profile';
-import { denormalizedChannelSelector } from '../../../store/channels/selectors';
-import { denormalizedConversationsSelector } from '../../../store/channels-list/selectors';
 
 export interface PublicProperties {}
 
@@ -74,13 +73,13 @@ export class Container extends React.Component<Properties> {
       chat: { activeConversationId },
     } = state;
 
-    const conversation = denormalizedChannelSelector(state, activeConversationId);
+    const conversation = denormalizeChannel(activeConversationId, state);
     const currentUser = currentUserSelector(state);
     const conversationAdminIds = conversation?.adminMatrixIds;
     const conversationModeratorIds = conversation?.moderatorIds;
     const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
     const isCurrentUserRoomModerator = conversationModeratorIds?.includes(currentUser?.id) ?? false;
-    const existingConversations = denormalizedConversationsSelector(state);
+    const existingConversations = denormalizeConversations(state);
 
     return {
       activeConversationId,

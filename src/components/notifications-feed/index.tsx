@@ -2,13 +2,13 @@ import React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { Channel, DefaultRoomLabels } from '../../store/channels';
+import { denormalizeConversations } from '../../store/channels-list';
 import { IconBell1 } from '@zero-tech/zui/icons';
 import { NotificationItem } from './notification-item';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { openNotificationConversation } from '../../store/notifications';
 import { ToggleGroup } from '@zero-tech/zui/components/ToggleGroup';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../layout/panel';
-import { denormalizedConversationsSelector } from '../../store/channels-list/selectors';
 
 import styles from './styles.module.scss';
 
@@ -53,7 +53,7 @@ export class Container extends React.Component<Properties, State> {
       chat: { isConversationsLoaded },
     } = state;
 
-    const conversations = denormalizedConversationsSelector(state).filter(
+    const conversations = denormalizeConversations(state).filter(
       (conversation) =>
         (conversation.unreadCount.total > 0 || conversation.unreadCount?.highlight > 0) &&
         !conversation.labels?.includes(DefaultRoomLabels.ARCHIVED)

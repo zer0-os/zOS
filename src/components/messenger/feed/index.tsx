@@ -2,13 +2,12 @@ import React from 'react';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
 import { PostPayload as PayloadPostMessage } from '../../../store/posts/saga';
-import { Channel } from '../../../store/channels';
+import { Channel, denormalize } from '../../../store/channels';
 import { sendPost } from '../../../store/posts';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
 import { Switch, Route } from 'react-router-dom';
-import { denormalizedChannelSelector } from '../../../store/channels/selectors';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
@@ -42,7 +41,7 @@ export class Container extends React.Component<Properties> {
       posts,
     } = state;
 
-    const currentChannel = denormalizedChannelSelector(state, activeConversationId) || null;
+    const currentChannel = denormalize(activeConversationId, state) || null;
 
     return {
       channel: currentChannel,

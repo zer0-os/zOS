@@ -7,10 +7,10 @@ import { MessengerChat } from '../../components/messenger/chat';
 import { MessengerFeed } from '../../components/messenger/feed';
 import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
+import { denormalize } from '../../store/channels';
 import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
 import { ConversationsSidekick } from '../../components/sidekick/variants/conversations-sidekick';
 import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
-import { denormalizedChannelSelector } from '../../store/channels/selectors';
 
 import styles from './Main.module.scss';
 
@@ -30,7 +30,7 @@ export class Container extends React.Component<Properties> {
       chat: { activeConversationId, isJoiningConversation, isConversationsLoaded },
     } = state;
 
-    const currentChannel = denormalizedChannelSelector(state, activeConversationId) || null;
+    const currentChannel = denormalize(activeConversationId, state) || null;
 
     return {
       isValidConversation: !!activeConversationId,

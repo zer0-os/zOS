@@ -4,13 +4,15 @@ This module handles the integration of external applications (zApps) within the 
 
 ## Manifest System
 
-The manifest system allows external apps to declare their capabilities and features to the zOS platform. Each app must submit a manifest that describes what it can do.
+The manifest system allows external apps to declare their capabilities and features to the zOS platform. Each app must provide a manifest that describes what it can do.
 
 ### Manifest Structure
 
 ```typescript
 type ZAppManifest = {
-  name: string; // The name of the application
+  title: string; // The title of the application
+  route: `/${string}`; // The base route where the app will be mounted
+  url: string; // The URL where the app is hosted
   features: ZAppFeature[]; // List of features the app supports
 };
 ```
@@ -31,82 +33,60 @@ The external app integration uses a message-based communication system between t
 
 ### Message Types
 
-#### From External App to zOS
+#### From External App to zOS (Incoming Messages)
 
 1. **Route Change** (`zapp-route-changed`)
 
-   - Purpose: Synchronize navigation between the external app and zOS
-   - Structure:
-     ```typescript
-     {
-       type: 'zapp-route-changed',
-       data: {
-         pathname: string
-       }
-     }
-     ```
+   ```typescript
+   type RouteChangeMessage = {
+     type: 'zapp-route-changed';
+     data: {
+       pathname: string;
+     };
+   };
+   ```
 
-2. **Submit Manifest** (`zapp-submit-manifest`)
+2. **Authenticate** (`zapp-authenticate`)
+   ```typescript
+   type AuthenticateMessage = {
+     type: 'zapp-authenticate';
+   };
+   ```
 
-   - Purpose: Register app capabilities with zOS
-   - Structure:
-     ```typescript
-     {
-       type: 'zapp-submit-manifest',
-       manifest: string  // JSON stringified manifest
-     }
-     ```
+#### From zOS to External App (Outgoing Messages)
 
-3. **Authenticate** (`zapp-authenticate`)
-   - Purpose: Request user authentication token
-   - Structure:
-     ```typescript
-     {
-       type: 'zapp-authenticate';
-     }
-     ```
-
-#### From zOS to External App
-
-1. **Manifest Response** (`zos-manifest-received`)
-
-   - Purpose: Acknowledge manifest submission
-   - Structure:
-     ```typescript
-     {
-       type: 'zos-manifest-received',
-       status: 'success' | 'error',
-       error?: string
-     }
-     ```
-
-2. **Authenticate Response** (`zapp-authenticate`)
-   - Purpose: Provide authentication token
-   - Structure:
-     ```typescript
-     {
-       type: 'zapp-authenticate',
-       token: string
-     }
-     ```
+2. **Authenticate Response** (`zos-authenticate`)
+   ```typescript
+   type AuthenticateResponseMessage = {
+     type: 'zos-authenticate';
+     token: string | null;
+     error?: string;
+   };
+   ```
 
 ## Usage Example
 
 ```typescript
 // In your external app
-const manifest = {
-  name: 'My App',
-  features: [{ type: 'fullscreen' }],
-};
+window.addEventListener('message', (event) => {
+  // Verify the message is from zOS
+  if (event.origin !== 'https://zos.zero.tech') {
+    return;
+  }
 
-// Submit manifest
-window.parent.postMessage(
-  {
-    type: 'zapp-submit-manifest',
-    manifest: JSON.stringify(manifest),
-  },
-  '*'
-);
+  const message = event.data;
+
+  switch (message.type) {
+    case 'zos-authenticate':
+      if (message.token) {
+        // Handle successful authentication
+        console.log('Received authentication token');
+      } else {
+        console.error('Authentication failed:', message.error);
+      }
+      break;
+  }
+});
 
 // Request authentication
 window.parent.postMessage(

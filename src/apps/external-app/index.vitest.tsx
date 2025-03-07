@@ -15,9 +15,12 @@ vi.mock('../iframe', () => ({
 }));
 
 const DEFAULT_PROPS: PublicProperties = {
-  route: '/foo',
-  title: 'Bar',
-  url: 'https://foo.bar',
+  manifest: {
+    title: 'Foo',
+    route: '/foo',
+    url: 'https://foo.bar',
+    features: [],
+  },
 };
 
 const history = createMemoryHistory();
@@ -38,20 +41,20 @@ describe(ExternalApp, () => {
   });
 
   it('should pass title to iFrame', () => {
-    renderComponent({ title: 'Foo' });
+    renderComponent(DEFAULT_PROPS);
     expect(mockIFrame).toHaveBeenCalledWith(expect.objectContaining({ title: 'Foo' }));
   });
 
   describe('when browser route is default app route', () => {
     it('should pass url to iFrame', () => {
-      renderComponent({ url: 'https://foo.baz' }, '/foo');
+      renderComponent({ manifest: { ...DEFAULT_PROPS.manifest, url: 'https://foo.baz' } });
       expect(mockIFrame).toHaveBeenCalledWith(expect.objectContaining({ src: 'https://foo.baz/' }));
     });
   });
 
   describe('when browser route is sub-route of app route', () => {
     it('should pass url to iFrame', () => {
-      renderComponent({ url: 'https://foo.baz' }, '/foo/bar/baz');
+      renderComponent({ manifest: { ...DEFAULT_PROPS.manifest, url: 'https://foo.baz' } }, '/foo/bar/baz');
       expect(mockIFrame).toHaveBeenCalledWith(expect.objectContaining({ src: 'https://foo.baz/bar/baz' }));
     });
   });
@@ -59,7 +62,7 @@ describe(ExternalApp, () => {
   describe('when window receives a message event', () => {
     describe('when type is zapp-route-changed', () => {
       it('should change route accordingly', async () => {
-        renderComponent({ route: '/foo', url: 'https://foo.bar' }, '/foo');
+        renderComponent({ manifest: { ...DEFAULT_PROPS.manifest, url: 'https://foo.bar' } }, '/foo');
 
         const navigationEvent = new MessageEvent('message', {
           data: {
@@ -77,7 +80,7 @@ describe(ExternalApp, () => {
       });
 
       it('should ignore origin outside of app', async () => {
-        renderComponent({ route: '/foo', url: 'https://foo.bar' }, '/foo');
+        renderComponent({ manifest: { ...DEFAULT_PROPS.manifest, url: 'https://foo.bar' } }, '/foo');
 
         const navigationEvent = new MessageEvent('message', {
           data: {
@@ -94,7 +97,7 @@ describe(ExternalApp, () => {
       });
 
       it('should handle root navigation', async () => {
-        renderComponent({ route: '/foo', url: 'https://foo.bar' }, '/foo');
+        renderComponent({ manifest: { ...DEFAULT_PROPS.manifest, url: 'https://foo.bar' } }, '/foo');
 
         const navigationEvent = new MessageEvent('message', {
           data: {
@@ -112,7 +115,10 @@ describe(ExternalApp, () => {
       });
 
       it('should not react if unmounted', () => {
-        const { unmount } = renderComponent({ route: '/foo', url: 'https://foo.bar' }, '/foo');
+        const { unmount } = renderComponent(
+          { manifest: { ...DEFAULT_PROPS.manifest, url: 'https://foo.bar' } },
+          '/foo'
+        );
 
         unmount();
 
@@ -133,7 +139,7 @@ describe(ExternalApp, () => {
     });
 
     it('should not react to other message types (only accept zapp-route-changed)', async () => {
-      renderComponent({ route: '/foo', url: 'https://foo.bar' }, '/foo');
+      renderComponent({ manifest: { ...DEFAULT_PROPS.manifest, url: 'https://foo.bar' } }, '/foo');
 
       const navigationEvent = new MessageEvent('message', {
         data: {

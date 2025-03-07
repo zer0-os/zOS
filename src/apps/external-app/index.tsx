@@ -7,17 +7,24 @@
 
 import { Location, withRouter, History } from 'react-router-dom';
 import { Component } from 'react';
+import { connect } from 'react-redux';
+import { Dispatch, AnyAction } from 'redux';
 import { IFrame } from '../iframe';
+import { IncomingMessage } from './types/types';
+import { routeChangedHandler } from './message-handlers/routeChangeHandler';
+import { isAuthenticateEvent, isRouteChangeEvent } from './types/messageTypeGuard';
+import { authenticateHandler } from './message-handlers/authenticateHandler';
+import { clearActiveZAppManifest, setActiveZAppManifest } from '../../store/active-zapp';
+import { ZAppManifest } from './types/manifest';
 
 export interface PublicProperties {
-  route: `/${string}`;
-  title: string;
-  url: string;
+  manifest: ZAppManifest;
 }
 
 interface Properties extends PublicProperties {
   history: History;
   location: Location;
+  dispatch: Dispatch<AnyAction>;
 }
 
 interface State {
@@ -32,40 +39,42 @@ class ExternalAppComponent extends Component<Properties, State> {
   componentDidMount() {
     const {
       location: { pathname },
-      route,
-      url,
+      manifest: { route, url },
+      dispatch,
     } = this.props;
 
     const loadedUrl = new URL(pathname.replace(route, ''), url);
     this.setState({ loadedUrl: loadedUrl.href });
 
     window.addEventListener('message', this.onMessage);
+
+    // Register the manifest with the store
+    dispatch(setActiveZAppManifest(this.props.manifest));
   }
 
   componentWillUnmount(): void {
     window.removeEventListener('message', this.onMessage);
+    this.props.dispatch(clearActiveZAppManifest());
   }
 
-  onMessage = (event: MessageEvent) => {
-    if (event.data.type === 'zapp-route-changed') {
-      const isFromCorrectSource = new URL(this.props.url).href === new URL(event.origin).href;
+  onMessage = (event: MessageEvent<IncomingMessage>) => {
+    const {
+      history,
+      manifest: { route, url },
+    } = this.props;
 
-      if (!isFromCorrectSource) {
-        return;
-      }
-
-      // If there's no pathname or it's the route route ('/'), we should navigate to the root of the app
-      if (!event.data.data.pathname || event.data.data.pathname === '/') {
-        this.props.history.push(this.props.route);
-      } else {
-        this.props.history.push(this.props.route + event.data.data.pathname);
-      }
+    if (isRouteChangeEvent(event)) {
+      const handler = routeChangedHandler(history, route, url);
+      handler(event);
+    } else if (isAuthenticateEvent(event)) {
+      authenticateHandler(event);
     }
   };
 
   render() {
-    return <IFrame src={this.state.loadedUrl} title={this.props.title} />;
+    return <IFrame src={this.state.loadedUrl} title={this.props.manifest.title} />;
   }
 }
 
-export const ExternalApp = withRouter<PublicProperties>(ExternalAppComponent);
+const ConnectedExternalApp = connect()(ExternalAppComponent);
+export const ExternalApp = withRouter<PublicProperties>(ConnectedExternalApp);

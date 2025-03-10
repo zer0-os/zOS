@@ -10,10 +10,11 @@ import './error.scss';
 const cn = bemClassName('error-page');
 
 interface ErrorComponentProperties {
+  error: string;
   onRetry: () => void;
 }
 
-export const ErrorComponent = ({ onRetry }: ErrorComponentProperties) => {
+export const ErrorComponent = ({ error, onRetry }: ErrorComponentProperties) => {
   return (
     <>
       <ThemeEngine theme={Themes.Dark} />
@@ -23,7 +24,7 @@ export const ErrorComponent = ({ onRetry }: ErrorComponentProperties) => {
             <ZeroLogo />
           </div>
           <div {...cn('message-container')}>
-            <h3 {...cn('message')}>There was an error loading ZERO, please try again.</h3>
+            <h3 {...cn('message')}>{error}</h3>
             <Button onPress={onRetry}>Try Again</Button>
           </div>
         </main>

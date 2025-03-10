@@ -14,7 +14,7 @@ import '@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
 import { ResetPassword } from './reset-password';
-import { LoginPage } from './pages';
+import { LoginPage, ErrorPage } from './pages';
 import { getHistory } from './lib/browser';
 import { ElectronTitlebar } from './components/electron-titlebar';
 import { desktopInit } from './lib/desktop';
@@ -50,6 +50,7 @@ root.render(
                   <Route path='/get-access' exact component={Invite} />
                   <Route path='/login' exact component={LoginPage} />
                   <Route path='/reset-password' exact component={ResetPassword} />
+                  <Route path='/error' exact component={ErrorPage} />
                   <Route component={App} />
                 </Switch>
               </RainbowKitConnect>

@@ -1,5 +1,6 @@
 import { AuthorizationResponse, User } from './types';
 import { del, get, post } from '../../lib/api/rest';
+import * as Sentry from '@sentry/react';
 
 export async function nonceOrAuthorize(signedWeb3Token: string): Promise<AuthorizationResponse> {
   const response = await post('/authentication/nonceOrAuthorize').set('Authorization', `Web3 ${signedWeb3Token}`);
@@ -23,11 +24,13 @@ export async function fetchCurrentUser(): Promise<User> {
   try {
     const response = await get('/api/users/current');
     return response.body;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    if (error?.response?.status === 401) {
+      return null;
+    }
+    Sentry.captureException(error);
+    throw error;
   }
-
-  return null;
 }
 
 export async function clearSession(): Promise<AuthorizationResponse> {

@@ -126,6 +126,11 @@ export function* closeRewardsTooltip() {
   }
 }
 
+export const clearRewards = (): void => {
+  localStorage.removeItem(lastDayRewardsKey);
+  localStorage.removeItem(totalRewardsKey);
+};
+
 export function* transferMeow(action) {
   yield put(setTransferError({ error: null }));
 

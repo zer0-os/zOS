@@ -13,6 +13,10 @@ export class SessionStorage {
     this.storage.removeItem('mxz_device_id');
     this.storage.removeItem(`mxz_access_token_${deviceId}`);
     this.storage.removeItem('mxz_user_id');
+
+    const allKeys = Object.keys(this.storage);
+    const filterKeys = allKeys.filter((key) => key.includes('mxjssdk_memory_filter'));
+    filterKeys.forEach((key) => this.storage.removeItem(key));
   }
 
   set(session: ChatSession) {

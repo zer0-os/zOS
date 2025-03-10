@@ -16,7 +16,7 @@ import { completePendingUserProfile } from '../registration/saga';
 import { closeUserProfile } from '../user-profile/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
-import { clearIndexedDBStorage } from '../../lib/storage/clear-idb';
+import { clearRewards } from '../rewards/saga';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -55,12 +55,6 @@ export function* terminate(isAccountChange = false) {
     yield call(clearSessionApi);
   } catch {
     /* No operation, if user is unauthenticated deleting the cookie fails */
-  }
-
-  try {
-    yield call(clearIndexedDBStorage);
-  } catch (error) {
-    console.error('Error clearing IndexedDB storage:', error);
   }
 
   yield call(clearUserState);
@@ -119,6 +113,7 @@ export function* forceLogout() {
   yield closeLogoutModal();
   yield call(clearLastActiveConversation);
   yield call(clearLastActiveTab);
+  yield call(clearRewards);
   yield call(terminate);
 }
 

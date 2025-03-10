@@ -20,6 +20,14 @@ $width: 46px;
   pointer-events: all;
   z-index: 10;
 
+  &--zapp-fullscreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    box-sizing: border-box;
+  }
+
   &__container {
     position: absolute;
     top: 50%;

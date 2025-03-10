@@ -4,7 +4,6 @@ enum ZAppMessageType {
 }
 
 enum ZOSMessageType {
-  ManifestReceived = 'zos-manifest-received',
   Authenticate = 'zos-authenticate',
 }
 
@@ -20,27 +19,13 @@ type AuthenticateMessage = {
 };
 
 type IncomingMessage = RouteChangeMessage | AuthenticateMessage;
-
-type ManifestResponseMessage = {
-  type: ZOSMessageType.ManifestReceived;
-  status: 'success' | 'error';
-  error?: string;
-};
-
 type AuthenticateResponseMessage = {
   type: ZOSMessageType.Authenticate;
   token: string | null;
   error?: string;
 };
 
-type OutgoingMessage = ManifestResponseMessage | AuthenticateResponseMessage;
+type OutgoingMessage = AuthenticateResponseMessage;
 
-export type {
-  IncomingMessage,
-  OutgoingMessage,
-  RouteChangeMessage,
-  AuthenticateMessage,
-  ManifestResponseMessage,
-  AuthenticateResponseMessage,
-};
+export type { IncomingMessage, OutgoingMessage, RouteChangeMessage, AuthenticateMessage, AuthenticateResponseMessage };
 export { ZAppMessageType, ZOSMessageType };

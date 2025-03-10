@@ -123,14 +123,6 @@ window.addEventListener('message', (event) => {
   const message = event.data;
 
   switch (message.type) {
-    case 'zos-manifest-received':
-      if (message.status === 'success') {
-        console.log('Manifest was accepted by zOS');
-      } else {
-        console.error('Manifest was rejected:', message.error);
-      }
-      break;
-
     case 'zapp-authenticate':
       // Store the authentication token
       const token = message.token;

@@ -42,10 +42,7 @@ const useAppBar = () => {
     );
   });
 
-  const zAppIsFullscreen = useSelector((state: RootState) => {
-    const fullscreenFeature = activeZAppFeatureSelector(state, 'fullscreen');
-    return !!fullscreenFeature;
-  });
+  const zAppIsFullscreen = useSelector(activeZAppFeatureSelector('fullscreen'));
 
   return {
     activeApp: match?.params?.app ?? '',

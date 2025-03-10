@@ -24,7 +24,7 @@ describe('page-load saga', () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
       [call(getHistory), history],
-      [call(getCurrentUser), true],
+      [call(getCurrentUser), { success: true }],
       [call(getNavigator), stubNavigator()],
       [spawn(redirectOnUserLogin), null],
     ]);
@@ -62,7 +62,7 @@ describe('page-load saga', () => {
       storeState: { pageload },
     } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide([[call(getCurrentUser), false]])
+      .provide([[call(getCurrentUser), { success: false, error: 'unauthenticated' }]])
       .run();
 
     expect(pageload.isComplete).toBe(true);
@@ -74,7 +74,7 @@ describe('page-load saga', () => {
 
     history = new StubHistory('/');
     const { storeState } = await subject(saga)
-      .provide([[call(getCurrentUser), false]])
+      .provide([[call(getCurrentUser), { success: false, error: 'unauthenticated' }]])
       .withReducer(rootReducer, initialState as any)
       .run();
 
@@ -82,10 +82,23 @@ describe('page-load saga', () => {
     expect(history.replace).toHaveBeenCalledWith({ pathname: '/login' });
   });
 
+  it('redirects to error page on critical error', async () => {
+    const initialState = { pageload: { isComplete: false } };
+
+    history = new StubHistory('/');
+    const { storeState } = await subject(saga)
+      .provide([[call(getCurrentUser), { success: false, error: 'critical' }]])
+      .withReducer(rootReducer, initialState as any)
+      .run();
+
+    expect(storeState.pageload.isComplete).toBe(true);
+    expect(history.replace).toHaveBeenCalledWith({ pathname: '/error' });
+  });
+
   it('saves the entry path when redirecting to the login page', async () => {
     history = new StubHistory('/some/path');
     const { storeState } = await subject(saga)
-      .provide([[call(getCurrentUser), false]])
+      .provide([[call(getCurrentUser), { success: false, error: 'unauthenticated' }]])
       .withReducer(rootReducer)
       .run();
 
@@ -110,7 +123,7 @@ describe('page-load saga', () => {
     history = new StubHistory('/reset-password');
     const { storeState: resetPasswordStoreState } = await subject(saga)
       .withReducer(rootReducer, initialState as any)
-      .provide([[call(getCurrentUser), false]])
+      .provide([[call(getCurrentUser), { success: false, error: 'unauthenticated' }]])
       .run();
 
     expect(resetPasswordStoreState.pageload.isComplete).toBe(true);

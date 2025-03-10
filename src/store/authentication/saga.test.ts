@@ -180,8 +180,8 @@ describe('terminate', () => {
 });
 
 describe(getCurrentUser, () => {
-  it('sets the user state', async () => {
-    const { storeState } = await expectSaga(getCurrentUser)
+  it('sets the user state and returns success', async () => {
+    const { storeState, returnValue } = await expectSaga(getCurrentUser)
       .provide([
         stubResponse(call(fetchCurrentUser), { stub: 'user-data' }),
         ...successResponses(),
@@ -192,14 +192,23 @@ describe(getCurrentUser, () => {
     expect(storeState).toMatchObject({
       user: { data: { stub: 'user-data' } },
     });
+    expect(returnValue).toEqual({ success: true });
   });
 
-  it('returns false if fetching the user fails. I.E., the user is not logged in.', async () => {
+  it('returns unauthenticated error when no user is found', async () => {
+    const { returnValue } = await expectSaga(getCurrentUser)
+      .provide([[matchers.call.fn(fetchCurrentUser), null]])
+      .run();
+
+    expect(returnValue).toEqual({ success: false, error: 'unauthenticated' });
+  });
+
+  it('returns critical error if fetching the user fails with an error', async () => {
     const { returnValue } = await expectSaga(getCurrentUser)
       .provide([[matchers.call.fn(fetchCurrentUser), throwError(new Error('fetch user error'))]])
       .run();
 
-    expect(returnValue).toEqual(false);
+    expect(returnValue).toEqual({ success: false, error: 'critical' });
   });
 
   function successResponses() {

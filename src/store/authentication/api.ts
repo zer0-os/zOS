@@ -23,11 +23,12 @@ export async function fetchCurrentUser(): Promise<User> {
   try {
     const response = await get('/api/users/current');
     return response.body;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    if (error?.response?.status === 401) {
+      return null;
+    }
+    throw error;
   }
-
-  return null;
 }
 
 export async function clearSession(): Promise<AuthorizationResponse> {

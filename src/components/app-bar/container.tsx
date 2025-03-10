@@ -48,6 +48,6 @@ const useAppBar = () => {
     activeApp: match?.params?.app ?? '',
     hasUnreadNotifications,
     hasUnreadHighlights,
-    zAppIsFullscreen,
+    zAppIsFullscreen: Boolean(zAppIsFullscreen),
   };
 };

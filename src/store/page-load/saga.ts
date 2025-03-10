@@ -21,12 +21,14 @@ export function* saga() {
     return;
   }
 
-  const success = yield call(getCurrentUser);
-  if (success) {
+  const result = yield call(getCurrentUser);
+  if (result.success) {
     yield handleAuthenticatedUser(history);
-  } else {
+  } else if (result.error === 'unauthenticated') {
     yield handleUnauthenticatedUser(history);
     yield call(setMobileAppDownloadVisibility, history);
+  } else {
+    yield handleCriticalError(history);
   }
 
   yield put(setIsComplete(true));
@@ -50,6 +52,10 @@ function* handleUnauthenticatedUser(history) {
   yield put(setEntryPath(history.location.pathname));
   yield spawn(redirectOnUserLogin);
   yield history.replace({ pathname: '/login' });
+}
+
+function* handleCriticalError(history) {
+  yield history.replace({ pathname: '/error' });
 }
 
 const MOBILE_APP_DOWNLOAD_PATHS = [

@@ -66,13 +66,13 @@ export function* getCurrentUser() {
   try {
     const user = yield call(fetchCurrentUser);
     if (!user) {
-      return false;
+      return { success: false, error: 'unauthenticated' };
     }
 
     yield completeUserLogin(user);
-    return true;
+    return { success: true };
   } catch (e) {
-    return false;
+    return { success: false, error: 'critical' };
   }
 }
 

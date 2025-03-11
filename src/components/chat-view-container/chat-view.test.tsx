@@ -1,7 +1,7 @@
 import React from 'react';
-import { Waypoint } from 'react-waypoint';
 import { shallow } from 'enzyme';
 import { ChatView, Properties } from './chat-view';
+import { Waypoint } from '../waypoint';
 
 import { Message as MessageModel } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';

@@ -54,7 +54,7 @@ export class AppBar extends React.Component<Properties, State> {
    *
    * This method:
    * 1. Adds the 'no-hover' class to prevent expansion
-   * 2. Forces a reflow to ensure immediate width change
+   * 2. Uses requestAnimationFrame to defer the next operations to the browser's paint cycle
    * 3. Sets up a one-time mouseleave listener to restore hover functionality
    */
   unhoverContainer = () => {

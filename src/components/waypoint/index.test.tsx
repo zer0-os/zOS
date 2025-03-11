@@ -19,6 +19,7 @@ describe('Waypoint', () => {
   const subject = (props = {}) => {
     const allProps = {
       onEnter: jest.fn(),
+      onLeave: jest.fn(),
       ...props,
     };
 
@@ -66,5 +67,15 @@ describe('Waypoint', () => {
 
     expect(onEnter).not.toHaveBeenCalled();
     expect(newOnEnter).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onLeave when ReactWaypoint onLeave is triggered', () => {
+    const onLeave = jest.fn();
+    const wrapper = subject({ onLeave });
+
+    const onLeaveHandler = wrapper.find(ReactWaypoint).prop('onLeave');
+    onLeaveHandler({} as any);
+
+    expect(onLeave).toHaveBeenCalledTimes(1);
   });
 });

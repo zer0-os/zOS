@@ -76,8 +76,12 @@ export class AutocompleteDropdown extends React.Component<Properties, State> {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.itemsElement.current && prevState.matches?.length !== this.state.matches?.length) {
-      this.setState({
-        dropdownHeight: this.itemsElement.current.getBoundingClientRect().height,
+      requestAnimationFrame(() => {
+        if (this._isMounted && this.itemsElement.current) {
+          this.setState({
+            dropdownHeight: this.itemsElement.current.getBoundingClientRect().height,
+          });
+        }
       });
     }
   }

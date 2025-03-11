@@ -64,19 +64,21 @@ export class AppBar extends React.Component<Properties, State> {
     // Add the no-hover class to prevent expansion
     container.classList.add('no-hover');
 
-    // Force a reflow to ensure the width change happens immediately (prevent animation glitches)
-    container.getBoundingClientRect();
-
-    this.removeMouseLeaveListener();
-
-    this.mouseLeaveHandler = () => {
+    requestAnimationFrame(() => {
       if (this.containerRef.current) {
-        this.containerRef.current.classList.remove('no-hover');
+        // The reflow will happen naturally in the next frame
         this.removeMouseLeaveListener();
-      }
-    };
 
-    container.addEventListener('mouseleave', this.mouseLeaveHandler);
+        this.mouseLeaveHandler = () => {
+          if (this.containerRef.current) {
+            this.containerRef.current.classList.remove('no-hover');
+            this.removeMouseLeaveListener();
+          }
+        };
+
+        this.containerRef.current.addEventListener('mouseleave', this.mouseLeaveHandler);
+      }
+    });
   };
 
   renderNotificationIcon = () => {

@@ -79,7 +79,7 @@ describe(AppBar, () => {
       expect(panel.classList.contains('no-hover')).toBe(true);
     });
 
-    it('should remove the no-hover class when the mouse leaves the container', () => {
+    it('should remove the no-hover class when the mouse leaves the container', async () => {
       const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
@@ -87,6 +87,9 @@ describe(AppBar, () => {
 
       fireEvent.click(link);
       expect(panel.classList.contains('no-hover')).toBe(true);
+
+      // Wait for the requestAnimationFrame to execute
+      await new Promise((resolve) => requestAnimationFrame(resolve));
 
       fireEvent.mouseLeave(panel);
       expect(panel.classList.contains('no-hover')).toBe(false);
@@ -105,13 +108,16 @@ describe(AppBar, () => {
       expect(panel.classList.contains('no-hover')).toBe(true);
     });
 
-    it('should allow hovering again after the mouse leaves and re-enters the container', () => {
+    it('should allow hovering again after the mouse leaves and re-enters the container', async () => {
       const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
       const panel = getByTestId('legacy-panel');
 
       fireEvent.click(link);
+
+      // Wait for the requestAnimationFrame to execute
+      await new Promise((resolve) => requestAnimationFrame(resolve));
 
       fireEvent.mouseLeave(panel);
       expect(panel.classList.contains('no-hover')).toBe(false);

@@ -89,9 +89,13 @@ export class PostInput extends React.Component<Properties, State> {
 
   adjustTextareaHeight = () => {
     if (this.textareaRef.current) {
-      const textarea = this.textareaRef.current;
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      requestAnimationFrame(() => {
+        const textarea = this.textareaRef.current;
+        if (textarea) {
+          textarea.style.height = 'auto';
+          textarea.style.height = `${textarea.scrollHeight}px`;
+        }
+      });
     }
   };
 

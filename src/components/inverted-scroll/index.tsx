@@ -2,8 +2,7 @@ import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 import { bemClassName } from '../../lib/bem';
-import { Waypoint } from 'react-waypoint';
-
+import { Waypoint } from '../waypoint';
 const cn = bemClassName('inverted-scroll');
 
 export interface Properties {
@@ -22,7 +21,11 @@ export class InvertedScroll extends React.Component<Properties, State> {
 
   scrollToBottom() {
     this.pinBottom();
-    this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
+    requestAnimationFrame(() => {
+      if (this.scrollWrapper) {
+        this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
+      }
+    });
   }
 
   setScrollWrapper = (element: HTMLElement) => {

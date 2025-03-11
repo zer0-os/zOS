@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react';
-import { Waypoint } from 'react-waypoint';
 
 import { Posts } from '../posts';
 import { MessagesFetchState } from '../../../../store/channels';
@@ -7,6 +6,7 @@ import { Media, Message as MessageModel } from '../../../../store/messages';
 import { Payload as PayloadFetchPosts } from '../../../../store/posts/saga';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { LoadMoreButton } from '../load-more';
+import { Waypoint } from '../../../../components/waypoint';
 
 import { bemClassName } from '../../../../lib/bem';
 import './styles.scss';

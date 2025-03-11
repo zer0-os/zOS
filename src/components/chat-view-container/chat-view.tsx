@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Waypoint } from 'react-waypoint';
+import { Waypoint } from '../waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions, Media } from '../../store/messages';

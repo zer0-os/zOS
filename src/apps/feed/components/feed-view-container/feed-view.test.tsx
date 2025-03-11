@@ -4,7 +4,7 @@ import { FeedView, Message, Properties } from './feed-view';
 import { Posts } from '../posts';
 import { MessagesFetchState } from '../../../../store/channels';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
-import { Waypoint } from 'react-waypoint';
+import { Waypoint } from '../../../../components/waypoint';
 
 describe('FeedView', () => {
   const POST_MESSAGES_TEST = [

@@ -3,7 +3,7 @@ import { useFeed } from './lib/useFeed';
 import { Message } from '../message';
 import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
-import { Waypoint } from 'react-waypoint';
+import { Waypoint } from '../../../../components/waypoint';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 
 import styles from './styles.module.scss';

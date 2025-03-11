@@ -1,8 +1,7 @@
 import { useReplyList } from './useReplyList';
 
 import { Post } from '../../post';
-import { Waypoint } from 'react-waypoint';
-
+import { Waypoint } from '../../../../../components/waypoint';
 import styles from './styles.module.scss';
 
 export interface RepliesProps {

@@ -1,10 +1,12 @@
 enum ZAppMessageType {
   RouteChange = 'zapp-route-changed',
   Authenticate = 'zapp-authenticate',
+  ChannelHandshake = 'zapp-channel-handshake',
 }
 
 enum ZOSMessageType {
   Authenticate = 'zos-authenticate',
+  ChannelHandshakeResponse = 'zos-channel-handshake-response',
 }
 
 type RouteChangeMessage = {
@@ -18,14 +20,32 @@ type AuthenticateMessage = {
   type: ZAppMessageType.Authenticate;
 };
 
-type IncomingMessage = RouteChangeMessage | AuthenticateMessage;
+type ChannelHandshakeMessage = {
+  type: ZAppMessageType.ChannelHandshake;
+};
+
+type IncomingMessage = RouteChangeMessage | AuthenticateMessage | ChannelHandshakeMessage;
+
 type AuthenticateResponseMessage = {
   type: ZOSMessageType.Authenticate;
   token: string | null;
   error?: string;
 };
 
-type OutgoingMessage = AuthenticateResponseMessage;
+type ChannelHandshakeResponseMessage = {
+  type: ZOSMessageType.ChannelHandshakeResponse;
+  port: MessagePort;
+};
 
-export type { IncomingMessage, OutgoingMessage, RouteChangeMessage, AuthenticateMessage, AuthenticateResponseMessage };
+type OutgoingMessage = AuthenticateResponseMessage | ChannelHandshakeResponseMessage;
+
+export type {
+  IncomingMessage,
+  OutgoingMessage,
+  RouteChangeMessage,
+  AuthenticateMessage,
+  AuthenticateResponseMessage,
+  ChannelHandshakeMessage,
+  ChannelHandshakeResponseMessage,
+};
 export { ZAppMessageType, ZOSMessageType };

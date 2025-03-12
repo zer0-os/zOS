@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import { Container as Main, Properties } from './Main';
 import { MessengerChat } from '../../components/messenger/chat';
 import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
-import { MembersSidekick } from '../../components/sidekick-new/variants/members-sidekick';
+import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
 
 jest.mock('../../lib/web3/thirdweb/client', () => ({
   getThirdWebClient: jest.fn(),

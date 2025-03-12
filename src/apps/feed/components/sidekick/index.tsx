@@ -9,7 +9,7 @@ import {
   ContentPortal as SidekickContentPortal,
   Content as SidekickContent,
   Scroll as SidekickScroll,
-} from '../../../../components/sidekick-new';
+} from '../../../../components/sidekick';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';

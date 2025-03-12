@@ -37,7 +37,7 @@ import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 import { AdminMessageType } from '../../../store/messages';
-import { Content as SidekickContent } from '../../sidekick-new/components/content';
+import { Content as SidekickContent } from '../../sidekick/components/content';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';

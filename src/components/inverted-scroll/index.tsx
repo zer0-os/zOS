@@ -21,11 +21,7 @@ export class InvertedScroll extends React.Component<Properties, State> {
 
   scrollToBottom() {
     this.pinBottom();
-    requestAnimationFrame(() => {
-      if (this.scrollWrapper) {
-        this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
-      }
-    });
+    this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
   }
 
   setScrollWrapper = (element: HTMLElement) => {
@@ -40,9 +36,11 @@ export class InvertedScroll extends React.Component<Properties, State> {
   preventHigherScroll = () => {
     // If we get fully scrolled to the top, scroll down a bit to prevent
     // the browser from pinning our position to the top of the scroll view.
-    if (this.scrollWrapper) {
-      this.scrollWrapper.scroll(0, 1);
-    }
+    requestAnimationFrame(() => {
+      if (this.scrollWrapper) {
+        this.scrollWrapper.scroll(0, 1);
+      }
+    });
   };
 
   pinBottom = () => this.setState({ pinnedBottom: true });

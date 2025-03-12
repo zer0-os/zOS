@@ -25,11 +25,9 @@ import { MembersSelectedPayload } from '../../../store/create-conversation/types
 import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-message';
 import { Modal } from '@zero-tech/zui/components';
 import { IconButton } from '@zero-tech/zui/components/IconButton';
-import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
 import { ErrorDialog } from '../../error-dialog';
 import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
-import { CurrentUserDetails } from '../../sidekick-new/components/current-user-details';
 import { getUserSubHandle } from '../../../lib/user';
 import { VerifyIdDialog } from '../../verify-id-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
@@ -277,11 +275,11 @@ export class Container extends React.Component<Properties, State> {
   renderUserHeader() {
     return (
       <Header className={this.state.isCollapsed ? { ...cn('collapsed') }.className : ''}>
-        <IconButton
+        {/* <IconButton
           {...cn('collapse-button')}
           Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}
           onClick={this.state.isCollapsed ? this.expand : this.collapse}
-        />
+        /> */}
         {!this.state.isCollapsed && <IconButton Icon={IconPlus} onClick={this.startCreateConversation} />}
       </Header>
     );

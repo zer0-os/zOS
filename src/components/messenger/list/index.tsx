@@ -277,7 +277,6 @@ export class Container extends React.Component<Properties, State> {
   renderUserHeader() {
     return (
       <Header className={this.state.isCollapsed ? { ...cn('collapsed') }.className : ''}>
-        {!this.state.isCollapsed && <CurrentUserDetails />}
         <IconButton
           {...cn('collapse-button')}
           Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}

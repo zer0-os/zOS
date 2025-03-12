@@ -9,6 +9,10 @@ import { config } from '../../../../config';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { MembersSidekick } from '../../../../components/sidekick-new/variants/members-sidekick';
 
+jest.mock('../../../../components/sidekick/variants/members-sidekick', () => ({
+  MembersSidekick: () => <div data-testid='members-sidekick' />,
+}));
+
 describe('FeedChatContainer', () => {
   const subject = (props: any = {}) => {
     const allProps = {

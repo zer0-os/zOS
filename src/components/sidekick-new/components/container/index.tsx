@@ -27,7 +27,7 @@ export const Container = ({ className, children, header, variant = 'primary' }: 
           {/* We're not removing the portal from the DOM here because it causes issues
            * with the sidekick portal. */}
           <div data-is-hidden={isSettingsOpen ? '' : null} className={styles.Content} id={SIDEKICK_PORTAL_ID}>
-            {!isSettingsOpen && children}
+            {children}
           </div>
         </LegacyPanel>
       </div>

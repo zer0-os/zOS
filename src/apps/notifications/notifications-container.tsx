@@ -3,7 +3,7 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 
 import { NotificationsFeed } from '../../components/notifications-feed';
-import { ConversationsSidekick } from '../../components/sidekick/variants/conversations-sidekick';
+import { ConversationsSidekick } from '../../components/sidekick-new/variants/conversations-sidekick';
 
 import styles from './notifications-container.module.scss';
 

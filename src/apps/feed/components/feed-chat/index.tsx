@@ -15,7 +15,7 @@ import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../component
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
 import { rawChannelSelector } from '../../../../store/channels/saga';
 import { toggleSecondarySidekick } from '../../../../store/group-management';
-import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
+import { MembersSidekick } from '../../../../components/sidekick-new/variants/members-sidekick';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { ConversationActionsContainer } from '../../../../components/messenger/conversation-actions/container';
 

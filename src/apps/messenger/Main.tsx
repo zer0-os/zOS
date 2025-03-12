@@ -7,8 +7,8 @@ import { MessengerChat } from '../../components/messenger/chat';
 import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
 import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
-import { ConversationsSidekick } from '../../components/sidekick/variants/conversations-sidekick';
-import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
+import { ConversationsSidekick } from '../../components/sidekick-new/variants/conversations-sidekick';
+import { MembersSidekick } from '../../components/sidekick-new/variants/members-sidekick';
 
 import styles from './Main.module.scss';
 

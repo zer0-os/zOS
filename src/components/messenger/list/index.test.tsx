@@ -10,7 +10,7 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
-import { CurrentUserDetails } from '../../sidekick/components/current-user-details';
+import { CurrentUserDetails } from '../../sidekick-new/components/current-user-details';
 import { ErrorDialog } from '../../error-dialog';
 import { bem } from '../../../lib/bem';
 import { IconButton } from '@zero-tech/zui/components/IconButton';

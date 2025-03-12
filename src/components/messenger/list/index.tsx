@@ -37,7 +37,6 @@ import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
 import { AdminMessageType } from '../../../store/messages';
-import { Header } from '../../sidekick-new/components/header';
 import { Content as SidekickContent } from '../../sidekick-new/components/content';
 
 import { bemClassName } from '../../../lib/bem';
@@ -272,19 +271,6 @@ export class Container extends React.Component<Properties, State> {
     return <RewardsModalContainer onClose={this.props.closeRewardsDialog} />;
   };
 
-  renderUserHeader() {
-    return (
-      <Header className={this.state.isCollapsed ? { ...cn('collapsed') }.className : ''}>
-        {/* <IconButton
-          {...cn('collapse-button')}
-          Icon={this.state.isCollapsed ? IconChevronRight : IconChevronLeft}
-          onClick={this.state.isCollapsed ? this.expand : this.collapse}
-        /> */}
-        {!this.state.isCollapsed && <IconButton Icon={IconPlus} onClick={this.startCreateConversation} />}
-      </Header>
-    );
-  }
-
   renderCreateConversation() {
     return (
       <>
@@ -345,7 +331,6 @@ export class Container extends React.Component<Properties, State> {
 
     return (
       <>
-        {this.props.stage === SagaStage.None && this.renderUserHeader()}
         <SidekickContent>
           {this.renderCreateConversation()}
           {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}

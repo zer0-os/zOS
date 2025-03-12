@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Header } from '../../header';
 import { User } from '../../../store/channels';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
-import { Avatar } from '@zero-tech/zui/components/Avatar';
 
 export interface Properties {
   className?: string;
@@ -21,22 +20,6 @@ export class ConversationHeader extends React.Component<Properties> {
 
   isOneOnOne() {
     return this.props.isOneOnOne;
-  }
-
-  avatarUrl() {
-    if (!this.props.otherMembers) {
-      return '';
-    }
-
-    if (this.isOneOnOne() && this.props.otherMembers[0]) {
-      return this.props.otherMembers[0].profileImage;
-    }
-
-    return '';
-  }
-
-  renderAvatar() {
-    return <Avatar size={'medium'} imageURL={this.avatarUrl()} tabIndex={-1} isRaised isGroup={!this.isOneOnOne()} />;
   }
 
   renderSubTitle() {

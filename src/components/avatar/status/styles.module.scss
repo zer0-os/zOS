@@ -1,0 +1,25 @@
+.Status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  &[data-status-type='active'] {
+    background-color: var(--color-success-11);
+  }
+
+  &[data-status-type='idle'] {
+    background-color: var(--color-warning-11);
+  }
+
+  &[data-status-type='busy'] {
+    background-color: var(--color-failure-11);
+  }
+
+  &[data-status-type='offline'] {
+    background-color: var(--color-greyscale-8);
+  }
+
+  &[data-status-type='unread'] {
+    background-color: var(--color-secondary-11);
+  }
+}

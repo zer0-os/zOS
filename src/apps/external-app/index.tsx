@@ -10,7 +10,7 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch, AnyAction } from 'redux';
 import { IFrame } from '../iframe';
-import { IncomingMessage, ZAppMessageType, ZOSMessageType } from './types/types';
+import { IncomingMessage, ZOSMessageType } from './types/types';
 import { routeChangedHandler } from './message-handlers/routeChangeHandler';
 import { isAuthenticateEvent, isRouteChangeEvent, isChannelHandshakeEvent } from './types/messageTypeGuard';
 import { authenticateHandler } from './message-handlers/authenticateHandler';

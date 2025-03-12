@@ -1,4 +1,4 @@
-import { AuthenticateMessage, AuthenticateResponseMessage, ZOSMessageType } from '../types/types';
+import { AuthenticateResponseMessage, ZOSMessageType } from '../types/types';
 import { get } from '../../../lib/api/rest';
 
 /**

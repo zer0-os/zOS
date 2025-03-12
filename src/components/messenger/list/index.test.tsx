@@ -13,7 +13,6 @@ import { previewDisplayDate } from '../../../lib/chat/chat-message';
 import { CurrentUserDetails } from '../../sidekick/components/current-user-details';
 import { ErrorDialog } from '../../error-dialog';
 import { bem } from '../../../lib/bem';
-import { IconButton } from '@zero-tech/zui/components/IconButton';
 const c = bem('.direct-message-members');
 
 const mockSearchMyNetworksByName = jest.fn();

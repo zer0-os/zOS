@@ -106,8 +106,17 @@ class ExternalAppComponent extends Component<Properties, State> {
     }
   };
 
+  getAllowAttribute = () => {
+    return this.props.manifest.features.reduce((acc, feature) => {
+      if (feature.type === 'microphone') {
+        return `${acc} microphone`;
+      }
+      return acc;
+    }, '');
+  };
+
   render() {
-    return <IFrame src={this.state.loadedUrl} title={this.props.manifest.title} />;
+    return <IFrame src={this.state.loadedUrl} title={this.props.manifest.title} allow={this.getAllowAttribute()} />;
   }
 }
 

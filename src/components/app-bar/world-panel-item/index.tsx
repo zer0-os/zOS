@@ -21,7 +21,7 @@ export class WorldPanelItem extends React.Component<Properties> {
     return (
       <div {...cn('', this.props.isActive && 'active')} onClick={this.publishClick}>
         <div title={this.props.label} {...cn('icon')}>
-          <this.props.Icon size={22} isFilled={this.props.isActive} />
+          <this.props.Icon size={22} />
         </div>
       </div>
     );

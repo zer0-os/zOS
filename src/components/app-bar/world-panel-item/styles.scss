@@ -1,15 +1,27 @@
 .world-panel-item {
   &__icon {
     border-radius: 9999px;
-    padding: 6px;
+    padding: 6px 0;
+
+    max-width: 22px;
 
     color: var(--color-greyscale-11);
+
+    > div {
+      width: 100%;
+      margin-left: 1px;
+    }
   }
 
-  &--active,
-  &:hover {
+  &--active {
     .world-panel-item__icon {
-      color: var(--color-primary-12);
+      color: var(--color-secondary-11);
+    }
+  }
+
+  &:not(&--active):hover {
+    .world-panel-item__icon {
+      color: var(--color-greyscale-12);
     }
   }
 

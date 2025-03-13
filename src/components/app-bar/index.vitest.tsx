@@ -59,12 +59,12 @@ describe(AppBar, () => {
   describe('Active App State', () => {
     it('should set the Messenger icon as active when activeApp is "conversation"', () => {
       renderComponent({ activeApp: 'conversation' });
-      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Messenger', isActive: true }));
+      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Chat', isActive: true }));
     });
 
     it('should not set the Messenger icon as active when activeApp is something else', () => {
       renderComponent({ activeApp: 'foo' });
-      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Messenger', isActive: false }));
+      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Chat', isActive: false }));
     });
   });
 

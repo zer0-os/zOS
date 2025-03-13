@@ -23,5 +23,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableFeedApp: { defaultValue: true },
   enableLinkedAccounts: { defaultValue: true },
   enableZeroWalletSigning: { defaultValue: true },
-  enableFeedChat: { defaultValue: true, locked: true },
+  enableFeedChat: { defaultValue: true },
 };

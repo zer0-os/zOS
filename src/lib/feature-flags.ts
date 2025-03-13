@@ -59,6 +59,14 @@ export class FeatureFlags implements FeatureFlagValues {
       });
     });
   }
+
+  public reset(): void {
+    Object.keys(this.config).forEach((key) => {
+      const flagKey = key as FeatureFlagKey;
+      const defaultValue = this.config[flagKey].defaultValue;
+      this._setBoolean(flagKey, defaultValue);
+    });
+  }
 }
 
 export const featureFlags = new FeatureFlags();

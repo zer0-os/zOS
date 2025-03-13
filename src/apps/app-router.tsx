@@ -4,7 +4,7 @@
  * - /conversation/:conversationId renders Messenger
  */
 
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { MessengerApp } from './messenger';
 import { FeedApp } from './feed';
 import { ExplorerApp } from './explorer';
@@ -15,13 +15,26 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
 
+import { Container as SidekickContainer } from '../components/sidekick/components/container';
+import { Header as SidekickHeader } from '../components/sidekick/components/header';
+import { CurrentUserDetails } from '../components/sidekick/components/current-user-details';
+
 const redirectToRoot = () => <Redirect to={'/'} />;
 
 export const AppRouter = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
+  const location = useLocation();
+  const isHomeOrExplorer = location.pathname.startsWith('/home') || location.pathname.startsWith('/explorer');
 
   return (
     <AuthenticationContextProvider value={{ isAuthenticated }}>
+      {!isHomeOrExplorer && (
+        <SidekickContainer>
+          <SidekickHeader>
+            <CurrentUserDetails />
+          </SidekickHeader>
+        </SidekickContainer>
+      )}
       <Switch>
         <Route path='/conversation/:conversationId' component={MessengerApp} />
         <Route path='/' exact component={MessengerApp} />

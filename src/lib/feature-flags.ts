@@ -65,6 +65,7 @@ export class FeatureFlags implements FeatureFlagValues {
       const flagKey = key as FeatureFlagKey;
       const defaultValue = this.config[flagKey].defaultValue;
       this._setBoolean(flagKey, defaultValue);
+      localStorage.removeItem(`FEATURE_FLAGS.${flagKey}`);
     });
   }
 }

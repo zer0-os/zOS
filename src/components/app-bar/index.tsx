@@ -86,11 +86,7 @@ export class AppBar extends React.Component<Properties, State> {
 
     return (
       <div {...cn('notification-icon-wrapper')}>
-        <IconBell1
-          {...cn('notification-icon', hasUnreadHighlights && 'highlight')}
-          isFilled={checkActive(this.props.activeApp)('notifications')}
-          size={22}
-        />
+        <IconBell1 {...cn('notification-icon', hasUnreadHighlights && 'highlight')} size={22} />
         {hasUnreadNotifications && !hasUnreadHighlights && <div {...cn('notification-dot')} />}
         {hasUnreadHighlights && <div {...cn('highlight-dot')} />}
       </div>

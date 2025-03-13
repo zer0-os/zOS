@@ -3,8 +3,8 @@
 @import '../../glass';
 
 $padding: 12px;
-$container-padding: 6px;
-$width: 46px;
+$container-padding: 5px;
+$width: 36px;
 
 .app-bar {
   position: relative;
@@ -25,6 +25,8 @@ $width: 46px;
     top: 50%;
     left: $padding;
     transform: translateY(-50%);
+    border-radius: 18px;
+    border: 0.5px solid #23252a;
 
     display: flex;
     flex-direction: column;
@@ -40,7 +42,7 @@ $width: 46px;
     transition: width 0.15s ease-in-out;
 
     &:hover {
-      width: calc(200px);
+      width: 180px;
     }
 
     &.no-hover {
@@ -101,7 +103,7 @@ $width: 46px;
 
     span {
       position: absolute;
-      left: 46px; // 30px icon + 16px padding
+      left: 38px; // 30px icon + 16px padding
       top: 50%;
       transform: translateY(-50%);
 
@@ -112,7 +114,7 @@ $width: 46px;
       white-space: nowrap;
 
       &[data-active] {
-        color: white;
+        color: var(--color-secondary-11);
       }
     }
   }

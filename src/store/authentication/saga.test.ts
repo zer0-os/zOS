@@ -36,6 +36,7 @@ import { closeUserProfile } from '../user-profile/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
 import { clearIndexedDBStorage } from '../../lib/storage/clear-idb';
+import { clearLastActiveFeed } from '../../lib/last-feed';
 
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
@@ -269,6 +270,10 @@ describe(forceLogout, () => {
 
   it('clears the last active tab', async () => {
     await expectLogoutSaga().call(clearLastActiveTab).call(terminate).run();
+  });
+
+  it('clears the last active feed', async () => {
+    await expectLogoutSaga().call(clearLastActiveFeed).call(terminate).run();
   });
 
   it('clears the user session', async () => {

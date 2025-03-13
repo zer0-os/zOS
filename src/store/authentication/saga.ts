@@ -17,6 +17,7 @@ import { closeUserProfile } from '../user-profile/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
 import { clearRewards } from '../rewards/saga';
+import { clearLastActiveFeed } from '../../lib/last-feed';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -113,6 +114,7 @@ export function* forceLogout() {
   yield closeLogoutModal();
   yield call(clearLastActiveConversation);
   yield call(clearLastActiveTab);
+  yield call(clearLastActiveFeed);
   yield call(clearRewards);
   yield call(terminate);
 }

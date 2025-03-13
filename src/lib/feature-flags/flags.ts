@@ -1,5 +1,4 @@
-import { store } from '../../store';
-import { currentUserSelector } from '../../store/authentication/saga';
+import window from 'global/window';
 
 export type FeatureFlagKey =
   | 'channelsApp'
@@ -36,13 +35,26 @@ export type FeatureFlagDefinitions = Record<FeatureFlagKey, FeatureFlagConfig>;
 
 export type FeatureFlagValues = Record<FeatureFlagKey, boolean>;
 
+/**
+ * Bypass the store dependency for the current user ID if we're in a test environment.
+ */
+let getCurrentUserId = () => null;
+export const setGetCurrentUserId = (fn: () => string | null) => {
+  getCurrentUserId = fn;
+};
+if (process.env.NODE_ENV !== 'test') {
+  (async () => {
+    const { store } = await import('../../store');
+    getCurrentUserId = () => store.getState().authentication?.user?.data?.id ?? null;
+  })();
+}
+
 export const getFeatureFlag = (propName: FeatureFlagKey, config?: FeatureFlagConfig): boolean => {
   const savedValue = window.localStorage.getItem('FEATURE_FLAGS.' + propName);
 
   // If the config has allowedUserIds, treat it as a locked feature that's only enabled for specific users
   if (config?.allowedUserIds) {
-    const state = store.getState();
-    const userId = currentUserSelector()(state)?.id;
+    const userId = getCurrentUserId();
     if (userId && config.allowedUserIds.includes(userId)) {
       return true;
     }

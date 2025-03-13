@@ -13,6 +13,7 @@ import {
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
+import { setLastActiveFeed } from '../../../../lib/last-feed';
 
 export const Sidekick = () => {
   const { isErrorZids, isLoadingZids, selectedZId, zids, search, setSearch, unreadCounts, mutedChannels } =
@@ -40,7 +41,7 @@ export const Sidekick = () => {
               const isMuted = mutedChannels[zid];
               const isUnread = hasUnreadHighlights || hasUnreadTotal;
               return (
-                <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid}>
+                <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid} zid={zid}>
                   <div className={classNames(styles.FeedName, { [styles.Unread]: isUnread })}>
                     <span>0://</span>
                     <div>{zid}</div>
@@ -65,10 +66,21 @@ export const Sidekick = () => {
   );
 };
 
-const FeedItem = ({ route, children, isSelected }: { route: string; children: ReactNode; isSelected?: boolean }) => {
+const FeedItem = ({
+  route,
+  children,
+  isSelected,
+  zid,
+}: {
+  route: string;
+  children: ReactNode;
+  isSelected?: boolean;
+  zid: string;
+}) => {
   const history = useHistory();
 
   const handleOnClick = () => {
+    setLastActiveFeed(zid);
     history.push(route);
   };
 

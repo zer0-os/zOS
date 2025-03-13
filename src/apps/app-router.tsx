@@ -4,7 +4,7 @@
  * - /conversation/:conversationId renders Messenger
  */
 
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { MessengerApp } from './messenger';
 import { FeedApp } from './feed';
 import { ExplorerApp } from './explorer';
@@ -23,14 +23,18 @@ const redirectToRoot = () => <Redirect to={'/'} />;
 
 export const AppRouter = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
+  const location = useLocation();
+  const isHomeOrExplorer = location.pathname.startsWith('/home') || location.pathname.startsWith('/explorer');
 
   return (
     <AuthenticationContextProvider value={{ isAuthenticated }}>
-      <SidekickContainer>
-        <SidekickHeader>
-          <CurrentUserDetails />
-        </SidekickHeader>
-      </SidekickContainer>
+      {!isHomeOrExplorer && (
+        <SidekickContainer>
+          <SidekickHeader>
+            <CurrentUserDetails />
+          </SidekickHeader>
+        </SidekickContainer>
+      )}
       <Switch>
         <Route path='/conversation/:conversationId' component={MessengerApp} />
         <Route path='/' exact component={MessengerApp} />

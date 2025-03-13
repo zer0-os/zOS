@@ -7,10 +7,9 @@ import styles from './styles.module.scss';
 export interface RepliesProps {
   postId: string;
   isFeed?: boolean;
-  hideZidAction?: boolean;
 }
 
-export const Replies = ({ postId, isFeed, hideZidAction }: RepliesProps) => {
+export const Replies = ({ postId, isFeed }: RepliesProps) => {
   const { fetchNextPage, hasNextPage, isFetchingNextPage, replies, userId, userMeowBalance, meowPost, meowPostFeed } =
     useReplyList(postId);
 
@@ -37,7 +36,6 @@ export const Replies = ({ postId, isFeed, hideZidAction }: RepliesProps) => {
                 numberOfReplies={reply.numberOfReplies}
                 channelZid={reply.channelZid}
                 avatarUrl={reply.sender?.avatarUrl}
-                hideZidAction={hideZidAction}
               />
             </li>
           ))

@@ -36,7 +36,6 @@ export interface PostProps {
   reactions?: { [key: string]: number };
   variant?: Variant;
   numberOfReplies?: number;
-  hideZidAction?: boolean;
 
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   meowPost: (postId: string, meowAmount: string) => void;
@@ -61,7 +60,6 @@ export const Post = ({
   meowPost,
   variant = 'default',
   numberOfReplies = 0,
-  hideZidAction = false,
 }: PostProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -224,7 +222,7 @@ export const Post = ({
                   )}
                 </div>
                 <div>
-                  {channelZid && !hideZidAction && (
+                  {channelZid && (
                     <PreventPropagation>
                       <FeedAction channelZid={channelZid} />
                     </PreventPropagation>

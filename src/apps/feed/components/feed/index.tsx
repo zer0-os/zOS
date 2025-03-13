@@ -10,10 +10,9 @@ import styles from './styles.module.scss';
 
 export interface FeedProps {
   zid?: string;
-  hideZidAction?: boolean;
 }
 
-export const Feed = ({ zid, hideZidAction }: FeedProps) => {
+export const Feed = ({ zid }: FeedProps) => {
   const {
     channelZid,
     fetchNextPage,
@@ -62,7 +61,6 @@ export const Feed = ({ zid, hideZidAction }: FeedProps) => {
                     timestamp={reply.createdAt}
                     userMeowBalance={userMeowBalance}
                     variant='default'
-                    hideZidAction={hideZidAction}
                   />
                 </li>
               ))

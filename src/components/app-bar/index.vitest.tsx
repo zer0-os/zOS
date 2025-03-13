@@ -21,6 +21,7 @@ vi.mock('@zero-tech/zui/icons', () => ({
   IconMessageSquare2: 'IconMessageSquare2',
   IconList: 'IconList',
   IconBell1: 'IconBell1',
+  IconFourDots: 'IconFourDots',
 }));
 
 vi.mock('./more-apps-modal', () => ({

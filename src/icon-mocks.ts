@@ -225,6 +225,7 @@ jest.mock('@zero-tech/zui/icons', () => ({
   IconFolderSearch: () => null,
   IconFolderShield: () => null,
   IconFolderX: () => null,
+  IconFourDots: () => null,
   IconFramer: () => null,
   IconGift1: () => null,
   IconGitBranch1: () => null,

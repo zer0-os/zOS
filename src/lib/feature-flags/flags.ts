@@ -23,7 +23,8 @@ export type FeatureFlagKey =
   | 'enableFeedApp'
   | 'enableLinkedAccounts'
   | 'enableZeroWalletSigning'
-  | 'enableFeedChat';
+  | 'enableFeedChat'
+  | 'enableAuraZApp';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

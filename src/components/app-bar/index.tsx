@@ -12,6 +12,7 @@ import { getLastActiveConversation } from '../../lib/last-conversation';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
+import { AuraIcon } from '../../apps/aura/auraIcon';
 
 const cn = bemClassName('app-bar');
 
@@ -147,6 +148,15 @@ export class AppBar extends React.Component<Properties, State> {
                 isActive={isActive('notifications')}
                 label='Notifications'
                 to='/notifications'
+                onLinkClick={this.unhoverContainer}
+              />
+            )}
+            {featureFlags.enableAuraZApp && (
+              <AppLink
+                Icon={AuraIcon}
+                isActive={isActive('aura')}
+                label='Aura'
+                to='/aura'
                 onLinkClick={this.unhoverContainer}
               />
             )}

@@ -27,11 +27,7 @@ export const AppRouter = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
   const location = useLocation();
   const isActiveZApp = useSelector(isZAppActiveSelector);
-  const renderSidekick = !(
-    location.pathname.startsWith('/home') ||
-    location.pathname.startsWith('/explorer') ||
-    isActiveZApp
-  );
+  const renderSidekick = !(location.pathname.startsWith('/home') || isActiveZApp);
 
   return (
     <AuthenticationContextProvider value={{ isAuthenticated }}>

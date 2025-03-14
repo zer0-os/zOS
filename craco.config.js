@@ -2,6 +2,9 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
+  babel: {
+    plugins: [['@babel/plugin-transform-typescript', { allowDeclareFields: true }]],
+  },
   webpack: {
     alias: {
       react: path.resolve('./node_modules/react'),

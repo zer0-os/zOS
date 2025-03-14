@@ -1,4 +1,4 @@
-import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, spawn, race, takeLatest, debounce } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
 import {
@@ -234,7 +234,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
     validateActiveConversation(payload.id)
   );
-  yield takeLatest(SagaActionTypes.ValidateFeedChat, ({ payload }: any) => validateActiveConversation(payload.id));
+
+  yield debounce(300, SagaActionTypes.ValidateFeedChat, ({ payload }: any) => validateActiveConversation(payload.id));
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);

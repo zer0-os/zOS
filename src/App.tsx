@@ -9,6 +9,7 @@ import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
 import { AppBar } from './components/app-bar/container';
 import { DialogManager } from './components/dialog-manager/container';
 import { ThemeEngine } from './components/theme-engine';
+import { BackgroundStyleProvider } from './lib/providers/BackgroundStyleProvider';
 
 export const App = () => {
   const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName } = useAppMain();
@@ -17,6 +18,7 @@ export const App = () => {
     // See: ZOS-115
     // @ts-ignore
     <ZUIProvider>
+      <BackgroundStyleProvider />
       <div className={mainClassName}>
         {isAuthenticated && (
           <>

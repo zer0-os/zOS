@@ -10,3 +10,9 @@ $default-background-blur: blur(32px);
 $default-gap: 8px;
 $border-color: #23252a;
 $panel-background: rgba(17, 18, 19, 0.5);
+
+// Apply borders only on low contrast backgrounds to improve visibility
+@mixin panel-border-bottom {
+  border-bottom: 1px solid $border-color;
+  border-bottom-width: var(--is-low-contrast-background);
+}

@@ -64,7 +64,8 @@ $header-color: var(--color-greyscale-11);
 
   box-sizing: border-box;
   border-radius: variables.$border-radius;
-  border-bottom: 1px solid variables.$border-color;
+
+  @include variables.panel-border-bottom;
 
   font-size: 14px;
 

@@ -15,7 +15,7 @@
 
   box-sizing: border-box;
   border-radius: variables.$border-radius;
-  border-bottom: 1px solid variables.$border-color;
+  @include variables.panel-border-bottom;
 }
 
 .Title {

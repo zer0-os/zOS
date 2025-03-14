@@ -42,6 +42,12 @@ vi.mock('./components/theme-engine', () => ({
   },
 }));
 
+vi.mock('./lib/providers/BackgroundStyleProvider', () => ({
+  BackgroundStyleProvider: () => {
+    return <div data-testid='background-style-provider' />;
+  },
+}));
+
 describe(App, () => {
   describe('by default', () => {
     var container: HTMLElement;
@@ -79,6 +85,10 @@ describe(App, () => {
 
       expect(getMainBackgroundClass).toHaveBeenCalledWith('foo');
       expect(container.querySelector('div.main')?.classList).toContain('mock-main-background-class');
+    });
+
+    it('should render BackgroundStyleProvider', () => {
+      expect(screen.getByTestId('background-style-provider')).toBeTruthy();
     });
   });
 

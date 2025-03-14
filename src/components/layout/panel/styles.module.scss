@@ -14,16 +14,28 @@ $panel-background: rgba(17, 18, 19, 0.5);
   background-color: $panel-background;
 }
 
+@mixin panel-rounding {
+  > *:first-child {
+    border-radius: variables.$border-radius variables.$border-radius 0 0;
+  }
+
+  > *:last-child {
+    border-radius: 0 0 variables.$border-radius variables.$border-radius;
+  }
+}
+
 .Legacy {
   @include panel-base;
+  @include panel-rounding;
 
   max-height: 100%;
 }
 
 .Panel {
+  @include panel-rounding;
+
   display: flex;
   flex-direction: column;
-  gap: variables.$default-gap;
   width: 100%;
 
   max-height: 100%;

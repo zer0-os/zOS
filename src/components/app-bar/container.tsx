@@ -7,9 +7,16 @@ import { DefaultRoomLabels } from '../../store/channels';
 import { getLastActiveConversation } from '../../lib/last-conversation';
 import { rawChannelSelector } from '../../store/channels/saga';
 import { useMemo } from 'react';
+import { activeZAppFeatureSelector } from '../../store/active-zapp/selectors';
 
 export const AppBar = () => {
-  const { activeApp, hasUnreadNotifications, hasUnreadHighlights, lastActiveMessengerConversationId } = useAppBar();
+  const {
+    activeApp,
+    hasUnreadNotifications,
+    hasUnreadHighlights,
+    lastActiveMessengerConversationId,
+    zAppIsFullscreen,
+  } = useAppBar();
 
   return (
     <AppBarComponent
@@ -17,6 +24,7 @@ export const AppBar = () => {
       hasUnreadNotifications={hasUnreadNotifications}
       hasUnreadHighlights={hasUnreadHighlights}
       lastActiveMessengerConversationId={lastActiveMessengerConversationId}
+      zAppIsFullscreen={zAppIsFullscreen}
     />
   );
 };
@@ -55,10 +63,13 @@ const useAppBar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!isActiveConversationSocialChannel ? activeConversationId : null]);
 
+  const zAppIsFullscreen = useSelector(activeZAppFeatureSelector('fullscreen'));
+
   return {
     activeApp: match?.params?.app ?? '',
     hasUnreadNotifications,
     hasUnreadHighlights,
     lastActiveMessengerConversationId,
+    zAppIsFullscreen: Boolean(zAppIsFullscreen),
   };
 };

@@ -20,6 +20,7 @@ export interface Properties {
   hasUnreadNotifications: boolean;
   hasUnreadHighlights: boolean;
   lastActiveMessengerConversationId?: string | undefined;
+  zAppIsFullscreen: boolean;
 }
 
 interface State {
@@ -100,7 +101,7 @@ export class AppBar extends React.Component<Properties, State> {
   };
 
   render() {
-    const { activeApp } = this.props;
+    const { activeApp, zAppIsFullscreen } = this.props;
     const isActive = checkActive(activeApp);
     const messengerPath = this.props.lastActiveMessengerConversationId
       ? `/conversation/${this.props.lastActiveMessengerConversationId}`
@@ -108,7 +109,7 @@ export class AppBar extends React.Component<Properties, State> {
 
     return (
       <>
-        <div {...cn('')}>
+        <div {...cn('', zAppIsFullscreen && 'zapp-fullscreen')}>
           <LegacyPanel {...cn('container')} ref={this.containerRef}>
             <AppLink
               Icon={IconHome}

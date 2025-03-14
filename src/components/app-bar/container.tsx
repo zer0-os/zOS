@@ -4,15 +4,17 @@ import { denormalizeConversations } from '../../store/channels-list';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { DefaultRoomLabels } from '../../store/channels';
+import { getLastActiveConversation } from '../../lib/last-conversation';
 
 export const AppBar = () => {
-  const { activeApp, hasUnreadNotifications, hasUnreadHighlights } = useAppBar();
+  const { activeApp, hasUnreadNotifications, hasUnreadHighlights, lastActiveMessengerConversationId } = useAppBar();
 
   return (
     <AppBarComponent
       activeApp={activeApp}
       hasUnreadNotifications={hasUnreadNotifications}
       hasUnreadHighlights={hasUnreadHighlights}
+      lastActiveMessengerConversationId={lastActiveMessengerConversationId}
     />
   );
 };
@@ -40,9 +42,12 @@ const useAppBar = () => {
     );
   });
 
+  const lastActiveMessengerConversationId = getLastActiveConversation();
+
   return {
     activeApp: match?.params?.app ?? '',
     hasUnreadNotifications,
     hasUnreadHighlights,
+    lastActiveMessengerConversationId,
   };
 };

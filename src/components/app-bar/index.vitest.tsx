@@ -41,6 +41,7 @@ const DEFAULT_PROPS: Properties = {
   activeApp: undefined,
   hasUnreadNotifications: false,
   hasUnreadHighlights: false,
+  lastActiveMessengerConversationId: undefined,
 };
 
 const renderComponent = (props: Partial<Properties>) => {

@@ -19,6 +19,7 @@ export interface Properties {
   activeApp: string | undefined;
   hasUnreadNotifications: boolean;
   hasUnreadHighlights: boolean;
+  lastActiveMessengerConversationId?: string | undefined;
 }
 
 interface State {
@@ -101,8 +102,9 @@ export class AppBar extends React.Component<Properties, State> {
   render() {
     const { activeApp } = this.props;
     const isActive = checkActive(activeApp);
-    const lastConversationId = this.getLastConversationId();
-    const messengerPath = lastConversationId ? `/conversation/${lastConversationId}` : '/';
+    const messengerPath = this.props.lastActiveMessengerConversationId
+      ? `/conversation/${this.props.lastActiveMessengerConversationId}`
+      : '/';
 
     return (
       <>

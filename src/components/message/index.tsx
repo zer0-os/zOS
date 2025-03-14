@@ -197,15 +197,19 @@ export class Message extends React.Component<Properties, State> {
   };
 
   scrollToMessage = (messageId: string) => {
-    const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-    const messageBlock = messageElement?.querySelector('.message__block');
-    if (messageBlock) {
-      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      messageBlock.classList.add('message__block--parent-message-highlight');
-      setTimeout(() => {
-        messageBlock.classList.remove('message__block--parent-message-highlight');
-      }, 3000);
-    }
+    requestAnimationFrame(() => {
+      const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+      const messageBlock = messageElement?.querySelector('.message__block');
+      if (messageBlock) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        messageBlock.classList.add('message__block--parent-message-highlight');
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            messageBlock.classList.remove('message__block--parent-message-highlight');
+          });
+        }, 3000);
+      }
+    });
   };
 
   onParentMessageClick = (messageId: string) => {
@@ -232,14 +236,18 @@ export class Message extends React.Component<Properties, State> {
   };
 
   handleMediaAspectRatio = (width: number, height: number) => {
-    const aspectRatio = width / height;
-    this.setState({ isFullWidth: height > 640 && aspectRatio <= 5 / 4 });
+    requestAnimationFrame(() => {
+      const aspectRatio = width / height;
+      this.setState({ isFullWidth: height > 640 && aspectRatio <= 5 / 4 });
+    });
   };
 
   handleImageLoad = (event) => {
-    const { naturalWidth: width, naturalHeight: height } = event.target;
-    this.handleMediaAspectRatio(width, height);
-    this.setState({ isImageLoaded: true });
+    requestAnimationFrame(() => {
+      const { naturalWidth: width, naturalHeight: height } = event.target;
+      this.handleMediaAspectRatio(width, height);
+      this.setState({ isImageLoaded: true });
+    });
   };
 
   handlePlaceholderAspectRatio = (width: number, height: number, maxWidth: number, maxHeight: number) => {

@@ -174,3 +174,7 @@ $glass-state-default-color: rgba(167, 163, 163, 0.05);
   //   rgba(0, 0, 0, 0.75) 100%
   // );
 }
+
+@mixin glass-materials-flat-thick {
+  background: rgba(10, 10, 10, 0.75);
+}

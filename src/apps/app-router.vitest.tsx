@@ -6,6 +6,9 @@ import { renderWithProviders } from '../test-utils';
 
 beforeEach(() => {
   vi.resetModules();
+  vi.mock('../components/sidekick/components/current-user-details', () => ({
+    CurrentUserDetails: () => <div data-testid='current-user-details' />,
+  }));
   vi.mock('../lib/feature-flags', () => ({
     featureFlags: { enableNotificationsApp: true, enableFeedApp: true },
   }));

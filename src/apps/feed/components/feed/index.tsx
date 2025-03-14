@@ -3,17 +3,16 @@ import { useFeed } from './lib/useFeed';
 import { Message } from '../message';
 import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
-import { Waypoint } from 'react-waypoint';
+import { Waypoint } from '../../../../components/waypoint';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 
 import styles from './styles.module.scss';
 
 export interface FeedProps {
   zid?: string;
-  hideZidAction?: boolean;
 }
 
-export const Feed = ({ zid, hideZidAction }: FeedProps) => {
+export const Feed = ({ zid }: FeedProps) => {
   const {
     channelZid,
     fetchNextPage,
@@ -62,7 +61,6 @@ export const Feed = ({ zid, hideZidAction }: FeedProps) => {
                     timestamp={reply.createdAt}
                     userMeowBalance={userMeowBalance}
                     variant='default'
-                    hideZidAction={hideZidAction}
                   />
                 </li>
               ))

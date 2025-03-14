@@ -2,8 +2,7 @@ import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import './styles.scss';
 import { bemClassName } from '../../lib/bem';
-import { Waypoint } from 'react-waypoint';
-
+import { Waypoint } from '../waypoint';
 const cn = bemClassName('inverted-scroll');
 
 export interface Properties {
@@ -37,9 +36,11 @@ export class InvertedScroll extends React.Component<Properties, State> {
   preventHigherScroll = () => {
     // If we get fully scrolled to the top, scroll down a bit to prevent
     // the browser from pinning our position to the top of the scroll view.
-    if (this.scrollWrapper) {
-      this.scrollWrapper.scroll(0, 1);
-    }
+    requestAnimationFrame(() => {
+      if (this.scrollWrapper) {
+        this.scrollWrapper.scroll(0, 1);
+      }
+    });
   };
 
   pinBottom = () => this.setState({ pinnedBottom: true });

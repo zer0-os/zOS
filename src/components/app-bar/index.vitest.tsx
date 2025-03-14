@@ -21,6 +21,7 @@ vi.mock('@zero-tech/zui/icons', () => ({
   IconMessageSquare2: 'IconMessageSquare2',
   IconList: 'IconList',
   IconBell1: 'IconBell1',
+  IconFourDots: 'IconFourDots',
 }));
 
 vi.mock('./more-apps-modal', () => ({
@@ -40,6 +41,7 @@ const DEFAULT_PROPS: Properties = {
   activeApp: undefined,
   hasUnreadNotifications: false,
   hasUnreadHighlights: false,
+  lastActiveMessengerConversationId: undefined,
   zAppIsFullscreen: false,
 };
 
@@ -59,12 +61,12 @@ describe(AppBar, () => {
   describe('Active App State', () => {
     it('should set the Messenger icon as active when activeApp is "conversation"', () => {
       renderComponent({ activeApp: 'conversation' });
-      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Messenger', isActive: true }));
+      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Chat', isActive: true }));
     });
 
     it('should not set the Messenger icon as active when activeApp is something else', () => {
       renderComponent({ activeApp: 'foo' });
-      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Messenger', isActive: false }));
+      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Chat', isActive: false }));
     });
   });
 
@@ -80,7 +82,7 @@ describe(AppBar, () => {
       expect(panel.classList.contains('no-hover')).toBe(true);
     });
 
-    it('should remove the no-hover class when the mouse leaves the container', () => {
+    it('should remove the no-hover class when the mouse leaves the container', async () => {
       const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
@@ -88,6 +90,9 @@ describe(AppBar, () => {
 
       fireEvent.click(link);
       expect(panel.classList.contains('no-hover')).toBe(true);
+
+      // Wait for the requestAnimationFrame to execute
+      await new Promise((resolve) => requestAnimationFrame(resolve));
 
       fireEvent.mouseLeave(panel);
       expect(panel.classList.contains('no-hover')).toBe(false);
@@ -106,13 +111,16 @@ describe(AppBar, () => {
       expect(panel.classList.contains('no-hover')).toBe(true);
     });
 
-    it('should allow hovering again after the mouse leaves and re-enters the container', () => {
+    it('should allow hovering again after the mouse leaves and re-enters the container', async () => {
       const { getByText, getByTestId } = renderComponent({});
 
       const link = getByText('Home');
       const panel = getByTestId('legacy-panel');
 
       fireEvent.click(link);
+
+      // Wait for the requestAnimationFrame to execute
+      await new Promise((resolve) => requestAnimationFrame(resolve));
 
       fireEvent.mouseLeave(panel);
       expect(panel.classList.contains('no-hover')).toBe(false);

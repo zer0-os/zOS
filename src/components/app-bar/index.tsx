@@ -1,12 +1,13 @@
 import * as React from 'react';
 
 import { WorldPanelItem } from './world-panel-item';
-import { IconBell1, IconDotsGrid, IconGlobe3, IconHome, IconMessageSquare2, IconSlashes } from '@zero-tech/zui/icons';
+import { IconBell1, IconGlobe3, IconHome, IconMessageSquare2, IconSlashes, IconFourDots } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
 import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
 import { featureFlags } from '../../lib/feature-flags';
 import { LegacyPanel } from '../layout/panel';
+import { getLastActiveConversation } from '../../lib/last-conversation';
 
 import { bemClassName } from '../../lib/bem';
 
@@ -18,6 +19,7 @@ export interface Properties {
   activeApp: string | undefined;
   hasUnreadNotifications: boolean;
   hasUnreadHighlights: boolean;
+  lastActiveMessengerConversationId?: string | undefined;
   zAppIsFullscreen: boolean;
 }
 
@@ -55,7 +57,7 @@ export class AppBar extends React.Component<Properties, State> {
    *
    * This method:
    * 1. Adds the 'no-hover' class to prevent expansion
-   * 2. Forces a reflow to ensure immediate width change
+   * 2. Uses requestAnimationFrame to defer the next operations to the browser's paint cycle
    * 3. Sets up a one-time mouseleave listener to restore hover functionality
    */
   unhoverContainer = () => {
@@ -65,19 +67,21 @@ export class AppBar extends React.Component<Properties, State> {
     // Add the no-hover class to prevent expansion
     container.classList.add('no-hover');
 
-    // Force a reflow to ensure the width change happens immediately (prevent animation glitches)
-    container.getBoundingClientRect();
-
-    this.removeMouseLeaveListener();
-
-    this.mouseLeaveHandler = () => {
+    requestAnimationFrame(() => {
       if (this.containerRef.current) {
-        this.containerRef.current.classList.remove('no-hover');
+        // The reflow will happen naturally in the next frame
         this.removeMouseLeaveListener();
-      }
-    };
 
-    container.addEventListener('mouseleave', this.mouseLeaveHandler);
+        this.mouseLeaveHandler = () => {
+          if (this.containerRef.current) {
+            this.containerRef.current.classList.remove('no-hover');
+            this.removeMouseLeaveListener();
+          }
+        };
+
+        this.containerRef.current.addEventListener('mouseleave', this.mouseLeaveHandler);
+      }
+    });
   };
 
   renderNotificationIcon = () => {
@@ -85,20 +89,23 @@ export class AppBar extends React.Component<Properties, State> {
 
     return (
       <div {...cn('notification-icon-wrapper')}>
-        <IconBell1
-          {...cn('notification-icon', hasUnreadHighlights && 'highlight')}
-          isFilled={checkActive(this.props.activeApp)('notifications')}
-          size={22}
-        />
+        <IconBell1 {...cn('notification-icon', hasUnreadHighlights && 'highlight')} size={22} />
         {hasUnreadNotifications && !hasUnreadHighlights && <div {...cn('notification-dot')} />}
         {hasUnreadHighlights && <div {...cn('highlight-dot')} />}
       </div>
     );
   };
 
+  getLastConversationId = () => {
+    return getLastActiveConversation();
+  };
+
   render() {
     const { activeApp, zAppIsFullscreen } = this.props;
     const isActive = checkActive(activeApp);
+    const messengerPath = this.props.lastActiveMessengerConversationId
+      ? `/conversation/${this.props.lastActiveMessengerConversationId}`
+      : '/';
 
     return (
       <>
@@ -111,13 +118,6 @@ export class AppBar extends React.Component<Properties, State> {
               to='/home'
               onLinkClick={this.unhoverContainer}
             />
-            <AppLink
-              Icon={IconMessageSquare2}
-              isActive={isActive('conversation')}
-              label='Messenger'
-              to='/conversation'
-              onLinkClick={this.unhoverContainer}
-            />
             {featureFlags.enableFeedApp && (
               <AppLink
                 Icon={IconSlashes}
@@ -127,6 +127,20 @@ export class AppBar extends React.Component<Properties, State> {
                 onLinkClick={this.unhoverContainer}
               />
             )}
+            <AppLink
+              Icon={IconMessageSquare2}
+              isActive={isActive('conversation')}
+              label='Chat'
+              to={messengerPath}
+              onLinkClick={this.unhoverContainer}
+            />
+            <AppLink
+              Icon={IconGlobe3}
+              isActive={isActive('explorer')}
+              label='World Explorer'
+              to='/explorer'
+              onLinkClick={this.unhoverContainer}
+            />
             {featureFlags.enableNotificationsApp && (
               <AppLink
                 Icon={this.renderNotificationIcon}
@@ -136,16 +150,9 @@ export class AppBar extends React.Component<Properties, State> {
                 onLinkClick={this.unhoverContainer}
               />
             )}
-            <AppLink
-              Icon={IconGlobe3}
-              isActive={isActive('explorer')}
-              label='Explorer'
-              to='/explorer'
-              onLinkClick={this.unhoverContainer}
-            />
-            <div {...cn('link')} title='More Apps'>
-              <WorldPanelItem Icon={IconDotsGrid} label='More Apps' isActive={false} onClick={this.openModal} />
-              <span>More Apps</span>
+            <div {...cn('link')} title='Other Apps'>
+              <WorldPanelItem Icon={IconFourDots} label='Other Apps' isActive={false} onClick={this.openModal} />
+              <span>Other Apps</span>
             </div>
           </LegacyPanel>
         </div>

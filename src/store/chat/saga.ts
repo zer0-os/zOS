@@ -234,6 +234,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
     validateActiveConversation(payload.id)
   );
+
   yield takeLatest(SagaActionTypes.ValidateFeedChat, ({ payload }: any) => validateActiveConversation(payload.id));
 
   const authBus = yield call(getAuthChannel);

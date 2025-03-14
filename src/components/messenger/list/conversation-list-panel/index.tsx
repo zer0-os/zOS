@@ -2,18 +2,20 @@ import * as React from 'react';
 
 import { Channel, DefaultRoomLabels } from '../../../../store/channels';
 import { ConversationItem } from '../conversation-item';
-import { Input } from '@zero-tech/zui/components';
+import { IconButton, Input } from '@zero-tech/zui/components';
 import { Item, Option } from '../../lib/types';
 import { UserSearchResults } from '../user-search-results';
 import { itemToOption } from '../../lib/utils';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import escapeRegExp from 'lodash/escapeRegExp';
 import { getDirectMatches, getIndirectMatches } from './utils';
-import { IconStar1 } from '@zero-tech/zui/icons';
+import { IconPlus, IconStar1 } from '@zero-tech/zui/icons';
 import { getLastActiveTab, setLastActiveTab } from '../../../../lib/last-tab';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
+import { startCreateConversation } from '../../../../store/create-conversation';
+import { useDispatch } from 'react-redux';
 
 const cn = bemClassName('messages-list');
 
@@ -261,6 +263,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                 type={'search'}
                 value={this.state.filter}
               />
+              <CreateConversationButton />
             </div>
           )}
 
@@ -307,3 +310,13 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     );
   }
 }
+
+export const CreateConversationButton = () => {
+  const dispatch = useDispatch();
+
+  const handleOnClick = () => {
+    dispatch(startCreateConversation());
+  };
+
+  return <IconButton Icon={IconPlus} onClick={handleOnClick} />;
+};

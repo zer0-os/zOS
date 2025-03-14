@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Waypoint } from 'react-waypoint';
+import { Waypoint } from '../waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions, Media } from '../../store/messages';
@@ -138,17 +138,19 @@ export class ChatView extends React.Component<Properties, State> {
       if (message.isAdmin) {
         return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;
       } else {
+        const isUserOwner = this.isUserOwnerOfMessage(message);
+        const isUserOwnerOfParentMessage = this.isUserOwnerOfMessage(message.parentMessage);
         const messageRenderProps = getMessageRenderProps(
           index,
           groupMessages.length,
           this.props.isOneOnOne,
-          this.isUserOwnerOfMessage(message)
+          isUserOwner
         );
         return (
           <div
             key={message.optimisticId || message.id}
             className={classNames('messages__message-row', {
-              'messages__message-row--owner': this.isUserOwnerOfMessage(message),
+              'messages__message-row--owner': isUserOwner,
             })}
           >
             <div {...cn('group-message', messageRenderProps.position)}>
@@ -159,7 +161,7 @@ export class ChatView extends React.Component<Properties, State> {
                 onImageClick={this.openLightbox}
                 messageId={message.id}
                 updatedAt={message.updatedAt}
-                isOwner={this.isUserOwnerOfMessage(message)}
+                isOwner={isUserOwner}
                 isHidden={message.isHidden}
                 onDelete={this.props.deleteMessage}
                 onEdit={this.props.editMessage}
@@ -167,7 +169,7 @@ export class ChatView extends React.Component<Properties, State> {
                 onReportUser={this.props.onReportUser}
                 onInfo={this.openMessageInfo}
                 parentMessageText={message.parentMessageText}
-                parentSenderIsCurrentUser={this.isUserOwnerOfMessage(message.parentMessage)}
+                parentSenderIsCurrentUser={isUserOwnerOfParentMessage}
                 parentSenderFirstName={message.parentMessage?.sender?.firstName}
                 parentSenderLastName={message.parentMessage?.sender?.lastName}
                 parentMessageMediaUrl={message?.parentMessageMedia?.url}

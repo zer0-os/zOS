@@ -16,6 +16,8 @@ import { completePendingUserProfile } from '../registration/saga';
 import { closeUserProfile } from '../user-profile/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
+import { clearRewards } from '../rewards/saga';
+import { clearLastActiveFeed } from '../../lib/last-feed';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -65,13 +67,13 @@ export function* getCurrentUser() {
   try {
     const user = yield call(fetchCurrentUser);
     if (!user) {
-      return false;
+      return { success: false, error: 'unauthenticated' };
     }
 
     yield completeUserLogin(user);
-    return true;
+    return { success: true };
   } catch (e) {
-    return false;
+    return { success: false, error: 'critical' };
   }
 }
 
@@ -112,6 +114,8 @@ export function* forceLogout() {
   yield closeLogoutModal();
   yield call(clearLastActiveConversation);
   yield call(clearLastActiveTab);
+  yield call(clearLastActiveFeed);
+  yield call(clearRewards);
   yield call(terminate);
 }
 

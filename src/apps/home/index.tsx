@@ -11,14 +11,14 @@ export const HomeApp = () => {
   if (postId) {
     return (
       <div className={styles.Home}>
-        <PostView postId={postId} hideZidAction={true} isFeed={true} />
+        <PostView postId={postId} isFeed={true} />
       </div>
     );
   }
 
   return (
     <div className={styles.Home}>
-      <Feed hideZidAction={true} />
+      <Feed />
     </div>
   );
 };

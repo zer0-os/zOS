@@ -9,6 +9,7 @@ import { PostView } from './components/post-view-container';
 import { PanelBody } from '../../components/layout/panel';
 import { IconSlashes } from '@zero-tech/zui/icons';
 import { FeedChat } from './components/feed-chat/container';
+import { getLastActiveFeed } from '../../lib/last-feed';
 
 import styles from './styles.module.scss';
 
@@ -48,6 +49,13 @@ const Loading = () => {
         <IconSlashes /> You are not a member of any channels.
       </PanelBody>
     );
+  }
+
+  const lastActiveFeed = getLastActiveFeed();
+
+  // If we have a last active feed and it's in the list of owned zids, use it
+  if (lastActiveFeed && zids.some((zid) => parseWorldZid(zid) === lastActiveFeed)) {
+    return <Redirect to={`/feed/${lastActiveFeed}`} />;
   }
 
   return <Redirect to={`/feed/${parseWorldZid(zids[0])}`} />;

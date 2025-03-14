@@ -1,29 +1,39 @@
 @use '../../../variables' as variables;
 
 $header-height: 42px;
-$header-background: #111213e6;
+$header-background: variables.$panel-background;
 $header-color: var(--color-greyscale-11);
-
-$panel-background: rgba(17, 18, 19, 0.5);
 
 @mixin panel-base {
   box-sizing: border-box;
   backdrop-filter: variables.$default-background-blur;
   border-radius: variables.$border-radius;
   padding: variables.$default-padding;
-  background-color: $panel-background;
+  background-color: variables.$panel-background;
+}
+
+@mixin panel-rounding {
+  > *:first-child {
+    border-radius: variables.$border-radius variables.$border-radius 0 0;
+  }
+
+  > *:last-child {
+    border-radius: 0 0 variables.$border-radius variables.$border-radius;
+  }
 }
 
 .Legacy {
   @include panel-base;
+  @include panel-rounding;
 
   max-height: 100%;
 }
 
 .Panel {
+  @include panel-rounding;
+
   display: flex;
   flex-direction: column;
-  gap: variables.$default-gap;
   width: 100%;
 
   max-height: 100%;
@@ -54,6 +64,10 @@ $panel-background: rgba(17, 18, 19, 0.5);
 
   box-sizing: border-box;
   border-radius: variables.$border-radius;
+
+  @include variables.panel-border-bottom;
+
+  font-size: 14px;
 
   background: $header-background;
 }

@@ -11,10 +11,11 @@
   width: 100%;
   padding: calc(variables.$default-padding / 2) variables.$default-padding;
 
+  font-size: 14px;
+
   box-sizing: border-box;
   border-radius: variables.$border-radius;
-
-  background-color: #111213e6;
+  @include variables.panel-border-bottom;
 }
 
 .Title {

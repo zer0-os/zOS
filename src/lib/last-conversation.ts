@@ -7,7 +7,6 @@ export const setLastActiveConversation = (conversationId: string): void => {
 };
 
 export const getLastActiveConversation = (): string | null => {
-  console.log('xxxx getLastActiveConversation called');
   return localStorage.getItem(LAST_CONVERSATION_KEY);
 };
 

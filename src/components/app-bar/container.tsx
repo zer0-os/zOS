@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { DefaultRoomLabels } from '../../store/channels';
 import { getLastActiveConversation } from '../../lib/last-conversation';
+import { rawChannelSelector } from '../../store/channels/saga';
+import { useMemo } from 'react';
 
 export const AppBar = () => {
   const { activeApp, hasUnreadNotifications, hasUnreadHighlights, lastActiveMessengerConversationId } = useAppBar();
@@ -21,6 +23,9 @@ export const AppBar = () => {
 
 const useAppBar = () => {
   const match = useRouteMatch('/:app');
+  const activeConversationId = useSelector((state: RootState) => state.chat.activeConversationId);
+  const rawActiveConversation = useSelector((state: RootState) => rawChannelSelector(activeConversationId)(state));
+  const isActiveConversationSocialChannel = rawActiveConversation?.isSocialChannel;
 
   const hasUnreadNotifications = useSelector((state: RootState) => {
     const conversations = denormalizeConversations(state);
@@ -42,7 +47,13 @@ const useAppBar = () => {
     );
   });
 
-  const lastActiveMessengerConversationId = getLastActiveConversation();
+  const lastActiveMessengerConversationId = useMemo(() => {
+    if (!isActiveConversationSocialChannel) {
+      return getLastActiveConversation();
+    }
+    return null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!isActiveConversationSocialChannel ? activeConversationId : null]);
 
   return {
     activeApp: match?.params?.app ?? '',

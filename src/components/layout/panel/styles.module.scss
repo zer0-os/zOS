@@ -1,17 +1,15 @@
 @use '../../../variables' as variables;
 
 $header-height: 42px;
-$header-background: #111213e6;
+$header-background: variables.$panel-background;
 $header-color: var(--color-greyscale-11);
-
-$panel-background: rgba(17, 18, 19, 0.5);
 
 @mixin panel-base {
   box-sizing: border-box;
   backdrop-filter: variables.$default-background-blur;
   border-radius: variables.$border-radius;
   padding: variables.$default-padding;
-  background-color: $panel-background;
+  background-color: variables.$panel-background;
 }
 
 @mixin panel-rounding {
@@ -66,6 +64,9 @@ $panel-background: rgba(17, 18, 19, 0.5);
 
   box-sizing: border-box;
   border-radius: variables.$border-radius;
+  border-bottom: 1px solid variables.$border-color;
+
+  font-size: 14px;
 
   background: $header-background;
 }

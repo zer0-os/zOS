@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
 import { featureFlags } from '../../lib/feature-flags';
 import { LegacyPanel } from '../layout/panel';
+import { getLastActiveConversation } from '../../lib/last-conversation';
 
 import { bemClassName } from '../../lib/bem';
 
@@ -93,9 +94,15 @@ export class AppBar extends React.Component<Properties, State> {
     );
   };
 
+  getLastConversationId = () => {
+    return getLastActiveConversation();
+  };
+
   render() {
     const { activeApp } = this.props;
     const isActive = checkActive(activeApp);
+    const lastConversationId = this.getLastConversationId();
+    const messengerPath = lastConversationId ? `/conversation/${lastConversationId}` : '/';
 
     return (
       <>
@@ -121,7 +128,7 @@ export class AppBar extends React.Component<Properties, State> {
               Icon={IconMessageSquare2}
               isActive={isActive('conversation')}
               label='Chat'
-              to='/conversation'
+              to={messengerPath}
               onLinkClick={this.unhoverContainer}
             />
             <AppLink

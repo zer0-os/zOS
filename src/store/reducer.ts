@@ -25,6 +25,7 @@ import { reducer as accountManagement } from './account-management';
 import { reducer as posts } from './posts';
 import { reducer as reportUser } from './report-user';
 import { reducer as thirdweb } from './thirdweb';
+import { reducer as panels } from './panels';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -52,6 +53,7 @@ export const rootReducer = combineReducers({
   posts,
   reportUser,
   thirdweb,
+  panels,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

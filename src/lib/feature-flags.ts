@@ -34,6 +34,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableLinkedAccounts: boolean;
   declare enableZeroWalletSigning: boolean;
   declare enableFeedChat: boolean;
+  declare enableAuraZApp: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;
@@ -69,6 +70,5 @@ export class FeatureFlags implements FeatureFlagValues {
     });
   }
 }
-
 export const featureFlags = new FeatureFlags();
 (window as any).FEATURE_FLAGS = featureFlags;

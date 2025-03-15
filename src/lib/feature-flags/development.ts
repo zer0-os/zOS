@@ -24,4 +24,8 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableLinkedAccounts: { defaultValue: true },
   enableZeroWalletSigning: { defaultValue: true },
   enableFeedChat: { defaultValue: true },
+  enableAuraZApp: {
+    defaultValue: false,
+    allowedUserIds: ['50c6e12e-1fe2-43f9-8991-ab269696588f', '020705c6-0740-4d4d-8185-0ba7542b9725'],
+  },
 };

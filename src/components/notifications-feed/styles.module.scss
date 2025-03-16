@@ -42,6 +42,7 @@
 .Body {
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: variables.$default-gap;
   padding: 0;
 }

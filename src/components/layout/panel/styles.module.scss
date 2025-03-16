@@ -27,10 +27,13 @@ $header-color: var(--color-greyscale-11);
   @include panel-rounding;
 
   max-height: 100%;
+
+  @include variables.panel-border;
 }
 
 .Panel {
   @include panel-rounding;
+  @include variables.panel-border;
 
   display: flex;
   flex-direction: column;

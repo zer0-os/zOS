@@ -4,12 +4,17 @@ $header-height: 42px;
 $header-background: variables.$panel-background;
 $header-color: var(--color-greyscale-11);
 
-@mixin panel-base {
-  box-sizing: border-box;
+@mixin panel-look {
   backdrop-filter: variables.$default-background-blur;
   border-radius: variables.$border-radius;
-  padding: variables.$default-padding;
   background-color: variables.$panel-background;
+}
+
+@mixin panel-base {
+  @include panel-look;
+
+  box-sizing: border-box;
+  padding: variables.$default-padding;
 }
 
 @mixin panel-rounding {
@@ -74,4 +79,32 @@ $header-color: var(--color-greyscale-11);
 
 .Title {
   color: $header-color;
+
+  user-select: none;
+}
+
+.Collapsed {
+  @include panel-look;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+
+  border-radius: variables.$border-radius;
+
+  font-size: 14px;
+  color: $header-color;
+
+  writing-mode: sideways-lr;
+  text-align: end;
+  width: 32px !important;
+  padding: 16px 8px;
+  height: 100%;
+
+  min-width: unset !important;
+  max-width: unset !important;
+
+  user-select: none;
+
+  cursor: pointer;
 }

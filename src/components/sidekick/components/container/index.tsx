@@ -3,6 +3,7 @@ import { LegacyPanel } from '../../../layout/panel';
 import { SIDEKICK_PORTAL_ID } from '../../lib/constants';
 import { useSidekickContainer } from './useSidekickContainer';
 import { UserProfileContainer } from '../../../messenger/user-profile/container';
+import { Panel } from '../../../../store/panels/constants';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -12,15 +13,16 @@ export interface ContainerProps {
   children?: React.ReactNode;
   header?: React.ReactNode;
   variant?: 'primary' | 'secondary';
+  panel?: Panel;
 }
 
-export const Container = ({ className, children, header, variant = 'primary' }: ContainerProps) => {
+export const Container = ({ className, children, header, variant = 'primary', panel }: ContainerProps) => {
   const { isSettingsOpen } = useSidekickContainer(variant);
 
   return (
     <IfAuthenticated showChildren>
       <div className={classNames(styles.Container, className)}>
-        <LegacyPanel className={styles.Wrapper}>
+        <LegacyPanel className={styles.Wrapper} panel={panel}>
           {isSettingsOpen && <UserProfileContainer />}
 
           {!isSettingsOpen && header}

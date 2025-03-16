@@ -52,7 +52,7 @@ export class Container extends React.Component<Properties> {
 
               {this.props.isConversationsLoaded && this.props.isValidConversation && <MessengerChat />}
             </div>
-            {this.props.isConversationsLoaded && this.props.isSecondarySidekickOpen && <MembersSidekick />}
+            {this.props.isConversationsLoaded && <MembersSidekick />}
 
             <FeatureFlag featureFlag='enableDevPanel'>
               <DevPanelContainer />

@@ -12,6 +12,7 @@ import { Media } from '../../../../components/message-input/utils';
 import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
+import { Panel as PanelEnum } from '../../../../store/panels/constants';
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
 import { rawChannelSelector } from '../../../../store/channels/saga';
 import { toggleSecondarySidekick } from '../../../../store/group-management';
@@ -38,6 +39,7 @@ export interface Properties extends PublicProperties {
   onRemoveReply: () => void;
   sendMessage: (payload: PayloadSendMessage) => void;
   toggleSecondarySidekick: () => void;
+  isCollapsed: boolean;
 }
 
 export class Container extends React.Component<Properties> {
@@ -52,6 +54,7 @@ export class Container extends React.Component<Properties> {
     const {
       chat: { activeConversationId, joinRoomErrorContent, isJoiningConversation, isConversationsLoaded },
       groupManagement,
+      panels: { openStates },
     } = state;
 
     const channel = denormalize(activeConversationId, state);
@@ -65,6 +68,7 @@ export class Container extends React.Component<Properties> {
       isConversationsLoaded,
       otherMembersTypingInRoom: rawChannel?.otherMembersTyping || [],
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
+      isCollapsed: !openStates[PanelEnum.FEED_CHAT],
     };
   }
 
@@ -205,7 +209,7 @@ export class Container extends React.Component<Properties> {
       <>
         {shouldRender && (
           <>
-            <Panel className={styles.Container}>
+            <Panel className={styles.Container} panel={PanelEnum.FEED_CHAT}>
               {this.renderHeader()}{' '}
               {this.renderBody(this.props.isJoiningConversation || !this.props.isConversationsLoaded)}
             </Panel>

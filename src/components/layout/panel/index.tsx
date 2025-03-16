@@ -75,7 +75,7 @@ export const PanelHeader = ({ children, className }: Pick<PanelProps, 'children'
   );
 };
 
-export const PanelTitle = ({ children, className }: Pick<PanelProps, 'children' | 'className' | 'toggleSidekick'>) => {
+export const PanelTitle = ({ children, className }: Pick<PanelProps, 'children' | 'className'>) => {
   return <div className={cn(styles.Title, className)}>{children}</div>;
 };
 

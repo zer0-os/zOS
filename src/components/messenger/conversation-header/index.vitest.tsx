@@ -18,7 +18,6 @@ const subject = (props: Partial<Properties> = {}) => {
     isOneOnOne: false,
     otherMembers: [],
     name: '',
-    toggleSecondarySidekick: () => null,
 
     ...props,
   };

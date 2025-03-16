@@ -145,9 +145,7 @@ export class Container extends React.Component<Properties> {
   renderHeader = () => {
     return (
       <PanelHeader className={styles.PanelHeader}>
-        <PanelTitle className={styles.PanelTitle} toggleSidekick={this.toggleSidekick}>
-          Chat
-        </PanelTitle>
+        <PanelTitle className={styles.PanelTitle}>Chat</PanelTitle>
         <ConversationActionsContainer />
       </PanelHeader>
     );

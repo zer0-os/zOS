@@ -9,15 +9,9 @@ export interface Properties {
   isOneOnOne: boolean;
   otherMembers: User[];
   name: string;
-
-  toggleSecondarySidekick: () => void;
 }
 
 export class ConversationHeader extends React.Component<Properties> {
-  toggleSidekick = () => {
-    this.props.toggleSecondarySidekick();
-  };
-
   isOneOnOne() {
     return this.props.isOneOnOne;
   }
@@ -45,6 +39,6 @@ export class ConversationHeader extends React.Component<Properties> {
   }
 
   render() {
-    return <Header title={this.renderTitle()} onClick={this.toggleSidekick} className={this.props.className} />;
+    return <Header title={this.renderTitle()} className={this.props.className} />;
   }
 }

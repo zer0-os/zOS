@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import { ConversationActions, Properties } from '.';
 

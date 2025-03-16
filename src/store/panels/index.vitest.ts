@@ -20,15 +20,12 @@ describe('panels reducer', () => {
   it('should handle togglePanel', () => {
     const panel = Panel.MEMBERS;
 
-    // Toggle from false to true
     let state = reducer(initialState, togglePanel(panel));
     expect(state.openStates[panel]).toBe(true);
 
-    // Toggle from true to false
     state = reducer(state, togglePanel(panel));
     expect(state.openStates[panel]).toBe(false);
 
-    // Toggle from false to true
     state = reducer(state, togglePanel(panel));
     expect(state.openStates[panel]).toBe(true);
   });
@@ -36,15 +33,12 @@ describe('panels reducer', () => {
   it('should handle setPanelState', () => {
     const panel = Panel.MEMBERS;
 
-    // Set to true
     let state = reducer(initialState, setPanelState({ panel, isOpen: true }));
     expect(state.openStates[panel]).toBe(true);
 
-    // Set to false
     state = reducer(state, setPanelState({ panel, isOpen: false }));
     expect(state.openStates[panel]).toBe(false);
 
-    // Set back to true
     state = reducer(state, setPanelState({ panel, isOpen: true }));
     expect(state.openStates[panel]).toBe(true);
   });
@@ -52,15 +46,12 @@ describe('panels reducer', () => {
   it('should handle openPanel', () => {
     const panel = Panel.MEMBERS;
 
-    // Open from initial state (false)
     let state = reducer(initialState, openPanel(panel));
     expect(state.openStates[panel]).toBe(true);
 
-    // Open when already open
     state = reducer(state, openPanel(panel));
     expect(state.openStates[panel]).toBe(true);
 
-    // Open after closing
     state = reducer(state, closePanel(panel));
     state = reducer(state, openPanel(panel));
     expect(state.openStates[panel]).toBe(true);
@@ -69,15 +60,12 @@ describe('panels reducer', () => {
   it('should handle closePanel', () => {
     const panel = Panel.FEED_CHAT;
 
-    // Close from initial state (true)
     let state = reducer(initialState, closePanel(panel));
     expect(state.openStates[panel]).toBe(false);
 
-    // Close when already closed
     state = reducer(state, closePanel(panel));
     expect(state.openStates[panel]).toBe(false);
 
-    // Close after opening
     state = reducer(state, openPanel(panel));
     state = reducer(state, closePanel(panel));
     expect(state.openStates[panel]).toBe(false);
@@ -89,22 +77,18 @@ describe('panels reducer', () => {
 
     let state = initialState;
 
-    // Close panel 1 (initially true)
     state = reducer(state, closePanel(panel1));
     expect(state.openStates[panel1]).toBe(false);
     expect(state.openStates[panel2]).toBe(false);
 
-    // Open panel 2
     state = reducer(state, openPanel(panel2));
     expect(state.openStates[panel1]).toBe(false);
     expect(state.openStates[panel2]).toBe(true);
 
-    // Open panel 1
     state = reducer(state, openPanel(panel1));
     expect(state.openStates[panel1]).toBe(true);
     expect(state.openStates[panel2]).toBe(true);
 
-    // Toggle panel 2
     state = reducer(state, togglePanel(panel2));
     expect(state.openStates[panel1]).toBe(true);
     expect(state.openStates[panel2]).toBe(false);

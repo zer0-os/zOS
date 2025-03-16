@@ -97,14 +97,16 @@ $header-color: var(--color-greyscale-11);
 
   writing-mode: sideways-lr;
   text-align: end;
-  width: 32px !important;
-  padding: 16px 8px;
+  width: 48px !important;
+  padding: 16px 16px;
   height: 100%;
 
   min-width: unset !important;
   max-width: unset !important;
 
   user-select: none;
+
+  box-sizing: border-box;
 
   cursor: pointer;
 }

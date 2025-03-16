@@ -14,15 +14,16 @@ export interface ContainerProps {
   header?: React.ReactNode;
   variant?: 'primary' | 'secondary';
   panel?: Panel;
+  name?: string;
 }
 
-export const Container = ({ className, children, header, variant = 'primary', panel }: ContainerProps) => {
+export const Container = ({ className, children, header, variant = 'primary', panel, name }: ContainerProps) => {
   const { isSettingsOpen } = useSidekickContainer(variant);
 
   return (
     <IfAuthenticated showChildren>
       <div className={classNames(styles.Container, className)}>
-        <LegacyPanel className={styles.Wrapper} panel={panel}>
+        <LegacyPanel className={styles.Wrapper} panel={panel} name={name}>
           {isSettingsOpen && <UserProfileContainer />}
 
           {!isSettingsOpen && header}

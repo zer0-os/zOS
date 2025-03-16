@@ -13,6 +13,8 @@ import { Panel } from '../../../store/panels/constants';
 import classNames from 'classnames';
 import styles from './members-sidekick.module.scss';
 
+const TITLE = 'Members';
+
 interface PublicProperties {
   className?: string;
 }
@@ -55,10 +57,11 @@ export class Container extends React.Component<Properties> {
         className={classNames(styles.Members, this.props.className)}
         header={
           <PanelHeader className={styles.Header}>
-            <Title>Members</Title>
+            <Title>{TITLE}</Title>
           </PanelHeader>
         }
         panel={Panel.MEMBERS}
+        name={TITLE}
       >
         <div className={styles.Content}>{this.renderSecondarySidekickContent()}</div>
       </SidekickContainer>

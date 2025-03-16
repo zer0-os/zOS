@@ -209,11 +209,11 @@ export class Container extends React.Component<Properties> {
       <>
         {shouldRender && (
           <>
-            <Panel className={styles.Container} panel={PanelEnum.FEED_CHAT}>
+            <Panel className={styles.Container} panel={PanelEnum.FEED_CHAT} name='Chat'>
               {this.renderHeader()}{' '}
               {this.renderBody(this.props.isJoiningConversation || !this.props.isConversationsLoaded)}
             </Panel>
-            {this.props.isSecondarySidekickOpen && <MembersSidekick className={styles.MembersSidekick} />}
+            <MembersSidekick className={styles.MembersSidekick} />
           </>
         )}
       </>

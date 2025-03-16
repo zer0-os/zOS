@@ -15,14 +15,18 @@ export interface PanelProps {
   children: ReactNode;
   toggleSidekick?: () => void;
   panel?: PanelEnum;
+  name?: string;
 }
 
 export const LegacyPanel = forwardRef(
-  ({ children, className, panel }: Pick<PanelProps, 'children' | 'className' | 'panel'>, ref: Ref<HTMLDivElement>) => {
+  (
+    { children, className, panel, name }: Pick<PanelProps, 'children' | 'className' | 'panel' | 'name'>,
+    ref: Ref<HTMLDivElement>
+  ) => {
     const { isOpen } = usePanelState(panel);
 
     return (
-      <PanelProvider panel={panel}>
+      <PanelProvider panel={panel} name={name}>
         {isOpen ? (
           <div ref={ref} className={cn(styles.Legacy, className)} data-testid='legacy-panel'>
             {children}
@@ -37,11 +41,16 @@ export const LegacyPanel = forwardRef(
 
 LegacyPanel.displayName = 'LegacyPanel';
 
-export const Panel = ({ children, className, panel }: Pick<PanelProps, 'children' | 'className' | 'panel'>) => {
+export const Panel = ({
+  children,
+  className,
+  panel,
+  name,
+}: Pick<PanelProps, 'children' | 'className' | 'panel' | 'name'>) => {
   const { isOpen } = usePanelState(panel);
 
   return (
-    <PanelProvider panel={panel}>
+    <PanelProvider panel={panel} name={name}>
       {isOpen ? (
         <div className={cn(styles.Panel, className)}>{children}</div>
       ) : (
@@ -56,11 +65,11 @@ export const PanelBody = ({ children, className }: Pick<PanelProps, 'children' |
 };
 
 export const PanelHeader = ({ children, className }: Pick<PanelProps, 'children' | 'className'>) => {
-  const { panel, toggle } = usePanel();
+  const { panel, toggle, name } = usePanel();
 
   return (
     <div className={cn(styles.Header, className)}>
-      {children}
+      {children ?? name}
       {panel && <IconButton onClick={toggle} Icon={IconXClose} size={24} />}
     </div>
   );
@@ -71,11 +80,11 @@ export const PanelTitle = ({ children, className }: Pick<PanelProps, 'children' 
 };
 
 export const PanelCollapsed = ({ className }: Pick<PanelProps, 'className'>) => {
-  const { panel, toggle } = usePanel();
+  const { toggle, name } = usePanel();
 
   return (
     <div className={cn(styles.Collapsed, className)} onClick={toggle}>
-      {panel}
+      {name}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
 import { featureFlags } from '../../lib/feature-flags';
 import { LegacyPanel } from '../layout/panel';
+import { getLastActiveConversation } from '../../lib/last-conversation';
 
 import { bemClassName } from '../../lib/bem';
 
@@ -18,6 +19,8 @@ export interface Properties {
   activeApp: string | undefined;
   hasUnreadNotifications: boolean;
   hasUnreadHighlights: boolean;
+  lastActiveMessengerConversationId?: string | undefined;
+  zAppIsFullscreen: boolean;
 }
 
 interface State {
@@ -93,13 +96,20 @@ export class AppBar extends React.Component<Properties, State> {
     );
   };
 
+  getLastConversationId = () => {
+    return getLastActiveConversation();
+  };
+
   render() {
-    const { activeApp } = this.props;
+    const { activeApp, zAppIsFullscreen } = this.props;
     const isActive = checkActive(activeApp);
+    const messengerPath = this.props.lastActiveMessengerConversationId
+      ? `/conversation/${this.props.lastActiveMessengerConversationId}`
+      : '/';
 
     return (
       <>
-        <div {...cn('')}>
+        <div {...cn('', zAppIsFullscreen && 'zapp-fullscreen')}>
           <LegacyPanel {...cn('container')} ref={this.containerRef}>
             <AppLink
               Icon={IconHome}
@@ -121,7 +131,7 @@ export class AppBar extends React.Component<Properties, State> {
               Icon={IconMessageSquare2}
               isActive={isActive('conversation')}
               label='Chat'
-              to='/conversation'
+              to={messengerPath}
               onLinkClick={this.unhoverContainer}
             />
             <AppLink

@@ -26,6 +26,7 @@ import { reducer as posts } from './posts';
 import { reducer as reportUser } from './report-user';
 import { reducer as thirdweb } from './thirdweb';
 import { reducer as panels } from './panels';
+import { reducer as activeZApp } from './active-zapp';
 
 export const rootReducer = combineReducers({
   pageload,
@@ -54,6 +55,7 @@ export const rootReducer = combineReducers({
   reportUser,
   thirdweb,
   panels,
+  activeZApp,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

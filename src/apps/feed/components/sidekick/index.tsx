@@ -10,10 +10,9 @@ import {
   Content as SidekickContent,
   Scroll as SidekickScroll,
 } from '../../../../components/sidekick';
-
-import classNames from 'classnames';
-import styles from './styles.module.scss';
 import { setLastActiveFeed } from '../../../../lib/last-feed';
+
+import styles from './styles.module.scss';
 
 export const Sidekick = () => {
   const { isErrorZids, isLoadingZids, selectedZId, zids, search, setSearch, unreadCounts, mutedChannels } =
@@ -39,10 +38,9 @@ export const Sidekick = () => {
               const hasUnreadHighlights = unreadCounts[zid]?.highlight > 0;
               const hasUnreadTotal = unreadCounts[zid]?.total > 0;
               const isMuted = mutedChannels[zid];
-              const isUnread = hasUnreadHighlights || hasUnreadTotal;
               return (
                 <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid} zid={zid}>
-                  <div className={classNames(styles.FeedName, { [styles.Unread]: isUnread })}>
+                  <div className={styles.FeedName}>
                     <span>0://</span>
                     <div>{zid}</div>
                   </div>

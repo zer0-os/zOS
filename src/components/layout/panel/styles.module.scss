@@ -88,6 +88,7 @@ $header-color: var(--color-greyscale-11);
 
 .Collapsed {
   @include panel-look;
+  @include variables.panel-border;
 
   display: flex;
   justify-content: center;

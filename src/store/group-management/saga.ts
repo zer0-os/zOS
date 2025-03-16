@@ -24,13 +24,14 @@ import {
   MemberManagementDialogStage,
   setMemberManagementStage,
   setMemberManagementError,
-  setSecondarySidekickOpen,
   MemberManagementAction,
 } from './index';
 import { EditConversationState } from './types';
-import { isSecondarySidekickOpenSelector } from './selectors';
 import { closeOverview as closeMessageInfo } from '../message-info/saga';
 import { rawChannelSelector } from '../channels/saga';
+import { getPanelOpenState } from '../panels/selectors';
+import { setPanelState } from '../panels';
+import { Panel } from '../panels/constants';
 
 export function* reset() {
   yield put(setStage(Stage.None));
@@ -68,22 +69,22 @@ export function* resetConversationManagement() {
 }
 
 export function* startAddGroupMember() {
-  const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
+  const isOpen = yield select(getPanelOpenState, Panel.MEMBERS);
 
-  if (!isSidekickOpen) {
+  if (!isOpen) {
     yield call(reset);
-    yield put(setSecondarySidekickOpen(true));
+    yield put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }));
   }
 
   yield put(setStage(Stage.StartAddMemberToRoom));
 }
 
 export function* startEditConversation() {
-  const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
+  const isOpen = yield select(getPanelOpenState, Panel.MEMBERS);
 
-  if (!isSidekickOpen) {
+  if (!isOpen) {
     yield call(reset);
-    yield put(setSecondarySidekickOpen(true));
+    yield put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }));
   }
   yield put(setStage(Stage.EditConversation));
 }
@@ -246,34 +247,34 @@ export function* editConversationNameAndIcon(action) {
 }
 
 export function* openViewGroupInformation() {
-  const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
+  const isOpen = yield select(getPanelOpenState, Panel.MEMBERS);
 
-  if (!isSidekickOpen) {
+  if (!isOpen) {
     yield call(reset);
-    yield put(setSecondarySidekickOpen(true));
+    yield put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }));
   }
 
   yield put(setStage(Stage.ViewGroupInformation));
 }
 
 export function* toggleIsSecondarySidekick() {
-  const isOpen = yield select(isSecondarySidekickOpenSelector);
+  const isOpen = yield select(getPanelOpenState, Panel.MEMBERS);
 
   if (!isOpen) {
     yield put(setStage(Stage.None));
   }
 
-  yield put(setSecondarySidekickOpen(!isOpen));
+  yield put(setPanelState({ panel: Panel.MEMBERS, isOpen: !isOpen }));
 }
 
 export function* openSidekickForSocialChannel(conversationId) {
   const channel = yield select(rawChannelSelector(conversationId));
 
   if (channel?.isSocialChannel) {
-    const isSidekickOpen = yield select(isSecondarySidekickOpenSelector);
+    const isOpen = yield select(getPanelOpenState, Panel.MEMBERS);
 
-    if (!isSidekickOpen) {
-      yield put(setSecondarySidekickOpen(true));
+    if (!isOpen) {
+      yield put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }));
     }
   }
 }

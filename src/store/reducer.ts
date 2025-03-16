@@ -25,6 +25,7 @@ import { reducer as accountManagement } from './account-management';
 import { reducer as posts } from './posts';
 import { reducer as reportUser } from './report-user';
 import { reducer as thirdweb } from './thirdweb';
+import { reducer as panels } from './panels';
 import { reducer as activeZApp } from './active-zapp';
 
 export const rootReducer = combineReducers({
@@ -53,6 +54,7 @@ export const rootReducer = combineReducers({
   posts,
   reportUser,
   thirdweb,
+  panels,
   activeZApp,
 });
 

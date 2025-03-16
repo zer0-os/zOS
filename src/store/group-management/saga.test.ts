@@ -7,6 +7,10 @@ import {
   toggleIsSecondarySidekick,
   setMemberAsModerator,
   removeMemberAsModerator,
+  startAddGroupMember,
+  startEditConversation,
+  openViewGroupInformation,
+  openSidekickForSocialChannel,
 } from './saga';
 import { StoreBuilder } from '../test/store';
 import {
@@ -17,7 +21,7 @@ import {
   setEditConversationGeneralError,
   setEditConversationImageError,
   MemberManagementDialogStage,
-  setSecondarySidekickOpen,
+  setStage,
 } from '.';
 import { expectSaga } from '../../test/saga';
 import { rootReducer } from '../reducer';
@@ -25,6 +29,10 @@ import { chat, removeUserAsModerator, setUserAsModerator, uploadFile } from '../
 import { denormalize as denormalizeUsers } from '../users';
 import { EditConversationState } from './types';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { getPanelOpenState } from '../panels/selectors';
+import { setPanelState } from '../panels';
+import { Panel } from '../panels/constants';
+import { rawChannelSelector } from '../channels/saga';
 
 describe('Group Management Saga', () => {
   const chatClient = {
@@ -355,26 +363,102 @@ describe('Group Management Saga', () => {
   });
 
   describe('toggleSecondarySidekick', () => {
-    it('toggles the isSecondarySidekickOpen state to true', async () => {
-      const initialState = defaultState({ isSecondarySidekickOpen: false });
+    it('opens the members panel when closed', async () => {
+      const initialState = defaultState();
 
-      const { storeState } = await expectSaga(toggleIsSecondarySidekick)
+      await expectSaga(toggleIsSecondarySidekick)
         .withReducer(rootReducer, initialState)
-        .put(setSecondarySidekickOpen(true))
+        .provide([[matchers.select(getPanelOpenState, Panel.MEMBERS), false]])
+        .put(setStage(Stage.None))
+        .put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
         .run();
-
-      expect(storeState.groupManagement.isSecondarySidekickOpen).toBe(true);
     });
 
-    it('toggles the isSecondarySidekickOpen state to false', async () => {
-      const initialState = defaultState({ isSecondarySidekickOpen: true });
+    it('closes the members panel when open', async () => {
+      const initialState = defaultState();
 
-      const { storeState } = await expectSaga(toggleIsSecondarySidekick)
+      await expectSaga(toggleIsSecondarySidekick)
         .withReducer(rootReducer, initialState)
-        .put(setSecondarySidekickOpen(false))
+        .provide([[matchers.select(getPanelOpenState, Panel.MEMBERS), true]])
+        .put(setPanelState({ panel: Panel.MEMBERS, isOpen: false }))
         .run();
+    });
+  });
 
-      expect(storeState.groupManagement.isSecondarySidekickOpen).toBe(false);
+  describe('startAddGroupMember', () => {
+    it('opens the members panel and sets stage when panel is closed', async () => {
+      await expectSaga(startAddGroupMember)
+        .provide([[matchers.select(getPanelOpenState, Panel.MEMBERS), false]])
+        .put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
+        .put(setStage(Stage.StartAddMemberToRoom))
+        .run();
+    });
+
+    it('only sets stage when panel is already open', async () => {
+      await expectSaga(startAddGroupMember)
+        .provide([[matchers.select(getPanelOpenState, Panel.MEMBERS), true]])
+        .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
+        .put(setStage(Stage.StartAddMemberToRoom))
+        .run();
+    });
+  });
+
+  describe('startEditConversation', () => {
+    it('opens the members panel and sets stage when panel is closed', async () => {
+      await expectSaga(startEditConversation)
+        .provide([[matchers.select(getPanelOpenState, Panel.MEMBERS), false]])
+        .put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
+        .put(setStage(Stage.EditConversation))
+        .run();
+    });
+
+    it('only sets stage when panel is already open', async () => {
+      await expectSaga(startEditConversation)
+        .provide([[matchers.select(getPanelOpenState, Panel.MEMBERS), true]])
+        .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
+        .put(setStage(Stage.EditConversation))
+        .run();
+    });
+  });
+
+  describe('openViewGroupInformation', () => {
+    it('opens the members panel and sets stage when panel is closed', async () => {
+      await expectSaga(openViewGroupInformation)
+        .provide([[matchers.select(getPanelOpenState, Panel.MEMBERS), false]])
+        .put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
+        .put(setStage(Stage.ViewGroupInformation))
+        .run();
+    });
+
+    it('only sets stage when panel is already open', async () => {
+      await expectSaga(openViewGroupInformation)
+        .provide([[matchers.select(getPanelOpenState, Panel.MEMBERS), true]])
+        .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
+        .put(setStage(Stage.ViewGroupInformation))
+        .run();
+    });
+  });
+
+  describe('openSidekickForSocialChannel', () => {
+    const conversationId = 'test-conversation';
+    const socialChannel = { isSocialChannel: true };
+    const nonSocialChannel = { isSocialChannel: false };
+
+    it('does nothing for social channels when panel is already open', async () => {
+      await expectSaga(openSidekickForSocialChannel, conversationId)
+        .provide([
+          [matchers.select(rawChannelSelector, conversationId), socialChannel],
+          [matchers.select(getPanelOpenState, Panel.MEMBERS), true],
+        ])
+        .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
+        .run();
+    });
+
+    it('does nothing for non-social channels', async () => {
+      await expectSaga(openSidekickForSocialChannel, conversationId)
+        .provide([[matchers.select(rawChannelSelector, conversationId), nonSocialChannel]])
+        .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
+        .run();
     });
   });
 });

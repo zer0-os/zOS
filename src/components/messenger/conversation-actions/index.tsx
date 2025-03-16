@@ -1,15 +1,10 @@
 import * as React from 'react';
 
 import { GroupManagementMenu } from '../../group-management-menu';
-import { IconButton } from '@zero-tech/zui/components/IconButton';
-import { IconChevronLeft, IconChevronRight } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
-import { bemClassName } from '../../../lib/bem';
 
 import './styles.scss';
-
-const cn = bemClassName('conversation-actions');
 
 export interface Properties {
   className?: string;
@@ -80,13 +75,6 @@ export class ConversationActions extends React.Component<Properties> {
           onStartAddMember={this.addMember}
           onUnmute={this.unmuteRoom}
           onViewGroupInformation={this.viewGroupInformation}
-        />
-        <IconButton
-          {...cn('group-button', this.props.isSecondarySidekickOpen && 'is-active')}
-          Icon={this.props.isSecondarySidekickOpen ? IconChevronRight : IconChevronLeft}
-          size={32}
-          onClick={this.toggleSidekick}
-          isFilled
         />
       </div>
     );

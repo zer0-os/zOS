@@ -1,6 +1,9 @@
 import { vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { reducer as panelsReducer } from '../../store/panels';
 
 import { AppBar, Properties } from '.';
 
@@ -37,6 +40,14 @@ vi.mock('./world-panel-item', () => ({
   },
 }));
 
+const createStore = () => {
+  return configureStore({
+    reducer: {
+      panels: panelsReducer,
+    },
+  });
+};
+
 const DEFAULT_PROPS: Properties = {
   activeApp: undefined,
   hasUnreadNotifications: false,
@@ -46,10 +57,13 @@ const DEFAULT_PROPS: Properties = {
 };
 
 const renderComponent = (props: Partial<Properties>) => {
+  const store = createStore();
   return render(
-    <MemoryRouter>
-      <AppBar {...{ ...DEFAULT_PROPS, ...props }} />
-    </MemoryRouter>
+    <Provider store={store}>
+      <MemoryRouter>
+        <AppBar {...{ ...DEFAULT_PROPS, ...props }} />
+      </MemoryRouter>
+    </Provider>
   );
 };
 

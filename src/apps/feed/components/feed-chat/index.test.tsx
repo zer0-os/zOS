@@ -8,6 +8,7 @@ import { send } from '../../../../store/messages';
 import { config } from '../../../../config';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
+import { Panel } from '../../../../store/panels/constants';
 
 jest.mock('../../../../components/sidekick/variants/members-sidekick', () => ({
   MembersSidekick: () => <div data-testid='members-sidekick' />,
@@ -164,6 +165,12 @@ describe('FeedChatContainer', () => {
         },
         chat: {
           activeConversationId: '1',
+        },
+        panels: {
+          openStates: {
+            [Panel.FEED_CHAT]: true,
+            [Panel.MEMBERS]: false,
+          },
         },
       } as RootState);
 

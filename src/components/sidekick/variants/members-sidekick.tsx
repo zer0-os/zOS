@@ -6,10 +6,14 @@ import { Stage as MessageInfoStage } from '../../../store/message-info';
 import { Stage as GroupManagementStage } from '../../../store/group-management';
 import { MessageInfoContainer } from '../../messenger/message-info/container';
 import { Container as SidekickContainer } from '../components/container';
-import { Header, Title } from '../../layout/header';
+import { Title } from '../../layout/header';
+import { PanelHeader } from '../../layout/panel';
+import { Panel } from '../../../store/panels/constants';
 
 import classNames from 'classnames';
 import styles from './members-sidekick.module.scss';
+
+const TITLE = 'Members';
 
 interface PublicProperties {
   className?: string;
@@ -50,16 +54,14 @@ export class Container extends React.Component<Properties> {
     return (
       <SidekickContainer
         variant='secondary'
-        className={classNames(
-          styles.Members,
-          this.props.className,
-          this.props.isSecondarySidekickOpen ? styles.Open : styles.Closed
-        )}
+        className={classNames(styles.Members, this.props.className)}
         header={
-          <Header className={styles.Header}>
-            <Title>Members</Title>
-          </Header>
+          <PanelHeader className={styles.Header}>
+            <Title>{TITLE}</Title>
+          </PanelHeader>
         }
+        panel={Panel.MEMBERS}
+        name={TITLE}
       >
         <div className={styles.Content}>{this.renderSecondarySidekickContent()}</div>
       </SidekickContainer>

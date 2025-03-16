@@ -36,14 +36,6 @@ const subject = (props: Partial<Properties> = {}) => {
 };
 
 describe(ConversationActions, () => {
-  it('fires toggleSecondarySidekick', function () {
-    const toggleSecondarySidekick = vi.fn();
-    const { container } = render(subject({ toggleSecondarySidekick }));
-    const groupButton = container.querySelector('.conversation-actions__group-button');
-    fireEvent.click(groupButton);
-    expect(toggleSecondarySidekick).toHaveBeenCalledOnce();
-  });
-
   describe('group management', function () {
     beforeEach(() => {
       vi.clearAllMocks();

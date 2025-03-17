@@ -26,6 +26,10 @@ export const productionFlags: FeatureFlagDefinitions = {
   enableFeedChat: { defaultValue: true },
   enableAuraZApp: {
     defaultValue: false,
-    allowedUserIds: ['dca9d449-548b-4fc9-8411-aab7b48bffc0', '050ec075-3313-416d-8192-3ffaf049759'],
+    allowedUserIds: [
+      'dca9d449-548b-4fc9-8411-aab7b48bffc0',
+      '050ec075-3313-416d-8192-3ffaf049759',
+      '389c8594-9ccb-45dc-87e1-f7444086f9b7',
+    ],
   },
 };

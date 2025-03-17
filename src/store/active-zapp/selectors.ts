@@ -4,6 +4,7 @@ import { ZAppFeatureType, ExtractFeatureType } from '../../apps/external-app/typ
 
 export const rawActiveZAppManifest = (state: RootState) => state.activeZApp.manifest;
 
+export const isZAppActiveSelector = createSelector([rawActiveZAppManifest], (manifest) => Boolean(manifest));
 export const activeZAppManifestSelector = createSelector([rawActiveZAppManifest], (manifest) => manifest);
 export const activeZAppFeaturesSelector = createSelector([rawActiveZAppManifest], (manifest) => manifest?.features);
 

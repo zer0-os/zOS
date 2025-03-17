@@ -123,14 +123,6 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
     );
   };
 
-  renderBanner = () => {
-    return (
-      <div {...cn('banner-container')}>
-        <div {...cn('banner')} />
-      </div>
-    );
-  };
-
   renderBackIcon = () => {
     return (
       <div {...cn('back-icon-container')}>
@@ -156,7 +148,6 @@ export class ViewGroupInformationPanel extends React.Component<Properties> {
   render() {
     return (
       <div {...cn()}>
-        {this.renderBanner()}
         {this.renderBackIcon()}
         <div {...cn('body')}>
           {this.renderDetails()}

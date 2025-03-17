@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
 import { AuraApp } from './aura';
+import styles from './app-router.module.css';
 
 import { Container as SidekickContainer } from '../components/sidekick/components/container';
 import { Header as SidekickHeader } from '../components/sidekick/components/header';
@@ -31,13 +32,11 @@ export const AppRouter = () => {
 
   return (
     <AuthenticationContextProvider value={{ isAuthenticated }}>
-      {renderSidekick && (
-        <SidekickContainer>
-          <SidekickHeader>
-            <CurrentUserDetails />
-          </SidekickHeader>
-        </SidekickContainer>
-      )}
+      <SidekickContainer className={!renderSidekick ? styles.sidekickHidden : ''}>
+        <SidekickHeader>
+          <CurrentUserDetails />
+        </SidekickHeader>
+      </SidekickContainer>
       <Switch>
         <Route path='/conversation/:conversationId' component={MessengerApp} />
         <Route path='/' exact component={MessengerApp} />

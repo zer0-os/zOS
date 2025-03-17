@@ -2,6 +2,7 @@ import encrypt from 'matrix-encrypt-attachment';
 import { getAttachmentUrl } from '../../api/attachment';
 import { getAccessToken, mxcUrlToHttp } from '..';
 import { encode } from 'blurhash';
+import { getFileFromCache, putFileToCache } from '../../storage/media-cache';
 
 /**
  * Read the file as an ArrayBuffer.
@@ -128,7 +129,7 @@ export function isFileUploadedToMatrix(url: string): boolean {
 }
 
 // https://github.com/matrix-org/matrix-react-sdk/blob/develop/src/utils/DecryptFile.ts#L50
-export async function decryptFile(encryptedFile, mimetype): Promise<Blob> {
+export async function decryptFile(encryptedFile, mimetype): Promise<string> {
   // Determine if the file is encrypted by checking for encryption-related fields
   const isEncrypted = !!(encryptedFile.key && encryptedFile.iv && encryptedFile.hashes?.sha256);
 
@@ -136,6 +137,11 @@ export async function decryptFile(encryptedFile, mimetype): Promise<Blob> {
   let response;
 
   if (isFileUploadedToMatrix(url)) {
+    const blobUrl = await getFileFromCache(url);
+    if (blobUrl) {
+      return blobUrl;
+    }
+
     response = await fetch(mxcUrlToHttp(url), {
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -151,17 +157,23 @@ export async function decryptFile(encryptedFile, mimetype): Promise<Blob> {
   }
   const responseData: ArrayBuffer = await response.arrayBuffer();
 
+  let blob;
   if (isEncrypted) {
     try {
       // Decrypt the array buffer using the information taken from the event content
       const dataArray = await encrypt.decryptAttachment(responseData, encryptedFile);
       // Turn the array into a Blob and give it the correct MIME-type
-      return new Blob([dataArray], { type: mimetype });
+      blob = new Blob([dataArray], { type: mimetype });
     } catch (e) {
       throw new Error(`Error occurred while decrypting file ${encryptedFile.url}: ${e}`);
     }
   } else {
     // For non-encrypted files, directly create a Blob from the downloaded data
-    return new Blob([responseData], { type: mimetype });
+    blob = new Blob([responseData], { type: mimetype });
   }
+
+  // Cache the file in indexedDB for future use
+  putFileToCache(url, blob);
+
+  return URL.createObjectURL(blob);
 }

@@ -7,6 +7,7 @@ import { config } from '../../config';
 import { PowerLevels } from './types';
 import { MatrixConstants, ReactionKeys, ReadReceiptPreferenceType } from './matrix/types';
 import { DefaultRoomLabels } from '../../store/channels';
+import { getFileFromCache, putFileToCache } from '../../lib/storage/media-cache';
 
 jest.mock('./matrix/utils', () => ({ setAsDM: jest.fn().mockResolvedValue(undefined) }));
 
@@ -21,6 +22,22 @@ jest.mock('./matrix/media', () => {
     encryptFile: (...args) => mockEncryptFile(...args),
     getImageDimensions: (...args) => mockGetImageDimensions(...args),
     generateBlurhash: (...args) => mockGenerateBlurhash(...args),
+  };
+});
+
+jest.mock('../../lib/storage/media-cache', () => {
+  return {
+    putFileToCache: jest.fn(async (_fileUrl, _blob) => {
+      // Just a mock implementation that does nothing but log
+      return Promise.resolve();
+    }),
+    getFileFromCache: jest.fn(async (_fileUrl) => {
+      // Return null to simulate cache miss and force the download path in tests
+      return Promise.resolve(null);
+    }),
+    clearCache: jest.fn().mockResolvedValue(undefined),
+    performCacheMaintenance: jest.fn().mockResolvedValue(undefined),
+    isFileUploadedToMatrix: jest.fn((url) => url?.startsWith('mxc://')),
   };
 });
 
@@ -1172,6 +1189,36 @@ describe('matrix client', () => {
         optimisticId: optimisticId,
       });
     });
+
+    it('calls putFileToCache after uploading a file', async () => {
+      // Setup
+      const roomId = '!testRoomId';
+      const media = {
+        name: 'test-file',
+        size: 1000,
+        type: 'image/png',
+      };
+      when(mockGetImageDimensions).calledWith(expect.anything()).mockResolvedValue({ width: 800, height: 600 });
+
+      const sendMessage = jest.fn().mockResolvedValue({ event_id: 'new-message-id' });
+      const uploadContent = jest.fn().mockResolvedValue({ content_uri: 'upload-url' });
+
+      const client = subject({
+        createClient: jest.fn(() =>
+          getSdkClient({
+            getRoom: jest.fn().mockReturnValue(stubRoom({ hasEncryptionStateEvent: jest.fn(() => false) })),
+            sendMessage,
+            uploadContent,
+          })
+        ),
+      });
+
+      await client.connect(null, 'token');
+      await client.uploadFileMessage(roomId, media as File);
+
+      // Simple verification that putFileToCache was called
+      expect(putFileToCache).toHaveBeenCalledWith('upload-url', media);
+    });
   });
 
   describe('uploadImageUrl', () => {
@@ -1322,6 +1369,32 @@ describe('matrix client', () => {
       const result = await client.downloadFile(fileUrl);
 
       expect(result).toBe(fileUrl);
+    });
+
+    it('checks cache before downloading a matrix file', async () => {
+      // Setup
+      const fileUrl = 'mxc://example.org/file123';
+      const cachedUrl = 'blob:cached-url';
+
+      // Make getFileFromCache return a value for this test only
+      (getFileFromCache as jest.Mock).mockResolvedValueOnce(cachedUrl);
+
+      const client = subject({
+        createClient: jest.fn(() =>
+          getSdkClient({
+            mxcUrlToHttp: jest.fn().mockReturnValue('http://example.org/file123'),
+          })
+        ),
+      });
+
+      await client.connect(null, 'token');
+      const result = await client.downloadFile(fileUrl);
+
+      // Verify cache was checked
+      expect(getFileFromCache).toHaveBeenCalledWith(fileUrl);
+
+      // Verify we got the cached value
+      expect(result).toBe(cachedUrl);
     });
   });
 
@@ -1933,5 +2006,10 @@ describe('matrix client', () => {
 
     // Restore console.warn after the test
     consoleWarnSpy.mockRestore();
+  });
+
+  afterAll(() => {
+    global.fetch = undefined;
+    global.URL.createObjectURL = undefined;
   });
 });

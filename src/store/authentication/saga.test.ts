@@ -38,6 +38,12 @@ import { clearLastActiveTab } from '../../lib/last-tab';
 import { clearIndexedDBStorage } from '../../lib/storage/clear-idb';
 import { clearLastActiveFeed } from '../../lib/last-feed';
 
+// Mock the media-cache module
+jest.mock('../../lib/storage/media-cache', () => ({
+  clearCache: jest.fn(),
+  performCacheMaintenance: jest.fn(),
+}));
+
 describe(nonceOrAuthorize, () => {
   const signedWeb3Token = '0x000000000000000000000000000000000000000A';
   const authorizationResponse = {

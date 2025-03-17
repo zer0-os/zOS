@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, all } from 'redux-saga/effects';
+import { takeLatest, put, call, all, delay, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setDisplayLogoutModal, setUser } from '.';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -18,6 +18,7 @@ import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
 import { clearRewards } from '../rewards/saga';
 import { clearLastActiveFeed } from '../../lib/last-feed';
+import { clearCache, performCacheMaintenance } from '../../lib/storage/media-cache';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -47,6 +48,7 @@ export function* completeUserLogin(user = null) {
 
   yield put(setUser({ data: user }));
   yield call(publishUserLogin, user);
+  yield spawn(scheduleCacheMaintenance);
 }
 
 export function* terminate(isAccountChange = false) {
@@ -93,7 +95,22 @@ export function* clearUserState() {
     call(clearMessages),
     call(clearUsers),
     call(closeUserProfile),
+    call(clearCache),
   ]);
+}
+
+const CACHE_MAINTENANCE_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours
+
+export function* scheduleCacheMaintenance() {
+  while (true) {
+    yield delay(CACHE_MAINTENANCE_INTERVAL);
+
+    try {
+      yield call(performCacheMaintenance);
+    } catch (e) {
+      console.error('Error during cache maintenance:', e);
+    }
+  }
 }
 
 export function* saga() {

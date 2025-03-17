@@ -22,7 +22,7 @@ const mockIdb = {
   },
 };
 
-jest.mock('../../lib/storage/idb', () => ({
+jest.mock('../../lib/storage/media-cache/idb', () => ({
   getProvider: () => mockIdb,
 }));
 

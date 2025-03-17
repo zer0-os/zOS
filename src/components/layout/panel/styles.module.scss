@@ -99,7 +99,9 @@ $header-color: var(--color-greyscale-11);
   font-size: 14px;
   color: $header-color;
 
-  writing-mode: sideways-lr;
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+
   text-align: end;
   width: 48px !important;
   padding: 16px 16px;

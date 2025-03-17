@@ -13,7 +13,7 @@ import {
   getProfileInfo as matrixGetProfileInfo,
 } from '../../lib/chat';
 import cloneDeep from 'lodash/cloneDeep';
-import { getProvider as getIndexedDbProvider } from '../../lib/storage/idb';
+import { getProvider as getIndexedDbProvider } from '../../lib/storage/media-cache/idb';
 import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
 import { User } from '../authentication/types';
 

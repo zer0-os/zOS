@@ -30,7 +30,7 @@ import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
-import { getProvider as getIndexedDbProvider } from '../../lib/storage/idb';
+import { getProvider as getIndexedDbProvider } from '../../lib/storage/media-cache/idb';
 import { receive as receiveUser } from '../users';
 
 export function* validateInvite(action) {

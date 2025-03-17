@@ -660,9 +660,7 @@ export function* loadAttachmentDetails(action) {
     // Set status to 'LOADING'
     yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Loading));
 
-    const blob = yield call(decryptFile, media.file || { url: media.url }, media.mimetype);
-    const url = URL.createObjectURL(blob);
-
+    const url = yield call(decryptFile, media.file || { url: media.url }, media.mimetype);
     if (!url) {
       yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Failed));
       return;

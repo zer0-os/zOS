@@ -50,6 +50,7 @@ import { encryptFile, generateBlurhash, getImageDimensions, isFileUploadedToMatr
 import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
 import { PostsResponse } from '../../store/posts';
+import { getFileFromCache, putFileToCache } from '../storage/media-cache';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
@@ -733,7 +734,7 @@ export class MatrixClient implements IChatClient {
     return response.content_uri;
   }
 
-  // if the file is uploaded to the homeserver, then we need bearer token to download it
+  // if the file is uploaded to the homeserver, then we need bearer token to download it mxc://zero-synapse-development.zer0.io/MZLtdcZkyZfqzvAkzvpHQuce
   // since the endpoint to download the file is protected
   async downloadFile(fileUrl: string, isThumbnail: boolean = false): Promise<string> {
     if (!isFileUploadedToMatrix(fileUrl)) {
@@ -741,6 +742,11 @@ export class MatrixClient implements IChatClient {
     }
 
     await this.waitForConnection();
+
+    const cachedBlob = await getFileFromCache(fileUrl);
+    if (cachedBlob) {
+      return cachedBlob;
+    }
 
     const response = await fetch(this.mxcUrlToHttp(fileUrl, isThumbnail), {
       headers: {
@@ -754,6 +760,10 @@ export class MatrixClient implements IChatClient {
     }
 
     const blob = await response.blob();
+
+    // Cache the blob in indexedDB
+    putFileToCache(fileUrl, blob);
+
     return URL.createObjectURL(blob);
   }
 
@@ -941,6 +951,9 @@ export class MatrixClient implements IChatClient {
       messageResult = await this.matrix.sendMessage(roomId, content);
       this.recordMessageSent(roomId);
     }
+
+    // Cache the file in indexedDB
+    putFileToCache(url, media);
 
     return {
       id: messageResult.event_id,
@@ -1718,7 +1731,9 @@ export class MatrixClient implements IChatClient {
   private async uploadCoverImage(image) {
     if (image) {
       try {
-        return await this.uploadFile(image);
+        const result = await this.uploadFile(image);
+        putFileToCache(result, image);
+        return result;
       } catch (error) {
         // For now, we will just ignore the error and continue to create the room
         // No reason for the image upload to block the room creation

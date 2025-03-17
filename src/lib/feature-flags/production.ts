@@ -28,9 +28,9 @@ export const productionFlags: FeatureFlagDefinitions = {
     defaultValue: false,
     allowedUserIds: [
       'dca9d449-548b-4fc9-8411-aab7b48bffc0',
-      '050ec075-3313-416d-8192-3ffaf049759',
-      '389c8594-9ccb-45dc-87e1-f7444086f9b7',
-      '2ae1fece-d3c8-43ea-99b9-fb2b975b61e0',
+      '020705c6-0740-4d4d-8185-0ba7542b9725',
+      'bcdcdf9b-e278-43c5-ac34-07a21689ab01',
+      'a8df265e-5e4c-46e9-a6e5-9da8684f96ac',
     ],
   },
 };

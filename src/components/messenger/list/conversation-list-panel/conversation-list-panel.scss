@@ -187,4 +187,17 @@ $side-padding: 16px;
     background-size: cover;
     background-repeat: no-repeat;
   }
+
+  &__waypoint-container {
+    height: 1px;
+    width: 100%;
+  }
+
+  &__loading-more {
+    padding: 16px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }

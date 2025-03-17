@@ -5,6 +5,7 @@ import { ConversationListPanel, Properties } from '.';
 import { Channel, DefaultRoomLabels } from '../../../../store/channels';
 import { stubConversation } from '../../../../store/test/store';
 import { IconStar1 } from '@zero-tech/zui/icons';
+import { Waypoint } from '../../../waypoint';
 
 describe('ConversationListPanel', () => {
   const subject = (props: Partial<Properties>) => {
@@ -109,6 +110,36 @@ describe('ConversationListPanel', () => {
 
     selectTab(wrapper, 'Family');
     expect(renderedConversationNames(wrapper)).toStrictEqual(['convo-4']);
+  });
+
+  it('initially renders only PAGE_SIZE conversations and Waypoint', function () {
+    const conversations = Array.from({ length: 30 }, (_, i) =>
+      stubConversation({
+        id: `convo-id-${i}`,
+        name: `convo-${i}`,
+        unreadCount: { total: 0, highlight: 0 },
+      })
+    );
+
+    const wrapper = subject({ conversations: conversations as any });
+
+    expect(wrapper.find('ConversationItem').length).toBe(20);
+
+    expect(wrapper).toHaveElement(Waypoint);
+  });
+
+  it('does not render Waypoint when all conversations are loaded', function () {
+    const conversations = Array.from({ length: 15 }, (_, i) =>
+      stubConversation({
+        id: `convo-id-${i}`,
+        name: `convo-${i}`,
+        unreadCount: { total: 0, highlight: 0 },
+      })
+    );
+
+    const wrapper = subject({ conversations: conversations as any });
+
+    expect(wrapper).not.toHaveElement(Waypoint);
   });
 
   it('renders Favorites tab first', function () {

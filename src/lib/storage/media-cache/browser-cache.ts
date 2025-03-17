@@ -61,10 +61,7 @@ export class BrowserMediaCache {
 
   async clear() {
     try {
-      console.log('xxx Clearing browser cache .. ');
       await caches.delete(this.cacheName);
-
-      console.log('xxx Browser cache after clearing .. ', await caches.keys());
     } catch (err) {
       console.error('Failed to clear browser cache:', err);
     }
@@ -86,19 +83,6 @@ export class BrowserMediaCache {
 
         const timestamp = new Date(dateHeader).getTime();
         if (now - timestamp > this.maxAgeMs) {
-          console.log(
-            'xxx Removing from browser cache:',
-            '\n  URL:',
-            request.url,
-            '\n  Last accessed:',
-            new Date(timestamp).toISOString(),
-            '\n  Current time:',
-            new Date(now).toISOString(),
-            '\n  Age (ms):',
-            now - timestamp,
-            '\n  Max age (ms):',
-            this.maxAgeMs
-          );
           await cache.delete(request);
           removedCount++;
         }

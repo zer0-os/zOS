@@ -11,13 +11,17 @@ import escapeRegExp from 'lodash/escapeRegExp';
 import { getDirectMatches, getIndirectMatches } from './utils';
 import { IconPlus, IconStar1 } from '@zero-tech/zui/icons';
 import { getLastActiveTab, setLastActiveTab } from '../../../../lib/last-tab';
+import { startCreateConversation } from '../../../../store/create-conversation';
+import { useDispatch } from 'react-redux';
+import { Waypoint } from '../../../waypoint';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
-import { startCreateConversation } from '../../../../store/create-conversation';
-import { useDispatch } from 'react-redux';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 const cn = bemClassName('messages-list');
+
+const PAGE_SIZE = 20;
 
 export interface Properties {
   conversations: Channel[];
@@ -46,12 +50,20 @@ interface State {
   filter: string;
   userSearchResults: Option[];
   selectedTab: Tab;
+  visibleItemCount: number;
+  isLoadingMore: boolean;
 }
 
 export class ConversationListPanel extends React.Component<Properties, State> {
   scrollContainerRef: React.RefObject<ScrollbarContainer>;
   tabListRef: React.RefObject<HTMLDivElement>;
-  state = { filter: '', userSearchResults: [], selectedTab: Tab.All };
+  state = {
+    filter: '',
+    userSearchResults: [],
+    selectedTab: Tab.All,
+    visibleItemCount: PAGE_SIZE,
+    isLoadingMore: false,
+  };
 
   constructor(props) {
     super(props);
@@ -72,7 +84,7 @@ export class ConversationListPanel extends React.Component<Properties, State> {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.isLabelDataLoaded !== this.props.isLabelDataLoaded) {
       const lastActiveTab = getLastActiveTab();
       if (lastActiveTab) {
@@ -81,6 +93,12 @@ export class ConversationListPanel extends React.Component<Properties, State> {
         this.setInitialTab();
       }
     }
+
+    // Reset pagination when filter or tab changes
+    if (prevState.filter !== this.state.filter || prevState.selectedTab !== this.state.selectedTab) {
+      this.setState({ visibleItemCount: PAGE_SIZE });
+      this.scrollToTop();
+    }
   }
 
   componentWillUnmount() {
@@ -88,6 +106,23 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       this.tabListRef.current.removeEventListener('wheel', this.horizontalScroll);
     }
   }
+
+  loadMoreItems = () => {
+    const { visibleItemCount } = this.state;
+    const totalItems = this.filteredConversations.length;
+
+    // Don't load more if we've already loaded all items or if we're already loading
+    if (visibleItemCount >= totalItems || this.state.isLoadingMore) return;
+
+    this.setState({ isLoadingMore: true }, () => {
+      requestAnimationFrame(() => {
+        this.setState({
+          visibleItemCount: Math.min(visibleItemCount + PAGE_SIZE, totalItems),
+          isLoadingMore: false,
+        });
+      });
+    });
+  };
 
   setInitialTab() {
     if (this.props.isLabelDataLoaded) {
@@ -250,6 +285,9 @@ export class ConversationListPanel extends React.Component<Properties, State> {
   render() {
     const isCollapsed = this.props.isCollapsed;
     const isExpanded = !isCollapsed;
+    const allFilteredConversations = this.filteredConversations;
+    const visibleConversations = allFilteredConversations.slice(0, this.state.visibleItemCount);
+    const hasMoreItems = visibleConversations.length < allFilteredConversations.length;
 
     return (
       <>
@@ -271,8 +309,8 @@ export class ConversationListPanel extends React.Component<Properties, State> {
 
           <ScrollbarContainer variant='on-hover' ref={this.scrollContainerRef}>
             <div {...cn('item-list')}>
-              {this.filteredConversations.length > 0 &&
-                this.filteredConversations.map((c) => (
+              {visibleConversations.length > 0 &&
+                visibleConversations.map((c) => (
                   <ConversationItem
                     key={c.id}
                     conversation={c}
@@ -285,6 +323,19 @@ export class ConversationListPanel extends React.Component<Properties, State> {
                     isCollapsed={isCollapsed}
                   />
                 ))}
+
+              {hasMoreItems && (
+                <div {...cn('waypoint-container')}>
+                  <Waypoint onEnter={this.loadMoreItems} bottomOffset='-60px' />
+                </div>
+              )}
+
+              {this.state.isLoadingMore && (
+                <div {...cn('loading-more')}>
+                  <Spinner />
+                </div>
+              )}
+
               {isExpanded &&
                 this.filteredConversations.length === 0 &&
                 !this.state.filter &&

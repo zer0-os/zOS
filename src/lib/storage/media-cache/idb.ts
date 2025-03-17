@@ -71,8 +71,6 @@ export class IndexedDBHelper {
 
   // Method to clear the object store
   async clear() {
-    console.log('xxx Clearing IndexedDB .. ');
-
     const db = await this.dbPromise;
     return db.clear(this.storeName);
   }

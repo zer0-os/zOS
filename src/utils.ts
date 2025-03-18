@@ -22,6 +22,8 @@ export function getMainBackgroundClass(selectedMainBackground) {
       return 'animated';
     case MainBackground.StaticGreenParticles:
       return 'static-green-particles';
+    case MainBackground.DotGrid:
+      return 'dot-grid';
     case MainBackground.StaticLightsOut:
     default:
       return 'static-lights-out';

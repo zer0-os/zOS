@@ -5,8 +5,11 @@ import { UserSearchResults, Properties } from '.';
 import { Avatar } from '@zero-tech/zui/components';
 
 import { bem } from '../../../../lib/bem';
+import { Waypoint } from '../../../waypoint';
 
 const c = bem('.user-search-results');
+
+const PAGE_SIZE = 20;
 
 describe('UserSearchResults', () => {
   const subject = (props: Partial<Properties>) => {
@@ -85,5 +88,49 @@ describe('UserSearchResults', () => {
     wrapper.find(c('item')).simulate('keydown', { key: 'Enter' });
 
     expect(handleCreate).toHaveBeenCalledWith(userResults[0].value);
+  });
+
+  it('initially renders only PAGE_SIZE results and shows Waypoint', () => {
+    const results = Array.from({ length: 30 }, (_, i) => ({
+      value: `user-${i}`,
+      label: `User ${i}`,
+      image: `image-${i}`,
+      subLabel: `0://user-${i}.test`,
+    }));
+
+    const wrapper = subject({ filter: 'test', results });
+
+    const renderedResults = wrapper.find(c('item'));
+    expect(renderedResults).toHaveLength(PAGE_SIZE);
+    expect(wrapper).toHaveElement(Waypoint);
+  });
+
+  it('shows loading spinner while loading more results', () => {
+    const results = Array.from({ length: 30 }, (_, i) => ({
+      value: `user-${i}`,
+      label: `User ${i}`,
+      image: `image-${i}`,
+      subLabel: `0://user-${i}.test`,
+    }));
+
+    const wrapper = subject({ filter: 'test', results });
+
+    wrapper.setState({ isLoadingMore: true });
+
+    expect(wrapper).toHaveElement('Spinner');
+  });
+
+  it('does not show Waypoint when all results are loaded', () => {
+    const results = Array.from({ length: 10 }, (_, i) => ({
+      value: `user-${i}`,
+      label: `User ${i}`,
+      image: `image-${i}`,
+      subLabel: `0://user-${i}.test`,
+    }));
+
+    const wrapper = subject({ filter: 'test', results });
+
+    // Should not show Waypoint since all results can be displayed at once
+    expect(wrapper).not.toHaveElement(Waypoint);
   });
 });

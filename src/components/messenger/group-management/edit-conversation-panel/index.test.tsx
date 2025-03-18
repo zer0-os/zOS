@@ -7,6 +7,7 @@ import { Alert } from '@zero-tech/zui/components';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
 import { EditConversationState } from '../../../../store/group-management/types';
+import { Waypoint } from '../../../waypoint';
 
 describe(EditConversationPanel, () => {
   const subject = (props: Partial<Properties>) => {
@@ -242,6 +243,48 @@ describe(EditConversationPanel, () => {
       const item = wrapper.find(CitizenListItem).findWhere((c) => c.prop('user').userId === 'otherMember1');
 
       expect(item.prop('onRemove')).toBeFalsy();
+    });
+  });
+
+  describe('Infinite Scroll', () => {
+    it('initially renders only PAGE_SIZE members and shows Waypoint', () => {
+      const otherMembers = Array.from({ length: 30 }, (_, i) => ({
+        userId: `user-${i}`,
+        matrixId: `matrix-id-${i}`,
+        firstName: `User ${i}`,
+      })) as User[];
+
+      const wrapper = subject({ otherMembers });
+
+      expect(wrapper.find(CitizenListItem).length).toBe(21); // 1 current user + 20 other members
+      expect(wrapper).toHaveElement(Waypoint);
+    });
+
+    it('shows loading spinner while loading more members', () => {
+      const otherMembers = Array.from({ length: 30 }, (_, i) => ({
+        userId: `user-${i}`,
+        matrixId: `matrix-id-${i}`,
+        firstName: `User ${i}`,
+      })) as User[];
+
+      const wrapper = subject({ otherMembers });
+
+      wrapper.setState({ isLoadingMore: true });
+
+      expect(wrapper).toHaveElement('Spinner');
+    });
+
+    it('does not show Waypoint when all members are loaded', () => {
+      const otherMembers = Array.from({ length: 10 }, (_, i) => ({
+        userId: `user-${i}`,
+        matrixId: `matrix-id-${i}`,
+        firstName: `User ${i}`,
+      })) as User[];
+
+      const wrapper = subject({ otherMembers });
+
+      // Should not show Waypoint since all members can be displayed at once
+      expect(wrapper).not.toHaveElement(Waypoint);
     });
   });
 });

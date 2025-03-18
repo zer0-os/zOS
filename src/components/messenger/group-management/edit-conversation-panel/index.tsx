@@ -11,10 +11,14 @@ import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { EditConversationErrors, EditConversationState } from '../../../../store/group-management/types';
 import { getTagForUser, isUserAdmin, isUserModerator, sortMembers } from '../../list/utils/utils';
+import { Waypoint } from '../../../waypoint';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 import './styles.scss';
 
 const cn = bemClassName('edit-conversation-panel');
+
+const PAGE_SIZE = 20;
 
 export interface Properties {
   name: string;
@@ -34,12 +38,16 @@ export interface Properties {
 interface State {
   name: string;
   image: File | null;
+  visibleMemberCount: number;
+  isLoadingMore: boolean;
 }
 
 export class EditConversationPanel extends React.Component<Properties, State> {
   state = {
     name: this.props.name || '',
     image: null,
+    visibleMemberCount: PAGE_SIZE,
+    isLoadingMore: false,
   };
 
   trackName = (value) => this.setState({ name: value });
@@ -48,6 +56,24 @@ export class EditConversationPanel extends React.Component<Properties, State> {
 
   handleEdit = () => {
     this.props.onEdit(this.state.name, this.state.image);
+  };
+
+  loadMoreMembers = () => {
+    const { visibleMemberCount } = this.state;
+    const { otherMembers } = this.props;
+    const totalMembers = otherMembers.length;
+
+    // Don't load more if we've already loaded all members or if we're already loading
+    if (visibleMemberCount >= totalMembers || this.state.isLoadingMore) return;
+
+    this.setState({ isLoadingMore: true }, () => {
+      requestAnimationFrame(() => {
+        this.setState({
+          visibleMemberCount: Math.min(visibleMemberCount + PAGE_SIZE, totalMembers),
+          isLoadingMore: false,
+        });
+      });
+    });
   };
 
   get generalError() {
@@ -145,7 +171,10 @@ export class EditConversationPanel extends React.Component<Properties, State> {
 
   renderMembers = () => {
     const { conversationAdminIds, otherMembers, conversationModeratorIds } = this.props;
+    const { visibleMemberCount, isLoadingMore } = this.state;
     const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds, conversationModeratorIds);
+    const visibleMembers = sortedOtherMembers.slice(0, visibleMemberCount);
+    const hasMoreMembers = visibleMembers.length < sortedOtherMembers.length;
 
     return (
       <div {...cn('members')}>
@@ -158,7 +187,7 @@ export class EditConversationPanel extends React.Component<Properties, State> {
               user={this.props.currentUser}
               tag={this.getMemberTag(this.props.currentUser)}
             ></CitizenListItem>
-            {sortedOtherMembers.map((u) => (
+            {visibleMembers.map((u) => (
               <CitizenListItem
                 key={u.userId}
                 user={u}
@@ -168,6 +197,18 @@ export class EditConversationPanel extends React.Component<Properties, State> {
               ></CitizenListItem>
             ))}
           </ScrollbarContainer>
+
+          {hasMoreMembers && (
+            <div {...cn('waypoint-container')}>
+              <Waypoint onEnter={this.loadMoreMembers} />
+            </div>
+          )}
+
+          {isLoadingMore && (
+            <div {...cn('loading-more')}>
+              <Spinner />
+            </div>
+          )}
         </div>
       </div>
     );

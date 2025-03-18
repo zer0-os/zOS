@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/reducer';
 import { MainBackground } from '../../../store/background';
 
-const LOW_CONTRAST_BACKGROUNDS: MainBackground[] = [MainBackground.StaticLightsOut];
+const LOW_CONTRAST_BACKGROUNDS: MainBackground[] = [MainBackground.StaticLightsOut, MainBackground.DotGrid];
 
 /**
  * Sets CSS variables based on the selected background.

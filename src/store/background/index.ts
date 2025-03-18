@@ -22,7 +22,7 @@ export interface BackgroundState {
 
 const initialState: BackgroundState = {
   selectedMainBackground:
-    (localStorage.getItem('mainBackground:selectedMainBackground') as MainBackground) || MainBackground.StaticLightsOut,
+    (localStorage.getItem('mainBackground:selectedMainBackground') as MainBackground) || MainBackground.DotGrid,
 };
 
 const slice = createSlice({

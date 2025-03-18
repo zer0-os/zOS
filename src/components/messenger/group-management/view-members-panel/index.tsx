@@ -7,10 +7,14 @@ import { bemClassName } from '../../../../lib/bem';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { getTagForUser, sortMembers } from '../../list/utils/utils';
+import { Waypoint } from '../../../waypoint';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 import './styles.scss';
 
 const cn = bemClassName('view-members-panel');
+
+const PAGE_SIZE = 20;
 
 export interface Properties {
   isOneOnOne: boolean;
@@ -25,7 +29,17 @@ export interface Properties {
   openUserProfile: () => void;
 }
 
-export class ViewMembersPanel extends React.Component<Properties> {
+interface State {
+  visibleMemberCount: number;
+  isLoadingMore: boolean;
+}
+
+export class ViewMembersPanel extends React.Component<Properties, State> {
+  state = {
+    visibleMemberCount: PAGE_SIZE,
+    isLoadingMore: false,
+  };
+
   getTag(user: User) {
     if (this.props.isOneOnOne) return null;
 
@@ -44,9 +58,30 @@ export class ViewMembersPanel extends React.Component<Properties> {
     this.props.openUserProfile();
   };
 
+  loadMoreMembers = () => {
+    const { visibleMemberCount } = this.state;
+    const { otherMembers } = this.props;
+    const totalMembers = otherMembers.length;
+
+    // Don't load more if we've already loaded all members or if we're already loading
+    if (visibleMemberCount >= totalMembers || this.state.isLoadingMore) return;
+
+    this.setState({ isLoadingMore: true }, () => {
+      requestAnimationFrame(() => {
+        this.setState({
+          visibleMemberCount: Math.min(visibleMemberCount + PAGE_SIZE, totalMembers),
+          isLoadingMore: false,
+        });
+      });
+    });
+  };
+
   renderMembers = () => {
     const { otherMembers, conversationAdminIds, conversationModeratorIds } = this.props;
+    const { visibleMemberCount, isLoadingMore } = this.state;
     const sortedOtherMembers = sortMembers(otherMembers, conversationAdminIds, conversationModeratorIds);
+    const visibleMembers = sortedOtherMembers.slice(0, visibleMemberCount);
+    const hasMoreMembers = visibleMembers.length < sortedOtherMembers.length;
 
     return (
       <div {...cn('members')}>
@@ -66,7 +101,7 @@ export class ViewMembersPanel extends React.Component<Properties> {
               tag={this.getTag(this.props.currentUser)}
               onSelected={this.openProfile}
             ></CitizenListItem>
-            {sortedOtherMembers.map((u) => (
+            {visibleMembers.map((u) => (
               <CitizenListItem
                 key={u.userId}
                 user={u}
@@ -75,6 +110,18 @@ export class ViewMembersPanel extends React.Component<Properties> {
               ></CitizenListItem>
             ))}
           </ScrollbarContainer>
+
+          {hasMoreMembers && (
+            <div {...cn('waypoint-container')}>
+              <Waypoint onEnter={this.loadMoreMembers} />
+            </div>
+          )}
+
+          {isLoadingMore && (
+            <div {...cn('loading-more')}>
+              <Spinner />
+            </div>
+          )}
         </div>
       </div>
     );

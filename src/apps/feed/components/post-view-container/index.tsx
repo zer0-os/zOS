@@ -34,34 +34,36 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
       <PanelHeader>
         <BackButton backToId={post?.replyTo?.id} />
       </PanelHeader>
-      {post !== undefined && (
-        <PanelBody className={styles.Panel}>
-          <div className={styles.Details}>
-            <Post
-              arweaveId={post.arweaveId}
-              avatarUrl={post.sender?.avatarUrl}
-              author={post.sender?.displaySubHandle}
-              className={styles.Post}
-              currentUserId={userId}
-              loadAttachmentDetails={() => {}}
-              media={post.media}
-              meowPost={isFeed ? meowPostFeed : meowPost}
-              messageId={post.id.toString()}
-              nickname={post.sender?.firstName}
-              numberOfReplies={post.numberOfReplies}
-              ownerUserId={post.sender?.userId}
-              reactions={post.reactions}
-              text={post.message}
-              timestamp={post.createdAt}
-              userMeowBalance={userMeowBalance}
-              variant='expanded'
-              channelZid={post.channelZid}
-            />
-            <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
-          </div>
-          <Replies postId={postId} isFeed={isFeed} />
-        </PanelBody>
-      )}
+      <PanelBody className={styles.Panel}>
+        {post !== undefined && (
+          <>
+            <div className={styles.Details}>
+              <Post
+                arweaveId={post.arweaveId}
+                avatarUrl={post.sender?.avatarUrl}
+                author={post.sender?.displaySubHandle}
+                className={styles.Post}
+                currentUserId={userId}
+                loadAttachmentDetails={() => {}}
+                media={post.media}
+                meowPost={isFeed ? meowPostFeed : meowPost}
+                messageId={post.id.toString()}
+                nickname={post.sender?.firstName}
+                numberOfReplies={post.numberOfReplies}
+                ownerUserId={post.sender?.userId}
+                reactions={post.reactions}
+                text={post.message}
+                timestamp={post.createdAt}
+                userMeowBalance={userMeowBalance}
+                variant='expanded'
+                channelZid={post.channelZid}
+              />
+              <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
+            </div>
+            <Replies postId={postId} isFeed={isFeed} />
+          </>
+        )}
+      </PanelBody>
     </Panel>
   );
 };

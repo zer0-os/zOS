@@ -1,5 +1,9 @@
+@use '../../../variables' as variables;
+
 .conversation-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  backdrop-filter: variables.$default-background-blur;
 }

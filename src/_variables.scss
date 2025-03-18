@@ -12,10 +12,13 @@ $default-gap: 8px;
 $border-color: #686e7d3d;
 $panel-background: rgba(17, 18, 19, 0.5);
 
-// Apply borders only on low contrast backgrounds to improve visibility
 @mixin panel-border-bottom {
-  border-bottom: 1px solid $border-color;
-  border-bottom-width: var(--is-low-contrast-background);
+  border-bottom-style: solid;
+  border-bottom-color: $border-color;
+
+  // Only show the border on low contrast backgrounds.
+  // The "* 1px" hack is required to ensure the border is 1px.
+  border-bottom-width: calc(var(--is-low-contrast-background) * 1px);
 }
 
 @mixin panel-border {

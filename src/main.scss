@@ -69,6 +69,16 @@ $border-color-hover: theme-zui.$color-primary-7;
       background: rgba(0, 0, 0, 1);
     }
 
+    &.dot-grid {
+      --dot-size: 1px;
+      --dot-space: 48px;
+
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.48) calc(var(--dot-size) / 2), transparent 0)
+        center center / var(--dot-space) var(--dot-space);
+      background-color: rgba(0, 0, 0, 1);
+      background-attachment: fixed;
+    }
+
     &.animated {
       position: relative;
 

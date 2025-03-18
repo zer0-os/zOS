@@ -21,4 +21,9 @@ describe('setMainBackground', () => {
 
     expect(localStorage.setItem).toHaveBeenCalled();
   });
+
+  it('should handle dot-grid background', async () => {
+    expectSaga(setMainBackground, { payload: MainBackground.DotGrid }).withReducer(reducer).run();
+    expect(localStorage.setItem).toHaveBeenCalledWith('mainBackground:selectedMainBackground', MainBackground.DotGrid);
+  });
 });

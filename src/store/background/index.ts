@@ -9,6 +9,7 @@ export enum MainBackground {
   StaticGreenParticles = 'static-green-particles',
   AnimatedGreenParticles = 'animated-green-particles',
   AnimatedBlackParticles = 'animated-black-particles',
+  DotGrid = 'dot-grid',
 }
 
 export const setMainBackground = createAction<{ selectedBackground: MainBackground }>(

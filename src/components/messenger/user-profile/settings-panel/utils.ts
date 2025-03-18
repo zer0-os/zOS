@@ -10,6 +10,8 @@ export function translateBackgroundValue(value) {
       return 'Green Particle (Animated)';
     case MainBackground.AnimatedBlackParticles:
       return 'Black Particle (Animated)';
+    case MainBackground.DotGrid:
+      return 'Dot Grid (Static)';
     default:
       return '';
   }

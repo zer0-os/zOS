@@ -73,6 +73,8 @@ $header-color: var(--color-greyscale-11);
   box-sizing: border-box;
   border-radius: variables.$border-radius;
 
+  backdrop-filter: variables.$default-background-blur;
+
   @include variables.panel-border-bottom;
 
   font-size: 14px;

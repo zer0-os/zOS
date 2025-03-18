@@ -15,7 +15,7 @@ $title-bar-border-radius: 8px 8px 0px 0px;
   position: fixed;
   z-index: 200;
   pointer-events: auto;
-  margin: 24px 18px 24px 0;
+  margin: 24px $default-gap 24px 0;
   padding: 0 !important;
 
   bottom: 0;

@@ -1,8 +1,9 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@use '../../variables' as variables;
 
 @import '../../glass';
 
-$padding: 12px;
+$padding: variables.$default-gap;
 $container-padding: 5px;
 $width: 36px;
 

@@ -94,8 +94,8 @@ export class ConversationListPanel extends React.Component<Properties, State> {
       }
     }
 
-    // Reset pagination when filter or tab changes
-    if (prevState.filter !== this.state.filter || prevState.selectedTab !== this.state.selectedTab) {
+    // Reset pagination when tab changes
+    if (prevState.selectedTab !== this.state.selectedTab) {
       this.setState({ visibleItemCount: PAGE_SIZE });
       this.scrollToTop();
     }

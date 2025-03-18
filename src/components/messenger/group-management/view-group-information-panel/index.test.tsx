@@ -8,6 +8,7 @@ import { Button } from '@zero-tech/zui/components/Button';
 
 import { IconUsers1 } from '@zero-tech/zui/icons';
 import { bem } from '../../../../lib/bem';
+import { Waypoint } from '../../../waypoint';
 
 const c = bem('.view-group-information-panel');
 
@@ -216,5 +217,45 @@ describe(ViewGroupInformationPanel, () => {
     expect(wrapper.find(CitizenListItem).at(0)).toHaveProp('tag', null); // current user is displayed at top
     expect(wrapper.find(CitizenListItem).at(1)).toHaveProp('tag', 'Mod');
     expect(wrapper.find(CitizenListItem).at(2)).toHaveProp('tag', null);
+  });
+
+  it('initially renders only PAGE_SIZE members and shows Waypoint', () => {
+    const otherMembers = Array.from({ length: 30 }, (_, i) => ({
+      userId: `user-${i}`,
+      matrixId: `matrix-id-${i}`,
+      firstName: `User ${i}`,
+    })) as User[];
+
+    const wrapper = subject({ otherMembers });
+
+    expect(wrapper.find(CitizenListItem).length).toBe(21); // 1 current user + 20 other members
+    expect(wrapper).toHaveElement(Waypoint);
+  });
+
+  it('shows loading spinner while loading more members', () => {
+    const otherMembers = Array.from({ length: 30 }, (_, i) => ({
+      userId: `user-${i}`,
+      matrixId: `matrix-id-${i}`,
+      firstName: `User ${i}`,
+    })) as User[];
+
+    const wrapper = subject({ otherMembers });
+
+    wrapper.setState({ isLoadingMore: true });
+
+    expect(wrapper).toHaveElement('Spinner');
+  });
+
+  it('does not show Waypoint when all members are loaded', () => {
+    const otherMembers = Array.from({ length: 10 }, (_, i) => ({
+      userId: `user-${i}`,
+      matrixId: `matrix-id-${i}`,
+      firstName: `User ${i}`,
+    })) as User[];
+
+    const wrapper = subject({ otherMembers });
+
+    // Should not show Waypoint since all members can be displayed at once
+    expect(wrapper).not.toHaveElement(Waypoint);
   });
 });

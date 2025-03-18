@@ -18,6 +18,10 @@ describe('translateBackgroundValue', () => {
     expect(translateBackgroundValue(MainBackground.AnimatedBlackParticles)).toBe('Black Particle (Animated)');
   });
 
+  it('should return "Dot Grid (Static)" for MainBackground.DotGrid', () => {
+    expect(translateBackgroundValue(MainBackground.DotGrid)).toBe('Dot Grid (Static)');
+  });
+
   it('should return an empty string for an unknown value', () => {
     expect(translateBackgroundValue('unknown-value')).toBe('');
   });

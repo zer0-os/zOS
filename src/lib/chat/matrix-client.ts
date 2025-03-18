@@ -1450,7 +1450,9 @@ export class MatrixClient implements IChatClient {
       // this.matrix.getCrypto().globalBlacklistUnverifiedDevices = false;
       this.matrix.setGlobalErrorOnUnknownDevices(false);
 
-      await this.matrix.startClient();
+      await this.matrix.startClient({
+        pollTimeout: 25000,
+      });
 
       featureFlags.enableTimerLogs && console.time('xxxWaitForSync');
       await this.waitForSync();

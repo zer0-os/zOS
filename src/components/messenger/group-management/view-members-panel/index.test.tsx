@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import { ViewMembersPanel, Properties } from '.';
 import { CitizenListItem } from '../../../citizen-list-item';
 import { User } from '../../../../store/channels';
+import { Waypoint } from '../../../waypoint';
 
 import { bem } from '../../../../lib/bem';
 
@@ -26,6 +27,46 @@ describe(ViewMembersPanel, () => {
 
     return shallow(<ViewMembersPanel {...allProps} />);
   };
+
+  it('initially renders only PAGE_SIZE members and shows Waypoint', () => {
+    const otherMembers = Array.from({ length: 30 }, (_, i) => ({
+      userId: `user-${i}`,
+      matrixId: `matrix-id-${i}`,
+      firstName: `User ${i}`,
+    })) as User[];
+
+    const wrapper = subject({ otherMembers });
+
+    expect(wrapper.find(CitizenListItem).length).toBe(21); // 1 current user + 20 other members
+
+    expect(wrapper).toHaveElement(Waypoint);
+  });
+
+  it('shows loading spinner while loading more members', () => {
+    const otherMembers = Array.from({ length: 30 }, (_, i) => ({
+      userId: `user-${i}`,
+      matrixId: `matrix-id-${i}`,
+      firstName: `User ${i}`,
+    })) as User[];
+
+    const wrapper = subject({ otherMembers });
+
+    wrapper.setState({ isLoadingMore: true });
+
+    expect(wrapper).toHaveElement('Spinner');
+  });
+
+  it('does not show Waypoint when all members are loaded', () => {
+    const otherMembers = Array.from({ length: 10 }, (_, i) => ({
+      userId: `user-${i}`,
+      matrixId: `matrix-id-${i}`,
+      firstName: `User ${i}`,
+    })) as User[];
+
+    const wrapper = subject({ otherMembers });
+
+    expect(wrapper).not.toHaveElement(Waypoint);
+  });
 
   it('publishes onAdd event', () => {
     const onAdd = jest.fn();

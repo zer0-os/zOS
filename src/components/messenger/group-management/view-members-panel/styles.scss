@@ -43,4 +43,17 @@
     padding-top: 8px;
     flex-grow: 1;
   }
+
+  &__waypoint-container {
+    height: 1px;
+    width: 100%;
+  }
+
+  &__loading-more {
+    padding: 16px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }

@@ -1,6 +1,8 @@
+@use '../../variables' as variables;
+
 .Header {
   position: sticky;
-  top: 24px;
+  top: variables.$page-padding-vertical;
 
   z-index: 10;
 }

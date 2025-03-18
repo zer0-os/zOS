@@ -27,7 +27,7 @@
   flex-direction: column;
 
   flex-shrink: 0;
-  padding: 24px variables.$default-gap 24px 0px;
+  padding: variables.$page-padding-vertical variables.$default-gap variables.$page-padding-vertical 0px;
 }
 
 .Wrapper {

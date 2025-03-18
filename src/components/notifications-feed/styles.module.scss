@@ -34,7 +34,7 @@
   max-width: 600px;
   min-width: 600px;
 
-  margin: 24px auto;
+  margin: variables.$page-padding-vertical auto;
 
   pointer-events: all;
 }

@@ -82,9 +82,9 @@ $header-color: var(--color-greyscale-11);
   background: $header-background;
 }
 
-.Title {
-  color: $header-color;
-
+.Title,
+.Close {
+  color: $header-color !important;
   user-select: none;
 }
 

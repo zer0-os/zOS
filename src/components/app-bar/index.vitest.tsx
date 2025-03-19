@@ -17,14 +17,12 @@ vi.mock('react-router-dom', () => ({
 }));
 
 vi.mock('@zero-tech/zui/icons', () => ({
-  IconHome: 'IconHome',
-  IconSlashes: 'IconSlashes',
-  IconDotsGrid: 'IconDotsGrid',
-  IconGlobe3: 'IconGlobe3',
-  IconMessageSquare2: 'IconMessageSquare2',
-  IconList: 'IconList',
-  IconBell1: 'IconBell1',
+  IconBell: 'IconBell',
   IconFourDots: 'IconFourDots',
+  IconHome: 'IconHome',
+  IconMessage01: 'IconMessage01',
+  IconSlantLines: 'IconSlantLines',
+  IconWorld: 'IconWorld',
 }));
 
 vi.mock('./more-apps-modal', () => ({

@@ -5,6 +5,7 @@ import { AutocompleteMembers } from './';
 import { when } from 'jest-when';
 
 import { Properties } from './';
+import { Waypoint } from '../../waypoint';
 
 describe('autocomplete-members', () => {
   const subject = (props: Partial<Properties>) => {
@@ -222,6 +223,59 @@ describe('autocomplete-members', () => {
       });
 
     expect(onSearchChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it('initially renders only PAGE_SIZE results and shows Waypoint', async () => {
+    const search = jest.fn();
+    const searchResults = Array.from({ length: 30 }, (_, i) => ({
+      name: `Result ${i}`,
+      id: `result-${i}`,
+      image: `image-${i}`,
+    }));
+
+    when(search).calledWith('name').mockResolvedValue(searchResults);
+
+    const wrapper = subject({ search });
+    await searchFor(wrapper, 'name');
+
+    // Should render only the first PAGE_SIZE (20) results
+    expect(wrapper.find('[role="button"]').length).toBe(20);
+    expect(wrapper).toHaveElement(Waypoint);
+  });
+
+  it('shows loading spinner while loading more results', async () => {
+    const search = jest.fn();
+    const searchResults = Array.from({ length: 30 }, (_, i) => ({
+      name: `Result ${i}`,
+      id: `result-${i}`,
+      image: `image-${i}`,
+    }));
+
+    when(search).calledWith('name').mockResolvedValue(searchResults);
+
+    const wrapper = subject({ search });
+    await searchFor(wrapper, 'name');
+
+    wrapper.setState({ isLoadingMore: true });
+
+    expect(wrapper).toHaveElement('Spinner');
+  });
+
+  it('does not show Waypoint when all results are loaded', async () => {
+    const search = jest.fn();
+    const searchResults = Array.from({ length: 10 }, (_, i) => ({
+      name: `Result ${i}`,
+      id: `result-${i}`,
+      image: `image-${i}`,
+    }));
+
+    when(search).calledWith('name').mockResolvedValue(searchResults);
+
+    const wrapper = subject({ search });
+    await searchFor(wrapper, 'name');
+
+    // Should not show Waypoint since all results can be displayed at once
+    expect(wrapper).not.toHaveElement(Waypoint);
   });
 });
 

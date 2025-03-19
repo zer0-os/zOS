@@ -1,4 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
+@use '../../../../layout' as layout;
+
 @import '../../../../variables';
 @import '../../../../glass';
 
@@ -7,7 +9,8 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  min-width: 270px;
+  min-width: layout.$width-sidekick;
+  max-width: layout.$width-sidekick;
 
   &__back-icon-container {
     display: flex;

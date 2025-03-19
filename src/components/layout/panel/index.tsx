@@ -70,7 +70,7 @@ export const PanelHeader = ({ children, className }: Pick<PanelProps, 'children'
   return (
     <div className={cn(styles.Header, className)}>
       {children ?? name}
-      {panel && <IconButton onClick={toggle} Icon={IconXClose} size={24} />}
+      {panel && <IconButton className={styles.Close} onClick={toggle} Icon={IconXClose} size={24} />}
     </div>
   );
 };

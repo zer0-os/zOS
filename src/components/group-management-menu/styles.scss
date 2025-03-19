@@ -12,10 +12,13 @@
 }
 
 .group-management-trigger {
-  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 
   color: rgba(113, 117, 122, 1);
 

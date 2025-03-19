@@ -31,7 +31,7 @@
     "@web3-react/network-connector": "^6.1.9",
     "@web3-react/walletlink-connector": "^6.2.13",
     "@zer0-os/zos-component-library": "0.18.9",
-    "@zero-tech/zui": "^1.21.0",
+    "@zero-tech/zui": "^1.23.3",
     "assert": "^2.1.0",
     "blurhash": "^2.0.5",
     "buffer": "^6.0.3",

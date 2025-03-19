@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React from 'react';
 
 import { WorldPanelItem } from './world-panel-item';
-import { IconBell1, IconGlobe3, IconHome, IconMessageSquare2, IconSlashes, IconFourDots } from '@zero-tech/zui/icons';
+import { IconBell, IconWorld, IconHome, IconMessage01, IconSlantLines, IconFourDots } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
 import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
@@ -90,7 +90,7 @@ export class AppBar extends React.Component<Properties, State> {
 
     return (
       <div {...cn('notification-icon-wrapper')}>
-        <IconBell1 {...cn('notification-icon', hasUnreadHighlights && 'highlight')} size={22} />
+        <IconBell {...cn('notification-icon', hasUnreadHighlights && 'highlight')} size={22} />
         {hasUnreadNotifications && !hasUnreadHighlights && <div {...cn('notification-dot')} />}
         {hasUnreadHighlights && <div {...cn('highlight-dot')} />}
       </div>
@@ -121,7 +121,7 @@ export class AppBar extends React.Component<Properties, State> {
             />
             {featureFlags.enableFeedApp && (
               <AppLink
-                Icon={IconSlashes}
+                Icon={IconSlantLines}
                 isActive={isActive('feed')}
                 label='Channels'
                 to='/feed'
@@ -129,14 +129,14 @@ export class AppBar extends React.Component<Properties, State> {
               />
             )}
             <AppLink
-              Icon={IconMessageSquare2}
+              Icon={IconMessage01}
               isActive={isActive('conversation')}
               label='Chat'
               to={messengerPath}
               onLinkClick={this.unhoverContainer}
             />
             <AppLink
-              Icon={IconGlobe3}
+              Icon={IconWorld}
               isActive={isActive('explorer')}
               label='World Explorer'
               to='/explorer'

@@ -2,12 +2,15 @@ import React, { ReactNode } from 'react';
 
 import { Item, Option } from '../lib/types';
 import { Avatar, Input } from '@zero-tech/zui/components';
+import { highlightFilter, itemToOption } from '../lib/utils';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { Waypoint } from '../../waypoint';
+import classNames from 'classnames';
 
 import './styles.scss';
 import '../list/styles.scss';
 
-import { highlightFilter, itemToOption } from '../lib/utils';
-import classNames from 'classnames';
+const PAGE_SIZE = 20;
 export interface Properties {
   children?: ReactNode;
   inputRef?: React.RefObject<HTMLInputElement>;
@@ -20,10 +23,19 @@ export interface Properties {
 interface State {
   results: Option[];
   searchString: string;
+  visibleResultCount: number;
+  isLoadingMore: boolean;
 }
 
 export class AutocompleteMembers extends React.Component<Properties, State> {
-  state = { results: null, searchString: '' };
+  state = { results: null, searchString: '', visibleResultCount: PAGE_SIZE, isLoadingMore: false };
+
+  componentDidUpdate(_prevProps: Properties, prevState: State) {
+    // Reset pagination when search string changes
+    if (prevState.searchString !== this.state.searchString) {
+      this.setState({ visibleResultCount: PAGE_SIZE });
+    }
+  }
 
   searchChanged = async (searchString: string) => {
     this.setState({ searchString });
@@ -39,6 +51,21 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     const selectedOptions = this.props.selectedOptions || [];
     const filteredOptions = options.filter((o) => !selectedOptions.find((s) => s.value === o.value));
     this.setState({ results: filteredOptions });
+  };
+
+  loadMoreResults = () => {
+    const { visibleResultCount, results } = this.state;
+
+    if (!results || visibleResultCount >= results.length || this.state.isLoadingMore) return;
+
+    this.setState({ isLoadingMore: true });
+
+    requestAnimationFrame(() => {
+      this.setState({
+        visibleResultCount: Math.min(visibleResultCount + PAGE_SIZE, results.length),
+        isLoadingMore: false,
+      });
+    });
   };
 
   itemSelected = (event) => {
@@ -66,6 +93,9 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
   };
 
   render() {
+    const visibleResults = this.state.results ? this.state.results.slice(0, this.state.visibleResultCount) : null;
+    const hasMoreResults = this.state.results && visibleResults && visibleResults.length < this.state.results.length;
+
     return (
       <div className='autocomplete-members'>
         <Input
@@ -88,9 +118,9 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
 
         {this.props.children}
         <div className='autocomplete-members__content'>
-          {this.state.results && this.state.results.length > 0 && (
+          {visibleResults && visibleResults.length > 0 && (
             <div className='autocomplete-members__search-results'>
-              {this.state.results.map((r) => (
+              {visibleResults.map((r) => (
                 <div
                   key={r.value}
                   data-id={r.value}
@@ -112,6 +142,18 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
             </div>
           )}
         </div>
+
+        {hasMoreResults && (
+          <div className='autocomplete-members__waypoint-container'>
+            <Waypoint onEnter={this.loadMoreResults} />
+          </div>
+        )}
+
+        {this.state.isLoadingMore && (
+          <div className='autocomplete-members__loading-more'>
+            <Spinner />
+          </div>
+        )}
       </div>
     );
   }

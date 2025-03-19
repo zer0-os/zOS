@@ -34,7 +34,10 @@ $border-color-hover: theme-zui.$color-primary-7;
     width: 100%;
 
     @media (min-width: 2561px) {
+      justify-content: unset;
       width: unset;
+      min-width: 1400px;
+      max-width: 1400px;
     }
   }
 

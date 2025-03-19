@@ -10,7 +10,7 @@
 
   border: 1px solid $glass-separator-primary-color;
   border-radius: 16px;
-  padding: 16px;
+  padding: 10px;
 
   font-size: 12px;
   font-weight: 400;
@@ -22,9 +22,9 @@
   &__usd {
     @include glass-text-primary-color;
     font-family: 'Roboto Mono';
-    font-size: 24px;
+    font-size: 16px;
     font-weight: 500;
-    line-height: 32px;
+    line-height: 17px;
     letter-spacing: 0.04em;
     text-align: center;
   }

@@ -37,7 +37,7 @@
   }
 
   &__body {
-    margin: 16px 16px 0 16px;
+    margin: 0 16px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -47,13 +47,13 @@
   &__section {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 10px;
   }
 
   &__details {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     z-index: 1;
   }
 
@@ -113,7 +113,7 @@
     display: flex;
     cursor: pointer;
     border-radius: 16px;
-    margin-bottom: 24px;
+    margin: 8px 0;
 
     @include glass-input-inset-default;
 

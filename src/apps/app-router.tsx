@@ -37,6 +37,8 @@ export const AppRouter = () => {
           <CurrentUserDetails />
         </SidekickHeader>
       </SidekickContainer>
+      {/* temporary fix to fill missing sidekick space */}
+      {!renderSidekick && <div className={styles.sidekickSpace} />}
       <Switch>
         <Route path='/conversation/:conversationId' component={MessengerApp} />
         <Route path='/' exact component={MessengerApp} />

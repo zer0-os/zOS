@@ -49,7 +49,7 @@ export const AppRouter = () => {
         {featureFlags.enableFeedApp && <Route path='/feed' component={FeedApp} />}
         <Route path='/explorer' component={ExplorerApp} />
         {featureFlags.enableNotificationsApp && <Route path='/notifications' component={NotificationsApp} />}
-        {<Route path='/aura' component={AuraApp} />}
+        {featureFlags.enableAuraZApp && <Route path='/aura' component={AuraApp} />}
         <Route component={redirectToRoot} />
       </Switch>
     </AuthenticationContextProvider>

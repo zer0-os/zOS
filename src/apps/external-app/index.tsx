@@ -115,8 +115,19 @@ class ExternalAppComponent extends Component<Properties, State> {
     }, '');
   };
 
+  getFullscreenFeature = () => {
+    return this.props.manifest.features.find((feature) => feature.type === 'fullscreen');
+  };
+
   render() {
-    return <IFrame src={this.state.loadedUrl} title={this.props.manifest.title} allow={this.getAllowAttribute()} />;
+    return (
+      <IFrame
+        src={this.state.loadedUrl}
+        title={this.props.manifest.title}
+        allow={this.getAllowAttribute()}
+        isFullscreen={!!this.getFullscreenFeature()}
+      />
+    );
   }
 }
 

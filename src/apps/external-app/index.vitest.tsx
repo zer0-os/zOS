@@ -154,4 +154,36 @@ describe(ExternalApp, () => {
       expect(history.location.pathname).toBe('/foo');
     });
   });
+
+  describe('fullscreen feature', () => {
+    it('should pass isFullscreen=false when no fullscreen feature exists', () => {
+      renderComponent({
+        manifest: {
+          ...DEFAULT_PROPS.manifest,
+          features: [],
+        },
+      });
+      expect(mockIFrame).toHaveBeenCalledWith(expect.objectContaining({ isFullscreen: false }));
+    });
+
+    it('should pass isFullscreen=true when fullscreen feature exists', () => {
+      renderComponent({
+        manifest: {
+          ...DEFAULT_PROPS.manifest,
+          features: [{ type: 'fullscreen' }],
+        },
+      });
+      expect(mockIFrame).toHaveBeenCalledWith(expect.objectContaining({ isFullscreen: true }));
+    });
+
+    it('should pass isFullscreen=false when other features exist but not fullscreen', () => {
+      renderComponent({
+        manifest: {
+          ...DEFAULT_PROPS.manifest,
+          features: [{ type: 'microphone' }],
+        },
+      });
+      expect(mockIFrame).toHaveBeenCalledWith(expect.objectContaining({ isFullscreen: false }));
+    });
+  });
 });

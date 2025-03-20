@@ -27,6 +27,13 @@ $width: 36px;
     left: 0;
     height: 100vh;
     box-sizing: border-box;
+
+    @media (min-width: 2561px) {
+      // Reset to default positioning for large screens
+      position: relative;
+      height: auto;
+      box-sizing: unset;
+    }
   }
 
   &__container {

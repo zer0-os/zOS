@@ -12,14 +12,23 @@ $width: 36px;
 
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
   flex-shrink: 0;
   flex-grow: 0;
 
-  padding: $padding;
+  padding: variables.$page-padding-vertical $padding;
   width: $width;
 
   pointer-events: all;
   z-index: 10;
+
+  &__logo-wrapper {
+    padding: 6px;
+    background: variables.$panel-background;
+    border: 1px solid variables.$border-color;
+    border-radius: 50%;
+  }
 
   &--zapp-fullscreen {
     position: absolute;

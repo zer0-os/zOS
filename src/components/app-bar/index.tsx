@@ -1,7 +1,15 @@
 import React from 'react';
 
 import { WorldPanelItem } from './world-panel-item';
-import { IconBell, IconWorld, IconHome, IconMessage01, IconSlantLines, IconFourDots } from '@zero-tech/zui/icons';
+import {
+  IconBell,
+  IconWorld,
+  IconHome,
+  IconMessage01,
+  IconSlantLines,
+  IconFourDots,
+  IconLogoZero,
+} from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
 import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
@@ -111,6 +119,9 @@ export class AppBar extends React.Component<Properties, State> {
     return (
       <>
         <div {...cn('', zAppIsFullscreen && 'zapp-fullscreen')}>
+          <div {...cn('logo-wrapper')}>
+            <IconLogoZero size={24} />
+          </div>
           <LegacyPanel {...cn('container')} ref={this.containerRef}>
             <AppLink
               Icon={IconHome}

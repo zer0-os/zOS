@@ -76,9 +76,10 @@ $border-color-hover: theme-zui.$color-primary-7;
       --dot-size: 1px;
       --dot-space: 48px;
 
-      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.48) calc(var(--dot-size) / 2), transparent 0)
-        center center / var(--dot-space) var(--dot-space);
       background-color: rgba(0, 0, 0, 1);
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) var(--dot-size), transparent 0);
+      background-size: var(--dot-space) var(--dot-space);
+      background-repeat: repeat;
       background-attachment: fixed;
     }
 

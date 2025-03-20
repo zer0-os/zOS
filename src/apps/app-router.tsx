@@ -20,7 +20,7 @@ import styles from './app-router.module.css';
 import { Container as SidekickContainer } from '../components/sidekick/components/container';
 import { Header as SidekickHeader } from '../components/sidekick/components/header';
 import { CurrentUserDetails } from '../components/sidekick/components/current-user-details';
-import { isZAppActiveSelector } from '../store/active-zapp/selectors';
+import { activeZAppFeatureSelector, isZAppActiveSelector } from '../store/active-zapp/selectors';
 
 const redirectToRoot = () => <Redirect to={'/'} />;
 
@@ -28,6 +28,7 @@ export const AppRouter = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
   const location = useLocation();
   const isActiveZApp = useSelector(isZAppActiveSelector);
+  const isFullscreenZApp = useSelector(activeZAppFeatureSelector('fullscreen'));
   const renderSidekick = !(location.pathname.startsWith('/home') || isActiveZApp);
 
   return (
@@ -37,8 +38,10 @@ export const AppRouter = () => {
           <CurrentUserDetails />
         </SidekickHeader>
       </SidekickContainer>
+
       {/* temporary fix to fill missing sidekick space */}
-      {!renderSidekick && <div className={styles.sidekickSpace} />}
+      {!renderSidekick && !isFullscreenZApp && <div className={styles.sidekickSpace} />}
+
       <Switch>
         <Route path='/conversation/:conversationId' component={MessengerApp} />
         <Route path='/' exact component={MessengerApp} />
@@ -46,7 +49,7 @@ export const AppRouter = () => {
         {featureFlags.enableFeedApp && <Route path='/feed' component={FeedApp} />}
         <Route path='/explorer' component={ExplorerApp} />
         {featureFlags.enableNotificationsApp && <Route path='/notifications' component={NotificationsApp} />}
-        {featureFlags.enableAuraZApp && <Route path='/aura' component={AuraApp} />}
+        {<Route path='/aura' component={AuraApp} />}
         <Route component={redirectToRoot} />
       </Switch>
     </AuthenticationContextProvider>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { debounce } from 'lodash';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel, onAddLabel, onRemoveLabel, openConversation, User } from '../../../store/channels';
@@ -83,6 +84,9 @@ interface State {
 }
 
 export class Container extends React.Component<Properties, State> {
+  private debouncedSearch: any;
+  private currentSearchResolve: ((value: any) => void) | null = null;
+
   static mapState(state: RootState): Partial<Properties> {
     const {
       createConversation,
@@ -131,14 +135,34 @@ export class Container extends React.Component<Properties, State> {
     };
   }
 
-  state = {
-    isVerifyIdDialogOpen: false,
-    isInviteDialogOpen: false,
-    isGroupTypeDialogOpen: false,
-    isCollapsed: false,
+  constructor(props: Properties) {
+    super(props);
+    this.state = {
+      isVerifyIdDialogOpen: false,
+      isInviteDialogOpen: false,
+      isGroupTypeDialogOpen: false,
+      isCollapsed: false,
+    };
+
+    // Create a debounced version of the search function
+    this.debouncedSearch = debounce(this.performSearch, 300);
+  }
+
+  componentWillUnmount() {
+    // Cancel any pending debounced searches
+    if (this.debouncedSearch && this.debouncedSearch.cancel) {
+      this.debouncedSearch.cancel();
+    }
+  }
+
+  usersInMyNetworks = (search: string) => {
+    return new Promise((resolve) => {
+      this.currentSearchResolve = resolve;
+      this.debouncedSearch(search);
+    });
   };
 
-  usersInMyNetworks = async (search: string) => {
+  performSearch = async (search: string) => {
     const { users: usersFromState, myUserId, receiveSearchResults } = this.props;
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
 
@@ -154,7 +178,10 @@ export class Container extends React.Component<Properties, State> {
     // Send the filtered results to the state handler
     receiveSearchResults(mappedFilteredUsers);
 
-    return mappedFilteredUsers;
+    if (this.currentSearchResolve) {
+      this.currentSearchResolve(mappedFilteredUsers);
+      this.currentSearchResolve = null;
+    }
   };
 
   startCreateConversation = () => {

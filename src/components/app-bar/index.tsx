@@ -1,7 +1,15 @@
 import React from 'react';
 
 import { WorldPanelItem } from './world-panel-item';
-import { IconBell, IconWorld, IconHome, IconMessage01, IconSlantLines, IconFourDots } from '@zero-tech/zui/icons';
+import {
+  IconBell,
+  IconWorld,
+  IconHome,
+  IconMessage01,
+  IconSlantLines,
+  IconFourDots,
+  IconAura,
+} from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
 import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
@@ -12,7 +20,6 @@ import { getLastActiveConversation } from '../../lib/last-conversation';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
-import { AuraIcon } from '../../apps/aura/auraIcon';
 
 const cn = bemClassName('app-bar');
 
@@ -153,7 +160,7 @@ export class AppBar extends React.Component<Properties, State> {
             )}
             {featureFlags.enableAuraZApp && (
               <AppLink
-                Icon={AuraIcon}
+                Icon={IconAura}
                 isActive={isActive('aura')}
                 label='Aura'
                 to='/aura'

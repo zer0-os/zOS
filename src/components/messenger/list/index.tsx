@@ -145,7 +145,7 @@ export class Container extends React.Component<Properties, State> {
     };
 
     // Create a debounced version of the search function
-    this.debouncedSearch = debounce(this.performSearch, 300);
+    this.debouncedSearch = debounce(this.performSearch, 800);
   }
 
   componentWillUnmount() {

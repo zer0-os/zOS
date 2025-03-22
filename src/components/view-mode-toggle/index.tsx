@@ -7,7 +7,8 @@ import { connectContainer } from '../../store/redux-container';
 
 import { ViewModes } from '../../shared-components/theme-engine';
 
-import { Icons, IconButton } from '@zer0-os/zos-component-library';
+import { IconButton } from '@zero-tech/zui/components/IconButton';
+import { IconMoon1, IconSun } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 
@@ -43,7 +44,7 @@ export class Container extends React.Component<Properties> {
   }
 
   get icon() {
-    return this.isDarkMode ? Icons.Moon : Icons.Sun;
+    return this.isDarkMode ? IconMoon1 : IconSun;
   }
 
   get className() {
@@ -58,7 +59,7 @@ export class Container extends React.Component<Properties> {
   };
 
   render() {
-    return <IconButton className={this.className} icon={this.icon} onClick={this.handleClick} />;
+    return <IconButton className={this.className} Icon={this.icon} onClick={this.handleClick} />;
   }
 }
 

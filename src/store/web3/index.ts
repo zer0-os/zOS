@@ -1,7 +1,14 @@
 import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit';
 import { Chains, ConnectionStatus, Connectors } from '../../lib/web3';
-import { WalletType } from '@zer0-os/zos-component-library';
 import { Connector } from 'wagmi';
+
+export enum WalletType {
+  Metamask = 'metamask',
+  WalletConnect = 'wallet-connect',
+  Coinbase = 'coinbase',
+  Fortmatic = 'fortmatic',
+  Portis = 'portis',
+}
 
 export enum SagaActionTypes {
   UpdateConnector = 'web3/saga/updateConnector',

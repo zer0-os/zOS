@@ -1,0 +1,71 @@
+.backgroundImage {
+  opacity: 0;
+  transition: transform var(--animation-duration-triple, 900ms);
+
+  transform-origin: 50% 50%;
+  transform: scale(1.025);
+}
+
+.backgroundImage.fadeIn {
+  animation: fadein var(--animation-duration-triple, 900ms) ease-out forwards;
+  transform: scale(1);
+}
+
+.backgroundImage.fadeIn.fadeDouble {
+  animation: fadein var(--animation-duration-double, 600ms) ease-out forwards;
+}
+
+.backgroundImage.fadeOut {
+  animation: fadeout var(--animation-duration-triple, 900ms) ease-out forwards;
+  transform: scale(1.025);
+}
+
+.backgroundImage.fadeOut.fadeDouble {
+  animation: fadeout var(--animation-duration-double, 600ms) ease-out forwards;
+}
+
+.backgroundImage.fadeDouble {
+  transition-duration: var(--animation-duration-double, 600ms);
+}
+
+.backgroundImage.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.backgroundImage.hoverZoom:hover {
+  transition-duration: var(--animation-duration-default, 300ms);
+  transform: scale(1.01) !important;
+}
+
+.backgroundImage.backgroundImageShaded::before {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 70%,
+    rgba(0, 0, 0, 0.1) 80%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  content: '\00a0';
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

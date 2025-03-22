@@ -1,12 +1,12 @@
 import React from 'react';
 
 import classNames from 'classnames';
-import { BackgroundImage } from '@zer0-os/zos-component-library';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconLink1, IconXClose } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../lib/bem';
+import { BackgroundImage } from '../background-image';
 
 import './styles.scss';
 

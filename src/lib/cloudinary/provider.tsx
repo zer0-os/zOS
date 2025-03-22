@@ -1,4 +1,4 @@
-import { CloudinaryProvider } from '@zer0-os/zos-component-library';
+import { CloudinaryProvider } from './cloudinaryProvider';
 import { config } from '../../config';
 
 let provider;

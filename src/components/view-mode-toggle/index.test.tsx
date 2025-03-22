@@ -4,7 +4,8 @@ import { RootState } from '../../store/reducer';
 
 import { Container } from '.';
 import { ViewModes } from '../../shared-components/theme-engine';
-import { Icons, IconButton } from '@zer0-os/zos-component-library';
+import { IconButton } from '@zero-tech/zui/components/IconButton';
+import { IconMoon1, IconSun } from '@zero-tech/zui/icons';
 
 describe('ViewModeToggle', () => {
   const subject = (props: any = {}) => {
@@ -37,13 +38,13 @@ describe('ViewModeToggle', () => {
   it('uses moon icon when in Dark mode', () => {
     const wrapper = subject({ viewMode: ViewModes.Dark });
 
-    expect(wrapper.find(IconButton).prop('icon')).toBe(Icons.Moon);
+    expect(wrapper.find(IconButton).prop('Icon')).toBe(IconMoon1);
   });
 
   it('uses sun icon when in Light mode', () => {
     const wrapper = subject({ viewMode: ViewModes.Light });
 
-    expect(wrapper.find(IconButton).prop('icon')).toBe(Icons.Sun);
+    expect(wrapper.find(IconButton).prop('Icon')).toBe(IconSun);
   });
 
   it('sets view mode to Dark onClick when currently Light', () => {

@@ -4,13 +4,12 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { store, runSagas } from './store';
 import { Provider } from 'react-redux';
-import { EscapeManagerProvider } from '@zer0-os/zos-component-library';
+import { EscapeManagerProvider } from '@zero-tech/zui/lib/hooks/useEscapeManager';
 import * as serviceWorker from './serviceWorker';
 import { Router, Route, Switch } from 'react-router-dom';
 import { showReleaseVersionInConsole, initializeErrorBoundary, isElectron } from './utils';
 import { ErrorBoundary } from './components/error-boundary/';
 
-import '@zer0-os/zos-component-library/dist/index.css';
 import './index.scss';
 import { Invite } from './invite';
 import { ResetPassword } from './reset-password';

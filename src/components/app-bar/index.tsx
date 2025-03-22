@@ -8,6 +8,7 @@ import {
   IconMessage01,
   IconSlantLines,
   IconFourDots,
+  IconLogoZero,
   IconAura,
 } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
@@ -16,6 +17,7 @@ import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
 import { featureFlags } from '../../lib/feature-flags';
 import { LegacyPanel } from '../layout/panel';
 import { getLastActiveConversation } from '../../lib/last-conversation';
+import { CurrentUser } from './current-user';
 
 import { bemClassName } from '../../lib/bem';
 
@@ -118,6 +120,9 @@ export class AppBar extends React.Component<Properties, State> {
     return (
       <>
         <div {...cn('', zAppIsFullscreen && 'zapp-fullscreen')}>
+          <div {...cn('logo-wrapper')}>
+            <IconLogoZero size={24} />
+          </div>
           <LegacyPanel {...cn('container')} ref={this.containerRef}>
             <AppLink
               Icon={IconHome}
@@ -172,6 +177,7 @@ export class AppBar extends React.Component<Properties, State> {
               <span>Other Apps</span>
             </div>
           </LegacyPanel>
+          <CurrentUser />
         </div>
         {this.state.isModalOpen && <MoreAppsModal onClose={this.closeModal} />}
       </>

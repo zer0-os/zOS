@@ -10,7 +10,6 @@ import { ConversationListPanel } from './conversation-list-panel';
 import { GroupDetailsPanel } from './group-details-panel';
 import { Stage } from '../../../store/create-conversation';
 import { previewDisplayDate } from '../../../lib/chat/chat-message';
-import { CurrentUserDetails } from '../../sidekick/components/current-user-details';
 import { ErrorDialog } from '../../error-dialog';
 import { bem } from '../../../lib/bem';
 const c = bem('.direct-message-members');
@@ -27,16 +26,11 @@ describe('messenger-list', () => {
       groupUsers: [],
       conversations: [],
       isFetchingExistingConversations: false,
-      userName: '',
-      userHandle: '',
-      userAvatarUrl: '',
-      userIsOnline: true,
       myUserId: '',
       joinRoomErrorContent: null,
       onConversationClick: jest.fn(),
       createConversation: jest.fn(),
       isRewardsDialogOpen: false,
-      hasUnviewedRewards: false,
       isSecondaryConversationDataLoaded: true,
       closeConversationErrorDialog: () => null,
       startCreateConversation: () => null,
@@ -53,12 +47,6 @@ describe('messenger-list', () => {
 
     return shallow(<DirectMessageChat {...allProps} />);
   };
-
-  it('does not render UserDetails when stage is not equal to none', function () {
-    const wrapper = subject({ stage: Stage.InitiateConversation });
-
-    expect(wrapper).not.toHaveElement(CurrentUserDetails);
-  });
 
   it('renders CreateConversationPanel', function () {
     const wrapper = subject({ stage: Stage.InitiateConversation });

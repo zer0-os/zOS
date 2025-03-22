@@ -28,8 +28,6 @@ import { Modal } from '@zero-tech/zui/components';
 import { ErrorDialog } from '../../error-dialog';
 import { ErrorDialogContent } from '../../../store/chat/types';
 import { receiveSearchResults } from '../../../store/users';
-import { getUserSubHandle } from '../../../lib/user';
-import { VerifyIdDialog } from '../../verify-id-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
@@ -51,15 +49,10 @@ export interface Properties extends PublicProperties {
   groupUsers: Option[];
   conversations: (Channel & { messagePreview?: string; previewDisplayDate?: string })[];
   isFetchingExistingConversations: boolean;
-  userName: string;
-  userHandle: string;
-  userAvatarUrl: string;
-  userIsOnline: boolean;
   myUserId: string;
   activeConversationId?: string;
   joinRoomErrorContent: ErrorDialogContent;
   isRewardsDialogOpen: boolean;
-  hasUnviewedRewards: boolean;
   isSecondaryConversationDataLoaded: boolean;
   users: { [id: string]: User };
 
@@ -77,7 +70,6 @@ export interface Properties extends PublicProperties {
 }
 
 interface State {
-  isVerifyIdDialogOpen: boolean;
   isInviteDialogOpen: boolean;
   isGroupTypeDialogOpen: boolean;
   isCollapsed: boolean;
@@ -99,21 +91,15 @@ export class Container extends React.Component<Properties, State> {
       .filter((c) => !c.isSocialChannel)
       .map(addLastMessageMeta(state))
       .sort(byLastMessageOrCreation);
-    const userHandle = getUserSubHandle(user?.data?.primaryZID, user?.data?.primaryWalletAddress);
     return {
       conversations,
       activeConversationId,
       stage: createConversation.stage,
       groupUsers: createConversation.groupUsers,
       isFetchingExistingConversations: createConversation.startGroupChat.isLoading,
-      userName: user?.data?.profileSummary?.firstName || '',
-      userHandle,
-      userAvatarUrl: user?.data?.profileSummary?.profileImage || '',
-      userIsOnline: true,
       myUserId: user?.data?.id,
       joinRoomErrorContent,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
-      hasUnviewedRewards: rewards.showNewRewardsIndicator,
       isSecondaryConversationDataLoaded,
       users: state.normalized['users'] || {},
     };
@@ -138,7 +124,6 @@ export class Container extends React.Component<Properties, State> {
   constructor(props: Properties) {
     super(props);
     this.state = {
-      isVerifyIdDialogOpen: false,
       isInviteDialogOpen: false,
       isGroupTypeDialogOpen: false,
       isCollapsed: false,
@@ -219,14 +204,6 @@ export class Container extends React.Component<Properties, State> {
     this.setState({ isCollapsed: false });
   };
 
-  openVerifyIdDialog = () => {
-    this.setState({ isVerifyIdDialogOpen: true });
-  };
-
-  closeVerifyIdDialog = () => {
-    this.setState({ isVerifyIdDialogOpen: false });
-  };
-
   openInviteDialog = () => {
     this.setState({ isInviteDialogOpen: true });
   };
@@ -247,21 +224,9 @@ export class Container extends React.Component<Properties, State> {
     this.props.closeConversationErrorDialog();
   };
 
-  get userStatus(): 'active' | 'offline' {
-    return this.props.userIsOnline ? 'active' : 'offline';
-  }
-
   get isErrorDialogOpen(): boolean {
     return !!this.props.joinRoomErrorContent;
   }
-
-  renderVerifyIdDialog = (): JSX.Element => {
-    return (
-      <Modal open={this.state.isVerifyIdDialogOpen} onOpenChange={this.closeVerifyIdDialog}>
-        <VerifyIdDialog onClose={this.closeVerifyIdDialog} />
-      </Modal>
-    );
-  };
 
   renderErrorDialog = (): JSX.Element => {
     return (
@@ -359,7 +324,6 @@ export class Container extends React.Component<Properties, State> {
       <>
         <SidekickContent>
           {this.renderCreateConversation()}
-          {this.state.isVerifyIdDialogOpen && this.renderVerifyIdDialog()}
           {this.props.joinRoomErrorContent && this.renderErrorDialog()}
           {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
           {this.state.isGroupTypeDialogOpen && this.renderGroupTypeDialog()}

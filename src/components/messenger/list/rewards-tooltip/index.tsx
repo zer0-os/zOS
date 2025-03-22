@@ -14,8 +14,8 @@ export class RewardsTooltip extends React.Component<Properties> {
     return (
       <TooltipPopup
         open={this.props.open}
-        align='center'
-        side='right'
+        align='end'
+        side='top'
         content={`You earned ${this.props.meowPreviousDayInUSD}`}
         onClose={this.props.onClose}
       />

@@ -15,32 +15,20 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
 import { AuraApp } from './aura';
-import styles from './app-router.module.css';
-
 import { Container as SidekickContainer } from '../components/sidekick/components/container';
-import { Header as SidekickHeader } from '../components/sidekick/components/header';
-import { CurrentUserDetails } from '../components/sidekick/components/current-user-details';
+import { Stage } from '../store/user-profile';
 import { activeZAppFeatureSelector, isZAppActiveSelector } from '../store/active-zapp/selectors';
+
+import styles from './app-router.module.css';
 
 const redirectToRoot = () => <Redirect to={'/'} />;
 
 export const AppRouter = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
-  const location = useLocation();
-  const isActiveZApp = useSelector(isZAppActiveSelector);
-  const isFullscreenZApp = useSelector(activeZAppFeatureSelector('fullscreen'));
-  const renderSidekick = !(location.pathname.startsWith('/home') || isActiveZApp);
 
   return (
     <AuthenticationContextProvider value={{ isAuthenticated }}>
-      <SidekickContainer className={!renderSidekick ? styles.sidekickHidden : ''}>
-        <SidekickHeader>
-          <CurrentUserDetails />
-        </SidekickHeader>
-      </SidekickContainer>
-
-      {/* temporary fix to fill missing sidekick space */}
-      {!renderSidekick && !isFullscreenZApp && <div className={styles.sidekickSpace} />}
+      <Sidekick />
 
       <Switch>
         <Route path='/conversation/:conversationId' component={MessengerApp} />
@@ -54,4 +42,27 @@ export const AppRouter = () => {
       </Switch>
     </AuthenticationContextProvider>
   );
+};
+
+/**
+ * Conditionally renders the sidekick based on the user's location and profile stage.
+ * This is a utility so we don't have to read state in the AppRouter.
+ */
+const Sidekick = () => {
+  const location = useLocation();
+  const isActiveZApp = useSelector(isZAppActiveSelector);
+  const isFullscreenZApp = useSelector(activeZAppFeatureSelector('fullscreen'));
+  const userProfileStage = useSelector((state: RootState) => state.userProfile.stage);
+
+  /**
+   * We only want to render the sidekick when the user is not on the home page,
+   * or if the user profile is open.
+   */
+  const renderSidekick = !(location.pathname.startsWith('/home') || isActiveZApp) || userProfileStage !== Stage.None;
+
+  if (renderSidekick) {
+    return <SidekickContainer className={!renderSidekick ? styles.sidekickHidden : ''} />;
+  } else if (!isFullscreenZApp) {
+    return <div className={styles.sidekickSpace} />;
+  }
 };

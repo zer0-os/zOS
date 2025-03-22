@@ -16,13 +16,18 @@ vi.mock('react-router-dom', () => ({
   MemoryRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+vi.mock('./current-user', () => ({
+  CurrentUser: () => <div data-testid='current-user' />,
+}));
+
 vi.mock('@zero-tech/zui/icons', () => ({
-  IconBell: 'IconBell',
-  IconFourDots: 'IconFourDots',
-  IconHome: 'IconHome',
-  IconMessage01: 'IconMessage01',
-  IconSlantLines: 'IconSlantLines',
-  IconWorld: 'IconWorld',
+  IconBell: () => <div data-testid='icon-bell' />,
+  IconFourDots: () => <div data-testid='icon-four-dots' />,
+  IconHome: () => <div data-testid='icon-home' />,
+  IconLogoZero: () => <div data-testid='icon-logo-zero' />,
+  IconMessage01: () => <div data-testid='icon-message' />,
+  IconSlantLines: () => <div data-testid='icon-slant-lines' />,
+  IconWorld: () => <div data-testid='icon-world' />,
 }));
 
 vi.mock('./more-apps-modal', () => ({

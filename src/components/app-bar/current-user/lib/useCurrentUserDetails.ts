@@ -1,11 +1,24 @@
-import { RootState } from '../../../../../store/reducer';
-import { openUserProfile } from '../../../../../store/user-profile';
-import { totalRewardsViewed } from '../../../../../store/rewards';
-
-import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-export const useCurrentUserDetails = () => {
+import { RootState } from '../../../../store/reducer';
+import { totalRewardsViewed } from '../../../../store/rewards';
+import { openUserProfile } from '../../../../store/user-profile';
+
+export interface CurrentUserDetailsReturn {
+  hasUnviewedRewards: boolean;
+  isHandleAWalletAddress: boolean;
+  isRewardsTooltipOpen: boolean;
+  isVerifyIdDialogOpen: boolean;
+  onClick: () => void;
+  onCloseVerifyIdDialog: () => void;
+  onOpenVerifyIdDialog: () => void;
+  userAvatarUrl: string;
+  userHandle: string;
+  userName: string;
+}
+
+export const useCurrentUserDetails = (): CurrentUserDetailsReturn => {
   const dispatch = useDispatch();
 
   const rewards = useSelector((state: RootState) => ({
@@ -21,6 +34,11 @@ export const useCurrentUserDetails = () => {
 
   const [isVerifyIdDialogOpen, setIsVerifyIdDialogOpen] = useState(false);
 
+  const handleOnClick = () => {
+    dispatch(openUserProfile());
+    dispatch(totalRewardsViewed());
+  };
+
   const handleOnOpenVerifyIdDialog = () => {
     setIsVerifyIdDialogOpen(true);
   };
@@ -29,18 +47,14 @@ export const useCurrentUserDetails = () => {
     setIsVerifyIdDialogOpen(false);
   };
 
-  const handleOnOpenUserProfile = () => {
-    dispatch(openUserProfile());
-  };
-
   return {
     hasUnviewedRewards: rewards.showNewRewardsIndicator,
+    isRewardsTooltipOpen: rewards.showRewardsInTooltip,
     isVerifyIdDialogOpen,
+    isHandleAWalletAddress: user.primaryZID?.startsWith('0x'),
+    onClick: handleOnClick,
     onCloseVerifyIdDialog: handleOnCloseVerifyIdDialog,
     onOpenVerifyIdDialog: handleOnOpenVerifyIdDialog,
-    onOpenUserProfile: handleOnOpenUserProfile,
-    showRewardsTooltip: rewards.showRewardsInTooltip,
-    totalRewardsViewed: () => dispatch(totalRewardsViewed()),
     userAvatarUrl: user.profileImage || '',
     userHandle: user.primaryZID || '',
     userName: user.firstName || '',

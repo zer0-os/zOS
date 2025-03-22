@@ -21,6 +21,7 @@ import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
 import { AuraIcon } from '../../apps/aura/auraIcon';
+import { CurrentUser } from './current-user';
 
 const cn = bemClassName('app-bar');
 
@@ -176,6 +177,7 @@ export class AppBar extends React.Component<Properties, State> {
               <span>Other Apps</span>
             </div>
           </LegacyPanel>
+          <CurrentUser />
         </div>
         {this.state.isModalOpen && <MoreAppsModal onClose={this.closeModal} />}
       </>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { debounce } from 'lodash';
 import { connectContainer } from '../../../store/redux-container';
 
 import {
@@ -67,6 +68,9 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties> {
+  private debouncedSearch: any;
+  private currentSearchResolve: ((value: any) => void) | null = null;
+
   static mapState(state: RootState): Partial<Properties> {
     const {
       groupManagement,
@@ -131,7 +135,28 @@ export class Container extends React.Component<Properties> {
     };
   }
 
-  usersInMyNetworks = async (search: string) => {
+  constructor(props: Properties) {
+    super(props);
+
+    // Create a debounced version of the search function
+    this.debouncedSearch = debounce(this.performSearch, 800);
+  }
+
+  componentWillUnmount() {
+    // Cancel any pending debounced searches
+    if (this.debouncedSearch && this.debouncedSearch.cancel) {
+      this.debouncedSearch.cancel();
+    }
+  }
+
+  usersInMyNetworks = (search: string) => {
+    return new Promise((resolve) => {
+      this.currentSearchResolve = resolve;
+      this.debouncedSearch(search);
+    });
+  };
+
+  performSearch = async (search: string) => {
     const { users: usersFromState, receiveSearchResults } = this.props;
     const myUserId = this.props.currentUser.userId;
 
@@ -141,14 +166,18 @@ export class Container extends React.Component<Properties> {
       ?.filter((user) => user.id !== myUserId)
       .map((user) => ({
         ...user,
-        image: usersFromState[user.id]?.profileImage ?? user.profileImage, // since redux state has local blob url image
+        // since redux state has local blob url image
+        image: usersFromState[user.id]?.profileImage ?? user.profileImage,
         profileImage: usersFromState[user.id]?.profileImage ?? user.profileImage,
       }));
 
     // Send the filtered results to the state handler
     receiveSearchResults(mappedFilteredUsers);
 
-    return mappedFilteredUsers;
+    if (this.currentSearchResolve) {
+      this.currentSearchResolve(mappedFilteredUsers);
+      this.currentSearchResolve = null;
+    }
   };
 
   onAddMembers = async (selectedOptions: Option[]) => {

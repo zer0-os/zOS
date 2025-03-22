@@ -3,4 +3,14 @@
   height: 100%;
   border: none;
   pointer-events: auto;
+
+  &--is-fullscreen {
+    @media (min-width: 2561px) {
+      display: flex;
+      align-self: center;
+      margin: 0 auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      width: 100%;
+    }
+  }
 }

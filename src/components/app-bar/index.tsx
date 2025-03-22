@@ -9,6 +9,7 @@ import {
   IconSlantLines,
   IconFourDots,
   IconLogoZero,
+  IconAura,
 } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
@@ -16,12 +17,11 @@ import { IconProps } from '@zero-tech/zui/components/Icons/Icons.types';
 import { featureFlags } from '../../lib/feature-flags';
 import { LegacyPanel } from '../layout/panel';
 import { getLastActiveConversation } from '../../lib/last-conversation';
+import { CurrentUser } from './current-user';
 
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
-import { AuraIcon } from '../../apps/aura/auraIcon';
-import { CurrentUser } from './current-user';
 
 const cn = bemClassName('app-bar');
 
@@ -165,7 +165,7 @@ export class AppBar extends React.Component<Properties, State> {
             )}
             {featureFlags.enableAuraZApp && (
               <AppLink
-                Icon={AuraIcon}
+                Icon={IconAura}
                 isActive={isActive('aura')}
                 label='Aura'
                 to='/aura'

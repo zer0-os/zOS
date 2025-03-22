@@ -15,11 +15,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
 import { AuraApp } from './aura';
-import styles from './app-router.module.css';
-
 import { Container as SidekickContainer } from '../components/sidekick/components/container';
-import { isZAppActiveSelector } from '../store/active-zapp/selectors';
 import { Stage } from '../store/user-profile';
+import { activeZAppFeatureSelector, isZAppActiveSelector } from '../store/active-zapp/selectors';
+
+import styles from './app-router.module.css';
 
 const redirectToRoot = () => <Redirect to={'/'} />;
 
@@ -29,6 +29,7 @@ export const AppRouter = () => {
   return (
     <AuthenticationContextProvider value={{ isAuthenticated }}>
       <Sidekick />
+
       <Switch>
         <Route path='/conversation/:conversationId' component={MessengerApp} />
         <Route path='/' exact component={MessengerApp} />
@@ -50,6 +51,7 @@ export const AppRouter = () => {
 const Sidekick = () => {
   const location = useLocation();
   const isActiveZApp = useSelector(isZAppActiveSelector);
+  const isFullscreenZApp = useSelector(activeZAppFeatureSelector('fullscreen'));
   const userProfileStage = useSelector((state: RootState) => state.userProfile.stage);
 
   /**
@@ -58,5 +60,9 @@ const Sidekick = () => {
    */
   const renderSidekick = !(location.pathname.startsWith('/home') || isActiveZApp) || userProfileStage !== Stage.None;
 
-  return <SidekickContainer className={!renderSidekick ? styles.sidekickHidden : ''} />;
+  if (renderSidekick) {
+    return <SidekickContainer className={!renderSidekick ? styles.sidekickHidden : ''} />;
+  } else if (!isFullscreenZApp) {
+    return <div className={styles.sidekickSpace} />;
+  }
 };

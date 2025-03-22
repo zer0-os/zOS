@@ -8,8 +8,11 @@ export interface IFrameProps {
   src: string;
   title: string;
   allow?: string;
+  isFullscreen?: boolean;
 }
 
-export const IFrame = ({ src, title, allow }: IFrameProps) => {
-  return <iframe data-testid='iframe' {...cn('')} src={src} title={title} allow={allow} />;
+export const IFrame = ({ src, title, allow, isFullscreen = false }: IFrameProps) => {
+  return (
+    <iframe {...cn('', isFullscreen && 'is-fullscreen')} data-testid='iframe' src={src} title={title} allow={allow} />
+  );
 };

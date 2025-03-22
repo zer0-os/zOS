@@ -22,23 +22,17 @@ export function useRouteChangeMetrics() {
       // End the previous route's measurement if it exists
       try {
         endMeasurement(`route-change-to-${prevPath}`);
-      } catch (e) {
-        // Ignore errors from ending non-existent measurements
-      }
+      } catch (e) {}
 
-      // Start measuring the new route
       startMeasurement(measurementName);
     }
 
     prevLocationRef.current = location;
 
-    // Cleanup function to ensure we end measurement if component unmounts during route change
     return () => {
       try {
         endMeasurement(`route-change-to-${currentPath}`);
-      } catch (e) {
-        // Ignore errors from ending non-existent measurements
-      }
+      } catch (e) {}
     };
   }, [location]);
 }

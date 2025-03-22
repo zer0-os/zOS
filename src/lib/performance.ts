@@ -25,7 +25,6 @@ export function endMeasurement(name: string) {
     const [measure] = performance.getEntriesByName(name, 'measure');
     console.log(`📊 Performance: ${name} took ${measure.duration.toFixed(2)}ms`);
 
-    // Cleanup to prevent memory leaks
     performance.clearMarks(startMark);
     performance.clearMarks(endMark);
     performance.clearMeasures(name);

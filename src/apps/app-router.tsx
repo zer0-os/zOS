@@ -15,7 +15,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
 import { AuraApp } from './aura';
-import { useRouteChangeMetrics } from '../lib/hooks/useRouteChangeMetrics';
 import { Container as SidekickContainer } from '../components/sidekick/components/container';
 import { Stage } from '../store/user-profile';
 import { activeZAppFeatureSelector, isZAppActiveSelector } from '../store/active-zapp/selectors';
@@ -26,9 +25,6 @@ const redirectToRoot = () => <Redirect to={'/'} />;
 
 export const AppRouter = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
-
-  // Add centralized route change measurements
-  useRouteChangeMetrics();
 
   return (
     <AuthenticationContextProvider value={{ isAuthenticated }}>

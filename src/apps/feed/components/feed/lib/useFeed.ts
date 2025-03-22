@@ -6,6 +6,7 @@ import { PAGE_SIZE } from '../../../lib/constants';
 import { RootState } from '../../../../../store';
 import { mapPostToMatrixMessage } from '../../../../../store/posts/utils';
 import { useMeowPost } from '../../../lib/useMeowPost';
+import { startMeasurement, endMeasurement } from '../../../../../lib/performance';
 
 export const useFeed = (zid?: string) => {
   const userId = useSelector((state: RootState) => state.authentication.user.data.id);
@@ -61,6 +62,14 @@ interface Options {
 }
 
 async function getPosts(endpoint: string, options: Options) {
-  const res = await get(endpoint, undefined, { ...options, include_replies: true, include_meows: true });
-  return res.body;
+  const measurementName = `fetch-posts-${endpoint}`;
+  startMeasurement(measurementName);
+  try {
+    const res = await get(endpoint, undefined, { ...options, include_replies: true, include_meows: true });
+    endMeasurement(measurementName);
+    return res.body;
+  } catch (error) {
+    endMeasurement(measurementName);
+    throw error;
+  }
 }

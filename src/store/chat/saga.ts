@@ -40,7 +40,6 @@ function* initChat(userId, token) {
 // This will wait until all the initial batch of "snapshot state" rooms
 // have been loaded into the state AND the "catchup events" have all been
 // published. However, there is no way to know if all the handlers of those
-// "catchup events" have all been published. However, there is no way to know if all the handlers of those
 // "catchup events" have actually completed as any handler may have async
 // operations.
 //

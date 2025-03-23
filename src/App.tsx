@@ -10,9 +10,10 @@ import { AppBar } from './components/app-bar/container';
 import { DialogManager } from './components/dialog-manager/container';
 import { ThemeEngine } from './components/theme-engine';
 import { BackgroundStyleProvider } from './lib/providers/BackgroundStyleProvider';
+import { LoadingScreenContainer } from './components/loading-screen/';
 
 export const App = () => {
-  const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName } = useAppMain();
+  const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName, showLoadingScreen } = useAppMain();
 
   return (
     // See: ZOS-115
@@ -20,6 +21,8 @@ export const App = () => {
     <ZUIProvider>
       <BackgroundStyleProvider />
       <div className={mainClassName}>
+        {showLoadingScreen && <LoadingScreenContainer />}
+
         {isAuthenticated && (
           <>
             {videoBackgroundSrc && <VideoBackground src={videoBackgroundSrc} />}
@@ -39,6 +42,7 @@ export const App = () => {
 const useAppMain = () => {
   const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
   const background = useSelector((state: RootState) => state.background.selectedMainBackground);
+  const loadingProgress = useSelector((state: RootState) => state.chat.loadingConversationProgress);
 
   const videoBackgroundSrc = getMainBackgroundVideoSrc(background);
   const mainClassName = classNames('main', 'messenger-full-screen', getMainBackgroundClass(background), {
@@ -47,12 +51,14 @@ const useAppMain = () => {
   });
 
   const wrapperClassName = 'app-main-wrapper';
+  const showLoadingScreen = isAuthenticated && loadingProgress !== 100;
 
   return {
     isAuthenticated,
     mainClassName,
     videoBackgroundSrc,
     wrapperClassName,
+    showLoadingScreen,
   };
 };
 

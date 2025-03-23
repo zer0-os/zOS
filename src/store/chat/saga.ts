@@ -1,4 +1,4 @@
-import { put, select, call, take, takeEvery, spawn, race, takeLatest } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, spawn, race, takeLatest, delay, cancel, fork } from 'redux-saga/effects';
 import { takeEveryFromBus } from '../../lib/saga';
 
 import {
@@ -9,6 +9,7 @@ import {
   setIsJoiningConversation,
   setIsChatConnectionComplete,
   setIsConversationsLoaded,
+  setLoadingConversationProgress,
 } from '.';
 import { Events as ChatEvents, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
@@ -41,20 +42,53 @@ function* initChat(userId, token) {
 // published. However, there is no way to know if all the handlers of those
 // "catchup events" have actually completed as any handler may have async
 // operations.
+//
+// This function will set the loadingConversationProgress to 100% when the
+// chat connection is complete. This could do with some refactoring to make it
+// more readable.
 export function* waitForChatConnectionCompletion() {
   const isComplete = yield select((state) => state.chat.isChatConnectionComplete);
   if (isComplete) {
     return true;
   }
 
+  yield put(setLoadingConversationProgress(5));
+
+  const progressTracker = yield fork(function* () {
+    for (let progress = 5; progress < 60; progress += 0.5) {
+      yield delay(50);
+      yield put(setLoadingConversationProgress(progress));
+    }
+  });
+
   const { complete } = yield race({
     complete: take(yield call(getChatBus), ChatEvents.ChatConnectionComplete),
     abort: take(yield call(getAuthChannel), AuthEvents.UserLogout),
   });
+
+  yield cancel(progressTracker);
+
   if (complete) {
+    const currentProgress = yield select((state) => state.chat.loadingConversationProgress);
+
+    for (let p = currentProgress; p <= 60; p += 0.5) {
+      yield put(setLoadingConversationProgress(p));
+      yield delay(50);
+    }
+
     yield put(setIsChatConnectionComplete(true));
+
+    for (let progress = 61; progress <= 95; progress += 0.5) {
+      yield put(setLoadingConversationProgress(progress));
+      yield delay(50);
+    }
+
+    yield put(setLoadingConversationProgress(100));
+
     return true;
   }
+
+  yield put(setLoadingConversationProgress(100));
   return false;
 }
 

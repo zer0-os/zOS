@@ -1,5 +1,4 @@
 import { createBrowserHistory, createHashHistory } from 'history';
-import { getProvider } from '../../lib/cloudinary/provider';
 import { Message } from '../../store/messages';
 import { isElectron } from '../../utils';
 import { nativeWindow } from '@todesktop/client-core';
@@ -14,7 +13,7 @@ export const send = (options: { body; heading; tag }) => {
     // from triggering so we disable it on Electron
     tag: !isElectron() ? tag : undefined,
     body,
-    icon: getProvider().getSource({ src: '', local: false, options: {} }),
+    icon: '',
   });
 
   // add click event to show window on desktop

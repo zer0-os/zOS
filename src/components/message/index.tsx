@@ -12,7 +12,6 @@ import {
 } from '../../store/messages';
 import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
-import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
 import { MessagesFetchState, User } from '../../store/channels';
 import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
@@ -716,7 +715,7 @@ export class Message extends React.Component<Properties, State> {
         {this.props.showSenderAvatar && (
           <div {...cn('left')}>
             <div {...cn('author-avatar')}>
-              <Avatar size='medium' imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`} tabIndex={-1} />
+              <Avatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
             </div>
           </div>
         )}

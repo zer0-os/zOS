@@ -76,7 +76,7 @@ export enum MessageSendStatus {
 }
 
 export interface Message {
-  id: number;
+  id: string;
   message?: string;
   parentMessageText?: string;
   parentMessageMedia?: Media;

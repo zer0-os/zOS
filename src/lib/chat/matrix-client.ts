@@ -269,7 +269,7 @@ export class MatrixClient implements IChatClient {
         setupNewKeyBackup: true,
       });
     } catch (error) {
-      console.log('Fail: bootstrapSecretStorage failed', error);
+      this.debug('Fail: bootstrapSecretStorage failed', error);
     } finally {
       this.secretStorageKey = null;
     }
@@ -300,7 +300,7 @@ export class MatrixClient implements IChatClient {
       await this.matrix.getCrypto().bootstrapSecretStorage({});
       await this.matrix.restoreKeyBackupWithSecretStorage(backup.backupInfo);
     } catch (e) {
-      console.log('error restoring backup', e);
+      this.debug('error restoring backup', e);
       throw new Error('Error while restoring backup');
     } finally {
       this.secretStorageKey = null;
@@ -360,7 +360,7 @@ export class MatrixClient implements IChatClient {
   private getNewContent(event): any {
     const result = event.content[MatrixConstants.NEW_CONTENT];
     if (!result) {
-      console.log('got an edit event that did not have new content', event);
+      this.debug('got an edit event that did not have new content', event);
     }
     return result;
   }
@@ -755,7 +755,7 @@ export class MatrixClient implements IChatClient {
     });
 
     if (!response.ok) {
-      console.log(`Failed to download file: ${response.status} ${response.statusText}`);
+      this.debug(`Failed to download file: ${response.status} ${response.statusText}`);
       return '';
     }
 
@@ -778,7 +778,7 @@ export class MatrixClient implements IChatClient {
         const downloadedUrl = await this.downloadFile(fileUrl, isThumbnail);
         return { [fileUrl]: downloadedUrl };
       } catch (error) {
-        console.log(`Error downloading file ${fileUrl}:`, error);
+        this.debug(`Error downloading file ${fileUrl}:`, error);
         return { [fileUrl]: '' }; // If the download fails, return an empty string as a fallback
       }
     };
@@ -789,14 +789,14 @@ export class MatrixClient implements IChatClient {
     for (let i = 0; i < fileUrls.length; i += batchSize) {
       const batch = fileUrls.slice(i, i + batchSize);
 
-      console.log(`Downloading batch ${i / batchSize + 1} of ${Math.ceil(fileUrls.length / batchSize)} `, batch);
+      this.debug(`Downloading batch ${i / batchSize + 1} of ${Math.ceil(fileUrls.length / batchSize)} `, batch);
 
       // Download the current batch of files concurrently
       const batchResultsArray: Array<{ [fileUrl: string]: string }> = await Promise.all(
         batch.map((fileUrl) => downloadFileWithFallback(fileUrl))
       );
 
-      console.log(`Download for batch ${i / batchSize + 1} complete: `, batchResultsArray);
+      this.debug(`Download for batch ${i / batchSize + 1} complete: `, batchResultsArray);
 
       // Merge the results of the current batch into the overall map
       batchResultsArray.forEach((result) => {
@@ -1784,13 +1784,13 @@ export class MatrixClient implements IChatClient {
    */
   async displayDeviceList(userIds: string[]) {
     const devices = await this.matrix.getCrypto().getUserDeviceInfo(userIds);
-    console.log('devices: ', devices);
+    this.debug('devices: ', devices);
   }
 
   async displayRoomKeys(roomId: string) {
     const roomKeys = await this.matrix.getCrypto().exportRoomKeys();
-    console.log('Room Id: ', roomId);
-    console.log(
+    this.debug('Room Id: ', roomId);
+    this.debug(
       'Room keys: ',
       roomKeys.filter((k) => k.room_id === roomId)
     );
@@ -1802,25 +1802,25 @@ export class MatrixClient implements IChatClient {
 
   async shareHistoryKeys(roomId: string, userIds: string[]) {
     // This resolves some instances where the other device is missing an old key from the room
-    console.log('sending shared history keys', roomId, userIds);
+    this.debug('sending shared history keys', roomId, userIds);
     await this.matrix.sendSharedHistoryKeys(roomId, userIds);
-    console.log('done sending shared history keys');
+    this.debug('done sending shared history keys');
   }
 
   async cancelAndResendKeyRequests() {
     // It seems like this may already be happening automatically when we have
     // problems decrypting messages.
-    console.log('cancelling and resending key requests');
+    this.debug('cancelling and resending key requests');
     await this.matrix.crypto?.cancelAndResendAllOutgoingKeyRequests();
-    console.log('done cancelling and resending key requests');
+    this.debug('done cancelling and resending key requests');
   }
 
   async discardOlmSession(roomId: string) {
     // Throw away the olm session for the room...does this automatically
     // regenerate or do we need the resetOlmSession call below?
-    console.log('discarding session', roomId);
+    this.debug('discarding session', roomId);
     await this.matrix.getCrypto().forceDiscardSession(roomId);
-    console.log('done discarding session', roomId);
+    this.debug('done discarding session', roomId);
   }
 
   async resetOlmSession(roomId: string) {
@@ -1828,7 +1828,7 @@ export class MatrixClient implements IChatClient {
     // Unsure which errors this might resolve. It seems like once you've missed
     // something related to olm that you can't recover from it and this may only
     // help with future messages.
-    console.log('resetting the olm session', roomId);
+    this.debug('resetting the olm session', roomId);
     this.matrix.getCrypto().forceDiscardSession(roomId);
     const room = this.matrix.getRoom(roomId);
     const members = (await room?.getEncryptionTargetMembers()) || [];
@@ -1838,7 +1838,7 @@ export class MatrixClient implements IChatClient {
         true
       );
     }
-    console.log('done resetting the olm session', roomId);
+    this.debug('done resetting the olm session', roomId);
   }
 
   async requestRoomKey(_roomId: string) {

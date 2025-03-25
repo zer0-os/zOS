@@ -6,6 +6,7 @@ import { IconLogoZero } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
+import { getLoadingMessage } from './utils';
 
 const cn = bemClassName('loading-screen');
 
@@ -35,6 +36,8 @@ export class Container extends React.Component<Properties> {
     // before the screen transitions away
     const visualProgress = progress >= 90 ? 100 : (progress * 100) / 90;
 
+    const loadingMessage = getLoadingMessage(progress);
+
     return (
       <div {...cn('')}>
         <div {...cn('content')}>
@@ -46,7 +49,7 @@ export class Container extends React.Component<Properties> {
               <div {...cn('progress-indicator')} style={{ width: `${visualProgress}%` }}></div>
             </div>
           </div>
-          <div {...cn('message')}>Decrypting Messages...</div>
+          <div {...cn('message')}>{loadingMessage}</div>
         </div>
       </div>
     );

@@ -52,7 +52,7 @@ export interface Properties {
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: string }) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
-  sendEmojiReaction: (messageId, key) => void;
+  sendEmojiReaction: (messageId: string, key: string) => void;
   onReportUser: (payload: { reportedUserId: string }) => void;
   openLightbox: (payload: { media: any[]; startingIndex: number }) => void;
 }

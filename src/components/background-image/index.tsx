@@ -47,7 +47,7 @@ export class BackgroundImage extends React.Component<Properties> {
     this.initialLoad();
   }
 
-  componentWillReceiveProps(nextProps: Properties) {
+  componentDidUpdate(nextProps: Properties) {
     if (this.props.provider.getSourceUrl(this.props.source) !== this.props.provider.getSourceUrl(nextProps.source)) {
       this.transitionToNewImage(nextProps);
     }

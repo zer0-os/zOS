@@ -137,11 +137,6 @@ export const Message: React.FC<Properties> = ({
     return getProvider().getSourceUrl(sender.profileImage);
   }, [sender.profileImage]);
 
-  // RICKY TODO: Fix whatever the fuck is changing this constantly
-  // useEffect(() => {
-  //   console.log('media', media);
-  // }, [media]);
-
   useEffect(() => {
     if (
       media &&

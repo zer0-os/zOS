@@ -17,6 +17,7 @@ export function setupStore(preloadedState?: Partial<RootState>) {
     reducer: rootReducer,
     middleware: (defaults) => defaults({ thunk: false }).concat(sagaMiddleware),
     preloadedState,
+    devTools: process.env.NODE_ENV !== 'production',
   });
 }
 

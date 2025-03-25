@@ -35,9 +35,9 @@ export interface Properties {
   onFetchMore: () => void;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: User;
-  deleteMessage: (messageId: number) => void;
+  deleteMessage: (messageId: string) => void;
   editMessage: (
-    messageId: number,
+    messageId: string,
     message: string,
     mentionedUserIds: string[],
     data?: Partial<EditMessageOptions>
@@ -50,7 +50,7 @@ export interface Properties {
   conversationErrorMessage: string;
   isSecondarySidekickOpen: boolean;
   toggleSecondarySidekick: () => void;
-  openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
+  openMessageInfo: (payload: { roomId: string; messageId: string }) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (messageId, key) => void;
   onReportUser: (payload: { reportedUserId: string }) => void;
@@ -104,7 +104,7 @@ export class ChatView extends React.Component<Properties, State> {
     this.props.openLightbox({ media: lightboxMedia, startingIndex: lightboxStartIndex });
   };
 
-  openMessageInfo = (messageId: number) => {
+  openMessageInfo = (messageId: string) => {
     this.props.openMessageInfo({ roomId: this.props.id, messageId });
 
     if (!this.props.isSecondarySidekickOpen) {
@@ -128,12 +128,11 @@ export class ChatView extends React.Component<Properties, State> {
     }
   }
 
-  isUserOwnerOfMessage(message: MessageModel) {
-    // eslint-disable-next-line eqeqeq
-    return this.props.user && message?.sender && this.props.user.id == message.sender.userId;
+  isUserOwnerOfMessage(message: { sender: { userId: string } }) {
+    return this.props.user && message?.sender && this.props.user.id === message.sender.userId;
   }
 
-  renderMessageGroup(groupMessages) {
+  renderMessageGroup(groupMessages: MessageModel[]) {
     return groupMessages.map((message, index) => {
       if (message.isAdmin) {
         return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;

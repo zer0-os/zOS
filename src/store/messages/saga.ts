@@ -36,7 +36,7 @@ import { getUserSubHandle } from '../../lib/user';
 export interface Payload {
   channelId: string;
   referenceTimestamp?: number;
-  messageId?: number;
+  messageId?: string;
 }
 export interface QueryUploadPayload {
   api_key: string;
@@ -54,7 +54,7 @@ export interface FileUploadResult {
 
 export interface EditPayload {
   channelId: string;
-  messageId?: number;
+  messageId?: string;
   message?: string;
   mentionedUserIds?: string[];
   data?: Partial<EditMessageOptions>;
@@ -65,7 +65,7 @@ export interface SendPayload {
   message?: string;
   mentionedUserIds?: string[];
   parentMessage?: ParentMessage;
-  parentMessageId?: number;
+  parentMessageId?: string;
   parentMessageUserId?: string;
   file?: FileUploadResult;
   optimisticId?: string;

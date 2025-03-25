@@ -49,7 +49,7 @@ interface State {
 }
 
 export class MessageInput extends React.Component<Properties, State> {
-  state = {
+  state: State = {
     value: this.props.initialValue || '',
     mentionedUserIds: [],
     media: [],
@@ -222,6 +222,7 @@ export class MessageInput extends React.Component<Properties, State> {
         id: giphy.id.toString(),
         name: giphy.title,
         url: giphy.images.preview_gif.url,
+        type: MediaType.Image,
         mediaType: MediaType.Image,
         giphy,
       },

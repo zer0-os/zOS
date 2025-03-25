@@ -38,9 +38,9 @@ export interface Properties extends PublicProperties {
     isAuthenticated: boolean;
   };
   isSecondarySidekickOpen: boolean;
-  openDeleteMessage: (messageId: number) => void;
+  openDeleteMessage: (messageId: string) => void;
   toggleSecondarySidekick: () => void;
-  openMessageInfo: (payload: { roomId: string; messageId: number }) => void;
+  openMessageInfo: (payload: { roomId: string; messageId: string }) => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (payload: { roomId: string; messageId: string; key: string }) => void;
   openReportUserModal: (payload: { reportedUserId: string }) => void;
@@ -140,7 +140,7 @@ export class Container extends React.Component<Properties> {
     }
   };
 
-  handleDeleteMessage = (messageId: number): void => {
+  handleDeleteMessage = (messageId: string): void => {
     const { channelId } = this.props;
     if (channelId && messageId) {
       this.props.openDeleteMessage(messageId);
@@ -148,7 +148,7 @@ export class Container extends React.Component<Properties> {
   };
 
   handleEditMessage = (
-    messageId: number,
+    messageId: string,
     message: string,
     mentionedUserIds: string[],
     data?: Partial<EditMessageOptions>
@@ -159,7 +159,7 @@ export class Container extends React.Component<Properties> {
     }
   };
 
-  sendEmojiReaction = async (messageId, key) => {
+  sendEmojiReaction = async (messageId: string, key: string) => {
     try {
       await this.props.sendEmojiReaction({ roomId: this.props.channelId, messageId, key });
     } catch (error) {

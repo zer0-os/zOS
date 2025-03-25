@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
-import moment from 'moment';
 import {
   Message as MessageModel,
   MediaType,
@@ -9,8 +8,8 @@ import {
   MessageSendStatus,
   Media,
   MediaDownloadStatus,
+  MessageAttachment,
 } from '../../store/messages';
-import { download } from '../../lib/api/attachment';
 import { LinkPreview } from '../link-preview';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
@@ -19,16 +18,18 @@ import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { MessageMenu } from '../../platform-apps/channels/messages-menu';
-import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { IconAlertCircle, IconHeart } from '@zero-tech/zui/icons';
+import { IconHeart } from '@zero-tech/zui/icons';
 import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
-import { Blurhash } from 'react-blurhash';
 import { ParentMessage } from './parent-message';
-import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { AttachmentPreviewModal } from '../attachment-preview-modal';
 import { ReactionPicker } from './reaction-picker/reaction-picker';
+import { MessageMedia } from './media/messageMedia';
+import { MessageFooter } from './footer/messageFooter';
+import { Reactions } from './reactions/reactions';
+import { Properties as MessageMenuProps } from '../../platform-apps/channels/messages-menu';
+import { useContextMenu } from './hooks/useContextMenu';
 
 import './styles.scss';
 
@@ -37,17 +38,17 @@ const cn = bemClassName('message');
 interface Properties extends MessageModel {
   className: string;
   onImageClick: (media: any) => void;
-  onDelete: (messageId: number) => void;
+  onDelete: (messageId: string) => void;
   onEdit: (
-    messageId: number,
+    messageId: string,
     message: string,
     mentionedUserIds: User['userId'][],
     data?: Partial<EditMessageOptions>
   ) => void;
-  onInfo: (messageId: number) => void;
+  onInfo: (messageId: string) => void;
   onReply: ({ reply }: { reply: ParentMessageType }) => void;
   isOwner?: boolean;
-  messageId?: number;
+  messageId?: string;
   updatedAt: number;
   parentMessageText?: string;
   parentSenderIsCurrentUser?: boolean;
@@ -59,85 +60,117 @@ interface Properties extends MessageModel {
   showSenderAvatar?: boolean;
   showTimestamp: boolean;
   showAuthorName: boolean;
-  isHidden: boolean;
   onHiddenMessageInfoClick: () => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
-  sendEmojiReaction: (messageId, key) => void;
+  sendEmojiReaction: (messageId: string, key: string) => void;
   onReportUser: (payload: { reportedUserId: string }) => void;
   messagesFetchStatus: MessagesFetchState;
 }
 
-export interface State {
-  isEditing: boolean;
-  isFullWidth: boolean;
-  isMessageMenuOpen: boolean;
-  isDropdownMenuOpen: boolean;
-  menuX: number;
-  menuY: number;
-  isImageLoaded: boolean;
-  isAttachmentPreviewOpen: boolean;
-  attachmentPreview: {
-    name: string;
-    url: string;
-    type: string;
-    mimetype?: string;
-  } | null;
-  isReactionPickerOpen: boolean;
-}
+export const Message: React.FC<Properties> = ({
+  className,
+  onImageClick,
+  onDelete,
+  onEdit,
+  onInfo,
+  onReply,
+  isOwner,
+  messageId,
+  parentSenderIsCurrentUser,
+  parentSenderFirstName,
+  parentSenderLastName,
+  parentMessageMediaUrl,
+  parentMessageMediaName,
+  getUsersForMentions,
+  showSenderAvatar,
+  showTimestamp,
+  showAuthorName,
+  isHidden,
+  onHiddenMessageInfoClick,
+  loadAttachmentDetails,
+  sendEmojiReaction,
+  onReportUser,
+  messagesFetchStatus,
+  media,
+  message,
+  parentMessageText,
+  parentMessageMedia,
+  parentMessageId,
+  isAdmin,
+  createdAt,
+  updatedAt,
+  sender,
+  mentionedUsers,
+  hidePreview,
+  preview,
+  admin,
+  optimisticId,
+  rootMessageId,
+  sendStatus,
+  reactions,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(false);
+  const [isAttachmentPreviewOpen, setIsAttachmentPreviewOpen] = useState(false);
+  const [attachmentPreview, setAttachmentPreview] = useState(null);
+  const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false);
+  const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
-export class Message extends React.Component<Properties, State> {
-  state = {
-    isEditing: false,
-    isFullWidth: false,
-    isMessageMenuOpen: false,
-    isDropdownMenuOpen: false,
-    menuX: 0,
-    menuY: 0,
-    isImageLoaded: false,
-    isAttachmentPreviewOpen: false,
-    attachmentPreview: null,
-    isReactionPickerOpen: false,
-  } as State;
+  const canEditMessage =
+    isOwner && message && sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
 
-  wrapperRef = React.createRef<HTMLDivElement>();
+  const canDeleteMessage = isOwner && sendStatus !== MessageSendStatus.IN_PROGRESS;
 
-  handleContextMenu = (event) => {
-    if (typeof window !== 'undefined' && window.getSelection) {
-      const selectedText = window.getSelection().toString();
-      if (selectedText.length > 0) {
-        return;
-      }
-    }
+  const canReportUser = !isOwner && sendStatus !== MessageSendStatus.IN_PROGRESS;
 
-    if (event.button === 2) {
-      event.preventDefault();
-      event.stopPropagation();
-      const { pageX, pageY } = event;
-      this.setState({
-        isDropdownMenuOpen: true,
-        isMessageMenuOpen: false,
-        menuX: pageX,
-        menuY: pageY,
+  const canReply = sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
+
+  const canViewInfo = sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
+
+  const canDownload = media?.type === MediaType.Image && media?.mimetype !== 'image/gif';
+
+  const canCopy = media?.type === MediaType.Image && media?.mimetype !== 'image/gif';
+
+  const isMenuTriggerAlwaysVisible = sendStatus === MessageSendStatus.FAILED;
+
+  const senderAvatarUrl = useMemo(() => {
+    return getProvider().getSourceUrl(sender.profileImage);
+  }, [sender.profileImage]);
+
+  // RICKY TODO: Fix whatever the fuck is changing this constantly
+  // useEffect(() => {
+  //   console.log('media', media);
+  // }, [media]);
+
+  useEffect(() => {
+    if (
+      media &&
+      (!media.url || media.url.startsWith('mxc://')) &&
+      media.downloadStatus !== MediaDownloadStatus.Failed &&
+      media.downloadStatus !== MediaDownloadStatus.Loading &&
+      messagesFetchStatus === MessagesFetchState.SUCCESS
+    ) {
+      loadAttachmentDetails({
+        media,
+        messageId: messageId.toString(),
       });
     }
+    // `media` is re-rendering constantly - excluding until we figure out why
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messagesFetchStatus, messageId, loadAttachmentDetails]);
+
+  const openAttachmentPreview = async (attachment: MessageAttachment) => {
+    setIsAttachmentPreviewOpen(true);
+    setAttachmentPreview(attachment);
   };
 
-  openAttachmentPreview = async (attachment): Promise<void> => {
-    this.setState({ isAttachmentPreviewOpen: true, attachmentPreview: attachment });
+  const closeAttachmentPreview = () => {
+    setIsAttachmentPreviewOpen(false);
+    setAttachmentPreview(null);
   };
 
-  closeAttachmentPreview = () => {
-    this.setState({ isAttachmentPreviewOpen: false, attachmentPreview: null });
-  };
-
-  downloadAttachment = async () => {
-    if (!this.state.attachmentPreview) return;
-    await download(this.state.attachmentPreview.url);
-  };
-
-  downloadImage = (media) => () => {
+  const downloadImage = () => {
     if (!media || !media.url) return;
-
     const link = document.createElement('a');
     link.href = media.url;
     link.download = media.name || 'image';
@@ -146,13 +179,11 @@ export class Message extends React.Component<Properties, State> {
     document.body.removeChild(link);
   };
 
-  copyImage = (media) => async () => {
+  const copyImage = async () => {
     if (!media?.url) return;
-
     try {
       const response = await fetch(media.url);
       const blob = await response.blob();
-
       try {
         await navigator.clipboard.write([
           new ClipboardItem({
@@ -160,43 +191,34 @@ export class Message extends React.Component<Properties, State> {
           }),
         ]);
       } catch (writeError) {
-        // Fallback: Create a temporary canvas to handle image copying
         const img = new Image();
         img.crossOrigin = 'anonymous';
-
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
           img.src = media.url;
         });
-
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
-
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0);
-
-        try {
-          await canvas.toBlob(async (blob) => {
-            if (blob) {
-              await navigator.clipboard.write([
-                new ClipboardItem({
-                  'image/png': blob,
-                }),
-              ]);
-            }
-          }, 'image/png');
-        } catch (canvasError) {
-          throw new Error('Failed to copy image using canvas fallback');
-        }
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                'image/png': blob,
+              }),
+            ]);
+          }
+        }, 'image/png');
       }
     } catch (err) {
       console.error('Failed to copy image:', err);
     }
   };
 
-  scrollToMessage = (messageId: string) => {
+  const scrollToMessage = (messageId: string) => {
     requestAnimationFrame(() => {
       const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
       const messageBlock = messageElement?.querySelector('.message__block');
@@ -212,415 +234,173 @@ export class Message extends React.Component<Properties, State> {
     });
   };
 
-  onParentMessageClick = (messageId: string) => {
-    this.scrollToMessage(messageId);
+  const onParentMessageClick = (messageId: string) => {
+    scrollToMessage(messageId);
   };
 
-  renderAttachment(attachment) {
-    return (
-      <div {...cn('attachment')} onClick={this.openAttachmentPreview.bind(this, attachment)}>
-        <AttachmentCards
-          attachments={[attachment]}
-          onAttachmentClicked={this.openAttachmentPreview.bind(this, attachment)}
-        />
-      </div>
-    );
-  }
-
-  onImageClick = (media) => () => {
-    this.props.onImageClick(media);
+  const deleteMessage = () => onDelete(messageId);
+  const toggleEdit = () => setIsEditing((prev) => !prev);
+  const editMessageFromInput = (message: string, mentionedUserIds: User['userId'][]) => {
+    editMessage(message, mentionedUserIds);
+  };
+  const editMessage = (content: string, mentionedUserIds: User['userId'][], data?: Partial<EditMessageOptions>) => {
+    onEdit(messageId, content, mentionedUserIds, data);
+    toggleEdit();
   };
 
-  onLoadAttachmentDetails = (media) => () => {
-    this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
+  const onRemovePreview = () => {
+    onEdit(messageId, message, [], { hidePreview: true });
   };
 
-  handleMediaAspectRatio = (width: number, height: number) => {
-    requestAnimationFrame(() => {
-      const aspectRatio = width / height;
-      this.setState({ isFullWidth: height > 640 && aspectRatio <= 5 / 4 });
-    });
-  };
-
-  handleImageLoad = (event) => {
-    requestAnimationFrame(() => {
-      const { naturalWidth: width, naturalHeight: height } = event.target;
-      this.handleMediaAspectRatio(width, height);
-      this.setState({ isImageLoaded: true });
-    });
-  };
-
-  handlePlaceholderAspectRatio = (width: number, height: number, maxWidth: number, maxHeight: number) => {
-    const aspectRatio = width / height;
-
-    let finalWidth = width;
-    let finalHeight = height;
-
-    if (height > maxHeight) {
-      finalHeight = maxHeight;
-      finalWidth = maxHeight * aspectRatio;
-    }
-
-    if (finalWidth > maxWidth) {
-      finalWidth = maxWidth;
-      finalHeight = maxWidth / aspectRatio;
-    }
-
-    return { width: finalWidth, height: finalHeight };
-  };
-
-  getPlaceholderDimensions = (w, h) => {
-    const width = w || 300;
-    const height = h || 200;
-
-    const maxWidth = 520;
-    const maxHeight = 640;
-
-    const { width: finalWidth, height: finalHeight } = this.handlePlaceholderAspectRatio(
-      width,
-      height,
-      maxWidth,
-      maxHeight
-    );
-
-    return { width: finalWidth, height: finalHeight };
-  };
-
-  renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height) {
-    return (
-      <>
-        {hasFailed ? (
-          <IconAlertCircle size={32} {...cn('icon', 'failed')} />
-        ) : blurhash ? (
-          <Blurhash hash={blurhash} width={width} height={height} resolutionX={16} resolutionY={12} punch={1.5} />
-        ) : (
-          <div {...cn('placeholder-box')} />
-        )}
-
-        {isLoading && <Spinner {...cn('icon', 'loading')} />}
-      </>
-    );
-  }
-
-  renderMedia(media) {
-    const { type, url, name, downloadStatus, mimetype } = media;
-    const blurhash = media['xyz.amorgan.blurhash'];
-
-    const { width, height } = this.getPlaceholderDimensions(media.width, media.height);
-    const isMatrixUrl = url?.startsWith('mxc://');
-
-    if (!url || isMatrixUrl) {
-      const isLoading = downloadStatus === MediaDownloadStatus.Loading;
-      const hasFailed = downloadStatus === MediaDownloadStatus.Failed;
-
-      if (!hasFailed && !isLoading && this.props.messagesFetchStatus === MessagesFetchState.SUCCESS) {
-        this.props.loadAttachmentDetails({ media, messageId: media.id ?? this.props.messageId.toString() });
-      }
-
-      return (
-        <>
-          {mimetype?.includes('application') || mimetype?.includes('audio') ? (
-            <AttachmentCards attachments={[{ name, url: '', type: '' }]} onAttachmentClicked={() => {}} />
-          ) : (
-            <div {...cn('placeholder-container')} style={{ width, height }}>
-              <div {...cn('placeholder-content')}>
-                {this.renderPlaceholderContent(hasFailed, isLoading, blurhash, width, height)}
-              </div>
-            </div>
-          )}
-        </>
-      );
-    }
-
-    if (MediaType.Image === type) {
-      return (
-        <div {...cn('block-image')} onClick={this.onImageClick(media)}>
-          <img
-            src={url}
-            alt={this.props.media.name}
-            onLoad={this.handleImageLoad}
-            style={!this.state.isImageLoaded ? { width, height } : {}}
-          />
-        </div>
-      );
-    } else if (MediaType.Video === type) {
-      return (
-        <div {...cn('block-video')}>
-          <video controls>
-            <source src={url} />
-          </video>
-        </div>
-      );
-    } else if (MediaType.File === type) {
-      return this.renderAttachment({ url, name, type, mimetype });
-    } else if (MediaType.Audio === type && !this.state.isEditing) {
-      return (
-        <div {...cn('block-audio')}>
-          <audio controls controlsList='nodownload nofullscreen noplaybackrate'>
-            <source src={url} type={mimetype} />
-          </audio>
-        </div>
-      );
-    }
-    return '';
-  }
-
-  renderFooter() {
-    if (this.state.isEditing) {
-      return;
-    }
-
-    const isSendStatusFailed = this.props.sendStatus === MessageSendStatus.FAILED;
-    const footerElements = [];
-
-    if (!!this.props.updatedAt && !isSendStatusFailed) {
-      footerElements.push(<span>(Edited)</span>);
-    }
-    if (!isSendStatusFailed && this.props.showTimestamp) {
-      footerElements.push(this.renderTime(this.props.createdAt));
-    }
-    if (isSendStatusFailed) {
-      footerElements.push(
-        <div {...cn('failure-message')}>
-          Failed to send&nbsp;
-          <IconAlertCircle size={16} />
-        </div>
-      );
-    }
-
-    if (footerElements.length === 0) {
-      return;
-    }
-
-    return (
-      <div {...cn('footer')}>
-        {footerElements[0]}
-        {footerElements[1]}
-        {footerElements[2]}
-      </div>
-    );
-  }
-
-  renderTime(time): React.ReactElement {
-    const createdTime = moment(time).format('h:mm A');
-    return <div {...cn('time')}>{createdTime}</div>;
-  }
-
-  renderAuthorName(): React.ReactElement {
-    return (
-      <div {...cn('author-name')}>
-        {this.props.sender.firstName} {this.props.sender.lastName}
-      </div>
-    );
-  }
-
-  canEditMessage = (): boolean => {
-    return (
-      this.props.isOwner &&
-      this.props.message &&
-      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS &&
-      this.props.sendStatus !== MessageSendStatus.FAILED
-    );
-  };
-
-  canDeleteMessage = (): boolean => {
-    return this.props.isOwner && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
-  };
-
-  canReportUser = (): boolean => {
-    return !this.props.isOwner && this.props.sendStatus !== MessageSendStatus.IN_PROGRESS;
-  };
-
-  isMediaMessage = (): boolean => {
-    return !!this.props.media;
-  };
-
-  deleteMessage = (): void => this.props.onDelete(this.props.messageId);
-  toggleEdit = () => this.setState((state) => ({ isEditing: !state.isEditing }));
-  editMessage = (content: string, mentionedUserIds: string[], data?: Partial<EditMessageOptions> | any) => {
-    this.props.onEdit(this.props.messageId, content, mentionedUserIds, data);
-    this.toggleEdit();
-  };
-
-  onRemovePreview = (): void => {
-    this.props.onEdit(this.props.messageId, this.props.message, [], { hidePreview: true });
-  };
-
-  onReply = (): void => {
+  const onMenuReply = () => {
     const reply = {
-      messageId: this.props.messageId,
-      userId: this.props.sender.userId,
-      message: this.props.message,
-      sender: this.props.sender,
-      isAdmin: this.props.isAdmin,
-      mentionedUsers: this.props.mentionedUsers,
-      hidePreview: this.props.hidePreview,
-      admin: this.props.admin,
-      optimisticId: this.props.optimisticId,
-      rootMessageId: this.props.rootMessageId,
-      media: this.props?.media,
+      messageId: messageId,
+      userId: sender.userId,
+      message: message,
+      sender: sender,
+      isAdmin: isAdmin,
+      mentionedUsers: mentionedUsers,
+      hidePreview: hidePreview,
+      admin: admin,
+      optimisticId: optimisticId,
+      rootMessageId: rootMessageId,
+      media: media,
     };
-
-    this.props.onReply({ reply });
+    onReply({ reply });
   };
 
-  onReportUser = () => {
-    this.props.onReportUser({ reportedUserId: this.props.sender.userId });
+  const onMenuReportUser = () => {
+    onReportUser({ reportedUserId: sender.userId });
   };
 
-  editActions = (value: string, mentionedUserIds: string[]) => {
+  const editActions = (value: string, mentionedUserIds: User['userId'][]) => (
+    <EditMessageActions
+      value={value}
+      primaryTooltipText='Save Changes'
+      secondaryTooltipText='Discard Changes'
+      onEdit={editMessage.bind(null, value, mentionedUserIds, { hidePreview: hidePreview })}
+      onCancel={toggleEdit}
+    />
+  );
+
+  const handleContextMenuOpen = () => {
+    setIsMessageMenuOpen(false);
+    setIsDropdownMenuOpen(true);
+  };
+  const { position: contextMenuPosition, handler: handleContextMenu } = useContextMenu({
+    onOpen: handleContextMenuOpen,
+  });
+
+  const handleOpenMenu = (isMessageMenuOpen: boolean) => setIsMessageMenuOpen(isMessageMenuOpen);
+  const handleCloseMenu = () => {
+    setIsMessageMenuOpen(false);
+    setIsDropdownMenuOpen(false);
+  };
+
+  const onMenuInfo = () => {
+    onInfo(messageId);
+  };
+
+  const openReactionPicker = () => setIsReactionPickerOpen(true);
+  const closeReactionPicker = () => setIsReactionPickerOpen(false);
+
+  const onEmojiReaction = (key: string) => {
+    sendEmojiReaction(messageId, key);
+    closeReactionPicker();
+  };
+
+  const Menu = ({ isMenuOpen, isMenuFlying }: Pick<MessageMenuProps, 'isMenuOpen' | 'isMenuFlying'>) => {
     return (
-      <EditMessageActions
-        value={value}
-        primaryTooltipText='Save Changes'
-        secondaryTooltipText='Discard Changes'
-        onEdit={this.editMessage.bind(this, value, mentionedUserIds, { hidePreview: this.props.hidePreview })}
-        onCancel={this.toggleEdit}
+      <MessageMenu
+        {...cn('menu-item')}
+        canEdit={canEditMessage}
+        canDelete={canDeleteMessage}
+        canReply={canReply}
+        canReportUser={canReportUser}
+        canViewInfo={canViewInfo}
+        canDownload={canDownload}
+        canCopy={canCopy}
+        onDelete={deleteMessage}
+        onEdit={toggleEdit}
+        onReply={onMenuReply}
+        onInfo={onMenuInfo}
+        onDownload={downloadImage}
+        onCopy={copyImage}
+        onOpenChange={handleOpenMenu}
+        onCloseMenu={handleCloseMenu}
+        onReportUser={onMenuReportUser}
+        isMenuOpen={isMenuOpen}
+        isMenuFlying={isMenuFlying}
       />
     );
   };
 
-  handleOpenMenu = (isMessageMenuOpen: boolean) => {
-    this.setState({ isMessageMenuOpen });
-  };
-
-  handleCloseMenu = () => {
-    this.setState({ isMessageMenuOpen: false, isDropdownMenuOpen: false });
-  };
-
-  canReply = () => {
-    return (
-      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS && this.props.sendStatus !== MessageSendStatus.FAILED
-    );
-  };
-
-  canViewInfo = (): boolean => {
-    return (
-      this.props.sendStatus !== MessageSendStatus.IN_PROGRESS && this.props.sendStatus !== MessageSendStatus.FAILED
-    );
-  };
-
-  canDownload = (): boolean => {
-    return this.props.media?.type === MediaType.Image && this.props.media?.mimetype !== 'image/gif';
-  };
-
-  canCopy = (): boolean => {
-    return this.props.media?.type === MediaType.Image && this.props.media?.mimetype !== 'image/gif';
-  };
-
-  onInfo = () => {
-    this.props.onInfo(this.props.messageId);
-  };
-
-  isMenuTriggerAlwaysVisible = () => {
-    return this.props.sendStatus === MessageSendStatus.FAILED;
-  };
-
-  openReactionPicker = () => this.setState({ isReactionPickerOpen: true });
-  closeReactionPicker = () => this.setState({ isReactionPickerOpen: false });
-
-  onEmojiReaction = (key) => {
-    this.props.sendEmojiReaction(this.props.messageId, key);
-    this.closeReactionPicker();
-  };
-
-  renderMenu(): React.ReactElement {
-    const { isMessageMenuOpen } = this.state;
-
-    const messageMenuProps = {
-      canEdit: this.canEditMessage(),
-      canDelete: this.canDeleteMessage(),
-      canReply: this.canReply(),
-      canReportUser: this.canReportUser(),
-      canViewInfo: this.canViewInfo(),
-      canDownload: this.canDownload(),
-      canCopy: this.canCopy(),
-      onDelete: this.deleteMessage,
-      onEdit: this.toggleEdit,
-      onReply: this.onReply,
-      onInfo: this.onInfo,
-      onDownload: this.downloadImage(this.props.media),
-      onCopy: this.copyImage(this.props.media),
-      isMediaMessage: this.isMediaMessage(),
-      isMenuOpen: isMessageMenuOpen,
-      onOpenChange: this.handleOpenMenu,
-      onCloseMenu: this.handleCloseMenu,
-      onReportUser: this.onReportUser,
-    };
-
-    const onClose = () => {
-      this.handleCloseMenu();
-    };
-
+  const renderMenu = () => {
     return (
       <div
         {...cn(
           classNames('menu', {
-            'menu--open': this.state.isMessageMenuOpen || this.state.isReactionPickerOpen,
-            'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
+            'menu--open': isMessageMenuOpen || isReactionPickerOpen,
+            'menu--force-visible': isMenuTriggerAlwaysVisible,
           })
         )}
-        onClick={onClose}
+        onClick={handleCloseMenu}
       >
-        <IconButton {...cn('menu-item')} onClick={this.openReactionPicker} Icon={IconHeart} size={32} />
-        <MessageMenu {...cn('menu-item')} {...messageMenuProps} />
+        <IconButton {...cn('menu-item')} onClick={openReactionPicker} Icon={IconHeart} size={32} />
+        <Menu isMenuOpen={isMessageMenuOpen} />
       </div>
     );
-  }
+  };
 
-  renderFloatMenu() {
-    const { menuX, menuY, isDropdownMenuOpen } = this.state;
+  const renderFloatMenu = () => {
     if (!isDropdownMenuOpen) return null;
-
-    const menuProps = {
-      canEdit: this.canEditMessage(),
-      canDelete: this.canDeleteMessage(),
-      canReply: this.canReply(),
-      canReportUser: this.canReportUser(),
-      canViewInfo: this.canViewInfo(),
-      canDownload: this.canDownload(),
-      canCopy: this.canCopy(),
-      onDelete: this.deleteMessage,
-      onEdit: this.toggleEdit,
-      onReply: this.onReply,
-      onInfo: this.onInfo,
-      onDownload: this.downloadImage(this.props.media),
-      onCopy: this.copyImage(this.props.media),
-      onReportUser: this.onReportUser,
-      isMediaMessage: this.isMediaMessage(),
-      isMenuOpen: isDropdownMenuOpen,
-      onOpenChange: this.handleOpenMenu,
-      onCloseMenu: this.handleCloseMenu,
-      isMenuFlying: isDropdownMenuOpen,
-    };
-
-    const menuContent = (
+    return createPortal(
       <div
         {...cn(
           classNames('menu', {
-            'menu--open': this.state.isDropdownMenuOpen,
-            'menu--force-visible': this.isMenuTriggerAlwaysVisible(),
+            'menu--open': isDropdownMenuOpen,
+            'menu--force-visible': isMenuTriggerAlwaysVisible,
           })
         )}
         style={{
           position: 'fixed',
-          left: `${menuX}px`,
-          top: `${menuY}px`,
-          display: isDropdownMenuOpen ? 'block' : 'none',
+          left: `${contextMenuPosition.x}px`,
+          top: `${contextMenuPosition.y}px`,
         }}
-        onClick={menuProps.onCloseMenu}
+        onClick={handleCloseMenu}
       >
-        <MessageMenu {...cn('menu-item')} {...menuProps} />
+        <Menu isMenuOpen={isDropdownMenuOpen} isMenuFlying={isDropdownMenuOpen} />
+      </div>,
+      document.getElementById('platform')
+    );
+  };
+
+  const renderBody = () => {
+    return (
+      <div {...cn('block-body')}>
+        {message && (
+          <ContentHighlighter
+            message={message}
+            isHidden={isHidden}
+            onHiddenMessageInfoClick={onHiddenMessageInfoClick}
+          />
+        )}
+
+        <div {...cn('footer-container', !!reactions && 'has-reactions')}>
+          {!!reactions && <Reactions reactions={reactions} />}
+          <MessageFooter
+            isEditing={isEditing}
+            sendStatus={sendStatus}
+            updatedAt={updatedAt}
+            createdAt={createdAt}
+            showTimestamp={showTimestamp}
+          />
+        </div>
       </div>
     );
+  };
 
-    return isDropdownMenuOpen && this.isMediaMessage
-      ? createPortal(menuContent, document.getElementById('platform'))
-      : null;
-  }
-
-  renderLinkPreview() {
-    const { preview, hidePreview, media, parentMessageText } = this.props;
+  const renderLinkPreview = () => {
     if (
       !preview?.title ||
       !preview?.description ||
@@ -630,142 +410,105 @@ export class Message extends React.Component<Properties, State> {
       media ||
       parentMessageText
     ) {
-      return;
+      return null;
     }
+    return <LinkPreview url={preview.url} {...preview} allowRemove={false} onRemove={onRemovePreview} />;
+  };
 
-    return <LinkPreview url={preview.url} {...preview} allowRemove={false} onRemove={this.onRemovePreview} />;
-  }
-
-  renderBody() {
-    const { message, isHidden, reactions } = this.props;
-
-    return (
-      <div {...cn('block-body')}>
-        {message && (
-          <ContentHighlighter
-            message={message}
-            isHidden={isHidden}
-            onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
-          />
-        )}
-
-        <div {...cn('footer-container', !!reactions && 'has-reactions')}>
-          {this.renderReactions()}
-          {this.renderFooter()}
-        </div>
-      </div>
-    );
-  }
-
-  renderReactions() {
-    const { reactions } = this.props;
-
-    if (!!reactions) {
-      return (
-        <div {...cn('reactions')}>
-          {Object.entries(reactions).map(([key, value]) => (
-            <div key={key} {...cn('reaction-icon')}>
-              {key} <span>{value}</span>
-            </div>
-          ))}
-        </div>
-      );
-    }
-  }
-
-  renderReactionPicker() {
-    return (
-      <div {...cn('reaction-picker-container')}>
-        <ReactionPicker
-          isOpen={this.state.isReactionPickerOpen}
-          onOpen={this.openReactionPicker}
-          onClose={this.closeReactionPicker}
-          onSelect={this.onEmojiReaction}
-        />
-      </div>
-    );
-  }
-
-  renderParentMessage() {
-    return (
-      <ParentMessage
-        message={this.props.parentMessageText}
-        senderIsCurrentUser={this.props.parentSenderIsCurrentUser}
-        senderFirstName={this.props.parentSenderFirstName}
-        senderLastName={this.props.parentSenderLastName}
-        mediaUrl={this.props.parentMessageMediaUrl}
-        mediaName={this.props.parentMessageMediaName}
-        messageId={this.props.parentMessageId}
-        onMessageClick={this.onParentMessageClick}
-        mediaType={this.props.parentMessageMedia?.type}
-      />
-    );
-  }
-
-  render() {
-    const { message, media, preview, sender, isOwner } = this.props;
-    return (
-      <div
-        className={classNames('message', this.props.className, {
-          'message--owner': isOwner,
-        })}
-        onContextMenu={this.handleContextMenu}
-        ref={this.wrapperRef}
-        data-message-id={this.props.messageId}
-      >
-        {this.props.showSenderAvatar && (
-          <div {...cn('left')}>
-            <div {...cn('author-avatar')}>
-              <Avatar size='medium' imageURL={`${getProvider().getSourceUrl(sender.profileImage)}`} tabIndex={-1} />
-            </div>
+  return (
+    <div
+      className={classNames('message', className, {
+        'message--owner': isOwner,
+      })}
+      onContextMenu={handleContextMenu}
+      data-message-id={messageId}
+    >
+      {showSenderAvatar && (
+        <div {...cn('left')}>
+          <div {...cn('author-avatar')}>
+            <Avatar size='medium' imageURL={senderAvatarUrl} tabIndex={-1} />
           </div>
-        )}
-        <div
-          {...cn(
-            'block',
-            classNames({
-              edit: this.state.isEditing,
-              reply: this.props.parentMessageText || this.props.parentMessageMediaUrl,
-            })
-          )}
-        >
-          {(message || media || preview) && (
-            <>
-              {!this.state.isEditing && (
-                <>
-                  {this.props.showAuthorName && this.renderAuthorName()}
-                  {media && this.renderMedia(media)}
-                  {this.renderLinkPreview()}
-                  {this.renderParentMessage()}
-                  {this.renderBody()}
-                </>
-              )}
-
-              {this.state.isEditing && this.props.message && (
-                <>
-                  {media && this.renderMedia(media)}
-
-                  <div {...cn('block-edit')}>
-                    <MessageInput
-                      initialValue={this.props.message}
-                      onSubmit={this.editMessage}
-                      getUsersForMentions={this.props.getUsersForMentions}
-                      isEditing={this.state.isEditing}
-                      renderAfterInput={this.editActions}
-                    />
-                  </div>
-                </>
-              )}
-            </>
-          )}
         </div>
-        {this.renderMenu()}
-        {this.renderFloatMenu()}
-        {this.state.isReactionPickerOpen && this.renderReactionPicker()}
-        {this.state.isAttachmentPreviewOpen && (
-          <AttachmentPreviewModal attachment={this.state.attachmentPreview} onClose={this.closeAttachmentPreview} />
+      )}
+      <div
+        {...cn(
+          'block',
+          classNames({
+            edit: isEditing,
+            reply: parentMessageText || parentMessageMediaUrl,
+          })
+        )}
+      >
+        {(message || media || preview) && (
+          <>
+            {!isEditing && (
+              <>
+                {showAuthorName && (
+                  <div {...cn('author-name')}>
+                    {sender.firstName} {sender.lastName}
+                  </div>
+                )}
+                {media && (
+                  <MessageMedia
+                    media={media}
+                    onImageClick={onImageClick}
+                    openAttachmentPreview={openAttachmentPreview}
+                  />
+                )}
+                {renderLinkPreview()}
+                <ParentMessage
+                  message={parentMessageText}
+                  senderIsCurrentUser={parentSenderIsCurrentUser}
+                  senderFirstName={parentSenderFirstName}
+                  senderLastName={parentSenderLastName}
+                  mediaUrl={parentMessageMediaUrl}
+                  mediaName={parentMessageMediaName}
+                  messageId={parentMessageId}
+                  onMessageClick={onParentMessageClick}
+                  mediaType={parentMessageMedia?.type}
+                />
+                {renderBody()}
+              </>
+            )}
+
+            {isEditing && message && (
+              <>
+                {media && (
+                  <MessageMedia
+                    media={media}
+                    onImageClick={onImageClick}
+                    openAttachmentPreview={openAttachmentPreview}
+                  />
+                )}
+                <div {...cn('block-edit')}>
+                  <MessageInput
+                    initialValue={message}
+                    onSubmit={editMessageFromInput}
+                    getUsersForMentions={getUsersForMentions}
+                    isEditing={isEditing}
+                    renderAfterInput={editActions}
+                  />
+                </div>
+              </>
+            )}
+          </>
         )}
       </div>
-    );
-  }
-}
+      {renderMenu()}
+      {renderFloatMenu()}
+      {isReactionPickerOpen && (
+        <div {...cn('reaction-picker-container')}>
+          <ReactionPicker
+            isOpen={isReactionPickerOpen}
+            onOpen={openReactionPicker}
+            onClose={closeReactionPicker}
+            onSelect={onEmojiReaction}
+          />
+        </div>
+      )}
+      {isAttachmentPreviewOpen && (
+        <AttachmentPreviewModal attachment={attachmentPreview} onClose={closeAttachmentPreview} />
+      )}
+    </div>
+  );
+};

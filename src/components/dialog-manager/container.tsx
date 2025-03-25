@@ -18,7 +18,7 @@ export interface Properties extends PublicProperties {
   isBackupDialogOpen: boolean;
   isRewardsDialogOpen: boolean;
   isReportUserModalOpen: boolean;
-  deleteMessageId: number;
+  deleteMessageId: string;
   lightbox: {
     isOpen: boolean;
     media: any[];

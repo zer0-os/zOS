@@ -5,6 +5,7 @@ export interface Media {
   id: string;
   url: string;
   name: string;
+  type: MediaType;
   nativeFile?: File;
   mediaType: MediaType;
   giphy?: any;
@@ -36,7 +37,14 @@ export const dropzoneToMedia = (files: any[]) => {
       mediaType = MediaType.File;
     }
 
-    return { id: Date.now().toString(), url: URL.createObjectURL(file), name: file.name, nativeFile: file, mediaType };
+    return {
+      id: Date.now().toString(),
+      url: URL.createObjectURL(file),
+      name: file.name,
+      nativeFile: file,
+      type: mediaType,
+      mediaType,
+    };
   });
 
   return media;

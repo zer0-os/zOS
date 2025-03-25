@@ -29,6 +29,7 @@ export enum MediaType {
   Video = 'video',
   Audio = 'audio',
   File = 'file',
+  Unknown = 'unknown',
 }
 
 export enum MediaDownloadStatus {
@@ -101,6 +102,13 @@ export interface Message {
   readBy?: User[];
   isPost: boolean;
   reactions?: { [key: string]: number };
+  isHidden?: boolean;
+}
+
+export interface MessageAttachment {
+  name: string;
+  url: string;
+  mimetype?: string;
 }
 
 export interface EditMessageOptions {

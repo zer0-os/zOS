@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import {
   Message as MessageModel,
-  MediaType,
   EditMessageOptions,
   MessageSendStatus,
   Media,
-  MediaDownloadStatus,
   MessageAttachment,
 } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
@@ -17,7 +15,6 @@ import { MessagesFetchState, User } from '../../store/channels';
 import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
-import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import { IconHeart } from '@zero-tech/zui/icons';
 import { Avatar, IconButton } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
@@ -28,10 +25,11 @@ import { ReactionPicker } from './reaction-picker/reaction-picker';
 import { MessageMedia } from './media/messageMedia';
 import { MessageFooter } from './footer/messageFooter';
 import { Reactions } from './reactions/reactions';
-import { Properties as MessageMenuProps } from '../../platform-apps/channels/messages-menu';
 import { useContextMenu } from './hooks/useContextMenu';
+import { MessageMenu, MessageMenuProps } from './menu/messageMenu';
 
 import './styles.scss';
+import { useLoadAttachmentEffect } from './hooks/useLoadAttachmentEffect';
 
 const cn = bemClassName('message');
 
@@ -116,43 +114,13 @@ export const Message: React.FC<Properties> = ({
   const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false);
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
-  const canEditMessage =
-    isOwner && message && sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
-
-  const canDeleteMessage = isOwner && sendStatus !== MessageSendStatus.IN_PROGRESS;
-
-  const canReportUser = !isOwner && sendStatus !== MessageSendStatus.IN_PROGRESS;
-
-  const canReply = sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
-
-  const canViewInfo = sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
-
-  const canDownload = media?.type === MediaType.Image && media?.mimetype !== 'image/gif';
-
-  const canCopy = media?.type === MediaType.Image && media?.mimetype !== 'image/gif';
-
   const isMenuTriggerAlwaysVisible = sendStatus === MessageSendStatus.FAILED;
 
   const senderAvatarUrl = useMemo(() => {
     return getProvider().getSourceUrl(sender.profileImage);
   }, [sender.profileImage]);
 
-  useEffect(() => {
-    if (
-      media &&
-      (!media.url || media.url.startsWith('mxc://')) &&
-      media.downloadStatus !== MediaDownloadStatus.Failed &&
-      media.downloadStatus !== MediaDownloadStatus.Loading &&
-      messagesFetchStatus === MessagesFetchState.SUCCESS
-    ) {
-      loadAttachmentDetails({
-        media,
-        messageId: messageId.toString(),
-      });
-    }
-    // `media` is re-rendering constantly - excluding until we figure out why
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messagesFetchStatus, messageId, loadAttachmentDetails]);
+  useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, messagesFetchStatus);
 
   const openAttachmentPreview = async (attachment: MessageAttachment) => {
     setIsAttachmentPreviewOpen(true);
@@ -308,13 +276,10 @@ export const Message: React.FC<Properties> = ({
     return (
       <MessageMenu
         {...cn('menu-item')}
-        canEdit={canEditMessage}
-        canDelete={canDeleteMessage}
-        canReply={canReply}
-        canReportUser={canReportUser}
-        canViewInfo={canViewInfo}
-        canDownload={canDownload}
-        canCopy={canCopy}
+        isOwner={isOwner}
+        message={message}
+        sendStatus={sendStatus}
+        media={media}
         onDelete={deleteMessage}
         onEdit={toggleEdit}
         onReply={onMenuReply}

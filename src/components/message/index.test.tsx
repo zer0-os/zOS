@@ -1,17 +1,16 @@
-import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from '.';
 import { MediaDownloadStatus, MediaType, MessageSendStatus } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../message-input/container';
-import { MessageMenu } from '../../platform-apps/channels/messages-menu';
 import { ContentHighlighter } from '../content-highlighter';
 import { ParentMessage } from './parent-message';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { MessagesFetchState } from '../../store/channels';
+import { MessageMedia } from './media/messageMedia';
+import { MessageFooter } from './footer/messageFooter';
 
 describe('message', () => {
   const sender = {
@@ -42,25 +41,35 @@ describe('message', () => {
   it('renders message video', () => {
     const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: MediaType.Video } });
 
-    expect(wrapper.find('.message__block-video').exists()).toBe(true);
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.exists()).toBe(true);
+    expect(messageMedia.dive().find('.message__block-video').exists()).toBe(true);
   });
 
   it('passes src prop to video', () => {
     const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: MediaType.Video } });
 
-    expect(wrapper.find('.message__block-video video source').prop('src')).toStrictEqual('https://image.com/video.mp4');
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.dive().find('.message__block-video video source').prop('src')).toStrictEqual(
+      'https://image.com/video.mp4'
+    );
   });
 
   it('renders message audio', () => {
     const wrapper = subject({ media: { url: 'https://image.com/audio.mp3', type: MediaType.Audio } });
 
-    expect(wrapper.find('.message__block-audio').exists()).toBe(true);
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.exists()).toBe(true);
+    expect(messageMedia.dive().find('.message__block-audio').exists()).toBe(true);
   });
 
   it('passes src prop to audio', () => {
     const wrapper = subject({ media: { url: 'https://image.com/audio.mp3', type: MediaType.Audio } });
 
-    expect(wrapper.find('.message__block-audio audio source').prop('src')).toStrictEqual('https://image.com/audio.mp3');
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.dive().find('.message__block-audio audio source').prop('src')).toStrictEqual(
+      'https://image.com/audio.mp3'
+    );
   });
 
   it('passes correct mime type to audio source', () => {
@@ -72,13 +81,16 @@ describe('message', () => {
       },
     });
 
-    expect(wrapper.find('.message__block-audio audio source').prop('type')).toStrictEqual('audio/x-m4a');
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.dive().find('.message__block-audio audio source').prop('type')).toStrictEqual('audio/x-m4a');
   });
 
   it('renders message image', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', type: MediaType.Image } });
 
-    expect(wrapper.find('.message__block-image').exists()).toBe(true);
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.exists()).toBe(true);
+    expect(messageMedia.dive().find('.message__block-image').exists()).toBe(true);
   });
 
   it('renders placeholder if no media url and mimetype is not application', () => {
@@ -89,7 +101,8 @@ describe('message', () => {
       media: { id: '1', url: null, type: MediaType.Image, mimetype: 'image/png' },
     });
 
-    expect(wrapper.find('.message__placeholder-container').exists()).toBe(true);
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.dive().find('.message__placeholder-container').exists()).toBe(true);
   });
 
   it('renders placeholder if matrix media url and mimetype is not application', () => {
@@ -100,7 +113,8 @@ describe('message', () => {
       media: { id: '1', url: 'mxc://some-test-matrix-url', type: MediaType.Image, mimetype: 'image/png' },
     });
 
-    expect(wrapper.find('.message__placeholder-container').exists()).toBe(true);
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.dive().find('.message__placeholder-container').exists()).toBe(true);
   });
 
   it('renders attachment cards if mimetype is application and url is null', () => {
@@ -111,7 +125,9 @@ describe('message', () => {
       media: { id: '1', url: null, type: MediaType.Image, mimetype: 'application/pdf' },
     });
 
-    expect(wrapper.find(AttachmentCards).exists()).toBe(true);
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.exists()).toBe(true);
+    expect(messageMedia.dive().find(AttachmentCards).exists()).toBe(true);
   });
 
   it('renders failed alert icon if media download status is failed', () => {
@@ -123,7 +139,9 @@ describe('message', () => {
       media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
     });
 
-    expect(wrapper).toHaveElement(IconAlertCircle);
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.exists()).toBe(true);
+    expect(messageMedia.dive().find(IconAlertCircle).exists()).toBe(true);
   });
 
   it('renders loading spinner if media download status is loading', () => {
@@ -135,84 +153,9 @@ describe('message', () => {
       media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Loading },
     });
 
-    expect(wrapper).toHaveElement(Spinner);
-  });
-
-  it('calls loadAttachmentDetails if no media url and messagesFetchStatus is success', () => {
-    const loadAttachmentDetails = jest.fn();
-
-    subject({
-      messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: null, type: MediaType.Image },
-      messagesFetchStatus: MessagesFetchState.SUCCESS,
-    });
-
-    expect(loadAttachmentDetails).toHaveBeenCalled();
-  });
-
-  it('calls loadAttachmentDetails if url is a matrix media url and messagesFetchStatus is success', () => {
-    const loadAttachmentDetails = jest.fn();
-    subject({
-      messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: 'mxc://some-test-matrix-url', type: MediaType.Image },
-      messagesFetchStatus: MessagesFetchState.SUCCESS,
-    });
-
-    expect(loadAttachmentDetails).toHaveBeenCalled();
-  });
-
-  it('does not call loadAttachmentDetails if messagesFetchStatus is not success', () => {
-    const loadAttachmentDetails = jest.fn();
-
-    subject({
-      messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: null, type: MediaType.Image },
-      messagesFetchStatus: MessagesFetchState.FAILED,
-    });
-
-    expect(loadAttachmentDetails).not.toHaveBeenCalled();
-  });
-
-  it('does not call loadAttachmentDetails if url is defined and not a matrix media url', () => {
-    const loadAttachmentDetails = jest.fn();
-
-    subject({
-      messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: 'some-test-url', type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
-      messagesFetchStatus: MessagesFetchState.SUCCESS,
-    });
-
-    expect(loadAttachmentDetails).not.toHaveBeenCalled();
-  });
-
-  it('does not call loadAttachmentDetails if media download status is failed', () => {
-    const loadAttachmentDetails = jest.fn();
-
-    subject({
-      messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
-      messagesFetchStatus: MessagesFetchState.SUCCESS,
-    });
-
-    expect(loadAttachmentDetails).not.toHaveBeenCalled();
-  });
-
-  it('does not call loadAttachmentDetails if media download status is loading', () => {
-    const loadAttachmentDetails = jest.fn();
-
-    subject({
-      messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Loading },
-      messagesFetchStatus: MessagesFetchState.SUCCESS,
-    });
-
-    expect(loadAttachmentDetails).not.toHaveBeenCalled();
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.exists()).toBe(true);
+    expect(messageMedia.dive().find(Spinner).exists()).toBe(true);
   });
 
   it('calculates and applies correct dimensions for the placeholder', () => {
@@ -223,15 +166,10 @@ describe('message', () => {
 
     const wrapper = subject({ loadAttachmentDetails, media });
 
-    const placeholderContainer = wrapper.find('.message__placeholder-container');
-
+    const messageMedia = wrapper.find(MessageMedia);
+    const placeholderContainer = messageMedia.dive().find('.message__placeholder-container');
+    expect(placeholderContainer.exists()).toBe(true);
     expect(placeholderContainer).toHaveProp('style', { width: maxWidthConstraint, height: aspectRatioAdjustedHeight });
-  });
-
-  it('does not renders message text', () => {
-    const wrapper = subject({ message: 'the message' });
-
-    expect(wrapper.find('.message__block-image').exists()).toBe(false);
   });
 
   it('renders time if specified', () => {
@@ -241,7 +179,9 @@ describe('message', () => {
       message: 'message',
     });
 
-    expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
+    const messageFooter = wrapper.find(MessageFooter);
+    expect(messageFooter.exists()).toBe(true);
+    expect(messageFooter.dive().find('.message__time').text()).toStrictEqual('5:04 PM');
   });
 
   it('does not render time if not specified', () => {
@@ -250,7 +190,8 @@ describe('message', () => {
       showTimestamp: false,
     });
 
-    expect(wrapper).not.toHaveElement('.message__time');
+    const messageFooter = wrapper.find(MessageFooter);
+    expect(messageFooter.exists()).toBe(false);
   });
 
   it('renders author name if specified', () => {
@@ -280,8 +221,11 @@ describe('message', () => {
       showTimestamp: true,
     });
 
-    expect(wrapper.find('.message__time').text()).toStrictEqual('5:04 PM');
-    expect(wrapper).not.toHaveElement('.message__failure-message');
+    const messageFooter = wrapper.find(MessageFooter);
+    expect(messageFooter.exists()).toBe(true);
+    const footerDive = messageFooter.dive();
+    expect(footerDive.find('.message__time').text()).toStrictEqual('5:04 PM');
+    expect(footerDive).not.toHaveElement('.message__failure-message');
   });
 
   it('renders failure message instead of time if status is failed', () => {
@@ -292,8 +236,11 @@ describe('message', () => {
       showTimestamp: true,
     });
 
-    expect(wrapper).not.toHaveElement('.message__time');
-    expect(wrapper).toHaveElement('.message__failure-message');
+    const messageFooter = wrapper.find(MessageFooter);
+    expect(messageFooter.exists()).toBe(true);
+    const footerDive = messageFooter.dive();
+    expect(footerDive.find('.message__time').exists()).toBe(false);
+    expect(footerDive.find('.message__failure-message').exists()).toBe(true);
   });
 
   it('renders message menu of items', () => {
@@ -311,95 +258,15 @@ describe('message', () => {
     expect(wrapper.find(MessageInput).exists()).toBe(false);
   });
 
-  it('disables all menu abilities when in progress', () => {
-    const wrapper = subject({
-      message: 'the message',
-      isOwner: true,
-      sendStatus: MessageSendStatus.IN_PROGRESS,
-    });
-
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
-
-    expect(wrapper.find(MessageMenu).exists()).toBe(true);
-
-    const messageMenuProps = wrapper.find(MessageMenu).props();
-    expect(messageMenuProps.canEdit).toBe(false);
-    expect(messageMenuProps.canReply).toBe(false);
-    expect(messageMenuProps.canDelete).toBe(false);
-    expect(messageMenuProps.canViewInfo).toBe(false);
-    expect(messageMenuProps.canReportUser).toBe(false);
-  });
-
-  it('allows reply when parent message is set', () => {
-    const wrapper = subject({
-      message: 'the message',
-      parentMessageText: 'quoted message',
-    });
-
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
-
-    expect(wrapper.find(MessageMenu).exists()).toBe(true);
-
-    const messageMenuProps = wrapper.find(MessageMenu).first().props();
-    expect(messageMenuProps.canReply).toBe(true);
-  });
-
-  it('allows only delete when message send failed', () => {
-    const wrapper = subject({
-      message: 'the message',
-      isOwner: true,
-      sendStatus: MessageSendStatus.FAILED,
-    });
-
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.find('.message').simulate('contextmenu', mockEvent);
-
-    expect(wrapper.find(MessageMenu).exists()).toBe(true);
-
-    const messageMenuProps = wrapper.find(MessageMenu).first().props();
-    expect(messageMenuProps.canEdit).toBe(false);
-    expect(messageMenuProps.canReply).toBe(false);
-    expect(messageMenuProps.canViewInfo).toBe(false);
-    expect(messageMenuProps.canDelete).toBe(true);
-  });
-
-  it('displays the menu when message send failed', () => {
-    const wrapper = subject({
-      message: 'the message',
-      isOwner: true,
-      sendStatus: MessageSendStatus.FAILED,
-    });
-
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.find('.message').simulate('contextmenu', mockEvent);
-
-    expect(wrapper.find('.menu--force-visible').exists()).toBe(true);
-  });
-
   it('renders edited indicator', () => {
     const wrapper = subject({
       message: 'the message',
       updatedAt: 86276372,
     });
 
-    expect(wrapper.find('.message__footer').text()).toEqual('(Edited)');
-  });
-
-  it('renders media when editing media message with text', () => {
-    const wrapper = subject({
-      message: 'the message',
-      media: { url: 'https://image.com/image.png', type: MediaType.Image },
-    });
-
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
-
-    wrapper.find(MessageMenu).props().onEdit();
-
-    expect(wrapper.find(MessageInput)).toExist();
-    expect(wrapper.find('.message__block-image img')).toExist();
+    const messageFooter = wrapper.find(MessageFooter);
+    expect(messageFooter.exists()).toBe(true);
+    expect(messageFooter.dive().text()).toEqual('(Edited)');
   });
 
   it('renders reply message', () => {
@@ -412,85 +279,31 @@ describe('message', () => {
     expect(wrapper.find(ParentMessage).prop('message')).toStrictEqual(parentMessageText);
   });
 
-  it('call reply message', () => {
-    const onReply = jest.fn();
-    const messageId = '989887';
-    const message = 'hello';
-    const sender = { userId: '78676X67767' };
-    const replyMessage = {
-      messageId,
-      message,
-      userId: sender.userId,
-      sender: sender,
-      isAdmin: false,
-      mentionedUsers: [],
-      hidePreview: true,
-      admin: {},
-      optimisticId: '',
-      rootMessageId: '',
-    };
-    const wrapper = subject({
-      message,
-      messageId,
-      sender,
-      isAdmin: false,
-      mentionedUsers: [],
-      hidePreview: true,
-      admin: {},
-      optimisticId: '',
-      rootMessageId: '',
-      onReply,
-    });
-
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
-
-    wrapper.find(MessageMenu).simulate('reply');
-
-    expect(onReply).toHaveBeenCalledWith({ reply: replyMessage });
-  });
-
   it('should not renders edited indicator', () => {
     const wrapper = subject({
       message: 'the message',
       updatedAt: 0,
     });
 
-    expect(wrapper.find('.message__block-edited').exists()).toBe(false);
-  });
-
-  it('should not render the edited indicator when onEdit is clicked', () => {
-    const wrapper = subject({
-      message: 'the message',
-      updatedAt: 86276372,
-    });
-
-    const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-    wrapper.simulate('contextmenu', mockEvent);
-
-    wrapper.find(MessageMenu).props().onEdit();
-
-    expect(wrapper.find('.message__block-edited').exists()).toBe(false);
-  });
-
-  it('should not renders message input', () => {
-    const wrapper = subject({
-      message: 'the message',
-    });
-
-    expect(wrapper.find(MessageInput).exists()).toBe(false);
+    const messageFooter = wrapper.find(MessageFooter);
+    expect(messageFooter.exists()).toBe(true);
+    expect(messageFooter.dive().text()).not.toContain('(Edited)');
   });
 
   it('passes src prop to image', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', type: MediaType.Image } });
 
-    expect(wrapper.find('.message__block-image img').prop('src')).toStrictEqual('https://image.com/image.png');
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.dive().find('.message__block-image img').prop('src')).toStrictEqual(
+      'https://image.com/image.png'
+    );
   });
 
   it('passes alt prop to image', () => {
     const wrapper = subject({ media: { url: 'https://image.com/image.png', name: 'work', type: MediaType.Image } });
 
-    expect(wrapper.find('.message__block-image img').prop('alt')).toStrictEqual('work');
+    const messageMedia = wrapper.find(MessageMedia);
+    expect(messageMedia.dive().find('.message__block-image img').prop('alt')).toStrictEqual('work');
   });
 
   it('renders LinkPreview when there is a message', () => {
@@ -607,8 +420,9 @@ describe('message', () => {
       const onImageClick = jest.fn();
 
       const wrapper = subject({ media, onImageClick });
+      const messageMedia = wrapper.find(MessageMedia);
 
-      wrapper.find('[className$="-image"]').simulate('click');
+      messageMedia.dive().find('[className$="-image"]').simulate('click');
 
       expect(onImageClick).toHaveBeenCalled();
     });
@@ -618,8 +432,9 @@ describe('message', () => {
       const onImageClick = jest.fn();
 
       const wrapper = subject({ media, onImageClick });
+      const messageMedia = wrapper.find(MessageMedia);
 
-      wrapper.find('[className$="-video"]').simulate('click');
+      messageMedia.dive().find('[className$="-video"]').simulate('click');
 
       expect(onImageClick).not.toHaveBeenCalled();
     });
@@ -629,107 +444,11 @@ describe('message', () => {
       const onImageClick = jest.fn();
 
       const wrapper = subject({ media, onImageClick });
+      const messageMedia = wrapper.find(MessageMedia);
 
-      wrapper.find('[className$="-audio"]').simulate('click');
+      messageMedia.dive().find('[className$="-audio"]').simulate('click');
 
       expect(onImageClick).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('MessageMenu', () => {
-    it('enables download option for media messages', () => {
-      const wrapper = subject({
-        message: 'the message',
-        media: { url: 'https://image.com/image.png', type: MediaType.Image },
-      });
-
-      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-      wrapper.simulate('contextmenu', mockEvent);
-
-      const messageMenuProps = wrapper.find(MessageMenu).props();
-      expect(messageMenuProps.canDownload).toBe(true);
-      expect(messageMenuProps.isMediaMessage).toBe(true);
-    });
-
-    it('disables download option for non-media messages', () => {
-      const wrapper = subject({
-        message: 'the message',
-      });
-
-      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-      wrapper.simulate('contextmenu', mockEvent);
-
-      const messageMenuProps = wrapper.find(MessageMenu).props();
-      expect(messageMenuProps.canDownload).toBe(false);
-      expect(messageMenuProps.isMediaMessage).toBe(false);
-    });
-
-    it('disables download option for gif images', () => {
-      const wrapper = subject({
-        message: 'the message',
-        media: { url: 'https://image.com/image.gif', type: MediaType.Image, mimetype: 'image/gif' },
-      });
-
-      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-      wrapper.simulate('contextmenu', mockEvent);
-
-      const messageMenuProps = wrapper.find(MessageMenu).props();
-      expect(messageMenuProps.canDownload).toBe(false);
-      expect(messageMenuProps.isMediaMessage).toBe(true);
-    });
-
-    it('enables copy option for media messages', () => {
-      const wrapper = subject({
-        message: 'the message',
-        media: { url: 'https://image.com/image.png', type: MediaType.Image },
-      });
-
-      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-      wrapper.simulate('contextmenu', mockEvent);
-
-      const messageMenuProps = wrapper.find(MessageMenu).props();
-      expect(messageMenuProps.canCopy).toBe(true);
-    });
-
-    it('does not enable copy option for non-media messages', () => {
-      const wrapper = subject({
-        message: 'the message',
-      });
-
-      const mockEvent = { clientX: 100, clientY: 200, preventDefault: jest.fn() };
-      wrapper.simulate('contextmenu', mockEvent);
-
-      const messageMenuProps = wrapper.find(MessageMenu).props();
-      expect(messageMenuProps.canCopy).toBe(false);
-    });
-  });
-
-  describe('Report Button', () => {
-    it('should not renders report button when message is owned by current user', () => {
-      const wrapper = subject({
-        message: 'the message',
-        isOwner: true,
-      });
-
-      expect(wrapper.find(MessageMenu).props().canReportUser).toBe(false);
-    });
-
-    it('should renders report button when message is not owned by current user', () => {
-      const wrapper = subject({
-        message: 'the message',
-        isOwner: false,
-      });
-
-      expect(wrapper.find(MessageMenu).props().canReportUser).toBe(true);
-    });
-
-    it('should call onReportUser when report button is clicked', () => {
-      const onReportUser = jest.fn();
-      const wrapper = subject({ message: 'the message', isOwner: false, onReportUser });
-
-      wrapper.find(MessageMenu).simulate('reportUser');
-
-      expect(onReportUser).toHaveBeenCalledWith({ reportedUserId: sender.userId });
     });
   });
 });

@@ -330,10 +330,7 @@ describe('secure backup status management', () => {
       await subject(ensureUserHasBackup)
         .withReducer(rootReducer, initialState as any)
         .provide([
-          [
-            call(getSecureBackup),
-            { backupInfo: {}, trustInfo: { usable: true, trusted_locally: true }, isLegacy: true },
-          ],
+          [call(getSecureBackup), { backupInfo: {}, trustInfo: { trusted: true }, crossSigning: false }],
         ])
         .not.call(systemInitiatedBackupDialog)
         .run();
@@ -471,10 +468,7 @@ describe(receiveBackupData, () => {
   it('sets metadata if backup exists and is usable', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: false } });
 
-    const { returnValue, storeState } = await subject(
-      receiveBackupData,
-      restoredBackupResponse({ usable: true, trusted_locally: false })
-    )
+    const { returnValue, storeState } = await subject(receiveBackupData, restoredBackupResponse({ trusted: true }))
       .withReducer(rootReducer, state.build())
       .run();
 
@@ -486,10 +480,7 @@ describe(receiveBackupData, () => {
   it('sets metadata if backup exists and is trusted locally', async () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: false, backupRestored: false } });
 
-    const { returnValue, storeState } = await subject(
-      receiveBackupData,
-      restoredBackupResponse({ usable: false, trusted_locally: true })
-    )
+    const { returnValue, storeState } = await subject(receiveBackupData, restoredBackupResponse({ trusted: false }))
       .withReducer(rootReducer, state.build())
       .run();
 
@@ -514,7 +505,7 @@ describe(receiveBackupData, () => {
     const state = new StoreBuilder().withOtherState({ matrix: { backupExists: true, backupRestored: true } });
 
     const backupResponse = unrestoredBackupResponse();
-    backupResponse.isLegacy = true;
+    backupResponse.crossSigning = false;
     const { returnValue, storeState } = await subject(receiveBackupData, backupResponse)
       .withReducer(rootReducer, state.build())
       .run();
@@ -530,9 +521,9 @@ function noBackupResponse(): any {
 }
 
 function unrestoredBackupResponse(): any {
-  return { backupInfo: {}, trustInfo: { usable: false, trusted_locally: false }, isLegacy: false };
+  return { backupInfo: {}, trustInfo: { trusted: false }, crossSigning: true };
 }
 
-function restoredBackupResponse({ usable, trusted_locally } = { usable: true, trusted_locally: true }): any {
-  return { backupInfo: {}, trustInfo: { usable, trusted_locally }, isLegacy: false };
+function restoredBackupResponse({ trusted } = { trusted: true }): any {
+  return { backupInfo: {}, trustInfo: { trusted }, crossSigning: true };
 }

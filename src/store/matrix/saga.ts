@@ -18,6 +18,7 @@ import { performUnlessLogout } from '../utils';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
 import { waitForChatConnectionCompletion } from '../chat/saga';
+import type { MatrixKeyBackupInfo } from '../../lib/chat/types';
 
 export function* saga() {
   yield spawn(listenForUserLogin);
@@ -36,10 +37,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.DebugDeviceList, debugDeviceList);
   yield takeLatest(SagaActionTypes.DebugRoomKeys, debugRoomKeys);
   yield takeLatest(SagaActionTypes.FetchDeviceInfo, getDeviceInfo);
-  yield takeLatest(SagaActionTypes.ResendKeyRequests, resendKeyRequests);
-  yield takeLatest(SagaActionTypes.DiscardOlm, discardOlm);
-  yield takeLatest(SagaActionTypes.RestartOlm, restartOlm);
-  yield takeLatest(SagaActionTypes.ShareHistoryKeys, shareHistoryKeys);
 }
 
 export function* getBackup() {
@@ -52,11 +49,11 @@ export function* getBackup() {
   return backupState;
 }
 
-export function* receiveBackupData(existingBackup) {
+export function* receiveBackupData(existingBackup: MatrixKeyBackupInfo) {
   let backupExists = false;
   let backupRestored = false;
 
-  if (existingBackup?.isLegacy) {
+  if (!existingBackup?.crossSigning) {
     // We used to have historical backups that didn't use cross-signing
     // If a user happens to have that then we treat them as if they don't have a backup
     // Otherwise, carry on as normal
@@ -67,8 +64,7 @@ export function* receiveBackupData(existingBackup) {
     // If the backup is trusted locally or usable, then we consider it restored
     // There are cases when only one of the two is true but in either case
     // we've found the backup is sufficient to decrypt everything
-    backupRestored =
-      backupExists && Boolean(existingBackup.trustInfo.usable || existingBackup.trustInfo.trusted_locally);
+    backupRestored = backupExists && existingBackup.trustInfo.trusted;
   }
 
   yield put(setBackupExists(backupExists));
@@ -183,29 +179,9 @@ export function* getDeviceInfo() {
   yield put(setDeviceId(deviceId));
 }
 
-export function* resendKeyRequests() {
-  const chatClient = yield call(chat.get);
-  yield call([chatClient, chatClient.cancelAndResendKeyRequests]);
-}
-
-export function* discardOlm(action) {
-  const chatClient = yield call(chat.get);
-  yield call([chatClient, chatClient.discardOlmSession], action.payload);
-}
-
-export function* restartOlm(action) {
-  const chatClient = yield call(chat.get);
-  yield call([chatClient, chatClient.resetOlmSession], action.payload);
-}
-
-export function* shareHistoryKeys(action) {
-  const chatClient = yield call(chat.get);
-  yield call([chatClient, chatClient.shareHistoryKeys], action.payload.roomId, action.payload.userIds);
-}
-
 export function* ensureUserHasBackup() {
   const backup = yield call(getSecureBackup);
-  if (!backup?.backupInfo) {
+  if (!backup) {
     if (yield call(performUnlessLogout, delay(10000))) {
       yield call(systemInitiatedBackupDialog);
     }

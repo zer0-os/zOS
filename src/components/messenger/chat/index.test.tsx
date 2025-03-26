@@ -35,6 +35,7 @@ describe(DirectMessageChat, () => {
       otherMembersTypingInRoom: [],
       onAddLabel: () => null,
       onRemoveLabel: () => null,
+
       ...props,
     };
 
@@ -81,7 +82,7 @@ describe(DirectMessageChat, () => {
   });
 
   it('renders users typing', function () {
-    const wrapper = subject({ otherMembersTypingInRoom: ['Johnny', 'Dale'] });
+    const wrapper = subject({ otherMembersTypingInRoom: ['Johnny', 'Dale'], isJoiningConversation: false });
 
     expect(wrapper.find('.direct-message-chat__typing-indicator')).toHaveText('Johnny and Dale are typing...');
   });
@@ -93,7 +94,7 @@ describe(DirectMessageChat, () => {
       const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
       const channelId = 'the-channel-id';
 
-      const wrapper = subject({ sendMessage, activeConversationId: channelId });
+      const wrapper = subject({ sendMessage, activeConversationId: channelId, isJoiningConversation: false });
 
       wrapper.find(MessageInput).simulate('submit', message, mentionedUserIds, []);
 
@@ -110,6 +111,7 @@ describe(DirectMessageChat, () => {
         sendMessage,
         activeConversationId: channelId,
         directMessage: { reply, otherMembers: [] } as any,
+        isJoiningConversation: false,
       });
 
       wrapper.find(MessageInput).simulate('submit', message, [], []);
@@ -124,7 +126,7 @@ describe(DirectMessageChat, () => {
       const message = 'test message';
       const channelId = 'the-channel-id';
 
-      const wrapper = subject({ sendMessage, activeConversationId: channelId });
+      const wrapper = subject({ sendMessage, activeConversationId: channelId, isJoiningConversation: false });
 
       wrapper.find(MessageInput).simulate('submit', message, [], [{ id: 'file-id', name: 'file-name' } as Media]);
 
@@ -134,7 +136,11 @@ describe(DirectMessageChat, () => {
     });
 
     it('searches for user mentions', async () => {
-      const wrapper = subject({ activeConversationId: '5', directMessage: { otherMembers: [] } as any });
+      const wrapper = subject({
+        activeConversationId: '5',
+        directMessage: { otherMembers: [] } as any,
+        isJoiningConversation: false,
+      });
       const input = wrapper.find(MessageInput);
 
       await input.prop('getUsersForMentions')('bob');

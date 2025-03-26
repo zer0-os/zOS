@@ -1,12 +1,10 @@
 export const getLoadingMessage = (progress: number): string => {
-  if (progress < 30) {
+  if (progress < 40) {
     return 'Connecting to server...';
-  } else if (progress < 50) {
+  } else if (progress < 60) {
     return 'Loading conversations...';
-  } else if (progress < 70) {
-    return 'Decrypting messages...';
   } else if (progress < 90) {
-    return 'Finalizing...';
+    return 'Joining conversation...';
   } else {
     return 'Ready to chat!';
   }

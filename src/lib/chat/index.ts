@@ -71,7 +71,7 @@ export interface IChatClient {
   getSecureBackup: () => Promise<MatrixKeyBackupInfo>;
   generateSecureBackup: () => Promise<any>;
   saveSecureBackup: (key: { encodedPrivateKey: string; privateKey: Uint8Array }) => Promise<void>;
-  restoreSecureBackup: (recoveryKey: string) => Promise<void>;
+  restoreSecureBackup: () => Promise<void>;
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
   uploadFile(file: File): Promise<string>;
   downloadFile(fileUrl: string): Promise<any>;
@@ -197,8 +197,8 @@ export class Chat {
     await this.client.saveSecureBackup(key);
   }
 
-  async restoreSecureBackup(recoveryKey: string): Promise<any> {
-    return this.client.restoreSecureBackup(recoveryKey);
+  async restoreSecureBackup(): Promise<any> {
+    return this.client.restoreSecureBackup();
   }
 
   async displayDeviceList(userIds: string[]) {

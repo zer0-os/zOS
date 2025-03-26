@@ -140,13 +140,12 @@ export function* saveBackup(action) {
   }
 }
 
-export function* restoreBackup(action) {
+export function* restoreBackup() {
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
   const chatClient = yield call(chat.get);
-  const recoveryKey = action.payload;
   try {
-    yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
+    yield call([chatClient, chatClient.restoreSecureBackup]);
     yield call(getBackup);
     yield put(setBackupStage(BackupStage.Success));
     yield put(setSuccessMessage('Login successfully verified!'));

@@ -6,7 +6,6 @@ import { withContext as withAuthenticationContext } from '../../components/authe
 import { MessengerChat } from '../../components/messenger/chat';
 import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
-import { JoiningConversationDialog } from '../../components/joining-conversation-dialog';
 import { ConversationsSidekick } from '../../components/sidekick/variants/conversations-sidekick';
 import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
 
@@ -48,9 +47,7 @@ export class Container extends React.Component<Properties> {
           <>
             <ConversationsSidekick />
             <div className={styles.Split}>
-              {this.props.isJoiningConversation && !this.props.isValidConversation && <JoiningConversationDialog />}
-
-              {this.props.isConversationsLoaded && this.props.isValidConversation && <MessengerChat />}
+              <MessengerChat />
             </div>
             {this.props.isConversationsLoaded && <MembersSidekick />}
 

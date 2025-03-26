@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import {
@@ -9,7 +9,6 @@ import {
   MessageAttachment,
 } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
-import { getProvider } from '../../lib/cloudinary/provider';
 import { MessageInput } from '../message-input/container';
 import { MessagesFetchState, User } from '../../store/channels';
 import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
@@ -27,9 +26,9 @@ import { MessageFooter } from './footer/messageFooter';
 import { Reactions } from './reactions/reactions';
 import { useContextMenu } from './hooks/useContextMenu';
 import { MessageMenu, MessageMenuProps } from './menu/messageMenu';
+import { useLoadAttachmentEffect } from './hooks/useLoadAttachmentEffect';
 
 import './styles.scss';
-import { useLoadAttachmentEffect } from './hooks/useLoadAttachmentEffect';
 
 const cn = bemClassName('message');
 
@@ -115,10 +114,6 @@ export const Message: React.FC<Properties> = ({
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
   const isMenuTriggerAlwaysVisible = sendStatus === MessageSendStatus.FAILED;
-
-  const senderAvatarUrl = useMemo(() => {
-    return getProvider().getSourceUrl(sender.profileImage);
-  }, [sender.profileImage]);
 
   useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, messagesFetchStatus);
 
@@ -386,7 +381,7 @@ export const Message: React.FC<Properties> = ({
       {showSenderAvatar && (
         <div {...cn('left')}>
           <div {...cn('author-avatar')}>
-            <Avatar size='medium' imageURL={senderAvatarUrl} tabIndex={-1} />
+            <Avatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
           </div>
         </div>
       )}

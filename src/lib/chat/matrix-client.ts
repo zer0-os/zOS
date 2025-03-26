@@ -1429,7 +1429,7 @@ export class MatrixClient implements IChatClient {
     if (!this.matrix) {
       // The CryptoStore needs to be passed into init to migrate users from the legacy crypto to Rust crypto
       let cryptoStore: CryptoStore;
-      if (window.indexedDB) {
+      if (typeof window !== 'undefined' && window.indexedDB) {
         cryptoStore = new IndexedDBCryptoStore(window.indexedDB, 'matrix-js-sdk:crypto');
       }
 

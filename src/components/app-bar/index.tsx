@@ -147,13 +147,6 @@ export class AppBar extends React.Component<Properties, State> {
               to={messengerPath}
               onLinkClick={this.unhoverContainer}
             />
-            <AppLink
-              Icon={IconWorld}
-              isActive={isActive('explorer')}
-              label='World Explorer'
-              to='/explorer'
-              onLinkClick={this.unhoverContainer}
-            />
             {featureFlags.enableNotificationsApp && (
               <AppLink
                 Icon={this.renderNotificationIcon}
@@ -163,6 +156,13 @@ export class AppBar extends React.Component<Properties, State> {
                 onLinkClick={this.unhoverContainer}
               />
             )}
+            <AppLink
+              Icon={IconWorld}
+              isActive={isActive('explorer')}
+              label='World Explorer'
+              to='/explorer'
+              onLinkClick={this.unhoverContainer}
+            />
             {featureFlags.enableAuraZApp && (
               <AppLink
                 Icon={IconAura}

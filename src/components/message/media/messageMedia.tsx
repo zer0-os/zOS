@@ -36,16 +36,16 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
   });
 
   useEffect(() => {
-    console.log(`xxxx INVIEW: ${isInView} for ${displayUrl?.substring(0, 30)}...`);
+    console.log(`xxxx [MessageMedia] INVIEW: ${isInView} for ${displayUrl?.substring(0, 30)}...`);
 
     if (!isInView) {
-      console.log('XXXXXXXX Setting isImageLoaded to false');
+      console.log('XXXX [MessageMedia] Setting isImageLoaded to false');
       setIsImageLoaded(false);
     }
   }, [isInView, displayUrl]);
 
   const handleImageLoad = () => {
-    console.log(`xxxx IMAGE LOADED loaded: ${displayUrl?.substring(0, 30)}...`);
+    console.log(`xxxx [MessageMedia] IMAGE LOADED: ${displayUrl?.substring(0, 30)}...`);
     setIsImageLoaded(true);
   };
 
@@ -88,8 +88,8 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
   }
 
   if (type === MediaType.Image) {
-    console.log('XXXX BLUR', blurhash);
-    console.log(`xxxx is THIS IN OR NOW INVIEW: ${isInView}`);
+    console.log('XXXX [MessageMedia] BLUR', blurhash);
+    console.log(`xxxx [MessageMedia] is THIS IN OR NOW INVIEW: ${isInView}`);
     return (
       <div ref={elementRef} {...cn('block-image')} onClick={() => onImageClick({ ...media, url: displayUrl })}>
         {isInView && !isUrlRevoked && (
@@ -97,7 +97,7 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
         )}
         {!isInView && blurhash && (
           <>
-            {console.log(`xxxx YYYYY `)}
+            {console.log('xxxx [MessageMedia] Reaching blurhash')}
             <Blurhash hash={blurhash} width={width} height={height} resolutionX={16} resolutionY={12} punch={1.5} />
           </>
         )}

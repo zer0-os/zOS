@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useMatrixImage } from './useMatrixImage';
-import { isFileUploadedToMatrix } from '../chat/matrix/media';
+import { queryClient } from '../web3/rainbowkit/provider';
 
 interface UseBlobUrlMemoryManagementOptions {
   rootMargin?: string;
@@ -35,20 +35,10 @@ export function useBlobUrlMemoryManagement<T extends HTMLElement = HTMLDivElemen
     originalUrlRef.current = url;
   }, [url]);
 
-  // Check if this is a Matrix URL
-  const isMatrixUrl = url ? isFileUploadedToMatrix(url) : false;
-
   // Use the Matrix image hook for Matrix URLs
-  const {
-    data: matrixUrl,
-    isLoading: isMatrixLoading,
-    refreshImage,
-  } = useMatrixImage(isMatrixUrl ? url : undefined, {
+  const { data: effectiveUrl, isPending: isMatrixLoading } = useMatrixImage(url, {
     isThumbnail,
   });
-
-  // The URL we'll actually use - either the Matrix URL or the original URL
-  const effectiveUrl = isMatrixUrl ? matrixUrl : url;
 
   useEffect(() => {
     console.log(`xxxx [Memory Management] URL changed to ${url?.substring(0, 30)}...`);
@@ -58,14 +48,14 @@ export function useBlobUrlMemoryManagement<T extends HTMLElement = HTMLDivElemen
   useEffect(() => {
     if (isInView && isUrlRevoked) {
       console.log(`xxxx [Memory Management] URL was revoked, refreshing image for ${url?.substring(0, 30)}...`);
-      refreshImage();
+      queryClient.invalidateQueries({ queryKey: ['matrix', 'file', { url, isThumbnail }] });
       setIsUrlRevoked(false);
     }
   }, [
     isInView,
+    isThumbnail,
     isUrlRevoked,
     url,
-    refreshImage,
   ]);
 
   // Set up intersection observer to detect when element is in view
@@ -154,7 +144,7 @@ export function useBlobUrlMemoryManagement<T extends HTMLElement = HTMLDivElemen
   return {
     elementRef,
     displayUrl: effectiveUrl,
-    isLoading: isMatrixUrl && isMatrixLoading,
+    isLoading: isMatrixLoading,
     isInView,
     isUrlRevoked,
   };

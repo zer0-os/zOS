@@ -60,9 +60,11 @@ const Sidekick = () => {
    */
   const renderSidekick = !(location.pathname.startsWith('/home') || isActiveZApp) || userProfileStage !== Stage.None;
 
-  if (renderSidekick) {
-    return <SidekickContainer className={!renderSidekick ? styles.sidekickHidden : ''} />;
-  } else if (!isFullscreenZApp) {
-    return <div className={styles.sidekickSpace} />;
-  }
+  return (
+    <>
+      {!renderSidekick && !isFullscreenZApp && <div className={styles.sidekickSpace} />}
+      {/* Sidekick needs to stay in the dom since it's element is referenced in a portal */}
+      <SidekickContainer className={!renderSidekick ? styles.sidekickHidden : ''} />
+    </>
+  );
 };

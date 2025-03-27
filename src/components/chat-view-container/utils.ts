@@ -74,66 +74,44 @@ export function filterAdminMessages(messagesByDay) {
   return filteredMessagesByDay;
 }
 
-export function mapMessagesById(channelMessages) {
-  const messagesById = {};
-  channelMessages.forEach((m) => {
-    messagesById[m.id.toString()] = m;
-    if (m.id.toString() !== m.optimisticId) {
-      messagesById[m.optimisticId] = m;
+// It's important to retain references since these messages come from redux state
+export function processMessages(messages: MessageModel[]) {
+  const messagesById = new Map();
+  const messagesByRootId = new Map();
+
+  messages.forEach((message) => {
+    messagesById.set(message.id, message);
+    if (message.id !== message.optimisticId) {
+      messagesById.set(message.optimisticId, message);
     }
-  });
-  return messagesById;
-}
-
-export function mapMessagesByRootId(channelMessages) {
-  const messagesByRootId = {};
-  channelMessages.forEach((m) => {
-    if (m.rootMessageId) {
-      messagesByRootId[m.rootMessageId] = m;
-    }
-  });
-  return messagesByRootId;
-}
-
-export function linkMessages(channelMessages, messagesById, messagesByRootId) {
-  const messages = [];
-  const mediaMessages = [];
-
-  channelMessages.forEach((m) => {
-    if (m.parentMessageId) {
-      linkParentMessage(m, messagesById, messagesByRootId);
-      messages.push(m);
-    } else if (m.rootMessageId) {
-      linkMediaMessage(m, messagesById, mediaMessages, messages);
-    } else {
-      messages.push(m);
+    if (message.rootMessageId) {
+      messagesByRootId.set(message.rootMessageId, message);
     }
   });
 
-  return messages;
-}
-
-export function linkParentMessage(message, messagesById, messagesByRootId) {
-  const parentMessage = messagesById[message.parentMessageId];
-
-  if (parentMessage) {
-    message.parentMessage = parentMessage;
-    message.parentMessageText = parentMessage.isHidden ? 'Message hidden' : parentMessage.message;
-    message.parentMessageMedia = parentMessage.media;
-
-    const rootMessage = messagesByRootId[parentMessage.id];
-    if (rootMessage) {
-      message.parentMessageMedia = rootMessage.media || message.parentMessageMedia;
+  return messages.map((message) => {
+    // Handle parent messages
+    if (message.parentMessageId) {
+      const parentMessage = messagesById.get(message.parentMessageId);
+      if (parentMessage) {
+        return {
+          ...message,
+          parentMessage,
+          parentMessageText: parentMessage.isHidden ? 'Message hidden' : parentMessage.message,
+          parentMessageMedia: messagesByRootId.get(parentMessage.id)?.media || parentMessage.media,
+        };
+      }
     }
-  }
-}
-
-export function linkMediaMessage(message, messagesById, mediaMessages, messages) {
-  const rootMessage = messagesById[message.rootMessageId];
-  if (rootMessage) {
-    rootMessage.media = { id: message.id, ...message.media };
-    mediaMessages.push(message);
-  } else {
-    messages.push(message);
-  }
+    // Handle media messages
+    if (message.rootMessageId) {
+      const rootMessage = messagesById.get(message.rootMessageId);
+      if (rootMessage) {
+        return {
+          ...message,
+          media: { id: message.id, ...message.media },
+        };
+      }
+    }
+    return message;
+  });
 }

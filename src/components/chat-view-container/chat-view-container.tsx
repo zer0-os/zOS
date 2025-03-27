@@ -23,7 +23,7 @@ import { compareDatesAsc } from '../../lib/date';
 import { openDeleteMessage, openLightbox } from '../../store/dialogs';
 import { openMessageInfo } from '../../store/message-info';
 import { toggleSecondarySidekick } from '../../store/group-management';
-import { linkMessages, mapMessagesById, mapMessagesByRootId } from './utils';
+import { processMessages } from './utils';
 import { openReportUserModal } from '../../store/report-user';
 
 export interface Properties extends PublicProperties {
@@ -174,11 +174,9 @@ export class Container extends React.Component<Properties> {
       (message) => !message.isPost && (!message.admin || message.admin?.type !== AdminMessageType.REACTION)
     );
 
-    const messagesById = mapMessagesById(chatMessages);
-    const messagesByRootId = mapMessagesByRootId(chatMessages);
-    const messages = linkMessages(chatMessages, messagesById, messagesByRootId);
-
-    return messages.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt));
+    return processMessages(chatMessages).sort((a, b) =>
+      compareDatesAsc(a.createdAt.toString(), b.createdAt.toString())
+    );
   }
 
   get sendDisabledMessage() {

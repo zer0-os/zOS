@@ -1,18 +1,22 @@
 import { useEffect } from 'react';
 import { MessagesFetchState } from '../../../store/channels';
-import { MediaDownloadStatus } from '../../../store/messages';
+import { Media, MediaDownloadStatus } from '../../../store/messages';
 
 export const useLoadAttachmentEffect = (
-  media: any,
+  media: Media,
   messageId: string,
   loadAttachmentDetails: (payload: { media: any; messageId: string }) => void,
   messagesFetchStatus: MessagesFetchState
 ) => {
   useEffect(() => {
+    // Images are handled by the useMatrixImage hook
+    const isImage = media?.mimetype?.startsWith('image/');
+
     const isLoading = media?.downloadStatus === MediaDownloadStatus.Loading;
     const hasFailed = media?.downloadStatus === MediaDownloadStatus.Failed;
     if (
       media &&
+      !isImage &&
       (!media.url || media.url.startsWith('mxc://')) &&
       !isLoading &&
       !hasFailed &&

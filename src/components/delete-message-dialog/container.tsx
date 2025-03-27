@@ -12,7 +12,7 @@ export interface PublicProperties {
 
 export interface Properties extends PublicProperties {
   channelId: string;
-  deleteMessageId: number;
+  deleteMessageId: string;
 
   deleteMessage: (payload: PayloadFetchMessages) => void;
 }

@@ -1,12 +1,12 @@
 import moment from 'moment/moment';
 import { AdminMessageType, Message as MessageModel } from '../../store/messages';
 
-export function createMessageGroups(messages: MessageModel[]) {
+export function createMessageGroups(messages: MessageModel[]): MessageModel[][] {
   if (!messages.length) {
     return [];
   }
 
-  const messageGroups = [];
+  const messageGroups: MessageModel[][] = [];
   let groupIndex = 0;
   messageGroups[0] = [messages[0]];
 
@@ -21,7 +21,7 @@ export function createMessageGroups(messages: MessageModel[]) {
   return messageGroups;
 }
 
-function isRelated(message1, message2) {
+function isRelated(message1: MessageModel, message2: MessageModel) {
   return (
     message1 &&
     message2 &&

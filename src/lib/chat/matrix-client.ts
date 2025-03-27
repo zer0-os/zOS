@@ -1410,7 +1410,7 @@ export class MatrixClient implements IChatClient {
     const tempClient = this.sdk.createClient({ baseUrl: config.matrix.homeServerUrl });
 
     const { user_id, device_id, access_token } = await tempClient.loginRequest({
-      type: 'm.login.token',
+      type: 'org.matrix.login.jwt',
       token,
     });
 

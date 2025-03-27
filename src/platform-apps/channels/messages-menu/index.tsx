@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React, { createRef, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import { DropdownMenu } from '@zero-tech/zui/components';
@@ -42,7 +42,7 @@ export interface Properties {
 export class MessageMenu extends React.Component<Properties> {
   ref = createRef();
 
-  renderMenuOption(icon, label) {
+  renderMenuOption(icon: ReactNode, label: string) {
     return (
       <div className={'option'}>
         {icon} {label}

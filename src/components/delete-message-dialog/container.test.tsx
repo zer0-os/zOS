@@ -7,7 +7,7 @@ describe(Container, () => {
     test('channelId', () => {
       const state = new StoreBuilder().withOtherState({
         dialogs: {
-          deleteMessageId: 123,
+          deleteMessageId: '123',
         },
         chat: {
           activeConversationId: 'channel-1',
@@ -24,7 +24,7 @@ describe(Container, () => {
     test('deleteMessageId', () => {
       const state = new StoreBuilder().withOtherState({
         dialogs: {
-          deleteMessageId: 123,
+          deleteMessageId: '123',
         },
         chat: {
           activeConversationId: 'channel-1',
@@ -33,7 +33,7 @@ describe(Container, () => {
 
       expect(Container.mapState(state.build())).toEqual(
         expect.objectContaining({
-          deleteMessageId: 123,
+          deleteMessageId: '123',
         })
       );
     });

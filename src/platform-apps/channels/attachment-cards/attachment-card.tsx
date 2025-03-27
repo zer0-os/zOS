@@ -4,10 +4,11 @@ import classNames from 'classnames';
 import './styles.scss';
 import { IconVideoRecorder, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
+import { MediaType } from '../../../store/messages';
 
 export interface Attachment {
   name: string;
-  type: string;
+  type: MediaType;
   url: string;
 }
 

@@ -84,7 +84,7 @@ describe('DialogManager', () => {
   });
 
   it('renders DeleteMessageContainer when deleteMessageId is present', () => {
-    const wrapper = subject({ deleteMessageId: 123 });
+    const wrapper = subject({ deleteMessageId: '123' });
 
     expect(wrapper).toHaveElement(DeleteMessageContainer);
   });
@@ -135,7 +135,7 @@ describe('DialogManager', () => {
         showRewardsInPopup: false,
       },
       dialogs: {
-        deleteMessageId: 123,
+        deleteMessageId: '123',
         lightbox: {
           isOpen: true,
           media: [],
@@ -168,7 +168,7 @@ describe('DialogManager', () => {
     it('returns deleteMessageId', () => {
       const props = Container.mapState(stateMock);
 
-      expect(props.deleteMessageId).toBe(123);
+      expect(props.deleteMessageId).toBe('123');
     });
 
     it('returns isReportUserModalOpen', () => {

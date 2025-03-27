@@ -10,7 +10,7 @@ export interface MatrixProfileInfo {
 }
 
 export interface ParentMessage {
-  messageId: number;
+  messageId: string;
   userId: string;
 
   message?: string;

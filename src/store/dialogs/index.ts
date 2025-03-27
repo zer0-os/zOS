@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type DialogState = {
-  deleteMessageId: number;
+  deleteMessageId: string;
   lightbox: {
     isOpen: boolean;
     media: any[];
@@ -22,7 +22,7 @@ const slice = createSlice({
   name: 'dialog',
   initialState,
   reducers: {
-    openDeleteMessage: (state, action: PayloadAction<number>) => {
+    openDeleteMessage: (state, action: PayloadAction<string>) => {
       state.deleteMessageId = action.payload;
     },
     closeDeleteMessage: (state) => {

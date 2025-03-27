@@ -1,4 +1,3 @@
-import React from 'react';
 import { shallow } from 'enzyme';
 import { ChatView, Properties } from './chat-view';
 import { Waypoint } from '../waypoint';
@@ -17,10 +16,10 @@ const c = bem('.chat-view');
 
 describe('ChatView', () => {
   const MESSAGES_TEST = [
-    { id: 1111, message: 'what', sender: { userId: '1' }, createdAt: 1658776625730 },
-    { id: 2222, message: 'hello', sender: { userId: '2' }, createdAt: 1659018545428 },
-    { id: 3333, message: 'hey', sender: { userId: '2' }, createdAt: 1659018545428 },
-    { id: 4444, message: 'ok!', sender: { userId: '2' }, createdAt: 1659018545428 },
+    { id: '1111', message: 'what', sender: { userId: '1' }, createdAt: 1658776625730 },
+    { id: '2222', message: 'hello', sender: { userId: '2' }, createdAt: 1659018545428 },
+    { id: '3333', message: 'hey', sender: { userId: '2' }, createdAt: 1659018545428 },
+    { id: '4444', message: 'ok!', sender: { userId: '2' }, createdAt: 1659018545428 },
   ] as MessageModel[];
 
   const subject = (props: Partial<Properties> = {}) => {
@@ -62,10 +61,10 @@ describe('ChatView', () => {
 
     const ids = wrapper.find(Message).map((m) => m.prop('id'));
     expect(ids).toIncludeAllMembers([
-      1111,
-      2222,
-      3333,
-      4444,
+      '1111',
+      '2222',
+      '3333',
+      '4444',
     ]);
   });
 
@@ -83,7 +82,7 @@ describe('ChatView', () => {
 
   it('render a header Date contain Today', () => {
     const messages = [
-      { id: 111, message: 'what', createdAt: Date.now() } as MessageModel,
+      { id: '111', message: 'what', createdAt: Date.now() } as MessageModel,
     ];
 
     const wrapper = subject({ messages });
@@ -237,7 +236,7 @@ describe('ChatView', () => {
     it('returns "Today" for the current day', () => {
       const today = moment().startOf('day');
       const messages = [
-        { id: 111, message: 'what', createdAt: today.valueOf() } as MessageModel,
+        { id: '111', message: 'what', createdAt: today.valueOf() } as MessageModel,
       ];
 
       const wrapper = subject({ messages });
@@ -248,7 +247,7 @@ describe('ChatView', () => {
     it('returns "Yesterday" for the previous day', () => {
       const yesterday = moment().subtract(1, 'day').startOf('day');
       const messages = [
-        { id: 111, message: 'what', createdAt: yesterday.valueOf() } as MessageModel,
+        { id: '111', message: 'what', createdAt: yesterday.valueOf() } as MessageModel,
       ];
 
       const wrapper = subject({ messages });
@@ -260,7 +259,7 @@ describe('ChatView', () => {
       // setting the date here is not ideal as at some point this will fail
       const currentYearDate = moment('2025-12-11'); // Example date within the same year
       const messages = [
-        { id: 111, message: 'what', createdAt: currentYearDate.valueOf() } as MessageModel,
+        { id: '111', message: 'what', createdAt: currentYearDate.valueOf() } as MessageModel,
       ];
 
       const wrapper = subject({ messages });
@@ -270,7 +269,7 @@ describe('ChatView', () => {
     it('returns the formatted date for previous years', () => {
       const previousYearDate = moment('2022-07-16'); // Example date from a previous year
       const messages = [
-        { id: 111, message: 'what', createdAt: previousYearDate.valueOf() } as MessageModel,
+        { id: '111', message: 'what', createdAt: previousYearDate.valueOf() } as MessageModel,
       ];
 
       const wrapper = subject({ messages });

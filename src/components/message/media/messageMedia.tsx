@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AttachmentCards from '../../../platform-apps/channels/attachment-cards';
 import { Media, MediaDownloadStatus, MediaType, MessageAttachment } from '../../../store/messages';
 import { getPlaceholderDimensions } from '../utils';
@@ -6,6 +6,7 @@ import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Blurhash } from 'react-blurhash';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { bemClassName } from '../../../lib/bem';
+import { useBlobUrlMemoryManagement } from '../../../lib/hooks/useBlobMemoryManagement';
 
 const cn = bemClassName('message');
 
@@ -20,9 +21,31 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const blurhash = media['xyz.amorgan.blurhash'];
   const { width, height } = getPlaceholderDimensions(media.width, media.height);
-  const isMatrixUrl = url?.startsWith('mxc://');
+
+  // Use the memory management hook for the media URL
+  const {
+    elementRef,
+    displayUrl,
+    isLoading: isUrlLoading,
+    isInView,
+    isUrlRevoked,
+  } = useBlobUrlMemoryManagement(url, {
+    rootMargin: '50px',
+    threshold: 0.1,
+    isThumbnail: false,
+  });
+
+  useEffect(() => {
+    console.log(`xxxx INVIEW: ${isInView} for ${displayUrl?.substring(0, 30)}...`);
+
+    if (!isInView) {
+      console.log('XXXXXXXX Setting isImageLoaded to false');
+      setIsImageLoaded(false);
+    }
+  }, [isInView, displayUrl]);
 
   const handleImageLoad = () => {
+    console.log(`xxxx IMAGE LOADED loaded: ${displayUrl?.substring(0, 30)}...`);
     setIsImageLoaded(true);
   };
 
@@ -45,12 +68,12 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
     </>
   );
 
-  if (!url || isMatrixUrl) {
-    const isLoading = downloadStatus === MediaDownloadStatus.Loading;
+  if (!displayUrl) {
+    const isLoading = downloadStatus === MediaDownloadStatus.Loading || isUrlLoading;
     const hasFailed = downloadStatus === MediaDownloadStatus.Failed;
 
     return (
-      <>
+      <div ref={elementRef}>
         {mimetype?.includes('application') || mimetype?.includes('audio') ? (
           <AttachmentCards attachments={[{ name, url: '', type: MediaType.Unknown }]} onAttachmentClicked={() => {}} />
         ) : (
@@ -60,14 +83,24 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
             </div>
           </div>
         )}
-      </>
+      </div>
     );
   }
 
   if (type === MediaType.Image) {
+    console.log('XXXX BLUR', blurhash);
+    console.log(`xxxx is THIS IN OR NOW INVIEW: ${isInView}`);
     return (
-      <div {...cn('block-image')} onClick={() => onImageClick(media)}>
-        <img src={url} alt={name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
+      <div ref={elementRef} {...cn('block-image')} onClick={() => onImageClick({ ...media, url: displayUrl })}>
+        {isInView && !isUrlRevoked && (
+          <img src={displayUrl} alt={name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
+        )}
+        {!isInView && blurhash && (
+          <>
+            {console.log(`xxxx YYYYY `)}
+            <Blurhash hash={blurhash} width={width} height={height} resolutionX={16} resolutionY={12} punch={1.5} />
+          </>
+        )}
       </div>
     );
   } else if (type === MediaType.Video) {

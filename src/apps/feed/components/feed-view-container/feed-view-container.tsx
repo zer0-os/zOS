@@ -108,7 +108,9 @@ export class Container extends React.Component<Properties> {
   }
 
   sortMessages(messages: Message[]) {
-    return messages.sort((a, b) => compareDatesAsc(a.createdAt.toString(), b.createdAt.toString())).reverse();
+    return messages
+      .sort((a, b) => compareDatesAsc(new Date(a.createdAt).toISOString(), new Date(b.createdAt).toISOString()))
+      .reverse();
   }
 
   meowPost = (postId, meowAmount) => {

@@ -168,8 +168,8 @@ export class Container extends React.Component<Properties> {
   };
 
   get messages() {
-    if (!this.props.channel?.messages) return { messages: [], mediaMessages: new Map() };
-    return processMessages(this.props.channel.messages);
+    if (!this.channel?.messages) return { messages: [], mediaMessages: new Map() };
+    return processMessages(this.channel.messages);
   }
 
   shouldRenderMessage(message: Message) {
@@ -179,7 +179,9 @@ export class Container extends React.Component<Properties> {
   }
 
   sortMessages(messages: Message[]) {
-    return messages.sort((a, b) => compareDatesAsc(a.createdAt.toString(), b.createdAt.toString()));
+    return messages.sort((a, b) =>
+      compareDatesAsc(new Date(a.createdAt).toISOString(), new Date(b.createdAt).toISOString())
+    );
   }
 
   get sendDisabledMessage() {

@@ -295,10 +295,40 @@ export class MatrixClient implements IChatClient {
     // setting up the secret storage, this suffices for now.
     this.secretStorageKey = recoveryKey;
     try {
+      this.debug('Attempting to restore backup with key format:', {
+        length: recoveryKey.length,
+        containsSpaces: recoveryKey.includes(' '),
+        startsWithSpaces: recoveryKey.startsWith(' '),
+        endsWithSpaces: recoveryKey.endsWith(' '),
+      });
+
+      this.debug('Backup info:', {
+        version: backup.backupInfo.version,
+        algorithm: backup.backupInfo.algorithm,
+        authDataPresent: !!backup.backupInfo.auth_data,
+      });
+
       // Since cross signing is already setup when we get here we don't have to provide signing keys
-      await this.matrix.bootstrapCrossSigning({ authUploadDeviceSigningKeys: async (_makeRequest) => {} });
-      await this.matrix.getCrypto().bootstrapSecretStorage({});
-      await this.matrix.restoreKeyBackupWithSecretStorage(backup.backupInfo);
+      try {
+        await this.matrix.bootstrapCrossSigning({ authUploadDeviceSigningKeys: async (_makeRequest) => {} });
+      } catch (e: any) {
+        this.debug('Error during bootstrapCrossSigning:', e);
+        throw new Error(`Cross-signing bootstrap failed: ${e.message}`);
+      }
+
+      try {
+        await this.matrix.getCrypto().bootstrapSecretStorage({});
+      } catch (e: any) {
+        this.debug('Error during bootstrapSecretStorage:', e);
+        throw new Error(`Secret storage bootstrap failed: ${e.message}`);
+      }
+
+      try {
+        await this.matrix.restoreKeyBackupWithSecretStorage(backup.backupInfo);
+      } catch (e: any) {
+        this.debug('Error during restoreKeyBackupWithSecretStorage:', e);
+        throw new Error(`Key backup restoration failed: ${e.message}`);
+      }
     } catch (e) {
       this.debug('error restoring backup', e);
       throw new Error('Error while restoring backup');

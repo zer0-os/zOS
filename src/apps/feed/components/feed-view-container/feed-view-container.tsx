@@ -7,9 +7,10 @@ import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../sto
 import { fetchPosts, meowPost } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
-import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../../components/chat-view-container/utils';
+import { processMessages } from '../../../../components/chat-view-container/utils';
 import { compareDatesAsc } from '../../../../lib/date';
 import { transferMeow } from '../../../../store/rewards';
+
 interface PublicProperties {
   channelId: string;
 }
@@ -103,11 +104,9 @@ export class Container extends React.Component<Properties> {
       (message) => message.isPost && message.sendStatus === MessageSendStatus.SUCCESS
     );
 
-    const postMessagesById = mapMessagesById(postMessages);
-    const postMessagesByRootId = mapMessagesByRootId(postMessages);
-    const posts = linkMessages(postMessages, postMessagesById, postMessagesByRootId);
-
-    return posts.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt)).reverse();
+    return processMessages(postMessages)
+      .sort((a, b) => compareDatesAsc(a.createdAt.toString(), b.createdAt.toString()))
+      .reverse();
   }
 
   meowPost = (postId, meowAmount) => {

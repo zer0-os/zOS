@@ -84,8 +84,9 @@ export class ChatView extends React.Component<Properties, State> {
   };
 
   getMessagesByDay() {
-    const messages = this.props.sortMessages(this.props.messages).filter(this.props.shouldRenderMessage);
-    return messages.reduce((prev, current) => {
+    const filteredMessages = this.props.messages.filter(this.props.shouldRenderMessage);
+    const sortedMessages = this.props.sortMessages(filteredMessages);
+    return sortedMessages.reduce((prev, current) => {
       const createdAt = moment(current.createdAt);
       const startOfDay = createdAt.startOf('day').format();
       if (!prev[startOfDay]) {

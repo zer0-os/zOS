@@ -25,7 +25,7 @@ import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias 
 import { joinRoom as apiJoinRoom } from './api';
 import { rawConversationsList } from '../channels-list/selectors';
 
-function* initChat(userId, token) {
+function* initChat(userId: string, token: string) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, token, chat.get());
   const id = yield connectionPromise;
   if (id !== userId) {

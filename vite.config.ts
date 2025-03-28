@@ -11,6 +11,14 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'build',
     },
+    optimizeDeps: {
+      exclude: ['@matrix-org/matrix-sdk-crypto-wasm'],
+      esbuildOptions: {
+        supported: {
+          'top-level-await': true,
+        },
+      },
+    },
     plugins: [
       react(),
       svgr({

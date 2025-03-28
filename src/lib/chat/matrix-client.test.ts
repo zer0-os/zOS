@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { EventType, GuestAccess, Preset, ReceiptType, Visibility } from 'matrix-js-sdk';
 import { MatrixClient } from './matrix-client';
 import { setAsDM } from './matrix/utils';
@@ -69,9 +73,14 @@ function stubTimeline(stubs = {}) {
   };
 }
 
+const getCryptoApi = () => ({
+  globalBlacklistUnverifiedDevices: false,
+});
+
 const getSdkClient = (sdkClient = {}) => ({
-  login: async () => ({}),
-  initCrypto: async () => null,
+  loginRequest: async () => ({}),
+  initRustCrypto: async () => null,
+  getCrypto: () => getCryptoApi(),
   startClient: jest.fn(async () => undefined),
   logout: jest.fn(),
   removeAllListeners: jest.fn(),
@@ -114,7 +123,7 @@ function resolveWith<T>(valueToResolve: T) {
   const promise = new Promise((resolve) => {
     theResolve = async () => {
       resolve(valueToResolve);
-      await new Promise((resolve) => setImmediate(resolve));
+      await new Promise((resolve) => resolve(void 0));
       await promise;
     };
   });
@@ -182,7 +191,7 @@ describe('matrix client', () => {
 
       client.connect('@bob:zos-matrix', 'token');
 
-      await new Promise((resolve) => setImmediate(resolve));
+      await new Promise((resolve) => resolve(void 0));
 
       expect(createClient).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -205,7 +214,7 @@ describe('matrix client', () => {
         access_token: matrixSession.accessToken,
       });
 
-      const createClient = jest.fn(() => getSdkClient({ login: mock }));
+      const createClient = jest.fn(() => getSdkClient({ loginRequest: mock }));
 
       const client = subject({ createClient }, { get: () => null });
 
@@ -237,7 +246,7 @@ describe('matrix client', () => {
         access_token: matrixSession.accessToken,
       });
 
-      const createClient = jest.fn(() => getSdkClient({ login: mock }));
+      const createClient = jest.fn(() => getSdkClient({ loginRequest: mock }));
 
       const client = subject({ createClient }, { get: () => null, set: setSession });
 
@@ -1400,46 +1409,59 @@ describe('matrix client', () => {
 
   describe('setReadReceiptPreference', () => {
     it('sets read receipt preference successfully', async () => {
-      const setAccountData = jest.fn().mockResolvedValue(undefined);
-
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ setAccountData })),
+        createClient: jest.fn(() => getSdkClient({})),
       });
 
       await client.connect(null, 'token');
       await client.setReadReceiptPreference(ReadReceiptPreferenceType.Public);
 
-      expect(setAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE, {
-        readReceipts: ReadReceiptPreferenceType.Public,
-      });
+      // Verify the preference was stored
+      const storedPreference = localStorage.getItem(MatrixConstants.READ_RECEIPT_PREFERENCE);
+      expect(storedPreference).toBe(ReadReceiptPreferenceType.Public);
     });
   });
 
   describe('getReadReceiptPreference', () => {
-    it('gets read receipt preference successfully', async () => {
-      const setAccountData = jest.fn().mockResolvedValue(undefined);
+    beforeEach(() => {
+      // Clear any existing preference before each test
+      localStorage.removeItem(MatrixConstants.READ_RECEIPT_PREFERENCE);
+    });
 
-      const getAccountData = jest.fn().mockResolvedValue({
-        event: { content: { readReceipts: ReadReceiptPreferenceType.Public } },
-      });
+    it('gets read receipt preference successfully', async () => {
+      // Set up the preference
+      localStorage.setItem(MatrixConstants.READ_RECEIPT_PREFERENCE, ReadReceiptPreferenceType.Public);
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ setAccountData, getAccountData })),
+        createClient: jest.fn(() => getSdkClient({})),
       });
 
       await client.connect(null, 'token');
-      await client.setReadReceiptPreference(ReadReceiptPreferenceType.Public);
-
       const preference = await client.getReadReceiptPreference();
-      expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
+
       expect(preference).toBe(ReadReceiptPreferenceType.Public);
     });
 
+    it('returns default private preference if not set', async () => {
+      const client = subject({
+        createClient: jest.fn(() => getSdkClient({})),
+      });
+
+      await client.connect(null, 'token');
+      const preference = await client.getReadReceiptPreference();
+
+      expect(preference).toBe(ReadReceiptPreferenceType.Private);
+    });
+
     it('returns default private preference on error', async () => {
-      const getAccountData = jest.fn().mockRejectedValue({});
+      // Mock localStorage.getItem to throw an error
+      const originalGetItem = localStorage.getItem;
+      localStorage.getItem = jest.fn().mockImplementation(() => {
+        throw new Error('Storage error');
+      });
 
       const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getAccountData })),
+        createClient: jest.fn(() => getSdkClient({})),
       });
 
       await client.connect(null, 'token');
@@ -1451,24 +1473,8 @@ describe('matrix client', () => {
       const preference = await client.getReadReceiptPreference();
 
       console.error = originalConsoleError;
+      localStorage.getItem = originalGetItem;
 
-      expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
-      expect(preference).toBe(ReadReceiptPreferenceType.Private);
-    });
-
-    it('returns default private preference if not set', async () => {
-      const getAccountData = jest.fn().mockResolvedValue({
-        event: { content: {} },
-      });
-
-      const client = subject({
-        createClient: jest.fn(() => getSdkClient({ getAccountData })),
-      });
-
-      await client.connect(null, 'token');
-      const preference = await client.getReadReceiptPreference();
-
-      expect(getAccountData).toHaveBeenCalledWith(MatrixConstants.READ_RECEIPT_PREFERENCE);
       expect(preference).toBe(ReadReceiptPreferenceType.Private);
     });
   });

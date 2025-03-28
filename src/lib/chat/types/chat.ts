@@ -1,4 +1,4 @@
-import { Media } from '../../store/messages';
+import { Media } from '../../../store/messages';
 
 export interface ChatMessage {
   [key: string]: any;

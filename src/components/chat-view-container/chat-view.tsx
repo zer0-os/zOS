@@ -84,8 +84,8 @@ export class ChatView extends React.Component<Properties, State> {
   };
 
   getMessagesByDay() {
-    const sortedMessages = this.props.sortMessages(this.props.messages);
-    return sortedMessages.reduce((prev, current) => {
+    const messages = this.props.sortMessages(this.props.messages).filter(this.props.shouldRenderMessage);
+    return messages.reduce((prev, current) => {
       const createdAt = moment(current.createdAt);
       const startOfDay = createdAt.startOf('day').format();
       if (!prev[startOfDay]) {
@@ -141,8 +141,6 @@ export class ChatView extends React.Component<Properties, State> {
 
   renderMessageGroup(groupMessages: MessageModel[]) {
     return groupMessages.map((message, index) => {
-      if (!this.props.shouldRenderMessage(message)) return null;
-
       if (message.isAdmin) {
         return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;
       } else {

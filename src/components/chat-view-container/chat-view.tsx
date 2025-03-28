@@ -29,6 +29,9 @@ export interface Properties {
   id: string;
   name: string;
   messages: MessageModel[];
+  mediaMessages: Map<string, MessageModel>;
+  shouldRenderMessage: (message: MessageModel) => boolean;
+  sortMessages: (messages: MessageModel[]) => MessageModel[];
   hasLoadedMessages: boolean;
   messagesFetchStatus: MessagesFetchState;
   otherMembers: ChannelMember[];
@@ -81,7 +84,9 @@ export class ChatView extends React.Component<Properties, State> {
   };
 
   getMessagesByDay() {
-    return this.props.messages.reduce((prev, current) => {
+    const filteredMessages = this.props.messages.filter(this.props.shouldRenderMessage);
+    const sortedMessages = this.props.sortMessages(filteredMessages);
+    return sortedMessages.reduce((prev, current) => {
       const createdAt = moment(current.createdAt);
       const startOfDay = createdAt.startOf('day').format();
       if (!prev[startOfDay]) {
@@ -93,11 +98,15 @@ export class ChatView extends React.Component<Properties, State> {
   }
 
   openLightbox = (media) => {
-    const { messages } = this.props;
+    const { messages, mediaMessages } = this.props;
 
     const lightboxMedia = messages
-      .filter((message) => !!message.media && [MediaType.Image].includes(message.media.type))
-      .map((m) => m.media);
+      .filter(this.props.shouldRenderMessage)
+      .map((message) => message.media || mediaMessages.get(message.id)?.media)
+      .filter((media) => {
+        return media && [MediaType.Image].includes(media.type);
+      })
+      .reverse();
 
     const lightboxStartIndex = lightboxMedia.indexOf(media);
 
@@ -145,6 +154,8 @@ export class ChatView extends React.Component<Properties, State> {
           this.props.isOneOnOne,
           isUserOwner
         );
+        const mediaMessage = this.props.mediaMessages.get(message.id);
+
         return (
           <div
             key={message.optimisticId || message.id}
@@ -182,6 +193,7 @@ export class ChatView extends React.Component<Properties, State> {
                 sendEmojiReaction={this.props.sendEmojiReaction}
                 reactions={message.reactions}
                 messagesFetchStatus={this.props.messagesFetchStatus}
+                mediaMessage={mediaMessage}
                 {...message}
               />
             </div>

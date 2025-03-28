@@ -75,7 +75,7 @@ export class SettingsPanel extends React.Component<Properties> {
 
     mainBackgroundItems.push({
       id: MainBackground.AnimatedGreenParticles,
-      label: this.renderSelectInputLabel('Greeen Particle (Animated)'),
+      label: this.renderSelectInputLabel('Green Particle (Animated)'),
       onSelect: () => this.setMainBackground(MainBackground.AnimatedGreenParticles),
     });
 

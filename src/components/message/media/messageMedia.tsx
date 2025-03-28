@@ -18,7 +18,6 @@ interface MessageMediaProps {
 
 export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: MessageMediaProps) => {
   const { type, url, name, downloadStatus, mimetype, file } = media;
-  console.log('XXXX MessageMedia render:', file?.url);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const blurhash = media['xyz.amorgan.blurhash'];
   const { width, height } = getPlaceholderDimensions(media.width, media.height);

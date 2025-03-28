@@ -4,6 +4,7 @@ import { getAccessToken, mxcUrlToHttp } from '..';
 import { encode } from 'blurhash';
 import { getFileFromCache, putFileToCache } from '../../storage/media-cache';
 import { EncryptedFile } from 'matrix-js-sdk/lib/types';
+import { isEncryptedFile } from './types';
 
 /**
  * Read the file as an ArrayBuffer.
@@ -130,9 +131,13 @@ export function isFileUploadedToMatrix(url: string): boolean {
 }
 
 // https://github.com/matrix-org/matrix-react-sdk/blob/develop/src/utils/DecryptFile.ts#L50
-export async function decryptFile(encryptedFile: EncryptedFile, mimetype: string): Promise<string | null> {
+export async function decryptFile(
+  encryptedFile: EncryptedFile | { url: string },
+  mimetype: string,
+  options: { isThumbnail?: boolean } = {}
+): Promise<string | null> {
   // Determine if the file is encrypted by checking for encryption-related fields
-  const isEncrypted = !!(encryptedFile.key && encryptedFile.iv && encryptedFile.hashes?.sha256);
+  const isEncrypted = isEncryptedFile(encryptedFile);
 
   const url = encryptedFile.url;
   let response;
@@ -143,7 +148,7 @@ export async function decryptFile(encryptedFile: EncryptedFile, mimetype: string
       return blobUrl;
     }
 
-    response = await fetch(mxcUrlToHttp(url), {
+    response = await fetch(mxcUrlToHttp(url, options.isThumbnail), {
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
       },

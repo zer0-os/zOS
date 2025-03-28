@@ -6,6 +6,7 @@ import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Blurhash } from 'react-blurhash';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { bemClassName } from '../../../lib/bem';
+import { useMatrixImage } from '../../../lib/hooks/useMatrixImage';
 
 const cn = bemClassName('message');
 
@@ -16,11 +17,14 @@ interface MessageMediaProps {
 }
 
 export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: MessageMediaProps) => {
-  const { type, url, name, downloadStatus, mimetype } = media;
+  const { type, url, name, downloadStatus, mimetype, file } = media;
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const blurhash = media['xyz.amorgan.blurhash'];
   const { width, height } = getPlaceholderDimensions(media.width, media.height);
-  const isMatrixUrl = url?.startsWith('mxc://');
+
+  const mediaUrl = file?.url || url;
+  const { data: imageUrl, isPending: isImageLoading } = useMatrixImage(file || mediaUrl);
+  const displayImageUrl = imageUrl || mediaUrl;
 
   const handleImageLoad = () => {
     setIsImageLoaded(true);
@@ -45,8 +49,8 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
     </>
   );
 
-  if (!url || isMatrixUrl) {
-    const isLoading = downloadStatus === MediaDownloadStatus.Loading;
+  if (!mediaUrl && !imageUrl) {
+    const isLoading = downloadStatus === MediaDownloadStatus.Loading || isImageLoading;
     const hasFailed = downloadStatus === MediaDownloadStatus.Failed;
 
     return (
@@ -66,8 +70,13 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
 
   if (type === MediaType.Image) {
     return (
-      <div {...cn('block-image')} onClick={() => onImageClick(media)}>
-        <img src={url} alt={name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
+      <div {...cn('block-image')} onClick={() => onImageClick({ ...media, url: displayImageUrl })}>
+        <img
+          src={displayImageUrl}
+          alt={name}
+          onLoad={handleImageLoad}
+          style={!isImageLoaded ? { width, height } : {}}
+        />
       </div>
     );
   } else if (type === MediaType.Video) {

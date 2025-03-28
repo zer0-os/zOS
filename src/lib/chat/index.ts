@@ -420,8 +420,8 @@ export function getAccessToken(): string | null {
   return chat.get().matrix.getAccessToken();
 }
 
-export function mxcUrlToHttp(mxcUrl: string): string {
-  return chat.get().matrix.mxcUrlToHttp(mxcUrl);
+export function mxcUrlToHttp(mxcUrl: string, isThumbnail: boolean = false): string {
+  return chat.get().matrix.mxcUrlToHttp(mxcUrl, isThumbnail);
 }
 
 export function getProfileInfo(userId: string): Promise<{

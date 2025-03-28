@@ -1,3 +1,5 @@
+import { EncryptedFile } from 'matrix-js-sdk/lib/types';
+
 export enum ConnectionStatus {
   Connected = 'connected',
   Connecting = 'connecting',
@@ -46,4 +48,8 @@ export enum NotifiableEventType {
 export enum ReadReceiptPreferenceType {
   Public = 'public',
   Private = 'private',
+}
+
+export function isEncryptedFile(file: EncryptedFile | { url: string }): file is EncryptedFile {
+  return 'key' in file && 'iv' in file && 'hashes' in file && 'sha256' in file.hashes;
 }

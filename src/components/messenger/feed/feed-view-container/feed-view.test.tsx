@@ -18,6 +18,8 @@ describe('FeedView', () => {
       postMessages: [],
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
+      shouldRenderMessage: () => true,
+      sortMessages: (posts) => posts,
       fetchPosts: jest.fn(),
       onFetchMore: jest.fn(),
       loadAttachmentDetails: jest.fn(),

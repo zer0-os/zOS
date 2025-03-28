@@ -3,7 +3,7 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { Payload as PayloadFetchPost } from '../../../../store/posts/saga';
 import { Channel, denormalize } from '../../../../store/channels';
-import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
+import { Media, Message, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
 import { fetchPosts, meowPost } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
@@ -98,15 +98,17 @@ export class Container extends React.Component<Properties> {
   };
 
   get postMessages() {
-    const allMessages = this.props.channel?.messages || [];
+    if (!this.props.channel?.messages) return [];
+    const { messages } = processMessages(this.props.channel.messages);
+    return messages;
+  }
 
-    const postMessages = allMessages.filter(
-      (message) => message.isPost && message.sendStatus === MessageSendStatus.SUCCESS
-    );
+  shouldRenderMessage(message: Message) {
+    return !message.rootMessageId && message.isPost && message.sendStatus === MessageSendStatus.SUCCESS;
+  }
 
-    return processMessages(postMessages)
-      .sort((a, b) => compareDatesAsc(a.createdAt.toString(), b.createdAt.toString()))
-      .reverse();
+  sortMessages(messages: Message[]) {
+    return messages.sort((a, b) => compareDatesAsc(a.createdAt.toString(), b.createdAt.toString())).reverse();
   }
 
   meowPost = (postId, meowAmount) => {
@@ -122,6 +124,8 @@ export class Container extends React.Component<Properties> {
           channelId={this.props.activeConversationId}
           currentUserId={this.props.user?.data?.id}
           postMessages={this.postMessages}
+          shouldRenderMessage={this.shouldRenderMessage}
+          sortMessages={this.sortMessages}
           fetchPosts={this.props.fetchPosts}
           onFetchMore={this.fetchMorePosts}
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}

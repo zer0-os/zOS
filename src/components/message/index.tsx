@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import {
@@ -46,6 +46,7 @@ interface Properties extends MessageModel {
   onReply: ({ reply }: { reply: ParentMessageType }) => void;
   isOwner?: boolean;
   messageId?: string;
+  mediaMessage?: MessageModel;
   updatedAt: number;
   parentMessageText?: string;
   parentSenderIsCurrentUser?: boolean;
@@ -88,7 +89,8 @@ export const Message: React.FC<Properties> = ({
   sendEmojiReaction,
   onReportUser,
   messagesFetchStatus,
-  media,
+  media: baseMedia,
+  mediaMessage,
   message,
   parentMessageText,
   parentMessageMedia,
@@ -113,9 +115,16 @@ export const Message: React.FC<Properties> = ({
   const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false);
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
+  const media = useMemo(() => {
+    return mediaMessage ? mediaMessage.media : baseMedia;
+  }, [mediaMessage, baseMedia]);
+  const mediaMessageId = useMemo(() => {
+    return mediaMessage ? mediaMessage.id : messageId;
+  }, [mediaMessage, messageId]);
+
   const isMenuTriggerAlwaysVisible = sendStatus === MessageSendStatus.FAILED;
 
-  useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, messagesFetchStatus);
+  useLoadAttachmentEffect(media, mediaMessageId, loadAttachmentDetails, messagesFetchStatus);
 
   const openAttachmentPreview = async (attachment: MessageAttachment) => {
     setIsAttachmentPreviewOpen(true);

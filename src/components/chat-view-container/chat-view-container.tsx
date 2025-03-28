@@ -10,8 +10,8 @@ import {
   EditMessageOptions,
   loadAttachmentDetails,
   Media,
-  AdminMessageType,
   sendEmojiReaction,
+  AdminMessageType,
 } from '../../store/messages';
 import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
@@ -19,12 +19,12 @@ import { AuthenticationState } from '../../store/authentication/types';
 import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import { openBackupDialog } from '../../store/matrix';
 import { ParentMessage } from '../../lib/chat/types';
-import { compareDatesAsc } from '../../lib/date';
 import { openDeleteMessage, openLightbox } from '../../store/dialogs';
 import { openMessageInfo } from '../../store/message-info';
 import { toggleSecondarySidekick } from '../../store/group-management';
 import { processMessages } from './utils';
 import { openReportUserModal } from '../../store/report-user';
+import { compareDatesAsc } from '../../lib/date';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -168,15 +168,18 @@ export class Container extends React.Component<Properties> {
   };
 
   get messages() {
-    const allMessages = this.channel?.messages || [];
+    if (!this.props.channel?.messages) return { messages: [], mediaMessages: new Map() };
+    return processMessages(this.props.channel.messages);
+  }
 
-    const chatMessages = allMessages.filter(
-      (message) => !message.isPost && (!message.admin || message.admin?.type !== AdminMessageType.REACTION)
+  shouldRenderMessage(message: Message) {
+    return (
+      !message.rootMessageId && !message.isPost && (!message.admin || message.admin?.type !== AdminMessageType.REACTION)
     );
+  }
 
-    return processMessages(chatMessages).sort((a, b) =>
-      compareDatesAsc(a.createdAt.toString(), b.createdAt.toString())
-    );
+  sortMessages(messages: Message[]) {
+    return messages.sort((a, b) => compareDatesAsc(a.createdAt.toString(), b.createdAt.toString()));
   }
 
   get sendDisabledMessage() {
@@ -228,7 +231,10 @@ export class Container extends React.Component<Properties> {
           className={classNames(this.props.className)}
           id={this.channel.id}
           name={this.channel.name}
-          messages={this.messages}
+          messages={this.messages.messages}
+          mediaMessages={this.messages.mediaMessages}
+          shouldRenderMessage={this.shouldRenderMessage}
+          sortMessages={this.sortMessages}
           messagesFetchStatus={this.channel.messagesFetchStatus}
           otherMembers={this.channel.otherMembers}
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}

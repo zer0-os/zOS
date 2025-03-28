@@ -30,13 +30,13 @@ describe('FeedViewContainer', () => {
 
   it('passes postMessages to child', () => {
     const messages = [
-      { id: 'post-one', message: 'First post', isPost: true, sendStatus: MessageSendStatus.SUCCESS },
       { id: 'post-two', message: 'Second post', isPost: true, sendStatus: MessageSendStatus.SUCCESS },
+      { id: 'post-one', message: 'First post', isPost: true, sendStatus: MessageSendStatus.SUCCESS },
     ];
 
     const wrapper = subject({ channel: { messages } });
 
-    expect(wrapper.find(FeedView).prop('postMessages')).toStrictEqual(messages.reverse());
+    expect(wrapper.find(FeedView).prop('postMessages')).toStrictEqual(messages);
   });
 
   it('passes empty array for postMessages to child when channel has no messages', () => {

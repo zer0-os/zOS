@@ -29,6 +29,9 @@ export interface Properties {
   id: string;
   name: string;
   messages: MessageModel[];
+  mediaMessages: Map<string, MessageModel>;
+  shouldRenderMessage: (message: MessageModel) => boolean;
+  sortMessages: (messages: MessageModel[]) => MessageModel[];
   hasLoadedMessages: boolean;
   messagesFetchStatus: MessagesFetchState;
   otherMembers: ChannelMember[];
@@ -81,7 +84,8 @@ export class ChatView extends React.Component<Properties, State> {
   };
 
   getMessagesByDay() {
-    return this.props.messages.reduce((prev, current) => {
+    const sortedMessages = this.props.sortMessages(this.props.messages);
+    return sortedMessages.reduce((prev, current) => {
       const createdAt = moment(current.createdAt);
       const startOfDay = createdAt.startOf('day').format();
       if (!prev[startOfDay]) {
@@ -93,11 +97,14 @@ export class ChatView extends React.Component<Properties, State> {
   }
 
   openLightbox = (media) => {
-    const { messages } = this.props;
+    const { messages, mediaMessages } = this.props;
 
     const lightboxMedia = messages
-      .filter((message) => !!message.media && [MediaType.Image].includes(message.media.type))
-      .map((m) => m.media);
+      .filter((message) => {
+        const messageMedia = message.media || mediaMessages.get(message.id)?.media;
+        return !!messageMedia && [MediaType.Image].includes(messageMedia.type);
+      })
+      .map((m) => m.media || mediaMessages.get(m.id)?.media);
 
     const lightboxStartIndex = lightboxMedia.indexOf(media);
 
@@ -134,6 +141,8 @@ export class ChatView extends React.Component<Properties, State> {
 
   renderMessageGroup(groupMessages: MessageModel[]) {
     return groupMessages.map((message, index) => {
+      if (!this.props.shouldRenderMessage(message)) return null;
+
       if (message.isAdmin) {
         return <AdminMessageContainer key={message.optimisticId || message.id} message={message} />;
       } else {
@@ -145,6 +154,8 @@ export class ChatView extends React.Component<Properties, State> {
           this.props.isOneOnOne,
           isUserOwner
         );
+        const mediaMessage = this.props.mediaMessages.get(message.id);
+
         return (
           <div
             key={message.optimisticId || message.id}
@@ -182,6 +193,7 @@ export class ChatView extends React.Component<Properties, State> {
                 sendEmojiReaction={this.props.sendEmojiReaction}
                 reactions={message.reactions}
                 messagesFetchStatus={this.props.messagesFetchStatus}
+                mediaMessage={mediaMessage}
                 {...message}
               />
             </div>

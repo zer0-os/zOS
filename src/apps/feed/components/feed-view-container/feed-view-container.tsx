@@ -3,13 +3,14 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { Payload as PayloadFetchPost } from '../../../../store/posts/saga';
 import { Channel, denormalize } from '../../../../store/channels';
-import { Media, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
+import { Media, Message, MessageSendStatus, loadAttachmentDetails } from '../../../../store/messages';
 import { fetchPosts, meowPost } from '../../../../store/posts';
 import { AuthenticationState } from '../../../../store/authentication/types';
 import { FeedView } from './feed-view';
-import { linkMessages, mapMessagesById, mapMessagesByRootId } from '../../../../components/chat-view-container/utils';
+import { processMessages } from '../../../../components/chat-view-container/utils';
 import { compareDatesAsc } from '../../../../lib/date';
 import { transferMeow } from '../../../../store/rewards';
+
 interface PublicProperties {
   channelId: string;
 }
@@ -97,17 +98,19 @@ export class Container extends React.Component<Properties> {
   };
 
   get postMessages() {
-    const allMessages = this.props.channel?.messages || [];
+    if (!this.props.channel?.messages) return [];
+    const { messages } = processMessages(this.props.channel.messages);
+    return messages;
+  }
 
-    const postMessages = allMessages.filter(
-      (message) => message.isPost && message.sendStatus === MessageSendStatus.SUCCESS
-    );
+  shouldRenderMessage(message: Message) {
+    return !message.rootMessageId && message.isPost && message.sendStatus === MessageSendStatus.SUCCESS;
+  }
 
-    const postMessagesById = mapMessagesById(postMessages);
-    const postMessagesByRootId = mapMessagesByRootId(postMessages);
-    const posts = linkMessages(postMessages, postMessagesById, postMessagesByRootId);
-
-    return posts.sort((a, b) => compareDatesAsc(a.createdAt, b.createdAt)).reverse();
+  sortMessages(messages: Message[]) {
+    return messages
+      .sort((a, b) => compareDatesAsc(new Date(a.createdAt).toISOString(), new Date(b.createdAt).toISOString()))
+      .reverse();
   }
 
   meowPost = (postId, meowAmount) => {
@@ -123,6 +126,8 @@ export class Container extends React.Component<Properties> {
           channelId={this.props.activeConversationId}
           currentUserId={this.props.user?.data?.id}
           postMessages={this.postMessages}
+          shouldRenderMessage={this.shouldRenderMessage}
+          sortMessages={this.sortMessages}
           fetchPosts={this.props.fetchPosts}
           onFetchMore={this.fetchMorePosts}
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}

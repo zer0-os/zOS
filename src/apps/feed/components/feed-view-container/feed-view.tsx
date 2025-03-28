@@ -21,6 +21,8 @@ export interface Properties {
   messagesFetchStatus: MessagesFetchState;
   userMeowBalance: string;
   channelId?: string;
+  shouldRenderMessage: (message: MessageModel) => boolean;
+  sortMessages: (messages: MessageModel[]) => MessageModel[];
   fetchPosts: (payload: PayloadFetchPosts) => void;
   onFetchMore: () => void;
   loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
@@ -43,6 +45,8 @@ export class FeedView extends React.Component<Properties> {
                 <Posts
                   currentUserId={this.props.currentUserId}
                   postMessages={this.props.postMessages}
+                  shouldRenderMessage={this.props.shouldRenderMessage}
+                  sortMessages={this.props.sortMessages}
                   loadAttachmentDetails={this.props.loadAttachmentDetails}
                   userMeowBalance={this.props.userMeowBalance}
                   meowPost={this.props.meowPost}

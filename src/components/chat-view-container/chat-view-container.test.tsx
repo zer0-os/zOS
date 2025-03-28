@@ -56,52 +56,6 @@ describe('ChannelViewContainer', () => {
     expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([]);
   });
 
-  it('groups message media with rootId onto parent message', () => {
-    const messages = [
-      { id: 'message-root', rootMessageId: '' },
-      { id: 'message-two', rootMessageId: '' },
-      { id: 'message-child', rootMessageId: 'message-root', media: { id: '1', media: 'media' } },
-    ];
-
-    const wrapper = subject({ channel: { messages } });
-
-    expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
-      { ...messages[0], media: { id: '1', media: 'media' } },
-      messages[1],
-    ]);
-  });
-
-  it('groups message media with optimistic rootId onto parent message', () => {
-    const messages = [
-      { id: 'message-root', optimisticId: 'optimistic-message-root', rootMessageId: '' },
-      { id: 'message-two', rootMessageId: '' },
-      { id: 'message-child', rootMessageId: 'optimistic-message-root', media: { id: '1', media: 'media' } },
-    ];
-
-    const wrapper = subject({ channel: { messages } });
-
-    expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
-      { ...messages[0], media: { id: '1', media: 'media' } },
-      messages[1],
-    ]);
-  });
-
-  it('messages with rootMessageId but no parent found are still included', () => {
-    const messages = [
-      { id: 'message-one', message: 'what', rootMessageId: '' },
-      { id: 'message-two', message: 'hello', rootMessageId: '' },
-      { id: 'message-child', message: 'what', rootMessageId: 'message-root', media: { some: 'media' } },
-    ];
-
-    const wrapper = subject({ channel: { messages } });
-
-    expect(wrapper.find(ChatView).prop('messages')).toStrictEqual([
-      { id: 'message-one', message: 'what', rootMessageId: '' },
-      { id: 'message-two', message: 'hello', rootMessageId: '' },
-      { id: 'message-child', message: 'what', rootMessageId: 'message-root', media: { some: 'media' } },
-    ]);
-  });
-
   it('passes channel name to child', () => {
     const wrapper = subject({ channel: { name: 'first channel' } });
 

@@ -154,7 +154,14 @@ export function* restoreBackup(action) {
     yield call(getBackup);
     yield put(setBackupStage(BackupStage.Success));
     yield put(setSuccessMessage('Login successfully verified!'));
-  } catch (e) {
+  } catch (e: any) {
+    console.error('Backup restoration failed:', {
+      errorName: e.name,
+      errorMessage: e.message,
+      errorStack: e.stack,
+      keyLength: recoveryKey.length,
+    });
+
     yield put(setErrorMessage('Failed to restore backup: Check your recovery key and try again'));
   }
 }

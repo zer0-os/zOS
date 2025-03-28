@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AttachmentCards from '../../../platform-apps/channels/attachment-cards';
 import { Media, MediaDownloadStatus, MediaType, MessageAttachment } from '../../../store/messages';
 import { getPlaceholderDimensions } from '../utils';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Blurhash } from 'react-blurhash';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { useMatrixImage } from '../../../lib/hooks/useMatrixImage';
 import { bemClassName } from '../../../lib/bem';
 
 const cn = bemClassName('message');
@@ -16,11 +17,23 @@ interface MessageMediaProps {
 }
 
 export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: MessageMediaProps) => {
-  const { type, url, name, downloadStatus, mimetype } = media;
+  const { type, url, name, downloadStatus, mimetype, file } = media;
+  console.log('XXXX MessageMedia render:', file?.url);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const blurhash = media['xyz.amorgan.blurhash'];
   const { width, height } = getPlaceholderDimensions(media.width, media.height);
-  const isMatrixUrl = url?.startsWith('mxc://');
+
+  // For encrypted files, we need to use the file.url instead of the media.url
+  const matrixUrl = file?.url || url;
+  const isMatrixUrl = matrixUrl?.startsWith('mxc://');
+
+  // Use the Matrix image hook for Matrix URLs
+  const { data: processedUrl, isLoading: isMatrixImageLoading } = useMatrixImage(isMatrixUrl ? matrixUrl : undefined);
+
+  // reset isImageLoaded when the URL changes
+  useEffect(() => {
+    setIsImageLoaded(false);
+  }, [processedUrl]);
 
   const handleImageLoad = () => {
     setIsImageLoaded(true);
@@ -45,8 +58,8 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
     </>
   );
 
-  if (!url || isMatrixUrl) {
-    const isLoading = downloadStatus === MediaDownloadStatus.Loading;
+  if ((!matrixUrl || isMatrixUrl) && !processedUrl) {
+    const isLoading = downloadStatus === MediaDownloadStatus.Loading || isMatrixImageLoading;
     const hasFailed = downloadStatus === MediaDownloadStatus.Failed;
 
     return (
@@ -64,10 +77,11 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
     );
   }
 
+  const displayUrl = processedUrl || matrixUrl;
   if (type === MediaType.Image) {
     return (
-      <div {...cn('block-image')} onClick={() => onImageClick(media)}>
-        <img src={url} alt={name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
+      <div {...cn('block-image')} onClick={() => onImageClick({ ...media, url: displayUrl })}>
+        <img src={displayUrl} alt={name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
       </div>
     );
   } else if (type === MediaType.Video) {

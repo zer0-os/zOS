@@ -47,6 +47,15 @@ export interface Media {
   downloadStatus?: MediaDownloadStatus;
   blurhash?: string;
   mimetype?: string;
+  file?: {
+    url: string;
+    key: string;
+    iv: string;
+    hashes: {
+      sha256: string;
+    };
+    v: string;
+  };
 }
 
 export interface MessagesResponse {

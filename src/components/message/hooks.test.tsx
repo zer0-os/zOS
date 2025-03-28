@@ -12,7 +12,7 @@ import { useContextMenu } from './hooks/useContextMenu';
 describe('loadAttachmentEffect', () => {
   it('calls loadAttachmentDetails if no media url and messagesFetchStatus is success', () => {
     const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image };
+    const media = { url: null, type: MediaType.Image, height: 100, width: 100, name: 'test-name' };
     const messageId = 'test-id';
 
     renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
@@ -25,7 +25,13 @@ describe('loadAttachmentEffect', () => {
 
   it('calls loadAttachmentDetails if url is a matrix media url and messagesFetchStatus is success', () => {
     const loadAttachmentDetails = jest.fn();
-    const media = { url: 'mxc://some-test-matrix-url', type: MediaType.Image };
+    const media = {
+      url: 'mxc://some-test-matrix-url',
+      type: MediaType.Image,
+      height: 100,
+      width: 100,
+      name: 'test-name',
+    };
     const messageId = 'test-id';
 
     renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
@@ -38,7 +44,7 @@ describe('loadAttachmentEffect', () => {
 
   it('does not call loadAttachmentDetails if messagesFetchStatus is not success', () => {
     const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image };
+    const media = { url: null, type: MediaType.Image, height: 100, width: 100, name: 'test-name' };
     const messageId = 'test-id';
 
     renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.FAILED));
@@ -48,7 +54,14 @@ describe('loadAttachmentEffect', () => {
 
   it('does not call loadAttachmentDetails if url is defined and not a matrix media url', () => {
     const loadAttachmentDetails = jest.fn();
-    const media = { url: 'some-test-url', type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed };
+    const media = {
+      url: 'some-test-url',
+      type: MediaType.Image,
+      downloadStatus: MediaDownloadStatus.Failed,
+      height: 100,
+      width: 100,
+      name: 'test-name',
+    };
     const messageId = 'test-id';
 
     renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
@@ -58,7 +71,14 @@ describe('loadAttachmentEffect', () => {
 
   it('does not call loadAttachmentDetails if media download status is failed', () => {
     const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed };
+    const media = {
+      url: null,
+      type: MediaType.Image,
+      downloadStatus: MediaDownloadStatus.Failed,
+      height: 100,
+      width: 100,
+      name: 'test-name',
+    };
     const messageId = 'test-id';
 
     renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
@@ -68,7 +88,31 @@ describe('loadAttachmentEffect', () => {
 
   it('does not call loadAttachmentDetails if media download status is loading', () => {
     const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Loading };
+    const media = {
+      url: null,
+      type: MediaType.Image,
+      downloadStatus: MediaDownloadStatus.Loading,
+      height: 100,
+      width: 100,
+      name: 'test-name',
+    };
+    const messageId = 'test-id';
+
+    renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
+
+    expect(loadAttachmentDetails).not.toHaveBeenCalled();
+  });
+
+  it('does not call loadAttachmentDetails if media mime type is an image', () => {
+    const loadAttachmentDetails = jest.fn();
+    const media = {
+      url: null,
+      type: MediaType.Image,
+      height: 100,
+      width: 100,
+      name: 'test-name',
+      mimetype: 'image/png',
+    };
     const messageId = 'test-id';
 
     renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));

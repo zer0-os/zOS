@@ -101,11 +101,12 @@ export class ChatView extends React.Component<Properties, State> {
     const { messages, mediaMessages } = this.props;
 
     const lightboxMedia = messages
-      .filter((message) => {
-        const messageMedia = message.media || mediaMessages.get(message.id)?.media;
-        return !!messageMedia && [MediaType.Image].includes(messageMedia.type);
+      .filter(this.props.shouldRenderMessage)
+      .map((message) => message.media || mediaMessages.get(message.id)?.media)
+      .filter((media) => {
+        return media && [MediaType.Image].includes(media.type);
       })
-      .map((m) => m.media || mediaMessages.get(m.id)?.media);
+      .reverse();
 
     const lightboxStartIndex = lightboxMedia.indexOf(media);
 

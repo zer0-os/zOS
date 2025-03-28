@@ -89,7 +89,16 @@ export function processMessages(messages: MessageModel[]) {
     }
   });
 
-  return messages.map((message) => {
+  // Separate media messages into their own map
+  const mediaMessages = new Map();
+  messages.forEach((message) => {
+    if (message.rootMessageId) {
+      mediaMessages.set(message.rootMessageId, message);
+    }
+  });
+
+  // Process regular messages
+  const processedMessages = messages.map((message) => {
     // Handle parent messages
     if (message.parentMessageId) {
       const parentMessage = messagesById.get(message.parentMessageId);
@@ -102,16 +111,11 @@ export function processMessages(messages: MessageModel[]) {
         };
       }
     }
-    // Handle media messages
-    if (message.rootMessageId) {
-      const rootMessage = messagesById.get(message.rootMessageId);
-      if (rootMessage) {
-        return {
-          ...message,
-          media: { id: message.id, ...message.media },
-        };
-      }
-    }
     return message;
   });
+
+  return {
+    messages: processedMessages,
+    mediaMessages,
+  };
 }

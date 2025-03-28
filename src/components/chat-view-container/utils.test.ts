@@ -1,15 +1,7 @@
 import moment from 'moment';
 
-import { AdminMessageType, Message as MessageModel } from '../../store/messages';
-import {
-  createMessageGroups,
-  getMessageRenderProps,
-  filterAdminMessages,
-  mapMessagesById,
-  mapMessagesByRootId,
-  linkParentMessage,
-  linkMediaMessage,
-} from './utils';
+import { AdminMessageType, Message as MessageModel, MediaType } from '../../store/messages';
+import { createMessageGroups, getMessageRenderProps, filterAdminMessages, processMessages } from './utils';
 
 describe(createMessageGroups, () => {
   it('returns an empty group list when input is empty', () => {
@@ -239,75 +231,65 @@ describe(filterAdminMessages, () => {
   });
 });
 
-describe(mapMessagesById, () => {
-  it('maps messages by their ID and optimistic ID', () => {
+describe(processMessages, () => {
+  it('processes messages with parent relationships', () => {
     const messages = [
-      { id: '1', optimisticId: 'opt-1', message: 'message 1' },
-      { id: '2', optimisticId: 'opt-2', message: 'message 2' },
+      stubMessage({ id: '1', parentMessageId: '2', message: 'child message' }),
+      stubMessage({
+        id: '2',
+        message: 'parent message',
+        media: { url: 'url', type: MediaType.Image, width: 100, height: 100, name: 'image' },
+      }),
     ];
-    const result = mapMessagesById(messages);
 
-    expect(result).toEqual({
-      '1': messages[0],
-      'opt-1': messages[0],
-      '2': messages[1],
-      'opt-2': messages[1],
-    });
-  });
-});
+    const { messages: processed } = processMessages(messages);
 
-describe(mapMessagesByRootId, () => {
-  it('maps messages by their root ID', () => {
-    const messages = [
-      { id: '1', rootMessageId: 'root-1', message: 'message 1' },
-      { id: '2', rootMessageId: 'root-2', message: 'message 2' },
-    ];
-    const result = mapMessagesByRootId(messages);
-
-    expect(result).toEqual({
-      'root-1': messages[0],
-      'root-2': messages[1],
-    });
-  });
-});
-
-describe(linkParentMessage, () => {
-  it('links a message to its parent and sets parent message text and media', () => {
-    const messages = [
-      { id: '1', parentMessageId: '2', message: 'child message' },
-      { id: '2', message: 'parent message', media: 'media' },
-    ];
-    const messagesById = mapMessagesById(messages);
-    const messagesByRootId = mapMessagesByRootId(messages);
-
-    linkParentMessage(messages[0], messagesById, messagesByRootId);
-
-    expect(messages[0]).toEqual({
-      id: '1',
-      parentMessageId: '2',
-      message: 'child message',
-      parentMessage: { id: '2', message: 'parent message', media: 'media' },
+    expect(processed[0]).toEqual({
+      ...messages[0],
+      parentMessage: messages[1],
       parentMessageText: 'parent message',
-      parentMessageMedia: 'media',
+      parentMessageMedia: { url: 'url', type: MediaType.Image, width: 100, height: 100, name: 'image' },
     });
+    expect(processed[1]).toBe(messages[1]);
   });
-});
 
-describe(linkMediaMessage, () => {
-  it('links a media message to its root message', () => {
+  it('processes messages with root relationships', () => {
     const messages = [
-      { id: '1', rootMessageId: 'root-1', message: 'media message', media: { media: 'media' } },
-      { id: 'root-1', message: 'root message' },
+      stubMessage({
+        id: '1',
+        rootMessageId: 'root-1',
+        message: 'media message',
+        media: { url: 'url', type: MediaType.Image, width: 100, height: 100, name: 'image' },
+      }),
+      stubMessage({ id: 'root-1', message: 'root message' }),
     ];
-    const messagesById = mapMessagesById(messages);
-    const mediaMessages = [];
-    const result = [];
 
-    linkMediaMessage(messages[0], messagesById, mediaMessages, result);
+    const { messages: processed, mediaMessages } = processMessages(messages);
 
-    expect(messagesById['root-1'].media).toEqual({ id: '1', media: 'media' });
-    expect(mediaMessages).toEqual([messages[0]]);
-    expect(result).toEqual([]);
+    expect(mediaMessages.get(processed[1].id)).toEqual(messages[0]);
+  });
+
+  it('handles optimistic IDs correctly', () => {
+    const messages = [
+      stubMessage({ id: '1', optimisticId: 'opt-1', message: 'message 1' }),
+      stubMessage({ id: '2', optimisticId: 'opt-2', message: 'message 2' }),
+    ];
+
+    const { messages: processed } = processMessages(messages);
+
+    expect(processed).toEqual(messages);
+  });
+
+  it('preserves message references', () => {
+    const messages = [
+      stubMessage({ id: '1', message: 'message 1' }),
+      stubMessage({ id: '2', message: 'message 2' }),
+    ];
+
+    const { messages: processed } = processMessages(messages);
+
+    expect(processed[0]).toBe(messages[0]);
+    expect(processed[1]).toBe(messages[1]);
   });
 });
 

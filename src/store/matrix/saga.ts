@@ -18,6 +18,7 @@ import { performUnlessLogout } from '../utils';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
 import { waitForChatConnectionCompletion } from '../chat/saga';
+import * as Sentry from '@sentry/browser';
 
 export function* saga() {
   yield spawn(listenForUserLogin);
@@ -155,6 +156,13 @@ export function* restoreBackup(action) {
     yield put(setBackupStage(BackupStage.Success));
     yield put(setSuccessMessage('Login successfully verified!'));
   } catch (e: any) {
+    Sentry.captureException(e, {
+      extra: {
+        context: 'restoreBackup',
+        userId: chatClient.userId,
+        keyLength: recoveryKey.length,
+      },
+    });
     console.error('Backup restoration failed:', {
       errorName: e.name,
       errorMessage: e.message,

@@ -51,6 +51,7 @@ import { featureFlags } from '../feature-flags';
 import { logger } from 'matrix-js-sdk/lib/logger';
 import { PostsResponse } from '../../store/posts';
 import { getFileFromCache, putFileToCache } from '../storage/media-cache';
+import * as Sentry from '@sentry/browser';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
@@ -87,20 +88,39 @@ export class MatrixClient implements IChatClient {
   }
 
   async connect(userId: string, accessToken: string) {
-    this.setConnectionStatus(ConnectionStatus.Connecting);
-    this.userId = await this.initializeClient(userId, this.accessToken || accessToken);
-    await this.initializeEventHandlers();
+    try {
+      this.setConnectionStatus(ConnectionStatus.Connecting);
+      this.userId = await this.initializeClient(userId, this.accessToken || accessToken);
+      await this.initializeEventHandlers();
 
-    this.setConnectionStatus(ConnectionStatus.Connected);
-    return this.userId;
+      this.setConnectionStatus(ConnectionStatus.Connected);
+      return this.userId;
+    } catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          context: 'connect',
+          userId,
+        },
+      });
+      throw error;
+    }
   }
 
   async disconnect() {
     if (this.matrix) {
-      await this.matrix.logout(true);
-      this.matrix.removeAllListeners();
-      await this.matrix.clearStores();
-      await this.matrix.store?.destroy();
+      try {
+        await this.matrix.logout(true);
+        this.matrix.removeAllListeners();
+        await this.matrix.clearStores();
+        await this.matrix.store?.destroy();
+      } catch (error) {
+        Sentry.captureException(error, {
+          extra: {
+            context: 'disconnect',
+            userId: this.userId,
+          },
+        });
+      }
     }
 
     this.sessionStorage.clear();
@@ -270,6 +290,12 @@ export class MatrixClient implements IChatClient {
       });
     } catch (error) {
       this.debug('Fail: bootstrapSecretStorage failed', error);
+      Sentry.captureException(error, {
+        extra: {
+          context: 'saveSecureBackup',
+          userId: this.userId,
+        },
+      });
     } finally {
       this.secretStorageKey = null;
     }
@@ -278,7 +304,14 @@ export class MatrixClient implements IChatClient {
   async restoreSecureBackup(recoveryKey: string) {
     const backup = await this.matrix.checkKeyBackup();
     if (!backup.backupInfo) {
-      throw new Error('Backup broken or not there');
+      const error = new Error('Backup broken or not there');
+      Sentry.captureException(error, {
+        extra: {
+          context: 'restoreSecureBackup',
+          userId: this.userId,
+        },
+      });
+      throw error;
     }
 
     const crossSigning = await this.doesUserHaveCrossSigning();
@@ -295,12 +328,66 @@ export class MatrixClient implements IChatClient {
     // setting up the secret storage, this suffices for now.
     this.secretStorageKey = recoveryKey;
     try {
+      this.debug('Attempting to restore backup with key format:', {
+        length: recoveryKey.length,
+        containsSpaces: recoveryKey.includes(' '),
+        startsWithSpaces: recoveryKey.startsWith(' '),
+        endsWithSpaces: recoveryKey.endsWith(' '),
+      });
+
+      this.debug('Backup info:', {
+        version: backup.backupInfo.version,
+        algorithm: backup.backupInfo.algorithm,
+        authDataPresent: !!backup.backupInfo.auth_data,
+      });
+
       // Since cross signing is already setup when we get here we don't have to provide signing keys
-      await this.matrix.bootstrapCrossSigning({ authUploadDeviceSigningKeys: async (_makeRequest) => {} });
-      await this.matrix.getCrypto().bootstrapSecretStorage({});
-      await this.matrix.restoreKeyBackupWithSecretStorage(backup.backupInfo);
+      try {
+        await this.matrix.bootstrapCrossSigning({ authUploadDeviceSigningKeys: async (_makeRequest) => {} });
+      } catch (e: any) {
+        this.debug('Error during bootstrapCrossSigning:', e);
+        Sentry.captureException(e, {
+          extra: {
+            context: 'bootstrapCrossSigning',
+            userId: this.userId,
+          },
+        });
+        throw new Error(`Cross-signing bootstrap failed: ${e.message}`);
+      }
+
+      try {
+        await this.matrix.getCrypto().bootstrapSecretStorage({});
+      } catch (e: any) {
+        this.debug('Error during bootstrapSecretStorage:', e);
+        Sentry.captureException(e, {
+          extra: {
+            context: 'bootstrapSecretStorage',
+            userId: this.userId,
+          },
+        });
+        throw new Error(`Secret storage bootstrap failed: ${e.message}`);
+      }
+
+      try {
+        await this.matrix.restoreKeyBackupWithSecretStorage(backup.backupInfo);
+      } catch (e: any) {
+        this.debug('Error during restoreKeyBackupWithSecretStorage:', e);
+        Sentry.captureException(e, {
+          extra: {
+            context: 'restoreKeyBackupWithSecretStorage',
+            userId: this.userId,
+          },
+        });
+        throw new Error(`Key backup restoration failed: ${e.message}`);
+      }
     } catch (e) {
       this.debug('error restoring backup', e);
+      Sentry.captureException(e, {
+        extra: {
+          context: 'restoreSecretStorageBackup',
+          userId: this.userId,
+        },
+      });
       throw new Error('Error while restoring backup');
     } finally {
       this.secretStorageKey = null;
@@ -308,7 +395,17 @@ export class MatrixClient implements IChatClient {
   }
 
   private async restoreLegacyBackup(recoveryKey: string, backup) {
-    await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
+    try {
+      await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
+    } catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          context: 'restoreLegacyBackup',
+          userId: this.userId,
+        },
+      });
+      throw error;
+    }
   }
 
   private async autoJoinRoom(roomId: string) {
@@ -320,6 +417,12 @@ export class MatrixClient implements IChatClient {
       // so we'll just ignore the error and assume it's because the room is invalid
       // A room can become invalid if all the members have left before one member has joined
       console.warn(`Could not auto join room ${roomId}`);
+      Sentry.captureException(e, {
+        extra: {
+          roomId,
+          context: 'autoJoinRoom',
+        },
+      });
       return false;
     }
   }
@@ -1740,6 +1843,13 @@ export class MatrixClient implements IChatClient {
         // For now, we will just ignore the error and continue to create the room
         // No reason for the image upload to block the room creation
         console.error(error);
+        Sentry.captureException(error, {
+          extra: {
+            context: 'uploadCoverImage',
+            imageSize: image?.size,
+            imageType: image?.type,
+          },
+        });
       }
     }
     return null;

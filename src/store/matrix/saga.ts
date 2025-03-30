@@ -19,6 +19,7 @@ import { Events as AuthEvents, getAuthChannel } from '../authentication/channels
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
 import { waitForChatConnectionCompletion } from '../chat/saga';
 import type { MatrixKeyBackupInfo } from '../../lib/chat/types';
+import { GeneratedSecretStorageKey } from 'matrix-js-sdk/lib/crypto-api';
 
 export function* saga() {
   yield spawn(listenForUserLogin);
@@ -49,7 +50,7 @@ export function* getBackup() {
   return backupState;
 }
 
-export function* receiveBackupData(existingBackup: MatrixKeyBackupInfo) {
+export function* receiveBackupData(existingBackup: MatrixKeyBackupInfo | null) {
   let backupExists = false;
   let backupRestored = false;
 
@@ -77,22 +78,11 @@ export function* generateBackup() {
   yield put(setErrorMessage(''));
   yield put(setBackupStage(BackupStage.GenerateBackup));
 
-  const existingKey = yield select((state) => state.matrix.generatedRecoveryKey);
-  if (existingKey) {
-    const privateKeyBase64 = Buffer.from(existingKey.privateKey).toString('base64');
-    yield put(
-      setGeneratedRecoveryKey({ encodedPrivateKey: existingKey.encodedPrivateKey, privateKey: privateKeyBase64 })
-    );
-    return;
-  }
-
   const chatClient = yield call(chat.get);
 
   try {
-    const key = yield call([chatClient, chatClient.generateSecureBackup]);
-    // serialize the private key to base64 for temporary storage
-    const privateKeyBase64 = Buffer.from(key.privateKey).toString('base64');
-    yield put(setGeneratedRecoveryKey({ encodedPrivateKey: key.encodedPrivateKey, privateKey: privateKeyBase64 }));
+    const key: GeneratedSecretStorageKey = yield call([chatClient, chatClient.generateSecureBackup]);
+    yield put(setGeneratedRecoveryKey(key.encodedPrivateKey));
   } catch (error) {
     yield put(setErrorMessage('Failed to generate backup key. Please try again.'));
     yield call(userInitiatedBackupDialog);
@@ -100,7 +90,7 @@ export function* generateBackup() {
 }
 
 export function* proceedToVerifyKey() {
-  const existingKey = yield select((state) => state.matrix.generatedRecoveryKey);
+  const existingKey: string | null = yield select((state) => state.matrix.generatedRecoveryKey);
 
   if (existingKey) {
     yield put(setBackupStage(BackupStage.VerifyKeyPhrase));
@@ -112,23 +102,17 @@ export function* proceedToVerifyKey() {
 export function* saveBackup(action) {
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
-  const generatedKey = yield select((state) => state.matrix.generatedRecoveryKey);
+  const generatedKey: string | null = yield select((state) => state.matrix.generatedRecoveryKey);
   const userInputKeyPhrase = action.payload;
 
-  if (userInputKeyPhrase !== generatedKey.encodedPrivateKey) {
+  if (userInputKeyPhrase !== generatedKey) {
     yield put(setErrorMessage('The phrase you entered does not match. Backup phrases are case sensitive'));
     return;
   }
 
   const chatClient = yield call(chat.get);
   try {
-    // convert the base64 encoded private key back to a Uint8Array
-    const privateKey = Uint8Array.from(Buffer.from(generatedKey.privateKey, 'base64'));
-
-    yield call([chatClient, chatClient.saveSecureBackup], {
-      encodedPrivateKey: generatedKey.encodedPrivateKey,
-      privateKey: privateKey,
-    });
+    yield call([chatClient, chatClient.saveSecureBackup], generatedKey);
 
     yield put(setGeneratedRecoveryKey(null));
     yield call(getBackup);
@@ -181,7 +165,7 @@ export function* getDeviceInfo() {
 export function* ensureUserHasBackup() {
   const backup = yield call(getSecureBackup);
   if (!backup) {
-    if (yield call(performUnlessLogout, delay(10000))) {
+    if (yield call(performUnlessLogout, delay(5000))) {
       yield call(systemInitiatedBackupDialog);
     }
   }

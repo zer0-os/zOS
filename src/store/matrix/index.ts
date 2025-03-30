@@ -26,10 +26,7 @@ export enum BackupStage {
   Success = 'success',
 }
 
-export type GeneratedRecoveryKey = {
-  encodedPrivateKey: string;
-  privateKey: string;
-} | null;
+export type GeneratedRecoveryKey = string | null;
 
 export type MatrixState = {
   isLoaded: boolean;

@@ -5,8 +5,9 @@ import { rootSaga } from './saga';
 import { rootReducer } from './reducer';
 
 const sagaMiddleware = createSagaMiddleware({
-  onError: (e) => {
+  onError: (e, info) => {
     console.error('Encountered uncaught error in root saga: ', e);
+    console.error('Saga info: ', info);
   },
 });
 

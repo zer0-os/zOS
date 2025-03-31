@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import AttachmentCards from '../../../platform-apps/channels/attachment-cards';
 import { Media, MediaDownloadStatus, MediaType, MessageAttachment } from '../../../store/messages';
 import { getPlaceholderDimensions } from '../utils';
@@ -21,18 +21,11 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const blurhash = media['xyz.amorgan.blurhash'];
   const { width, height } = getPlaceholderDimensions(media.width, media.height);
+  const isMatrixUrl = url?.startsWith('mxc://');
 
-  // For encrypted files, we need to use the file.url instead of the media.url
-  const matrixUrl = file?.url || url;
-  const isMatrixUrl = matrixUrl?.startsWith('mxc://');
-
-  // Use the Matrix image hook for Matrix URLs
-  const { data: processedUrl, isLoading: isMatrixImageLoading } = useMatrixImage(isMatrixUrl ? matrixUrl : undefined);
-
-  // reset isImageLoaded when the URL changes
-  useEffect(() => {
-    setIsImageLoaded(false);
-  }, [processedUrl]);
+  const mediaUrl = file?.url || url;
+  const { data: imageUrl, isPending: isImageLoading } = useMatrixImage(file || mediaUrl);
+  const displayImageUrl = imageUrl || mediaUrl;
 
   const handleImageLoad = () => {
     setIsImageLoaded(true);
@@ -57,8 +50,8 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
     </>
   );
 
-  if ((!matrixUrl || isMatrixUrl) && !processedUrl) {
-    const isLoading = downloadStatus === MediaDownloadStatus.Loading || isMatrixImageLoading;
+  if (!displayImageUrl || isMatrixUrl) {
+    const isLoading = downloadStatus === MediaDownloadStatus.Loading || isImageLoading;
     const hasFailed = downloadStatus === MediaDownloadStatus.Failed;
 
     return (
@@ -76,11 +69,15 @@ export const MessageMedia = ({ media, onImageClick, openAttachmentPreview }: Mes
     );
   }
 
-  const displayUrl = processedUrl || matrixUrl;
   if (type === MediaType.Image) {
     return (
-      <div {...cn('block-image')} onClick={() => onImageClick({ ...media, url: displayUrl })}>
-        <img src={displayUrl} alt={name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
+      <div {...cn('block-image')} onClick={() => onImageClick({ ...media, url: displayImageUrl })}>
+        <img
+          src={displayImageUrl}
+          alt={name}
+          onLoad={handleImageLoad}
+          style={!isImageLoaded ? { width, height } : {}}
+        />
       </div>
     );
   } else if (type === MediaType.Video) {

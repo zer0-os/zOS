@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { MessagesFetchState } from '../../../store/channels';
-import { Media, MediaDownloadStatus } from '../../../store/messages';
+import { Media, MediaDownloadStatus, MediaType } from '../../../store/messages';
 
 export const useLoadAttachmentEffect = (
   media: Media,
@@ -9,8 +9,7 @@ export const useLoadAttachmentEffect = (
   messagesFetchStatus: MessagesFetchState
 ) => {
   useEffect(() => {
-    const isImage = media?.mimetype?.startsWith('image/');
-
+    const isImage = media?.type === MediaType.Image;
     const isLoading = media?.downloadStatus === MediaDownloadStatus.Loading;
     const hasFailed = media?.downloadStatus === MediaDownloadStatus.Failed;
     if (

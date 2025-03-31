@@ -12,6 +12,11 @@ import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { MessageMedia } from './media/messageMedia';
 import { MessageFooter } from './footer/messageFooter';
 
+const mockUseMatrixImage = jest.fn();
+jest.mock('../../lib/hooks/useMatrixImage', () => ({
+  useMatrixImage: (file) => mockUseMatrixImage(file),
+}));
+
 describe('message', () => {
   const sender = {
     firstName: 'John',
@@ -30,6 +35,17 @@ describe('message', () => {
     return shallow(<Message {...allProps} />);
   };
 
+  beforeEach(() => {
+    mockUseMatrixImage.mockImplementation((file) => {
+      const url = file?.url || (typeof file === 'string' ? file : null);
+      return {
+        data: url,
+        isPending: false,
+        isError: false,
+      };
+    });
+  });
+
   it('renders message text', () => {
     const wrapper = subject({ message: 'the message' });
 
@@ -39,7 +55,16 @@ describe('message', () => {
   });
 
   it('renders message video', () => {
-    const wrapper = subject({ media: { url: 'https://image.com/video.mp4', type: MediaType.Video } });
+    const wrapper = subject({
+      media: {
+        url: 'https://image.com/video.mp4',
+        type: MediaType.Video,
+        // Add these properties to avoid undefined errors
+        file: null,
+        width: 100,
+        height: 100,
+      },
+    });
 
     const messageMedia = wrapper.find(MessageMedia);
     expect(messageMedia.exists()).toBe(true);

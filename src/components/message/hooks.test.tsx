@@ -12,7 +12,7 @@ import { useContextMenu } from './hooks/useContextMenu';
 describe('loadAttachmentEffect', () => {
   it('calls loadAttachmentDetails if no media url and messagesFetchStatus is success', () => {
     const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image, height: 100, width: 100, name: 'test-name' };
+    const media = { url: null, type: MediaType.File, height: 100, width: 100, name: 'test-name' };
     const messageId = 'test-id';
 
     renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
@@ -27,7 +27,7 @@ describe('loadAttachmentEffect', () => {
     const loadAttachmentDetails = jest.fn();
     const media = {
       url: 'mxc://some-test-matrix-url',
-      type: MediaType.Image,
+      type: MediaType.Video,
       height: 100,
       width: 100,
       name: 'test-name',

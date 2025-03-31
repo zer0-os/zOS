@@ -8,6 +8,7 @@ import { DevPanelContainer } from '../../components/dev-panel/container';
 import { FeatureFlag } from '../../components/feature-flag';
 import { ConversationsSidekick } from '../../components/sidekick/variants/conversations-sidekick';
 import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
+import { LoadingScreenContainer } from '../../components/loading-screen';
 
 import styles from './Main.module.scss';
 
@@ -47,7 +48,9 @@ export class Container extends React.Component<Properties> {
           <>
             <ConversationsSidekick />
             <div className={styles.Split}>
-              <MessengerChat />
+              {this.props.isJoiningConversation && !this.props.isValidConversation && <LoadingScreenContainer />}
+
+              {this.props.isConversationsLoaded && this.props.isValidConversation && <MessengerChat />}
             </div>
             {this.props.isConversationsLoaded && <MembersSidekick />}
 

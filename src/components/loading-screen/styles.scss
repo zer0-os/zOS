@@ -1,7 +1,11 @@
 .loading-screen {
-  display: flex;
-  justify-content: center;
-  height: 100%;
+  margin: 24px 8px 24px 0;
+
+  &__panel {
+    height: 100%;
+    padding: 16px;
+    border-radius: 8px !important;
+  }
 
   &__content {
     display: flex;
@@ -9,6 +13,7 @@
     align-items: center;
     justify-content: center;
     gap: 32px;
+    height: 100%;
   }
 
   &__icon-container {

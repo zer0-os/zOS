@@ -283,29 +283,31 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  async restoreSecureBackup() {
-    const backup = await this.cryptoApi.getKeyBackupInfo();
-    if (!backup) {
+  async restoreSecureBackup(recoveryKey: string) {
+    const backupInfo = await this.cryptoApi.getKeyBackupInfo();
+    if (!backupInfo) {
       throw new Error('Backup broken or not there');
     }
 
-    const crossSigning = await this.doesUserHaveCrossSigning();
-    if (crossSigning) {
-      await this.restoreSecretStorageBackup();
-    } else {
-      await this.cryptoApi.restoreKeyBackup();
+    const privateKey = decodeRecoveryKey(recoveryKey);
+    await this.accessSecretStorage(async (): Promise<void> => {
+      this.cryptoApi.storeSessionBackupPrivateKey(privateKey, backupInfo.version);
+      this.cryptoApi.restoreKeyBackup();
+    });
+    const keyCheckInfo = await this.cryptoApi.checkKeyBackupAndEnable();
+    if (!keyCheckInfo) {
+      throw new Error('Backup broken or not there');
     }
   }
 
-  private async restoreSecretStorageBackup() {
+  async accessSecretStorage(func = async (): Promise<void> => {}) {
     try {
-      // Since cross signing is already setup when we get here we don't have to provide signing keys
-      await this.cryptoApi.bootstrapCrossSigning({ authUploadDeviceSigningKeys: async (_makeRequest) => {} });
+      await this.cryptoApi.bootstrapCrossSigning({});
       await this.cryptoApi.bootstrapSecretStorage({});
-      await this.cryptoApi.restoreKeyBackup();
+      await func();
     } catch (e) {
-      this.debug('error restoring backup', e);
-      throw new Error('Error while restoring backup');
+      this.debug('error accessing secret storage', e);
+      throw new Error('Error while accessing secret storage');
     }
   }
 

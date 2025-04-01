@@ -84,10 +84,7 @@ describe(generateBackup, () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(storeState.matrix.generatedRecoveryKey).toEqual({
-      encodedPrivateKey: 'new key - encoded',
-      privateKey: Buffer.from('new key - private').toString('base64'),
-    });
+    expect(storeState.matrix.generatedRecoveryKey).toEqual('new key - encoded');
   });
 
   it('sets stage to GenerateBackup', async () => {
@@ -114,29 +111,6 @@ describe(generateBackup, () => {
 
     expect(storeState.matrix.errorMessage).toEqual('Failed to generate backup key. Please try again.');
   });
-
-  it('reuses existing backup key if present and does not call generateSecureBackup', async () => {
-    const initialState = {
-      matrix: {
-        generatedRecoveryKey: { encodedPrivateKey: 'existing key - encoded', privateKey: 'existing key - private' },
-      },
-    };
-    const generateSecureBackupMock = jest.fn();
-
-    const { storeState } = await subject(generateBackup)
-      .withReducer(rootReducer, initialState as any)
-      .provide([
-        [matchers.call.fn(chat.get), { ...chatClient, generateSecureBackup: generateSecureBackupMock }],
-        [matchers.call.fn(getSecureBackup), true],
-      ])
-      .run();
-
-    expect(storeState.matrix.generatedRecoveryKey).toEqual({
-      encodedPrivateKey: 'existing key - encoded',
-      privateKey: Buffer.from('existing key - private').toString('base64'),
-    });
-    expect(generateSecureBackupMock).not.toHaveBeenCalled();
-  });
 });
 
 describe(saveBackup, () => {
@@ -144,20 +118,14 @@ describe(saveBackup, () => {
     function successSubject(userInputKeyPhrase) {
       const initialState = {
         matrix: {
-          generatedRecoveryKey: {
-            encodedPrivateKey: 'generated-key',
-            privateKey: Buffer.from('generated-key').toString('base64'),
-          },
+          generatedRecoveryKey: 'generated-key',
         },
       };
 
       return subject(saveBackup, { payload: userInputKeyPhrase })
         .provide([
           [
-            call([chatClient, chatClient.saveSecureBackup], {
-              encodedPrivateKey: 'generated-key',
-              privateKey: Uint8Array.from(Buffer.from('generated-key', 'base64')),
-            }),
+            call([chatClient, chatClient.saveSecureBackup], 'generated-key'),
             { version: 1 },
           ],
         ])
@@ -191,10 +159,7 @@ describe(saveBackup, () => {
     it('sets a failure message', async () => {
       const initialState = {
         matrix: {
-          generatedRecoveryKey: {
-            encodedPrivateKey: 'generated-key',
-            privateKey: Buffer.from('generated-key').toString('base64'),
-          },
+          generatedRecoveryKey: 'generated-key',
         },
       };
 
@@ -228,11 +193,14 @@ describe(saveBackup, () => {
 
 describe(restoreBackup, () => {
   it('tries to restore a backup', async () => {
-    await subject(restoreBackup).withReducer(rootReducer).call([chatClient, chatClient.restoreSecureBackup]).run();
+    await subject(restoreBackup, { payload: 'recovery-key' })
+      .withReducer(rootReducer)
+      .call([chatClient, chatClient.restoreSecureBackup], 'recovery-key')
+      .run();
   });
 
   it('resets the state when restoring is successful', async () => {
-    await subject(restoreBackup)
+    await subject(restoreBackup, { payload: 'recovery-key' })
       .provide([[matchers.call.like({ context: chatClient, fn: chatClient.restoreSecureBackup }), undefined]])
       .withReducer(rootReducer)
       .call(getBackup)
@@ -240,7 +208,7 @@ describe(restoreBackup, () => {
   });
 
   it('sets success message and stage when restoring is successful', async () => {
-    const { storeState } = await subject(restoreBackup)
+    const { storeState } = await subject(restoreBackup, { payload: 'recovery-key' })
       .provide([[matchers.call.like({ context: chatClient, fn: chatClient.restoreSecureBackup }), undefined]])
       .withReducer(rootReducer)
       .call(getBackup)
@@ -251,7 +219,7 @@ describe(restoreBackup, () => {
   });
 
   it('sets failure state if restoring fails', async () => {
-    const { storeState } = await subject(restoreBackup)
+    const { storeState } = await subject(restoreBackup, { payload: 'recovery-key' })
       .provide([
         [
           matchers.call.like({ context: chatClient, fn: chatClient.restoreSecureBackup }),
@@ -320,7 +288,7 @@ describe('secure backup status management', () => {
         .withReducer(rootReducer, initialState as any)
         .provide([
           [call(getSecureBackup), undefined],
-          stubDelay(10000),
+          stubDelay(5000),
           [call(systemInitiatedBackupDialog), undefined],
         ])
         .call(systemInitiatedBackupDialog)

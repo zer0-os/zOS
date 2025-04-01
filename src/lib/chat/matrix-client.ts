@@ -54,12 +54,13 @@ import { featureFlags } from '../feature-flags';
 import { PostsResponse } from '../../store/posts';
 import { getFileFromCache, putFileToCache } from '../storage/media-cache';
 import { CryptoStore } from 'matrix-js-sdk/lib/crypto/store/base';
+import { SecretStorageKeyDescription } from 'matrix-js-sdk/lib/secret-storage';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
 export class MatrixClient implements IChatClient {
-  private matrix: SDKMatrixClient = null;
-  private cryptoApi: CryptoApi = null;
+  matrix: SDKMatrixClient = null;
+  cryptoApi: CryptoApi = null;
   private events: RealtimeChatEvents = null;
   private connectionStatus = ConnectionStatus.Disconnected;
 
@@ -273,6 +274,10 @@ export class MatrixClient implements IChatClient {
 
       await this.cryptoApi.bootstrapCrossSigning({
         authUploadDeviceSigningKeys: async (makeRequest) => {
+          // This is not a valid payload, but we're relying on the fact that the payload is
+          // ignored the first time the user uploads cross-signing keys.
+          // We'll need to wire this up in synapse properly in order for users to be able to
+          // add new keys to the homeserver.
           await makeRequest({ identifier: { type: 'm.id.user', user: this.userId } });
         },
       });
@@ -290,19 +295,21 @@ export class MatrixClient implements IChatClient {
     }
 
     const privateKey = decodeRecoveryKey(recoveryKey);
-    await this.accessSecretStorage(async (): Promise<void> => {
-      this.cryptoApi.storeSessionBackupPrivateKey(privateKey, backupInfo.version);
-      this.cryptoApi.restoreKeyBackup();
+    this.secretStorageKey = privateKey;
+    await this.accessSecretStorage(async () => {
+      await this.cryptoApi.loadSessionBackupPrivateKeyFromSecretStorage();
+      const recoverInfo = await this.cryptoApi.restoreKeyBackup();
+      if (!recoverInfo) {
+        throw new Error('Backup broken or not there');
+      }
     });
-    const keyCheckInfo = await this.cryptoApi.checkKeyBackupAndEnable();
-    if (!keyCheckInfo) {
-      throw new Error('Backup broken or not there');
-    }
   }
 
   async accessSecretStorage(func = async (): Promise<void> => {}) {
     try {
-      await this.cryptoApi.bootstrapCrossSigning({});
+      await this.cryptoApi.bootstrapCrossSigning({
+        authUploadDeviceSigningKeys: async (_makeRequest) => {},
+      });
       await this.cryptoApi.bootstrapSecretStorage({});
       await func();
     } catch (e) {
@@ -1448,7 +1455,10 @@ export class MatrixClient implements IChatClient {
       const opts: ICreateClientOpts = {
         cryptoStore,
         baseUrl: config.matrix.homeServerUrl,
-        cryptoCallbacks: { getSecretStorageKey: this.getSecretStorageKey },
+        cryptoCallbacks: {
+          getSecretStorageKey: this.getSecretStorageKey,
+          cacheSecretStorageKey: this.cacheSecretStorageKey,
+        },
         ...userCreds,
       };
 
@@ -1773,12 +1783,24 @@ export class MatrixClient implements IChatClient {
     return latestReadReceipts;
   }
 
+  private cacheSecretStorageKey(_keyId: string, _keyInfo: SecretStorageKeyDescription, key: Uint8Array) {
+    this.secretStorageKey = key;
+  }
+
   private getSecretStorageKey: CryptoCallbacks['getSecretStorageKey'] = async ({ keys: keyInfos }) => {
-    const keyInfoEntries = Object.entries(keyInfos);
-    if (keyInfoEntries.length > 1) {
-      throw new Error('Multiple storage key requests not implemented');
+    const defaultKeyId = await this.matrix.secretStorage.getDefaultKeyId();
+
+    let keyId: string;
+    if (defaultKeyId && keyInfos[defaultKeyId]) {
+      keyId = defaultKeyId;
+    } else {
+      const usefulKeys = Object.keys(keyInfos);
+      if (usefulKeys.length > 1) {
+        throw new Error('Multiple storage key requests not implemented');
+      }
+      keyId = usefulKeys[0];
     }
-    const [keyId] = keyInfoEntries[0];
+
     return [keyId, this.secretStorageKey];
   };
 

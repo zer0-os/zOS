@@ -19,7 +19,6 @@ import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
-import { LoadingScreenContainer } from '../../loading-screen';
 
 import './styles.scss';
 import { rawChannelSelector } from '../../../store/channels/saga';
@@ -149,10 +148,6 @@ export class Container extends React.Component<Properties> {
     return <div className='direct-message-chat__typing-indicator'>{text}</div>;
   };
 
-  renderLoadingScreen = () => {
-    return <LoadingScreenContainer />;
-  };
-
   render() {
     if ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) {
       return null;
@@ -164,7 +159,6 @@ export class Container extends React.Component<Properties> {
 
         <PanelBody className='direct-message-chat__panel'>
           <div className='direct-message-chat__content'>
-            {this.props.isJoiningConversation && this.renderLoadingScreen()}
             {!this.props.isJoiningConversation && (
               <>
                 <ChatViewContainer
@@ -177,20 +171,18 @@ export class Container extends React.Component<Properties> {
               </>
             )}
 
-            {!this.props.isJoiningConversation && (
-              <div className='direct-message-chat__footer-position'>
-                <div className='direct-message-chat__footer'>
-                  <MessageInput
-                    id={this.props.activeConversationId}
-                    onSubmit={this.handleSendMessage}
-                    getUsersForMentions={this.searchMentionableUsers}
-                    reply={this.props.directMessage?.reply}
-                    onRemoveReply={this.props.onRemoveReply}
-                  />
-                  {this.renderTypingIndicators()}
-                </div>
+            <div className='direct-message-chat__footer-position'>
+              <div className='direct-message-chat__footer'>
+                <MessageInput
+                  id={this.props.activeConversationId}
+                  onSubmit={this.handleSendMessage}
+                  getUsersForMentions={this.searchMentionableUsers}
+                  reply={this.props.directMessage?.reply}
+                  onRemoveReply={this.props.onRemoveReply}
+                />
+                {this.renderTypingIndicators()}
               </div>
-            )}
+            </div>
 
             {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
           </div>

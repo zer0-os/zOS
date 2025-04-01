@@ -53,6 +53,7 @@ import { encryptFile, generateBlurhash, getImageDimensions, isFileUploadedToMatr
 import { featureFlags } from '../feature-flags';
 import { PostsResponse } from '../../store/posts';
 import { getFileFromCache, putFileToCache } from '../storage/media-cache';
+import * as Sentry from '@sentry/browser';
 import { CryptoStore } from 'matrix-js-sdk/lib/crypto/store/base';
 import { SecretStorageKeyDescription } from 'matrix-js-sdk/lib/secret-storage';
 
@@ -91,20 +92,39 @@ export class MatrixClient implements IChatClient {
   }
 
   async connect(userId: string, accessToken: string) {
-    this.setConnectionStatus(ConnectionStatus.Connecting);
-    this.userId = await this.initializeClient(userId, this.accessToken || accessToken);
-    await this.initializeEventHandlers();
+    try {
+      this.setConnectionStatus(ConnectionStatus.Connecting);
+      this.userId = await this.initializeClient(userId, this.accessToken || accessToken);
+      await this.initializeEventHandlers();
 
-    this.setConnectionStatus(ConnectionStatus.Connected);
-    return this.userId;
+      this.setConnectionStatus(ConnectionStatus.Connected);
+      return this.userId;
+    } catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          context: 'connect',
+          userId,
+        },
+      });
+      throw error;
+    }
   }
 
   async disconnect() {
     if (this.matrix) {
-      await this.matrix.logout(true);
-      this.matrix.removeAllListeners();
-      await this.matrix.clearStores();
-      await this.matrix.store?.destroy();
+      try {
+        await this.matrix.logout(true);
+        this.matrix.removeAllListeners();
+        await this.matrix.clearStores();
+        await this.matrix.store?.destroy();
+      } catch (error) {
+        Sentry.captureException(error, {
+          extra: {
+            context: 'disconnect',
+            userId: this.userId,
+          },
+        });
+      }
     }
 
     this.sessionStorage.clear();
@@ -327,6 +347,12 @@ export class MatrixClient implements IChatClient {
       // so we'll just ignore the error and assume it's because the room is invalid
       // A room can become invalid if all the members have left before one member has joined
       console.warn(`Could not auto join room ${roomId}`);
+      Sentry.captureException(e, {
+        extra: {
+          roomId,
+          context: 'autoJoinRoom',
+        },
+      });
       return false;
     }
   }
@@ -1758,6 +1784,13 @@ export class MatrixClient implements IChatClient {
         // For now, we will just ignore the error and continue to create the room
         // No reason for the image upload to block the room creation
         console.error(error);
+        Sentry.captureException(error, {
+          extra: {
+            context: 'uploadCoverImage',
+            imageSize: image?.size,
+            imageType: image?.type,
+          },
+        });
       }
     }
     return null;

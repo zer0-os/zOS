@@ -82,7 +82,7 @@ describe(DirectMessageChat, () => {
   });
 
   it('renders users typing', function () {
-    const wrapper = subject({ otherMembersTypingInRoom: ['Johnny', 'Dale'], isJoiningConversation: false });
+    const wrapper = subject({ otherMembersTypingInRoom: ['Johnny', 'Dale'] });
 
     expect(wrapper.find('.direct-message-chat__typing-indicator')).toHaveText('Johnny and Dale are typing...');
   });
@@ -94,7 +94,7 @@ describe(DirectMessageChat, () => {
       const mentionedUserIds = ['ef698a51-1cea-42f8-a078-c0f96ed03c9e'];
       const channelId = 'the-channel-id';
 
-      const wrapper = subject({ sendMessage, activeConversationId: channelId, isJoiningConversation: false });
+      const wrapper = subject({ sendMessage, activeConversationId: channelId });
 
       wrapper.find(MessageInput).simulate('submit', message, mentionedUserIds, []);
 
@@ -126,7 +126,7 @@ describe(DirectMessageChat, () => {
       const message = 'test message';
       const channelId = 'the-channel-id';
 
-      const wrapper = subject({ sendMessage, activeConversationId: channelId, isJoiningConversation: false });
+      const wrapper = subject({ sendMessage, activeConversationId: channelId });
 
       wrapper.find(MessageInput).simulate('submit', message, [], [{ id: 'file-id', name: 'file-name' } as Media]);
 
@@ -139,7 +139,6 @@ describe(DirectMessageChat, () => {
       const wrapper = subject({
         activeConversationId: '5',
         directMessage: { otherMembers: [] } as any,
-        isJoiningConversation: false,
       });
       const input = wrapper.find(MessageInput);
 

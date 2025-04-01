@@ -3,10 +3,11 @@ import * as React from 'react';
 import { connectContainer } from '../../store/redux-container';
 import { RootState } from '../../store/reducer';
 import { IconLogoZero } from '@zero-tech/zui/icons';
+import { getLoadingMessage } from './utils';
+import { Panel, PanelBody } from '../layout/panel';
 
 import { bemClassName } from '../../lib/bem';
 import './styles.scss';
-import { getLoadingMessage } from './utils';
 
 const cn = bemClassName('loading-screen');
 
@@ -39,19 +40,21 @@ export class Container extends React.Component<Properties> {
     const loadingMessage = getLoadingMessage(progress);
 
     return (
-      <div {...cn('')}>
-        <div {...cn('content')}>
-          <div {...cn('icon-container')}>
-            <IconLogoZero {...cn('icon')} size={64} />
-          </div>
-          <div {...cn('progress-container')}>
-            <div {...cn('progress-bar')}>
-              <div {...cn('progress-indicator')} style={{ width: `${visualProgress}%` }}></div>
+      <Panel {...cn('')}>
+        <PanelBody {...cn('panel')}>
+          <div {...cn('content')}>
+            <div {...cn('icon-container')}>
+              <IconLogoZero {...cn('icon')} size={64} />
             </div>
+            <div {...cn('progress-container')}>
+              <div {...cn('progress-bar')}>
+                <div {...cn('progress-indicator')} style={{ width: `${visualProgress}%` }}></div>
+              </div>
+            </div>
+            <div {...cn('message')}>{loadingMessage}</div>
           </div>
-          <div {...cn('message')}>{loadingMessage}</div>
-        </div>
-      </div>
+        </PanelBody>
+      </Panel>
     );
   }
 }

@@ -6,6 +6,7 @@ import { createNormalizedSlice, removeAll } from '../normalized';
 import { LinkPreview } from '../../lib/link-preview';
 import { ParentMessage } from '../../lib/chat/types';
 import { User } from '../authentication/types';
+import { EncryptedFile } from 'matrix-js-sdk/lib/types';
 
 export interface AttachmentUploadResult {
   name: string;
@@ -47,6 +48,7 @@ export interface Media {
   downloadStatus?: MediaDownloadStatus;
   blurhash?: string;
   mimetype?: string;
+  file?: EncryptedFile;
 }
 
 export interface MessagesResponse {

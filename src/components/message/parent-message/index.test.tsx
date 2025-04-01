@@ -2,10 +2,15 @@ import { shallow } from 'enzyme';
 
 import { ParentMessage, Properties } from '.';
 import { ContentHighlighter } from '../../content-highlighter';
-
+import { MediaType } from '../../../store/messages';
 import { bem } from '../../../lib/bem';
 
 const c = bem('.parent-message-container');
+
+const mockUseMatrixMedia = jest.fn();
+jest.mock('../../../lib/hooks/useMatrixMedia', () => ({
+  useMatrixMedia: (file) => mockUseMatrixMedia(file),
+}));
 
 describe(ParentMessage, () => {
   const subject = (props: Partial<Properties>) => {
@@ -14,9 +19,7 @@ describe(ParentMessage, () => {
       senderIsCurrentUser: false,
       senderFirstName: '',
       senderLastName: '',
-      mediaUrl: '',
-      mediaName: '',
-      mediaType: '',
+      media: { url: '', type: MediaType.Image, name: '', width: 0, height: 0 },
       messageId: 'message-id',
       onMessageClick: () => {},
 
@@ -25,6 +28,17 @@ describe(ParentMessage, () => {
 
     return shallow(<ParentMessage {...allProps} />);
   };
+
+  beforeEach(() => {
+    mockUseMatrixMedia.mockImplementation((file) => {
+      const url = file?.url || (typeof file === 'string' ? file : null);
+      return {
+        data: url,
+        isPending: false,
+        isError: false,
+      };
+    });
+  });
 
   it('renders reply message', function () {
     const wrapper = subject({ message: 'hello' });
@@ -39,25 +53,33 @@ describe(ParentMessage, () => {
   });
 
   it('renders video when media type is video and url is present', function () {
-    const wrapper = subject({ mediaName: 'test-media-name', mediaUrl: 'test-media-url', mediaType: 'video' });
+    const wrapper = subject({
+      media: { url: 'test-media-url', type: MediaType.Video, name: 'test-media-name', width: 0, height: 0 },
+    });
 
     expect(wrapper.find('video')).toHaveProp('src', 'test-media-url');
   });
 
   it('renders image when media type is image and url is present', function () {
-    const wrapper = subject({ mediaName: 'test-media-name', mediaUrl: 'test-media-url', mediaType: 'image' });
+    const wrapper = subject({
+      media: { url: 'test-media-url', type: MediaType.Image, name: 'test-media-name', width: 0, height: 0 },
+    });
 
     expect(wrapper.find('img')).toHaveProp('src', 'test-media-url');
   });
 
   it('renders audio icon when media type is audio', function () {
-    const wrapper = subject({ mediaName: 'test-audio.mp3', mediaUrl: 'test-audio-url', mediaType: 'audio' });
+    const wrapper = subject({
+      media: { url: 'test-audio-url', type: MediaType.Audio, name: 'test-audio.mp3', width: 0, height: 0 },
+    });
 
     expect(wrapper).toHaveElement('IconVolumeMax');
   });
 
   it('renders file icon when media type is file', function () {
-    const wrapper = subject({ mediaName: 'test-file.pdf', mediaUrl: 'test-file-url', mediaType: 'file' });
+    const wrapper = subject({
+      media: { url: 'test-file-url', type: MediaType.File, name: 'test-file.pdf', width: 0, height: 0 },
+    });
 
     expect(wrapper).toHaveElement('IconPaperclip');
   });
@@ -69,7 +91,7 @@ describe(ParentMessage, () => {
   });
 
   it('does not render when both message and mediaUrl are empty', function () {
-    const wrapper = subject({ message: '', mediaUrl: '' });
+    const wrapper = subject({ message: '', media: { url: '', type: MediaType.Image, name: '', width: 0, height: 0 } });
 
     expect(wrapper.isEmptyRender()).toBe(true);
   });

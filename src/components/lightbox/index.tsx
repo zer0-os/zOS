@@ -7,12 +7,13 @@ import {
   IconXClose,
 } from '@zero-tech/zui/components/Icons';
 import { IconButton } from '@zero-tech/zui/components';
+import { Media } from '../../store/messages';
+import { useMatrixMedia } from '../../lib/hooks/useMatrixMedia';
 
 import styles from './styles.module.scss';
 
 export interface LightboxProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  items: any[];
+  items: Media[];
   startingIndex?: number;
   onClose?: (e?: React.MouseEvent) => void;
   provider: {
@@ -28,13 +29,13 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
   const [isCopied, setIsCopied] = useState(false);
   const currentItem = items[index];
   const isCurrentItemGif = currentItem?.mimetype === 'image/gif';
+  const { data: effectiveMediaUrl } = useMatrixMedia(currentItem);
 
   const copyImage = async () => {
-    const currentItem = items[index];
-    if (!currentItem?.url) return;
+    if (!effectiveMediaUrl) return;
 
     try {
-      const response = await fetch(currentItem.url);
+      const response = await fetch(effectiveMediaUrl);
       const blob = await response.blob();
 
       try {
@@ -53,7 +54,7 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
-          img.src = currentItem.url;
+          img.src = effectiveMediaUrl;
         });
 
         const canvas = document.createElement('canvas');
@@ -87,11 +88,10 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
   };
 
   const downloadImage = () => {
-    const currentItem = items[index];
-    if (!currentItem || !currentItem.url) return;
+    if (!effectiveMediaUrl) return;
 
     const link = document.createElement('a');
-    link.href = currentItem.url;
+    link.href = effectiveMediaUrl;
     link.download = currentItem.name || 'image';
     document.body.appendChild(link);
     link.click();
@@ -115,7 +115,7 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
   const processedItems = items.map((media) => {
     if (media.type === 'image') {
       const options = provider.fitWithinBox(media);
-      return provider.getSource({ src: media.url, options });
+      return provider.getSource({ src: effectiveMediaUrl, options });
     }
     return media.url;
   });

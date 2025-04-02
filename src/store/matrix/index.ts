@@ -9,10 +9,6 @@ export enum SagaActionTypes {
   DebugDeviceList = 'chat/debug-device-list',
   DebugRoomKeys = 'chat/debug-room-keys',
   FetchDeviceInfo = 'chat/fetch-device-info',
-  ResendKeyRequests = 'chat/resend-key-requests',
-  DiscardOlm = 'chat/discard-olm',
-  RestartOlm = 'chat/restart-olm',
-  ShareHistoryKeys = 'chat/share-history-keys',
   OpenBackupDialog = 'chat/open-backup-dialog',
   CloseBackupDialog = 'chat/close-backup-dialog',
   VerifyKey = 'chat/verify-key',
@@ -30,10 +26,7 @@ export enum BackupStage {
   Success = 'success',
 }
 
-export type GeneratedRecoveryKey = {
-  encodedPrivateKey: string;
-  privateKey: string;
-} | null;
+export type GeneratedRecoveryKey = string | null;
 
 export type MatrixState = {
   isLoaded: boolean;
@@ -67,10 +60,6 @@ export const clearBackup = createAction(SagaActionTypes.ClearBackup);
 export const debugDeviceList = createAction<string[]>(SagaActionTypes.DebugDeviceList);
 export const debugRoomKeys = createAction<string>(SagaActionTypes.DebugRoomKeys);
 export const fetchDeviceInfo = createAction<string[]>(SagaActionTypes.FetchDeviceInfo);
-export const resendKeyRequests = createAction(SagaActionTypes.ResendKeyRequests);
-export const discardOlm = createAction<string>(SagaActionTypes.DiscardOlm);
-export const restartOlm = createAction<string>(SagaActionTypes.RestartOlm);
-export const shareHistoryKeys = createAction<{ roomId: string; userIds: string[] }>(SagaActionTypes.ShareHistoryKeys);
 export const openBackupDialog = createAction(SagaActionTypes.OpenBackupDialog);
 export const closeBackupDialog = createAction(SagaActionTypes.CloseBackupDialog);
 export const proceedToVerifyKey = createAction(SagaActionTypes.VerifyKey);

@@ -4,6 +4,7 @@ import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { MatrixProfileInfo, ParentMessage, User } from './types';
 import { MemberNetworks } from '../../store/users/types';
+import type { MatrixKeyBackupInfo } from './types';
 
 export interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message) => void;
@@ -24,15 +25,6 @@ export interface RealtimeChatEvents {
   roomLabelChange: (roomId: string, labels: string[]) => void;
   postMessageReactionChange: (roomId: string, reaction: any) => void;
   messageEmojiReactionChange: (roomId: string, reaction: any) => void;
-}
-
-export interface MatrixKeyBackupInfo {
-  algorithm: string;
-  auth_data: any;
-  count?: number;
-  etag?: string;
-  version?: string; // number contained within
-  recovery_key?: string;
 }
 
 export interface IChatClient {
@@ -76,9 +68,9 @@ export interface IChatClient {
     data?: Partial<EditMessageOptions>
   ): Promise<any>;
   markRoomAsRead: (roomId: string, userId?: string) => Promise<void>;
-  getSecureBackup: () => Promise<any>;
+  getSecureBackup: () => Promise<MatrixKeyBackupInfo>;
   generateSecureBackup: () => Promise<any>;
-  saveSecureBackup: (MatrixKeyBackupInfo) => Promise<void>;
+  saveSecureBackup: (key: string) => Promise<void>;
   restoreSecureBackup: (recoveryKey: string) => Promise<void>;
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
   uploadFile(file: File): Promise<string>;
@@ -193,7 +185,7 @@ export class Chat {
     return this.client.markRoomAsRead(roomId, userId);
   }
 
-  async getSecureBackup(): Promise<any> {
+  async getSecureBackup() {
     return this.client.getSecureBackup();
   }
 
@@ -201,8 +193,8 @@ export class Chat {
     return this.client.generateSecureBackup();
   }
 
-  async saveSecureBackup(backup: MatrixKeyBackupInfo): Promise<void> {
-    await this.client.saveSecureBackup(backup);
+  async saveSecureBackup(key: string): Promise<void> {
+    await this.client.saveSecureBackup(key);
   }
 
   async restoreSecureBackup(recoveryKey: string): Promise<any> {
@@ -225,10 +217,6 @@ export class Chat {
     return this.matrix.getDeviceInfo();
   }
 
-  async cancelAndResendKeyRequests() {
-    return this.matrix.cancelAndResendKeyRequests();
-  }
-
   async addMembersToRoom(roomId: string, users: User[]): Promise<void> {
     return this.matrix.addMembersToRoom(roomId, users);
   }
@@ -241,15 +229,6 @@ export class Chat {
     return this.matrix.editRoomNameAndIcon(roomId, name, icon);
   }
 
-  async discardOlmSession(roomId: string) {
-    return this.matrix.discardOlmSession(roomId);
-  }
-  async resetOlmSession(roomId: string) {
-    return this.matrix.resetOlmSession(roomId);
-  }
-  async shareHistoryKeys(roomId: string, userIds: string[]) {
-    return this.matrix.shareHistoryKeys(roomId, userIds);
-  }
   initChat(events: RealtimeChatEvents): void {
     this.client.init(events);
   }
@@ -267,26 +246,6 @@ export class Chat {
     return this.client as MatrixClient;
   }
 }
-
-const ClientFactory = {
-  get() {
-    return new MatrixClient();
-  },
-};
-
-let chatClient: Chat;
-export const chat = {
-  get() {
-    if (!chatClient) {
-      chatClient = new Chat(ClientFactory.get(), () => {
-        chatClient = null;
-      });
-    }
-
-    return chatClient;
-  },
-};
-
 export async function fetchConversationsWithUsers(users: User[]) {
   return chat.get().fetchConversationsWithUsers(users);
 }
@@ -434,3 +393,22 @@ export function getProfileInfo(userId: string): Promise<{
 export async function getAliasForRoomId(roomId: string) {
   return chat.get().matrix.getAliasForRoomId(roomId);
 }
+
+const ClientFactory = {
+  get() {
+    return new MatrixClient();
+  },
+};
+
+let chatClient: Chat;
+export const chat = {
+  get() {
+    if (!chatClient) {
+      chatClient = new Chat(ClientFactory.get(), () => {
+        chatClient = null;
+      });
+    }
+
+    return chatClient;
+  },
+};

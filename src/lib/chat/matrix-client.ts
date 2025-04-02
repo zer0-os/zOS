@@ -19,7 +19,10 @@ import {
   IRoomTimelineData,
   RoomMember,
   ReceiptType,
+  IndexedDBCryptoStore,
+  ICreateClientOpts,
 } from 'matrix-js-sdk';
+import { CryptoApi, CryptoCallbacks, decodeRecoveryKey } from 'matrix-js-sdk/lib/crypto-api';
 import { RealtimeChatEvents, IChatClient } from './';
 import {
   mapEventToAdminMessage,
@@ -30,7 +33,7 @@ import {
 import { ConversationStatus, Channel, User as UserModel } from '../../store/channels';
 import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
-import { ChatMessageType, MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
+import { ChatMessageType, MatrixKeyBackupInfo, MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
 import { config } from '../../config';
 import { get, post } from '../api/rest';
 import { MemberNetworks } from '../../store/users/types';
@@ -48,15 +51,17 @@ import { constructFallbackForParentMessage, getFilteredMembersForAutoComplete, s
 import { SessionStorage } from './session-storage';
 import { encryptFile, generateBlurhash, getImageDimensions, isFileUploadedToMatrix } from './matrix/media';
 import { featureFlags } from '../feature-flags';
-import { logger } from 'matrix-js-sdk/lib/logger';
 import { PostsResponse } from '../../store/posts';
 import { getFileFromCache, putFileToCache } from '../storage/media-cache';
 import * as Sentry from '@sentry/browser';
+import { CryptoStore } from 'matrix-js-sdk/lib/crypto/store/base';
+import { SecretStorageKeyDescription } from 'matrix-js-sdk/lib/secret-storage';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
 export class MatrixClient implements IChatClient {
-  private matrix: SDKMatrixClient = null;
+  matrix: SDKMatrixClient = null;
+  cryptoApi: CryptoApi = null;
   private events: RealtimeChatEvents = null;
   private connectionStatus = ConnectionStatus.Disconnected;
 
@@ -68,14 +73,13 @@ export class MatrixClient implements IChatClient {
   private unreadNotificationHandlers = [];
   private roomTagHandlers = [];
   private initializationTimestamp: number;
-  private secretStorageKey: string;
+  private secretStorageKey: Uint8Array | undefined;
 
   constructor(private sdk = { createClient }, private sessionStorage = new SessionStorage()) {
     this.addConnectionAwaiter();
   }
 
   init(events: RealtimeChatEvents) {
-    logger.setLevel(featureFlags.verboseLogging ? logger.levels.DEBUG : logger.levels.WARN, false);
     this.events = events;
   }
 
@@ -259,152 +263,78 @@ export class MatrixClient implements IChatClient {
     return result;
   }
 
-  async getSecureBackup() {
+  async getSecureBackup(): Promise<MatrixKeyBackupInfo | null> {
     const crossSigning = await this.doesUserHaveCrossSigning();
-    const backupInfo = await this.matrix.checkKeyBackup();
-    (backupInfo as any).isLegacy = !crossSigning;
-    return backupInfo;
+    const keyCheckInfo = await this.cryptoApi.checkKeyBackupAndEnable();
+    if (!keyCheckInfo) return null;
+    return {
+      backupInfo: keyCheckInfo.backupInfo,
+      trustInfo: keyCheckInfo.trustInfo,
+      crossSigning,
+    };
   }
 
   async generateSecureBackup() {
-    const recoveryKey = await this.matrix.getCrypto()!.createRecoveryKeyFromPassphrase();
+    const recoveryKey = await this.cryptoApi.createRecoveryKeyFromPassphrase();
     return recoveryKey;
   }
 
-  async saveSecureBackup(recoveryKey) {
-    await this.matrix.bootstrapCrossSigning({
-      authUploadDeviceSigningKeys: async (makeRequest) => {
-        await makeRequest({ identifier: { type: 'm.id.user', user: this.userId } });
-      },
-    });
-
-    // Set this because bootstrapping the secret storage will call back
-    // and require this value. Not ideal but given the callback nature of
-    // setting up the secret storage, this suffices for now.
-    this.secretStorageKey = recoveryKey.encodedPrivateKey;
+  async saveSecureBackup(key: string) {
+    // Temporarily cache the key to be used for bootstrap
+    const privateKey = decodeRecoveryKey(key);
+    this.secretStorageKey = privateKey;
     try {
-      await this.matrix.getCrypto().bootstrapSecretStorage({
-        // createSecretStorageKey is now required to correctly setup the secret storage?
-        createSecretStorageKey: async () => recoveryKey,
+      await this.cryptoApi.bootstrapSecretStorage({
+        createSecretStorageKey: async () => ({
+          encodedPrivateKey: key,
+          privateKey,
+        }),
         setupNewKeyBackup: true,
+      });
+
+      await this.cryptoApi.bootstrapCrossSigning({
+        authUploadDeviceSigningKeys: async (makeRequest) => {
+          // This is not a valid payload, but we're relying on the fact that the payload is
+          // ignored the first time the user uploads cross-signing keys.
+          // We'll need to wire this up in synapse properly in order for users to be able to
+          // add new keys to the homeserver.
+          await makeRequest({ identifier: { type: 'm.id.user', user: this.userId } });
+        },
       });
     } catch (error) {
       this.debug('Fail: bootstrapSecretStorage failed', error);
-      Sentry.captureException(error, {
-        extra: {
-          context: 'saveSecureBackup',
-          userId: this.userId,
-        },
-      });
-    } finally {
-      this.secretStorageKey = null;
+      this.secretStorageKey = undefined;
+      throw new Error('Fail: bootstrapSecretStorage failed');
     }
   }
 
   async restoreSecureBackup(recoveryKey: string) {
-    const backup = await this.matrix.checkKeyBackup();
-    if (!backup.backupInfo) {
-      const error = new Error('Backup broken or not there');
-      Sentry.captureException(error, {
-        extra: {
-          context: 'restoreSecureBackup',
-          userId: this.userId,
-        },
-      });
-      throw error;
+    const backupInfo = await this.cryptoApi.getKeyBackupInfo();
+    if (!backupInfo) {
+      throw new Error('Backup broken or not there');
     }
 
-    const crossSigning = await this.doesUserHaveCrossSigning();
-    if (crossSigning) {
-      await this.restoreSecretStorageBackup(recoveryKey, backup);
-    } else {
-      await this.restoreLegacyBackup(recoveryKey, backup);
-    }
+    const privateKey = decodeRecoveryKey(recoveryKey);
+    this.secretStorageKey = privateKey;
+    await this.accessSecretStorage(async () => {
+      await this.cryptoApi.loadSessionBackupPrivateKeyFromSecretStorage();
+      const recoverInfo = await this.cryptoApi.restoreKeyBackup();
+      if (!recoverInfo) {
+        throw new Error('Backup broken or not there');
+      }
+    });
   }
 
-  private async restoreSecretStorageBackup(recoveryKey: string, backup) {
-    // Set this because bootstrapping the secret storage will call back
-    // and require this value. Not ideal but given the callback nature of
-    // setting up the secret storage, this suffices for now.
-    this.secretStorageKey = recoveryKey;
+  async accessSecretStorage(func = async (): Promise<void> => {}) {
     try {
-      this.debug('Attempting to restore backup with key format:', {
-        length: recoveryKey.length,
-        containsSpaces: recoveryKey.includes(' '),
-        startsWithSpaces: recoveryKey.startsWith(' '),
-        endsWithSpaces: recoveryKey.endsWith(' '),
+      await this.cryptoApi.bootstrapCrossSigning({
+        authUploadDeviceSigningKeys: async (_makeRequest) => {},
       });
-
-      this.debug('Backup info:', {
-        version: backup.backupInfo.version,
-        algorithm: backup.backupInfo.algorithm,
-        authDataPresent: !!backup.backupInfo.auth_data,
-      });
-
-      // Since cross signing is already setup when we get here we don't have to provide signing keys
-      try {
-        await this.matrix.bootstrapCrossSigning({ authUploadDeviceSigningKeys: async (_makeRequest) => {} });
-      } catch (e: any) {
-        this.debug('Error during bootstrapCrossSigning:', e);
-        Sentry.captureException(e, {
-          extra: {
-            context: 'bootstrapCrossSigning',
-            userId: this.userId,
-          },
-        });
-        throw new Error(`Cross-signing bootstrap failed: ${e.message}`);
-      }
-
-      try {
-        await this.matrix.getCrypto().bootstrapSecretStorage({});
-      } catch (e: any) {
-        this.debug('Error during bootstrapSecretStorage:', e);
-        Sentry.captureException(e, {
-          extra: {
-            context: 'bootstrapSecretStorage',
-            userId: this.userId,
-          },
-        });
-        throw new Error(`Secret storage bootstrap failed: ${e.message}`);
-      }
-
-      try {
-        await this.matrix.restoreKeyBackupWithSecretStorage(backup.backupInfo);
-      } catch (e: any) {
-        this.debug('Error during restoreKeyBackupWithSecretStorage:', e);
-        Sentry.captureException(e, {
-          extra: {
-            context: 'restoreKeyBackupWithSecretStorage',
-            userId: this.userId,
-          },
-        });
-        throw new Error(`Key backup restoration failed: ${e.message}`);
-      }
+      await this.cryptoApi.bootstrapSecretStorage({});
+      await func();
     } catch (e) {
-      this.debug('error restoring backup', e);
-      Sentry.captureException(e, {
-        extra: {
-          context: 'restoreSecretStorageBackup',
-          userId: this.userId,
-        },
-      });
-      throw new Error('Error while restoring backup');
-    } finally {
-      this.secretStorageKey = null;
-    }
-  }
-
-  private async restoreLegacyBackup(recoveryKey: string, backup) {
-    try {
-      await this.matrix.restoreKeyBackupWithRecoveryKey(recoveryKey, undefined, undefined, backup.backupInfo);
-    } catch (error) {
-      Sentry.captureException(error, {
-        extra: {
-          context: 'restoreLegacyBackup',
-          userId: this.userId,
-        },
-      });
-      throw error;
+      this.debug('error accessing secret storage', e);
+      throw new Error('Error while accessing secret storage');
     }
   }
 
@@ -1167,13 +1097,13 @@ export class MatrixClient implements IChatClient {
   }
 
   async setReadReceiptPreference(preference: string) {
-    await this.matrix.setAccountData(MatrixConstants.READ_RECEIPT_PREFERENCE, { readReceipts: preference });
+    localStorage.setItem(MatrixConstants.READ_RECEIPT_PREFERENCE, preference);
   }
 
   async getReadReceiptPreference() {
     try {
-      const accountData = await this.matrix.getAccountData(MatrixConstants.READ_RECEIPT_PREFERENCE);
-      return accountData?.event?.content?.readReceipts || ReadReceiptPreferenceType.Private;
+      const readReceiptPreference = localStorage.getItem(MatrixConstants.READ_RECEIPT_PREFERENCE);
+      return readReceiptPreference || ReadReceiptPreferenceType.Private;
     } catch (err) {
       console.error('Error getting read receipt preference', err);
       return ReadReceiptPreferenceType.Private;
@@ -1505,8 +1435,8 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  private debugEvent(name) {
-    return (data) => this.debug('Received Event', name, data);
+  private debugEvent(name: string) {
+    return (data: unknown) => this.debug('Received Event', name, data);
   }
 
   private async getCredentials(userId: string, accessToken: string) {
@@ -1523,7 +1453,10 @@ export class MatrixClient implements IChatClient {
   private async login(token: string) {
     const tempClient = this.sdk.createClient({ baseUrl: config.matrix.homeServerUrl });
 
-    const { user_id, device_id, access_token } = await tempClient.login('org.matrix.login.jwt', { token });
+    const { user_id, device_id, access_token } = await tempClient.loginRequest({
+      type: 'org.matrix.login.jwt',
+      token,
+    });
 
     this.sessionStorage.set({
       userId: user_id,
@@ -1538,20 +1471,28 @@ export class MatrixClient implements IChatClient {
     featureFlags.enableTimerLogs && console.time('xxxinitializeClient');
 
     if (!this.matrix) {
-      const opts: any = {
+      // The CryptoStore needs to be passed into init to migrate users from the legacy crypto to Rust crypto
+      let cryptoStore: CryptoStore;
+      if (typeof window !== 'undefined' && window.indexedDB) {
+        cryptoStore = new IndexedDBCryptoStore(window.indexedDB, 'matrix-js-sdk:crypto');
+      }
+
+      const userCreds = await this.getCredentials(userId, ssoToken);
+      const opts: ICreateClientOpts = {
+        cryptoStore,
         baseUrl: config.matrix.homeServerUrl,
-        cryptoCallbacks: { getSecretStorageKey: this.getSecretStorageKey },
-        ...(await this.getCredentials(userId, ssoToken)),
+        cryptoCallbacks: {
+          getSecretStorageKey: this.getSecretStorageKey,
+          cacheSecretStorageKey: this.cacheSecretStorageKey,
+        },
+        ...userCreds,
       };
 
       this.matrix = this.sdk.createClient(opts);
+      await this.matrix.initRustCrypto();
+      this.cryptoApi = this.matrix.getCrypto();
 
-      await this.matrix.initCrypto();
-
-      // suppsedly the setter is deprecated, but the direct property set doesn't seem to work.
-      // this is hopefully only a short-term setting anyway, so just leaving for now.
-      // this.matrix.getCrypto().globalBlacklistUnverifiedDevices = false;
-      this.matrix.setGlobalErrorOnUnknownDevices(false);
+      this.cryptoApi.globalBlacklistUnverifiedDevices = false;
 
       await this.matrix.startClient({
         pollTimeout: 25000,
@@ -1875,30 +1816,41 @@ export class MatrixClient implements IChatClient {
     return latestReadReceipts;
   }
 
-  private getSecretStorageKey = async ({ keys: keyInfos }) => {
-    const keyInfoEntries = Object.entries(keyInfos);
-    if (keyInfoEntries.length > 1) {
-      throw new Error('Multiple storage key requests not implemented');
+  private cacheSecretStorageKey(_keyId: string, _keyInfo: SecretStorageKeyDescription, key: Uint8Array) {
+    this.secretStorageKey = key;
+  }
+
+  private getSecretStorageKey: CryptoCallbacks['getSecretStorageKey'] = async ({ keys: keyInfos }) => {
+    const defaultKeyId = await this.matrix.secretStorage.getDefaultKeyId();
+
+    let keyId: string;
+    if (defaultKeyId && keyInfos[defaultKeyId]) {
+      keyId = defaultKeyId;
+    } else {
+      const usefulKeys = Object.keys(keyInfos);
+      if (usefulKeys.length > 1) {
+        throw new Error('Multiple storage key requests not implemented');
+      }
+      keyId = usefulKeys[0];
     }
-    const [keyId] = keyInfoEntries[0];
-    const key = this.matrix.keyBackupKeyFromRecoveryKey(this.secretStorageKey);
-    return [keyId, key];
+
+    return [keyId, this.secretStorageKey];
   };
 
   private async doesUserHaveCrossSigning() {
-    return await this.matrix.getCrypto()?.userHasCrossSigningKeys(this.userId, true);
+    return await this.cryptoApi?.userHasCrossSigningKeys(this.userId, true);
   }
 
   /*
    * DEBUGGING
    */
   async displayDeviceList(userIds: string[]) {
-    const devices = await this.matrix.getCrypto().getUserDeviceInfo(userIds);
+    const devices = await this.cryptoApi.getUserDeviceInfo(userIds);
     this.debug('devices: ', devices);
   }
 
   async displayRoomKeys(roomId: string) {
-    const roomKeys = await this.matrix.getCrypto().exportRoomKeys();
+    const roomKeys = await this.cryptoApi.exportRoomKeys();
     this.debug('Room Id: ', roomId);
     this.debug(
       'Room keys: ',
@@ -1908,47 +1860,6 @@ export class MatrixClient implements IChatClient {
 
   async getDeviceInfo() {
     return this.matrix.getDeviceId();
-  }
-
-  async shareHistoryKeys(roomId: string, userIds: string[]) {
-    // This resolves some instances where the other device is missing an old key from the room
-    this.debug('sending shared history keys', roomId, userIds);
-    await this.matrix.sendSharedHistoryKeys(roomId, userIds);
-    this.debug('done sending shared history keys');
-  }
-
-  async cancelAndResendKeyRequests() {
-    // It seems like this may already be happening automatically when we have
-    // problems decrypting messages.
-    this.debug('cancelling and resending key requests');
-    await this.matrix.crypto?.cancelAndResendAllOutgoingKeyRequests();
-    this.debug('done cancelling and resending key requests');
-  }
-
-  async discardOlmSession(roomId: string) {
-    // Throw away the olm session for the room...does this automatically
-    // regenerate or do we need the resetOlmSession call below?
-    this.debug('discarding session', roomId);
-    await this.matrix.getCrypto().forceDiscardSession(roomId);
-    this.debug('done discarding session', roomId);
-  }
-
-  async resetOlmSession(roomId: string) {
-    // RESET THE OLM SESSION
-    // Unsure which errors this might resolve. It seems like once you've missed
-    // something related to olm that you can't recover from it and this may only
-    // help with future messages.
-    this.debug('resetting the olm session', roomId);
-    this.matrix.getCrypto().forceDiscardSession(roomId);
-    const room = this.matrix.getRoom(roomId);
-    const members = (await room?.getEncryptionTargetMembers()) || [];
-    if (members.length > 0) {
-      await this.matrix.crypto?.ensureOlmSessionsForUsers(
-        members.map((m) => m.userId),
-        true
-      );
-    }
-    this.debug('done resetting the olm session', roomId);
   }
 
   async requestRoomKey(_roomId: string) {

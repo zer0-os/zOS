@@ -1,6 +1,6 @@
 {
   "name": "ZERO",
-  "version": "1.326.0",
+  "version": "1.327.0",
   "private": true,
   "main": "./public/electron.js",
   "engines": {

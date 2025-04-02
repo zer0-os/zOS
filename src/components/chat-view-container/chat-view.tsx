@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Waypoint } from '../waypoint';
 import classNames from 'classnames';
 import moment from 'moment';
-import { Message as MessageModel, MediaType, EditMessageOptions, Media } from '../../store/messages';
+import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import { User } from '../../store/authentication/types';
 import { User as ChannelMember } from '../../store/channels';
@@ -54,7 +54,6 @@ export interface Properties {
   isSecondarySidekickOpen: boolean;
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: string }) => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (messageId: string, key: string) => void;
   onReportUser: (payload: { reportedUserId: string }) => void;
   openLightbox: (payload: { media: any[]; startingIndex: number }) => void;
@@ -182,17 +181,14 @@ export class ChatView extends React.Component<Properties, State> {
                 parentSenderIsCurrentUser={isUserOwnerOfParentMessage}
                 parentSenderFirstName={message.parentMessage?.sender?.firstName}
                 parentSenderLastName={message.parentMessage?.sender?.lastName}
-                parentMessageMediaUrl={message?.parentMessageMedia?.url}
-                parentMessageMediaName={message.parentMessageMedia?.name}
+                parentMessageMedia={message.parentMessageMedia}
                 getUsersForMentions={this.searchMentionableUsers}
                 showSenderAvatar={this.props.showSenderAvatar}
                 showTimestamp={messageRenderProps.showTimestamp}
                 showAuthorName={messageRenderProps.showAuthorName}
                 onHiddenMessageInfoClick={this.props.onHiddenMessageInfoClick}
-                loadAttachmentDetails={this.props.loadAttachmentDetails}
                 sendEmojiReaction={this.props.sendEmojiReaction}
                 reactions={message.reactions}
-                messagesFetchStatus={this.props.messagesFetchStatus}
                 mediaMessage={mediaMessage}
                 {...message}
               />

@@ -8,8 +8,6 @@ import {
   editMessage,
   Message,
   EditMessageOptions,
-  loadAttachmentDetails,
-  Media,
   sendEmojiReaction,
   AdminMessageType,
 } from '../../store/messages';
@@ -41,7 +39,6 @@ export interface Properties extends PublicProperties {
   openDeleteMessage: (messageId: string) => void;
   toggleSecondarySidekick: () => void;
   openMessageInfo: (payload: { roomId: string; messageId: string }) => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (payload: { roomId: string; messageId: string; key: string }) => void;
   openReportUserModal: (payload: { reportedUserId: string }) => void;
   openLightbox: (payload: { media: any[]; startingIndex: number }) => void;
@@ -87,7 +84,6 @@ export class Container extends React.Component<Properties> {
       openDeleteMessage,
       openMessageInfo,
       toggleSecondarySidekick,
-      loadAttachmentDetails,
       sendEmojiReaction,
       openReportUserModal,
       openLightbox,
@@ -255,7 +251,6 @@ export class Container extends React.Component<Properties> {
           isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
           toggleSecondarySidekick={this.props.toggleSecondarySidekick}
           openMessageInfo={this.props.openMessageInfo}
-          loadAttachmentDetails={this.props.loadAttachmentDetails}
           sendEmojiReaction={this.sendEmojiReaction}
           openLightbox={this.props.openLightbox}
         />

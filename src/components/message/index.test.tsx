@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import { Message } from '.';
-import { MediaDownloadStatus, MediaType, MessageSendStatus } from '../../store/messages';
+import { MediaType, MessageSendStatus } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
 import { MessageInput } from '../message-input/container';
@@ -11,6 +11,11 @@ import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { MessageMedia } from './media/messageMedia';
 import { MessageFooter } from './footer/messageFooter';
+
+const mockUseMatrixMedia = jest.fn();
+jest.mock('../../lib/hooks/useMatrixMedia', () => ({
+  useMatrixMedia: (file) => mockUseMatrixMedia(file),
+}));
 
 describe('message', () => {
   const sender = {
@@ -29,6 +34,17 @@ describe('message', () => {
 
     return shallow(<Message {...allProps} />);
   };
+
+  beforeEach(() => {
+    mockUseMatrixMedia.mockImplementation((file) => {
+      const url = file?.url || (typeof file === 'string' ? file : null);
+      return {
+        data: url,
+        isPending: false,
+        isError: false,
+      };
+    });
+  });
 
   it('renders message text', () => {
     const wrapper = subject({ message: 'the message' });
@@ -94,10 +110,7 @@ describe('message', () => {
   });
 
   it('renders placeholder if no media url and mimetype is not application', () => {
-    const loadAttachmentDetails = jest.fn();
-
     const wrapper = subject({
-      loadAttachmentDetails,
       media: { id: '1', url: null, type: MediaType.Image, mimetype: 'image/png' },
     });
 
@@ -105,11 +118,14 @@ describe('message', () => {
     expect(messageMedia.dive().find('.message__placeholder-container').exists()).toBe(true);
   });
 
-  it('renders placeholder if matrix media url and mimetype is not application', () => {
-    const loadAttachmentDetails = jest.fn();
+  it('renders placeholder while media is loading', () => {
+    mockUseMatrixMedia.mockReturnValue({
+      data: null,
+      isPending: true,
+      isError: false,
+    });
 
     const wrapper = subject({
-      loadAttachmentDetails,
       media: { id: '1', url: 'mxc://some-test-matrix-url', type: MediaType.Image, mimetype: 'image/png' },
     });
 
@@ -118,10 +134,7 @@ describe('message', () => {
   });
 
   it('renders attachment cards if mimetype is application and url is null', () => {
-    const loadAttachmentDetails = jest.fn();
-
     const wrapper = subject({
-      loadAttachmentDetails,
       media: { id: '1', url: null, type: MediaType.Image, mimetype: 'application/pdf' },
     });
 
@@ -130,13 +143,16 @@ describe('message', () => {
     expect(messageMedia.dive().find(AttachmentCards).exists()).toBe(true);
   });
 
-  it('renders failed alert icon if media download status is failed', () => {
-    const loadAttachmentDetails = jest.fn();
+  it('renders failed alert icon if media loading fails', () => {
+    mockUseMatrixMedia.mockReturnValue({
+      data: null,
+      isPending: false,
+      isError: true,
+    });
 
     const wrapper = subject({
       messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed },
+      media: { url: null, type: MediaType.Image },
     });
 
     const messageMedia = wrapper.find(MessageMedia);
@@ -144,13 +160,16 @@ describe('message', () => {
     expect(messageMedia.dive().find(IconAlertCircle).exists()).toBe(true);
   });
 
-  it('renders loading spinner if media download status is loading', () => {
-    const loadAttachmentDetails = jest.fn();
+  it('renders loading spinner while media is loading', () => {
+    mockUseMatrixMedia.mockReturnValue({
+      data: null,
+      isPending: true,
+      isError: false,
+    });
 
     const wrapper = subject({
       messageId: 'test-id',
-      loadAttachmentDetails,
-      media: { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Loading },
+      media: { url: null, type: MediaType.Image },
     });
 
     const messageMedia = wrapper.find(MessageMedia);
@@ -159,12 +178,11 @@ describe('message', () => {
   });
 
   it('calculates and applies correct dimensions for the placeholder', () => {
-    const loadAttachmentDetails = jest.fn();
     const media = { id: '1', url: null, width: 1200, height: 1200, type: MediaType.Image };
     const maxWidthConstraint = 520;
     const aspectRatioAdjustedHeight = 520;
 
-    const wrapper = subject({ loadAttachmentDetails, media });
+    const wrapper = subject({ media });
 
     const messageMedia = wrapper.find(MessageMedia);
     const placeholderContainer = messageMedia.dive().find('.message__placeholder-container');

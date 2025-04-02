@@ -1,10 +1,11 @@
 import * as React from 'react';
-
 import { ContentHighlighter } from '../../content-highlighter';
 import { bemClassName } from '../../../lib/bem';
+import { useMatrixMedia } from '../../../lib/hooks/useMatrixMedia';
+import { Media } from '../../../store/messages';
+import { IconCornerDownRight, IconPaperclip, IconVolumeMax } from '@zero-tech/zui/icons';
 
 import './styles.scss';
-import { IconCornerDownRight, IconPaperclip, IconVolumeMax } from '@zero-tech/zui/icons';
 
 const cn = bemClassName('parent-message-container');
 
@@ -13,80 +14,73 @@ export interface Properties {
   senderIsCurrentUser: boolean;
   senderFirstName: string;
   senderLastName: string;
-  mediaUrl: string;
-  mediaName: string;
+  media: Media;
   messageId: string;
-  mediaType: string;
   onMessageClick: (messageId: string) => void;
 }
 
-export class ParentMessage extends React.PureComponent<Properties> {
-  onClick = () => {
-    if (this.props.messageId) {
-      this.props.onMessageClick(this.props.messageId);
+export function ParentMessage({
+  message,
+  senderIsCurrentUser,
+  senderFirstName,
+  senderLastName,
+  media,
+  messageId,
+  onMessageClick,
+}: Properties) {
+  const { data: effectiveMediaUrl } = useMatrixMedia(media);
+
+  const handleClick = () => {
+    if (messageId) {
+      onMessageClick(messageId);
     }
   };
 
-  get name() {
-    if (this.props.senderIsCurrentUser) {
-      return 'You';
-    }
+  const name = senderIsCurrentUser ? 'You' : `${senderFirstName} ${senderLastName}`;
 
-    return `${this.props.senderFirstName} ${this.props.senderLastName}`;
+  if (!message && !effectiveMediaUrl) {
+    return null;
   }
 
-  render() {
-    if (!this.props.message && !this.props.mediaUrl) {
-      return null;
-    }
+  return (
+    <div {...cn('')} onClick={handleClick} role='button' tabIndex={0}>
+      <div {...cn('parent-message')}>
+        <IconCornerDownRight size={16} />
 
-    return (
-      <div {...cn('')} onClick={this.onClick} role='button' tabIndex={0}>
-        <div {...cn('parent-message')}>
-          <IconCornerDownRight size={16} />
-
-          {this.props?.mediaName && (
-            <div
-              {...cn(
-                'media-container',
-                (this.props?.mediaType === 'file' || this.props?.mediaType === 'audio') && 'file'
-              )}
-            >
-              {this.props?.mediaUrl && this.props?.mediaType === 'image' && (
-                <img {...cn('media')} src={this.props?.mediaUrl} alt={this.props?.mediaName} />
-              )}
-
-              {this.props?.mediaUrl && this.props?.mediaType === 'video' && (
-                <video {...cn('media')} src={this.props?.mediaUrl} />
-              )}
-
-              {this.props?.mediaUrl && this.props?.mediaType === 'audio' && (
-                <div {...cn('media', 'file')}>
-                  <IconVolumeMax {...cn('audio-icon')} isFilled size={18} />
-                </div>
-              )}
-
-              {this.props?.mediaUrl && this.props?.mediaType === 'file' && (
-                <div {...cn('media', 'file')}>
-                  <IconPaperclip {...cn('file-icon')} isFilled size={18} />
-                </div>
-              )}
-
-              {!this.props.mediaUrl && <div {...cn('image-placeholder')} />}
-            </div>
-          )}
-
-          <div {...cn('content')}>
-            <div {...cn('header')}>{this.name}</div>
-
-            {this.props.message && (
-              <span {...cn('message')}>
-                <ContentHighlighter variant='tertiary' message={this.props.message} />
-              </span>
+        {media?.name && (
+          <div {...cn('media-container', (media?.type === 'file' || media?.type === 'audio') && 'file')}>
+            {effectiveMediaUrl && media?.type === 'image' && (
+              <img {...cn('media')} src={effectiveMediaUrl} alt={media?.name} />
             )}
+
+            {effectiveMediaUrl && media?.type === 'video' && <video {...cn('media')} src={effectiveMediaUrl} />}
+
+            {effectiveMediaUrl && media?.type === 'audio' && (
+              <div {...cn('media', 'file')}>
+                <IconVolumeMax {...cn('audio-icon')} isFilled size={18} />
+              </div>
+            )}
+
+            {effectiveMediaUrl && media?.type === 'file' && (
+              <div {...cn('media', 'file')}>
+                <IconPaperclip {...cn('file-icon')} isFilled size={18} />
+              </div>
+            )}
+
+            {!effectiveMediaUrl && <div {...cn('image-placeholder')} />}
           </div>
+        )}
+
+        <div {...cn('content')}>
+          <div {...cn('header')}>{name}</div>
+
+          {message && (
+            <span {...cn('message')}>
+              <ContentHighlighter variant='tertiary' message={message} />
+            </span>
+          )}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

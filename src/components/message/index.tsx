@@ -10,7 +10,7 @@ import {
 } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { MessageInput } from '../message-input/container';
-import { MessagesFetchState, User } from '../../store/channels';
+import { User } from '../../store/channels';
 import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
@@ -26,7 +26,7 @@ import { MessageFooter } from './footer/messageFooter';
 import { Reactions } from './reactions/reactions';
 import { useContextMenu } from './hooks/useContextMenu';
 import { MessageMenu, MessageMenuProps } from './menu/messageMenu';
-import { useLoadAttachmentEffect } from './hooks/useLoadAttachmentEffect';
+import { useMatrixMedia } from '../../lib/hooks/useMatrixMedia';
 
 import './styles.scss';
 
@@ -52,17 +52,14 @@ interface Properties extends MessageModel {
   parentSenderIsCurrentUser?: boolean;
   parentSenderFirstName?: string;
   parentSenderLastName?: string;
-  parentMessageMediaUrl?: string;
-  parentMessageMediaName?: string;
+  parentMessageMedia?: Media;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   showSenderAvatar?: boolean;
   showTimestamp: boolean;
   showAuthorName: boolean;
   onHiddenMessageInfoClick: () => void;
-  loadAttachmentDetails: (payload: { media: Media; messageId: string }) => void;
   sendEmojiReaction: (messageId: string, key: string) => void;
   onReportUser: (payload: { reportedUserId: string }) => void;
-  messagesFetchStatus: MessagesFetchState;
 }
 
 export const Message: React.FC<Properties> = ({
@@ -77,18 +74,14 @@ export const Message: React.FC<Properties> = ({
   parentSenderIsCurrentUser,
   parentSenderFirstName,
   parentSenderLastName,
-  parentMessageMediaUrl,
-  parentMessageMediaName,
   getUsersForMentions,
   showSenderAvatar,
   showTimestamp,
   showAuthorName,
   isHidden,
   onHiddenMessageInfoClick,
-  loadAttachmentDetails,
   sendEmojiReaction,
   onReportUser,
-  messagesFetchStatus,
   media: baseMedia,
   mediaMessage,
   message,
@@ -118,13 +111,10 @@ export const Message: React.FC<Properties> = ({
   const media = useMemo(() => {
     return mediaMessage ? mediaMessage.media : baseMedia;
   }, [mediaMessage, baseMedia]);
-  const mediaMessageId = useMemo(() => {
-    return mediaMessage ? mediaMessage.id : messageId;
-  }, [mediaMessage, messageId]);
 
   const isMenuTriggerAlwaysVisible = sendStatus === MessageSendStatus.FAILED;
 
-  useLoadAttachmentEffect(media, mediaMessageId, loadAttachmentDetails, messagesFetchStatus);
+  const { data: effectiveMediaUrl, isPending: isMediaLoading, isError: isMediaError } = useMatrixMedia(media);
 
   const openAttachmentPreview = async (attachment: MessageAttachment) => {
     setIsAttachmentPreviewOpen(true);
@@ -137,9 +127,9 @@ export const Message: React.FC<Properties> = ({
   };
 
   const downloadImage = () => {
-    if (!media || !media.url) return;
+    if (!effectiveMediaUrl) return;
     const link = document.createElement('a');
-    link.href = media.url;
+    link.href = effectiveMediaUrl;
     link.download = media.name || 'image';
     document.body.appendChild(link);
     link.click();
@@ -147,9 +137,9 @@ export const Message: React.FC<Properties> = ({
   };
 
   const copyImage = async () => {
-    if (!media?.url) return;
+    if (!effectiveMediaUrl) return;
     try {
-      const response = await fetch(media.url);
+      const response = await fetch(effectiveMediaUrl);
       const blob = await response.blob();
       try {
         await navigator.clipboard.write([
@@ -163,7 +153,7 @@ export const Message: React.FC<Properties> = ({
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
-          img.src = media.url;
+          img.src = effectiveMediaUrl;
         });
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
@@ -399,7 +389,7 @@ export const Message: React.FC<Properties> = ({
           'block',
           classNames({
             edit: isEditing,
-            reply: parentMessageText || parentMessageMediaUrl,
+            reply: parentMessageText,
           })
         )}
       >
@@ -417,6 +407,9 @@ export const Message: React.FC<Properties> = ({
                     media={media}
                     onImageClick={onImageClick}
                     openAttachmentPreview={openAttachmentPreview}
+                    effectiveMediaUrl={effectiveMediaUrl}
+                    isLoading={isMediaLoading}
+                    isError={isMediaError}
                   />
                 )}
                 {renderLinkPreview()}
@@ -425,11 +418,9 @@ export const Message: React.FC<Properties> = ({
                   senderIsCurrentUser={parentSenderIsCurrentUser}
                   senderFirstName={parentSenderFirstName}
                   senderLastName={parentSenderLastName}
-                  mediaUrl={parentMessageMediaUrl}
-                  mediaName={parentMessageMediaName}
+                  media={parentMessageMedia}
                   messageId={parentMessageId}
                   onMessageClick={onParentMessageClick}
-                  mediaType={parentMessageMedia?.type}
                 />
                 {renderBody()}
               </>
@@ -442,6 +433,9 @@ export const Message: React.FC<Properties> = ({
                     media={media}
                     onImageClick={onImageClick}
                     openAttachmentPreview={openAttachmentPreview}
+                    effectiveMediaUrl={effectiveMediaUrl}
+                    isLoading={isMediaLoading}
+                    isError={isMediaError}
                   />
                 )}
                 <div {...cn('block-edit')}>

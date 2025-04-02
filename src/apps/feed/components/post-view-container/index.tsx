@@ -44,7 +44,6 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
                 author={post.sender?.displaySubHandle}
                 className={styles.Post}
                 currentUserId={userId}
-                loadAttachmentDetails={() => {}}
                 media={post.media}
                 meowPost={isFeed ? meowPostFeed : meowPost}
                 messageId={post.id.toString()}

@@ -27,7 +27,6 @@ export const Replies = ({ postId, isFeed }: RepliesProps) => {
                 author={reply.sender?.displaySubHandle}
                 nickname={reply.sender?.firstName}
                 text={reply.message}
-                loadAttachmentDetails={() => {}}
                 meowPost={isFeed ? meowPostFeed : meowPost}
                 currentUserId={userId}
                 reactions={reply.reactions}

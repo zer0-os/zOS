@@ -50,7 +50,6 @@ export const Feed = ({ zid }: FeedProps) => {
                     author={reply.sender?.displaySubHandle}
                     channelZid={reply.channelZid}
                     currentUserId={userId}
-                    loadAttachmentDetails={() => {}}
                     meowPost={meowPostFeed}
                     messageId={reply.id.toString()}
                     nickname={reply.sender?.firstName}

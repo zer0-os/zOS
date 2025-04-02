@@ -1,16 +1,7 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
-import {
-  EditMessageOptions,
-  SagaActionTypes,
-  schema,
-  removeAll,
-  denormalize,
-  MediaType,
-  MessageSendStatus,
-  MediaDownloadStatus,
-} from '.';
+import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../channels';
 import { markConversationAsRead, rawChannelSelector, receiveChannel } from '../channels/saga';
@@ -30,7 +21,6 @@ import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
-import { decryptFile } from '../../lib/chat/matrix/media';
 import { getUserSubHandle } from '../../lib/user';
 
 export interface Payload {
@@ -605,7 +595,6 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
-  yield takeEvery(SagaActionTypes.LoadAttachmentDetails, loadAttachmentDetails);
   yield takeEvery(SagaActionTypes.SendEmojiReaction, sendEmojiReaction);
 
   const chatBus = yield call(getChatBus);
@@ -640,50 +629,6 @@ function* readReceiptReceived({ payload }) {
       }
     }
   }
-}
-
-const inProgress = {};
-export function* loadAttachmentDetails(action) {
-  const { media, messageId } = action.payload;
-
-  if (
-    inProgress[messageId] ||
-    (media.url && !media.url.startsWith('mxc://')) ||
-    media.downloadStatus === MediaDownloadStatus.Failed
-  ) {
-    return;
-  }
-
-  inProgress[messageId] = true;
-
-  try {
-    // Set status to 'LOADING'
-    yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Loading));
-
-    const url = yield call(decryptFile, media.file || { url: media.url }, media.mimetype);
-    if (!url) {
-      yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Failed));
-      return;
-    }
-
-    // Set status to 'SUCCESS' and update URL
-    yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Success, url));
-  } catch (error) {
-    console.error('Failed to download and decrypt image:', error);
-
-    // Set status to 'FAILED'
-    yield put(updateMediaStatus(messageId, media, MediaDownloadStatus.Failed));
-  } finally {
-    inProgress[messageId] = false;
-  }
-}
-
-function updateMediaStatus(messageId, media, downloadStatus, url = null) {
-  return receiveMessage({
-    id: messageId,
-    media: { ...media, downloadStatus, ...(url && { url }) },
-    image: url ? { ...media, url } : undefined,
-  });
 }
 
 export function* sendEmojiReaction(action) {

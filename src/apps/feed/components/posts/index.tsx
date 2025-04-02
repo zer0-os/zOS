@@ -4,7 +4,6 @@ import styles from './styles.module.scss';
 
 export const Posts = ({
   postMessages,
-  loadAttachmentDetails,
   userMeowBalance,
   currentUserId,
   meowPost,
@@ -27,7 +26,6 @@ export const Posts = ({
               nickname={post.sender.firstName}
               timestamp={post.createdAt}
               author={post.sender.displaySubHandle}
-              loadAttachmentDetails={loadAttachmentDetails}
               ownerUserId={post.sender.userId}
               userMeowBalance={userMeowBalance}
               reactions={post.reactions}

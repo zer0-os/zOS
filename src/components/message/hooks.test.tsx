@@ -3,79 +3,7 @@
  */
 
 import { renderHook } from '@testing-library/react-hooks';
-import { MediaDownloadStatus } from '../../store/messages';
-import { MediaType } from '../../store/messages';
-import { MessagesFetchState } from '../../store/channels';
-import { useLoadAttachmentEffect } from './hooks/useLoadAttachmentEffect';
 import { useContextMenu } from './hooks/useContextMenu';
-
-describe('loadAttachmentEffect', () => {
-  it('calls loadAttachmentDetails if no media url and messagesFetchStatus is success', () => {
-    const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image };
-    const messageId = 'test-id';
-
-    renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
-
-    expect(loadAttachmentDetails).toHaveBeenCalledWith({
-      media,
-      messageId,
-    });
-  });
-
-  it('calls loadAttachmentDetails if url is a matrix media url and messagesFetchStatus is success', () => {
-    const loadAttachmentDetails = jest.fn();
-    const media = { url: 'mxc://some-test-matrix-url', type: MediaType.Image };
-    const messageId = 'test-id';
-
-    renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
-
-    expect(loadAttachmentDetails).toHaveBeenCalledWith({
-      media,
-      messageId,
-    });
-  });
-
-  it('does not call loadAttachmentDetails if messagesFetchStatus is not success', () => {
-    const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image };
-    const messageId = 'test-id';
-
-    renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.FAILED));
-
-    expect(loadAttachmentDetails).not.toHaveBeenCalled();
-  });
-
-  it('does not call loadAttachmentDetails if url is defined and not a matrix media url', () => {
-    const loadAttachmentDetails = jest.fn();
-    const media = { url: 'some-test-url', type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed };
-    const messageId = 'test-id';
-
-    renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
-
-    expect(loadAttachmentDetails).not.toHaveBeenCalled();
-  });
-
-  it('does not call loadAttachmentDetails if media download status is failed', () => {
-    const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Failed };
-    const messageId = 'test-id';
-
-    renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
-
-    expect(loadAttachmentDetails).not.toHaveBeenCalled();
-  });
-
-  it('does not call loadAttachmentDetails if media download status is loading', () => {
-    const loadAttachmentDetails = jest.fn();
-    const media = { url: null, type: MediaType.Image, downloadStatus: MediaDownloadStatus.Loading };
-    const messageId = 'test-id';
-
-    renderHook(() => useLoadAttachmentEffect(media, messageId, loadAttachmentDetails, MessagesFetchState.SUCCESS));
-
-    expect(loadAttachmentDetails).not.toHaveBeenCalled();
-  });
-});
 
 describe('useContextMenu', () => {
   it('should not trigger menu when text is selected', () => {

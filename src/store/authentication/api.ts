@@ -1,9 +1,10 @@
 import { AuthorizationResponse, User } from './types';
-import { del, get, post } from '../../lib/api/rest';
+import { addVercelPreviewAuthHeader, del, get, post } from '../../lib/api/rest';
 import * as Sentry from '@sentry/react';
 
 export async function nonceOrAuthorize(signedWeb3Token: string): Promise<AuthorizationResponse> {
   const response = await post('/authentication/nonceOrAuthorize').set('Authorization', `Web3 ${signedWeb3Token}`);
+  addVercelPreviewAuthHeader(response.body.accessToken);
 
   return response.body;
 }
@@ -48,6 +49,7 @@ export async function getSSOToken(): Promise<{ token: string }> {
 export async function emailLogin({ email, password }: { email: string; password: string }) {
   try {
     const response = await post('/api/v2/accounts/login').send({ email, password });
+    addVercelPreviewAuthHeader(response.body.accessToken);
     return {
       success: true,
       response: response.body,

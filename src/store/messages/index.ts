@@ -6,6 +6,7 @@ import { createNormalizedSlice, removeAll } from '../normalized';
 import { LinkPreview } from '../../lib/link-preview';
 import { ParentMessage } from '../../lib/chat/types';
 import { User } from '../authentication/types';
+import { EncryptedFile } from 'matrix-js-sdk/lib/types';
 
 export interface AttachmentUploadResult {
   name: string;
@@ -32,21 +33,15 @@ export enum MediaType {
   Unknown = 'unknown',
 }
 
-export enum MediaDownloadStatus {
-  Success = 'SUCCESS',
-  Failed = 'FAILED',
-  Loading = 'LOADING',
-}
-
 export interface Media {
   height: number;
   name: string;
   type: MediaType;
   url: string;
   width: number;
-  downloadStatus?: MediaDownloadStatus;
   blurhash?: string;
   mimetype?: string;
+  file?: EncryptedFile;
 }
 
 export interface MessagesResponse {
@@ -120,7 +115,6 @@ export enum SagaActionTypes {
   Send = 'messages/saga/send',
   DeleteMessage = 'messages/saga/deleteMessage',
   EditMessage = 'messages/saga/editMessage',
-  LoadAttachmentDetails = 'messages/saga/loadAttachmentDetails',
   SendEmojiReaction = 'messages/saga/sendEmojiReaction',
 }
 
@@ -128,7 +122,6 @@ const fetch = createAction<Payload>(SagaActionTypes.Fetch);
 const send = createAction<SendPayload>(SagaActionTypes.Send);
 const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
 const editMessage = createAction<EditPayload>(SagaActionTypes.EditMessage);
-const loadAttachmentDetails = createAction<{ media: Media }>(SagaActionTypes.LoadAttachmentDetails);
 const sendEmojiReaction = createAction<{ roomId: string; messageId: string; key: string }>(
   SagaActionTypes.SendEmojiReaction
 );
@@ -139,4 +132,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch, send, deleteMessage, editMessage, removeAll, loadAttachmentDetails, sendEmojiReaction };
+export { fetch, send, deleteMessage, editMessage, removeAll, sendEmojiReaction };

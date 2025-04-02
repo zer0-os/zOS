@@ -3,6 +3,8 @@ import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 import { IconCornerDownRight, IconPaperclip, IconVolumeMax, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
+import { useMatrixMedia } from '../../lib/hooks/useMatrixMedia';
+import { Media } from '../../store/messages';
 
 import './styles.scss';
 
@@ -13,70 +15,70 @@ export interface Properties {
   senderIsCurrentUser: boolean;
   senderFirstName: string;
   senderLastName: string;
-  mediaUrl: string;
-  mediaName: string;
-  mediaType: string;
-
+  media: Media;
   onRemove?: () => void;
 }
 
-export default class ReplyCard extends React.Component<Properties, undefined> {
-  get name() {
-    if (this.props.senderIsCurrentUser) {
-      return 'You';
-    }
+export default function ReplyCard({
+  message,
+  senderIsCurrentUser,
+  senderFirstName,
+  senderLastName,
+  media,
+  onRemove,
+}: Properties) {
+  const { data: effectiveMediaUrl } = useMatrixMedia(media);
 
-    return `${this.props.senderFirstName} ${this.props.senderLastName}`;
-  }
+  const name = senderIsCurrentUser ? 'You' : `${senderFirstName} ${senderLastName}`;
 
-  itemRemoved = () => {
-    if (this.props.onRemove) {
-      this.props.onRemove();
+  const handleRemove = () => {
+    if (onRemove) {
+      onRemove();
     }
   };
 
-  render() {
-    const { message } = this.props;
-
-    return (
-      <div {...cn()}>
-        <IconCornerDownRight size={16} />
-
-        {this.props.mediaUrl && this.props.mediaType === 'image' && (
-          <div {...cn('media-container')}>
-            <img {...cn('media')} src={this.props.mediaUrl} alt={this.props.mediaName} />
-          </div>
-        )}
-
-        {this.props.mediaUrl && this.props.mediaType === 'video' && (
-          <div {...cn('media-container')}>
-            <video {...cn('media')} src={this.props.mediaUrl} />
-          </div>
-        )}
-
-        {this.props.mediaUrl && this.props.mediaType === 'audio' && (
-          <div {...cn('media-container', 'file')}>
-            <IconVolumeMax {...cn('audio-icon')} isFilled size={18} />
-          </div>
-        )}
-
-        {this.props.mediaUrl && this.props.mediaType === 'file' && (
-          <div {...cn('media-container', 'file')}>
-            <IconPaperclip {...cn('file-icon')} isFilled size={18} />
-          </div>
-        )}
-
-        <div {...cn('content')}>
-          <div {...cn('header')}>{this.name}</div>
-
-          {message && (
-            <div {...cn('message')}>
-              <ContentHighlighter variant='tertiary' message={message} />
-            </div>
-          )}
-        </div>
-        <IconButton Icon={IconXClose} size={24} onClick={this.itemRemoved} />
-      </div>
-    );
+  if (!message && !effectiveMediaUrl) {
+    return null;
   }
+
+  return (
+    <div {...cn()}>
+      <IconCornerDownRight size={16} />
+
+      {effectiveMediaUrl && media?.type === 'image' && (
+        <div {...cn('media-container')}>
+          <img {...cn('media')} src={effectiveMediaUrl} alt={media?.name} />
+        </div>
+      )}
+
+      {effectiveMediaUrl && media?.type === 'video' && (
+        <div {...cn('media-container')}>
+          <video {...cn('media')} src={effectiveMediaUrl} />
+        </div>
+      )}
+
+      {effectiveMediaUrl && media?.type === 'audio' && (
+        <div {...cn('media-container', 'file')}>
+          <IconVolumeMax {...cn('audio-icon')} isFilled size={18} />
+        </div>
+      )}
+
+      {effectiveMediaUrl && media?.type === 'file' && (
+        <div {...cn('media-container', 'file')}>
+          <IconPaperclip {...cn('file-icon')} isFilled size={18} />
+        </div>
+      )}
+
+      <div {...cn('content')}>
+        <div {...cn('header')}>{name}</div>
+
+        {message && (
+          <div {...cn('message')}>
+            <ContentHighlighter variant='tertiary' message={message} />
+          </div>
+        )}
+      </div>
+      <IconButton Icon={IconXClose} size={24} onClick={handleRemove} />
+    </div>
+  );
 }

@@ -49,7 +49,6 @@ describe('ChatView', () => {
       isSecondarySidekickOpen: false,
       toggleSecondarySidekick: () => null,
       openMessageInfo: () => null,
-      loadAttachmentDetails: () => null,
       sendEmojiReaction: () => null,
       onReportUser: () => null,
       openLightbox: () => null,

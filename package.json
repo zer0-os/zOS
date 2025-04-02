@@ -149,8 +149,6 @@
     "@types/react": "^18.0.0",
     "react@16.x": "^18.0.0",
     "react@17.x": "^18.0.0",
-    "@zer0-os/zos-component-library": "$@zer0-os/zos-component-library",
-    "@zero-tech/zui": "$@zero-tech/zui",
     "@radix-ui/react-popper": "1.0.0"
   }
 }

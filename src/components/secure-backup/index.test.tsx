@@ -22,6 +22,7 @@ describe(SecureBackup, () => {
       successMessage: '',
       errorMessage: '',
       backupStage: BackupStage.UserGeneratePrompt,
+      restoreProgress: { stage: '', total: 0, successes: 0, failures: 0 },
 
       onGenerate: () => null,
       onRestore: () => null,

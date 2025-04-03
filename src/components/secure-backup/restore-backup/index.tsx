@@ -3,6 +3,8 @@ import * as React from 'react';
 import { bemClassName } from '../../../lib/bem';
 
 import { Alert, Input } from '@zero-tech/zui/components';
+import { RestoreProgress } from '../../../store/matrix';
+import { ProgressTracker } from './progress-tracker';
 
 import '../styles.scss';
 
@@ -14,6 +16,8 @@ export interface State {
 
 export interface Properties {
   errorMessage: string;
+  restoreProgress: RestoreProgress;
+
   onChange: (recoveryKey: string) => void;
 }
 
@@ -54,6 +58,8 @@ export class RestoreBackup extends React.Component<Properties, State> {
               </Alert>
             )}
           </div>
+
+          <ProgressTracker progress={this.props.restoreProgress} />
         </div>
       </>
     );

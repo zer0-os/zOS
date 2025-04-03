@@ -8,6 +8,7 @@ describe('RestoreBackup', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
       errorMessage: '',
+      restoreProgress: { stage: '', total: 0, successes: 0, failures: 0 },
       onChange: () => null,
       ...props,
     };

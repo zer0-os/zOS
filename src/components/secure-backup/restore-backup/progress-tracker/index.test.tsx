@@ -40,7 +40,7 @@ describe('ProgressTracker', () => {
     expect(wrapper).toHaveText('Fetching room keys...');
   });
 
-  it('renders loading message when stage is load_keys and not complete', () => {
+  it('renders loading message with progress when stage is load_keys and not complete', () => {
     const wrapper = subject({
       stage: 'load_keys',
       total: 2,
@@ -48,7 +48,7 @@ describe('ProgressTracker', () => {
       failures: 0,
     });
 
-    expect(wrapper).toHaveText('Loading room keys...');
+    expect(wrapper).toHaveText('Loading room keys... (1 of 2)');
   });
 
   it('renders success message when stage is load_keys and complete', () => {

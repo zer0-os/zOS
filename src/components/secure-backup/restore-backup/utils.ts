@@ -5,7 +5,7 @@ export const getProgressText = (stage: string, total: number, successes: number)
     case 'fetch':
       return 'Fetching room keys...';
     case 'load_keys':
-      return successes === total ? 'Keys loaded successfully' : 'Loading room keys...';
+      return successes === total ? 'Keys loaded successfully' : `Loading room keys... (${successes} of ${total})`;
     default:
       return '';
   }

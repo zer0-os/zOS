@@ -1,4 +1,5 @@
-import { call, delay, put, select, spawn, take, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, spawn, take, takeLatest, cancel } from 'redux-saga/effects';
+import { channel } from 'redux-saga';
 
 import {
   SagaActionTypes,
@@ -12,6 +13,8 @@ import {
   BackupStage,
   setBackupExists,
   setBackupRestored,
+  setRestoreProgress,
+  initialRestoreProgressState,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';
 import { performUnlessLogout } from '../utils';
@@ -128,10 +131,27 @@ export function* saveBackup(action) {
 export function* restoreBackup(action) {
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
+  yield put(setRestoreProgress({ ...initialRestoreProgressState, stage: 'start' }));
+
   const chatClient = yield call(chat.get);
   const recoveryKey = action.payload;
+  const progressChannel = channel();
+
   try {
-    yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
+    const restorePromise = call([chatClient, chatClient.restoreSecureBackup], recoveryKey, (progress) =>
+      progressChannel.put(progress)
+    );
+
+    const progressTask = yield spawn(function* () {
+      while (true) {
+        yield put(setRestoreProgress(yield take(progressChannel)));
+      }
+    });
+
+    yield restorePromise;
+    progressChannel.close();
+    yield cancel(progressTask);
+
     yield call(getBackup);
     yield put(setBackupStage(BackupStage.Success));
     yield put(setSuccessMessage('Login successfully verified!'));
@@ -159,6 +179,7 @@ export function* clearBackupState() {
   yield put(setGeneratedRecoveryKey(null));
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
+  yield put(setRestoreProgress(initialRestoreProgressState));
 }
 
 export function* debugDeviceList(action) {

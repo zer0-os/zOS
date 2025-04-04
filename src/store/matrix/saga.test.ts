@@ -24,11 +24,11 @@ import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { StoreBuilder } from '../test/store';
 import { waitForChatConnectionCompletion } from '../chat/saga';
-import { BackupStage } from '.';
+import { BackupStage, initialRestoreProgressState } from '.';
 
 const chatClient = {
   generateSecureBackup: () => null,
-  restoreSecureBackup: (_key) => null,
+  restoreSecureBackup: (_key, _progressCallback) => null,
   saveSecureBackup: (_backup) => null,
 };
 
@@ -195,7 +195,7 @@ describe(restoreBackup, () => {
   it('tries to restore a backup', async () => {
     await subject(restoreBackup, { payload: 'recovery-key' })
       .withReducer(rootReducer)
-      .call([chatClient, chatClient.restoreSecureBackup], 'recovery-key')
+      .provide([[matchers.call.like({ context: chatClient, fn: chatClient.restoreSecureBackup }), undefined]])
       .run();
   });
 
@@ -263,6 +263,7 @@ describe(clearBackupState, () => {
         successMessage: 'Stuff happened',
         errorMessage: 'An error',
         backupStage: BackupStage.SystemGeneratePrompt,
+        restoreProgress: initialRestoreProgressState,
       },
     };
     const { storeState } = await subject(clearBackupState)
@@ -275,6 +276,7 @@ describe(clearBackupState, () => {
       successMessage: '',
       errorMessage: '',
       backupStage: BackupStage.SystemGeneratePrompt,
+      restoreProgress: initialRestoreProgressState,
     });
   });
 });

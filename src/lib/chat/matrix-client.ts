@@ -22,7 +22,7 @@ import {
   IndexedDBCryptoStore,
   ICreateClientOpts,
 } from 'matrix-js-sdk';
-import { CryptoApi, CryptoCallbacks, decodeRecoveryKey } from 'matrix-js-sdk/lib/crypto-api';
+import { CryptoApi, CryptoCallbacks, decodeRecoveryKey, ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 import { RealtimeChatEvents, IChatClient } from './';
 import {
   mapEventToAdminMessage,
@@ -308,7 +308,7 @@ export class MatrixClient implements IChatClient {
     }
   }
 
-  async restoreSecureBackup(recoveryKey: string) {
+  async restoreSecureBackup(recoveryKey: string, onProgress?: (progress: ImportRoomKeyProgressData) => void) {
     const backupInfo = await this.cryptoApi.getKeyBackupInfo();
     if (!backupInfo) {
       throw new Error('Backup broken or not there');
@@ -318,7 +318,9 @@ export class MatrixClient implements IChatClient {
     this.secretStorageKey = privateKey;
     await this.accessSecretStorage(async () => {
       await this.cryptoApi.loadSessionBackupPrivateKeyFromSecretStorage();
-      const recoverInfo = await this.cryptoApi.restoreKeyBackup();
+      const recoverInfo = await this.cryptoApi.restoreKeyBackup({
+        progressCallback: onProgress,
+      });
       if (!recoverInfo) {
         throw new Error('Backup broken or not there');
       }

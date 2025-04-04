@@ -28,6 +28,20 @@ export enum BackupStage {
 
 export type GeneratedRecoveryKey = string | null;
 
+export type RestoreProgress = {
+  stage: string;
+  total: number;
+  successes: number;
+  failures: number;
+};
+
+export const initialRestoreProgressState: RestoreProgress = {
+  stage: '',
+  total: 0,
+  successes: 0,
+  failures: 0,
+};
+
 export type MatrixState = {
   isLoaded: boolean;
   backupExists: boolean;
@@ -38,6 +52,7 @@ export type MatrixState = {
   deviceId: string;
   isBackupDialogOpen: boolean;
   backupStage: BackupStage;
+  restoreProgress: RestoreProgress;
 };
 
 export const initialState: MatrixState = {
@@ -50,6 +65,7 @@ export const initialState: MatrixState = {
   deviceId: '',
   isBackupDialogOpen: false,
   backupStage: BackupStage.UserGeneratePrompt, // Assume there is no backup by default
+  restoreProgress: initialRestoreProgressState,
 };
 
 export const getBackup = createAction(SagaActionTypes.GetBackup);
@@ -95,6 +111,9 @@ const slice = createSlice({
     setBackupRestored: (state, action: PayloadAction<MatrixState['backupRestored']>) => {
       state.backupRestored = action.payload;
     },
+    setRestoreProgress: (state, action: PayloadAction<MatrixState['restoreProgress']>) => {
+      state.restoreProgress = action.payload;
+    },
   },
 });
 
@@ -108,5 +127,6 @@ export const {
   setBackupStage,
   setBackupExists,
   setBackupRestored,
+  setRestoreProgress,
 } = slice.actions;
 export const { reducer } = slice;

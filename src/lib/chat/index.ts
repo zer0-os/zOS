@@ -5,6 +5,7 @@ import { FileUploadResult } from '../../store/messages/saga';
 import { MatrixProfileInfo, ParentMessage, User } from './types';
 import { MemberNetworks } from '../../store/users/types';
 import type { MatrixKeyBackupInfo } from './types';
+import { ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 
 export interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message) => void;
@@ -71,7 +72,10 @@ export interface IChatClient {
   getSecureBackup: () => Promise<MatrixKeyBackupInfo>;
   generateSecureBackup: () => Promise<any>;
   saveSecureBackup: (key: string) => Promise<void>;
-  restoreSecureBackup: (recoveryKey: string) => Promise<void>;
+  restoreSecureBackup: (
+    recoveryKey: string,
+    onProgress?: (progress: ImportRoomKeyProgressData) => void
+  ) => Promise<void>;
   getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
   uploadFile(file: File): Promise<string>;
   downloadFile(fileUrl: string): Promise<any>;
@@ -197,8 +201,11 @@ export class Chat {
     await this.client.saveSecureBackup(key);
   }
 
-  async restoreSecureBackup(recoveryKey: string): Promise<any> {
-    return this.client.restoreSecureBackup(recoveryKey);
+  async restoreSecureBackup(
+    recoveryKey: string,
+    onProgress?: (progress: ImportRoomKeyProgressData) => void
+  ): Promise<any> {
+    return this.client.restoreSecureBackup(recoveryKey, onProgress);
   }
 
   async displayDeviceList(userIds: string[]) {

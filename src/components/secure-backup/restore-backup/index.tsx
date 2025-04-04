@@ -50,6 +50,7 @@ export class RestoreBackup extends React.Component<Properties, State> {
               onChange={this.trackRecoveryKey}
               value={this.recoveryKey}
               error={!!this.props.errorMessage}
+              type='password'
             />
 
             {this.props.errorMessage && (

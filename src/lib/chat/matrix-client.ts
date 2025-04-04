@@ -319,9 +319,7 @@ export class MatrixClient implements IChatClient {
     await this.accessSecretStorage(async () => {
       await this.cryptoApi.loadSessionBackupPrivateKeyFromSecretStorage();
       const recoverInfo = await this.cryptoApi.restoreKeyBackup({
-        progressCallback: (progress) => {
-          onProgress?.(progress);
-        },
+        progressCallback: onProgress,
       });
       if (!recoverInfo) {
         throw new Error('Backup broken or not there');

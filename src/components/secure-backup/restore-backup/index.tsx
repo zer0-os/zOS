@@ -42,7 +42,7 @@ export class RestoreBackup extends React.Component<Properties, State> {
     return (
       <>
         <div>
-          {!isRestorationInProgress ? (
+          {!isRestorationInProgress || this.props.errorMessage ? (
             <>
               <p {...cn('primary-text')}>Account backup phrase</p>
 

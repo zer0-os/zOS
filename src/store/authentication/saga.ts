@@ -19,6 +19,7 @@ import { clearLastActiveTab } from '../../lib/last-tab';
 import { clearRewards } from '../rewards/saga';
 import { clearLastActiveFeed } from '../../lib/last-feed';
 import { clearCache, performCacheMaintenance } from '../../lib/storage/media-cache';
+import { setSentryUser } from '../../utils';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -139,11 +140,13 @@ export function* forceLogout() {
 export function* publishUserLogin(user) {
   const channel = yield call(getAuthChannel);
   yield put(channel, { type: Events.UserLogin, userId: user.id });
+  yield call(setSentryUser, user.id);
 }
 
 export function* publishUserLogout() {
   const channel = yield call(getAuthChannel);
   yield put(channel, { type: Events.UserLogout });
+  yield call(setSentryUser, null);
 }
 
 export function* redirectUnauthenticatedUser(isAccountChange: boolean) {

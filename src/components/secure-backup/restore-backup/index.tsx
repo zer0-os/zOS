@@ -59,7 +59,7 @@ export class RestoreBackup extends React.Component<Properties, State> {
             )}
           </div>
 
-          <ProgressTracker progress={this.props.restoreProgress} />
+          {!this.props.errorMessage && <ProgressTracker progress={this.props.restoreProgress} />}
         </div>
       </>
     );

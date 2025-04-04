@@ -1,0 +1,73 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../glass';
+
+.secure-backup-progress {
+  margin-top: 16px;
+  width: 100%;
+
+  &__progress-bar-container {
+    height: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  &__progress-bar {
+    height: 100%;
+    background: theme.$color-secondary-11;
+    border-radius: 4px;
+  }
+
+  &__progress-text {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  &__percentage {
+    @include glass-text-secondary-color;
+
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+
+    &[data-is-complete='true'] {
+      color: theme.$color-secondary-11;
+    }
+  }
+
+  &__message {
+    @include glass-text-secondary-color;
+
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+
+    white-space: pre-line;
+  }
+
+  &__failure-message {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    line-height: 20px;
+
+    color: theme.$color-warning-11;
+  }
+
+  &__success-container {
+    display: flex;
+    align-items: center;
+    margin-top: 24px;
+    border-radius: 8px;
+    border: 1px solid theme.$color-secondary-11;
+  }
+
+  &__success-message {
+    color: theme.$color-secondary-11;
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}

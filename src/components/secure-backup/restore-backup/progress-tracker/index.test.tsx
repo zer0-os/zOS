@@ -26,7 +26,7 @@ describe('ProgressTracker', () => {
       failures: 0,
     });
 
-    expect(wrapper).toHaveText('Starting secure backup restoration...');
+    expect(wrapper).toHaveText('Preparing to restore your encrypted messages...');
   });
 
   it('renders fetching message when stage is fetch', () => {
@@ -37,18 +37,62 @@ describe('ProgressTracker', () => {
       failures: 0,
     });
 
-    expect(wrapper).toHaveText('Fetching room keys...');
+    expect(wrapper).toHaveText('Retrieving your secure backup...(Please wait a few moments)');
   });
 
-  it('renders loading message with percentage when stage is load_keys and not complete', () => {
+  it('renders initial loading message when progress is 1%', () => {
     const wrapper = subject({
       stage: 'load_keys',
-      total: 4,
+      total: 100,
       successes: 1,
       failures: 0,
     });
 
-    expect(wrapper).toHaveText('Restoring your encrypted messages... (25%)');
+    expect(wrapper).toHaveText('Starting to restore your encrypted messages...(1%)');
+  });
+
+  it('renders loading message when progress is 25%', () => {
+    const wrapper = subject({
+      stage: 'load_keys',
+      total: 100,
+      successes: 25,
+      failures: 0,
+    });
+
+    expect(wrapper).toHaveText('Loading your encrypted conversations...(25%)');
+  });
+
+  it('renders loading message when progress is 50%', () => {
+    const wrapper = subject({
+      stage: 'load_keys',
+      total: 100,
+      successes: 50,
+      failures: 0,
+    });
+
+    expect(wrapper).toHaveText('Almost there! Restoring your final messages...(50%)');
+  });
+
+  it('renders loading message when progress is 75%', () => {
+    const wrapper = subject({
+      stage: 'load_keys',
+      total: 100,
+      successes: 75,
+      failures: 0,
+    });
+
+    expect(wrapper).toHaveText('Finishing up! Just a few more messages to restore...(75%)');
+  });
+
+  it('renders failure message when there are failures', () => {
+    const wrapper = subject({
+      stage: 'load_keys',
+      total: 10,
+      successes: 8,
+      failures: 2,
+    });
+
+    expect(wrapper).toIncludeText('2 keys could not be restored. Some messages may remain encrypted.');
   });
 
   it('renders success message when stage is load_keys and complete', () => {
@@ -59,6 +103,6 @@ describe('ProgressTracker', () => {
       failures: 0,
     });
 
-    expect(wrapper).toHaveText('Keys loaded successfully');
+    expect(wrapper).toIncludeText('Your encrypted messages have been successfully restored!(100%)');
   });
 });

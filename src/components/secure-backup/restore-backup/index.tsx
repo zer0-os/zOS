@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { bemClassName } from '../../../lib/bem';
 
-import { Alert, Input } from '@zero-tech/zui/components';
+import { Alert, PasswordInput } from '@zero-tech/zui/components';
 import { RestoreProgress } from '../../../store/matrix';
 import { ProgressTracker } from './progress-tracker';
 
@@ -45,12 +45,12 @@ export class RestoreBackup extends React.Component<Properties, State> {
           </p>
 
           <div {...cn('input-container')}>
-            <Input
+            <PasswordInput
               placeholder='Enter your recovery key'
               onChange={this.trackRecoveryKey}
               value={this.recoveryKey}
               error={!!this.props.errorMessage}
-              type='password'
+              size='large'
             />
 
             {this.props.errorMessage && (

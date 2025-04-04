@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 
 import { VerifyKeyPhrase, Properties } from '.';
 
-import { Alert, Input } from '@zero-tech/zui/components';
+import { Alert, PasswordInput } from '@zero-tech/zui/components';
 
 describe(VerifyKeyPhrase, () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -19,7 +19,7 @@ describe(VerifyKeyPhrase, () => {
     const onChange = jest.fn();
     const wrapper = subject({ onChange });
 
-    wrapper.find(Input).simulate('change', 'test-key-phrase');
+    wrapper.find(PasswordInput).simulate('change', 'test-key-phrase');
 
     expect(onChange).toHaveBeenCalledWith('test-key-phrase');
   });

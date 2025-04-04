@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { bemClassName } from '../../../lib/bem';
 
-import { Alert, Input } from '@zero-tech/zui/components';
+import { Alert, PasswordInput } from '@zero-tech/zui/components';
 
 import '../styles.scss';
 
@@ -38,11 +38,12 @@ export class VerifyKeyPhrase extends React.Component<Properties, State> {
           <p {...cn('secondary-text')}>Confirm that you have safely stored your backup phrase by entering it below</p>
 
           <div {...cn('input-container')}>
-            <Input
+            <PasswordInput
               placeholder='Enter your backup phrase'
               onChange={this.trackKeyPhrase}
               value={this.keyPhrase}
               error={!!this.props.errorMessage}
+              size='large'
             />
 
             {this.props.errorMessage && (

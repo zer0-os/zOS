@@ -40,15 +40,15 @@ describe('ProgressTracker', () => {
     expect(wrapper).toHaveText('Fetching room keys...');
   });
 
-  it('renders loading message with progress when stage is load_keys and not complete', () => {
+  it('renders loading message with percentage when stage is load_keys and not complete', () => {
     const wrapper = subject({
       stage: 'load_keys',
-      total: 2,
+      total: 4,
       successes: 1,
       failures: 0,
     });
 
-    expect(wrapper).toHaveText('Loading room keys... (1 of 2)');
+    expect(wrapper).toHaveText('Restoring your encrypted messages... (25%)');
   });
 
   it('renders success message when stage is load_keys and complete', () => {

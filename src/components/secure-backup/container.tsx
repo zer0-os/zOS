@@ -12,6 +12,7 @@ import {
   restoreBackup,
   saveBackup,
   proceedToVerifyKey,
+  RestoreProgress,
 } from '../../store/matrix';
 
 import { SecureBackup } from '.';
@@ -29,6 +30,7 @@ export interface Properties extends PublicProperties {
   errorMessage: string;
   backupStage: BackupStage;
   videoAssetsPath: string;
+  restoreProgress: RestoreProgress;
 
   getBackup: () => void;
   generateBackup: () => void;
@@ -40,8 +42,16 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
-    const { isLoaded, generatedRecoveryKey, backupExists, backupRestored, successMessage, errorMessage, backupStage } =
-      state.matrix;
+    const {
+      isLoaded,
+      generatedRecoveryKey,
+      backupExists,
+      backupRestored,
+      successMessage,
+      errorMessage,
+      backupStage,
+      restoreProgress,
+    } = state.matrix;
 
     return {
       isLoading: !isLoaded,
@@ -52,6 +62,7 @@ export class Container extends React.Component<Properties> {
       errorMessage,
       videoAssetsPath: config.videoAssetsPath,
       backupStage,
+      restoreProgress,
     };
   }
 
@@ -83,6 +94,7 @@ export class Container extends React.Component<Properties> {
         onVerifyKey={this.props.proceedToVerifyKey}
         videoAssetsPath={this.props.videoAssetsPath}
         backupStage={this.props.backupStage}
+        restoreProgress={this.props.restoreProgress}
       />
     );
   }

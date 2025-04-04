@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { bemClassName } from '../../lib/bem';
 import { assertAllValuesConsumed } from '../../lib/enum';
-import { BackupStage } from '../../store/matrix';
+import { BackupStage, RestoreProgress } from '../../store/matrix';
 
 import { BackupFAQ } from './backup-faq';
 import { GeneratePrompt } from './generate-prompt';
@@ -28,6 +28,7 @@ export interface Properties {
   errorMessage: string;
   videoAssetsPath: string;
   backupStage: BackupStage;
+  restoreProgress: RestoreProgress;
 
   onClose: () => void;
   onGenerate: () => void;
@@ -106,7 +107,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
   };
 
   configForStage = () => {
-    if (this.props.isLoading) {
+    if (this.props.isLoading && this.props.backupStage !== BackupStage.RestoreBackup) {
       return { content: <LoadingIndicator /> };
     }
 
@@ -178,7 +179,13 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
           primaryText: 'Verify',
           primaryDisabled: !this.state.userInputKeyPhrase,
           onPrimary: this.restoreBackup,
-          content: <RestoreBackup errorMessage={errorMessage} onChange={this.trackKeyPhrase} />,
+          content: (
+            <RestoreBackup
+              errorMessage={errorMessage}
+              onChange={this.trackKeyPhrase}
+              restoreProgress={this.props.restoreProgress}
+            />
+          ),
         };
 
       case BackupStage.VerifyKeyPhrase:

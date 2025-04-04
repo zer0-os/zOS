@@ -69,7 +69,7 @@ export class ProgressTracker extends React.Component<Properties> {
 
             {isComplete && <p {...cn('success-message')}>Your encrypted messages have been successfully restored!</p>}
             {percentage > 0 && (
-              <span {...cn('percentage')} data-is-complete={percentage === 100}>{`(${percentage}%)`}</span>
+              <span {...cn('percentage')} data-is-complete={percentage === 100}>{`(${Math.round(percentage)}%)`}</span>
             )}
           </div>
         </div>

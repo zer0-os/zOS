@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 
 import { RestoreBackup, Properties } from '.';
 
-import { Alert, Input } from '@zero-tech/zui/components';
+import { Alert, PasswordInput } from '@zero-tech/zui/components';
 
 describe('RestoreBackup', () => {
   const subject = (props: Partial<Properties> = {}) => {
@@ -20,7 +20,7 @@ describe('RestoreBackup', () => {
     const onChange = jest.fn();
     const wrapper = subject({ onChange });
 
-    wrapper.find(Input).simulate('change', 'test-key-phrase');
+    wrapper.find(PasswordInput).simulate('change', 'test-key-phrase');
 
     expect(onChange).toHaveBeenCalledWith('test-key-phrase');
   });

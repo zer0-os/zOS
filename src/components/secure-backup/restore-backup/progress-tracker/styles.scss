@@ -45,6 +45,10 @@
     line-height: 20px;
 
     white-space: pre-line;
+
+    &[data-is-complete='true'] {
+      color: theme.$color-secondary-11;
+    }
   }
 
   &__failure-message {

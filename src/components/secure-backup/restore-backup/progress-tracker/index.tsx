@@ -14,9 +14,7 @@ export class ProgressTracker extends React.Component<Properties> {
   getProgressPercentage = () => {
     const { total, successes } = this.props.progress;
     if (total === 0) return 0;
-
-    const actualPercentage = (successes / total) * 100;
-    return actualPercentage >= 90 ? 100 : actualPercentage;
+    return (successes / total) * 100;
   };
 
   getContextualMessage = () => {
@@ -31,7 +29,7 @@ export class ProgressTracker extends React.Component<Properties> {
         return 'Retrieving your secure backup...(Please wait a few moments)';
       case 'load_keys':
         if (percentage === 100) {
-          return '';
+          return 'Your encrypted messages have been successfully restored!';
         }
 
         if (percentage < 25) {
@@ -49,9 +47,9 @@ export class ProgressTracker extends React.Component<Properties> {
   };
 
   render() {
-    const { stage, total, successes, failures } = this.props.progress;
+    const { stage, failures } = this.props.progress;
     const percentage = this.getProgressPercentage();
-    const isComplete = stage === 'load_keys' && successes === total;
+    const isComplete = percentage === 100;
     const message = this.getContextualMessage();
 
     if (!stage) {
@@ -65,11 +63,12 @@ export class ProgressTracker extends React.Component<Properties> {
             <div {...cn('progress-bar')} style={{ width: `${percentage}%` }} />
           </div>
           <div {...cn('progress-text')}>
-            <span {...cn('message')}>{message}</span>
+            <span {...cn('message')} data-is-complete={isComplete}>
+              {message}
+            </span>
 
-            {isComplete && <p {...cn('success-message')}>Your encrypted messages have been successfully restored!</p>}
             {percentage > 0 && (
-              <span {...cn('percentage')} data-is-complete={percentage === 100}>{`(${Math.round(percentage)}%)`}</span>
+              <span {...cn('percentage')} data-is-complete={isComplete}>{`(${Math.round(percentage)}%)`}</span>
             )}
           </div>
         </div>

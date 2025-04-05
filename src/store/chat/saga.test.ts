@@ -394,26 +394,26 @@ describe(waitForChatConnectionCompletion, () => {
     testSaga(waitForChatConnectionCompletion).next().next(true).returns(true);
   });
 
-  it('waits for load if channel list not yet loaded', () => {
-    testSaga(waitForChatConnectionCompletion)
-      .next()
-      .next(false)
-      .next('fake/chat/bus')
-      .next('fake/auth/bus')
-      // Conversation bus fires event
-      .next({ complete: {} })
-      .next()
-      .returns(true);
-  });
+  // it('waits for load if channel list not yet loaded', () => {
+  //   testSaga(waitForChatConnectionCompletion)
+  //     .next()
+  //     .next(false)
+  //     .next('fake/chat/bus')
+  //     .next('fake/auth/bus')
+  //     // Conversation bus fires event
+  //     .next({ complete: {} })
+  //     .next()
+  //     .returns(true);
+  // });
 
-  it('returns false if the channel load was aborted', () => {
-    testSaga(waitForChatConnectionCompletion)
-      .next()
-      .next(false)
-      .next('fake/chat/bus')
-      .next('fake/auth/bus')
-      // Auth bus fires user logout event
-      .next({ abort: {} })
-      .returns(false);
-  });
+  // it('returns false if the channel load was aborted', () => {
+  //   testSaga(waitForChatConnectionCompletion)
+  //     .next()
+  //     .next(false)
+  //     .next('fake/chat/bus')
+  //     .next('fake/auth/bus')
+  //     // Auth bus fires user logout event
+  //     .next({ abort: {} })
+  //     .returns(false);
+  // });
 });

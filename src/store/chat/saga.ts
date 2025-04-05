@@ -254,7 +254,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
   }
 
   // Mark conversation as read, now that it has been set as active
-  yield call(markConversationAsRead, conversationId);
+  yield spawn(markConversationAsRead, conversationId);
 }
 
 export function* closeErrorDialog() {

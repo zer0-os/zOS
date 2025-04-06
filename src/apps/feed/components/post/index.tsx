@@ -27,7 +27,6 @@ export interface PostProps {
   author?: string;
   nickname: string;
   text?: string;
-  media?: any;
   ownerUserId?: string;
   channelZid?: string;
   userMeowBalance?: string;

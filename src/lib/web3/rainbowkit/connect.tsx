@@ -9,7 +9,7 @@ import { connectContainer } from '../../../store/redux-container';
 import { watchAccount } from '@wagmi/core';
 import { getWagmiConfig } from '../wagmi-config';
 import { Chains, ConnectionStatus } from '..';
-import { setChain, setConnectionStatus, setAddress, updateConnector } from '../../../store/web3';
+import { setChain, setConnectionStatus, setAddress } from '../../../store/web3';
 import { config } from '../../../config';
 import { RootState } from '../../../store';
 
@@ -21,7 +21,6 @@ export interface Properties extends PublicProperties {
   address: string;
 
   setAddress: (address: string) => void;
-  updateConnector: (connector: string) => void;
   setChain: (chain: Chains) => void;
   setConnectionStatus: (status: ConnectionStatus) => void;
 }
@@ -40,7 +39,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { setChain, setConnectionStatus, setAddress, updateConnector };
+    return { setChain, setConnectionStatus, setAddress };
   }
 
   componentDidMount(): void {

@@ -13,7 +13,6 @@ export interface Properties {
   canLeaveRoom: boolean;
   canEdit: boolean;
   canViewDetails: boolean;
-  isSecondarySidekickOpen: boolean;
   isRoomMuted: boolean;
   onAddMember: () => void;
   onReportUser: () => void;

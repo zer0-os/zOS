@@ -34,12 +34,10 @@ export interface Properties extends PublicProperties {
   isConversationsLoaded: boolean;
   joinRoomErrorContent: ErrorDialogContent;
   otherMembersTypingInRoom: string[];
-  isSecondarySidekickOpen: boolean;
   validateFeedChat: (id: string) => void;
   onRemoveReply: () => void;
   sendMessage: (payload: PayloadSendMessage) => void;
   toggleSecondarySidekick: () => void;
-  isCollapsed: boolean;
 }
 
 export class Container extends React.Component<Properties> {
@@ -53,8 +51,6 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId, joinRoomErrorContent, isJoiningConversation, isConversationsLoaded },
-      groupManagement,
-      panels: { openStates },
     } = state;
 
     const channel = denormalize(activeConversationId, state);
@@ -67,8 +63,6 @@ export class Container extends React.Component<Properties> {
       isJoiningConversation,
       isConversationsLoaded,
       otherMembersTypingInRoom: rawChannel?.otherMembersTyping || [],
-      isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
-      isCollapsed: !openStates[PanelEnum.FEED_CHAT],
     };
   }
 

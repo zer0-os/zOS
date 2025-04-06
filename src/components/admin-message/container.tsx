@@ -7,6 +7,7 @@ import { connectContainer } from '../../store/redux-container';
 import { adminMessageText } from '../../lib/chat/chat-message';
 
 export interface PublicProperties {
+  // eslint-disable-next-line react-redux/no-unused-prop-types
   message: Message;
 }
 

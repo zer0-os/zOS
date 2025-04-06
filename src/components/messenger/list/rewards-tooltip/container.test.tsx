@@ -14,17 +14,6 @@ describe(Container, () => {
       expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ meowPreviousDayInUSD: '$4.11' }));
     });
 
-    test('isLoading', () => {
-      const state = new StoreBuilder().withOtherState({
-        rewards: {
-          meowPreviousDay: '0',
-          loading: true,
-        },
-      });
-
-      expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ isLoading: true }));
-    });
-
     test('isOpen', () => {
       const state = new StoreBuilder().withOtherState({
         rewards: {

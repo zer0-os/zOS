@@ -11,8 +11,6 @@ export interface PublicProperties {}
 export interface Properties extends PublicProperties {
   isOpen: boolean;
   meowPreviousDayInUSD: string;
-  isLoading: boolean;
-  meowTokenPriceInUSD: number;
 
   closeRewardsTooltip: () => void;
 }
@@ -23,8 +21,6 @@ export class Container extends React.Component<Properties> {
 
     return {
       meowPreviousDayInUSD: Container.totalPriceInUSD(rewards.meowPreviousDay, rewards.meowInUSD),
-      isLoading: rewards.loading,
-      meowTokenPriceInUSD: rewards.meowInUSD,
       isOpen: rewards.showRewardsInTooltip,
     };
   }

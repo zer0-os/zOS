@@ -19,7 +19,6 @@ export interface Properties extends PublicProperties {
   messages: Message[];
   conversations: Channel[];
 
-  toggleState(): void;
   updateMessage(message: Partial<Message>): void;
   updateConversation: (conversation: Partial<Channel>) => void;
 }

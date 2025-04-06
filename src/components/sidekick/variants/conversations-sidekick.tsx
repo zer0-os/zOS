@@ -5,24 +5,19 @@ import { ContentPortal as SidekickContentPortal } from '../components/content-po
 import { MessengerList } from '../../messenger/list';
 import { UserProfileContainer } from '../../messenger/user-profile/container';
 import { Stage as ProfileStage } from '../../../store/user-profile';
-import { Stage as MessageInfoStage } from '../../../store/message-info';
 
-interface PublicProperties {
-  className?: string;
-}
+interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   profileStage: ProfileStage;
-  messageInfoStage: MessageInfoStage;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { userProfile, messageInfo } = state;
+    const { userProfile } = state;
 
     return {
       profileStage: userProfile.stage,
-      messageInfoStage: messageInfo.stage,
     };
   }
 

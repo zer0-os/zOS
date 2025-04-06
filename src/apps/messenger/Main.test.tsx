@@ -22,7 +22,6 @@ describe(Main, () => {
       isValidConversation: false,
       isJoiningConversation: false,
       isConversationsLoaded: true,
-      isSecondarySidekickOpen: false,
       ...props,
     };
 
@@ -35,10 +34,9 @@ describe(Main, () => {
     expect(wrapper).toHaveElement(MessengerChat);
   });
 
-  it('should render members sidekick when is secondary sidekick open', () => {
+  it('should render members sidekick', () => {
     const wrapper = subject({
       context: { isAuthenticated: true },
-      isSecondarySidekickOpen: true,
       isConversationsLoaded: true,
     });
 

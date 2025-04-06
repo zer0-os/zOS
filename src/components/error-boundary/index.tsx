@@ -4,8 +4,6 @@ import { ErrorBoundary as SentryErrorBoundary } from '@sentry/react';
 export interface Properties {
   children: any;
   boundary: string;
-
-  beforeCapture?: any;
 }
 
 export class ErrorBoundary extends React.Component<Properties> {

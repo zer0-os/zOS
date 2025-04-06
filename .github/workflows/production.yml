@@ -32,12 +32,11 @@ jobs:
       REACT_APP_GOOGLE_PLAY_STORE_PATH: ${{vars.GOOGLE_PLAY_STORE_PATH}}
       REACT_APP_WEB_APP_DOWNLOAD_PATH: ${{vars.WEB_APP_DOWNLOAD_PATH}}
       REACT_APP_MATRIX_HOME_SERVER_NAME: ${{vars.MATRIX_HOME_SERVER_NAME}}
+      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
     steps:
       - uses: actions/checkout@v4
       - name: Common Setup
         uses: ./.github/actions/common
-
-      - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
 
       - run: npm install --legacy-peer-deps
       - name: get-npm-version

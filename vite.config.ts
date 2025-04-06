@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react-swc';
 import { resolve } from 'path';
 import svgr from 'vite-plugin-svgr';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -10,6 +11,7 @@ export default defineConfig(({ mode }) => {
     base: '/',
     build: {
       outDir: 'build',
+      sourcemap: true,
     },
     optimizeDeps: {
       exclude: ['@matrix-org/matrix-sdk-crypto-wasm'],
@@ -25,6 +27,11 @@ export default defineConfig(({ mode }) => {
         include: '**/*.svg?react',
       }),
       nodePolyfills(),
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: 'factory-5k',
+        project: 'zos',
+      }),
     ],
     envPrefix: 'REACT_APP_',
     css: {

@@ -332,6 +332,13 @@ export const Message: React.FC<Properties> = ({
   const renderBody = () => {
     return (
       <div {...cn('block-body')}>
+        {media?.body && (
+          <ContentHighlighter
+            message={media.body}
+            isHidden={isHidden}
+            onHiddenMessageInfoClick={onHiddenMessageInfoClick}
+          />
+        )}
         {message && (
           <ContentHighlighter
             message={message}

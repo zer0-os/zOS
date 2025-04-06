@@ -153,7 +153,8 @@ export class ChatView extends React.Component<Properties, State> {
           this.props.isOneOnOne,
           isUserOwner
         );
-        const mediaMessage = this.props.mediaMessages.get(message.id);
+        const mediaMessage =
+          this.props.mediaMessages.get(message.id) || this.props.mediaMessages.get(message.optimisticId);
 
         return (
           <div

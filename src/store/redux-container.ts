@@ -21,10 +21,12 @@ interface IDispatchActions {
 export function connectContainer<TPublicProps>(
   containerComponent: IContainerComponent<TPublicProps, any>
 ): ConnectedComponent<any, TPublicProps> {
+  // eslint-disable-next-line react-redux/mapStateToProps-prefer-parameters-names
   function mapStateToProps(state: RootState, props: TPublicProps) {
     return containerComponent.mapState(state, props);
   }
 
+  // eslint-disable-next-line react-redux/mapStateToProps-prefer-parameters-names
   function mapDispatchToProps(dispatch: (action: any) => void, props: TPublicProps) {
     const actions = containerComponent.mapActions(props) as any;
 

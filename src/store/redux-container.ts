@@ -26,7 +26,7 @@ export function connectContainer<TPublicProps>(
     return containerComponent.mapState(state, props);
   }
 
-  // eslint-disable-next-line react-redux/mapStateToProps-prefer-parameters-names
+  // eslint-disable-next-line react-redux/mapDispatchToProps-prefer-parameters-names
   function mapDispatchToProps(dispatch: (action: any) => void, props: TPublicProps) {
     const actions = containerComponent.mapActions(props) as any;
 

@@ -2,13 +2,14 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 import { PAGE_SIZE } from '../../../lib/constants';
-import { RootState } from '../../../../../store';
 import { getPostReplies, mapPostToMatrixMessage } from '../../../../../store/posts/utils';
 import { useMeowPost } from '../../../lib/useMeowPost';
+import { userIdSelector } from '../../../../../store/authentication/selectors';
+import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/selectors';
 
 export const useReplyList = (postId: string) => {
-  const userId = useSelector((state: RootState) => state.authentication.user.data.id);
-  const userMeowBalance = useSelector((state: RootState) => state.rewards.meow);
+  const userId = useSelector(userIdSelector);
+  const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
   const { meowPost, meowPostFeed } = useMeowPost();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({

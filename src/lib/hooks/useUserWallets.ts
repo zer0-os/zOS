@@ -1,13 +1,13 @@
 import { useSelector } from 'react-redux';
 
-import { RootState } from '../../store/reducer';
+import { userWalletsSelector } from '../../store/authentication/selectors';
 
 /**
  * Gets a list of wallets owned by the user.
  * @returns list of wallets owned by the user
  */
 export const useUserWallets = () => {
-  const wallets = useSelector((state: RootState) => state.authentication.user?.data?.wallets);
+  const wallets = useSelector(userWalletsSelector);
 
   return {
     wallets,

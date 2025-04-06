@@ -4,9 +4,13 @@ import { getPanelOpenState } from './selectors';
 import { RootState } from '../reducer';
 import { Panel } from './constants';
 
+function panelStateSelector(panel?: Panel) {
+  return (state: RootState) => getPanelOpenState(state, panel);
+}
+
 export const usePanelState = (panel?: Panel) => {
   const dispatch = useDispatch();
-  const isOpen = !!useSelector((state: RootState) => getPanelOpenState(state, panel));
+  const isOpen = !!useSelector(panelStateSelector(panel));
 
   return {
     panel,

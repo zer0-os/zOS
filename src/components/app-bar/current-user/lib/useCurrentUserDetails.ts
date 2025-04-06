@@ -4,6 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store/reducer';
 import { totalRewardsViewed } from '../../../../store/rewards';
 import { openUserProfile } from '../../../../store/user-profile';
+import {
+  primaryZIDSelector,
+  userFirstNameSelector,
+  userProfileImageSelector,
+} from '../../../../store/authentication/selectors';
 
 export interface CurrentUserDetailsReturn {
   hasUnviewedRewards: boolean;
@@ -18,19 +23,18 @@ export interface CurrentUserDetailsReturn {
   userName: string;
 }
 
+const rewardsTooltipSelector = (state: RootState) => ({
+  showNewRewardsIndicator: state.rewards.showNewRewardsIndicator,
+  showRewardsInTooltip: state.rewards.showRewardsInTooltip,
+});
+
 export const useCurrentUserDetails = (): CurrentUserDetailsReturn => {
   const dispatch = useDispatch();
 
-  const rewards = useSelector((state: RootState) => ({
-    showNewRewardsIndicator: state.rewards.showNewRewardsIndicator,
-    showRewardsInTooltip: state.rewards.showRewardsInTooltip,
-  }));
-
-  const user = useSelector((state: RootState) => ({
-    primaryZID: state.authentication.user?.data?.primaryZID,
-    firstName: state.authentication.user?.data?.profileSummary?.firstName,
-    profileImage: state.authentication.user?.data?.profileSummary?.profileImage,
-  }));
+  const rewards = useSelector(rewardsTooltipSelector);
+  const primaryZID = useSelector(primaryZIDSelector);
+  const firstName = useSelector(userFirstNameSelector);
+  const profileImage = useSelector(userProfileImageSelector);
 
   const [isVerifyIdDialogOpen, setIsVerifyIdDialogOpen] = useState(false);
 
@@ -51,12 +55,12 @@ export const useCurrentUserDetails = (): CurrentUserDetailsReturn => {
     hasUnviewedRewards: rewards.showNewRewardsIndicator,
     isRewardsTooltipOpen: rewards.showRewardsInTooltip,
     isVerifyIdDialogOpen,
-    isHandleAWalletAddress: user.primaryZID?.startsWith('0x'),
+    isHandleAWalletAddress: primaryZID?.startsWith('0x'),
     onClick: handleOnClick,
     onCloseVerifyIdDialog: handleOnCloseVerifyIdDialog,
     onOpenVerifyIdDialog: handleOnOpenVerifyIdDialog,
-    userAvatarUrl: user.profileImage || '',
-    userHandle: user.primaryZID || '',
-    userName: user.firstName || '',
+    userAvatarUrl: profileImage || '',
+    userHandle: primaryZID || '',
+    userName: firstName || '',
   };
 };

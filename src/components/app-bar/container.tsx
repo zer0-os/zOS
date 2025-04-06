@@ -1,13 +1,12 @@
 import { useRouteMatch } from 'react-router-dom';
 import { AppBar as AppBarComponent } from './';
-import { denormalizeConversations } from '../../store/channels-list';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
-import { DefaultRoomLabels } from '../../store/channels';
 import { getLastActiveConversation } from '../../lib/last-conversation';
-import { rawChannelSelector } from '../../store/channels/saga';
 import { useMemo } from 'react';
 import { activeZAppFeatureSelector } from '../../store/active-zapp/selectors';
+import { activeConversationIdSelector, rawActiveConversationSelector } from '../../store/chat/selectors';
+import { hasUnreadHighlightsSelector } from '../../store/channels-list/selectors';
+import { hasUnreadNotificationsSelector } from '../../store/channels-list/selectors';
 
 export const AppBar = () => {
   const {
@@ -31,29 +30,12 @@ export const AppBar = () => {
 
 const useAppBar = () => {
   const match = useRouteMatch('/:app');
-  const activeConversationId = useSelector((state: RootState) => state.chat.activeConversationId);
-  const rawActiveConversation = useSelector((state: RootState) => rawChannelSelector(activeConversationId)(state));
+  const activeConversationId = useSelector(activeConversationIdSelector);
+  const rawActiveConversation = useSelector(rawActiveConversationSelector);
   const isActiveConversationSocialChannel = rawActiveConversation?.isSocialChannel;
 
-  const hasUnreadNotifications = useSelector((state: RootState) => {
-    const conversations = denormalizeConversations(state);
-    return conversations.some(
-      (channel) =>
-        channel.unreadCount?.total > 0 &&
-        !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-        !channel.labels?.includes(DefaultRoomLabels.MUTE)
-    );
-  });
-
-  const hasUnreadHighlights = useSelector((state: RootState) => {
-    const conversations = denormalizeConversations(state);
-    return conversations.some(
-      (channel) =>
-        channel.unreadCount?.highlight > 0 &&
-        !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
-        !channel.labels?.includes(DefaultRoomLabels.MUTE)
-    );
-  });
+  const hasUnreadNotifications = useSelector(hasUnreadNotificationsSelector);
+  const hasUnreadHighlights = useSelector(hasUnreadHighlightsSelector);
 
   const lastActiveMessengerConversationId = useMemo(() => {
     if (!isActiveConversationSocialChannel) {

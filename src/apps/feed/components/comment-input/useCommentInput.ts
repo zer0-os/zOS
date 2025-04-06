@@ -4,17 +4,25 @@ import { Media } from '../../../../components/message-input/utils';
 import { RootState } from '../../../../store';
 import { SagaActionTypes } from '../../../../store/posts';
 import { useSubmitPost } from '../../lib/useSubmitPost';
+import { userProfileImageSelector } from '../../../../store/authentication/selectors';
+import { activeConversationIdSelector } from '../../../../store/chat/selectors';
+
+const postErrorSelector = (state: RootState) => {
+  return state.posts.error;
+};
+
+const postIsSubmittingSelector = (state: RootState) => {
+  return state.posts.isSubmitting;
+};
 
 export const useCommentInput = (postId: string, channelZid?: string) => {
   const dispatch = useDispatch();
 
-  const userProfileImageUrl = useSelector(
-    (state: RootState) => state.authentication.user.data?.profileSummary?.profileImage
-  );
+  const userProfileImageUrl = useSelector(userProfileImageSelector);
 
-  const channelId = useSelector((state: RootState) => state.chat.activeConversationId);
-  const error = useSelector((state: RootState) => state.posts.error);
-  const isLoading = useSelector((state: RootState) => state.posts.isSubmitting);
+  const channelId = useSelector(activeConversationIdSelector);
+  const error = useSelector(postErrorSelector);
+  const isLoading = useSelector(postIsSubmittingSelector);
 
   const { handleOnSubmit: handleOnSubmitPost, isLoading: isLoadingFeed, error: errorFeed } = useSubmitPost();
 

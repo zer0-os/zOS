@@ -3,14 +3,15 @@ import { useSelector } from 'react-redux';
 
 import { get } from '../../../../../lib/api/rest';
 import { PAGE_SIZE } from '../../../lib/constants';
-import { RootState } from '../../../../../store';
 import { mapPostToMatrixMessage } from '../../../../../store/posts/utils';
 import { useMeowPost } from '../../../lib/useMeowPost';
+import { primaryZIDSelector, userIdSelector } from '../../../../../store/authentication/selectors';
+import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/selectors';
 
 export const useFeed = (zid?: string) => {
-  const userId = useSelector((state: RootState) => state.authentication.user.data.id);
-  const userMeowBalance = useSelector((state: RootState) => state.rewards.meow);
-  const primaryZID = useSelector((state: RootState) => state.authentication.user.data.primaryZID)?.replace('0://', '');
+  const userId = useSelector(userIdSelector);
+  const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
+  const primaryZID = useSelector(primaryZIDSelector);
 
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['posts', { zid }],

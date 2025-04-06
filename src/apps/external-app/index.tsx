@@ -131,5 +131,6 @@ class ExternalAppComponent extends Component<Properties, State> {
   }
 }
 
+// eslint-disable-next-line react-redux/prefer-separate-component-file
 const ConnectedExternalApp = connect()(ExternalAppComponent);
 export const ExternalApp = withRouter<PublicProperties>(ConnectedExternalApp);

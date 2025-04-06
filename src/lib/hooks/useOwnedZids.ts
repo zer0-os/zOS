@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 
-import { RootState } from '../../store/reducer';
+import { userIdSelector } from '../../store/authentication/selectors';
 import { fetchOwnedZIDs } from '../../store/edit-profile/api';
 
 /**
@@ -11,7 +11,7 @@ import { fetchOwnedZIDs } from '../../store/edit-profile/api';
  * @returns formatted and alphabetically sorted list of ZIDs
  */
 export const useOwnedZids = () => {
-  const userId = useSelector((state: RootState) => state.authentication.user?.data.id);
+  const userId = useSelector(userIdSelector);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['user', 'zids', { userId }],

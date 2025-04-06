@@ -3,7 +3,6 @@ import './main.scss';
 import { useSelector } from 'react-redux';
 import { AppRouter } from './apps/app-router';
 import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
-import { RootState } from './store';
 import classNames from 'classnames';
 import { getMainBackgroundClass, getMainBackgroundVideoSrc } from './utils';
 import { AppBar } from './components/app-bar/container';
@@ -12,6 +11,8 @@ import { ThemeEngine } from './components/theme-engine';
 import { BackgroundStyleProvider } from './lib/providers/BackgroundStyleProvider';
 import { Maintenance } from './maintenance';
 import { selectIsInMaintenance } from './store/maintenance';
+import { selectedMainBackgroundSelector } from './store/background/selectors';
+import { isAuthenticatedSelector } from './store/authentication/selectors';
 
 export const App = () => {
   const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName } = useAppMain();
@@ -50,8 +51,8 @@ export const App = () => {
 };
 
 const useAppMain = () => {
-  const isAuthenticated = useSelector((state: RootState) => !!state.authentication.user?.data);
-  const background = useSelector((state: RootState) => state.background.selectedMainBackground);
+  const isAuthenticated = useSelector(isAuthenticatedSelector);
+  const background = useSelector(selectedMainBackgroundSelector);
 
   const videoBackgroundSrc = getMainBackgroundVideoSrc(background);
   const mainClassName = classNames('main', 'messenger-full-screen', getMainBackgroundClass(background), {

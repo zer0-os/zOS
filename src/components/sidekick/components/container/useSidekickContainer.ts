@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../../store';
+import { userProfileStageSelector } from '../../../../store/user-profile/selectors';
 import { Stage } from '../../../../store/user-profile';
 
 export interface UseSideKickContainerReturn {
@@ -11,7 +11,7 @@ export interface UseSideKickContainerReturn {
 }
 
 export const useSidekickContainer = (variant?: 'primary' | 'secondary'): UseSideKickContainerReturn => {
-  const userProfileStage = useSelector((state: RootState) => state.userProfile.stage);
+  const userProfileStage = useSelector(userProfileStageSelector);
 
   return {
     isSettingsOpen: variant === 'primary' && userProfileStage !== Stage.None,

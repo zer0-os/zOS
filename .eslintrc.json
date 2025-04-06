@@ -21,7 +21,6 @@
     "react-redux/mapStateToProps-prefer-parameters-names": "warn",
     "react-redux/mapStateToProps-prefer-selectors": "warn",
     "react-redux/useSelector-prefer-selectors": "warn",
-    "react-redux/no-unused-prop-types": "warn",
     "react-redux/prefer-separate-component-file": "warn"
   },
   "plugins": ["react-redux"],

@@ -3,6 +3,7 @@ import { setEntryPath, setIsComplete, setShowAndroidDownload } from '.';
 import { getHistory, getNavigator } from '../../lib/browser';
 import { getCurrentUser } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
+import { checkServerStatus } from '../maintenance';
 
 const anonymousPaths = [
   '/get-access',
@@ -14,6 +15,8 @@ export function* saga() {
   const history = yield call(getHistory);
   const navigator = yield call(getNavigator);
   const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
+
+  yield put(checkServerStatus());
 
   if (isMobileDevice) {
     history.replace({ pathname: '/restricted' });

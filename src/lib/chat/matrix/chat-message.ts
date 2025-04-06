@@ -36,6 +36,7 @@ export async function buildMediaObject(content) {
   else if (content.msgtype === MsgType.Audio) mediaType = 'audio';
   if (content.file && content.info) {
     return {
+      body: content.body,
       url: null,
       type: mediaType,
       file: { ...content.file },
@@ -43,6 +44,7 @@ export async function buildMediaObject(content) {
     };
   } else if (content.url) {
     return {
+      body: content.body,
       url: content.url,
       type: mediaType,
       ...content.info,

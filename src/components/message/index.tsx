@@ -402,59 +402,49 @@ export const Message: React.FC<Properties> = ({
       >
         {(message || media || preview) && (
           <>
-            {!isEditing && (
-              <>
-                {showAuthorName && (
-                  <div {...cn('author-name')}>
-                    {sender.firstName} {sender.lastName}
-                  </div>
-                )}
-                {media && (
-                  <MessageMedia
-                    media={media}
-                    onImageClick={onImageClick}
-                    openAttachmentPreview={openAttachmentPreview}
-                    effectiveMediaUrl={effectiveMediaUrl}
-                    isLoading={isMediaLoading}
-                    isError={isMediaError}
-                  />
-                )}
-                {renderLinkPreview()}
-                <ParentMessage
-                  message={parentMessageText}
-                  senderIsCurrentUser={parentSenderIsCurrentUser}
-                  senderFirstName={parentSenderFirstName}
-                  senderLastName={parentSenderLastName}
-                  media={parentMessageMedia}
-                  messageId={parentMessageId}
-                  onMessageClick={onParentMessageClick}
-                />
-                {renderBody()}
-              </>
+            {showAuthorName && !isEditing && (
+              <div {...cn('author-name')}>
+                {sender.firstName} {sender.lastName}
+              </div>
             )}
 
+            {media && (
+              <MessageMedia
+                media={media}
+                onImageClick={onImageClick}
+                openAttachmentPreview={openAttachmentPreview}
+                effectiveMediaUrl={effectiveMediaUrl}
+                isLoading={isMediaLoading}
+                isError={isMediaError}
+              />
+            )}
+
+            {!isEditing && renderLinkPreview()}
+
+            {!isEditing && (
+              <ParentMessage
+                message={parentMessageText}
+                senderIsCurrentUser={parentSenderIsCurrentUser}
+                senderFirstName={parentSenderFirstName}
+                senderLastName={parentSenderLastName}
+                media={parentMessageMedia}
+                messageId={parentMessageId}
+                onMessageClick={onParentMessageClick}
+              />
+            )}
+
+            {!isEditing && renderBody()}
+
             {isEditing && message && (
-              <>
-                {media && (
-                  <MessageMedia
-                    media={media}
-                    onImageClick={onImageClick}
-                    openAttachmentPreview={openAttachmentPreview}
-                    effectiveMediaUrl={effectiveMediaUrl}
-                    isLoading={isMediaLoading}
-                    isError={isMediaError}
-                  />
-                )}
-                <div {...cn('block-edit')}>
-                  <MessageInput
-                    initialValue={message}
-                    onSubmit={editMessageFromInput}
-                    getUsersForMentions={getUsersForMentions}
-                    isEditing={isEditing}
-                    renderAfterInput={editActions}
-                  />
-                </div>
-              </>
+              <div {...cn('block-edit')}>
+                <MessageInput
+                  initialValue={message}
+                  onSubmit={editMessageFromInput}
+                  getUsersForMentions={getUsersForMentions}
+                  isEditing={isEditing}
+                  renderAfterInput={editActions}
+                />
+              </div>
             )}
           </>
         )}

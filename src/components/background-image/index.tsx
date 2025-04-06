@@ -19,6 +19,8 @@ export interface Properties {
   autoHeight?: boolean;
   shaded?: boolean;
   minHeight?: string;
+
+  // eslint-disable-next-line react-redux/no-unused-prop-types
   style?: React.CSSProperties;
   local?: boolean;
 
@@ -58,7 +60,11 @@ export class BackgroundImage extends React.Component<Properties> {
   initialLoad = () => {
     if (this.hasSource()) {
       this.isIdle = false;
-      this.downloadImage(this.props);
+      this.downloadImage({
+        source: this.props.source,
+        alwaysFadeIn: this.props.alwaysFadeIn,
+        options: this.props.options,
+      });
     }
   };
 
@@ -132,7 +138,7 @@ export class BackgroundImage extends React.Component<Properties> {
     this.root.className = newClassNames.join(' ');
   };
 
-  downloadImage({ source, options, alwaysFadeIn }: Properties) {
+  downloadImage({ source, options, alwaysFadeIn }: Pick<Properties, 'source' | 'options' | 'alwaysFadeIn'>) {
     if (source.indexOf('blob:') >= 0 || this.props.local) {
       this.root._backgroundSrc = source;
       return this.onLoad(source, alwaysFadeIn);

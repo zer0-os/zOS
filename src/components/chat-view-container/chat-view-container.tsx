@@ -31,10 +31,6 @@ export interface Properties extends PublicProperties {
   editMessage: (payload: EditPayload) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
   openBackupDialog: () => void;
-  activeConversationId?: string;
-  context: {
-    isAuthenticated: boolean;
-  };
   isSecondarySidekickOpen: boolean;
   openDeleteMessage: (messageId: string) => void;
   toggleSecondarySidekick: () => void;
@@ -48,6 +44,8 @@ interface PublicProperties {
   channelId: string;
   className?: string;
   showSenderAvatar?: boolean;
+
+  // eslint-disable-next-line react-redux/no-unused-prop-types
   ref?: any;
 }
 
@@ -63,14 +61,12 @@ export class Container extends React.Component<Properties> {
     const channel = denormalize(props.channelId, state) || null;
     const {
       authentication: { user },
-      chat: { activeConversationId },
       groupManagement: { isSecondarySidekickOpen },
     } = state;
 
     return {
       channel,
       user,
-      activeConversationId,
       isSecondarySidekickOpen,
     };
   }

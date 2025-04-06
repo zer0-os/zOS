@@ -57,7 +57,6 @@ export interface Properties extends PublicProperties {
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
   editConversationNameAndIcon: (payload: EditConversationPayload) => void;
-  openRemoveMember: (params: { roomId: string; userId: string }) => void;
   startEditConversation: () => void;
   startAddGroupMember: () => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;

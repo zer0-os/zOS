@@ -27,12 +27,10 @@ export interface Properties extends PublicProperties {
   canEdit: boolean;
   canAddMembers: boolean;
   canViewDetails: boolean;
-  isSecondarySidekickOpen: boolean;
   canReportUser: boolean;
 
   startAddGroupMember: () => void;
   startEditConversation: () => void;
-  leaveGroupDialogStatus: LeaveGroupDialogStatus;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
   viewGroupInformation: () => void;
   toggleSecondarySidekick: () => void;
@@ -45,7 +43,6 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId, isJoiningConversation },
-      groupManagement,
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
@@ -65,14 +62,12 @@ export class Container extends React.Component<Properties> {
     return {
       activeConversationId,
       directMessage,
-      leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
       isJoiningConversation,
       canLeaveRoom,
       canEdit,
       canAddMembers,
       canViewDetails,
       canReportUser,
-      isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }
 
@@ -131,7 +126,6 @@ export class Container extends React.Component<Properties> {
         onAddMember={this.props.startAddGroupMember}
         onEdit={this.props.startEditConversation}
         toggleSecondarySidekick={this.props.toggleSecondarySidekick}
-        isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
         isRoomMuted={this.isMuted}
         onMuteRoom={this.muteRoom}
         onUnmuteRoom={this.unmuteRoom}

@@ -14,7 +14,6 @@ export interface PublicProperties {
   initialValue?: string;
   getUsersForMentions: (search: string) => Promise<UserForMention[]>;
   renderAfterInput?: (value: string, mentionedUserIds: User['userId'][]) => React.ReactNode;
-  onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
   id?: string;
   reply?: null | ParentMessage;
   currentUserId?: string;

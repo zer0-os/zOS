@@ -20,7 +20,6 @@ interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
-  isSecondarySidekickOpen: boolean;
   messageInfoStage: MessageInfoStage;
   groupManagementStage: GroupManagementStage;
 }
@@ -32,7 +31,6 @@ export class Container extends React.Component<Properties> {
     return {
       messageInfoStage: messageInfo.stage,
       groupManagementStage: groupManagement.stage,
-      isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
     };
   }
 

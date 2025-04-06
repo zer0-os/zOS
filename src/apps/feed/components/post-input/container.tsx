@@ -19,7 +19,6 @@ export interface PublicProperties {
   variant?: 'comment' | 'post';
 
   onSubmit: (message: string, media: Media[]) => void;
-  onPostInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
 }
 
 export interface Properties extends PublicProperties {

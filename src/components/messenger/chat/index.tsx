@@ -2,18 +2,11 @@ import React from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel, denormalize, onAddLabel, onRemoveLabel, onRemoveReply } from '../../../store/channels';
+import { Channel, denormalize, onRemoveReply } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { send as sendMessage } from '../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
-import {
-  startAddGroupMember,
-  LeaveGroupDialogStatus,
-  setLeaveGroupStatus,
-  startEditConversation,
-  viewGroupInformation,
-  toggleSecondarySidekick,
-} from '../../../store/group-management';
+import { LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
@@ -31,18 +24,11 @@ export interface Properties extends PublicProperties {
   activeConversationId: string;
   directMessage: Channel;
   isJoiningConversation: boolean;
-  isSecondarySidekickOpen: boolean;
   otherMembersTypingInRoom: string[];
-  startAddGroupMember: () => void;
-  startEditConversation: () => void;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
   sendMessage: (payload: PayloadSendMessage) => void;
   onRemoveReply: () => void;
-  viewGroupInformation: () => void;
-  toggleSecondarySidekick: () => void;
-  onAddLabel: (payload: { roomId: string; label: string }) => void;
-  onRemoveLabel: (payload: { roomId: string; label: string }) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -66,7 +52,6 @@ export class Container extends React.Component<Properties> {
       activeConversationId,
       directMessage,
       isJoiningConversation,
-      isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
       otherMembersTypingInRoom: channel?.otherMembersTyping || [],
     };
@@ -74,15 +59,9 @@ export class Container extends React.Component<Properties> {
 
   static mapActions(): Partial<Properties> {
     return {
-      startAddGroupMember,
-      startEditConversation,
       setLeaveGroupStatus,
       onRemoveReply,
       sendMessage,
-      viewGroupInformation,
-      toggleSecondarySidekick,
-      onAddLabel,
-      onRemoveLabel,
     };
   }
 

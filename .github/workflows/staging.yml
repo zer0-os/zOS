@@ -37,8 +37,6 @@ jobs:
       - name: Common Setup
         uses: ./.github/actions/common
 
-      - run: echo '//npm.pkg.github.com/:_authToken=${{secrets.GITHUB_TOKEN}}' >> .npmrc
-
       - run: npm install --legacy-peer-deps
       - name: get-npm-version
         id: package-version

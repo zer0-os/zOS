@@ -21,6 +21,7 @@ import {
   ReceiptType,
   IndexedDBCryptoStore,
   ICreateClientOpts,
+  MatrixScheduler,
 } from 'matrix-js-sdk';
 import { CryptoApi, CryptoCallbacks, decodeRecoveryKey, ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 import { RealtimeChatEvents, IChatClient } from './';
@@ -1479,6 +1480,7 @@ export class MatrixClient implements IChatClient {
         cryptoStore = new IndexedDBCryptoStore(window.indexedDB, 'matrix-js-sdk:crypto');
       }
 
+      const scheduler = new MatrixScheduler();
       const userCreds = await this.getCredentials(userId, ssoToken);
       const opts: ICreateClientOpts = {
         cryptoStore,
@@ -1487,6 +1489,7 @@ export class MatrixClient implements IChatClient {
           getSecretStorageKey: this.getSecretStorageKey,
           cacheSecretStorageKey: this.cacheSecretStorageKey,
         },
+        scheduler,
         ...userCreds,
       };
 

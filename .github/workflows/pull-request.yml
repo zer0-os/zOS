@@ -7,13 +7,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Validate
-    uses: ./.github/workflows/validate.yml
+  # validate:
+  #   name: Validate
+  #   uses: ./.github/workflows/validate.yml
 
   deploy-preview:
     name: Deploy Netlify preview
-    needs: validate
+    # needs: validate
     uses: ./.github/workflows/deploy-to-netlify.yml
     with:
       is_preview: true

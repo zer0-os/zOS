@@ -47,6 +47,11 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@main
       - name: Build project
         run: REACT_APP_VERSION=${{steps.package-version.outputs.current-version}} npm run build
+
+      # https://github.com/jsmrcaga/action-netlify-deploy/pull/62
+      - name: Install netlify-cli
+        run: npm install netlify-cli@17.36.1 -g
+
       - uses: jsmrcaga/action-netlify-deploy@v2.0.0
         with:
           build_command: 'echo Skipping building the web files'

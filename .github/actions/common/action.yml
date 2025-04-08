@@ -25,4 +25,5 @@ runs:
         key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
 
     - name: Install dependencies
+      shell: bash
       run: npm ci --legacy-peer-deps

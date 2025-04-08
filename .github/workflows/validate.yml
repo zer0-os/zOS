@@ -3,6 +3,13 @@ name: Validate
 on: workflow_call
 
 jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/common
+
   check-code-quality:
     name: Check code quality
     runs-on: ubuntu-latest

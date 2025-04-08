@@ -13,11 +13,8 @@ jobs:
 
   deploy-preview:
     name: Deploy Netlify preview
-    runs-on: ubuntu-latest
     needs: validate
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/deploy-to-netlify.yml
-        with:
-          is_preview: true
-          environment: development
+    uses: ./.github/workflows/deploy-to-netlify.yml
+    with:
+      is_preview: true
+      environment: development

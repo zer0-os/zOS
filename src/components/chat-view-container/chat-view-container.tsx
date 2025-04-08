@@ -15,7 +15,7 @@ import { Channel, ConversationStatus, denormalize, onReply } from '../../store/c
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
-import { openBackupDialog } from '../../store/matrix';
+import { openCreateBackupDialog } from '../../store/matrix';
 import { ParentMessage } from '../../lib/chat/types';
 import { openDeleteMessage, openLightbox } from '../../store/dialogs';
 import { openMessageInfo } from '../../store/message-info';
@@ -30,7 +30,7 @@ export interface Properties extends PublicProperties {
   user: AuthenticationState['user'];
   editMessage: (payload: EditPayload) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
-  openBackupDialog: () => void;
+  openCreateBackupDialog: () => void;
   isSecondarySidekickOpen: boolean;
   openDeleteMessage: (messageId: string) => void;
   toggleSecondarySidekick: () => void;
@@ -76,7 +76,7 @@ export class Container extends React.Component<Properties> {
       fetchMessages,
       editMessage,
       onReply,
-      openBackupDialog,
+      openCreateBackupDialog,
       openDeleteMessage,
       openMessageInfo,
       toggleSecondarySidekick,
@@ -242,7 +242,7 @@ export class Container extends React.Component<Properties> {
           onReply={this.props.onReply}
           onReportUser={this.onReportUser}
           conversationErrorMessage={this.conversationErrorMessage}
-          onHiddenMessageInfoClick={this.props.openBackupDialog}
+          onHiddenMessageInfoClick={this.props.openCreateBackupDialog}
           ref={this.chatViewRef}
           isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
           toggleSecondarySidekick={this.props.toggleSecondarySidekick}

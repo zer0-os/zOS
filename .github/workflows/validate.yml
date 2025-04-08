@@ -1,10 +1,6 @@
 name: Validate
 
-on:
-  pull_request:
-  push:
-    branches:
-      - main
+on: workflow_call
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'

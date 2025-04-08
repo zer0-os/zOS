@@ -13,10 +13,6 @@ on:
 permissions:
   pull-requests: write
 
-concurrency:
-  group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
-  cancel-in-progress: true
-
 jobs:
   deploy:
     name: Deploy

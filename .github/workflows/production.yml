@@ -37,8 +37,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Common Setup
         uses: ./.github/actions/common
-
-      - run: npm install --legacy-peer-deps
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main

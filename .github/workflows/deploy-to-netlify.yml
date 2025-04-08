@@ -40,7 +40,7 @@ jobs:
       REACT_APP_WEB_APP_DOWNLOAD_PATH: ${{vars.WEB_APP_DOWNLOAD_PATH}}
       REACT_APP_MATRIX_HOME_SERVER_NAME: ${{vars.MATRIX_HOME_SERVER_NAME}}
     steps:
-      - uses: ./.github/actions/common
+      - uses: actions/checkout@v4
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main

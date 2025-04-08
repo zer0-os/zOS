@@ -55,11 +55,12 @@ jobs:
           if [ "${{ inputs.is_preview }}" = "false" ]; then prod_flag="--prod"; fi
           netlify deploy \
             --dir build \
-            --site ${{ secrets.NETLIFY_SITE_ID_NEW }} \
-            --auth ${{ secrets.NETLIFY_AUTH_TOKEN_NEW }} \
             $prod_flag \
             --json \
             > deploy_output.json
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_NEW }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN_NEW }}
       - name: Generate URL Preview
         id: url_preview
         if: ${{ inputs.is_preview }}

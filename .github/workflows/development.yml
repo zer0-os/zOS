@@ -17,9 +17,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Common Setup
         uses: ./.github/actions/common
-      - run: npm run lint
-      - run: npx tsc
-      - run: npm run test
+      - name: Check code quality
+        uses: ./.github/actions/check-code-quality
+      - name: Check code validity
+        uses: ./.github/actions/check-code-validity
 
   deploy_new:
     needs: validate

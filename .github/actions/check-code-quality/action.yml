@@ -1,0 +1,17 @@
+name: 'Code Quality Checks'
+description: 'Makes sure all pushed code is up to scratch'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check for formatting issues
+      run: npm run code-format:validate
+      shell: bash
+
+    - name: Check for linting issues
+      run: npm run lint
+      shell: bash
+
+    - name: Run typecheck
+      run: npx tsc
+      shell: bash

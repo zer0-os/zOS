@@ -1,3 +1,5 @@
+# This is a temporary file, it will be removed in further commits.
+
 name: run-lint
 on:
   pull_request: {}
@@ -15,5 +17,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Common Setup
         uses: ./.github/actions/common
-      - name: Build project
-        run: npm run lint
+      - name: Check code quality
+        uses: ./.github/actions/check-code-quality

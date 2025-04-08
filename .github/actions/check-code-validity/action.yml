@@ -1,0 +1,13 @@
+name: 'Code Validity Checks'
+description: 'Makes sure pushed code does not break anything'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run legacy tests (jest)
+      run: npm run test
+      shell: bash
+
+    - name: Run tests (vitest)
+      run: npm run test:vitest
+      shell: bash

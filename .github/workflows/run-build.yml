@@ -1,3 +1,5 @@
+# This is a temporary file, it will be removed in further commits.
+
 name: run-build
 on:
   pull_request: {}

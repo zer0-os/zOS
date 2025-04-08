@@ -51,6 +51,7 @@ jobs:
         with:
           build_command: 'echo Skipping building the web files'
           build_directory: build
+          install_command: 'echo Skipping installing the dependencies'
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN_NEW }}
           NETLIFY_DEPLOY_TO_PROD: ${{ !inputs.is_preview }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_NEW }}

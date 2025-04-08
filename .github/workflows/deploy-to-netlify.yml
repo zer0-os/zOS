@@ -1,0 +1,97 @@
+name: Deploy to Netlify
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      is_preview:
+        type: boolean
+        required: true
+
+permissions:
+  pull-requests: write
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    env:
+      REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
+      REACT_APP_CLOUDINARY_PREFIX: ${{secrets.CLOUDINARY_PREFIX}}
+      REACT_APP_CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
+      REACT_APP_ETH_CHAIN: ${{secrets.ETH_CHAIN}}
+      REACT_APP_ZERO_API_URL: ${{secrets.ZERO_API_URL_NEW}}
+      REACT_APP_SENTRY_DSN: ${{secrets.SENTRY_DSN}}
+      REACT_APP_WEB3_AUTHENTICATE_MESSAGE: ${{secrets.WEB3_AUTHENTICATE_MESSAGE}}
+      REACT_APP_GIPHY_SDK_KEY: ${{secrets.GIPHY_SDK_KEY}}
+      REACT_APP_WALLET_CONNECT_PROJECT_ID: ${{secrets.WALLET_CONNECT_PROJECT_ID}}
+      REACT_APP_THIRDWEB_CLIENT_ID: ${{secrets.THIRDWEB_CLIENT_ID}}
+      REACT_APP_MESSENGER_INVITE_PATH: ${{vars.MESSENGER_INVITE_PATH_NEW}}
+      REACT_APP_VIDEO_ASSETS_PATH: ${{vars.VIDEO_ASSETS_PATH}}
+      REACT_APP_IMAGE_ASSETS_PATH: ${{vars.IMAGE_ASSETS_PATH}}
+      REACT_APP_ANDROID_STORE_PATH: ${{vars.ANDROID_STORE_PATH}}
+      REACT_APP_MATRIX_HOME_SERVER_URL: ${{vars.MATRIX_HOME_SERVER_URL}}
+      REACT_APP_ZNS_EXPLORER_URL: ${{vars.ZNS_EXPLORER_URL}}
+      REACT_APP_APPLE_APP_STORE_PATH: ${{vars.APPLE_APP_STORE_PATH}}
+      REACT_APP_GOOGLE_PLAY_STORE_PATH: ${{vars.GOOGLE_PLAY_STORE_PATH}}
+      REACT_APP_WEB_APP_DOWNLOAD_PATH: ${{vars.WEB_APP_DOWNLOAD_PATH}}
+      REACT_APP_MATRIX_HOME_SERVER_NAME: ${{vars.MATRIX_HOME_SERVER_NAME}}
+    steps:
+      - uses: ./.github/actions/common
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+      - name: Build project
+        run: REACT_APP_VERSION=${{steps.package-version.outputs.current-version}} npm run build
+      - run: npm install -g netlify-cli
+      - name: Deploy to Netlify
+        id: netlify_deploy
+        run: |
+          prod_flag=""
+          if [ "${{ inputs.is_preview }}" = "false" ]; then prod_flag="--prod"; fi
+          netlify deploy \
+            --dir build \
+            --site ${{ secrets.NETLIFY_SITE_ID_NEW }} \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN_NEW }} \
+            $prod_flag \
+            --json \
+            > deploy_output.json
+      - name: Generate URL Preview
+        id: url_preview
+        if: ${{ inputs.is_preview }}
+        run: |
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output.json)
+          echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+      - name: Comment URL Preview on PR
+        uses: actions/github-script@v7
+        if: ${{ inputs.is_preview }}
+        env:
+          NETLIFY_PREVIEW_URL: ${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}
+        with:
+          script: |
+            async function comment(){
+              const result = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+              })
+              const issueNumber = result.data[0].number
+              if(issueNumber){
+                await github.rest.issues.createComment({
+                  issue_number: issueNumber,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: 'Preview URL: ' + process.env.NETLIFY_PREVIEW_URL
+                })
+              }else{
+                console.log('No PR found for commit ' + context.sha)
+              }
+            }
+            comment()

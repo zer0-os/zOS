@@ -1,25 +1,15 @@
-name: Validate
+name: Validate Changes
 
 on: workflow_call
 
 jobs:
-  setup:
-    name: Setup
+  validate:
+    name: Validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/common
-
-  check-code-quality:
-    name: Check code quality
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
       - uses: ./.github/actions/check-code-quality
-
-  check-code-validity:
-    name: Check code validity
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+        name: 'Code Quality'
       - uses: ./.github/actions/check-code-validity
+        name: 'Code Validity'

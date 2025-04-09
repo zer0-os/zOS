@@ -348,6 +348,32 @@ describe('messenger-list', () => {
           'Jack: recent message',
         ]);
       });
+
+      it('displays "Message hidden" for hidden messages in the preview', () => {
+        const state = subject([
+          {
+            id: 'convo-1',
+            lastMessage: {
+              message: 'The last message',
+              sender: { firstName: 'Jack' },
+              isHidden: true,
+            },
+          },
+          {
+            id: 'convo-2',
+            lastMessage: {
+              message: 'Second message last',
+              sender: { firstName: 'Jack' },
+              isHidden: false,
+            },
+          },
+        ]);
+
+        expect(state.conversations.map((c) => c.messagePreview)).toEqual([
+          'Jack: Message hidden',
+          'Jack: Second message last',
+        ]);
+      });
     });
 
     test('previewDisplayDate', () => {

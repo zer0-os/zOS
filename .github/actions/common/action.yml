@@ -9,22 +9,8 @@ runs:
       uses: actions/setup-node@v4
       with:
         version-file: .nvmrc
-
-    - name: Cache node modules
-      id: cache-npm
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.npm
-          node_modules
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-      env:
-        cache-name: cache-node-modules
+        cache: npm
 
     - name: Install dependencies
       shell: bash
-      run: npm install --legacy-peer-deps
+      run: npm ci --legacy-peer-deps

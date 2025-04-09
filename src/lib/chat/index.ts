@@ -84,6 +84,7 @@ export interface IChatClient {
     isThumbnail: boolean,
     batchSize: number
   ): Promise<{ [fileUrl: string]: string }>;
+  verifyMatrixProfileIsSynced(profileInfo: MatrixProfileInfo): Promise<void>;
   editProfile(profileInfo: MatrixProfileInfo): Promise<void>;
   getAccessToken(): string | null;
   mxcUrlToHttp(mxcUrl: string): string;
@@ -399,6 +400,10 @@ export function getProfileInfo(userId: string): Promise<{
 
 export async function getAliasForRoomId(roomId: string) {
   return chat.get().matrix.getAliasForRoomId(roomId);
+}
+
+export async function verifyMatrixProfileIsSynced(profileInfo: MatrixProfileInfo) {
+  return chat.get().matrix.verifyMatrixProfileIsSynced(profileInfo);
 }
 
 const ClientFactory = {

@@ -1,4 +1,4 @@
-name: Pull Request
+name: PR
 
 on: pull_request
 
@@ -14,3 +14,12 @@ jobs:
   code-quality:
     name: Code Quality
     uses: ./.github/workflows/code-quality.yml
+
+  check-build:
+    name: Check Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/common
+      - name: Build project
+        run: npm run build

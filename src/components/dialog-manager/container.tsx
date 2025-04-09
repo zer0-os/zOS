@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-// import { SecureBackupContainer } from '../secure-backup/container';
+import { CreateSecureBackupContainer } from '../secure-backup/create-secure-backup/container';
+import { RestoreSecureBackupContainer } from '../secure-backup/restore-secure-backup/container';
 import { closeCreateBackupDialog, closeRestoreBackupDialog } from '../../store/matrix';
 import { LogoutConfirmationModalContainer } from '../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../rewards-modal/container';
@@ -16,7 +17,6 @@ export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   displayLogoutModal: boolean;
-  // isBackupDialogOpen: boolean;
   isCreateBackupDialogOpen: boolean;
   isRestoreBackupDialogOpen: boolean;
   isRewardsDialogOpen: boolean;
@@ -28,7 +28,6 @@ export interface Properties extends PublicProperties {
     startingIndex: number;
   };
 
-  // closeBackupDialog: () => void;
   closeCreateBackupDialog: () => void;
   closeRestoreBackupDialog: () => void;
   closeRewardsDialog: () => void;
@@ -94,18 +93,12 @@ export class Container extends React.Component<Properties> {
   };
 
   renderCreateBackupDialog = (): JSX.Element => {
-    // new component for create backup dialog (split from secure backup)
-    return <>CREATE</>;
+    return <CreateSecureBackupContainer onClose={this.closeCreateBackup} />;
   };
 
   renderRestoreBackupDialog = (): JSX.Element => {
-    // new component for restore backup dialog (split from secure backup)
-    return <>RESTORE</>;
+    return <RestoreSecureBackupContainer onClose={this.closeRestoreBackup} />;
   };
-
-  // renderSecureBackupDialog = (): JSX.Element => {
-  //   return <SecureBackupContainer onClose={this.closeBackup} />;
-  // };
 
   renderLogoutDialog = (): JSX.Element => {
     return <LogoutConfirmationModalContainer />;
@@ -142,7 +135,6 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <>
-        {/* {this.props.isBackupDialogOpen && this.renderSecureBackupDialog()} */}
         {this.props.isCreateBackupDialogOpen && this.renderCreateBackupDialog()}
         {this.props.isRestoreBackupDialogOpen && this.renderRestoreBackupDialog()}
         {this.props.displayLogoutModal && this.renderLogoutDialog()}

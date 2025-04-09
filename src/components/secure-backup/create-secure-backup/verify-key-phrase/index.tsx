@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import { bemClassName } from '../../../lib/bem';
+import { bemClassName } from '../../../../lib/bem';
 
 import { Alert, PasswordInput } from '@zero-tech/zui/components';
 
-import '../styles.scss';
+import '../../styles.scss';
 
 const cn = bemClassName('secure-backup');
 

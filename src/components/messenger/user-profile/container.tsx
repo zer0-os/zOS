@@ -76,10 +76,10 @@ export class Container extends React.Component<Properties> {
   }
 
   onBackup = () => {
-    if (this.props.backupExists && !this.props.backupRestored) {
-      this.props.openRestoreBackupDialog();
-    } else {
+    if (!this.props.backupExists) {
       this.props.openCreateBackupDialog();
+    } else {
+      this.props.openRestoreBackupDialog();
     }
   };
 

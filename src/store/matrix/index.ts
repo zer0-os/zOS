@@ -9,9 +9,6 @@ export enum SagaActionTypes {
   DebugDeviceList = 'chat/debug-device-list',
   DebugRoomKeys = 'chat/debug-room-keys',
   FetchDeviceInfo = 'chat/fetch-device-info',
-  // OpenBackupDialog = 'chat/open-backup-dialog',
-  // CloseBackupDialog = 'chat/close-backup-dialog',
-  // VerifyKey = 'chat/verify-key',
   OpenCreateBackupDialog = 'chat/open-create-backup-dialog',
   OpenRestoreBackupDialog = 'chat/open-restore-backup-dialog',
   CloseCreateBackupDialog = 'chat/close-create-backup-dialog',
@@ -19,18 +16,6 @@ export enum SagaActionTypes {
   VerifyCreatedKey = 'chat/verify-created-key',
   VerifyRestorationKey = 'chat/verify-restoration-key',
 }
-
-// export enum BackupStage {
-//   UserGeneratePrompt = 'user_generate_prompt',
-//   UserRestorePrompt = 'user_restore_prompt',
-//   SystemGeneratePrompt = 'system_generate_prompt',
-//   SystemRestorePrompt = 'system_restore_prompt',
-//   RecoveredBackupInfo = 'recovered_backup_info',
-//   VerifyKeyPhrase = 'verify_key_phrase',
-//   GenerateBackup = 'generate_backup',
-//   RestoreBackup = 'restore_backup',
-//   Success = 'success',
-// }
 
 export enum CreateBackupStage {
   UserGeneratePrompt = 'user_generate_prompt',
@@ -72,7 +57,6 @@ export type MatrixState = {
   successMessage: string;
   errorMessage: string;
   deviceId: string;
-  // isBackupDialogOpen: boolean;
   isCreateBackupDialogOpen: boolean;
   isRestoreBackupDialogOpen: boolean;
   createBackupStage: CreateBackupStage;
@@ -88,7 +72,6 @@ export const initialState: MatrixState = {
   successMessage: '',
   errorMessage: '',
   deviceId: '',
-  // isBackupDialogOpen: false,
   isCreateBackupDialogOpen: false,
   isRestoreBackupDialogOpen: false,
   createBackupStage: CreateBackupStage.UserGeneratePrompt,
@@ -104,9 +87,6 @@ export const clearBackup = createAction(SagaActionTypes.ClearBackup);
 export const debugDeviceList = createAction<string[]>(SagaActionTypes.DebugDeviceList);
 export const debugRoomKeys = createAction<string>(SagaActionTypes.DebugRoomKeys);
 export const fetchDeviceInfo = createAction<string[]>(SagaActionTypes.FetchDeviceInfo);
-// export const openBackupDialog = createAction(SagaActionTypes.OpenBackupDialog);
-// export const closeBackupDialog = createAction(SagaActionTypes.CloseBackupDialog);
-// export const proceedToVerifyKey = createAction(SagaActionTypes.VerifyKey);
 export const openCreateBackupDialog = createAction(SagaActionTypes.OpenCreateBackupDialog);
 export const openRestoreBackupDialog = createAction(SagaActionTypes.OpenRestoreBackupDialog);
 export const closeCreateBackupDialog = createAction(SagaActionTypes.CloseCreateBackupDialog);
@@ -139,12 +119,6 @@ const slice = createSlice({
     setIsRestoreBackupDialogOpen: (state, action: PayloadAction<MatrixState['isRestoreBackupDialogOpen']>) => {
       state.isRestoreBackupDialogOpen = action.payload;
     },
-    // setIsBackupDialogOpen: (state, action: PayloadAction<MatrixState['isBackupDialogOpen']>) => {
-    //   state.isBackupDialogOpen = action.payload;
-    // },
-    // setBackupStage: (state, action: PayloadAction<MatrixState['backupStage']>) => {
-    //   state.backupStage = action.payload;
-    // },
     setCreateBackupStage: (state, action: PayloadAction<MatrixState['createBackupStage']>) => {
       state.createBackupStage = action.payload;
     },
@@ -165,14 +139,12 @@ const slice = createSlice({
 
 export const {
   setLoaded,
-  // setIsBackupDialogOpen,
   setIsCreateBackupDialogOpen,
   setIsRestoreBackupDialogOpen,
   setGeneratedRecoveryKey,
   setSuccessMessage,
   setErrorMessage,
   setDeviceId,
-  // setBackupStage,
   setCreateBackupStage,
   setRestoreBackupStage,
   setBackupExists,

@@ -8,9 +8,6 @@ import {
   setErrorMessage,
   setLoaded,
   setSuccessMessage,
-  // setIsBackupDialogOpen,
-  // setBackupStage,
-  // BackupStage,
   setIsCreateBackupDialogOpen,
   setIsRestoreBackupDialogOpen,
   setCreateBackupStage,
@@ -40,11 +37,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.SaveBackup, saveBackup);
   yield takeLatest(SagaActionTypes.RestoreBackup, restoreBackup);
   yield takeLatest(SagaActionTypes.ClearBackup, clearBackupState);
-  // yield takeLatest(SagaActionTypes.OpenBackupDialog, userInitiatedBackupDialog);
   yield takeLatest(SagaActionTypes.CloseCreateBackupDialog, closeCreateBackupDialog);
   yield takeLatest(SagaActionTypes.CloseRestoreBackupDialog, closeRestoreBackupDialog);
-  // yield takeLatest(SagaActionTypes.VerifyKey, proceedToVerifyKey);
-
   yield takeLatest(SagaActionTypes.OpenCreateBackupDialog, userInitiatedCreateBackupDialog);
   yield takeLatest(SagaActionTypes.OpenRestoreBackupDialog, userInitiatedRestoreBackupDialog);
   yield takeLatest(SagaActionTypes.VerifyCreatedKey, proceedToVerifyCreatedKey);
@@ -104,16 +98,6 @@ export function* generateBackup() {
     yield call(userInitiatedCreateBackupDialog);
   }
 }
-
-// export function* proceedToVerifyKey() {
-//   const existingKey: string | null = yield select((state) => state.matrix.generatedRecoveryKey);
-
-//   if (existingKey) {
-//     yield put(setBackupStage(BackupStage.VerifyKeyPhrase));
-//   } else {
-//     yield put(setBackupStage(BackupStage.RestoreBackup));
-//   }
-// }
 
 export function* proceedToVerifyCreatedKey() {
   yield put(setCreateBackupStage(CreateBackupStage.VerifyKeyPhrase));
@@ -236,20 +220,6 @@ export function* closeRestoreBackupDialog() {
   yield put(setIsRestoreBackupDialogOpen(false));
 }
 
-// export function* userInitiatedBackupDialog() {
-//   const { backupExists, backupRestored } = yield select((state) => state.matrix);
-
-//   if (!backupExists) {
-//     yield put(setBackupStage(BackupStage.UserGeneratePrompt));
-//   } else if (!backupRestored) {
-//     yield put(setBackupStage(BackupStage.UserRestorePrompt));
-//   } else {
-//     yield put(setBackupStage(BackupStage.RecoveredBackupInfo));
-//   }
-
-//   yield put(setIsBackupDialogOpen(true));
-// }
-
 export function* userInitiatedCreateBackupDialog() {
   const { backupExists } = yield select((state) => state.matrix);
 
@@ -314,21 +284,6 @@ export function* handleBackupUserPrompts() {
     console.error('Error handling backup user prompts:', e);
   }
 }
-
-// export function* systemInitiatedBackupDialog() {
-//   const { backupExists, backupRestored } = yield select((state) => state.matrix);
-
-//   if (!backupExists) {
-//     yield put(setBackupStage(BackupStage.SystemGeneratePrompt));
-//   } else if (!backupRestored) {
-//     yield put(setBackupStage(BackupStage.SystemRestorePrompt));
-//   } else {
-//     // Probably never trigger this stage by the system but keep it as a default case
-//     yield put(setBackupStage(BackupStage.RecoveredBackupInfo));
-//   }
-
-//   yield put(setIsBackupDialogOpen(true));
-// }
 
 export function* systemInitiatedCreateBackupDialog() {
   const { backupExists } = yield select((state) => state.matrix);

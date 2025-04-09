@@ -27,7 +27,6 @@ export interface Properties extends PublicProperties {
   currentUser: User;
   stage: Stage;
   backupExists: boolean;
-  backupRestored: boolean;
 
   logout: () => void;
   openCreateBackupDialog: () => void;
@@ -55,7 +54,6 @@ export class Container extends React.Component<Properties> {
       } as User,
       stage: userProfile.stage,
       backupExists: matrix.backupExists,
-      backupRestored: matrix.backupRestored,
     };
   }
 

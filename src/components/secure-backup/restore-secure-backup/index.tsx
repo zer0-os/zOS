@@ -96,7 +96,6 @@ export class RestoreSecureBackup extends React.PureComponent<Properties, State> 
 
     const { backupStage, onVerifyKey, onClose, errorMessage, successMessage } = this.props;
 
-    let content = null;
     switch (backupStage) {
       case RestoreBackupStage.UserRestorePrompt:
         return {

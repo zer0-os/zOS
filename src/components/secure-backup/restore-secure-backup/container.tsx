@@ -7,10 +7,8 @@ import { connectContainer } from '../../../store/redux-container';
 import {
   RestoreBackupStage,
   clearBackup,
-  generateBackup,
   getBackup,
   restoreBackup,
-  saveBackup,
   verifyRestorationKey,
   RestoreProgress,
 } from '../../../store/matrix';
@@ -25,7 +23,6 @@ export interface Properties extends PublicProperties {
   isLoading: boolean;
   backupExists: boolean;
   backupRestored: boolean;
-  recoveryKey: string;
   successMessage: string;
   errorMessage: string;
   backupStage: RestoreBackupStage;
@@ -33,8 +30,6 @@ export interface Properties extends PublicProperties {
   restoreProgress: RestoreProgress;
 
   getBackup: () => void;
-  generateBackup: () => void;
-  saveBackup: () => void;
   restoreBackup: (recoveryKey: string) => void;
   clearBackup: () => void;
   verifyRestorationKey: () => void;
@@ -44,7 +39,6 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
     const {
       isLoaded,
-      generatedRecoveryKey,
       backupExists,
       backupRestored,
       successMessage,
@@ -57,7 +51,6 @@ export class Container extends React.Component<Properties> {
       isLoading: !isLoaded,
       backupExists,
       backupRestored,
-      recoveryKey: generatedRecoveryKey || '',
       successMessage,
       errorMessage,
       videoAssetsPath: config.videoAssetsPath,
@@ -67,7 +60,7 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { generateBackup, saveBackup, restoreBackup, getBackup, clearBackup, verifyRestorationKey };
+    return { restoreBackup, getBackup, clearBackup, verifyRestorationKey };
   }
 
   componentDidMount(): void {

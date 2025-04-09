@@ -97,7 +97,6 @@ export class CreateSecureBackup extends React.PureComponent<Properties, State> {
 
     const { backupStage, onGenerate, onClose, recoveryKey, errorMessage, successMessage } = this.props;
 
-    let content = null;
     switch (backupStage) {
       case CreateBackupStage.UserGeneratePrompt:
         return {

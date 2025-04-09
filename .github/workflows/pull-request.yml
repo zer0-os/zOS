@@ -8,7 +8,9 @@ concurrency:
 
 jobs:
   test:
+    name: Test
     uses: ./.github/workflows/test.yml
 
   code-quality:
+    name: Code Quality
     uses: ./.github/workflows/code-quality.yml

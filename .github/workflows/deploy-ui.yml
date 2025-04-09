@@ -1,0 +1,117 @@
+name: Deploy UI
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      is_preview:
+        type: boolean
+        required: true
+      REACT_APP_MESSENGER_INVITE_PATH:
+        type: string
+        required: true
+      REACT_APP_VIDEO_ASSETS_PATH:
+        type: string
+        required: true
+      REACT_APP_IMAGE_ASSETS_PATH:
+        type: string
+        required: true
+      REACT_APP_ANDROID_STORE_PATH:
+        type: string
+        required: true
+      REACT_APP_MATRIX_HOME_SERVER_URL:
+        type: string
+        required: true
+      REACT_APP_ZNS_EXPLORER_URL:
+        type: string
+        required: true
+      REACT_APP_APPLE_APP_STORE_PATH:
+        type: string
+        required: true
+      REACT_APP_GOOGLE_PLAY_STORE_PATH:
+        type: string
+        required: true
+      REACT_APP_WEB_APP_DOWNLOAD_PATH:
+        type: string
+        required: true
+      REACT_APP_MATRIX_HOME_SERVER_NAME:
+        type: string
+        required: true
+    secrets:
+      INFURA_URL:
+        required: true
+      CLOUDINARY_PREFIX:
+        required: true
+      CLOUDINARY_CLOUD_NAME:
+        required: true
+      ETH_CHAIN:
+        required: true
+      ZERO_API_URL:
+        required: true
+      SENTRY_DSN:
+        required: true
+      WEB3_AUTHENTICATE_MESSAGE:
+        required: true
+      GIPHY_SDK_KEY:
+        required: true
+      WALLET_CONNECT_PROJECT_ID:
+        required: true
+      THIRDWEB_CLIENT_ID:
+        required: true
+      NETLIFY_AUTH_TOKEN:
+        required: true
+      NETLIFY_SITE_ID:
+        required: true
+
+permissions:
+  pull-requests: write
+
+jobs:
+  deploy:
+    name: Netlify
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    env:
+      REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
+      REACT_APP_CLOUDINARY_PREFIX: ${{secrets.CLOUDINARY_PREFIX}}
+      REACT_APP_CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
+      REACT_APP_ETH_CHAIN: ${{secrets.ETH_CHAIN}}
+      REACT_APP_ZERO_API_URL: ${{secrets.ZERO_API_URL_NEW }}
+      REACT_APP_SENTRY_DSN: ${{secrets.SENTRY_DSN}}
+      REACT_APP_WEB3_AUTHENTICATE_MESSAGE: ${{secrets.WEB3_AUTHENTICATE_MESSAGE}}
+      REACT_APP_GIPHY_SDK_KEY: ${{secrets.GIPHY_SDK_KEY}}
+      REACT_APP_WALLET_CONNECT_PROJECT_ID: ${{secrets.WALLET_CONNECT_PROJECT_ID}}
+      REACT_APP_THIRDWEB_CLIENT_ID: ${{secrets.THIRDWEB_CLIENT_ID}}
+      REACT_APP_MESSENGER_INVITE_PATH: ${{inputs.MESSENGER_INVITE_PATH_NEW}}
+      REACT_APP_VIDEO_ASSETS_PATH: ${{inputs.VIDEO_ASSETS_PATH}}
+      REACT_APP_IMAGE_ASSETS_PATH: ${{inputs.IMAGE_ASSETS_PATH}}
+      REACT_APP_ANDROID_STORE_PATH: ${{inputs.ANDROID_STORE_PATH}}
+      REACT_APP_MATRIX_HOME_SERVER_URL: ${{inputs.MATRIX_HOME_SERVER_URL}}
+      REACT_APP_ZNS_EXPLORER_URL: ${{inputs.ZNS_EXPLORER_URL}}
+      REACT_APP_APPLE_APP_STORE_PATH: ${{inputs.APPLE_APP_STORE_PATH}}
+      REACT_APP_GOOGLE_PLAY_STORE_PATH: ${{inputs.GOOGLE_PLAY_STORE_PATH}}
+      REACT_APP_WEB_APP_DOWNLOAD_PATH: ${{inputs.WEB_APP_DOWNLOAD_PATH}}
+      REACT_APP_MATRIX_HOME_SERVER_NAME: ${{inputs.MATRIX_HOME_SERVER_NAME}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/common
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+      - name: Build project
+        run: REACT_APP_VERSION=${{steps.package-version.outputs.current-version}} npm run build
+
+      # https://github.com/jsmrcaga/action-netlify-deploy/pull/62
+      - name: Install netlify-cli
+        run: npm install netlify-cli@17.36.1 -g
+
+      - uses: jsmrcaga/action-netlify-deploy@v2.0.0
+        with:
+          build_command: 'echo Skipping building the web files'
+          build_directory: build
+          install_command: 'echo Skipping installing the dependencies'
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_DEPLOY_TO_PROD: ${{ !inputs.is_preview }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

@@ -13,7 +13,7 @@ jobs:
 
   deploy-preview:
     name: Deploy Netlify preview
-    uses: ./.github/workflows/deploy-to-netlify.yml
+    uses: ./.github/workflows/deploy-ui.yml
     with:
       is_preview: true
       environment: development

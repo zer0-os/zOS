@@ -291,6 +291,18 @@ describe(processMessages, () => {
     expect(processed[0]).toBe(messages[0]);
     expect(processed[1]).toBe(messages[1]);
   });
+
+  it('sets message content to "Message hidden" for hidden messages', () => {
+    const messages = [
+      stubMessage({ id: '1', message: 'original message', isHidden: true }),
+      stubMessage({ id: '2', message: 'normal message', isHidden: false }),
+    ];
+
+    const { messages: processed } = processMessages(messages);
+
+    expect(processed[0].message).toBe('Message hidden');
+    expect(processed[1].message).toBe('normal message');
+  });
 });
 
 function stubMessage(attrs: Partial<MessageModel> = {}) {

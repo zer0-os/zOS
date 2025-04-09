@@ -99,6 +99,14 @@ export function processMessages(messages: MessageModel[]) {
 
   // Process regular messages
   const processedMessages = messages.map((message) => {
+    // Handle hidden messages
+    if (message.isHidden) {
+      message = {
+        ...message,
+        message: 'Message hidden',
+      };
+    }
+
     // Handle parent messages
     if (message.parentMessageId) {
       const parentMessage = messagesById.get(message.parentMessageId);

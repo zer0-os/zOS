@@ -851,7 +851,20 @@ export class MatrixClient implements IChatClient {
       await this.matrix.setDisplayName(displayName);
     }
 
-    if (avatarUrl && currentProfileInfo.avatar_url !== avatarUrl) {
+    // Only update avatar if both URLs exist and they're different MXC URLs
+    if (avatarUrl && currentProfileInfo.avatar_url) {
+      // Convert both URLs to MXC format for comparison
+      const currentMxcUrl = currentProfileInfo.avatar_url.startsWith('mxc://')
+        ? currentProfileInfo.avatar_url
+        : this.mxcUrlToHttp(currentProfileInfo.avatar_url);
+
+      const newMxcUrl = avatarUrl.startsWith('mxc://') ? avatarUrl : this.mxcUrlToHttp(avatarUrl);
+
+      if (currentMxcUrl !== newMxcUrl) {
+        await this.matrix.setAvatarUrl(avatarUrl);
+      }
+    } else if (avatarUrl && !currentProfileInfo.avatar_url) {
+      // If there's no current avatar but we have a new one, set it
       await this.matrix.setAvatarUrl(avatarUrl);
     }
   }

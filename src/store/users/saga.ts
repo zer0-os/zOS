@@ -144,8 +144,8 @@ export function* fetchCurrentUserProfileImage() {
 // so this is just a failsafe to ensure that the user profile (from zos-api) is synced with it's matrix state
 export function* verifyMatrixProfileIsSynced() {
   const currentUser = yield select(currentUserSelector());
-  const { firstName: displayName, profileImage: avatarUrl } = currentUser.profileSummary || {};
-  yield call(verifyMatrixProfileIsSyncedAPI, { displayName, avatarUrl });
+  const { firstName: displayName } = currentUser.profileSummary || {};
+  yield call(verifyMatrixProfileIsSyncedAPI, { displayName });
 }
 
 function* listenForUserLogin() {

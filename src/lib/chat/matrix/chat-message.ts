@@ -179,7 +179,7 @@ function getRoomReactionAdminData(content, sender) {
 }
 
 function getRoomMemberAdminData(content, targetUserId, previousContent?) {
-  if (previousContent && previousContent?.avatar_url !== content.avatar_url) {
+  if (previousContent?.avatar_url && previousContent?.avatar_url !== content.avatar_url) {
     return { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: targetUserId };
   }
 

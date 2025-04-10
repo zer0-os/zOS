@@ -16,7 +16,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { getProvider as getIndexedDbProvider } from '../../lib/storage/media-cache/idb';
 import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
 import { User } from '../authentication/types';
-import { verifyMatrixProfileIsSynced as verifyMatrixProfileIsSyncedAPI } from '../../lib/chat';
+import { verifyMatrixProfileDisplayNameIsSynced as verifyMatrixProfileDisplayNameIsSyncedAPI } from '../../lib/chat';
 import * as Sentry from '@sentry/react';
 export function* clearUsers() {
   yield put(removeAll({ schema: schema.key }));
@@ -142,10 +142,10 @@ export function* fetchCurrentUserProfileImage() {
 
 // there seems to be a bug where the profile info (displayname specifically) is not updated in the 'matrix' database
 // so this is just a failsafe to ensure that the user profile (from zos-api) is synced with it's matrix state
-export function* verifyMatrixProfileIsSynced() {
+export function* verifyMatrixProfileDisplayNameIsSynced() {
   const currentUser = yield select(currentUserSelector());
-  const { firstName: displayName, profileImage: avatarUrl } = currentUser.profileSummary || {};
-  yield call(verifyMatrixProfileIsSyncedAPI, { displayName, avatarUrl });
+  const { firstName: displayName } = currentUser.profileSummary || {};
+  yield call(verifyMatrixProfileDisplayNameIsSyncedAPI, displayName);
 }
 
 function* listenForUserLogin() {
@@ -153,7 +153,7 @@ function* listenForUserLogin() {
   while (true) {
     yield take(userChannel, AuthEvents.UserLogin);
     yield call(fetchCurrentUserProfileImage);
-    yield spawn(verifyMatrixProfileIsSynced);
+    yield spawn(verifyMatrixProfileDisplayNameIsSynced);
   }
 }
 

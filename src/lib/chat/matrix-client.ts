@@ -842,17 +842,12 @@ export class MatrixClient implements IChatClient {
     return downloadResultsMap;
   }
 
-  async verifyMatrixProfileIsSynced(profileInfo: MatrixProfileInfo) {
+  async verifyMatrixProfileDisplayNameIsSynced(displayName: string) {
     await this.waitForConnection();
-    const { displayName, avatarUrl } = profileInfo;
     const currentProfileInfo = await this.getProfileInfo(this.userId);
 
     if (displayName && currentProfileInfo.displayname !== displayName) {
       await this.matrix.setDisplayName(displayName);
-    }
-
-    if (avatarUrl && currentProfileInfo.avatar_url !== avatarUrl) {
-      await this.matrix.setAvatarUrl(avatarUrl);
     }
   }
 

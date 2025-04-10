@@ -490,7 +490,7 @@ describe(receiveBackupData, () => {
 
     const { returnValue, storeState } = await subject(receiveBackupData, {
       crossSigning: true,
-      trustInfo: { trusted: false },
+      trustInfo: { trusted: false, matchesDecryptionKey: false },
     })
       .withReducer(rootReducer, state.build())
       .run();
@@ -506,6 +506,21 @@ describe(receiveBackupData, () => {
     const { returnValue, storeState } = await subject(receiveBackupData, {
       crossSigning: true,
       trustInfo: { trusted: true },
+    })
+      .withReducer(rootReducer, state.build())
+      .run();
+
+    expect(storeState.matrix.backupExists).toBe(true);
+    expect(storeState.matrix.backupRestored).toBe(true);
+    expect(returnValue).toEqual({ backupExists: true, backupRestored: true });
+  });
+
+  it('sets metadata if backup exists and is not trusted but matches the decryption key', async () => {
+    const state = new StoreBuilder().withOtherState({ matrix: { backupExists: true, backupRestored: false } });
+
+    const { returnValue, storeState } = await subject(receiveBackupData, {
+      crossSigning: true,
+      trustInfo: { trusted: false, matchesDecryptionKey: true },
     })
       .withReducer(rootReducer, state.build())
       .run();

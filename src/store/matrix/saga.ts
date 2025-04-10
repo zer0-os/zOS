@@ -72,10 +72,11 @@ export function* receiveBackupData(existingBackup: MatrixKeyBackupInfo | null) {
     backupRestored = false;
   } else {
     backupExists = !!existingBackup?.trustInfo;
-    // If the backup is trusted locally or usable, then we consider it restored
-    // There are cases when only one of the two is true but in either case
+    // If the backup is trusted locally, or usable and matches the decryption key, then we consider it restored
+    // There are cases when only two of the three are true but in either case
     // we've found the backup is sufficient to decrypt everything
-    backupRestored = backupExists && existingBackup.trustInfo.trusted;
+    backupRestored =
+      backupExists && (existingBackup.trustInfo.trusted || existingBackup.trustInfo.matchesDecryptionKey);
   }
 
   yield put(setBackupExists(backupExists));

@@ -2014,6 +2014,116 @@ describe('matrix client', () => {
     consoleWarnSpy.mockRestore();
   });
 
+  describe('verifyMatrixProfileIsSynced', () => {
+    it('updates display name when different', async () => {
+      const setDisplayName = jest.fn().mockResolvedValue(undefined);
+      const getProfileInfo = jest.fn().mockResolvedValue({ displayname: 'Old Name' });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ setDisplayName, getProfileInfo })) });
+
+      await client.connect(null, 'token');
+      await client.verifyMatrixProfileIsSynced({ displayName: 'New Name' });
+
+      expect(getProfileInfo).toHaveBeenCalled();
+      expect(setDisplayName).toHaveBeenCalledWith('New Name');
+    });
+
+    it('does not update display name when same', async () => {
+      const setDisplayName = jest.fn().mockResolvedValue(undefined);
+      const getProfileInfo = jest.fn().mockResolvedValue({ displayname: 'Same Name' });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ setDisplayName, getProfileInfo })) });
+
+      await client.connect(null, 'token');
+      await client.verifyMatrixProfileIsSynced({ displayName: 'Same Name' });
+
+      expect(getProfileInfo).toHaveBeenCalled();
+      expect(setDisplayName).not.toHaveBeenCalled();
+    });
+
+    it('updates avatar when MXC URLs are different', async () => {
+      const setAvatarUrl = jest.fn().mockResolvedValue(undefined);
+      const getProfileInfo = jest.fn().mockResolvedValue({ avatar_url: 'mxc://old/avatar' });
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ setAvatarUrl, getProfileInfo })) });
+
+      await client.connect(null, 'token');
+      await client.verifyMatrixProfileIsSynced({ avatarUrl: 'mxc://new/avatar' });
+
+      expect(getProfileInfo).toHaveBeenCalled();
+      expect(setAvatarUrl).toHaveBeenCalledWith('mxc://new/avatar');
+    });
+
+    it('updates avatar when converting blob URL to MXC URL', async () => {
+      const setAvatarUrl = jest.fn().mockResolvedValue(undefined);
+      const getProfileInfo = jest.fn().mockResolvedValue({ avatar_url: 'mxc://old/avatar' });
+      const mxcUrlToHttp = jest.fn().mockReturnValue('mxc://new/avatar');
+      const client = subject({
+        createClient: jest.fn(() =>
+          getSdkClient({
+            setAvatarUrl,
+            getProfileInfo,
+            mxcUrlToHttp,
+          })
+        ),
+      });
+
+      await client.connect(null, 'token');
+      await client.verifyMatrixProfileIsSynced({ avatarUrl: 'blob://different/avatar' });
+
+      expect(getProfileInfo).toHaveBeenCalled();
+      expect(mxcUrlToHttp).toHaveBeenCalledWith(
+        'blob://different/avatar',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true,
+        true
+      );
+      expect(setAvatarUrl).toHaveBeenCalledWith('blob://different/avatar');
+    });
+
+    it('does not update avatar when MXC URLs are the same after conversion', async () => {
+      const setAvatarUrl = jest.fn().mockResolvedValue(undefined);
+      const getProfileInfo = jest.fn().mockResolvedValue({ avatar_url: 'mxc://same/avatar' });
+      const mxcUrlToHttp = jest.fn().mockReturnValue('mxc://same/avatar');
+      const client = subject({
+        createClient: jest.fn(() =>
+          getSdkClient({
+            setAvatarUrl,
+            getProfileInfo,
+            mxcUrlToHttp,
+          })
+        ),
+      });
+
+      await client.connect(null, 'token');
+      await client.verifyMatrixProfileIsSynced({ avatarUrl: 'blob://same/avatar' });
+
+      expect(getProfileInfo).toHaveBeenCalled();
+      expect(mxcUrlToHttp).toHaveBeenCalledWith(
+        'blob://same/avatar',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true,
+        true
+      );
+      expect(setAvatarUrl).not.toHaveBeenCalled();
+    });
+
+    it('sets avatar when no current avatar exists', async () => {
+      const setAvatarUrl = jest.fn().mockResolvedValue(undefined);
+      const getProfileInfo = jest.fn().mockResolvedValue({});
+      const client = subject({ createClient: jest.fn(() => getSdkClient({ setAvatarUrl, getProfileInfo })) });
+
+      await client.connect(null, 'token');
+      await client.verifyMatrixProfileIsSynced({ avatarUrl: 'mxc://new/avatar' });
+
+      expect(getProfileInfo).toHaveBeenCalled();
+      expect(setAvatarUrl).toHaveBeenCalledWith('mxc://new/avatar');
+    });
+  });
+
   afterAll(() => {
     global.fetch = undefined;
     global.URL.createObjectURL = undefined;

@@ -85,6 +85,10 @@ export class RestoreSecureBackup extends React.PureComponent<Properties, State> 
     this.setState({ userInputKeyPhrase: '' });
   };
 
+  proceedToVerifyKey = () => {
+    this.props.onVerifyKey();
+  };
+
   configForStage = () => {
     if (this.props.isLoading && this.props.backupStage !== RestoreBackupStage.RestoreBackup) {
       return { content: <LoadingIndicator /> };
@@ -94,20 +98,20 @@ export class RestoreSecureBackup extends React.PureComponent<Properties, State> 
       return { content: <BackupFAQ onBack={this.closeFAQContent} /> };
     }
 
-    const { backupStage, onVerifyKey, onClose, errorMessage, successMessage } = this.props;
+    const { backupStage, onClose, errorMessage, successMessage } = this.props;
 
     switch (backupStage) {
       case RestoreBackupStage.UserRestorePrompt:
         return {
           primaryText: 'Verify with backup phrase',
-          onPrimary: onVerifyKey,
+          onPrimary: this.proceedToVerifyKey,
           content: <RestorePrompt onLearnMore={this.openFAQContent} />,
         };
 
       case RestoreBackupStage.SystemRestorePrompt:
         return {
           primaryText: 'Verify with backup phrase',
-          onPrimary: onVerifyKey,
+          onPrimary: this.proceedToVerifyKey,
           secondaryText: 'Continue Without Verifying',
           secondaryColor: Color.Greyscale,
           onSecondary: onClose,

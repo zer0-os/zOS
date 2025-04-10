@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { bemClassName } from '../../../../lib/bem';
-import { RestoreProgress } from '../../../../store/matrix';
+import { bemClassName } from '../../../../../lib/bem';
+import { RestoreProgress } from '../../../../../store/matrix';
 
 import './styles.scss';
 

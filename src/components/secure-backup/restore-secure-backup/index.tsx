@@ -1,38 +1,32 @@
 import * as React from 'react';
 
-import { bemClassName } from '../../lib/bem';
-import { assertAllValuesConsumed } from '../../lib/enum';
-import { BackupStage, RestoreProgress } from '../../store/matrix';
+import { bemClassName } from '../../../lib/bem';
+import { assertAllValuesConsumed } from '../../../lib/enum';
+import { RestoreBackupStage, RestoreProgress } from '../../../store/matrix';
 
-import { BackupFAQ } from './backup-faq';
-import { GeneratePrompt } from './generate-prompt';
-import { GenerateBackup } from './generate-backup';
+import { BackupFAQ } from '../backup-faq';
 import { RestorePrompt } from './restore-prompt';
 import { RestoreBackup } from './restore-backup';
 import { RecoveredBackup } from './recovered-backup';
 import { Success } from './success';
-import { VerifyKeyPhrase } from './verify-key-phrase';
-import { Color, Modal } from '../modal';
+import { Color, Modal } from '../../modal';
 import { LoadingIndicator } from '@zero-tech/zui/components';
 
-import './styles.scss';
+import '../styles.scss';
 
 const cn = bemClassName('secure-backup');
 
 export interface Properties {
   isLoading: boolean;
-  recoveryKey: string;
   backupExists: boolean;
   backupRestored: boolean;
   successMessage: string;
   errorMessage: string;
   videoAssetsPath: string;
-  backupStage: BackupStage;
+  backupStage: RestoreBackupStage;
   restoreProgress: RestoreProgress;
 
   onClose: () => void;
-  onGenerate: () => void;
-  onSave: (recoveryKey) => void;
   onRestore: (recoveryKey) => void;
   onVerifyKey: () => void;
 }
@@ -43,7 +37,7 @@ interface State {
   userInputKeyPhrase: string;
 }
 
-export class SecureBackup extends React.PureComponent<Properties, State> {
+export class RestoreSecureBackup extends React.PureComponent<Properties, State> {
   state = {
     showFAQContent: false,
     hasCopiedKey: false,
@@ -82,23 +76,8 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     this.setState({ hasCopiedKey: true });
   };
 
-  moveToKeyPhraseVerify = () => {
-    this.setState({ hasCopiedKey: false });
-    this.props.onVerifyKey();
-  };
-
   trackKeyPhrase = (value) => {
     this.setState({ userInputKeyPhrase: value });
-  };
-
-  returnToGenerate = () => {
-    this.setState({ userInputKeyPhrase: '' });
-    this.props.onGenerate();
-  };
-
-  saveBackup = () => {
-    this.props.onSave(this.state.userInputKeyPhrase);
-    this.setState({ userInputKeyPhrase: '' });
   };
 
   restoreBackup = () => {
@@ -106,8 +85,12 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
     this.setState({ userInputKeyPhrase: '' });
   };
 
+  proceedToVerifyKey = () => {
+    this.props.onVerifyKey();
+  };
+
   configForStage = () => {
-    if (this.props.isLoading && this.props.backupStage !== BackupStage.RestoreBackup) {
+    if (this.props.isLoading && this.props.backupStage !== RestoreBackupStage.RestoreBackup) {
       return { content: <LoadingIndicator /> };
     }
 
@@ -115,66 +98,34 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
       return { content: <BackupFAQ onBack={this.closeFAQContent} /> };
     }
 
-    const { backupStage, onGenerate, onVerifyKey, onClose, recoveryKey, errorMessage, successMessage } = this.props;
+    const { backupStage, onClose, errorMessage, successMessage } = this.props;
 
-    let content = null;
     switch (backupStage) {
-      case BackupStage.UserGeneratePrompt:
-        return {
-          primaryText: 'Backup my account',
-          onPrimary: onGenerate,
-          content: <GeneratePrompt errorMessage={errorMessage} onLearnMore={this.openFAQContent} />,
-        };
-
-      case BackupStage.UserRestorePrompt:
+      case RestoreBackupStage.UserRestorePrompt:
         return {
           primaryText: 'Verify with backup phrase',
-          onPrimary: onVerifyKey,
+          onPrimary: this.proceedToVerifyKey,
           content: <RestorePrompt onLearnMore={this.openFAQContent} />,
         };
 
-      case BackupStage.SystemGeneratePrompt:
-        return {
-          primaryText: 'Backup my account',
-          onPrimary: onGenerate,
-          secondaryText: 'Backup later',
-          secondaryColor: Color.Red,
-          onSecondary: onClose,
-          content: <GeneratePrompt isSystemPrompt errorMessage={errorMessage} onLearnMore={this.openFAQContent} />,
-        };
-
-      case BackupStage.SystemRestorePrompt:
+      case RestoreBackupStage.SystemRestorePrompt:
         return {
           primaryText: 'Verify with backup phrase',
-          onPrimary: onVerifyKey,
+          onPrimary: this.proceedToVerifyKey,
           secondaryText: 'Continue Without Verifying',
           secondaryColor: Color.Greyscale,
           onSecondary: onClose,
           content: <RestorePrompt isSystemPrompt onLearnMore={this.openFAQContent} />,
         };
 
-      case BackupStage.RecoveredBackupInfo:
+      case RestoreBackupStage.RecoveredBackupInfo:
         return {
           primaryText: 'Dismiss',
           onPrimary: this.props.onClose,
           content: <RecoveredBackup onLearnMore={this.openFAQContent} />,
         };
 
-      case BackupStage.GenerateBackup:
-        return {
-          primaryText: "I've safely stored my backup",
-          primaryDisabled: !this.state.hasCopiedKey,
-          onPrimary: this.moveToKeyPhraseVerify,
-          content: (
-            <GenerateBackup
-              recoveryKey={recoveryKey}
-              errorMessage={errorMessage}
-              onKeyCopied={this.enableVerifyButton}
-            />
-          ),
-        };
-
-      case BackupStage.RestoreBackup:
+      case RestoreBackupStage.RestoreBackup:
         return {
           primaryText: 'Verify',
           primaryDisabled: !this.state.userInputKeyPhrase,
@@ -188,18 +139,7 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
           ),
         };
 
-      case BackupStage.VerifyKeyPhrase:
-        return {
-          primaryText: 'Verify and complete backup',
-          primaryDisabled: !this.state.userInputKeyPhrase,
-          onPrimary: this.saveBackup,
-          secondaryText: 'Back to phrase',
-          secondaryColor: Color.Greyscale,
-          onSecondary: this.returnToGenerate,
-          content: <VerifyKeyPhrase errorMessage={errorMessage} onChange={this.trackKeyPhrase} />,
-        };
-
-      case BackupStage.Success:
+      case RestoreBackupStage.Success:
         return {
           primaryText: 'Finish',
           onPrimary: this.props.onClose,
@@ -209,10 +149,6 @@ export class SecureBackup extends React.PureComponent<Properties, State> {
       default:
         assertAllValuesConsumed(backupStage);
     }
-
-    return {
-      content,
-    };
   };
 
   render() {

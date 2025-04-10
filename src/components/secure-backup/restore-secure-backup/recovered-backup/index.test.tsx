@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 
 import { RecoveredBackup, Properties } from '.';
 
-import { bem } from '../../../lib/bem';
+import { bem } from '../../../../lib/bem';
 const c = bem('.secure-backup');
 
 describe(RecoveredBackup, () => {

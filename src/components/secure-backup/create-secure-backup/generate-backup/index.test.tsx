@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme';
 
-import { buttonLabelled, pressButton } from '../../../test/utils';
+import { buttonLabelled, pressButton } from '../../../../test/utils';
 
 import { GenerateBackup, Properties } from '.';
 
-import { bem } from '../../../lib/bem';
+import { bem } from '../../../../lib/bem';
 const c = bem('.secure-backup');
 
 describe(GenerateBackup, () => {

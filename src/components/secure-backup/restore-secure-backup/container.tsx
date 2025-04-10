@@ -1,21 +1,19 @@
 import * as React from 'react';
 
-import { config } from '../../config';
+import { config } from '../../../config';
 
-import { RootState } from '../../store/reducer';
-import { connectContainer } from '../../store/redux-container';
+import { RootState } from '../../../store/reducer';
+import { connectContainer } from '../../../store/redux-container';
 import {
-  BackupStage,
+  RestoreBackupStage,
   clearBackup,
-  generateBackup,
   getBackup,
   restoreBackup,
-  saveBackup,
-  proceedToVerifyKey,
+  verifyRestorationKey,
   RestoreProgress,
-} from '../../store/matrix';
+} from '../../../store/matrix';
 
-import { SecureBackup } from '.';
+import { RestoreSecureBackup } from '.';
 
 export interface PublicProperties {
   onClose?: () => void;
@@ -25,31 +23,27 @@ export interface Properties extends PublicProperties {
   isLoading: boolean;
   backupExists: boolean;
   backupRestored: boolean;
-  recoveryKey: string;
   successMessage: string;
   errorMessage: string;
-  backupStage: BackupStage;
+  backupStage: RestoreBackupStage;
   videoAssetsPath: string;
   restoreProgress: RestoreProgress;
 
   getBackup: () => void;
-  generateBackup: () => void;
-  saveBackup: () => void;
   restoreBackup: (recoveryKey: string) => void;
   clearBackup: () => void;
-  proceedToVerifyKey: () => void;
+  verifyRestorationKey: () => void;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
     const {
       isLoaded,
-      generatedRecoveryKey,
       backupExists,
       backupRestored,
       successMessage,
       errorMessage,
-      backupStage,
+      restoreBackupStage,
       restoreProgress,
     } = state.matrix;
 
@@ -57,17 +51,16 @@ export class Container extends React.Component<Properties> {
       isLoading: !isLoaded,
       backupExists,
       backupRestored,
-      recoveryKey: generatedRecoveryKey || '',
       successMessage,
       errorMessage,
       videoAssetsPath: config.videoAssetsPath,
-      backupStage,
+      backupStage: restoreBackupStage,
       restoreProgress,
     };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { generateBackup, saveBackup, restoreBackup, getBackup, clearBackup, proceedToVerifyKey };
+    return { restoreBackup, getBackup, clearBackup, verifyRestorationKey };
   }
 
   componentDidMount(): void {
@@ -80,18 +73,15 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <SecureBackup
+      <RestoreSecureBackup
         isLoading={this.props.isLoading}
         backupExists={this.props.backupExists}
         backupRestored={this.props.backupRestored}
-        recoveryKey={this.props.recoveryKey}
         successMessage={this.props.successMessage}
         errorMessage={this.props.errorMessage}
         onClose={this.props.onClose}
-        onGenerate={this.props.generateBackup}
-        onSave={this.props.saveBackup}
         onRestore={this.props.restoreBackup}
-        onVerifyKey={this.props.proceedToVerifyKey}
+        onVerifyKey={this.props.verifyRestorationKey}
         videoAssetsPath={this.props.videoAssetsPath}
         backupStage={this.props.backupStage}
         restoreProgress={this.props.restoreProgress}
@@ -100,4 +90,4 @@ export class Container extends React.Component<Properties> {
   }
 }
 
-export const SecureBackupContainer = connectContainer<PublicProperties>(Container);
+export const RestoreSecureBackupContainer = connectContainer<PublicProperties>(Container);

@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import { ProgressTracker } from '.';
-import { RestoreProgress } from '../../../../store/matrix';
+import { RestoreProgress } from '../../../../../store/matrix';
 
 describe('ProgressTracker', () => {
   const subject = (props: RestoreProgress) => {

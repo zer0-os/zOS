@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { SecureBackupContainer } from '../secure-backup/container';
-import { closeBackupDialog } from '../../store/matrix';
+import { CreateSecureBackupContainer } from '../secure-backup/create-secure-backup/container';
+import { RestoreSecureBackupContainer } from '../secure-backup/restore-secure-backup/container';
+import { closeCreateBackupDialog, closeRestoreBackupDialog } from '../../store/matrix';
 import { LogoutConfirmationModalContainer } from '../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../rewards-modal/container';
 import { closeRewardsDialog } from '../../store/rewards';
@@ -11,11 +12,13 @@ import { closeDeleteMessage, closeLightbox } from '../../store/dialogs';
 import { ReportUserContainer } from '../report-user-dialog/container';
 import { closeReportUserModal } from '../../store/report-user';
 import { Lightbox } from '../lightbox';
+
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   displayLogoutModal: boolean;
-  isBackupDialogOpen: boolean;
+  isCreateBackupDialogOpen: boolean;
+  isRestoreBackupDialogOpen: boolean;
   isRewardsDialogOpen: boolean;
   isReportUserModalOpen: boolean;
   deleteMessageId: string;
@@ -25,7 +28,8 @@ export interface Properties extends PublicProperties {
     startingIndex: number;
   };
 
-  closeBackupDialog: () => void;
+  closeCreateBackupDialog: () => void;
+  closeRestoreBackupDialog: () => void;
   closeRewardsDialog: () => void;
   closeDeleteMessage: () => void;
   closeReportUserModal: () => void;
@@ -36,7 +40,7 @@ export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
     const {
       authentication: { displayLogoutModal },
-      matrix: { isBackupDialogOpen },
+      matrix: { isCreateBackupDialogOpen, isRestoreBackupDialogOpen },
       dialogs: { deleteMessageId, lightbox },
       reportUser: { isReportUserModalOpen },
       rewards,
@@ -44,7 +48,8 @@ export class Container extends React.Component<Properties> {
 
     return {
       displayLogoutModal,
-      isBackupDialogOpen,
+      isCreateBackupDialogOpen,
+      isRestoreBackupDialogOpen,
       isRewardsDialogOpen: rewards.showRewardsInPopup,
       deleteMessageId,
       isReportUserModalOpen,
@@ -53,11 +58,22 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
-    return { closeBackupDialog, closeRewardsDialog, closeDeleteMessage, closeReportUserModal, closeLightbox };
+    return {
+      closeCreateBackupDialog,
+      closeRestoreBackupDialog,
+      closeRewardsDialog,
+      closeDeleteMessage,
+      closeReportUserModal,
+      closeLightbox,
+    };
   }
 
-  closeBackup = () => {
-    this.props.closeBackupDialog();
+  closeCreateBackup = () => {
+    this.props.closeCreateBackupDialog();
+  };
+
+  closeRestoreBackup = () => {
+    this.props.closeRestoreBackupDialog();
   };
 
   closeRewards = () => {
@@ -76,8 +92,12 @@ export class Container extends React.Component<Properties> {
     this.props.closeLightbox();
   };
 
-  renderSecureBackupDialog = (): JSX.Element => {
-    return <SecureBackupContainer onClose={this.closeBackup} />;
+  renderCreateBackupDialog = (): JSX.Element => {
+    return <CreateSecureBackupContainer onClose={this.closeCreateBackup} />;
+  };
+
+  renderRestoreBackupDialog = (): JSX.Element => {
+    return <RestoreSecureBackupContainer onClose={this.closeRestoreBackup} />;
   };
 
   renderLogoutDialog = (): JSX.Element => {
@@ -115,7 +135,8 @@ export class Container extends React.Component<Properties> {
   render() {
     return (
       <>
-        {this.props.isBackupDialogOpen && this.renderSecureBackupDialog()}
+        {this.props.isCreateBackupDialogOpen && this.renderCreateBackupDialog()}
+        {this.props.isRestoreBackupDialogOpen && this.renderRestoreBackupDialog()}
         {this.props.displayLogoutModal && this.renderLogoutDialog()}
         {this.props.isRewardsDialogOpen && this.renderRewardsDialog()}
         {this.props.deleteMessageId && this.renderDeleteMessageDialog()}

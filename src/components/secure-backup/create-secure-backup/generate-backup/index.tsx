@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import { bemClassName } from '../../../lib/bem';
-import { clipboard } from '../../../lib/clipboard';
+import { bemClassName } from '../../../../lib/bem';
+import { clipboard } from '../../../../lib/clipboard';
 
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 
-import '../styles.scss';
+import '../../styles.scss';
 
 const cn = bemClassName('secure-backup');
 

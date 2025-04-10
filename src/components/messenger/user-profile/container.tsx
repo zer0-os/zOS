@@ -18,7 +18,7 @@ import {
   openLinkedAccounts,
 } from '../../../store/user-profile';
 import { logout } from '../../../store/authentication';
-import { openBackupDialog } from '../../../store/matrix';
+import { openCreateBackupDialog, openRestoreBackupDialog } from '../../../store/matrix';
 import { openRewardsDialog } from '../../../store/rewards';
 
 export interface PublicProperties {}
@@ -26,9 +26,11 @@ export interface PublicProperties {}
 export interface Properties extends PublicProperties {
   currentUser: User;
   stage: Stage;
+  backupExists: boolean;
 
   logout: () => void;
-  openBackupDialog: () => void;
+  openCreateBackupDialog: () => void;
+  openRestoreBackupDialog: () => void;
   openUserProfile: () => void;
   closeUserProfile: () => void;
   openEditProfile: () => void;
@@ -41,7 +43,7 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
-    const { userProfile } = state;
+    const { userProfile, matrix } = state;
     const currentUser = currentUserSelector(state);
 
     return {
@@ -51,6 +53,7 @@ export class Container extends React.Component<Properties> {
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
       } as User,
       stage: userProfile.stage,
+      backupExists: matrix.backupExists,
     };
   }
 
@@ -59,7 +62,8 @@ export class Container extends React.Component<Properties> {
       logout,
       openUserProfile,
       closeUserProfile,
-      openBackupDialog,
+      openCreateBackupDialog,
+      openRestoreBackupDialog,
       openEditProfile,
       openRewardsDialog,
       openSettings,
@@ -68,6 +72,14 @@ export class Container extends React.Component<Properties> {
       openLinkedAccounts,
     };
   }
+
+  onBackup = () => {
+    if (!this.props.backupExists) {
+      this.props.openCreateBackupDialog();
+    } else {
+      this.props.openRestoreBackupDialog();
+    }
+  };
 
   render() {
     return (
@@ -78,7 +90,7 @@ export class Container extends React.Component<Properties> {
         subHandle={this.props.currentUser.displaySubHandle}
         onClose={this.props.closeUserProfile}
         onLogout={this.props.logout}
-        onBackup={this.props.openBackupDialog}
+        onBackup={this.onBackup}
         onEdit={this.props.openEditProfile}
         onBackToOverview={this.props.openUserProfile}
         onRewards={this.props.openRewardsDialog}

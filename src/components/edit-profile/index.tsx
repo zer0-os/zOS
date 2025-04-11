@@ -204,7 +204,7 @@ export class EditProfile extends React.Component<Properties, State> {
                     items={this.menuItems}
                     label=''
                     placeholder={this.props.currentPrimaryZID || 'None (wallet address)'}
-                    value={this.state.primaryZID}
+                    value={this.state.primaryZID || ''}
                     itemSize='spacious'
                     menuClassName={c('zid-select-menu')}
                   />

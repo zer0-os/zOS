@@ -10,6 +10,7 @@ import { FeedApp } from './feed';
 import { ExplorerApp } from './explorer';
 import { NotificationsApp } from './notifications';
 import { HomeApp } from './home';
+import { ProfileApp } from './profile';
 import { featureFlags } from '../lib/feature-flags';
 import { useSelector } from 'react-redux';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
@@ -39,11 +40,15 @@ export const AppRouter = () => {
         <Route path='/explorer' component={ExplorerApp} />
         {featureFlags.enableNotificationsApp && <Route path='/notifications' component={NotificationsApp} />}
         {featureFlags.enableAuraZApp && <Route path='/aura' component={AuraApp} />}
+        <Route path='/profile' component={ProfileApp} />
         <Route component={redirectToRoot} />
       </Switch>
     </AuthenticationContextProvider>
   );
 };
+
+// Paths that should hide the sidekick menu
+export const HIDE_SIDEKICK_PATHS = ['/home', '/profile'];
 
 /**
  * Conditionally renders the sidekick based on the user's location and profile stage.
@@ -56,10 +61,12 @@ const Sidekick = () => {
   const userProfileStage = useSelector(userProfileStageSelector);
 
   /**
-   * We only want to render the sidekick when the user is not on the home page,
+   * We only want to render the sidekick when the user is not on a path that should hide it,
    * or if the user profile is open.
    */
-  const renderSidekick = !(location.pathname.startsWith('/home') || isActiveZApp) || userProfileStage !== Stage.None;
+  const renderSidekick =
+    !(HIDE_SIDEKICK_PATHS.some((path) => location.pathname.startsWith(path)) || isActiveZApp) ||
+    userProfileStage !== Stage.None;
 
   return (
     <>

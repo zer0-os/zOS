@@ -157,4 +157,13 @@ describe(AppBar, () => {
       expect(panel.classList.contains('no-hover')).toBe(false);
     });
   });
+
+  describe('Logo Navigation', () => {
+    it('should navigate to home when clicking the logo', () => {
+      const { getByTestId } = renderComponent({});
+      const logoLink = getByTestId('icon-logo-zero').closest('a');
+
+      expect(logoLink).toHaveAttribute('to', '/home');
+    });
+  });
 });

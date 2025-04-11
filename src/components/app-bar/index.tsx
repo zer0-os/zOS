@@ -121,9 +121,9 @@ export class AppBar extends React.Component<Properties, State> {
     return (
       <>
         <div {...cn('', zAppIsFullscreen && 'zapp-fullscreen')}>
-          <div {...cn('logo-wrapper')}>
+          <Link to='/home' {...cn('logo-wrapper')}>
             <IconLogoZero size={24} />
-          </div>
+          </Link>
           <LegacyPanel {...cn('container')} ref={this.containerRef}>
             <AppLink
               Icon={IconHome}

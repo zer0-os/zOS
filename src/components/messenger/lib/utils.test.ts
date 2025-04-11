@@ -57,6 +57,45 @@ describe('highlightFilter', () => {
     expect(result[1].props.children).toEqual('lo');
     expect(result[2]).toEqual(' World');
   });
+
+  it('handles special regex characters in filter', () => {
+    const text = 'Hello? World';
+    const filter = '?';
+
+    const result = highlightFilter(text, filter);
+
+    expect(result.length).toEqual(3);
+    expect(result[0]).toEqual('Hello');
+    expect(result[1].type).toEqual('span');
+    expect(result[1].props.children).toEqual('?');
+    expect(result[2]).toEqual(' World');
+  });
+
+  it('handles multiple special regex characters in filter', () => {
+    const text = 'Hello? World*';
+    const filter = '? World*';
+
+    const result = highlightFilter(text, filter);
+
+    expect(result.length).toEqual(3);
+    expect(result[0]).toEqual('Hello');
+    expect(result[1].type).toEqual('span');
+    expect(result[1].props.children).toEqual('? World*');
+    expect(result[2]).toEqual('');
+  });
+
+  it('handles special regex characters in text but not in filter', () => {
+    const text = 'Hello? World*';
+    const filter = 'World';
+
+    const result = highlightFilter(text, filter);
+
+    expect(result.length).toEqual(3);
+    expect(result[0]).toEqual('Hello? ');
+    expect(result[1].type).toEqual('span');
+    expect(result[1].props.children).toEqual('World');
+    expect(result[2]).toEqual('*');
+  });
 });
 
 describe(getOtherMembersTypingDisplayText, () => {

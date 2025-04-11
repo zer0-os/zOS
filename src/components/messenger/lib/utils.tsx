@@ -20,7 +20,8 @@ export const conversationToOption = (conversation: Channel): Option[] => {
 };
 
 export const highlightFilter = (text, filter) => {
-  const regex = new RegExp(`(${filter})`, 'i');
+  const escapedFilter = filter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escapedFilter})`, 'i');
 
   if (filter !== '' && text) {
     return text.split(regex).map((part, index) =>

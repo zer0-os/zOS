@@ -10,6 +10,7 @@ import {
   IconFourDots,
   IconLogoZero,
   IconAura,
+  IconUser,
 } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
@@ -147,6 +148,15 @@ export class AppBar extends React.Component<Properties, State> {
               to={messengerPath}
               onLinkClick={this.unhoverContainer}
             />
+            {featureFlags.enableProfile && (
+              <AppLink
+                Icon={IconUser}
+                isActive={isActive('profile')}
+                label='Profile'
+                to='/profile'
+                onLinkClick={this.unhoverContainer}
+              />
+            )}
             {featureFlags.enableNotificationsApp && (
               <AppLink
                 Icon={this.renderNotificationIcon}

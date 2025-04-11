@@ -24,7 +24,8 @@ export type FeatureFlagKey =
   | 'enableLinkedAccounts'
   | 'enableZeroWalletSigning'
   | 'enableFeedChat'
-  | 'enableAuraZApp';
+  | 'enableAuraZApp'
+  | 'enableProfile';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

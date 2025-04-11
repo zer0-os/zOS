@@ -285,6 +285,7 @@ export const Message: React.FC<Properties> = ({
         onReportUser={onMenuReportUser}
         isMenuOpen={isMenuOpen}
         isMenuFlying={isMenuFlying}
+        isHidden={isHidden}
       />
     );
   };

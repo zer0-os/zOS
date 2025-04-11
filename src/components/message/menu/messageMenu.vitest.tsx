@@ -16,6 +16,7 @@ describe('MessageMenu', () => {
       width: 600,
       name: 'test-image.jpg',
     },
+    isHidden: false,
     isMenuOpen: true,
     onDelete: vi.fn(),
     onEdit: vi.fn(),
@@ -36,6 +37,11 @@ describe('MessageMenu', () => {
     it('should allow editing when user is owner and message is sent', () => {
       render(<MessageMenu {...defaultProps} />);
       expect(screen.getByRole('menuitem', { name: /edit/i })).toBeEnabled();
+    });
+
+    it('should disable editing when message is hidden', () => {
+      render(<MessageMenu {...defaultProps} isHidden={true} />);
+      expect(screen.queryByRole('menuitem', { name: /edit/i })).not.toBeInTheDocument();
     });
 
     it('should disable editing when message is in progress', () => {
@@ -83,6 +89,12 @@ describe('MessageMenu', () => {
       expect(screen.getByRole('menuitem', { name: /edit/i })).toBeEnabled();
       expect(screen.getByRole('menuitem', { name: /delete/i })).toBeEnabled();
       expect(screen.queryByRole('button', { name: /report/i })).not.toBeInTheDocument();
+    });
+
+    it('should disable editing but allow deletion when message is hidden', () => {
+      render(<MessageMenu {...defaultProps} isHidden={true} />);
+      expect(screen.queryByRole('menuitem', { name: /edit/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('menuitem', { name: /delete/i })).toBeEnabled();
     });
 
     it('should disable all owner actions when message is in progress', () => {

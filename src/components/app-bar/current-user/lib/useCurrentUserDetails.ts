@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '../../../../store/reducer';
 import { totalRewardsViewed } from '../../../../store/rewards';
-import { openUserProfile } from '../../../../store/user-profile';
+import { openUserProfile, closeUserProfile, Stage } from '../../../../store/user-profile';
+import { userProfileStageSelector } from '../../../../store/user-profile/selectors';
 import {
   primaryZIDSelector,
   userFirstNameSelector,
@@ -35,11 +36,16 @@ export const useCurrentUserDetails = (): CurrentUserDetailsReturn => {
   const primaryZID = useSelector(primaryZIDSelector);
   const firstName = useSelector(userFirstNameSelector);
   const profileImage = useSelector(userProfileImageSelector);
+  const userProfileStage = useSelector(userProfileStageSelector);
 
   const [isVerifyIdDialogOpen, setIsVerifyIdDialogOpen] = useState(false);
 
   const handleOnClick = () => {
-    dispatch(openUserProfile());
+    if (userProfileStage === Stage.None) {
+      dispatch(openUserProfile());
+    } else {
+      dispatch(closeUserProfile());
+    }
     dispatch(totalRewardsViewed());
   };
 

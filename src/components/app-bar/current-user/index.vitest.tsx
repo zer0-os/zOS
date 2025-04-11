@@ -71,6 +71,7 @@ vi.mock('../../verify-id-dialog', () => ({
 
 const mockTotalRewardsViewed = vi.fn();
 const mockOpenUserProfile = vi.fn();
+const mockCloseUserProfile = vi.fn();
 const mockCloseVerifyIdDialog = vi.fn();
 const mockOpenVerifyIdDialog = vi.fn();
 
@@ -155,6 +156,26 @@ describe('CurrentUser Component', () => {
     fireEvent.click(containerElement);
 
     expect(mockOpenUserProfile).toHaveBeenCalled();
+    expect(mockTotalRewardsViewed).toHaveBeenCalled();
+  });
+
+  it('should close user profile when clicked while open', () => {
+    currentMockHook = {
+      ...DEFAULT_HOOK_RETURN,
+      onClick: () => {
+        mockCloseUserProfile();
+        mockTotalRewardsViewed();
+      },
+    };
+
+    const { container } = render(<CurrentUser />);
+
+    const containerElement = container.querySelector('.Container');
+    expect(containerElement).toBeInTheDocument();
+
+    fireEvent.click(containerElement);
+
+    expect(mockCloseUserProfile).toHaveBeenCalled();
     expect(mockTotalRewardsViewed).toHaveBeenCalled();
   });
 

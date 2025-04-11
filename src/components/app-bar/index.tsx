@@ -148,13 +148,15 @@ export class AppBar extends React.Component<Properties, State> {
               to={messengerPath}
               onLinkClick={this.unhoverContainer}
             />
-            <AppLink
-              Icon={IconUser}
-              isActive={isActive('profile')}
-              label='Profile'
-              to='/profile'
-              onLinkClick={this.unhoverContainer}
-            />
+            {featureFlags.enableProfile && (
+              <AppLink
+                Icon={IconUser}
+                isActive={isActive('profile')}
+                label='Profile'
+                to='/profile'
+                onLinkClick={this.unhoverContainer}
+              />
+            )}
             {featureFlags.enableNotificationsApp && (
               <AppLink
                 Icon={this.renderNotificationIcon}

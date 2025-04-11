@@ -331,9 +331,10 @@ export const Message: React.FC<Properties> = ({
   };
 
   const renderBody = () => {
+    console.log('XXXX media', media);
     return (
       <div {...cn('block-body')}>
-        {media?.body && (
+        {media?.body && media.body !== media.name && (
           <ContentHighlighter
             message={media.body}
             isHidden={isHidden}

@@ -10,7 +10,6 @@ export interface Attachment {
   name: string;
   type: MediaType;
   url: string;
-  body?: string;
 }
 
 export interface Properties {
@@ -62,9 +61,7 @@ export default class AttachmentCard extends React.Component<Properties, undefine
         <div className='attachment-card__icon'>
           {this.props.type === 'video' ? <IconVideoRecorder size={18} /> : this.renderPaperClip()}
         </div>
-        {(!this.props.attachment.body || this.props.attachment.body !== this.props.attachment.name) && (
-          <span className='attachment-card__name'>{this.props.attachment.name}</span>
-        )}
+        <span className='attachment-card__name'>{this.props.attachment.name}</span>
       </div>
     );
 

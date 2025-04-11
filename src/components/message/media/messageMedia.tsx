@@ -84,14 +84,7 @@ export const MessageMedia = ({
       </div>
     );
   } else if (media?.type === MediaType.File) {
-    const attachment = {
-      url: effectiveMediaUrl,
-      name: media?.name,
-      type: media?.type,
-      mimetype: media?.mimetype,
-      body: media?.body,
-    };
-    console.log('XXXX attachment', attachment);
+    const attachment = { url: effectiveMediaUrl, name: media?.name, type: media?.type, mimetype: media?.mimetype };
     return (
       <div {...cn('attachment')} onClick={() => openAttachmentPreview(attachment)}>
         <AttachmentCards attachments={[attachment]} onAttachmentClicked={() => openAttachmentPreview(attachment)} />

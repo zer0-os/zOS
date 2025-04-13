@@ -4,6 +4,7 @@ import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel, onAddLabel, onRemoveLabel, openConversation, User } from '../../../store/channels';
 import { denormalizeConversations } from '../../../store/channels-list';
+import { denormalize as denormalizeUser } from '../../../store/users';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
@@ -41,6 +42,8 @@ import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 
 const cn = bemClassName('direct-message-members');
+
+type GetUser = (id: string) => User | undefined;
 
 export interface PublicProperties {}
 
@@ -87,9 +90,11 @@ export class Container extends React.Component<Properties, State> {
       rewards,
     } = state;
 
+    const currentUserId = user?.data?.id;
+    const getUser: GetUser = (id) => denormalizeUser(id, state);
     const conversations = denormalizeConversations(state)
       .filter((c) => !c.isSocialChannel)
-      .map(addLastMessageMeta(state))
+      .map(addLastMessageMeta(currentUserId, getUser))
       .sort(byLastMessageOrCreation);
     return {
       conversations,
@@ -335,8 +340,8 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-function addLastMessageMeta(state: RootState): any {
-  return (conversation) => {
+function addLastMessageMeta(currentUserId: string, getUser: GetUser): any {
+  return (conversation: Channel) => {
     const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
 
     const filteredMessages = sortedMessages.filter(
@@ -349,16 +354,14 @@ function addLastMessageMeta(state: RootState): any {
     return {
       ...conversation,
       mostRecentMessage,
-      messagePreview: getMessagePreview(mostRecentMessage, state, conversation.isOneOnOne),
+      messagePreview: getMessagePreview(mostRecentMessage, currentUserId, getUser, conversation.isOneOnOne),
       previewDisplayDate: previewDisplayDate(mostRecentMessage?.createdAt),
     };
   };
 }
 
-function byLastMessageOrCreation(a, b) {
-  const aDate = a.mostRecentMessage?.createdAt || a.createdAt;
-  const bDate = b.mostRecentMessage?.createdAt || b.createdAt;
-  return compareDatesDesc(aDate, bDate);
+function byLastMessageOrCreation(a: Channel, b: Channel) {
+  return b.bumpStamp - a.bumpStamp;
 }
 
 export const MessengerList = connectContainer<PublicProperties>(Container);

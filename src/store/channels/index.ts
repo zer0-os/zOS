@@ -6,6 +6,8 @@ import { createAction } from '@reduxjs/toolkit';
 import { UnreadCountUpdatedPayload } from './types';
 import { ParentMessage } from '../../lib/chat/types';
 import { Wallet } from '../authentication/types';
+import { toSimplifiedUser } from '../users/utils';
+import { SimplifiedUser } from '../users/types';
 
 export interface User {
   userId: string;
@@ -51,6 +53,10 @@ export interface Channel {
   messages: Message[];
   otherMembers: User[];
   memberHistory: User[];
+  /**
+   * timestamp used for sorting when timeline is unknown (from sliding sync)
+   */
+  bumpStamp?: number;
   hasMore: boolean;
   hasMorePosts?: boolean;
   createdAt: number;
@@ -121,7 +127,23 @@ const slice = createNormalizedSlice({
   },
 });
 
-export const { receive: rawReceive } = slice.actions;
+export const { receive } = slice.actions;
+export const rawReceive: typeof receive = (data: Partial<Channel>) => {
+  // @ts-ignore - Removing denormalized flag
+  const { __denormalized, otherMembers, memberHistory, ...rest } = data;
+  // Simplifying users when saving to control update flow. See `store/users/utils.ts` for more details.
+  const simplifiedUsers: { otherMembers?: SimplifiedUser[]; memberHistory?: SimplifiedUser[] } = {};
+  if (otherMembers) {
+    simplifiedUsers.otherMembers = otherMembers.map(toSimplifiedUser);
+  }
+  if (memberHistory) {
+    simplifiedUsers.memberHistory = memberHistory.map(toSimplifiedUser);
+  }
+  return receive({
+    ...rest,
+    ...simplifiedUsers,
+  });
+};
 export const { normalize, denormalize, schema } = slice;
 export {
   unreadCountUpdated,

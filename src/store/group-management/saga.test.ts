@@ -32,7 +32,7 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { getPanelOpenState } from '../panels/selectors';
 import { setPanelState } from '../panels';
 import { Panel } from '../panels/constants';
-import { rawChannelSelector } from '../channels/saga';
+import { channelSelector } from '../channels/selectors';
 
 describe('Group Management Saga', () => {
   const chatClient = {
@@ -447,7 +447,7 @@ describe('Group Management Saga', () => {
     it('does nothing for social channels when panel is already open', async () => {
       await expectSaga(openSidekickForSocialChannel, conversationId)
         .provide([
-          [matchers.select(rawChannelSelector, conversationId), socialChannel],
+          [matchers.select(channelSelector(conversationId), conversationId), socialChannel],
           [matchers.select(getPanelOpenState, Panel.MEMBERS), true],
         ])
         .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
@@ -456,7 +456,7 @@ describe('Group Management Saga', () => {
 
     it('does nothing for non-social channels', async () => {
       await expectSaga(openSidekickForSocialChannel, conversationId)
-        .provide([[matchers.select(rawChannelSelector, conversationId), nonSocialChannel]])
+        .provide([[matchers.select(channelSelector(conversationId), conversationId), nonSocialChannel]])
         .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
         .run();
     });

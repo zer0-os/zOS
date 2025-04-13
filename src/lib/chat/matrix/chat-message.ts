@@ -1,11 +1,11 @@
 import { CustomEventType, MatrixConstants, MembershipStateType, NotifiableEventType } from './types';
-import { EventType, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
-import { AdminMessageType, Message, MessageSendStatus } from '../../../store/messages';
-import { getObjectDiff, parsePlainBody } from './utils';
+import { EventType, IContent, IEvent, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk/lib/matrix';
+import { AdminMessageType, MediaType, Message, MessageSendStatus } from '../../../store/messages';
+import { extractUserIdFromMatrixId, getObjectDiff, parsePlainBody } from './utils';
 import { PowerLevels } from '../types';
 
-export async function parseMediaData(matrixMessage) {
-  const { content } = matrixMessage;
+export function parseMediaData(matrixEvent: Partial<IEvent>) {
+  const { content } = matrixEvent;
 
   let media = null;
   try {
@@ -15,7 +15,7 @@ export async function parseMediaData(matrixMessage) {
       content?.msgtype === MsgType.File ||
       content?.msgtype === MsgType.Audio
     ) {
-      media = await buildMediaObject(content);
+      media = buildMediaObject(content);
     }
   } catch (e) {
     console.error('error ocurred while parsing media data: ', e);
@@ -28,12 +28,12 @@ export async function parseMediaData(matrixMessage) {
   };
 }
 
-export async function buildMediaObject(content) {
-  let mediaType;
-  if (content.msgtype === MsgType.Image) mediaType = 'image';
-  else if (content.msgtype === MsgType.Video) mediaType = 'video';
-  else if (content.msgtype === MsgType.File) mediaType = 'file';
-  else if (content.msgtype === MsgType.Audio) mediaType = 'audio';
+export function buildMediaObject(content: IContent) {
+  let mediaType: MediaType;
+  if (content.msgtype === MsgType.Image) mediaType = MediaType.Image;
+  else if (content.msgtype === MsgType.Video) mediaType = MediaType.Video;
+  else if (content.msgtype === MsgType.File) mediaType = MediaType.File;
+  else if (content.msgtype === MsgType.Audio) mediaType = MediaType.Audio;
   if (content.file && content.info) {
     return {
       url: null,
@@ -51,10 +51,11 @@ export async function buildMediaObject(content) {
   return null;
 }
 
-export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
-  const { event_id, content, origin_server_ts, sender: senderId, updatedAt } = matrixMessage;
+// TODO: zos-619: This should be part of the MatrixAdapter
+export function mapMatrixMessage(matrixEvent: Partial<IEvent>, sdkMatrixClient: SDKMatrixClient): Message {
+  const { event_id, content, origin_server_ts, sender: senderId } = matrixEvent;
 
-  const parent = matrixMessage.content['m.relates_to'];
+  const parent = matrixEvent.content['m.relates_to'];
   const senderData = sdkMatrixClient.getUser(senderId);
 
   let messageContent = content.body;
@@ -71,35 +72,44 @@ export async function mapMatrixMessage(matrixMessage, sdkMatrixClient: SDKMatrix
     id: event_id,
     message,
     createdAt: origin_server_ts,
-    updatedAt: updatedAt,
+    updatedAt: 0,
     sender: {
-      userId: senderId,
-      firstName: senderData?.displayName,
+      userId: extractUserIdFromMatrixId(senderId),
+      matrixId: senderId,
+      firstName: senderData?.displayName ?? '',
       lastName: '',
-      profileImage: '',
+      profileImage: senderData?.avatarUrl ?? '',
       profileId: '',
+      primaryZID: '',
     },
+    isPost: false,
+    preview: null,
+    sendStatus: MessageSendStatus.SUCCESS,
     isAdmin: false,
     optimisticId: content.optimisticId,
-    ...{
-      admin: {},
-      mentionedUsers: [],
-      hidePreview: false,
-      media: null,
-      image: null,
-    },
+    mentionedUsers: [],
+    hidePreview: false,
+    media: null,
+    image: null,
     parentMessageText: '',
     parentMessageMedia: null,
     parentMessageId: parent ? parent['m.in_reply_to']?.event_id : null,
     isHidden: content?.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE,
-    ...(await parseMediaData(matrixMessage)),
+    ...parseMediaData(matrixEvent),
   };
 }
 
-export function mapEventToAdminMessage(matrixMessage): Message {
-  const { event_id, content, origin_server_ts, sender, type, state_key: targetUserId, unsigned } = matrixMessage;
+// TODO: zos-619: This should be part of the MatrixAdapter
+export function mapEventToAdminMessage(matrixEvent: IEvent): Message {
+  const { event_id, content, origin_server_ts, sender, type, state_key: targetUserId, unsigned } = matrixEvent;
 
-  const adminData = getAdminDataFromEventType(type, content, sender, targetUserId, unsigned?.prev_content);
+  const adminData = getAdminDataFromEventType(
+    type,
+    content,
+    extractUserIdFromMatrixId(sender),
+    extractUserIdFromMatrixId(targetUserId),
+    unsigned?.prev_content
+  );
 
   if (!adminData) {
     return null;
@@ -122,11 +132,12 @@ export function mapEventToAdminMessage(matrixMessage): Message {
   };
 }
 
-export async function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKMatrixClient) {
-  const { event_id, content, origin_server_ts, sender: senderId } = matrixMessage;
+// TODO: zos-619: This should be part of the MatrixAdapter
+export function mapEventToPostMessage(matrixEvent: IEvent, sdkMatrixClient: SDKMatrixClient): Message {
+  const { event_id, content, origin_server_ts, sender: senderId } = matrixEvent;
 
   const senderData = sdkMatrixClient.getUser(senderId);
-  const { media, image, rootMessageId } = await parseMediaData(matrixMessage);
+  const { media, image, rootMessageId } = parseMediaData(matrixEvent);
 
   return {
     id: event_id,
@@ -136,12 +147,14 @@ export async function mapEventToPostMessage(matrixMessage, sdkMatrixClient: SDKM
     optimisticId: content.optimisticId,
 
     sender: {
-      userId: senderId,
-      firstName: senderData?.displayName,
+      userId: extractUserIdFromMatrixId(senderId),
+      matrixId: senderId,
+      firstName: senderData?.displayName ?? '',
       lastName: '',
-      profileImage: '',
+      profileImage: senderData?.avatarUrl ?? '',
       profileId: '',
       displaySubHandle: '',
+      primaryZID: '',
     },
 
     isAdmin: false,
@@ -274,4 +287,12 @@ function convertToNotifiableEventType(eventType) {
   }
 }
 
-const ADMIN_USER = { userId: 'admin', firstName: '', lastName: '', profileImage: '', profileId: '', primaryZID: '' };
+const ADMIN_USER = {
+  userId: 'admin',
+  firstName: '',
+  lastName: '',
+  profileImage: '',
+  profileId: '',
+  primaryZID: '',
+  matrixId: '',
+};

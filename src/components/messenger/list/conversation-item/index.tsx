@@ -5,7 +5,7 @@ import { getOtherMembersTypingDisplayText, highlightFilter } from '../../lib/uti
 import { Channel, DefaultRoomLabels } from '../../../../store/channels';
 
 import { MoreMenu } from './more-menu';
-import { Avatar } from '@zero-tech/zui/components';
+import { MatrixAvatar } from '../../../matrix-avatar';
 
 import { ContentHighlighter } from '../../../content-highlighter';
 import { IconBellOff1 } from '@zero-tech/zui/icons';
@@ -80,7 +80,7 @@ export class ConversationItem extends React.Component<Properties, State> {
     }
 
     return (
-      <Avatar
+      <MatrixAvatar
         size={'regular'}
         imageURL={imageUrl}
         tabIndex={-1}

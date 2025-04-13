@@ -6,7 +6,7 @@ import { SagaActionTypes, setCount, setError, setInitialCount, setIsLoadingPost,
 import { MediaType } from '../messages';
 import { messageSelector, rawMessagesSelector } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
-import { rawChannelSelector, receiveChannel } from '../channels/saga';
+import { receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState } from '../channels';
 import { SagaActionTypes as ChannelsEvents } from '../channels';
 import { updateUserMeowBalance } from '../rewards/saga';
@@ -25,6 +25,7 @@ import {
 import { ethers } from 'ethers';
 import { get } from '../../lib/api/rest';
 import { queryClient } from '../../lib/web3/rainbowkit/provider';
+import { channelSelector } from '../channels/selectors';
 
 export interface Payload {
   channelId: string;
@@ -67,7 +68,7 @@ export function* fetchPost(action) {
 export function* sendPost(action) {
   const { channelId, message, replyToId } = action.payload;
 
-  const channel = yield select(rawChannelSelector(channelId));
+  const channel = yield select(channelSelector(channelId));
 
   if (channel.conversationStatus !== ConversationStatus.CREATED) {
     return;
@@ -202,7 +203,7 @@ export function* sendPost(action) {
 
 export function* fetchPosts(action) {
   const { channelId } = action.payload;
-  const channel = yield select(rawChannelSelector(action.payload.channelId));
+  const channel = yield select(channelSelector(action.payload.channelId));
 
   if (channel.conversationStatus !== ConversationStatus.CREATED) {
     return;
@@ -294,7 +295,7 @@ function* meowPost(action) {
 function* pollPosts(action) {
   const { channelId } = action.payload;
 
-  const channel = yield select(rawChannelSelector(channelId));
+  const channel = yield select(channelSelector(channelId));
   const channelZna = channel.name?.split('0://')[1];
 
   if (!channelZna) {
@@ -322,7 +323,7 @@ function* pollPosts(action) {
 }
 
 export function* startPollingPosts(channelId: string) {
-  const channel = yield select(rawChannelSelector(channelId));
+  const channel = yield select(channelSelector(channelId));
   if (channel?.conversationStatus === ConversationStatus.CREATED) {
     yield put({ type: SagaActionTypes.PollPosts, payload: { channelId } });
   }

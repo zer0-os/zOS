@@ -7,3 +7,8 @@ export interface MemberNetworks {
   primaryZID: string;
   primaryWalletAddress: string;
 }
+
+export interface SimplifiedUser {
+  userId: string;
+  matrixId: string;
+}

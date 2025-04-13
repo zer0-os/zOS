@@ -14,7 +14,7 @@ import { ErrorDialogContent } from '../../../../store/chat/types';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 import { Panel as PanelEnum } from '../../../../store/panels/constants';
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
-import { rawChannelSelector } from '../../../../store/channels/saga';
+import { channelSelector } from '../../../../store/channels/selectors';
 import { toggleSecondarySidekick } from '../../../../store/group-management';
 import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
@@ -58,7 +58,7 @@ export class Container extends React.Component<Properties> {
     } = state;
 
     const channel = denormalize(activeConversationId, state);
-    const rawChannel = rawChannelSelector(activeConversationId)(state);
+    const rawChannel = channelSelector(activeConversationId)(state);
 
     return {
       channel,
@@ -102,11 +102,7 @@ export class Container extends React.Component<Properties> {
   };
 
   searchMentionableUsers = async (search: string) => {
-    return await searchMentionableUsersForChannel(
-      this.props.activeConversationId,
-      search,
-      this.props.channel.otherMembers
-    );
+    return await searchMentionableUsersForChannel(search, this.props.channel.otherMembers);
   };
 
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {

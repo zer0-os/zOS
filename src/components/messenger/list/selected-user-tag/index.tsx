@@ -2,12 +2,13 @@ import * as React from 'react';
 
 import { Option } from '../../lib/types';
 
-import { Avatar, IconButton } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
 import { IconXClose } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
 import { bemClassName } from '../../../../lib/bem';
 import './selected-user-tag.scss';
+import { MatrixAvatar } from '../../../matrix-avatar';
 
 const cn = bemClassName('selected-user-tag');
 
@@ -37,7 +38,7 @@ export class SelectedUserTag extends React.Component<Properties> {
     return (
       <div {...cn('', classNames({ [tagSize]: tagSize }))}>
         <div {...cn('avatar')}>
-          <Avatar size={avatarSize} imageURL={option.image} />
+          <MatrixAvatar size={avatarSize} imageURL={option.image} />
         </div>
 
         <div {...cn('user-details')}>

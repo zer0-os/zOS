@@ -1,18 +1,10 @@
 import { call, put, select, spawn, take, takeEvery } from 'redux-saga/effects';
 import { schema, removeAll, receive, SagaActionTypes } from '.';
-import { userByMatrixIdSelector } from './selectors';
+import { usersByMatrixIdsSelector } from './selectors';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { getUserSubHandle } from '../../lib/user';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
-import { currentUserSelector } from '../authentication/saga';
-import { setUser } from '../authentication';
-import {
-  downloadFile,
-  uploadFile,
-  editProfile as matrixEditProfile,
-  getProfileInfo as matrixGetProfileInfo,
-} from '../../lib/chat';
-import cloneDeep from 'lodash/cloneDeep';
+import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
 import { getProvider as getIndexedDbProvider } from '../../lib/storage/media-cache/idb';
 import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
 import { User } from '../authentication/types';
@@ -38,11 +30,6 @@ export function* receiveSearchResults(searchResults) {
         displaySubHandle: getUserSubHandle(r.primaryZID, r.primaryWalletAddress),
       };
     });
-
-  // fetch the profile images from the homeserver for new search result users
-  for (const user of mappedUsers) {
-    user.profileImage = yield call(downloadFile, user.profileImage);
-  }
 
   yield put(receive(mappedUsers));
 }
@@ -83,58 +70,10 @@ export function* updateUserProfileImageFromCache(currentUser: User) {
   return undefined;
 }
 
-/*
-  Fetch the current user's profile image url from the store, and then fetch the image from the homeserver.
-  This is because the profile image stored in the homeserver (mxc://) is authoritative, and we need the matrix-client
-  access token to fetch the image.
-
-  Also handles the case where the user is logging in for the first time.
-*/
-export function* fetchCurrentUserProfileImage() {
-  let currentUser: User = cloneDeep(yield select(currentUserSelector()));
-  let profileImageUrl: string | undefined;
-
-  const isFirstTimeLogin = yield select((state) => state.registration.isFirstTimeLogin);
-
-  if (isFirstTimeLogin) {
-    profileImageUrl = yield call(updateUserProfileImageFromCache, currentUser);
-  } else {
-    profileImageUrl = currentUser.profileSummary?.profileImage;
-    if (!profileImageUrl) {
-      const profileInfo = yield call(matrixGetProfileInfo, currentUser.matrixId);
-      profileImageUrl = profileInfo?.avatar_url;
-    }
-  }
-
-  if (!profileImageUrl) {
-    return;
-  }
-
-  // Download the profile image after getting the url
-  const downloadedImageUrl = yield call(downloadFile, profileImageUrl);
-
-  // just get the refreshed state from the store
-  // (since there are other sagas that might update the user state at the same time)
-  currentUser = cloneDeep(yield select(currentUserSelector()));
-
-  // Update the profile image in the store
-  const updatedUser = {
-    ...currentUser,
-    wallets: currentUser.wallets || [],
-    profileSummary: {
-      ...currentUser.profileSummary,
-      profileImage: downloadedImageUrl,
-    },
-  };
-
-  yield put(setUser({ data: updatedUser }));
-}
-
 function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, AuthEvents.UserLogin);
-    yield call(fetchCurrentUserProfileImage);
   }
 }
 
@@ -148,10 +87,34 @@ export function* receiveSearchResultsAction(action) {
   return yield receiveSearchResults(action.payload);
 }
 
-export function* getUserByMatrixId(matrixId: string) {
-  let user = yield select(userByMatrixIdSelector, matrixId);
-  if (!user) {
-    user = (yield call(getZEROUsersAPI, [matrixId]) ?? [])[0];
+/**
+ * Fetches users by matrix ids and returns a map of users
+ * This ensures that users who are not in the store are fetched from the API
+ * and added to the store
+ * @param matrixIds - array of matrix ids (gets deduplicated internally)
+ * @returns map of users
+ */
+export function* getUsersByMatrixIds(matrixIds: string[]) {
+  let users: Map<string, User> = yield select(usersByMatrixIdsSelector, matrixIds);
+  // TODO: Once we have all user data in Matrix, we can try to load the user from there before fetching from the API
+  // We still don't store primaryZID or primaryWalletAddress in Matrix, so we need to fetch them from the API
+  const missingUsers = [...new Set(matrixIds)].filter((id) => !users.has(id));
+  if (missingUsers.length > 0) {
+    const apiUsers = yield call(getZEROUsersAPI, missingUsers) ?? [];
+    yield put(receive(apiUsers));
+    users = yield select(usersByMatrixIdsSelector, matrixIds);
   }
-  return user;
+  return users;
+}
+
+/**
+ * Fetches a user by matrix id and returns the user
+ * This ensures that users who are not in the store are fetched from the API
+ * and added to the store
+ * @param matrixId - matrix id
+ * @returns user
+ */
+export function* getUserByMatrixId(matrixId: string) {
+  const users: Map<string, User> = yield call(getUsersByMatrixIds, [matrixId]);
+  return users.get(matrixId);
 }

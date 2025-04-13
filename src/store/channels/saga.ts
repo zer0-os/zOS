@@ -1,4 +1,3 @@
-import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, spawn, take } from 'redux-saga/effects';
 import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAULTS } from '.';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -9,6 +8,7 @@ import {
   sendTypingEvent as matrixSendUserTypingEvent,
   addRoomToLabel,
   removeRoomFromLabel,
+  Chat,
 } from '../../lib/chat';
 import { mostRecentConversation } from '../channels-list/selectors';
 import { setActiveConversation } from '../chat/saga';
@@ -17,17 +17,15 @@ import { rawSetActiveConversationId } from '../chat';
 import { resetConversationManagement } from '../group-management/saga';
 import { leadingDebounce } from '../utils';
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
-import { getLocalZeroUsersMap } from '../messages/saga';
 import { userByMatrixIdSelector } from '../users/selectors';
-import { rawChannel } from './selectors';
+import { channelSelector } from './selectors';
 import cloneDeep from 'lodash/cloneDeep';
 import { getHistory } from '../../lib/browser';
 import { startPollingPosts } from '../posts/saga';
 import { setLastActiveConversation, getLastActiveConversation } from '../../lib/last-conversation';
-
-export const rawChannelSelector = (channelId) => (state) => {
-  return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
-};
+import { SlidingSyncManager } from '../../lib/chat/slidingSync';
+import { extractUserIdFromMatrixId } from '../../lib/chat/matrix/utils';
+import { getUsersByMatrixIds } from '../users/saga';
 
 export function* markAllMessagesAsRead(channelId, userId) {
   if (!userId) {
@@ -36,7 +34,7 @@ export function* markAllMessagesAsRead(channelId, userId) {
 
   const chatClient = yield call(chat.get);
   try {
-    yield call([chatClient, chatClient.markRoomAsRead], channelId, userId);
+    yield call([chatClient, chatClient.markRoomAsRead], channelId);
     yield call(receiveChannel, { id: channelId, unreadCount: { total: 0, highlight: 0 } });
   } catch (error) {}
 }
@@ -44,7 +42,7 @@ export function* markAllMessagesAsRead(channelId, userId) {
 // mark all messages in read in current active conversation
 export function* markConversationAsRead(conversationId) {
   const currentUser = yield select(currentUserSelector());
-  const conversationInfo = yield select(rawChannelSelector(conversationId));
+  const conversationInfo = yield select(channelSelector(conversationId));
 
   // We should only mark as read if the user is in the Messenger or Feed app and not in the notifications feed
   const history = yield call(getHistory);
@@ -63,7 +61,7 @@ export function* openFirstConversation() {
   const lastConversationId = yield call(getLastActiveConversation);
 
   if (lastConversationId) {
-    const conversation = yield select(rawChannelSelector(lastConversationId));
+    const conversation = yield select(channelSelector(lastConversationId));
     if (conversation) {
       yield call(openConversation, lastConversationId);
       return;
@@ -79,11 +77,32 @@ export function* openFirstConversation() {
   }
 }
 
-export function* openConversation(conversationId) {
+export function* loadMembersIfNeeded(conversationIds: string[]) {
+  const chatClient: Chat = yield call(chat.get);
+  for (const conversationId of conversationIds) {
+    const members = yield call([chatClient, chatClient.loadMembersIfNeeded], conversationId);
+    if (members) {
+      yield call(
+        getUsersByMatrixIds,
+        members.memberHistory.map((m) => m.matrixId)
+      );
+      yield call(receiveChannel, {
+        id: conversationId,
+        otherMembers: members.otherMembers,
+        memberHistory: members.memberHistory,
+      });
+    }
+  }
+}
+
+export function* openConversation(conversationId: string) {
   if (!conversationId) {
     return;
   }
 
+  SlidingSyncManager.instance.setRoomVisible(conversationId);
+
+  yield call(loadMembersIfNeeded, [conversationId]);
   yield call(setLastActiveConversation, conversationId);
   yield call(setActiveConversation, conversationId);
   yield spawn(markConversationAsRead, conversationId);
@@ -97,7 +116,7 @@ export function* unreadCountUpdated(action) {
     unreadCount: { total, highlight },
   } = action.payload;
 
-  const channel = yield select(rawChannelSelector(channelId));
+  const channel = yield select(channelSelector(channelId));
 
   if (!channel) {
     return;
@@ -129,7 +148,7 @@ export function* clearChannels() {
 }
 
 export function* receiveChannel(channel: Partial<Channel>) {
-  const existing = yield select(rawChannelSelector(channel.id));
+  const existing = yield select(channelSelector(channel.id));
   let data = { ...channel };
   if (!existing) {
     data = { ...CHANNEL_DEFAULTS, ...data };
@@ -159,7 +178,7 @@ export function* onRemoveLabel(action) {
 export function* roomLabelChange(action) {
   const { roomId, labels } = action.payload;
   try {
-    const channel = yield select(rawChannelSelector(roomId));
+    const channel = yield select(channelSelector(roomId));
     const currentLabels = channel?.labels || [];
 
     const newLabels = labels.filter((label) => !currentLabels?.includes(label));
@@ -177,14 +196,15 @@ export function* receivedRoomMembersTyping(action) {
   const { roomId, userIds: matrixIds } = action.payload;
 
   const currentUser = yield select(currentUserSelector());
-  const zeroUsersByMatrixIds = yield call(getLocalZeroUsersMap);
+  const users = yield select((state) => state.normalized.users);
   const otherMembersTyping = [];
   for (const matrixId of matrixIds) {
     if (matrixId === currentUser.matrixId) {
       continue;
     }
 
-    const zeroUser = zeroUsersByMatrixIds[matrixId];
+    const id = extractUserIdFromMatrixId(matrixId);
+    const zeroUser = users[id];
     if (zeroUser) {
       otherMembersTyping.push(zeroUser.firstName);
     }
@@ -223,7 +243,7 @@ function* listenForMessageSent() {
 export function* receivedRoomMemberPowerLevelChanged(action) {
   const { roomId, matrixId, powerLevel } = action.payload;
   const user = yield select(userByMatrixIdSelector, matrixId);
-  const channel = yield select(rawChannel, roomId);
+  const channel = yield select(channelSelector(roomId));
   if (!user || !channel) {
     return;
   }

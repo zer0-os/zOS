@@ -2,12 +2,12 @@ import * as React from 'react';
 
 import { User } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
-import { Avatar } from '@zero-tech/zui/components';
 import { displayName } from '../../lib/user';
 
 import './styles.scss';
 import { MemberManagementMenuContainer } from '../messenger/group-management/member-management-menu/container';
 import classNames from 'classnames';
+import { MatrixAvatar } from '../matrix-avatar';
 
 const cn = bemClassName('citizen-list-item');
 
@@ -54,7 +54,7 @@ export class CitizenListItem extends React.Component<Properties, State> {
         tabIndex={0}
       >
         <div {...cn('details')}>
-          <Avatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
+          <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
           <div {...cn('text-container')}>
             <span {...cn('name')}>{displayName(this.props.user)}</span>
             <span {...cn('handle')}>{this.props.user.displaySubHandle}</span>

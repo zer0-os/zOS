@@ -28,12 +28,12 @@ export function monthsSince(theDate: string) {
   return Math.abs(moment(theDate).diff(Date.now(), 'months'));
 }
 
-export function compareDatesDesc(a: string, b: string) {
+export function compareDatesDesc(a: string | number | Date, b: string | number | Date) {
   const BEGINNING_OF_TIME = '1000-01-01';
   return -moment(a || BEGINNING_OF_TIME).diff(moment(b || BEGINNING_OF_TIME));
 }
 
-export function compareDatesAsc(a: string, b: string) {
+export function compareDatesAsc(a: string | number | Date, b: string | number | Date) {
   const BEGINNING_OF_TIME = '1000-01-01';
   return moment(a || BEGINNING_OF_TIME).diff(moment(b || BEGINNING_OF_TIME));
 }

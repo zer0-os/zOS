@@ -32,3 +32,7 @@ function byLastMessageOrCreation(a, b) {
   const bDate = b.lastMessage?.createdAt || b.createdAt;
   return compareDatesDesc(aDate, bDate);
 }
+
+export function userSelector(state, userIds: string[]) {
+  return userIds.map((id) => (state.normalized.users || {})[id]);
+}

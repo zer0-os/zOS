@@ -409,10 +409,10 @@ export function* saga() {
 }
 
 function* userJoinedChannelAction({ payload }) {
-  yield addChannel(payload.channel);
+  yield addChannel(payload.channelId);
 
-  const channel = yield call(getConversationsBus);
-  yield put(channel, { type: ConversationEvents.UserJoinedConversation, conversationId: payload.channel.id });
+  const conversationBus = yield call(getConversationsBus);
+  yield put(conversationBus, { type: ConversationEvents.UserJoinedConversation, conversationId: payload.channelId });
 }
 
 function* roomNameChangedAction(action) {
@@ -428,22 +428,26 @@ function* roomGroupTypeChangedAction(action) {
 }
 
 function* otherUserJoinedChannelAction({ payload }) {
-  yield otherUserJoinedChannel(payload.channelId, payload.user);
+  yield otherUserJoinedChannel(payload.channelId, payload.userId);
 }
 
 function* otherUserLeftChannelAction({ payload }) {
-  yield otherUserLeftChannel(payload.channelId, payload.user);
+  yield otherUserLeftChannel(payload.channelId, payload.userId);
 }
 
-export function* addChannel(channel) {
-  const conversationsList = yield select(rawConversationsList);
-  yield call(mapToZeroUsers, [channel]);
-  yield call(parseProfileImagesForMembers, [channel]);
-  yield fork(fetchRoomName, channel.id);
-  yield fork(fetchRoomAvatar, channel.id);
-  yield fork(fetchRoomGroupType, channel.id);
+export function* addChannel(channelId) {
+  const channel = yield select(channelSelector(channelId));
+  if (!channel) {
+    return;
+  }
 
-  yield put(receive(uniqNormalizedList([...conversationsList, channel])));
+  const chatClient = yield call(chat.get);
+  const newChannelData = yield call([chatClient, chatClient.getNewChannelDataById], channelId);
+  yield call(receiveChannel, {
+    ...channel,
+    ...newChannelData,
+  });
+  yield call(loadMembersIfNeeded, [channelId]);
 }
 
 export function* roomNameChanged(id: string, name: string) {
@@ -463,31 +467,26 @@ export function* roomGroupTypeChanged(id: string, type: string) {
   yield call(receiveChannel, { id, isSocialChannel: type === 'social' });
 }
 
-export function* otherUserJoinedChannel(roomId: string, user: User) {
-  const channel = yield select(rawChannel, roomId);
+export function* otherUserJoinedChannel(roomId: string, userId: string) {
+  const channel = yield select(channelSelector(roomId));
   if (!channel) {
     return;
   }
 
-  if (user.userId === user.matrixId) {
-    user = yield call(getUserByMatrixId, user.matrixId) || user;
-    const profileImage = yield call(downloadFile, user.profileImage || '');
-    user = { ...user, profileImage };
-  }
-
+  let user = yield call(getUserByMatrixId, userId);
   if (!channel?.otherMembers?.includes(user.userId)) {
     const otherMembers = [...(channel?.otherMembers || []), user];
     yield call(receiveChannel, { id: channel.id, isOneOnOne: otherMembers.length === 1, otherMembers });
   }
 }
 
-export function* otherUserLeftChannel(roomId: string, user: User) {
-  const channel = yield select(rawChannel, roomId);
+export function* otherUserLeftChannel(roomId: string, userId: string) {
+  const channel = yield select(channelSelector(roomId));
   if (!channel) {
     return;
   }
 
-  const existingUser = yield call(getUserByMatrixId, user.matrixId);
+  const existingUser = yield call(getUserByMatrixId, userId);
   if (!existingUser) {
     return;
   }

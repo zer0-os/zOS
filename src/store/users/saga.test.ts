@@ -1,10 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import {
-  clearUsers,
-  fetchCurrentUserProfileImage,
-  receiveSearchResults,
-  updateUserProfileImageFromCache,
-} from './saga';
+import { clearUsers, receiveSearchResults, updateUserProfileImageFromCache } from './saga';
 import { call, spawn } from 'redux-saga/effects';
 import { rootReducer } from '../reducer';
 import { denormalize } from '.';
@@ -124,64 +119,6 @@ describe(receiveSearchResults, () => {
       .run();
 
     expect(denormalize(user1.id, storeState)).toEqual(expect.objectContaining(existingUser));
-  });
-});
-
-describe(fetchCurrentUserProfileImage, () => {
-  it('calls updateUserProfileImageFromCache if the current user is logging in for the first time', async () => {
-    const currentUser: any = {
-      id: 'user-id-1',
-      matrixId: 'matrix-id-1',
-      profileId: 'profile-id-1',
-      profileSummary: { firstName: 'Alice' },
-      primaryZID: 'zid-1',
-    };
-    const initialState = new StoreBuilder().withCurrentUser(currentUser).withRegistration({ isFirstTimeLogin: true });
-
-    await expectSaga(fetchCurrentUserProfileImage)
-      .provide([
-        [call(updateUserProfileImageFromCache, expect.anything()), ''],
-        [
-          spawn(matrixEditProfile, { displayName: 'Alice' }),
-          undefined,
-        ],
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .call(updateUserProfileImageFromCache, currentUser)
-      .run();
-  });
-
-  it('returns if no profile image is found', async () => {
-    const currentUser: any = {
-      id: 'user-id-1',
-      profileSummary: { firstName: 'Alice', profileImage: '' },
-    };
-    const initialState = new StoreBuilder().withCurrentUser(currentUser).withRegistration({ isFirstTimeLogin: false });
-
-    const { storeState } = await expectSaga(fetchCurrentUserProfileImage)
-      .provide([[call(updateUserProfileImageFromCache, expect.anything()), undefined]])
-      .withReducer(rootReducer, initialState.build())
-      .not.call(updateUserProfileImageFromCache, currentUser)
-      .not.call(downloadFile, '')
-      .run();
-
-    expect(storeState.authentication.user.data.profileSummary.profileImage).toBe('');
-  });
-
-  it('downloads the profile image and updates the store', async () => {
-    const currentUser: any = {
-      id: 'user-id-1',
-      profileSummary: { firstName: 'Alice', profileImage: 'image-url' },
-    };
-    const initialState = new StoreBuilder().withCurrentUser(currentUser).withRegistration({ isFirstTimeLogin: false });
-
-    const { storeState } = await expectSaga(fetchCurrentUserProfileImage)
-      .provide([[call(downloadFile, 'image-url'), 'downloaded-image-url']])
-      .withReducer(rootReducer, initialState.build())
-      .call(downloadFile, 'image-url')
-      .run();
-
-    expect(storeState.authentication.user.data.profileSummary.profileImage).toBe('downloaded-image-url');
   });
 });
 

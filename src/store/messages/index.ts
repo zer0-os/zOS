@@ -17,6 +17,7 @@ export interface AttachmentUploadResult {
 
 interface Sender {
   userId: string;
+  matrixId: string;
   firstName: string;
   lastName: string;
   profileImage: string;
@@ -85,6 +86,7 @@ export interface Message {
   hidePreview: boolean;
   preview: LinkPreview;
   media?: Media;
+  image?: Media;
   admin?: {
     type: AdminMessageType;
     inviterId?: string;

@@ -1,12 +1,10 @@
 import { testSaga } from 'redux-saga-test-plan';
-import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { expectSaga } from '../../test/saga';
 import {
   createConversation,
   createUnencryptedConversation,
   groupMembersSelected,
-  performGroupMembersSelected,
   reset,
   startConversation,
 } from './saga';
@@ -18,7 +16,6 @@ import {
 } from '../channels-list/saga';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
-import { fetchConversationsWithUsers } from '../../lib/chat';
 
 describe('create conversation saga', () => {
   describe('startConversation', () => {
@@ -72,27 +69,6 @@ describe('create conversation saga', () => {
         .next()
         .next()
         .put(setFetchingConversations(false));
-    });
-  });
-
-  describe(performGroupMembersSelected, () => {
-    function subject(...args: Parameters<typeof expectSaga>) {
-      return expectSaga(...args)
-        .provide([])
-        .withReducer(rootReducer, defaultState());
-    }
-
-    it('moves to group details stage', async () => {
-      const users = [{ value: 'user-1' }, { value: 'user-2' }];
-      const initialState = defaultState({ stage: Stage.InitiateConversation });
-
-      const { returnValue, storeState } = await subject(performGroupMembersSelected, users)
-        .provide([[matchers.call.fn(fetchConversationsWithUsers), []]])
-        .withReducer(rootReducer, initialState)
-        .run();
-
-      expect(storeState.createConversation).toEqual(expect.objectContaining({ groupUsers: users }));
-      expect(returnValue).toEqual(Stage.GroupDetails);
     });
   });
 

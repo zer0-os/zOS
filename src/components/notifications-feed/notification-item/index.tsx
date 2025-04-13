@@ -1,7 +1,7 @@
-import { Avatar } from '@zero-tech/zui/components/Avatar';
 import { Channel } from '../../../store/channels';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import styles from './styles.module.scss';
+import { MatrixAvatar } from '../../matrix-avatar';
 
 export interface NotificationProps {
   conversation: Channel;
@@ -37,7 +37,7 @@ export const NotificationItem = ({ conversation, onClick, type }: NotificationPr
 
   return (
     <div className={styles.NotificationItem} onClick={() => onClick(conversation.id)}>
-      <Avatar size='regular' imageURL={getAvatarUrl()} isGroup={!conversation.isOneOnOne} />
+      <MatrixAvatar size='regular' imageURL={getAvatarUrl()} isGroup={!conversation.isOneOnOne} />
       <div className={styles.Content}>
         <div className={styles.Message}>{message}</div>
       </div>

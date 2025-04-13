@@ -5,6 +5,8 @@ import { Message } from '../../store/messages';
 import { AdminMessage } from '.';
 import { connectContainer } from '../../store/redux-container';
 import { adminMessageText } from '../../lib/chat/chat-message';
+import { currentUserSelector } from '../../store/authentication/selectors';
+import { denormalize as denormalizeUser } from '../../store/users';
 
 export interface PublicProperties {
   message: Message;
@@ -16,7 +18,9 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
-    let text = props.message.isAdmin ? adminMessageText(props.message, state) : props.message.message;
+    const getUser = (id: string) => denormalizeUser(id, state);
+    const currentUserId = currentUserSelector(state)?.id;
+    let text = props.message.isAdmin ? adminMessageText(props.message, currentUserId, getUser) : props.message.message;
 
     return { text };
   }

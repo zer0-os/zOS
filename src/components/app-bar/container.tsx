@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { DefaultRoomLabels } from '../../store/channels';
 import { getLastActiveConversation } from '../../lib/last-conversation';
-import { rawChannelSelector } from '../../store/channels/saga';
+import { channelSelector } from '../../store/channels/selectors';
 import { useMemo } from 'react';
 import { activeZAppFeatureSelector } from '../../store/active-zapp/selectors';
 
@@ -32,8 +32,8 @@ export const AppBar = () => {
 const useAppBar = () => {
   const match = useRouteMatch('/:app');
   const activeConversationId = useSelector((state: RootState) => state.chat.activeConversationId);
-  const rawActiveConversation = useSelector((state: RootState) => rawChannelSelector(activeConversationId)(state));
-  const isActiveConversationSocialChannel = rawActiveConversation?.isSocialChannel;
+  const activeConversation = useSelector(channelSelector(activeConversationId));
+  const isActiveConversationSocialChannel = activeConversation?.isSocialChannel;
 
   const hasUnreadNotifications = useSelector((state: RootState) => {
     const conversations = denormalizeConversations(state);

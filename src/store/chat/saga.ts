@@ -24,6 +24,7 @@ import { markConversationAsRead, openFirstConversation, rawChannelSelector } fro
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 import { rawConversationsList } from '../channels-list/selectors';
+import { channelSelector } from '../channels/selectors';
 
 function* initChat(userId: string, token: string) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, token, chat.get());
@@ -185,7 +186,8 @@ export function* isMemberOfActiveConversation(activeConversationId) {
   // Check with the chat client just in case it knows better
   // This is a slower call which is why we check the state first.
   const user = yield select(currentUserSelector);
-  return yield call(isRoomMember, user.id, activeConversationId);
+  const isMember = yield call(isRoomMember, user.matrixId, activeConversationId);
+  return isMember;
 }
 
 // NOTE: we're waiting for the event to be fired, but if it doesn't..then
@@ -233,7 +235,7 @@ export function* performValidateActiveConversation(activeConversationId: string)
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
   }
 
-  const conversation = yield select(rawChannelSelector(conversationId));
+  const conversation = yield select(channelSelector(conversationId));
   if (conversation?.isSocialChannel && isMessengerApp) {
     // If it's a social channel and accessed from messenger app, open the last active conversation instead
     yield call(openFirstConversation);

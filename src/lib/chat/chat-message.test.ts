@@ -4,21 +4,36 @@ import { RootState } from '../../store/reducer';
 import { StoreBuilder } from '../../store/test/store';
 import { adminMessageText, getMessagePreview, previewDisplayDate } from './chat-message';
 
-describe(adminMessageText, () => {
-  const getState = (currentUserId: string, users = {}) => {
-    return {
-      authentication: {
-        user: { data: { id: currentUserId } },
-      },
-      normalized: {
-        users: { ...users },
-      } as any,
-    } as RootState;
-  };
+const getState = (currentUserId: string, users = {}) => {
+  return {
+    authentication: {
+      user: { data: { id: currentUserId } },
+    },
+    normalized: {
+      users: { ...users },
+    } as any,
+  } as RootState;
+};
 
+const getUserFromState = (state: RootState) => (id: string) => {
+  // @ts-ignore
+  return state.normalized.users?.[id];
+};
+
+const getCurrentUserId = (state: RootState) => {
+  return state.authentication.user.data.id;
+};
+
+describe(adminMessageText, () => {
   it('returns default message if admin type unknown', () => {
     const state = getState('current-user', {});
-    const adminText = adminMessageText({ message: 'some message', isAdmin: true, admin: {} } as Message, state);
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
+    const adminText = adminMessageText(
+      { message: 'some message', isAdmin: true, admin: {} } as Message,
+      currentUserId,
+      getUser
+    );
 
     expect(adminText).toEqual('some message');
   });
@@ -26,13 +41,16 @@ describe(adminMessageText, () => {
   describe(AdminMessageType.JOINED_ZERO, () => {
     it('returns default message if users not found', () => {
       const state = getState('current-user', {});
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
           admin: { type: AdminMessageType.JOINED_ZERO, inviteeId: 'unknown-user-id' },
         } as Message,
-        state
+        currentUserId,
+        getUser
       );
 
       expect(adminText).toEqual('some message');
@@ -46,7 +64,9 @@ describe(adminMessageText, () => {
         admin: { type: AdminMessageType.JOINED_ZERO, inviterId: 'inviter-id', inviteeId: 'current-user' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('You joined Courtney on ZERO');
     });
@@ -59,7 +79,9 @@ describe(adminMessageText, () => {
         admin: { type: AdminMessageType.JOINED_ZERO, inviteeId: 'invitee-id', inviterId: 'current-user' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Julie joined you on ZERO');
     });
@@ -68,13 +90,16 @@ describe(adminMessageText, () => {
   describe(AdminMessageType.CONVERSATION_STARTED, () => {
     it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
           admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'unknown-user-id' },
         } as Message,
-        state
+        currentUserId,
+        getUser
       );
 
       expect(adminText).toEqual('some message');
@@ -88,7 +113,9 @@ describe(adminMessageText, () => {
         admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'admin-user-id' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Courtney started the conversation');
     });
@@ -101,7 +128,9 @@ describe(adminMessageText, () => {
         admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'admin-user-id' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('You started the conversation');
     });
@@ -110,13 +139,16 @@ describe(adminMessageText, () => {
   describe(AdminMessageType.MEMBER_LEFT_CONVERSATION, () => {
     it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
           admin: { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: 'unknown-user-id' },
         } as Message,
-        state
+        currentUserId,
+        getUser
       );
 
       expect(adminText).toEqual('some message');
@@ -124,13 +156,15 @@ describe(adminMessageText, () => {
 
     it('translates message if admin user id is found', () => {
       const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const message = {
         message: 'some message',
         isAdmin: true,
         admin: { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: 'admin-user-id' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Courtney left the conversation');
     });
@@ -139,13 +173,16 @@ describe(adminMessageText, () => {
   describe(AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, () => {
     it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
           admin: { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, userId: 'unknown-user-id' },
         } as Message,
-        state
+        currentUserId,
+        getUser
       );
 
       expect(adminText).toEqual('some message');
@@ -159,7 +196,9 @@ describe(adminMessageText, () => {
         admin: { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, userId: 'admin-user-id' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Courtney was added to the conversation');
     });
@@ -168,13 +207,16 @@ describe(adminMessageText, () => {
   describe(AdminMessageType.MEMBER_SET_AS_MODERATOR, () => {
     it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
           admin: { type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId: 'unknown-user-id' },
         } as Message,
-        state
+        currentUserId,
+        getUser
       );
 
       expect(adminText).toEqual('some message');
@@ -182,13 +224,15 @@ describe(adminMessageText, () => {
 
     it('translates message if admin user id is found', () => {
       const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const message = {
         message: 'some message',
         isAdmin: true,
         admin: { type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId: 'admin-user-id' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Courtney was set as moderator by admin');
     });
@@ -197,13 +241,16 @@ describe(adminMessageText, () => {
   describe(AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, () => {
     it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
           admin: { type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId: 'unknown-user-id' },
         } as Message,
-        state
+        currentUserId,
+        getUser
       );
 
       expect(adminText).toEqual('some message');
@@ -217,7 +264,9 @@ describe(adminMessageText, () => {
         admin: { type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId: 'admin-user-id' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Courtney was removed as moderator by admin');
     });
@@ -226,13 +275,16 @@ describe(adminMessageText, () => {
   describe(AdminMessageType.MEMBER_AVATAR_CHANGED, () => {
     it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
           admin: { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: 'unknown-user-id' },
         } as Message,
-        state
+        currentUserId,
+        getUser
       );
 
       expect(adminText).toEqual('some message');
@@ -246,7 +298,9 @@ describe(adminMessageText, () => {
         admin: { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: 'admin-user-id' },
       } as Message;
 
-      const adminText = adminMessageText(message, state);
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Admin: Courtney changed their avatar');
     });
@@ -255,13 +309,16 @@ describe(adminMessageText, () => {
   describe(AdminMessageType.REACTION, () => {
     it('returns default message if admin user id not found', () => {
       const state = getState('current-user', {});
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const adminText = adminMessageText(
         {
           message: 'some message',
           isAdmin: true,
           admin: { type: AdminMessageType.REACTION, userId: 'unknown-user-id' },
         } as Message,
-        state
+        currentUserId,
+        getUser
       );
 
       expect(adminText).toEqual('some message');
@@ -269,13 +326,15 @@ describe(adminMessageText, () => {
 
     it('translates message if admin user id is found', () => {
       const state = getState('current-user', { 'admin-user-id': { id: 'admin-user-id', firstName: 'Courtney' } });
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
       const message = {
         message: 'some message',
         isAdmin: true,
         admin: { type: AdminMessageType.REACTION, userId: 'admin-user-id', amount: '10' },
       } as any;
 
-      const adminText = adminMessageText(message, state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Courtney reacted with 10 MEOW');
     });
@@ -288,7 +347,9 @@ describe(adminMessageText, () => {
         admin: { type: AdminMessageType.REACTION, userId: 'admin-user-id' },
       } as any;
 
-      const adminText = adminMessageText(message, state);
+      const getUser = getUserFromState(state);
+      const currentUserId = getCurrentUserId(state);
+      const adminText = adminMessageText(message, currentUserId, getUser);
 
       expect(adminText).toEqual('Courtney sent a reaction');
     });
@@ -299,9 +360,12 @@ describe(getMessagePreview, () => {
   it('adds the prefix for current user', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
 
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
     const preview = getMessagePreview(
       { message: 'some message', sender: { userId: 'current-user' } } as Message,
-      state
+      currentUserId,
+      getUser
     );
 
     expect(preview).toEqual('You: some message');
@@ -309,10 +373,13 @@ describe(getMessagePreview, () => {
 
   it('adds the user firstName for non-current user', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(
       { message: 'some message', sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
-      state
+      currentUserId,
+      getUser
     );
 
     expect(preview).toEqual('Jack: some message');
@@ -320,6 +387,8 @@ describe(getMessagePreview, () => {
 
   it('returns admin preview for admin messages', () => {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(
       {
@@ -327,7 +396,8 @@ describe(getMessagePreview, () => {
         isAdmin: true,
         admin: { type: AdminMessageType.CONVERSATION_STARTED, userId: 'current-user' },
       } as Message,
-      state
+      currentUserId,
+      getUser
     );
 
     expect(preview).toEqual('You started the conversation');
@@ -335,6 +405,8 @@ describe(getMessagePreview, () => {
 
   it('describes an image message', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(
       {
@@ -343,7 +415,8 @@ describe(getMessagePreview, () => {
         sender: { userId: 'current-user' },
         media: { type: MediaType.Image },
       } as Message,
-      state
+      currentUserId,
+      getUser
     );
 
     expect(preview).toEqual('You: sent an image');
@@ -351,10 +424,13 @@ describe(getMessagePreview, () => {
 
   it('returns failed to send message', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(
       { message: 'some message', isAdmin: false, sendStatus: MessageSendStatus.FAILED } as Message,
-      state
+      currentUserId,
+      getUser
     );
 
     expect(preview).toEqual('You: Failed to send');
@@ -362,10 +438,13 @@ describe(getMessagePreview, () => {
 
   it('returns post preview for isPost messages', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(
       { message: '', isAdmin: false, isPost: true, sender: { userId: 'current-user' } } as Message,
-      state
+      currentUserId,
+      getUser
     );
 
     expect(preview).toEqual('You: shared a new post');
@@ -373,10 +452,13 @@ describe(getMessagePreview, () => {
 
   it('returns post preview with sender firstName for non-current user', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(
       { message: '', isAdmin: false, isPost: true, sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
-      state
+      currentUserId,
+      getUser
     );
 
     expect(preview).toEqual('Jack: shared a new post');
@@ -384,18 +466,23 @@ describe(getMessagePreview, () => {
 
   it('returns a system update message if message is null', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
-    const preview = getMessagePreview(null, state);
+    const preview = getMessagePreview(null, currentUserId, getUser);
 
     expect(preview).toEqual('Admin: System update or change occurred');
   });
 
   it('does not add prefix for one-on-one conversations', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(
       { message: 'some message', sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
-      state,
+      currentUserId,
+      getUser,
       true // isOneOnOne
     );
 
@@ -404,10 +491,13 @@ describe(getMessagePreview, () => {
 
   it('adds prefix for group conversations', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
+    const getUser = getUserFromState(state);
+    const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(
       { message: 'some message', sender: { userId: 'another-user', firstName: 'Jack' } } as Message,
-      state,
+      currentUserId,
+      getUser,
       false // isOneOnOne
     );
 

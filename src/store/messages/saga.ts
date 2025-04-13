@@ -1,10 +1,19 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
-import { EditMessageOptions, SagaActionTypes, schema, removeAll, denormalize, MediaType, MessageSendStatus } from '.';
+import {
+  EditMessageOptions,
+  SagaActionTypes,
+  schema,
+  removeAll,
+  denormalize,
+  MediaType,
+  MessageSendStatus,
+  Message,
+} from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../channels';
-import { markConversationAsRead, rawChannelSelector, receiveChannel } from '../channels/saga';
+import { markConversationAsRead, receiveChannel } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
 import { getLinkPreviews } from './api';
@@ -19,9 +28,8 @@ import { User } from '../channels';
 import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
-import { mapAdminUserIdToZeroUserId } from '../channels-list/utils';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
-import { getUserSubHandle } from '../../lib/user';
+import { channelSelector } from '../channels/selectors';
 
 export interface Payload {
   channelId: string;
@@ -87,36 +95,12 @@ export const roomLabelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}'].labels`, []);
 };
 
-export function* getLocalZeroUsersMap() {
-  const users = yield select((state) => state.normalized.users || {});
-  const zeroUsersMap: { [matrixId: string]: User } = {};
-  for (const user of Object.values(users)) {
-    zeroUsersMap[(user as User).matrixId] = user as User;
-  }
-  // map current user as well
-  const currentUser = yield select(currentUserSelector());
-  const displaySubHandle = getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress);
-  if (currentUser) {
-    zeroUsersMap[currentUser.matrixId] = {
-      userId: currentUser.id,
-      profileId: currentUser.profileSummary.id,
-      firstName: currentUser.profileSummary.firstName,
-      lastName: currentUser.profileSummary.lastName,
-      profileImage: currentUser.profileSummary.profileImage,
-      displaySubHandle,
-    } as User;
-  }
-
-  return zeroUsersMap;
-}
-
-export function* mapMessagesAndPreview(messages, channelId) {
+export function* mapMessagesAndPreview(messages: Message[], channelId: string) {
   const reactions = yield call(getMessageEmojiReactions, channelId);
 
-  const zeroUsersMap = yield call(mapMessageSenders, messages, channelId);
-  yield call(mapAdminUserIdToZeroUserId, [{ messages }], zeroUsersMap);
+  const messagesWithSenders = yield call(mapMessageSenders, messages);
 
-  for (const message of messages) {
+  for (const message of messagesWithSenders) {
     if (message.isHidden) {
       message.message = 'Message hidden';
     }
@@ -141,7 +125,7 @@ export function* mapMessagesAndPreview(messages, channelId) {
 
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;
-  const channel = yield select(rawChannelSelector(channelId));
+  const channel = yield select(channelSelector(channelId));
   if (channel.conversationStatus !== ConversationStatus.CREATED) {
     return;
   }
@@ -194,7 +178,7 @@ export function* fetch(action) {
       }
     }
   } catch (error) {
-    console.log('Error fetching messages', error);
+    console.error('Error fetching messages', error);
     yield call(receiveChannel, { id: channelId, messagesFetchStatus: MessagesFetchState.FAILED });
   }
 }
@@ -463,7 +447,7 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
   });
 
   for (const channelId of Object.keys(byChannelId)) {
-    const channel = yield select(rawChannelSelector(channelId));
+    const channel = yield select(channelSelector(channelId));
     if (!channel) {
       continue;
     }
@@ -483,7 +467,7 @@ function* receiveBatchedMessages(channelId, messages) {
   // If there is an async call in between then the channels list of messages
   // could have changed and we'll end up missing those changes by the time we
   // save the batch here.
-  const currentChannel = yield select(rawChannelSelector(channelId));
+  const currentChannel = yield select(channelSelector(channelId));
   let currentMessages = currentChannel?.messages || [];
   for (let message of messages) {
     let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);

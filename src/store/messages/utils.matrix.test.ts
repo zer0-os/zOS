@@ -5,7 +5,6 @@ import { getZEROUsers } from '../channels-list/api';
 import { StoreBuilder } from '../test/store';
 import { rootReducer } from '../reducer';
 import { call } from 'redux-saga/effects';
-import { getLocalZeroUsersMap } from './saga';
 import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { batchDownloadFiles } from '../../lib/chat';
 
@@ -32,18 +31,58 @@ describe(mapMessageSenders, () => {
     ];
 
     messages = [
-      { id: 1, message: 'message-1', sender: { userId: 'matrix-user-1', firstName: '' } },
+      {
+        id: '1',
+        message: 'message-1',
+        sender: {
+          userId: 'matrix-user-1',
+          matrixId: 'matrix-user-1',
+          firstName: '',
+          lastName: '',
+          profileImage: '',
+          profileId: '',
+          primaryZID: '',
+        },
+        isAdmin: false,
+        createdAt: 0,
+        updatedAt: 0,
+        mentionedUsers: [],
+        hidePreview: false,
+        preview: {} as any,
+        sendStatus: 'sent' as any,
+        isPost: false,
+      },
       { id: 2, message: 'message-2', sender: { userId: 'matrix-user-2', firstName: '' } },
     ];
   });
 
   it('replaces local data with actual ZERO user data', async () => {
     const messages = [
-      { id: 1, message: 'message-1', sender: { userId: 'matrix-user-1', firstName: '' } },
+      {
+        id: '1',
+        message: 'message-1',
+        sender: {
+          userId: 'matrix-user-1',
+          matrixId: 'matrix-user-1',
+          firstName: '',
+          lastName: '',
+          profileImage: '',
+          profileId: '',
+          primaryZID: '',
+        },
+        isAdmin: false,
+        createdAt: 0,
+        updatedAt: 0,
+        mentionedUsers: [],
+        hidePreview: false,
+        preview: {} as any,
+        sendStatus: 'sent' as any,
+        isPost: false,
+      },
     ];
     const initialState = new StoreBuilder().withUsers({ userId: 'user-id-1', firstName: 'my test name' });
 
-    await expectSaga(mapMessageSenders, messages, 'channel-id')
+    await expectSaga(mapMessageSenders, messages)
       .provide([
         [
           call(getZEROUsers, ['matrix-user-1']),
@@ -82,7 +121,7 @@ describe(mapMessageSenders, () => {
       },
     };
 
-    await expectSaga(mapMessageSenders, messages, 'channel-id').withState(initialState).run();
+    await expectSaga(mapMessageSenders, messages).withState(initialState).run();
 
     expect(messages[0].sender).toEqual({
       userId: 'user-1',
@@ -139,7 +178,6 @@ describe(mapNotificationSenders, () => {
 
     const { returnValue } = await expectSaga(mapNotificationSenders, notifications)
       .provide([
-        [call(getLocalZeroUsersMap), {}],
         [
           call(getZEROUsersAPI, ['matrix-user-1']),
           [
@@ -180,13 +218,6 @@ describe(mapNotificationSenders, () => {
 
     const { returnValue } = await expectSaga(mapNotificationSenders, notifications)
       .provide([
-        [
-          call(getLocalZeroUsersMap),
-          {
-            'matrix-user-1': users[0],
-            'matrix-user-2': users[1],
-          },
-        ],
         [
           call(batchDownloadFiles, ['mxc://image-url-1', 'mxc://image-url-2'], true),
           {

@@ -21,9 +21,9 @@ import { Media } from '../../message-input/utils';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 
 import './styles.scss';
-import { rawChannelSelector } from '../../../store/channels/saga';
 import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
 import { Panel, PanelBody } from '../../layout/panel';
+import { channelSelector } from '../../../store/channels/selectors';
 
 export interface PublicProperties {}
 
@@ -60,7 +60,7 @@ export class Container extends React.Component<Properties> {
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
-    const channel = rawChannelSelector(activeConversationId)(state);
+    const channel = channelSelector(activeConversationId)(state);
 
     return {
       activeConversationId,
@@ -113,11 +113,7 @@ export class Container extends React.Component<Properties> {
   };
 
   searchMentionableUsers = async (search: string) => {
-    return await searchMentionableUsersForChannel(
-      this.props.activeConversationId,
-      search,
-      this.props.directMessage.otherMembers
-    );
+    return await searchMentionableUsersForChannel(search, this.props.directMessage.otherMembers);
   };
 
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {

@@ -52,28 +52,11 @@
     inset: -1px;
     border-radius: inherit;
     border: 1px solid #01f4cb80;
-    mask: linear-gradient(
-      135deg,
-      transparent 0%,
-      #01f4cb 2%,
-      #01f4cb 15%,
-      transparent 20%,
-      transparent 80%,
-      #01f4cb 85%,
-      #01f4cb 98%,
-      transparent 100%
-    );
-    -webkit-mask: linear-gradient(
-      135deg,
-      transparent 0%,
-      #01f4cb 2%,
-      #01f4cb 15%,
-      transparent 20%,
-      transparent 80%,
-      #01f4cb 85%,
-      #01f4cb 98%,
-      transparent 100%
-    );
+
+    // Apply a mask so the edges of the border fade in/out
+    $mask: linear-gradient(135deg, #000 0%, transparent 20%, transparent 80%, #000 100%);
+    mask: $mask;
+    -webkit-mask: $mask;
     pointer-events: none;
   }
 

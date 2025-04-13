@@ -23,6 +23,7 @@ import { toggleSecondarySidekick } from '../../store/group-management';
 import { processMessages } from './utils';
 import { openReportUserModal } from '../../store/report-user';
 import { compareDatesAsc } from '../../lib/date';
+import { isOneOnOne } from '../../store/channels-list/utils';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
@@ -213,7 +214,7 @@ export class Container extends React.Component<Properties> {
   }
 
   get isOneOnOne() {
-    return this.props.channel?.isOneOnOne;
+    return isOneOnOne(this.props.channel);
   }
 
   onReportUser = ({ reportedUserId }: { reportedUserId: string }) => {

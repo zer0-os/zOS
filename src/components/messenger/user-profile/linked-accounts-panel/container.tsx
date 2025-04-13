@@ -8,6 +8,7 @@ import { denormalizeConversations } from '../../../../store/channels-list';
 import { Channel } from '../../../../store/channels';
 import { config } from '../../../../config';
 import { LinkedAccountsPanel } from '.';
+import { isOneOnOne } from '../../../../store/channels-list/utils';
 
 export interface PublicProperties {
   onClose?: () => void;
@@ -37,10 +38,7 @@ export class Container extends React.Component<Properties> {
     const { existingConversations, telegramBotUserId, createConversation, openConversation } = this.props;
 
     const existingConversation = existingConversations?.find(
-      (conversation) =>
-        conversation.isOneOnOne &&
-        conversation.otherMembers?.length === 1 &&
-        conversation.otherMembers[0]?.userId === telegramBotUserId
+      (conversation) => isOneOnOne(conversation) && conversation.otherMembers[0]?.userId === telegramBotUserId
     );
 
     if (existingConversation) {

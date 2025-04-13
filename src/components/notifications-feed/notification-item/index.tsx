@@ -2,6 +2,7 @@ import { Channel } from '../../../store/channels';
 import { otherMembersToString } from '../../../platform-apps/channels/util';
 import styles from './styles.module.scss';
 import { MatrixAvatar } from '../../matrix-avatar';
+import { isOneOnOne } from '../../../store/channels-list/utils';
 
 export interface NotificationProps {
   conversation: Channel;
@@ -10,6 +11,7 @@ export interface NotificationProps {
 }
 
 export const NotificationItem = ({ conversation, onClick, type }: NotificationProps) => {
+  const conversationIsOneOnOne = isOneOnOne(conversation);
   const getName = () => {
     return conversation.name || otherMembersToString(conversation.otherMembers);
   };
@@ -18,7 +20,7 @@ export const NotificationItem = ({ conversation, onClick, type }: NotificationPr
     if (conversation.icon) {
       return conversation.icon;
     }
-    if (conversation.isOneOnOne && conversation.otherMembers[0]?.profileImage) {
+    if (conversationIsOneOnOne && conversation.otherMembers[0]?.profileImage) {
       return conversation.otherMembers[0].profileImage;
     }
     return undefined;
@@ -31,13 +33,13 @@ export const NotificationItem = ({ conversation, onClick, type }: NotificationPr
   const isSocialChannel = conversation.isSocialChannel;
   const channelType = isSocialChannel ? 'feed channel' : 'channel';
 
-  const message = conversation.isOneOnOne
+  const message = conversationIsOneOnOne
     ? `${count} unread ${notificationText} in your conversation with ${getName()}`
     : `${count} unread ${notificationText} in the ${getName()} ${channelType}`;
 
   return (
     <div className={styles.NotificationItem} onClick={() => onClick(conversation.id)}>
-      <MatrixAvatar size='regular' imageURL={getAvatarUrl()} isGroup={!conversation.isOneOnOne} />
+      <MatrixAvatar size='regular' imageURL={getAvatarUrl()} isGroup={!conversationIsOneOnOne} />
       <div className={styles.Content}>
         <div className={styles.Message}>{message}</div>
       </div>

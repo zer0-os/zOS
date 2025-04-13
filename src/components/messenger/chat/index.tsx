@@ -24,6 +24,7 @@ import './styles.scss';
 import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
 import { Panel, PanelBody } from '../../layout/panel';
 import { channelSelector } from '../../../store/channels/selectors';
+import { isOneOnOne } from '../../../store/channels-list/utils';
 
 export interface PublicProperties {}
 
@@ -87,7 +88,7 @@ export class Container extends React.Component<Properties> {
   }
 
   isOneOnOne() {
-    return this.props.directMessage?.isOneOnOne;
+    return isOneOnOne(this.props.directMessage);
   }
 
   get isLeaveGroupDialogOpen() {

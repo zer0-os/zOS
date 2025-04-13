@@ -30,6 +30,8 @@ import { denormalizeConversations } from '../../../store/channels-list';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { createConversation } from '../../../store/create-conversation';
 import { openUserProfile } from '../../../store/user-profile';
+import { isOneOnOneSelector } from '../../../store/channels-list/selectors';
+import { isOneOnOne } from '../../../store/channels-list/utils';
 
 export interface PublicProperties {}
 
@@ -78,6 +80,7 @@ export class Container extends React.Component<Properties> {
     } = state;
 
     const conversation = denormalizeChannel(activeConversationId, state);
+    const isOneOnOne = isOneOnOneSelector(state, activeConversationId);
     const currentUser = currentUserSelector(state);
     const conversationAdminIds = conversation?.adminMatrixIds;
     const conversationModeratorIds = conversation?.moderatorIds;
@@ -107,15 +110,13 @@ export class Container extends React.Component<Properties> {
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,
       canAddMembers:
-        (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) &&
-        !conversation?.isOneOnOne &&
-        !conversation?.isSocialChannel,
+        (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !isOneOnOne && !conversation?.isSocialChannel,
       canEditGroup: (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !conversation?.isSocialChannel,
       canLeaveGroup:
         !isCurrentUserRoomAdmin && conversation?.otherMembers?.length > 1 && !conversation?.isSocialChannel,
       conversationAdminIds,
       conversationModeratorIds,
-      isOneOnOne: conversation?.isOneOnOne,
+      isOneOnOne,
       existingConversations,
       users: state.normalized['users'] || {},
     };
@@ -192,10 +193,7 @@ export class Container extends React.Component<Properties> {
     const { existingConversations, createConversation, openConversation } = this.props;
 
     const existingConversation = existingConversations?.find(
-      (conversation) =>
-        conversation.isOneOnOne &&
-        conversation.otherMembers?.length === 1 &&
-        conversation.otherMembers[0]?.userId === userId
+      (conversation) => isOneOnOne(conversation) && conversation.otherMembers[0]?.userId === userId
     );
 
     if (existingConversation) {

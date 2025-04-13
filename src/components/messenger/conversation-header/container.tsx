@@ -8,6 +8,7 @@ import { PanelHeader } from '../../layout/panel';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
+import { isOneOnOne } from '../../../store/channels-list/utils';
 
 const cn = bemClassName('conversation-header');
 
@@ -44,7 +45,7 @@ export class Container extends React.Component<Properties> {
   }
 
   isOneOnOne() {
-    return this.props.directMessage?.isOneOnOne;
+    return isOneOnOne(this.props.directMessage);
   }
 
   render() {

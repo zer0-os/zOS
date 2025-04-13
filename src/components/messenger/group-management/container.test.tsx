@@ -90,7 +90,7 @@ describe(Container, () => {
       });
 
       test('gets false when conversation is one on one', () => {
-        const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'user-id', isOneOnOne: true });
+        const state = new StoreBuilder().managingGroup({}).withActiveConversation({ id: 'user-id' });
 
         expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: false }));
       });

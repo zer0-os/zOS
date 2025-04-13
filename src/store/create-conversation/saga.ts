@@ -5,8 +5,8 @@ import {
   createUnencryptedConversation as performCreateUnencryptedConversation,
 } from '../channels-list/saga';
 import { Events, getAuthChannel } from '../authentication/channels';
-import { denormalizeConversations } from '../channels-list';
 import { openConversation } from '../channels/saga';
+import { oneOnOnesSelector } from '../channels-list/selectors';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -125,8 +125,8 @@ function* handleInitiation() {
   }
 
   const { userIds } = action.payload;
-  const convos = yield select(denormalizeConversations);
-  const existingOneOnOne = convos.filter((c) => c.isOneOnOne).find((c) => c.otherMembers[0]?.userId === userIds[0]);
+  const oneOnOnes = yield select(oneOnOnesSelector);
+  const existingOneOnOne = oneOnOnes.find((c) => c.otherMembers[0]?.userId === userIds[0]);
 
   if (existingOneOnOne) {
     yield call(openConversation, existingOneOnOne.id);

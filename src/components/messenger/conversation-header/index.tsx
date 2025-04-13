@@ -12,10 +12,6 @@ export interface Properties {
 }
 
 export class ConversationHeader extends React.Component<Properties> {
-  isOneOnOne() {
-    return this.props.isOneOnOne;
-  }
-
   renderSubTitle() {
     if (!this.props.otherMembers || this.props.otherMembers.length === 0) {
       return '';
@@ -23,7 +19,7 @@ export class ConversationHeader extends React.Component<Properties> {
 
     const member = this.props.otherMembers[0];
 
-    if (this.isOneOnOne() && member) {
+    if (this.props.isOneOnOne && member) {
       return `${member.displaySubHandle || ''}`;
     }
   }

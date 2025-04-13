@@ -6,6 +6,8 @@ import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
 import { EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
 import { MatrixConstants } from '../../lib/chat/matrix/types';
 
+export const isOneOnOne = (channel: Channel) => channel.otherMembers.length === 1;
+
 export function rawUserToDomainUser(u): User {
   return {
     userId: u.id,

@@ -40,6 +40,7 @@ import { Content as SidekickContent } from '../../sidekick/components/content';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
+import { isOneOnOne } from '../../../store/channels-list/utils';
 
 const cn = bemClassName('direct-message-members');
 
@@ -354,7 +355,7 @@ function addLastMessageMeta(currentUserId: string, getUser: GetUser): any {
     return {
       ...conversation,
       mostRecentMessage,
-      messagePreview: getMessagePreview(mostRecentMessage, currentUserId, getUser, conversation.isOneOnOne),
+      messagePreview: getMessagePreview(mostRecentMessage, currentUserId, getUser, isOneOnOne(conversation)),
       previewDisplayDate: previewDisplayDate(mostRecentMessage?.createdAt),
     };
   };

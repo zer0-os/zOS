@@ -63,7 +63,6 @@ export interface Channel {
   lastMessage: Message;
   unreadCount?: { total: number; highlight: number };
   icon?: string;
-  isOneOnOne: boolean;
   hasLoadedMessages: boolean;
   conversationStatus: ConversationStatus;
   messagesFetchStatus: MessagesFetchState;
@@ -88,7 +87,6 @@ export const CHANNEL_DEFAULTS = {
   lastMessage: null,
   unreadCount: { total: 0, highlight: 0 },
   icon: '',
-  isOneOnOne: true,
   hasLoadedMessages: false,
   conversationStatus: ConversationStatus.CREATED,
   messagesFetchStatus: null,

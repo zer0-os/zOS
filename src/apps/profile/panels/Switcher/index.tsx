@@ -9,7 +9,9 @@ export const Switcher = () => {
 
   return (
     <div className={styles.Container}>
-      <div className={styles.Content}>{data?.primaryZid && <Feed zid={data.primaryZid} />}</div>
+      <div className={styles.Content}>
+        {data?.primaryZid && <Feed isPostingEnabled={false} zid={data.primaryZid} />}
+      </div>
     </div>
   );
 };

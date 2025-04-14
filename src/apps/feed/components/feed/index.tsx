@@ -10,9 +10,10 @@ import styles from './styles.module.scss';
 
 export interface FeedProps {
   zid?: string;
+  isPostingEnabled?: boolean;
 }
 
-export const Feed = ({ zid }: FeedProps) => {
+export const Feed = ({ zid, isPostingEnabled = true }: FeedProps) => {
   const {
     channelZid,
     fetchNextPage,
@@ -35,7 +36,7 @@ export const Feed = ({ zid }: FeedProps) => {
         <PanelTitle>{headerText}</PanelTitle>
       </PanelHeader>
       <PanelBody className={styles.Panel}>
-        {channelZid && <PostInput className={styles.Input} channelZid={channelZid} />}
+        {channelZid && isPostingEnabled && <PostInput className={styles.Input} channelZid={channelZid} />}
         {isLoading && <Message>Loading posts...</Message>}
         {isEmpty && <Message>This feed is empty</Message>}
         {hasLoadedMessages && (

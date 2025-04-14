@@ -34,4 +34,5 @@ export const productionFlags: FeatureFlagDefinitions = {
     ],
   },
   enableProfile: { defaultValue: true },
+  enableUserProfiles: { defaultValue: false },
 };

@@ -289,11 +289,12 @@ describe('messenger-list', () => {
 
     test('gets sorted conversations', () => {
       const state = subject([
-        { id: 'convo-1', lastMessage: { createdAt: moment('2023-03-03').valueOf(), sender: {} } },
-        { id: 'convo-2', lastMessage: { createdAt: moment('2023-03-01').valueOf(), sender: {} } },
-        { id: 'convo-3', createdAt: moment('2023-03-04').valueOf() },
+        { id: 'convo-1', bumpStamp: 4, lastMessage: { createdAt: moment('2023-03-03').valueOf(), sender: {} } },
+        { id: 'convo-2', bumpStamp: 2, lastMessage: { createdAt: moment('2023-03-01').valueOf(), sender: {} } },
+        { id: 'convo-3', bumpStamp: 5, createdAt: moment('2023-03-04').valueOf() },
         {
           id: 'convo-4',
+          bumpStamp: 3,
           createdAt: moment('2023-03-05').valueOf(),
           lastMessage: { createdAt: moment('2023-03-02').valueOf(), sender: {} },
         },
@@ -312,10 +313,12 @@ describe('messenger-list', () => {
         const state = subject([
           {
             id: 'convo-1',
+            bumpStamp: 2,
             lastMessage: { message: 'The last message', sender: { firstName: 'Jack' } },
           },
           {
             id: 'convo-2',
+            bumpStamp: 1,
             lastMessage: { message: 'Second message last', sender: { firstName: 'Jack' } },
           },
         ]);
@@ -330,6 +333,7 @@ describe('messenger-list', () => {
         const state = subject([
           {
             id: 'convo-1',
+            bumpStamp: 1,
             lastMessage: { message: 'lastMessage', createdAt: 10003, sender: { firstName: 'Jack' } },
             messages: [
               { id: '1', message: 'recent message', createdAt: 10005, sender: { firstName: 'Jack' } },
@@ -338,6 +342,7 @@ describe('messenger-list', () => {
           },
           {
             id: 'convo-2',
+            bumpStamp: 2,
             lastMessage: { message: 'lastMessage', createdAt: 20007, sender: { firstName: 'Jack' } },
             messages: [],
           },

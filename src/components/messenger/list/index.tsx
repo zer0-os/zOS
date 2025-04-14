@@ -41,6 +41,7 @@ import { Content as SidekickContent } from '../../sidekick/components/content';
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 import { isOneOnOne } from '../../../store/channels-list/utils';
+import { byBumpStamp } from '../../../store/channels-list/selectors';
 
 const cn = bemClassName('direct-message-members');
 
@@ -96,7 +97,7 @@ export class Container extends React.Component<Properties, State> {
     const conversations = denormalizeConversations(state)
       .filter((c) => !c.isSocialChannel)
       .map(addLastMessageMeta(currentUserId, getUser))
-      .sort(byLastMessageOrCreation);
+      .sort(byBumpStamp);
     return {
       conversations,
       activeConversationId,
@@ -359,10 +360,6 @@ function addLastMessageMeta(currentUserId: string, getUser: GetUser): any {
       previewDisplayDate: previewDisplayDate(mostRecentMessage?.createdAt),
     };
   };
-}
-
-function byLastMessageOrCreation(a: Channel, b: Channel) {
-  return b.bumpStamp - a.bumpStamp;
 }
 
 export const MessengerList = connectContainer<PublicProperties>(Container);

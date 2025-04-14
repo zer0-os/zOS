@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { UserSearchResults, Properties } from '.';
-import { Avatar } from '@zero-tech/zui/components';
+import { MatrixAvatar } from '../../../matrix-avatar';
 
 import { bem } from '../../../../lib/bem';
 import { Waypoint } from '../../../waypoint';
@@ -42,7 +42,7 @@ describe('UserSearchResults', () => {
 
     renderedResults.forEach((node, index) => {
       expect(node.key()).toEqual(userResults[index].value);
-      expect(node.find(Avatar)).toHaveProp('imageURL', userResults[index].image);
+      expect(node.find(MatrixAvatar)).toHaveProp('imageURL', userResults[index].image);
       expect(node.find(c('label'))).toHaveText(userResults[index].label);
       expect(node.find(c('sub-label'))).toHaveText(userResults[index].subLabel);
     });

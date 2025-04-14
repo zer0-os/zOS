@@ -25,7 +25,7 @@ export const mostRecentConversation = createSelector([conversationsListSelector,
   }
 
   const roomsWithMetaData = rooms.map(addLastMessage);
-  return roomsWithMetaData.sort(byLastMessageOrCreation)[0];
+  return roomsWithMetaData.sort(byBumpStamp)[0];
 });
 
 function addLastMessage(conversation) {
@@ -33,10 +33,8 @@ function addLastMessage(conversation) {
   return { ...conversation, lastMessage: sortedMessages[0] };
 }
 
-function byLastMessageOrCreation(a, b) {
-  const aDate = a.lastMessage?.createdAt || a.createdAt;
-  const bDate = b.lastMessage?.createdAt || b.createdAt;
-  return compareDatesDesc(aDate, bDate);
+export function byBumpStamp(a: Channel, b: Channel) {
+  return b.bumpStamp - a.bumpStamp;
 }
 
 export function userSelector(state, userIds: string[]) {

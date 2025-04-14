@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 
 import { ConversationItem, Properties } from '.';
 import { ContentHighlighter } from '../../../content-highlighter';
-import { Avatar } from '@zero-tech/zui/components';
+import { MatrixAvatar } from '../../../matrix-avatar';
 import { bem } from '../../../../lib/bem';
 import { IconBellOff1 } from '@zero-tech/zui/icons';
 import { DefaultRoomLabels } from '../../../../store/channels';
@@ -32,7 +32,7 @@ describe(ConversationItem, () => {
       conversation: { isOneOnOne: true, ...convoWith({ profileImage: 'image-url' }) },
     });
 
-    expect(wrapper.find(Avatar)).toHaveProp('imageURL', 'image-url');
+    expect(wrapper.find(MatrixAvatar)).toHaveProp('imageURL', 'image-url');
   });
 
   it('renders group icon for group conversation with an image', function () {
@@ -40,7 +40,7 @@ describe(ConversationItem, () => {
       conversation: { icon: 'custom-image-url', ...convoWith({ firstName: 'one' }, { firstName: 'two' }) },
     });
 
-    expect(wrapper.find(Avatar)).toHaveProp('imageURL', 'custom-image-url');
+    expect(wrapper.find(MatrixAvatar)).toHaveProp('imageURL', 'custom-image-url');
   });
 
   it('renders conversation title for one on one', function () {

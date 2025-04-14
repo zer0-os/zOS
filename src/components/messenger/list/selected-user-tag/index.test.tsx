@@ -3,8 +3,9 @@ import { shallow } from 'enzyme';
 
 import { SelectedUserTag, Properties } from '.';
 import { bem } from '../../../../lib/bem';
+import { MatrixAvatar } from '../../../matrix-avatar';
 
-jest.mock('@zero-tech/zui/components', () => ({ Avatar: () => <></>, IconButton: () => <></> }));
+jest.mock('@zero-tech/zui/components', () => ({ IconButton: () => <></> }));
 jest.mock('@zero-tech/zui/icons', () => ({ IconXClose: () => <></> }));
 
 const c = bem('.selected-user-tag');
@@ -27,7 +28,7 @@ describe('SelectedUserTag', () => {
     const wrapper = subject({ userOption });
 
     expect(wrapper.find('.selected-user-tag__user-label').text()).toEqual('User 1');
-    expect(wrapper.find('Avatar').prop('imageURL')).toEqual('url-1');
+    expect(wrapper.find(MatrixAvatar).prop('imageURL')).toEqual('url-1');
   });
 
   it('publishes remove event', function () {
@@ -54,7 +55,7 @@ describe('SelectedUserTag', () => {
     const wrapper = subject({ userOption });
 
     expect(wrapper.find('.selected-user-tag--compact')).toExist();
-    expect(wrapper.find('Avatar')).toHaveProp('size', 'small');
+    expect(wrapper.find(MatrixAvatar)).toHaveProp('size', 'small');
   });
 
   it('renders with size as spacious when specified', () => {
@@ -62,6 +63,6 @@ describe('SelectedUserTag', () => {
     const wrapper = subject({ userOption, tagSize: 'spacious' });
 
     expect(wrapper.find('.selected-user-tag--spacious')).toExist();
-    expect(wrapper.find('Avatar')).toHaveProp('size', 'regular');
+    expect(wrapper.find(MatrixAvatar)).toHaveProp('size', 'regular');
   });
 });

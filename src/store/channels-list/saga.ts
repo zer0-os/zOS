@@ -259,7 +259,7 @@ export function* otherUserJoinedChannel(roomId: string, userId: string) {
   }
 
   let user = yield call(getUserByMatrixId, userId);
-  if (!channel?.otherMembers?.includes(user.userId)) {
+  if (!channel?.otherMembers?.some(({ userId }) => userId === user.userId)) {
     const otherMembers = [...(channel?.otherMembers || []), user];
     yield call(receiveChannel, { id: channel.id, otherMembers });
   }
@@ -276,8 +276,9 @@ export function* otherUserLeftChannel(roomId: string, userId: string) {
     return;
   }
 
+  const newMembers = channel?.otherMembers?.filter(({ userId }) => userId !== existingUser.userId) || [];
   yield call(receiveChannel, {
     id: channel.id,
-    otherMembers: channel?.otherMembers?.filter((userId) => userId !== existingUser.userId) || [],
+    otherMembers: newMembers,
   });
 }

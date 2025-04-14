@@ -18,7 +18,7 @@ import { resetConversationManagement } from '../group-management/saga';
 import { leadingDebounce } from '../utils';
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
 import { userByMatrixIdSelector } from '../users/selectors';
-import { channelSelector } from './selectors';
+import { channelSelector, rawChannel } from './selectors';
 import cloneDeep from 'lodash/cloneDeep';
 import { getHistory } from '../../lib/browser';
 import { startPollingPosts } from '../posts/saga';
@@ -247,7 +247,7 @@ function* listenForMessageSent() {
 export function* receivedRoomMemberPowerLevelChanged(action) {
   const { roomId, matrixId, powerLevel } = action.payload;
   const user = yield select(userByMatrixIdSelector, matrixId);
-  const channel = yield select(channelSelector(roomId));
+  const channel = yield select(rawChannel, roomId);
   if (!user || !channel) {
     return;
   }

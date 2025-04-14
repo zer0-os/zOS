@@ -291,6 +291,8 @@ export const Message: React.FC<Properties> = ({
   };
 
   const renderMenu = () => {
+    const isGif = media?.mimetype === 'image/gif';
+
     return (
       <div
         {...cn(
@@ -301,7 +303,8 @@ export const Message: React.FC<Properties> = ({
         )}
         onClick={handleCloseMenu}
       >
-        <IconButton {...cn('menu-item')} onClick={openReactionPicker} Icon={IconHeart} size={32} />
+        {!isGif && <IconButton {...cn('menu-item')} onClick={openReactionPicker} Icon={IconHeart} size={32} />}
+
         <Menu isMenuOpen={isMessageMenuOpen} />
       </div>
     );

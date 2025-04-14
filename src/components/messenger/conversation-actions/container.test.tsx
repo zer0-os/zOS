@@ -230,7 +230,9 @@ describe('ConversationActionsContainer', () => {
 
     describe('canViewDetails', () => {
       it('is false when one on one conversation', () => {
-        const state = new StoreBuilder().withActiveConversation(stubConversation({ isSocialChannel: false }));
+        const state = new StoreBuilder().withActiveConversation(
+          stubConversation({ totalMembers: 2, isSocialChannel: false })
+        );
 
         expect(ConversationActionsContainer.mapState(state.build())).toEqual(
           expect.objectContaining({ canViewDetails: false })
@@ -260,7 +262,9 @@ describe('ConversationActionsContainer', () => {
 
     describe('canReportUser', () => {
       it('is true when the conversation is one on one', () => {
-        const state = new StoreBuilder().withActiveConversation(stubConversation({ isSocialChannel: false }));
+        const state = new StoreBuilder().withActiveConversation(
+          stubConversation({ totalMembers: 2, isSocialChannel: false })
+        );
 
         expect(ConversationActionsContainer.mapState(state.build())).toEqual(
           expect.objectContaining({ canReportUser: true })

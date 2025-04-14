@@ -11,6 +11,7 @@ import { expectSaga, stubResponse } from '../../test/saga';
 import { markConversationAsRead } from '../channels/saga';
 import { StoreBuilder } from '../test/store';
 import { getMessageEmojiReactions } from '../../lib/chat';
+import { getUsersByMatrixIds } from '../users/saga';
 
 describe(receiveNewMessage, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
@@ -44,13 +45,30 @@ describe(receiveNewMessage, () => {
 
   it('maps the message users', async () => {
     const channelId = 'channel-id';
-    const message = { id: 'message-id', message: 'test message', sender: { userId: 'matrix-id' } };
+    const message = {
+      id: 'message-id',
+      message: 'test message',
+      sender: { userId: 'user-1', matrixId: 'matrix-id' },
+    };
     const initialState = new StoreBuilder()
       .withConversationList({ id: channelId })
       .withUsers({ userId: 'user-1', matrixId: 'matrix-id', firstName: 'the real user' });
 
     const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
       .provide([
+        stubResponse(
+          call(getUsersByMatrixIds, ['matrix-id']),
+          new Map([
+            [
+              'matrix-id',
+              {
+                userId: 'user-1',
+                matrixId: 'matrix-id',
+                firstName: 'the real user',
+              },
+            ],
+          ])
+        ),
         stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
       ])
       .withReducer(rootReducer, initialState.build())

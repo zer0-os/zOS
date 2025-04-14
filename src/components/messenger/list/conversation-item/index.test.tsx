@@ -29,7 +29,7 @@ describe(ConversationItem, () => {
 
   it('renders other members avatar for one on one', function () {
     const wrapper = subject({
-      conversation: { isOneOnOne: true, ...convoWith({ profileImage: 'image-url' }) },
+      conversation: { totalMembers: 2, ...convoWith({ profileImage: 'image-url' }) },
     });
 
     expect(wrapper.find(MatrixAvatar)).toHaveProp('imageURL', 'image-url');

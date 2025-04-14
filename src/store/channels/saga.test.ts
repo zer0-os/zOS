@@ -319,7 +319,7 @@ const CHANNEL_DEFAULTS = {
   lastMessage: null,
   unreadCount: { total: 0, highlight: 0 },
   icon: '',
-  isOneOnOne: true,
+  totalMembers: 2,
   hasLoadedMessages: false,
   conversationStatus: ConversationStatus.CREATED,
   messagesFetchStatus: null,

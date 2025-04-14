@@ -185,7 +185,7 @@ describe('ChannelViewContainer', () => {
     it('includes user name if one on one', () => {
       const otherMembers = [{ userId: '1', firstName: 'Jack', lastName: 'Black' }];
       const wrapper = subject({
-        channel: { isOneOnOne: true, otherMembers, conversationStatus: ConversationStatus.ERROR },
+        channel: { totalMembers: 2, otherMembers, conversationStatus: ConversationStatus.ERROR },
       });
 
       expect(wrapper.find('ChatView').prop('conversationErrorMessage')).toEqual(

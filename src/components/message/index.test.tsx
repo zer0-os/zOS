@@ -417,7 +417,7 @@ describe('message', () => {
       showSenderAvatar: true,
     });
 
-    const avatarComponent = wrapper.find('.message__author-avatar Avatar');
+    const avatarComponent = wrapper.find('.message__author-avatar MatrixAvatar');
 
     expect(avatarComponent.exists()).toBe(true);
 

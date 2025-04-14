@@ -194,6 +194,8 @@ export function stubConversation(attrs: Partial<Channel> = {}): Partial<Channel>
   return {
     id: `conversation-id-${stubCount}`,
     otherMembers: [],
+    totalMembers: 3,
+    bumpStamp: 1000,
     ...attrs,
   };
 }

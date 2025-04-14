@@ -23,10 +23,9 @@ import { getHistory } from '../../lib/browser';
 import { addRoomToSync, markConversationAsRead, openFirstConversation } from '../channels/saga';
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
-import { rawConversationsList } from '../channels-list/selectors';
 import { loadMembersIfNeeded } from '../channels/saga';
 import { startPollingPosts } from '../posts/saga';
-import { channelSelector } from '../channels/selectors';
+import { allChannelsSelector, channelSelector } from '../channels/selectors';
 
 function* initChat(userId: string, token: string) {
   const { chatConnection, connectionPromise, activate } = createChatConnection(userId, token, chat.get());
@@ -180,7 +179,7 @@ export function* joinRoom(roomIdOrAlias: string) {
 }
 
 export function* isMemberOfActiveConversation(activeConversationId) {
-  const conversationList = yield select(rawConversationsList);
+  const conversationList = yield select(allChannelsSelector);
   const isRoomInState = conversationList.includes(activeConversationId);
   if (isRoomInState) {
     return true;

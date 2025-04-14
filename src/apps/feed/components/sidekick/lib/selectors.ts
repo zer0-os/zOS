@@ -1,11 +1,11 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '../../../../../store/reducer';
-import { denormalizeConversations } from '../../../../../store/channels-list';
+import { allChannelsSelector } from '../../../../../store/channels/selectors';
 import { UnreadCount } from './useSidekick';
 import { DefaultRoomLabels } from '../../../../../store/channels';
 
 export const selectSocialChannelsUnreadCounts = createSelector(
-  [(state: RootState) => denormalizeConversations(state)],
+  [(state: RootState) => allChannelsSelector(state)],
   (conversations) => {
     return conversations
       .filter((c) => c.isSocialChannel && c.zid)
@@ -17,7 +17,7 @@ export const selectSocialChannelsUnreadCounts = createSelector(
 );
 
 export const selectMutedChannels = createSelector(
-  [(state: RootState) => denormalizeConversations(state)],
+  [(state: RootState) => allChannelsSelector(state)],
   (conversations) => {
     return conversations
       .filter((c) => c.isSocialChannel && c.zid)

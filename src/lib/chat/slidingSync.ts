@@ -49,7 +49,7 @@ const ENCRYPTED_SUBSCRIPTION = {
 
 const sssLists: Record<string, MSC3575List> = {
   invites: {
-    ranges: [[0, 10]],
+    ranges: [[0, 20]],
     timeline_limit: 1,
     required_state: REQUIRED_STATE_LIST,
     include_old_rooms: {
@@ -61,7 +61,7 @@ const sssLists: Record<string, MSC3575List> = {
     },
   },
   favorites: {
-    ranges: [[0, 10]],
+    ranges: [[0, 20]],
     timeline_limit: 10,
     sort: ['by_recency'],
     required_state: REQUIRED_STATE_LIST,
@@ -74,7 +74,7 @@ const sssLists: Record<string, MSC3575List> = {
     },
   },
   dms: {
-    ranges: [[0, 10]],
+    ranges: [[0, 20]],
     timeline_limit: 10,
     sort: ['by_recency'],
     required_state: REQUIRED_STATE_LIST,
@@ -88,7 +88,7 @@ const sssLists: Record<string, MSC3575List> = {
     },
   },
   untagged: {
-    ranges: [[0, 10]],
+    ranges: [[0, 20]],
     timeline_limit: 10,
     sort: ['by_recency'],
     required_state: REQUIRED_STATE_LIST,

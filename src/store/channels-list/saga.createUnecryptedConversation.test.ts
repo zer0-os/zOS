@@ -1,7 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 
 import { createUnencryptedConversation, receiveCreatedConversation } from './saga';
-import { userSelector } from './selectors';
+import { userSelector } from '../users/selectors';
 
 import { chat } from '../../lib/chat';
 

@@ -18,24 +18,24 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/selectors';
 import { Channel, MessagesFetchState } from '../channels';
-import { replaceOptimisticMessage } from '../messages/saga';
 import { getUserByMatrixId } from '../users/saga';
 import { channelSelector } from '../channels/selectors';
-import { channelListStatus, rawConversationsList } from './selectors';
 import { setIsConversationsLoaded } from '../chat';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { delay } from 'redux-saga/effects';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
 import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
-import { userSelector } from './selectors';
+import { userSelector } from '../users/selectors';
 import { MembershipStateType } from '../../lib/chat/matrix/types';
 
 export function* fetchChannels() {
   yield put(setStatus(AsyncListStatus.Fetching));
   // Get initial channels from Matrix store for faster initial load
   const initChannels = yield call(MatrixAdapter.getChannels);
-  yield put(receive(initChannels));
+  for (const channel of initChannels) {
+    yield call(receiveChannel, channel);
+  }
   yield put(setStatus(AsyncListStatus.Stopped));
   yield put(setIsConversationsLoaded(true));
   const conversationBus = yield call(getConversationsBus);
@@ -82,22 +82,12 @@ export function* receiveCreatedConversation(conversation: Partial<Channel>) {
   newConversation.hasLoadedMessages = true;
   newConversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
 
-  const channels = yield select(rawConversationsList);
-  yield put(receive([...channels, newConversation]));
+  yield call(receiveChannel, newConversation);
   yield call(openConversation, newConversation.id);
 }
 
 export function* clearChannelsAndConversations() {
-  yield all([
-    call(clearChannels),
-    put(receive([])),
-  ]);
-}
-
-export function* fetchChannelsAndConversations() {
-  if (String(yield select(channelListStatus)) !== AsyncListStatus.Stopped) {
-    yield call(fetchChannels);
-  }
+  yield call(clearChannels);
 }
 
 function* listenForUserLogin() {
@@ -105,7 +95,7 @@ function* listenForUserLogin() {
   while (true) {
     yield take(userChannel, AuthEvents.UserLogin);
     yield call(MatrixAdapter.matrixInitialized);
-    yield call(fetchChannelsAndConversations);
+    yield call(fetchChannels);
   }
 }
 
@@ -168,8 +158,6 @@ function* batchedRoomDataAction(action: RoomDataAction) {
       // This could be updated to show Accept/Reject buttons in the UI like mobile does
       if (room.getMyMembership() === MembershipStateType.Invite) {
         yield call(matrixClientInstance.autoJoinRoom, roomId);
-        const channels = yield select(rawConversationsList);
-        yield put(receive([...channels, roomId]));
       }
     }
     yield fork(loadMembersIfNeeded, initialUpdates);

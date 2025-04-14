@@ -4,6 +4,8 @@ import { schema } from '../channels';
 import { toSimplifiedUser } from '../users/utils';
 import { SimplifiedUser } from '../users/types';
 
+// ChannelsList has been deprecated. We're now using the Channels slice instead.
+// This is still in place while we migrate the codebase to the new slice.
 const slice = createNormalizedListSlice({
   name: 'channelsList',
   schema,
@@ -35,7 +37,3 @@ export const receive = (channels: string[] | Channel[]) => {
   );
 };
 export const { reducer, normalize, denormalize } = slice;
-
-export function denormalizeConversations(state) {
-  return denormalize(state.channelsList.value, state);
-}

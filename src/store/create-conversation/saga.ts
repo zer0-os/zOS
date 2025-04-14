@@ -6,7 +6,7 @@ import {
 } from '../channels-list/saga';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { openConversation } from '../channels/saga';
-import { oneOnOnesSelector } from '../channels-list/selectors';
+import { oneOnOnesSelector } from '../channels/selectors';
 
 export function* reset() {
   yield put(setGroupUsers([]));

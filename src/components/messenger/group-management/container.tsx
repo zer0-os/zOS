@@ -26,11 +26,10 @@ import { getUserSubHandle } from '../../../lib/user';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import { receiveSearchResults } from '../../../store/users';
-import { denormalizeConversations } from '../../../store/channels-list';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { createConversation } from '../../../store/create-conversation';
 import { openUserProfile } from '../../../store/user-profile';
-import { isOneOnOneSelector } from '../../../store/channels-list/selectors';
+import { allDenormalizedChannelsSelector, isOneOnOneSelector } from '../../../store/channels/selectors';
 import { isOneOnOne } from '../../../store/channels-list/utils';
 
 export interface PublicProperties {}
@@ -86,7 +85,7 @@ export class Container extends React.Component<Properties> {
     const conversationModeratorIds = conversation?.moderatorIds;
     const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
     const isCurrentUserRoomModerator = conversationModeratorIds?.includes(currentUser?.id) ?? false;
-    const existingConversations = denormalizeConversations(state);
+    const existingConversations = allDenormalizedChannelsSelector(state);
 
     return {
       activeConversationId,

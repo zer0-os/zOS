@@ -1,11 +1,10 @@
 import { useRouteMatch } from 'react-router-dom';
 import { AppBar as AppBarComponent } from './';
-import { denormalizeConversations } from '../../store/channels-list';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { DefaultRoomLabels } from '../../store/channels';
 import { getLastActiveConversation } from '../../lib/last-conversation';
-import { channelSelector } from '../../store/channels/selectors';
+import { channelSelector, allDenormalizedChannelsSelector } from '../../store/channels/selectors';
 import { useMemo } from 'react';
 import { activeZAppFeatureSelector } from '../../store/active-zapp/selectors';
 
@@ -36,7 +35,7 @@ const useAppBar = () => {
   const isActiveConversationSocialChannel = activeConversation?.isSocialChannel;
 
   const hasUnreadNotifications = useSelector((state: RootState) => {
-    const conversations = denormalizeConversations(state);
+    const conversations = allDenormalizedChannelsSelector(state);
     return conversations.some(
       (channel) =>
         channel.unreadCount?.total > 0 &&
@@ -46,7 +45,7 @@ const useAppBar = () => {
   });
 
   const hasUnreadHighlights = useSelector((state: RootState) => {
-    const conversations = denormalizeConversations(state);
+    const conversations = allDenormalizedChannelsSelector(state);
     return conversations.some(
       (channel) =>
         channel.unreadCount?.highlight > 0 &&

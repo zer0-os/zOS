@@ -4,11 +4,11 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { openConversation } from '../../../../store/channels';
 import { createConversation } from '../../../../store/create-conversation';
-import { denormalizeConversations } from '../../../../store/channels-list';
 import { Channel } from '../../../../store/channels';
 import { config } from '../../../../config';
 import { LinkedAccountsPanel } from '.';
 import { isOneOnOne } from '../../../../store/channels-list/utils';
+import { allChannelsSelector } from '../../../../store/channels/selectors';
 
 export interface PublicProperties {
   onClose?: () => void;
@@ -25,7 +25,7 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState) {
     const telegramBotUserId = config.telegramBotUserId;
-    const existingConversations = denormalizeConversations(state);
+    const existingConversations = allChannelsSelector(state);
 
     return { telegramBotUserId, existingConversations };
   }

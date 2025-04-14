@@ -2,7 +2,7 @@ import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { createConversation, receiveCreatedConversation } from './saga';
-import { userSelector } from './selectors';
+import { userSelector } from '../users/selectors';
 
 import { rootReducer } from '../reducer';
 import { MessagesFetchState, denormalize as denormalizeChannel } from '../channels';

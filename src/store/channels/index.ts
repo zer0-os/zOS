@@ -57,7 +57,7 @@ export interface Channel {
   /**
    * timestamp used for sorting when timeline is unknown (from sliding sync)
    */
-  bumpStamp?: number;
+  bumpStamp: number;
   hasMore: boolean;
   hasMorePosts?: boolean;
   createdAt: number;

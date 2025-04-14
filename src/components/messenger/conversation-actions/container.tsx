@@ -14,7 +14,7 @@ import {
 import { ConversationActions } from '.';
 import { openReportUserModal } from '../../../store/report-user';
 import './styles.scss';
-import { isOneOnOneSelector } from '../../../store/channels-list/selectors';
+import { isOneOnOneSelector } from '../../../store/channels/selectors';
 
 export interface PublicProperties {
   className?: string;

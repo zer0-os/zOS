@@ -21,3 +21,7 @@ export function usersByMatrixIdsSelector(state: RootState, matrixIds: string[]):
   });
   return userMap;
 }
+
+export function userSelector(state, userIds: string[]) {
+  return userIds.map((id) => (state.normalized.users || {})[id]);
+}

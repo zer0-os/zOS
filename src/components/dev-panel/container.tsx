@@ -10,8 +10,7 @@ import {
   rawReceive as receiveChannel,
 } from '../../store/channels';
 import { Message, MessageSendStatus, receive } from '../../store/messages';
-import { denormalizeConversations } from '../../store/channels-list';
-import { compareDatesDesc } from '../../lib/date';
+import { allDenormalizedChannelsSelector } from '../../store/channels/selectors';
 
 interface PublicProperties {}
 
@@ -42,9 +41,7 @@ export class Container extends React.Component<Properties, State> {
       messages = channel.messages || [];
     }
 
-    const conversations = (denormalizeConversations(state) ?? []).sort((a, b) =>
-      compareDatesDesc(a.lastMessage?.createdAt || a.createdAt, b.lastMessage?.createdAt || b.createdAt)
-    );
+    const conversations = allDenormalizedChannelsSelector(state);
 
     return {
       messages,

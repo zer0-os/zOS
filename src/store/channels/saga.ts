@@ -10,7 +10,7 @@ import {
   removeRoomFromLabel,
   Chat,
 } from '../../lib/chat';
-import { mostRecentConversation } from '../channels-list/selectors';
+import { mostRecentConversation } from '../channels/selectors';
 import { setActiveConversation } from '../chat/saga';
 import { ParentMessage, PowerLevels } from '../../lib/chat/types';
 import { rawSetActiveConversationId } from '../chat';

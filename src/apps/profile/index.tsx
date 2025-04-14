@@ -1,5 +1,4 @@
-import { primaryZIDSelector } from '../../store/authentication/selectors';
-import { useSelector } from 'react-redux';
+import { useProfileApp } from './lib/useProfileApp';
 
 import { Feed } from '../feed/components/feed';
 import { UserPanel } from './panels/UserPanel';
@@ -7,12 +6,11 @@ import { UserPanel } from './panels/UserPanel';
 import styles from './styles.module.scss';
 
 export const ProfileApp = () => {
-  const primaryZID = useSelector(primaryZIDSelector);
-  const splitZID = primaryZID?.split('0://')[1];
+  const { data } = useProfileApp();
 
   return (
     <div className={styles.Wrapper}>
-      {splitZID && <Feed zid={splitZID} />}
+      {data?.primaryZid && <Feed zid={data.primaryZid} />}
       <div>
         <UserPanel />
       </div>

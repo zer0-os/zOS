@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import moment from 'moment';
 import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
@@ -9,12 +9,14 @@ import { ReplyAction } from './actions/reply/reply-action';
 import { formatWeiAmount } from '../../../../lib/number';
 import { FeedAction } from './actions/feed';
 import { ArweaveAction } from './actions/arweave';
+import { ShowMoreButton } from '../show-more-button';
+import { analyzePostContent } from '../../lib/analyzePostContent';
+import { usePostRoute } from './lib/usePostRoute';
 import Linkify from 'linkify-react';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
-import { usePostRoute } from './lib/usePostRoute';
 type Variant = 'default' | 'expanded';
 
 export interface PostProps {
@@ -33,6 +35,7 @@ export interface PostProps {
   reactions?: { [key: string]: number };
   variant?: Variant;
   numberOfReplies?: number;
+  isSinglePostView?: boolean;
 
   meowPost: (postId: string, meowAmount: string) => void;
 }
@@ -54,20 +57,41 @@ export const Post = ({
   meowPost,
   variant = 'default',
   numberOfReplies = 0,
+  isSinglePostView = false,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
     formatWeiAmount(userMeowBalance) <= '0' || ownerUserId?.toLowerCase() === currentUserId?.toLowerCase();
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const { shouldTruncate, truncatedContent } = useMemo(() => analyzePostContent(text), [text]);
+
+  const shouldShowTruncation = !isSinglePostView && shouldTruncate;
+
+  const displayText = useMemo(() => {
+    if (!text || !shouldShowTruncation || isExpanded) return text;
+    return truncatedContent;
+  }, [
+    text,
+    shouldShowTruncation,
+    isExpanded,
+    truncatedContent,
+  ]);
+
   const multilineText = useMemo(
     () =>
-      text?.split('\n').map((line, index) => (
+      displayText?.split('\n').map((line, index) => (
         <p key={index} className={styles.Text}>
           {line}
         </p>
       )),
-    [text]
+    [displayText]
   );
+
+  const handleExpand = useCallback(() => {
+    setIsExpanded(true);
+  }, []);
 
   return (
     <Wrapper postId={messageId} variant={variant} channelZid={channelZid}>
@@ -80,8 +104,9 @@ export const Post = ({
         <ZUIPost
           className={styles.Post}
           body={
-            <div className={styles.Body}>
+            <div className={classNames(styles.Body, { [styles.Truncated]: shouldShowTruncation && !isExpanded })}>
               <Linkify options={{ render: renderLink }}>{multilineText}</Linkify>
+              {shouldShowTruncation && !isExpanded && <ShowMoreButton onClick={handleExpand} />}
               {variant === 'expanded' && (
                 <span className={styles.Date}>{moment(timestamp).format('h:mm A - D MMM YYYY')}</span>
               )}

@@ -28,7 +28,7 @@ export function createOptimisticMessageObject(
       type: file.mediaType,
       url: file.giphy ? file.giphy.images.downsized.url : file.url,
       name: file.name,
-      mimetype: file.nativeFile ? file.nativeFile.type : null,
+      mimetype: file.giphy ? 'image/gif' : file.nativeFile ? file.nativeFile.type : null,
       // Not sure why these are in our types as I don't think we use them at all
       // I'm guessing this is for rendering a loaded message when the image hasn't downloaded yet
       // but we're not doing that yet.

@@ -60,7 +60,8 @@ export const MessageMenu = ({
 
   const canReportUser = !isOwner && sendStatus !== MessageSendStatus.IN_PROGRESS;
 
-  const canReply = sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
+  const canReply =
+    sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED && !isGiphyMessage(media);
 
   const canViewInfo = sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
 
@@ -91,4 +92,8 @@ export const MessageMenu = ({
       isMenuFlying={isMenuFlying}
     />
   );
+};
+
+const isGiphyMessage = (media: Media) => {
+  return media?.type === MediaType.Image && media?.mimetype === 'image/gif';
 };

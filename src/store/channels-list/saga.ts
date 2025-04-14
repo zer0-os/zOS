@@ -1,6 +1,5 @@
 import getDeepProperty from 'lodash.get';
 import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
-import { receive, setStatus } from '.';
 import { chat, downloadFile } from '../../lib/chat';
 
 import { AsyncListStatus } from '../normalized';
@@ -17,7 +16,7 @@ import { Events as AuthEvents, getAuthChannel } from '../authentication/channels
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/selectors';
-import { Channel, MessagesFetchState } from '../channels';
+import { Channel, MessagesFetchState, removeChannel } from '../channels';
 import { getUserByMatrixId } from '../users/saga';
 import { channelSelector } from '../channels/selectors';
 import { setIsConversationsLoaded } from '../chat';
@@ -30,13 +29,11 @@ import { userSelector } from '../users/selectors';
 import { MembershipStateType } from '../../lib/chat/matrix/types';
 
 export function* fetchChannels() {
-  yield put(setStatus(AsyncListStatus.Fetching));
   // Get initial channels from Matrix store for faster initial load
   const initChannels = yield call(MatrixAdapter.getChannels);
   for (const channel of initChannels) {
     yield call(receiveChannel, channel);
   }
-  yield put(setStatus(AsyncListStatus.Stopped));
   yield put(setIsConversationsLoaded(true));
   const conversationBus = yield call(getConversationsBus);
   yield put(conversationBus, { type: ConversationEvents.ConversationsLoaded });
@@ -99,7 +96,7 @@ function* listenForUserLogin() {
   }
 }
 
-export function* userLeftChannel(channelId, matrixId) {
+export function* userLeftChannel(channelId: string, matrixId: string) {
   const currentUser = yield select(currentUserSelector);
 
   if (matrixId === currentUser.matrixId) {
@@ -107,20 +104,14 @@ export function* userLeftChannel(channelId, matrixId) {
   }
 }
 
-function* currentUserLeftChannel(channelId) {
-  const channelIdList = yield select((state) => getDeepProperty(state, 'channelsList.value', []));
-  const newList = channelIdList.filter((id) => id !== channelId);
-  yield put(receive(newList));
+function* currentUserLeftChannel(channelId: string) {
+  yield put(removeChannel(channelId));
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   if (activeConversationId === channelId) {
     yield call(clearLastActiveConversation);
     yield call(openFirstConversation);
   }
-}
-
-function* clearOnLogout() {
-  yield put(setStatus(AsyncListStatus.Idle));
 }
 
 type RoomDataAction = { payload: { roomId: string; roomData: MSC3575RoomData } };
@@ -166,7 +157,6 @@ function* batchedRoomDataAction(action: RoomDataAction) {
 
 export function* saga() {
   yield spawn(listenForUserLogin);
-  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.UserLeftChannel, ({ payload }) =>

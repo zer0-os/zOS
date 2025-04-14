@@ -168,6 +168,11 @@ describe('MessageMenu', () => {
       expect(screen.queryByRole('menuitem', { name: /reply/i })).not.toBeInTheDocument();
     });
 
+    it('should disable reply when message is a GIF', () => {
+      render(<MessageMenu {...defaultProps} media={{ ...defaultProps.media, mimetype: 'image/gif' }} />);
+      expect(screen.queryByRole('menuitem', { name: /reply/i })).not.toBeInTheDocument();
+    });
+
     it('should call onReply when reply button is clicked', async () => {
       render(<MessageMenu {...defaultProps} />);
       fireEvent.click(screen.getByRole('menuitem', { name: /reply/i }));

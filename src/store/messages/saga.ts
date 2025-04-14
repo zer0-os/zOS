@@ -29,7 +29,7 @@ import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
-import { channelSelector } from '../channels/selectors';
+import { rawChannel } from '../channels/selectors';
 
 export interface Payload {
   channelId: string;
@@ -125,7 +125,7 @@ export function* mapMessagesAndPreview(messages: Message[], channelId: string) {
 
 export function* fetch(action) {
   const { channelId, referenceTimestamp } = action.payload;
-  const channel = yield select(channelSelector(channelId));
+  const channel = yield select((state) => rawChannel(state, channelId));
   if (channel.conversationStatus !== ConversationStatus.CREATED) {
     return;
   }
@@ -447,7 +447,7 @@ export function* batchedReceiveNewMessage(batchedPayloads) {
   });
 
   for (const channelId of Object.keys(byChannelId)) {
-    const channel = yield select(channelSelector(channelId));
+    const channel = yield select((state) => rawChannel(state, channelId));
     if (!channel) {
       continue;
     }
@@ -467,7 +467,7 @@ function* receiveBatchedMessages(channelId, messages) {
   // If there is an async call in between then the channels list of messages
   // could have changed and we'll end up missing those changes by the time we
   // save the batch here.
-  const currentChannel = yield select(channelSelector(channelId));
+  const currentChannel = yield select((state) => rawChannel(state, channelId));
   let currentMessages = currentChannel?.messages || [];
   for (let message of messages) {
     let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
@@ -479,7 +479,7 @@ function* receiveBatchedMessages(channelId, messages) {
   yield call(receiveChannel, { id: channelId, messages: uniqNormalizedList(currentMessages, true) });
 }
 
-export function* replaceOptimisticMessage(currentMessages, message) {
+export function* replaceOptimisticMessage(currentMessages: string[], message: Message) {
   const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
 
   if (messageIndex < 0) {

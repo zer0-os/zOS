@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel, denormalize, onAddLabel, onRemoveLabel, onRemoveReply } from '../../../store/channels';
+import { Channel, onAddLabel, onRemoveLabel, onRemoveReply } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { send as sendMessage } from '../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
@@ -60,8 +60,7 @@ export class Container extends React.Component<Properties> {
       groupManagement,
     } = state;
 
-    const directMessage = denormalize(activeConversationId, state);
-    const channel = channelSelector(activeConversationId)(state);
+    const directMessage = channelSelector(activeConversationId)(state);
 
     return {
       activeConversationId,
@@ -69,7 +68,7 @@ export class Container extends React.Component<Properties> {
       isJoiningConversation,
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
-      otherMembersTypingInRoom: channel?.otherMembersTyping || [],
+      otherMembersTypingInRoom: directMessage?.otherMembersTyping || [],
     };
   }
 

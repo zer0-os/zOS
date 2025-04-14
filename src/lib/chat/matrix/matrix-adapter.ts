@@ -75,7 +75,6 @@ export class MatrixAdapter {
       createdAt,
       unreadCount,
       conversationStatus: ConversationStatus.CREATED,
-      isOneOnOne: room.getMembers().length === 2,
       adminMatrixIds: admins,
       moderatorIds: mods,
       labels,

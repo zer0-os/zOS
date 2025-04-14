@@ -10,10 +10,14 @@ const slice = createNormalizedListSlice({
 });
 
 export const { receiveNormalized, setStatus, receive: rawReceive } = slice.actions;
-export const receive = (channels: Channel[]) => {
+export const receive = (channels: string[] | Channel[]) => {
   // Simplifying users when saving to control update flow. See `store/users/utils.ts` for more details.
   return rawReceive(
-    channels.map((channel) => {
+    channels.map((channel: string | Partial<Channel>) => {
+      if (typeof channel === 'string') {
+        return channel;
+      }
+      // TODO zos-619: Ensure this is actually needed
       // @ts-ignore - Removing denormalized flag
       const { __denormalized, otherMembers, memberHistory, ...rest } = channel;
       const simplifiedUsers: { otherMembers?: SimplifiedUser[]; memberHistory?: SimplifiedUser[] } = {};

@@ -45,3 +45,8 @@ export enum ChatMessageType {
   GROUP = 'group', // encrpyted/unencrypted group chats
   CHANNEL = 'channel', // token gated (social) chats
 }
+
+export type NotificationCount = {
+  total: number;
+  highlight: number;
+};

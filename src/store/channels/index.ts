@@ -53,6 +53,7 @@ export interface Channel {
   messages: Message[];
   otherMembers: User[];
   memberHistory: User[];
+  totalMembers: number;
   /**
    * timestamp used for sorting when timeline is unknown (from sliding sync)
    */
@@ -81,6 +82,7 @@ export const CHANNEL_DEFAULTS = {
   messages: [],
   otherMembers: [],
   memberHistory: [],
+  totalMembers: 0,
   hasMore: true,
   hasMorePosts: true,
   createdAt: 0,

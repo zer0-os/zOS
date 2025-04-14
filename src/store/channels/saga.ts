@@ -82,17 +82,22 @@ export function* loadMembersIfNeeded(conversationIds: string[]) {
   for (const conversationId of conversationIds) {
     const members = yield call([chatClient, chatClient.loadMembersIfNeeded], conversationId);
     if (members) {
-      yield call(
-        getUsersByMatrixIds,
-        members.memberHistory.map((m) => m.matrixId)
-      );
       yield call(receiveChannel, {
         id: conversationId,
         otherMembers: members.otherMembers,
         memberHistory: members.memberHistory,
+        totalMembers: members.totalMembers,
       });
+      yield call(
+        getUsersByMatrixIds,
+        members.memberHistory.map((m) => m.matrixId)
+      );
     }
   }
+}
+
+export function* addRoomToSync(conversationId: string) {
+  yield call(() => SlidingSyncManager.instance.addRoomToSync(conversationId));
 }
 
 export function* openConversation(conversationId: string) {
@@ -100,8 +105,7 @@ export function* openConversation(conversationId: string) {
     return;
   }
 
-  SlidingSyncManager.instance.setRoomVisible(conversationId);
-
+  yield call(addRoomToSync, conversationId);
   yield call(loadMembersIfNeeded, [conversationId]);
   yield call(setLastActiveConversation, conversationId);
   yield call(setActiveConversation, conversationId);

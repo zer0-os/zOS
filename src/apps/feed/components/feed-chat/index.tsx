@@ -3,7 +3,7 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { ChatViewContainer } from '../../../../components/chat-view-container/chat-view-container';
 import { validateFeedChat } from '../../../../store/chat';
-import { Channel, denormalize, onRemoveReply } from '../../../../store/channels';
+import { Channel, onRemoveReply } from '../../../../store/channels';
 import { MessageInput } from '../../../../components/message-input/container';
 import { send as sendMessage } from '../../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../../store/messages/saga';
@@ -57,8 +57,7 @@ export class Container extends React.Component<Properties> {
       panels: { openStates },
     } = state;
 
-    const channel = denormalize(activeConversationId, state);
-    const rawChannel = channelSelector(activeConversationId)(state);
+    const channel = channelSelector(activeConversationId)(state);
 
     return {
       channel,
@@ -66,7 +65,7 @@ export class Container extends React.Component<Properties> {
       joinRoomErrorContent,
       isJoiningConversation,
       isConversationsLoaded,
-      otherMembersTypingInRoom: rawChannel?.otherMembersTyping || [],
+      otherMembersTypingInRoom: channel?.otherMembersTyping || [],
       isSecondarySidekickOpen: groupManagement.isSecondarySidekickOpen,
       isCollapsed: !openStates[PanelEnum.FEED_CHAT],
     };

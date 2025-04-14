@@ -20,10 +20,12 @@ import { receive } from '../users';
 import { chat, getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
-import { markConversationAsRead, openFirstConversation, rawChannelSelector } from '../channels/saga';
+import { addRoomToSync, markConversationAsRead, openFirstConversation } from '../channels/saga';
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 import { rawConversationsList } from '../channels-list/selectors';
+import { loadMembersIfNeeded } from '../channels/saga';
+import { startPollingPosts } from '../posts/saga';
 import { channelSelector } from '../channels/selectors';
 
 function* initChat(userId: string, token: string) {
@@ -47,6 +49,7 @@ function* initChat(userId: string, token: string) {
 // This function will set the loadingConversationProgress to 100% when the
 // chat connection is complete. This could do with some refactoring to make it
 // more readable.
+// TODO zos-619: Look this over and see if it's still needed.
 export function* waitForChatConnectionCompletion() {
   const isComplete = yield select((state) => state.chat.isChatConnectionComplete);
   if (isComplete) {
@@ -79,10 +82,10 @@ export function* waitForChatConnectionCompletion() {
 
     yield put(setIsChatConnectionComplete(true));
 
-    for (let progress = 61; progress <= 95; progress += 0.5) {
-      yield put(setLoadingConversationProgress(progress));
-      yield delay(50);
-    }
+    // for (let progress = 61; progress <= 95; progress += 0.5) {
+    //   yield put(setLoadingConversationProgress(progress));
+    //   yield delay(50);
+    // }
 
     yield put(setLoadingConversationProgress(100));
 
@@ -253,6 +256,11 @@ export function* performValidateActiveConversation(activeConversationId: string)
   // check if path has changed before setting active conversation
   if (currentPathNow === originalPath) {
     yield put(rawSetActiveConversationId(conversationId));
+
+    // Set up the conversation with necessary initialization steps
+    yield call(addRoomToSync, conversationId);
+    yield call(loadMembersIfNeeded, [conversationId]);
+    yield call(startPollingPosts, conversationId);
   }
 
   // Mark conversation as read, now that it has been set as active

@@ -40,7 +40,6 @@ export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: s
   await matrix.setAccountData(EventType.Direct, Object.fromEntries(dmRoomMap));
 }
 
-// TODO: follow up to use zOS user instead of matrix user
 export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMember[] = [], filter: string = '') {
   const normalizedFilter = filter.toLowerCase(); // Case-insensitive search
 

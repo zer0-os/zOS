@@ -23,6 +23,7 @@ export enum Events {
   ReadReceiptReceived = 'chat/message/readReceiptReceived',
   RoomLabelChange = 'chat/channel/roomLabelChange',
   MessageEmojiReactionChange = 'chat/message/messageEmojiReactionChange',
+  RoomData = 'chat/roomData',
 }
 
 let theBus: MulticastChannel<unknown>;
@@ -91,6 +92,7 @@ export function createChatConnection(userId: string, chatAccessToken: string, ch
     const onOtherUserLeftChannel = (channelId, userId) =>
       emit({ type: Events.OtherUserLeftChannel, payload: { channelId, userId } });
     const receiveLiveRoomEvent = (eventData) => emit({ type: Events.LiveRoomEventReceived, payload: { eventData } });
+    const receiveRoomData = (roomId, roomData) => emit({ type: Events.RoomData, payload: { roomId, roomData } });
     const roomMemberTyping = (roomId, userIds) => emit({ type: Events.RoomMemberTyping, payload: { roomId, userIds } });
     const roomMemberPowerLevelChanged = (roomId, matrixId, powerLevel) =>
       emit({ type: Events.RoomMemberPowerLevelChanged, payload: { roomId, matrixId, powerLevel } });
@@ -118,6 +120,7 @@ export function createChatConnection(userId: string, chatAccessToken: string, ch
       readReceiptReceived,
       roomLabelChange,
       messageEmojiReactionChange,
+      receiveRoomData,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

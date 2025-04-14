@@ -5,6 +5,7 @@ import { AsyncListStatus } from '../normalized';
 import { channelSelector } from '../channels/selectors';
 import { createSelector } from '@reduxjs/toolkit';
 import { isOneOnOne } from './utils';
+import { Channel } from '../channels';
 
 export function channelListStatus(state) {
   return getDeepProperty(state, 'channelsList.status', AsyncListStatus.Idle);
@@ -14,12 +15,15 @@ export function rawConversationsList(state) {
   return getDeepProperty(state, 'channelsList.value', []);
 }
 
-export const mostRecentConversation = createSelector([rawConversationsList, (state) => state], (roomIds, state) => {
-  if (!roomIds.length) {
+export function conversationsListSelector(state): Channel[] {
+  return denormalize(rawConversationsList(state), state);
+}
+
+export const mostRecentConversation = createSelector([conversationsListSelector, (state) => state], (rooms) => {
+  if (!rooms.length) {
     return null;
   }
 
-  const rooms = denormalize(roomIds, state);
   const roomsWithMetaData = rooms.map(addLastMessage);
   return roomsWithMetaData.sort(byLastMessageOrCreation)[0];
 });
@@ -44,6 +48,6 @@ export const isOneOnOneSelector = createSelector(
   (channel) => isOneOnOne(channel)
 );
 
-export const oneOnOnesSelector = createSelector([rawConversationsList, (state) => state], (channels, state) =>
-  channels.filter((channel) => isOneOnOneSelector(state, channel.id))
+export const oneOnOnesSelector = createSelector([conversationsListSelector], (channels) =>
+  channels.filter((channel) => isOneOnOne(channel))
 );

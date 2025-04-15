@@ -28,6 +28,7 @@ vi.mock('@zero-tech/zui/icons', () => ({
   IconMessage01: () => <div data-testid='icon-message' />,
   IconSlantLines: () => <div data-testid='icon-slant-lines' />,
   IconWorld: () => <div data-testid='icon-world' />,
+  IconUser: () => <div data-testid='icon-user' />,
 }));
 
 vi.mock('./more-apps-modal', () => ({
@@ -84,6 +85,16 @@ describe(AppBar, () => {
     it('should not set the Messenger icon as active when activeApp is something else', () => {
       renderComponent({ activeApp: 'foo' });
       expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Chat', isActive: false }));
+    });
+
+    it('should set the Profile icon as active when activeApp is "profile"', () => {
+      renderComponent({ activeApp: 'profile' });
+      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Profile', isActive: true }));
+    });
+
+    it('should not set the Profile icon as active when activeApp is something else', () => {
+      renderComponent({ activeApp: 'foo' });
+      expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Profile', isActive: false }));
     });
   });
 
@@ -144,6 +155,15 @@ describe(AppBar, () => {
 
       fireEvent.mouseEnter(panel);
       expect(panel.classList.contains('no-hover')).toBe(false);
+    });
+  });
+
+  describe('Logo Navigation', () => {
+    it('should navigate to home when clicking the logo', () => {
+      const { getByTestId } = renderComponent({});
+      const logoLink = getByTestId('icon-logo-zero').closest('a');
+
+      expect(logoLink).toHaveAttribute('to', '/home');
     });
   });
 });

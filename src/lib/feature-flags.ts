@@ -35,6 +35,8 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableZeroWalletSigning: boolean;
   declare enableFeedChat: boolean;
   declare enableAuraZApp: boolean;
+  declare enableProfile: boolean;
+  declare enableUserProfiles: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

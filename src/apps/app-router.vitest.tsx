@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { AppRouter } from './app-router';
+import { AppRouter, HIDE_SIDEKICK_PATHS } from './app-router';
 import { vi } from 'vitest';
 import { renderWithProviders } from '../test-utils';
 
@@ -41,6 +41,10 @@ const renderComponent = (route: string | undefined = '/') => {
 };
 
 describe(AppRouter, () => {
+  it('should have correct paths in HIDE_SIDEKICK_PATHS', () => {
+    expect(HIDE_SIDEKICK_PATHS).toEqual(['/home', '/profile']);
+  });
+
   it('should render MessengerMain component when route is /', () => {
     renderComponent('/');
     expect(screen.getByTestId('messenger-app')).toBeTruthy();

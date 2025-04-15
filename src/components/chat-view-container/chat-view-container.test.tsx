@@ -12,6 +12,7 @@ describe('ChannelViewContainer', () => {
     const allProps = {
       channel: null,
       channelId: '',
+      backupExists: false,
       fetchMessages: () => undefined,
       user: {
         isLoading: false,
@@ -230,6 +231,9 @@ describe('ChannelViewContainer', () => {
         },
         groupManagement: {
           isSecondarySidekickOpen: false,
+        },
+        matrix: {
+          backupExists: false,
         },
       } as RootState);
 

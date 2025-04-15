@@ -6,7 +6,6 @@ import './styles.scss';
 
 export interface Properties {
   attachments: Attachment[];
-  border?: boolean;
   onRemove?: (attachment: any) => void;
   onAttachmentClicked?: (attachment: any) => void;
   type?: 'video' | 'file';

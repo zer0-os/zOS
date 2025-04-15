@@ -1,12 +1,17 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { clearUsers, receiveSearchResults, updateUserProfileImageFromCache } from './saga';
+import {
+  clearUsers,
+  receiveSearchResults,
+  updateUserProfileImageFromCache,
+  verifyMatrixProfileDisplayNameIsSynced,
+} from './saga';
 import { call, spawn } from 'redux-saga/effects';
 import { rootReducer } from '../reducer';
 import { denormalize } from '.';
 import { StoreBuilder } from '../test/store';
 import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
 import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
-
+import { verifyMatrixProfileDisplayNameIsSynced as verifyMatrixProfileDisplayNameIsSyncedAPI } from '../../lib/chat';
 const mockIdb = {
   state: {},
   put(key, item) {
@@ -191,5 +196,26 @@ describe(updateUserProfileImageFromCache, () => {
       .run();
 
     expect(returnValue).toBe('uploaded-image-url');
+  });
+});
+
+describe(verifyMatrixProfileDisplayNameIsSynced, () => {
+  it('should select the current user and call the sync API with extracted profile info', async () => {
+    const currentUser: any = {
+      id: 'user-id-sync',
+      profileSummary: { firstName: 'Test Name', profileImage: 'mxc://test/avatar' },
+    };
+    const initialState = new StoreBuilder().withCurrentUser(currentUser);
+
+    await expectSaga(verifyMatrixProfileDisplayNameIsSynced)
+      .provide([
+        [
+          call(verifyMatrixProfileDisplayNameIsSyncedAPI, 'Test Name'),
+          {},
+        ],
+      ])
+      .withReducer(rootReducer, initialState.build())
+      .call(verifyMatrixProfileDisplayNameIsSyncedAPI, 'Test Name')
+      .run();
   });
 });

@@ -19,21 +19,18 @@ export interface Properties {
   isValidConversation: boolean;
   isJoiningConversation: boolean;
   isConversationsLoaded: boolean;
-  isSecondarySidekickOpen: boolean;
 }
 
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const {
       chat: { activeConversationId, isJoiningConversation, isConversationsLoaded },
-      groupManagement: { isSecondarySidekickOpen },
     } = state;
 
     return {
       isValidConversation: !!activeConversationId,
       isJoiningConversation,
       isConversationsLoaded,
-      isSecondarySidekickOpen,
     };
   }
 

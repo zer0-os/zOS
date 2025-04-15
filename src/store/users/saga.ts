@@ -9,7 +9,9 @@ import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
 import { User } from '../authentication/types';
 import { getZeroUsersQuery } from './queries/getZeroUsersQuery';
 import { queryClient } from '../../lib/web3/rainbowkit/provider';
-
+import { verifyMatrixProfileDisplayNameIsSynced as verifyMatrixProfileDisplayNameIsSyncedAPI } from '../../lib/chat';
+import * as Sentry from '@sentry/react';
+import { currentUserSelector } from '../authentication/selectors';
 export function* clearUsers() {
   yield put(removeAll({ schema: schema.key }));
 }
@@ -42,39 +44,57 @@ export function* receiveSearchResults(searchResults) {
   (as the matrixClient was not initialized at that time).
 */
 export function* updateUserProfileImageFromCache(currentUser: User) {
-  const { firstName: name } = currentUser.profileSummary || {};
-  const { primaryZID } = currentUser;
+  try {
+    const { firstName: name } = currentUser.profileSummary || {};
+    const { primaryZID } = currentUser;
 
-  const provider = yield call(getIndexedDbProvider);
-  const profileImage: File = yield call([provider, provider.get], 'profileImage');
+    const provider = yield call(getIndexedDbProvider);
+    const profileImage: File = yield call([provider, provider.get], 'profileImage');
 
-  if (profileImage) {
-    const profileImageUrl = yield call(uploadFile, profileImage);
-    const response = yield call(apiEditUserProfile, {
-      name,
-      primaryZID,
-      profileImage: profileImageUrl || undefined,
-    });
-    if (response.success) {
-      // also update the profile image & name in the homeserver user directory
-      yield spawn(matrixEditProfile, { avatarUrl: profileImageUrl, displayName: name });
+    if (profileImage) {
+      const profileImageUrl = yield call(uploadFile, profileImage);
+      const response = yield call(apiEditUserProfile, {
+        name,
+        primaryZID,
+        profileImage: profileImageUrl || undefined,
+      });
+      if (response.success) {
+        // also update the profile image & name in the homeserver user directory
+        yield spawn(matrixEditProfile, { avatarUrl: profileImageUrl, displayName: name });
 
-      return profileImageUrl;
+        return profileImageUrl;
+      } else {
+        console.error('Failed to update user profile on registration:', response.error);
+      }
     } else {
-      console.error('Failed to update user profile on registration:', response.error);
+      // only update the displayname if the user hasn't uploaded a profile image during registration
+      yield spawn(matrixEditProfile, { displayName: name });
     }
-  } else {
-    // only update the displayname if the user hasn't uploaded a profile image during registration
-    yield spawn(matrixEditProfile, { displayName: name });
+  } catch (error) {
+    Sentry.captureException(error, {
+      extra: {
+        context: 'updateUserProfileImageFromCache started',
+        data: { userId: currentUser.id },
+      },
+    });
   }
 
   return undefined;
+}
+
+// there seems to be a bug where the profile info (displayname specifically) is not updated in the 'matrix' database
+// so this is just a failsafe to ensure that the user profile (from zos-api) is synced with it's matrix state
+export function* verifyMatrixProfileDisplayNameIsSynced() {
+  const currentUser = yield select(currentUserSelector);
+  const { firstName: displayName } = currentUser.profileSummary || {};
+  yield call(verifyMatrixProfileDisplayNameIsSyncedAPI, displayName);
 }
 
 function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, AuthEvents.UserLogin);
+    yield spawn(verifyMatrixProfileDisplayNameIsSynced);
   }
 }
 

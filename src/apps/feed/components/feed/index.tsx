@@ -9,10 +9,18 @@ import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../component
 import styles from './styles.module.scss';
 
 export interface FeedProps {
+  /**
+   * Filter by channel ZID, e.g. "posts in 0://foo".
+   */
   zid?: string;
+  /**
+   * Filter by author user ID.
+   */
+  userId?: string;
+  isPostingEnabled?: boolean;
 }
 
-export const Feed = ({ zid }: FeedProps) => {
+export const Feed = ({ zid, isPostingEnabled = true, userId }: FeedProps) => {
   const {
     channelZid,
     fetchNextPage,
@@ -25,9 +33,9 @@ export const Feed = ({ zid }: FeedProps) => {
     isLoading,
     meowPostFeed,
     posts,
-    userId,
+    currentUserId,
     userMeowBalance,
-  } = useFeed(zid);
+  } = useFeed(zid, userId);
 
   return (
     <Panel className={styles.Feed}>
@@ -35,7 +43,7 @@ export const Feed = ({ zid }: FeedProps) => {
         <PanelTitle>{headerText}</PanelTitle>
       </PanelHeader>
       <PanelBody className={styles.Panel}>
-        {channelZid && <PostInput className={styles.Input} channelZid={channelZid} />}
+        {channelZid && isPostingEnabled && <PostInput className={styles.Input} channelZid={channelZid} />}
         {isLoading && <Message>Loading posts...</Message>}
         {isEmpty && <Message>This feed is empty</Message>}
         {hasLoadedMessages && (
@@ -49,7 +57,7 @@ export const Feed = ({ zid }: FeedProps) => {
                     avatarUrl={reply.sender?.avatarUrl}
                     author={reply.sender?.displaySubHandle}
                     channelZid={reply.channelZid}
-                    currentUserId={userId}
+                    currentUserId={currentUserId}
                     meowPost={meowPostFeed}
                     messageId={reply.id.toString()}
                     nickname={reply.sender?.firstName}

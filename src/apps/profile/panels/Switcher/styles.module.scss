@@ -1,0 +1,13 @@
+.Container {
+  flex: 1;
+  max-width: 600px;
+}
+
+.Content {
+  height: 100%;
+  width: 100%;
+
+  > * {
+    width: 100%;
+  }
+}

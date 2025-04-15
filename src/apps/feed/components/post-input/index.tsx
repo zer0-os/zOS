@@ -37,6 +37,7 @@ export interface Properties extends PublicPropertiesContainer {
   };
 
   dropzoneToMedia?: (files: any[]) => Media[];
+  onPostInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
 }
 
 interface State {

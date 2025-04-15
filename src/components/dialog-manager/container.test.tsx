@@ -2,8 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Container, Properties } from './container';
 import { RootState } from '../../store/reducer';
-import { SecureBackupContainer } from '../secure-backup/container';
-import { closeBackupDialog } from '../../store/matrix';
+import { closeRestoreBackupDialog, closeCreateBackupDialog } from '../../store/matrix';
 import { LogoutConfirmationModalContainer } from '../logout-confirmation-modal/container';
 import { RewardsModalContainer } from '../rewards-modal/container';
 import { closeRewardsDialog } from '../../store/rewards';
@@ -12,12 +11,15 @@ import { closeDeleteMessage, closeLightbox } from '../../store/dialogs';
 import { ReportUserContainer } from '../report-user-dialog/container';
 import { closeReportUserModal } from '../../store/report-user';
 import { Lightbox } from '../lightbox';
+import { CreateSecureBackupContainer } from '../secure-backup/create-secure-backup/container';
+import { RestoreSecureBackupContainer } from '../secure-backup/restore-secure-backup/container';
 
 describe('DialogManager', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
       displayLogoutModal: false,
-      isBackupDialogOpen: false,
+      isCreateBackupDialogOpen: false,
+      isRestoreBackupDialogOpen: false,
       isRewardsDialogOpen: false,
       deleteMessageId: null,
       isReportUserModalOpen: false,
@@ -26,7 +28,8 @@ describe('DialogManager', () => {
         media: [],
         startingIndex: 0,
       },
-      closeBackupDialog: () => null,
+      closeCreateBackupDialog: () => null,
+      closeRestoreBackupDialog: () => null,
       closeRewardsDialog: () => null,
       closeDeleteMessage: () => null,
       closeReportUserModal: () => null,
@@ -37,26 +40,48 @@ describe('DialogManager', () => {
     return shallow(<Container {...allProps} />);
   };
 
-  it('renders SecureBackupContainer when isBackupDialogOpen is true', () => {
-    const wrapper = subject({ isBackupDialogOpen: true });
+  it('renders CreateSecureBackupContainer when isCreateBackupDialogOpen is true', () => {
+    const wrapper = subject({ isCreateBackupDialogOpen: true });
 
-    expect(wrapper).toHaveElement(SecureBackupContainer);
+    expect(wrapper).toHaveElement(CreateSecureBackupContainer);
   });
 
-  it('does not render SecureBackupContainer when isBackupDialogOpen is false', () => {
-    const wrapper = subject({ isBackupDialogOpen: false });
+  it('does not render CreateSecureBackupContainer when isCreateBackupDialogOpen is false', () => {
+    const wrapper = subject({ isCreateBackupDialogOpen: false });
 
-    expect(wrapper).not.toHaveElement(SecureBackupContainer);
+    expect(wrapper).not.toHaveElement(CreateSecureBackupContainer);
   });
 
-  it('calls closeBackupDialog on closeBackup method', () => {
-    const closeBackupDialogMock = jest.fn();
-    const wrapper = subject({ closeBackupDialog: closeBackupDialogMock });
+  it('calls closeCreateBackupDialog on closeBackup method', () => {
+    const closeCreateBackupDialogMock = jest.fn();
+    const wrapper = subject({ closeCreateBackupDialog: closeCreateBackupDialogMock });
 
     const instance = wrapper.instance() as Container;
-    instance.closeBackup();
+    instance.closeCreateBackup();
 
-    expect(closeBackupDialogMock).toHaveBeenCalled();
+    expect(closeCreateBackupDialogMock).toHaveBeenCalled();
+  });
+
+  it('renders RestoreSecureBackupContainer when isRestoreBackupDialogOpen is true', () => {
+    const wrapper = subject({ isRestoreBackupDialogOpen: true });
+
+    expect(wrapper).toHaveElement(RestoreSecureBackupContainer);
+  });
+
+  it('does not render RestoreSecureBackupContainer when isRestoreBackupDialogOpen is false', () => {
+    const wrapper = subject({ isRestoreBackupDialogOpen: false });
+
+    expect(wrapper).not.toHaveElement(RestoreSecureBackupContainer);
+  });
+
+  it('calls closeRestoreBackupDialog on closeRestoreBackup method', () => {
+    const closeRestoreBackupDialogMock = jest.fn();
+    const wrapper = subject({ closeRestoreBackupDialog: closeRestoreBackupDialogMock });
+
+    const instance = wrapper.instance() as Container;
+    instance.closeRestoreBackup();
+
+    expect(closeRestoreBackupDialogMock).toHaveBeenCalled();
   });
 
   it('renders Logout Confirmation when displayLogoutModal is true', () => {
@@ -129,7 +154,8 @@ describe('DialogManager', () => {
         displayLogoutModal: true,
       },
       matrix: {
-        isBackupDialogOpen: true,
+        isCreateBackupDialogOpen: true,
+        isRestoreBackupDialogOpen: true,
       },
       rewards: {
         showRewardsInPopup: false,
@@ -147,10 +173,16 @@ describe('DialogManager', () => {
       },
     } as RootState;
 
-    it('returns isBackupDialogOpen', () => {
+    it('returns isCreateBackupDialogOpen', () => {
       const props = Container.mapState(stateMock);
 
-      expect(props.isBackupDialogOpen).toBe(true);
+      expect(props.isCreateBackupDialogOpen).toBe(true);
+    });
+
+    it('returns isRestoreBackupDialogOpen', () => {
+      const props = Container.mapState(stateMock);
+
+      expect(props.isRestoreBackupDialogOpen).toBe(true);
     });
 
     it('returns displayLogoutModal', () => {
@@ -189,11 +221,18 @@ describe('DialogManager', () => {
   });
 
   describe('mapActions', () => {
-    it('returns closeBackupDialog action', () => {
+    it('returns closeCreateBackupDialog action', () => {
       const actions = Container.mapActions({} as any);
 
-      expect(actions.closeBackupDialog).toBeDefined();
-      expect(actions.closeBackupDialog).toEqual(closeBackupDialog);
+      expect(actions.closeCreateBackupDialog).toBeDefined();
+      expect(actions.closeCreateBackupDialog).toEqual(closeCreateBackupDialog);
+    });
+
+    it('returns closeRestoreBackupDialog action', () => {
+      const actions = Container.mapActions({} as any);
+
+      expect(actions.closeRestoreBackupDialog).toBeDefined();
+      expect(actions.closeRestoreBackupDialog).toEqual(closeRestoreBackupDialog);
     });
 
     it('returns closeRewardsDialog action', () => {

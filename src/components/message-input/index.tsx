@@ -36,6 +36,7 @@ export interface Properties extends PublicPropertiesContainer {
   };
   dropzoneToMedia?: (files: any[]) => Media[];
   onUserTyping: ({ roomId }: { roomId: string }) => void;
+  onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
 }
 
 interface State {

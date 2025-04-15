@@ -9,6 +9,7 @@ import { currentUserSelector } from '../../store/authentication/selectors';
 import { denormalize as denormalizeUser } from '../../store/users';
 
 export interface PublicProperties {
+  // eslint-disable-next-line react-redux/no-unused-prop-types
   message: Message;
 }
 

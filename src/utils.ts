@@ -15,6 +15,14 @@ export const initializeErrorBoundary = () => {
   });
 };
 
+export const setSentryUser = (userId: string) => {
+  if (userId) {
+    Sentry.setUser({ id: userId });
+  } else {
+    Sentry.setUser(null);
+  }
+};
+
 export function getMainBackgroundClass(selectedMainBackground) {
   switch (selectedMainBackground) {
     case MainBackground.AnimatedGreenParticles:

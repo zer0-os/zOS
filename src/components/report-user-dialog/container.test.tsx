@@ -8,8 +8,6 @@ import { StoreBuilder } from '../../store/test/store';
 describe('ReportUserContainer', () => {
   const subject = (props: Partial<Properties>) => {
     const allProps: Properties = {
-      reason: '',
-      comment: '',
       reportedUserName: '',
       loading: false,
       errorMessage: '',

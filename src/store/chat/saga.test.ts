@@ -90,6 +90,7 @@ describe(performValidateActiveConversation, () => {
       .call(getHistory)
       .call(channelSagas.addRoomToSync, conversationId)
       .put(rawSetActiveConversationId(conversationId))
+      .spawn(markConversationAsRead, conversationId)
       .run();
 
     expect(storeState.chat.activeConversationId).toBe(conversationId);
@@ -185,6 +186,7 @@ describe(performValidateActiveConversation, () => {
       .call(getHistory)
       .call(channelSagas.addRoomToSync, 'social-channel')
       .put(rawSetActiveConversationId('social-channel'))
+      .spawn(markConversationAsRead, 'social-channel')
       .not.call(openFirstConversation)
       .run();
   });
@@ -217,6 +219,7 @@ describe(performValidateActiveConversation, () => {
       .call(getHistory)
       .call(channelSagas.addRoomToSync, resolvedRoomId)
       .put(rawSetActiveConversationId(resolvedRoomId))
+      .spawn(markConversationAsRead, 'convo-1')
       .run();
   });
 
@@ -252,7 +255,7 @@ describe(performValidateActiveConversation, () => {
         },
       ])
       .not.put(rawSetActiveConversationId('convo-1'))
-      .call(markConversationAsRead, 'convo-1')
+      .spawn(markConversationAsRead, 'convo-1')
       .run();
   });
 });
@@ -417,8 +420,6 @@ describe(waitForChatConnectionCompletion, () => {
   it('returns true if channel list already loaded', () => {
     testSaga(waitForChatConnectionCompletion).next().next(true).returns(true);
   });
-
-  // TODO: Fix these tests
 
   // it('waits for load if channel list not yet loaded', () => {
   //   testSaga(waitForChatConnectionCompletion)

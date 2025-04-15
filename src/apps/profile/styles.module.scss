@@ -1,0 +1,15 @@
+@use '../../variables' as variables;
+
+.Wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: variables.$default-gap;
+
+  width: 100%;
+  height: 100%;
+  padding: variables.$page-padding-vertical variables.$default-gap;
+  box-sizing: border-box;
+
+  pointer-events: all;
+}

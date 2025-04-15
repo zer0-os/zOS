@@ -286,11 +286,14 @@ export const Message: React.FC<Properties> = ({
         onReportUser={onMenuReportUser}
         isMenuOpen={isMenuOpen}
         isMenuFlying={isMenuFlying}
+        isHidden={isHidden}
       />
     );
   };
 
   const renderMenu = () => {
+    const isGif = media?.mimetype === 'image/gif';
+
     return (
       <div
         {...cn(
@@ -301,7 +304,8 @@ export const Message: React.FC<Properties> = ({
         )}
         onClick={handleCloseMenu}
       >
-        <IconButton {...cn('menu-item')} onClick={openReactionPicker} Icon={IconHeart} size={32} />
+        {!isGif && <IconButton {...cn('menu-item')} onClick={openReactionPicker} Icon={IconHeart} size={32} />}
+
         <Menu isMenuOpen={isMessageMenuOpen} />
       </div>
     );
@@ -333,6 +337,13 @@ export const Message: React.FC<Properties> = ({
   const renderBody = () => {
     return (
       <div {...cn('block-body')}>
+        {media?.body && (
+          <ContentHighlighter
+            message={media.body}
+            isHidden={isHidden}
+            onHiddenMessageInfoClick={onHiddenMessageInfoClick}
+          />
+        )}
         {message && (
           <ContentHighlighter
             message={message}
@@ -396,59 +407,49 @@ export const Message: React.FC<Properties> = ({
       >
         {(message || media || preview) && (
           <>
-            {!isEditing && (
-              <>
-                {showAuthorName && (
-                  <div {...cn('author-name')}>
-                    {sender.firstName} {sender.lastName}
-                  </div>
-                )}
-                {media && (
-                  <MessageMedia
-                    media={media}
-                    onImageClick={onImageClick}
-                    openAttachmentPreview={openAttachmentPreview}
-                    effectiveMediaUrl={effectiveMediaUrl}
-                    isLoading={isMediaLoading}
-                    isError={isMediaError}
-                  />
-                )}
-                {renderLinkPreview()}
-                <ParentMessage
-                  message={parentMessageText}
-                  senderIsCurrentUser={parentSenderIsCurrentUser}
-                  senderFirstName={parentSenderFirstName}
-                  senderLastName={parentSenderLastName}
-                  media={parentMessageMedia}
-                  messageId={parentMessageId}
-                  onMessageClick={onParentMessageClick}
-                />
-                {renderBody()}
-              </>
+            {showAuthorName && !isEditing && (
+              <div {...cn('author-name')}>
+                {sender.firstName} {sender.lastName}
+              </div>
             )}
 
+            {media && (
+              <MessageMedia
+                media={media}
+                onImageClick={onImageClick}
+                openAttachmentPreview={openAttachmentPreview}
+                effectiveMediaUrl={effectiveMediaUrl}
+                isLoading={isMediaLoading}
+                isError={isMediaError}
+              />
+            )}
+
+            {!isEditing && renderLinkPreview()}
+
+            {!isEditing && (
+              <ParentMessage
+                message={parentMessageText}
+                senderIsCurrentUser={parentSenderIsCurrentUser}
+                senderFirstName={parentSenderFirstName}
+                senderLastName={parentSenderLastName}
+                media={parentMessageMedia}
+                messageId={parentMessageId}
+                onMessageClick={onParentMessageClick}
+              />
+            )}
+
+            {!isEditing && renderBody()}
+
             {isEditing && message && (
-              <>
-                {media && (
-                  <MessageMedia
-                    media={media}
-                    onImageClick={onImageClick}
-                    openAttachmentPreview={openAttachmentPreview}
-                    effectiveMediaUrl={effectiveMediaUrl}
-                    isLoading={isMediaLoading}
-                    isError={isMediaError}
-                  />
-                )}
-                <div {...cn('block-edit')}>
-                  <MessageInput
-                    initialValue={message}
-                    onSubmit={editMessageFromInput}
-                    getUsersForMentions={getUsersForMentions}
-                    isEditing={isEditing}
-                    renderAfterInput={editActions}
-                  />
-                </div>
-              </>
+              <div {...cn('block-edit')}>
+                <MessageInput
+                  initialValue={message}
+                  onSubmit={editMessageFromInput}
+                  getUsersForMentions={getUsersForMentions}
+                  isEditing={isEditing}
+                  renderAfterInput={editActions}
+                />
+              </div>
             )}
           </>
         )}

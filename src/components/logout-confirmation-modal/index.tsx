@@ -48,6 +48,14 @@ export class LogoutConfirmationModal extends React.Component<Properties> {
     );
   }
 
+  close = () => {
+    this.props.onClose();
+  };
+
+  logout = () => {
+    this.props.onLogout();
+  };
+
   render() {
     return (
       <Modal
@@ -58,9 +66,9 @@ export class LogoutConfirmationModal extends React.Component<Properties> {
         secondaryText='Cancel'
         secondaryVariant={Variant.Secondary}
         secondaryColor={Color.Greyscale}
-        onPrimary={this.props.onLogout}
-        onSecondary={this.props.onClose}
-        onClose={this.props.onClose}
+        onPrimary={this.logout}
+        onSecondary={this.close}
+        onClose={this.close}
       >
         <div {...cn()}>
           {!this.props.backupExists && this.noBackupText}

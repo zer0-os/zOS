@@ -8,18 +8,9 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version-file: .nvmrc
+        cache: npm
 
-    - name: Get node version
-      id: node
+    - name: Install dependencies
       shell: bash
-      run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-    # rebuild the cache if OS, package-lock.json or node version changes
-    - name: Get node_modules cache
-      uses: actions/cache@v4
-      id: node_modules
-      with:
-        path: |
-          **/node_modules
-        key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+      run: npm ci --legacy-peer-deps

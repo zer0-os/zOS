@@ -15,7 +15,7 @@ import { Channel, ConversationStatus, denormalize, onReply } from '../../store/c
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
 import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
-import { openBackupDialog } from '../../store/matrix';
+import { openCreateBackupDialog, openRestoreBackupDialog } from '../../store/matrix';
 import { ParentMessage } from '../../lib/chat/types';
 import { openDeleteMessage, openLightbox } from '../../store/dialogs';
 import { openMessageInfo } from '../../store/message-info';
@@ -27,15 +27,13 @@ import { isOneOnOne } from '../../store/channels-list/utils';
 
 export interface Properties extends PublicProperties {
   channel: Channel;
+  backupExists: boolean;
   fetchMessages: (payload: PayloadFetchMessages) => void;
   user: AuthenticationState['user'];
   editMessage: (payload: EditPayload) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
-  openBackupDialog: () => void;
-  activeConversationId?: string;
-  context: {
-    isAuthenticated: boolean;
-  };
+  openCreateBackupDialog: () => void;
+  openRestoreBackupDialog: () => void;
   isSecondarySidekickOpen: boolean;
   openDeleteMessage: (messageId: string) => void;
   toggleSecondarySidekick: () => void;
@@ -49,6 +47,8 @@ interface PublicProperties {
   channelId: string;
   className?: string;
   showSenderAvatar?: boolean;
+
+  // eslint-disable-next-line react-redux/no-unused-prop-types
   ref?: any;
 }
 
@@ -64,15 +64,15 @@ export class Container extends React.Component<Properties> {
     const channel = denormalize(props.channelId, state) || null;
     const {
       authentication: { user },
-      chat: { activeConversationId },
       groupManagement: { isSecondarySidekickOpen },
+      matrix: { backupExists },
     } = state;
 
     return {
       channel,
       user,
-      activeConversationId,
       isSecondarySidekickOpen,
+      backupExists,
     };
   }
 
@@ -81,7 +81,8 @@ export class Container extends React.Component<Properties> {
       fetchMessages,
       editMessage,
       onReply,
-      openBackupDialog,
+      openCreateBackupDialog,
+      openRestoreBackupDialog,
       openDeleteMessage,
       openMessageInfo,
       toggleSecondarySidekick,
@@ -153,6 +154,14 @@ export class Container extends React.Component<Properties> {
     const { channelId } = this.props;
     if (channelId && messageId) {
       this.props.editMessage({ channelId, messageId, message, mentionedUserIds, data });
+    }
+  };
+
+  handleHiddenMessageInfoClick = () => {
+    if (!this.props.backupExists) {
+      this.props.openCreateBackupDialog();
+    } else {
+      this.props.openRestoreBackupDialog();
     }
   };
 
@@ -247,7 +256,7 @@ export class Container extends React.Component<Properties> {
           onReply={this.props.onReply}
           onReportUser={this.onReportUser}
           conversationErrorMessage={this.conversationErrorMessage}
-          onHiddenMessageInfoClick={this.props.openBackupDialog}
+          onHiddenMessageInfoClick={this.handleHiddenMessageInfoClick}
           ref={this.chatViewRef}
           isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
           toggleSecondarySidekick={this.props.toggleSecondarySidekick}

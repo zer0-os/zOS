@@ -6,6 +6,7 @@ import { Main } from './Main';
 import { setActiveConversationId } from '../../store/chat';
 
 export interface Properties {
+  // eslint-disable-next-line react-redux/no-unused-prop-types
   match: { params: { conversationId: string } };
   setActiveConversationId: ({ id }: { id: string }) => void;
 }

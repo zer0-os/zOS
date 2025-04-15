@@ -24,7 +24,7 @@ import {
   IContent,
   NotificationCount,
 } from 'matrix-js-sdk/lib/matrix';
-import { CryptoApi, CryptoCallbacks, decodeRecoveryKey } from 'matrix-js-sdk/lib/crypto-api';
+import { CryptoApi, CryptoCallbacks, decodeRecoveryKey, ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 import { RealtimeChatEvents } from './';
 import {
   mapEventToAdminMessage,
@@ -271,7 +271,7 @@ export class MatrixClient {
    * Restore the secure backup from the Homeserver.
    * @param recoveryKey Recovery key
    */
-  async restoreSecureBackup(recoveryKey: string) {
+  async restoreSecureBackup(recoveryKey: string, onProgress?: (progress: ImportRoomKeyProgressData) => void) {
     const backupInfo = await this.cryptoApi.getKeyBackupInfo();
     if (!backupInfo) {
       throw new Error('Backup broken or not there');
@@ -281,7 +281,9 @@ export class MatrixClient {
     this.secretStorageKey = privateKey;
     await this.accessSecretStorage(async () => {
       await this.cryptoApi.loadSessionBackupPrivateKeyFromSecretStorage();
-      const recoverInfo = await this.cryptoApi.restoreKeyBackup();
+      const recoverInfo = await this.cryptoApi.restoreKeyBackup({
+        progressCallback: onProgress,
+      });
       if (!recoverInfo) {
         throw new Error('Backup broken or not there');
       }
@@ -714,6 +716,15 @@ export class MatrixClient {
     }
 
     return downloadResultsMap;
+  }
+
+  async verifyMatrixProfileDisplayNameIsSynced(displayName: string) {
+    await this.waitForConnection();
+    const currentProfileInfo = await this.getProfileInfo(this.userId);
+
+    if (displayName && currentProfileInfo.displayname !== displayName) {
+      await this.matrix.setDisplayName(displayName);
+    }
   }
 
   async editProfile(profileInfo: MatrixProfileInfo = {}) {

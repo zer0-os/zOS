@@ -23,19 +23,11 @@ describe(DirectMessageChat, () => {
       activeConversationId: '1',
       leaveGroupDialogStatus: LeaveGroupDialogStatus.CLOSED,
       directMessage: { id: '1', otherMembers: [] } as any,
-      isSecondarySidekickOpen: false,
       sendMessage: () => null,
       onRemoveReply: () => null,
       isJoiningConversation: false,
-      startAddGroupMember: () => null,
-      startEditConversation: () => null,
       setLeaveGroupStatus: () => null,
-      viewGroupInformation: () => null,
-      toggleSecondarySidekick: () => null,
       otherMembersTypingInRoom: [],
-      onAddLabel: () => null,
-      onRemoveLabel: () => null,
-
       ...props,
     };
 

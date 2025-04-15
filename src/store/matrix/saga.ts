@@ -1,4 +1,5 @@
-import { call, delay, put, select, spawn, take, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, spawn, take, takeLatest, cancel } from 'redux-saga/effects';
+import { channel } from 'redux-saga';
 
 import {
   SagaActionTypes,
@@ -7,11 +8,16 @@ import {
   setErrorMessage,
   setLoaded,
   setSuccessMessage,
-  setIsBackupDialogOpen,
-  setBackupStage,
-  BackupStage,
+  setIsCreateBackupDialogOpen,
+  setIsRestoreBackupDialogOpen,
+  setCreateBackupStage,
+  setRestoreBackupStage,
+  CreateBackupStage,
+  RestoreBackupStage,
   setBackupExists,
   setBackupRestored,
+  setRestoreProgress,
+  initialRestoreProgressState,
 } from '.';
 import { chat, getSecureBackup } from '../../lib/chat';
 import { performUnlessLogout } from '../utils';
@@ -31,9 +37,12 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.SaveBackup, saveBackup);
   yield takeLatest(SagaActionTypes.RestoreBackup, restoreBackup);
   yield takeLatest(SagaActionTypes.ClearBackup, clearBackupState);
-  yield takeLatest(SagaActionTypes.OpenBackupDialog, userInitiatedBackupDialog);
-  yield takeLatest(SagaActionTypes.CloseBackupDialog, closeBackupDialog);
-  yield takeLatest(SagaActionTypes.VerifyKey, proceedToVerifyKey);
+  yield takeLatest(SagaActionTypes.CloseCreateBackupDialog, closeCreateBackupDialog);
+  yield takeLatest(SagaActionTypes.CloseRestoreBackupDialog, closeRestoreBackupDialog);
+  yield takeLatest(SagaActionTypes.OpenCreateBackupDialog, userInitiatedCreateBackupDialog);
+  yield takeLatest(SagaActionTypes.OpenRestoreBackupDialog, userInitiatedRestoreBackupDialog);
+  yield takeLatest(SagaActionTypes.VerifyCreatedKey, proceedToVerifyCreatedKey);
+  yield takeLatest(SagaActionTypes.VerifyRestorationKey, proceedToVerifyRestorationKey);
 
   // For debugging
   yield takeLatest(SagaActionTypes.DebugDeviceList, debugDeviceList);
@@ -63,10 +72,11 @@ export function* receiveBackupData(existingBackup: MatrixKeyBackupInfo | null) {
     backupRestored = false;
   } else {
     backupExists = !!existingBackup?.trustInfo;
-    // If the backup is trusted locally or usable, then we consider it restored
-    // There are cases when only one of the two is true but in either case
+    // If the backup is trusted locally, or usable and matches the decryption key, then we consider it restored
+    // There are cases when only two of the three are true but in either case
     // we've found the backup is sufficient to decrypt everything
-    backupRestored = backupExists && existingBackup.trustInfo.trusted;
+    backupRestored =
+      backupExists && (existingBackup.trustInfo.trusted || existingBackup.trustInfo.matchesDecryptionKey);
   }
 
   yield put(setBackupExists(backupExists));
@@ -77,7 +87,7 @@ export function* receiveBackupData(existingBackup: MatrixKeyBackupInfo | null) {
 
 export function* generateBackup() {
   yield put(setErrorMessage(''));
-  yield put(setBackupStage(BackupStage.GenerateBackup));
+  yield put(setCreateBackupStage(CreateBackupStage.GenerateBackup));
 
   const chatClient = yield call(chat.get);
 
@@ -86,18 +96,16 @@ export function* generateBackup() {
     yield put(setGeneratedRecoveryKey(key.encodedPrivateKey));
   } catch (error) {
     yield put(setErrorMessage('Failed to generate backup key. Please try again.'));
-    yield call(userInitiatedBackupDialog);
+    yield call(userInitiatedCreateBackupDialog);
   }
 }
 
-export function* proceedToVerifyKey() {
-  const existingKey: string | null = yield select((state) => state.matrix.generatedRecoveryKey);
+export function* proceedToVerifyCreatedKey() {
+  yield put(setCreateBackupStage(CreateBackupStage.VerifyKeyPhrase));
+}
 
-  if (existingKey) {
-    yield put(setBackupStage(BackupStage.VerifyKeyPhrase));
-  } else {
-    yield put(setBackupStage(BackupStage.RestoreBackup));
-  }
+export function* proceedToVerifyRestorationKey() {
+  yield put(setRestoreBackupStage(RestoreBackupStage.RestoreBackup));
 }
 
 export function* saveBackup(action) {
@@ -117,7 +125,7 @@ export function* saveBackup(action) {
 
     yield put(setGeneratedRecoveryKey(null));
     yield call(getBackup);
-    yield put(setBackupStage(BackupStage.Success));
+    yield put(setCreateBackupStage(CreateBackupStage.Success));
     yield put(setSuccessMessage('Account backup successful'));
     yield put(setErrorMessage(''));
   } catch {
@@ -128,12 +136,29 @@ export function* saveBackup(action) {
 export function* restoreBackup(action) {
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
+  yield put(setRestoreProgress({ ...initialRestoreProgressState, stage: 'start' }));
+
   const chatClient = yield call(chat.get);
   const recoveryKey = action.payload;
+  const progressChannel = channel();
+
   try {
-    yield call([chatClient, chatClient.restoreSecureBackup], recoveryKey);
+    const restorePromise = call([chatClient, chatClient.restoreSecureBackup], recoveryKey, (progress) =>
+      progressChannel.put(progress)
+    );
+
+    const progressTask = yield spawn(function* () {
+      while (true) {
+        yield put(setRestoreProgress(yield take(progressChannel)));
+      }
+    });
+
+    yield restorePromise;
+    progressChannel.close();
+    yield cancel(progressTask);
+
     yield call(getBackup);
-    yield put(setBackupStage(BackupStage.Success));
+    yield put(setRestoreBackupStage(RestoreBackupStage.Success));
     yield put(setSuccessMessage('Login successfully verified!'));
   } catch (e: any) {
     Sentry.captureException(e, {
@@ -159,6 +184,7 @@ export function* clearBackupState() {
   yield put(setGeneratedRecoveryKey(null));
   yield put(setSuccessMessage(''));
   yield put(setErrorMessage(''));
+  yield put(setRestoreProgress(initialRestoreProgressState));
 }
 
 export function* debugDeviceList(action) {
@@ -182,27 +208,44 @@ export function* ensureUserHasBackup() {
   const backup = yield call(getSecureBackup);
   if (!backup) {
     if (yield call(performUnlessLogout, delay(5000))) {
-      yield call(systemInitiatedBackupDialog);
+      yield call(systemInitiatedCreateBackupDialog);
     }
   }
 }
 
-export function* closeBackupDialog() {
-  yield put(setIsBackupDialogOpen(false));
+export function* closeCreateBackupDialog() {
+  yield put(setIsCreateBackupDialogOpen(false));
 }
 
-export function* userInitiatedBackupDialog() {
-  const { backupExists, backupRestored } = yield select((state) => state.matrix);
+export function* closeRestoreBackupDialog() {
+  yield put(setIsRestoreBackupDialogOpen(false));
+}
+
+export function* userInitiatedCreateBackupDialog() {
+  const { backupExists } = yield select((state) => state.matrix);
 
   if (!backupExists) {
-    yield put(setBackupStage(BackupStage.UserGeneratePrompt));
-  } else if (!backupRestored) {
-    yield put(setBackupStage(BackupStage.UserRestorePrompt));
+    yield put(setCreateBackupStage(CreateBackupStage.UserGeneratePrompt));
+    yield put(setIsCreateBackupDialogOpen(true));
   } else {
-    yield put(setBackupStage(BackupStage.RecoveredBackupInfo));
+    yield put(setErrorMessage('A backup already exists. Please use the restore flow instead.'));
   }
+}
 
-  yield put(setIsBackupDialogOpen(true));
+export function* userInitiatedRestoreBackupDialog() {
+  const { backupExists, backupRestored } = yield select((state) => state.matrix);
+
+  if (backupExists) {
+    if (!backupRestored) {
+      yield put(setRestoreBackupStage(RestoreBackupStage.UserRestorePrompt));
+      yield put(setIsRestoreBackupDialogOpen(true));
+    } else {
+      yield put(setRestoreBackupStage(RestoreBackupStage.RecoveredBackupInfo));
+      yield put(setIsRestoreBackupDialogOpen(true));
+    }
+  } else {
+    yield put(setErrorMessage('No backup exists to restore. Please create a backup first.'));
+  }
 }
 
 function* listenForUserLogout() {
@@ -227,31 +270,41 @@ export function* handleBackupUserPrompts() {
     return;
   }
 
-  const { backupExists, backupRestored } = yield call(getBackup);
-  if (!backupExists) {
-    return yield call(performUnlessLogout, call(checkBackupOnFirstSentMessage));
-  }
+  try {
+    const { backupExists, backupRestored } = yield call(getBackup);
+    if (!backupExists) {
+      return yield call(performUnlessLogout, call(checkBackupOnFirstSentMessage));
+    }
 
-  if (backupRestored) {
-    return;
-  }
+    if (backupRestored) {
+      return;
+    }
 
-  yield call(systemInitiatedBackupDialog);
+    yield call(systemInitiatedRestoreBackupDialog);
+  } catch (e) {
+    console.error('Error handling backup user prompts:', e);
+  }
 }
 
-export function* systemInitiatedBackupDialog() {
-  const { backupExists, backupRestored } = yield select((state) => state.matrix);
+export function* systemInitiatedCreateBackupDialog() {
+  const { backupExists } = yield select((state) => state.matrix);
 
   if (!backupExists) {
-    yield put(setBackupStage(BackupStage.SystemGeneratePrompt));
-  } else if (!backupRestored) {
-    yield put(setBackupStage(BackupStage.SystemRestorePrompt));
-  } else {
-    // Probably never trigger this stage by the system but keep it as a default case
-    yield put(setBackupStage(BackupStage.RecoveredBackupInfo));
+    yield put(setCreateBackupStage(CreateBackupStage.SystemGeneratePrompt));
+    yield put(setIsCreateBackupDialogOpen(true));
+  }
+}
+
+export function* systemInitiatedRestoreBackupDialog() {
+  const { backupExists, backupRestored } = yield select((state) => state.matrix);
+
+  if (backupExists && !backupRestored) {
+    yield put(setRestoreBackupStage(RestoreBackupStage.SystemRestorePrompt));
+  } else if (backupExists && backupRestored) {
+    yield put(setRestoreBackupStage(RestoreBackupStage.RecoveredBackupInfo));
   }
 
-  yield put(setIsBackupDialogOpen(true));
+  yield put(setIsRestoreBackupDialogOpen(true));
 }
 
 export function* checkBackupOnFirstSentMessage() {

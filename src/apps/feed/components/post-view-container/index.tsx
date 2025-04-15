@@ -44,7 +44,6 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
                 author={post.sender?.displaySubHandle}
                 className={styles.Post}
                 currentUserId={userId}
-                media={post.media}
                 meowPost={isFeed ? meowPostFeed : meowPost}
                 messageId={post.id.toString()}
                 nickname={post.sender?.firstName}
@@ -56,6 +55,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
                 userMeowBalance={userMeowBalance}
                 variant='expanded'
                 channelZid={post.channelZid}
+                isSinglePostView={true}
               />
               <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
             </div>

@@ -13,8 +13,6 @@ export interface PublicProperties {
 }
 
 export interface Properties extends PublicProperties {
-  reason: string;
-  comment?: string;
   reportedUserName: string;
   loading: boolean;
   errorMessage: string;

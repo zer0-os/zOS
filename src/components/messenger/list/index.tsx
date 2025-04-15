@@ -363,6 +363,14 @@ function addLastMessageMeta(
     // Use the most recent valid message or fall back to the lastMessage
     let mostRecentMessage = filteredMessages[0] || conversation.lastMessage;
 
+    // If the message is hidden, set its content to "Message hidden" before generating the preview
+    if (mostRecentMessage?.isHidden) {
+      mostRecentMessage = {
+        ...mostRecentMessage,
+        message: 'Message hidden',
+      };
+    }
+
     return {
       ...conversation,
       mostRecentMessage,

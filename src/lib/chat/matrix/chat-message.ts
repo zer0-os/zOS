@@ -36,6 +36,7 @@ export function buildMediaObject(content: IContent) {
   else if (content.msgtype === MsgType.Audio) mediaType = MediaType.Audio;
   if (content.file && content.info) {
     return {
+      body: content.body,
       url: null,
       type: mediaType,
       file: { ...content.file },
@@ -43,6 +44,7 @@ export function buildMediaObject(content: IContent) {
     };
   } else if (content.url) {
     return {
+      body: content.body,
       url: content.url,
       type: mediaType,
       ...content.info,
@@ -190,7 +192,7 @@ function getRoomReactionAdminData(content, sender) {
 }
 
 function getRoomMemberAdminData(content, targetUserId, previousContent?) {
-  if (previousContent?.avatar_url !== content.avatar_url) {
+  if (previousContent?.avatar_url && previousContent?.avatar_url !== content.avatar_url) {
     return { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: targetUserId };
   }
 

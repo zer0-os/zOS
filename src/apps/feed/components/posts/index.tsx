@@ -20,7 +20,6 @@ export const Posts = ({
               arweaveId={post.arweaveId}
               currentUserId={currentUserId}
               messageId={post.id}
-              media={post.media}
               avatarUrl={post.sender.profileImage}
               text={post.message}
               nickname={post.sender.firstName}

@@ -1,0 +1,25 @@
+name: PR
+
+on: pull_request
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test
+    uses: ./.github/workflows/test.yml
+
+  code-quality:
+    name: Code Quality
+    uses: ./.github/workflows/code-quality.yml
+
+  check-build:
+    name: Check Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/common
+      - name: Build
+        run: npm run build

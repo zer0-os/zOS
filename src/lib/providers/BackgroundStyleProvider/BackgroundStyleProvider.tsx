@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../store/reducer';
 import { MainBackground } from '../../../store/background';
+import { selectedMainBackgroundSelector } from '../../../store/background/selectors';
 
 const LOW_CONTRAST_BACKGROUNDS: MainBackground[] = [MainBackground.StaticLightsOut, MainBackground.DotGrid];
 
@@ -9,7 +9,7 @@ const LOW_CONTRAST_BACKGROUNDS: MainBackground[] = [MainBackground.StaticLightsO
  * Sets CSS variables based on the selected background.
  */
 export const BackgroundStyleProvider = () => {
-  const selectedMainBackground = useSelector((state: RootState) => state.background.selectedMainBackground);
+  const selectedMainBackground = useSelector(selectedMainBackgroundSelector);
 
   useEffect(() => {
     const isLowContrastBackground = LOW_CONTRAST_BACKGROUNDS.includes(selectedMainBackground);

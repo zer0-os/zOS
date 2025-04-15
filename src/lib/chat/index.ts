@@ -16,6 +16,7 @@ import { ICreateRoomOpts } from 'matrix-js-sdk/lib/matrix';
 import { GuestAccess } from 'matrix-js-sdk/lib/matrix';
 import { EventType } from 'matrix-js-sdk/lib/matrix';
 import { User as MatrixUser } from 'matrix-js-sdk/lib/models/user';
+import { ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 
 export interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message) => void;
@@ -36,6 +37,69 @@ export interface RealtimeChatEvents {
   roomLabelChange: (roomId: string, labels: string[]) => void;
   messageEmojiReactionChange: (roomId: string, reaction: any) => void;
   receiveRoomData: (roomId: string, roomData: MSC3575RoomData) => void;
+}
+
+export interface IChatClient {
+  init: (events: RealtimeChatEvents) => void;
+  connect: (userId: string, accessToken: string) => Promise<string | null>;
+  disconnect: () => void;
+  reconnect: () => void;
+  supportsOptimisticCreateConversation: () => boolean;
+  getRoomNameById: (id: string) => Promise<string>;
+  getRoomAvatarById: (id: string) => Promise<string>;
+  getRoomGroupTypeById: (id: string) => Promise<string>;
+  getChannels: (id: string) => Promise<Partial<Channel>[]>;
+  getConversations: () => Promise<Partial<Channel>[]>;
+  searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
+  searchMentionableUsersForChannel: (channelId: string, search: string, channelMembers?: UserModel[]) => Promise<any[]>;
+  getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
+  getMessageByRoomId: (channelId: string, messageId: string) => Promise<any>;
+  createConversation: (
+    users: User[],
+    name: string,
+    image: File,
+    optimisticId: string
+  ) => Promise<Partial<Channel> | void>;
+  sendMessagesByChannelId: (
+    channelId: string,
+    message: string,
+    mentionedUserIds: string[],
+    parentMessage?: ParentMessage,
+    file?: FileUploadResult,
+    optimisticId?: string,
+    isSocialChannel?: boolean
+  ) => Promise<MessagesResponse>;
+  fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
+  deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
+  leaveRoom: (roomId: string, userId: string) => Promise<void>;
+  editMessage(
+    roomId: string,
+    messageId: string,
+    message: string,
+    mentionedUserIds: string[],
+    data?: Partial<EditMessageOptions>
+  ): Promise<any>;
+  markRoomAsRead: (roomId: string, userId?: string) => Promise<void>;
+  getSecureBackup: () => Promise<MatrixKeyBackupInfo>;
+  generateSecureBackup: () => Promise<any>;
+  saveSecureBackup: (key: string) => Promise<void>;
+  restoreSecureBackup: (
+    recoveryKey: string,
+    onProgress?: (progress: ImportRoomKeyProgressData) => void
+  ) => Promise<void>;
+  getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
+  uploadFile(file: File): Promise<string>;
+  downloadFile(fileUrl: string): Promise<any>;
+  batchDownloadFiles(
+    fileUrls: string[],
+    isThumbnail: boolean,
+    batchSize: number
+  ): Promise<{ [fileUrl: string]: string }>;
+  verifyMatrixProfileDisplayNameIsSynced(displayName: string): Promise<void>;
+  editProfile(profileInfo: MatrixProfileInfo): Promise<void>;
+  getAccessToken(): string | null;
+  mxcUrlToHttp(mxcUrl: string): string;
+  getProfileInfo(userId: string): Promise<{ avatar_url?: string; displayname?: string }>;
 }
 
 export class Chat {
@@ -295,8 +359,11 @@ export class Chat {
     await this.client.saveSecureBackup(key);
   }
 
-  async restoreSecureBackup(recoveryKey: string): Promise<any> {
-    return this.client.restoreSecureBackup(recoveryKey);
+  async restoreSecureBackup(
+    recoveryKey: string,
+    onProgress?: (progress: ImportRoomKeyProgressData) => void
+  ): Promise<any> {
+    return this.client.restoreSecureBackup(recoveryKey, onProgress);
   }
 
   async displayDeviceList(userIds: string[]) {
@@ -477,6 +544,10 @@ export function getProfileInfo(userId: string): Promise<{
 
 export async function getAliasForRoomId(roomId: string) {
   return matrixClientInstance.getAliasForRoomId(roomId);
+}
+
+export async function verifyMatrixProfileDisplayNameIsSynced(displayName: string) {
+  return chat.get().matrix.verifyMatrixProfileDisplayNameIsSynced(displayName);
 }
 
 let chatClient: Chat;

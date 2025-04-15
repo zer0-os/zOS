@@ -1,4 +1,4 @@
-import { Channel, denormalize } from '.';
+import { Channel, DefaultRoomLabels, denormalize } from '.';
 import { RootState } from '../reducer';
 import getDeepProperty from 'lodash.get';
 import { createSelector } from '@reduxjs/toolkit';
@@ -39,3 +39,23 @@ export const mostRecentConversation = createSelector([allDenormalizedChannelsSel
 
   return rooms.sort(byBumpStamp)[0];
 });
+
+export function hasUnreadNotificationsSelector(state: RootState) {
+  const conversations = allDenormalizedChannelsSelector(state);
+  return conversations.some(
+    (channel) =>
+      channel.unreadCount?.total > 0 &&
+      !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+      !channel.labels?.includes(DefaultRoomLabels.MUTE)
+  );
+}
+
+export function hasUnreadHighlightsSelector(state: RootState) {
+  const conversations = allDenormalizedChannelsSelector(state);
+  return conversations.some(
+    (channel) =>
+      channel.unreadCount?.highlight > 0 &&
+      !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+      !channel.labels?.includes(DefaultRoomLabels.MUTE)
+  );
+}

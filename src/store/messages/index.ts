@@ -35,6 +35,7 @@ export enum MediaType {
 }
 
 export interface Media {
+  body?: string;
   height: number;
   name: string;
   type: MediaType;

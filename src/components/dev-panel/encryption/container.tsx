@@ -10,7 +10,6 @@ import { currentUserSelector } from '../../../store/authentication/selectors';
 interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
-  roomId: string;
   deviceId: string;
   currentUserId: string;
   room: Channel;

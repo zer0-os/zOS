@@ -19,7 +19,6 @@ const defaultProps: Properties = {
   setAddress: vi.fn(),
   setChain: vi.fn(),
   setConnectionStatus: vi.fn(),
-  updateConnector: vi.fn(),
 };
 
 const chainId = config.supportedChainId;

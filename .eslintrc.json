@@ -1,10 +1,7 @@
 {
-  "extends": "react-app",
+  "extends": ["react-app", "plugin:react-redux/recommended"],
   "rules": {
-    "quotes": [
-      "error",
-      "single",
-      { "avoidEscape": true }],
+    "quotes": ["error", "single", { "avoidEscape": true }],
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -15,6 +12,7 @@
       }
     ]
   },
+  "plugins": ["react-redux"],
   "overrides": [
     {
       "files": ["**/*.stories.*"],

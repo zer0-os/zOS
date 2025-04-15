@@ -33,4 +33,6 @@ export const productionFlags: FeatureFlagDefinitions = {
       'a8df265e-5e4c-46e9-a6e5-9da8684f96ac',
     ],
   },
+  enableProfile: { defaultValue: true },
+  enableUserProfiles: { defaultValue: true },
 };

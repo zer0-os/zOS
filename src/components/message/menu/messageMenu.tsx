@@ -28,6 +28,7 @@ export interface MessageMenuProps
   media: Media;
   isMenuOpen?: boolean;
   isMenuFlying?: boolean;
+  isHidden?: boolean;
 }
 
 export const MessageMenu = ({
@@ -46,15 +47,21 @@ export const MessageMenu = ({
   onReportUser,
   isMenuOpen = false,
   isMenuFlying = false,
+  isHidden = false,
 }: MessageMenuProps) => {
   const canEditMessage =
-    isOwner && message && sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
+    isOwner &&
+    message &&
+    !isHidden &&
+    sendStatus !== MessageSendStatus.IN_PROGRESS &&
+    sendStatus !== MessageSendStatus.FAILED;
 
   const canDeleteMessage = isOwner && sendStatus !== MessageSendStatus.IN_PROGRESS;
 
   const canReportUser = !isOwner && sendStatus !== MessageSendStatus.IN_PROGRESS;
 
-  const canReply = sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
+  const canReply =
+    sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED && !isGiphyMessage(media);
 
   const canViewInfo = sendStatus !== MessageSendStatus.IN_PROGRESS && sendStatus !== MessageSendStatus.FAILED;
 
@@ -85,4 +92,8 @@ export const MessageMenu = ({
       isMenuFlying={isMenuFlying}
     />
   );
+};
+
+const isGiphyMessage = (media: Media) => {
+  return media?.type === MediaType.Image && media?.mimetype === 'image/gif';
 };

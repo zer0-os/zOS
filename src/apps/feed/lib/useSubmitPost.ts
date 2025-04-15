@@ -3,11 +3,11 @@ import { useAccount, useSignMessage } from 'wagmi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Media } from '../../../components/message-input/utils';
-import { RootState } from '../../../store';
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
 import { POST_MAX_LENGTH } from './constants';
 import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
 import { featureFlags } from '../../../lib/feature-flags';
+import { primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
 
 interface SubmitPostParams {
   channelZid: string;
@@ -19,10 +19,8 @@ interface SubmitPostParams {
 export const useSubmitPost = () => {
   const queryClient = useQueryClient();
 
-  const { userPrimaryZid, userWallets } = useSelector((state: RootState) => ({
-    userPrimaryZid: state.authentication.user.data?.primaryZID,
-    userWallets: state.authentication.user.data?.wallets,
-  }));
+  const userPrimaryZid = useSelector(primaryZIDSelector);
+  const userWallets = useSelector(userWalletsSelector);
 
   const { address: connectedAddress } = useAccount();
   const { signMessageAsync } = useSignMessage();

@@ -18,7 +18,6 @@ const subject = (props: Partial<Properties> = {}) => {
     canLeaveRoom: false,
     canEdit: false,
     canViewDetails: false,
-    isSecondarySidekickOpen: false,
     isRoomMuted: false,
     onAddMember: () => null,
     onEdit: () => null,

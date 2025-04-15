@@ -1344,15 +1344,6 @@ export class MatrixClient {
         });
       }
 
-      // const silentLogger = {
-      //   trace: () => {},
-      //   debug: () => {},
-      //   info: () => {},
-      //   warn: () => {},
-      //   error: () => {},
-      //   getChild: () => silentLogger, // Return itself for child loggers
-      // };
-
       const userCreds = await this.getCredentials(userId, ssoToken);
       const createClientOpts: ICreateClientOpts = {
         cryptoStore,
@@ -1364,7 +1355,6 @@ export class MatrixClient {
         store: matrixStore,
         timelineSupport: true,
         ...userCreds,
-        // logger: silentLogger,
       };
 
       this.matrix = this.sdk.createClient(createClientOpts);
@@ -1386,12 +1376,8 @@ export class MatrixClient {
 
       // Start client
       await this.matrix.startClient(startClientOpts);
-
-      // featureFlags.enableTimerLogs && console.time('xxxWaitForSync');
       await this.waitForSync();
-      // featureFlags.enableTimerLogs && console.timeEnd('xxxWaitForSync');
 
-      // featureFlags.enableTimerLogs && console.timeEnd('xxxinitializeClient');
       return createClientOpts.userId;
     }
   }

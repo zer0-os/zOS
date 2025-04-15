@@ -29,6 +29,8 @@ export function rawUserToDomainUser(u): User {
 }
 
 // TODO zos-619: This should be in MatrixAdapter
+// Also, there should be handlers for each of the required_state events that match up
+// with the events we're adding to the SlidingSync in /lib/chat/slidingSync.ts
 export async function updateChannelWithRoomData(
   roomId: string,
   roomData: MSC3575RoomData,

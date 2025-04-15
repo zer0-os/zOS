@@ -4,7 +4,7 @@ import { MatrixClient } from 'matrix-js-sdk/lib/client';
 import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
 import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
 import { EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
-import { MatrixConstants } from '../../lib/chat/matrix/types';
+import { CustomEventType, MatrixConstants } from '../../lib/chat/matrix/types';
 
 export const isOneOnOne = (channel: { totalMembers: number }) => channel.totalMembers === 2;
 
@@ -36,6 +36,8 @@ export async function updateChannelWithRoomData(
 ): Promise<Partial<Channel> | null> {
   const room = client.getRoom(roomId);
   if (!room) return null;
+  const groupTypeState = roomData.required_state.find((event) => event.type === CustomEventType.GROUP_TYPE);
+  const groupType = groupTypeState?.content?.group_type;
 
   const baseChannel = MatrixAdapter.mapRoomToChannel(room);
 
@@ -86,6 +88,10 @@ export async function updateChannelWithRoomData(
     bumpStamp: roomData.bump_stamp,
     ...initialChannelUpdates,
   };
+
+  if (groupType && groupType === 'social') {
+    updatedChannel.isSocialChannel = true;
+  }
 
   return updatedChannel;
 }

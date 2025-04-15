@@ -10,6 +10,7 @@ import {
   SlidingSyncState,
 } from 'matrix-js-sdk/lib/sliding-sync';
 import { defer, sleep } from 'matrix-js-sdk/lib/utils';
+import { CustomEventType } from './matrix/types';
 
 // Heroku has a hard limit of 30 seconds requests.
 // So we set a 19 second timeout for a /sync request and then
@@ -22,6 +23,7 @@ const REQUIRED_STATE_LIST = [
   [EventType.RoomTombstone, ''],
   [EventType.RoomEncryption, ''],
   [EventType.RoomCreate, ''],
+  [CustomEventType.GROUP_TYPE, MSC3575_WILDCARD],
   [EventType.RoomMember, MSC3575_STATE_KEY_ME],
 ];
 

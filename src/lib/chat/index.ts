@@ -127,7 +127,7 @@ export class Chat {
     return this.client.getRoomAvatar(room);
   }
 
-  async getRoomGroupTypeById(roomId: string) {
+  getRoomGroupTypeById(roomId: string) {
     const room = this.client.matrix.getRoom(roomId);
     return this.client.getRoomGroupType(room);
   }

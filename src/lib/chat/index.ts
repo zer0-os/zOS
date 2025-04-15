@@ -1,8 +1,8 @@
-import { EditMessageOptions, Message } from '../../store/messages';
-import { User as UserModel } from '../../store/channels/index';
+import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
+import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
-import { MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
+import { MatrixKeyBackupInfo, MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import matrixClientInstance from './matrix/matrix-client-instance';
 import { CustomEventType, MembershipStateType } from './matrix/types';

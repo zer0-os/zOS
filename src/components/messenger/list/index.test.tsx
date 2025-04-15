@@ -270,7 +270,7 @@ describe('messenger-list', () => {
           },
         },
         chat,
-        channelsList: { value: channelData.result },
+        channelsList: { value: [] },
         normalized: {
           ...userData.entities,
           ...channelData.entities,
@@ -358,6 +358,7 @@ describe('messenger-list', () => {
         const state = subject([
           {
             id: 'convo-1',
+            bumpStamp: 3,
             lastMessage: {
               message: 'The last message',
               sender: { firstName: 'Jack' },
@@ -366,6 +367,7 @@ describe('messenger-list', () => {
           },
           {
             id: 'convo-2',
+            bumpStamp: 2,
             lastMessage: {
               message: 'Second message last',
               sender: { firstName: 'Jack' },

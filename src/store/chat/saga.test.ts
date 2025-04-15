@@ -219,7 +219,7 @@ describe(performValidateActiveConversation, () => {
       .call(getHistory)
       .call(channelSagas.addRoomToSync, resolvedRoomId)
       .put(rawSetActiveConversationId(resolvedRoomId))
-      .spawn(markConversationAsRead, 'convo-1')
+      .spawn(markConversationAsRead, resolvedRoomId)
       .run();
   });
 

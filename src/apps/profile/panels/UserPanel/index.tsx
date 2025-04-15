@@ -1,4 +1,4 @@
-import { useProfileApp } from '../../lib/useProfileApp';
+import { useUserPanel } from './useUserPanel';
 
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
@@ -29,19 +29,4 @@ export const UserPanel = () => {
       </PanelBody>
     </Panel>
   );
-};
-
-const useUserPanel = () => {
-  const { data, isLoading } = useProfileApp();
-
-  const handle = data?.handle;
-  const profileImageUrl = data?.profileImage;
-  const zid = data?.primaryZid;
-
-  return {
-    handle,
-    profileImageUrl,
-    zid,
-    isLoading,
-  };
 };

@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { fork, put, call, take, select, spawn } from 'redux-saga/effects';
+import { put, call, take, select, spawn } from 'redux-saga/effects';
 import { chat, downloadFile } from '../../lib/chat';
 
 import { updateChannelWithRoomData } from './utils';

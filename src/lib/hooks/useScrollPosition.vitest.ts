@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useScrollPosition } from './useScrollPosition';
 
-// Mock window.scrollTo with a proper implementation
 vi.spyOn(window, 'scrollTo').mockImplementation((x, y) => {
   Object.defineProperty(window, 'scrollY', { value: y, writable: true });
 });

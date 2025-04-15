@@ -1,16 +1,9 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import {
-  clearUsers,
-  receiveSearchResults,
-  updateUserProfileImageFromCache,
-  verifyMatrixProfileDisplayNameIsSynced,
-} from './saga';
-import { call, spawn } from 'redux-saga/effects';
+import { clearUsers, receiveSearchResults, verifyMatrixProfileDisplayNameIsSynced } from './saga';
+import { call } from 'redux-saga/effects';
 import { rootReducer } from '../reducer';
 import { denormalize } from '.';
 import { StoreBuilder } from '../test/store';
-import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
-import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
 import { verifyMatrixProfileDisplayNameIsSynced as verifyMatrixProfileDisplayNameIsSyncedAPI } from '../../lib/chat';
 const mockIdb = {
   state: {},
@@ -119,83 +112,6 @@ describe(receiveSearchResults, () => {
       .run();
 
     expect(denormalize(user1.id, storeState)).toEqual(expect.objectContaining(existingUser));
-  });
-});
-
-describe(updateUserProfileImageFromCache, () => {
-  it('updates only displayname & returns undefined if no profile image is found', async () => {
-    const currentUser: any = {
-      id: 'user-id-1',
-      profileSummary: { firstName: 'Alice' },
-      primaryZID: '0://zid',
-    };
-
-    mockIdb.put('profileImage', undefined);
-
-    const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser)
-      .provide([
-        [
-          spawn(matrixEditProfile, { displayName: 'Alice' }),
-          undefined,
-        ],
-      ])
-      .spawn(matrixEditProfile, { displayName: 'Alice' })
-      .run();
-
-    expect(returnValue).toBeUndefined();
-  });
-
-  it('returns if edit profile fails', async () => {
-    const currentUser: any = {
-      id: 'user-id-1',
-      profileSummary: { firstName: 'Alice' },
-      primaryZID: '0://zid',
-    };
-
-    const file: any = { name: 'Some file', type: 'image/png' };
-    mockIdb.put('profileImage', file);
-
-    console.error = jest.fn();
-    const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser)
-      .provide([
-        [call(uploadFile, file), 'uploaded-image-url'],
-        [
-          call(apiEditUserProfile, { name: 'Alice', primaryZID: '0://zid', profileImage: 'uploaded-image-url' }),
-          { success: false },
-        ],
-      ])
-      .not.spawn(matrixEditProfile, { avatarUrl: 'uploaded-image-url', displayName: 'Alice' })
-      .run();
-
-    expect(returnValue).toBeUndefined();
-  });
-
-  it('uploads the profile Image, edits the user profile, and sets the state to success', async () => {
-    const currentUser: any = {
-      id: 'user-id-1',
-      profileSummary: { firstName: 'Alice' },
-      primaryZID: '0://zid',
-    };
-
-    const file: any = { name: 'Some file', type: 'image/png' };
-    mockIdb.put('profileImage', file);
-
-    const { returnValue } = await expectSaga(updateUserProfileImageFromCache, currentUser)
-      .provide([
-        [call(uploadFile, file), 'uploaded-image-url'],
-        [
-          call(apiEditUserProfile, { name: 'Alice', primaryZID: '0://zid', profileImage: 'uploaded-image-url' }),
-          { success: true },
-        ],
-        [
-          spawn(matrixEditProfile, { avatarUrl: 'uploaded-image-url', displayName: 'Alice' }),
-          undefined,
-        ],
-      ])
-      .spawn(matrixEditProfile, { avatarUrl: 'uploaded-image-url', displayName: 'Alice' })
-      .run();
-
-    expect(returnValue).toBe('uploaded-image-url');
   });
 });
 

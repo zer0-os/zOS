@@ -1,19 +1,16 @@
-import { useSelector } from 'react-redux';
-import {
-  primaryZIDSelector,
-  userFirstNameSelector,
-  userProfileImageSelector,
-} from '../../../../store/authentication/selectors';
+import { useUserPanel } from './useUserPanel';
 
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { IconLogoZero } from '@zero-tech/zui/icons';
 import MatrixMask from './matrix-mask.svg?react';
 
+import { Skeleton } from '@zero-tech/zui/components/Skeleton';
+
 import styles from './styles.module.scss';
 
 export const UserPanel = () => {
-  const { handle, profileImageUrl, zid } = useUserPanel();
+  const { handle, profileImageUrl, zid, isLoading } = useUserPanel();
 
   return (
     <Panel className={styles.Container}>
@@ -25,23 +22,11 @@ export const UserPanel = () => {
             <MatrixMask className={styles.Mask} />
           </div>
           <div className={styles.Name}>
-            <h1>{handle}</h1>
-            <h2>{zid}</h2>
+            <h1>{isLoading ? <Skeleton /> : handle}</h1>
+            <h2>{isLoading ? <Skeleton /> : zid ? '0://' + zid : null}</h2>
           </div>
         </div>
       </PanelBody>
     </Panel>
   );
-};
-
-const useUserPanel = () => {
-  const handle = useSelector(userFirstNameSelector);
-  const profileImageUrl = useSelector(userProfileImageSelector);
-  const zid = useSelector(primaryZIDSelector);
-
-  return {
-    handle,
-    profileImageUrl,
-    zid,
-  };
 };

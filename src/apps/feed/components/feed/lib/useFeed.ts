@@ -8,13 +8,13 @@ import { useMeowPost } from '../../../lib/useMeowPost';
 import { primaryZIDSelector, userIdSelector } from '../../../../../store/authentication/selectors';
 import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/selectors';
 
-export const useFeed = (zid?: string) => {
-  const userId = useSelector(userIdSelector);
+export const useFeed = (zid?: string, userId?: string) => {
+  const currentUserId = useSelector(userIdSelector);
   const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
   const primaryZID = useSelector(primaryZIDSelector);
 
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['posts', { zid }],
+    queryKey: ['posts', { zid, userId }],
     queryFn: async ({ pageParam = 0 }) => {
       let endpoint;
 
@@ -22,6 +22,10 @@ export const useFeed = (zid?: string) => {
         endpoint = `/api/v2/posts/channel/${zid}`;
       } else {
         endpoint = '/api/v2/posts';
+      }
+
+      if (userId) {
+        endpoint += `?user_id=${userId}`;
       }
 
       const res = await getPosts(endpoint, { limit: PAGE_SIZE, skip: pageParam * PAGE_SIZE });
@@ -51,7 +55,7 @@ export const useFeed = (zid?: string) => {
     isLoading,
     meowPostFeed,
     posts: data,
-    userId,
+    currentUserId,
     userMeowBalance,
   };
 };

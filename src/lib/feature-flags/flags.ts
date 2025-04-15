@@ -25,7 +25,8 @@ export type FeatureFlagKey =
   | 'enableZeroWalletSigning'
   | 'enableFeedChat'
   | 'enableAuraZApp'
-  | 'enableProfile';
+  | 'enableProfile'
+  | 'enableUserProfiles';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

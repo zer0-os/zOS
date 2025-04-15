@@ -1,7 +1,8 @@
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, useRouteMatch } from 'react-router-dom';
 
 import { useOwnedZids } from '../../lib/hooks/useOwnedZids';
 import { parseWorldZid } from '../../lib/zid';
+import { useScrollPosition } from '../../lib/hooks/useScrollPosition';
 
 import { Feed } from './components/feed';
 import { Sidekick } from './components/sidekick';
@@ -14,6 +15,10 @@ import { getLastActiveFeed } from '../../lib/last-feed';
 import styles from './styles.module.scss';
 
 export const FeedApp = () => {
+  const route = useRouteMatch<{ postId: string }>('/feed/:zid/:postId');
+  const postId = route?.params?.postId;
+  useScrollPosition(postId);
+
   return (
     <div className={styles.Feed}>
       <Sidekick />

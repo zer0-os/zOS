@@ -138,3 +138,12 @@ export function isMatrixId(matrixId: string): boolean {
 export function isAdminMatrixId(matrixId: string): boolean {
   return matrixId === 'admin';
 }
+
+/**
+ * Checks if a matrix ID is a valid telegram matrix ID
+ * @param matrixId - The Matrix ID in format @telegram:server
+ * @returns Boolean
+ */
+export function isTelegramMatrixId(matrixId: string): boolean {
+  return matrixId.includes('telegram');
+}

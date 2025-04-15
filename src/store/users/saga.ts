@@ -3,15 +3,14 @@ import { schema, removeAll, receive, SagaActionTypes } from '.';
 import { usersByMatrixIdsSelector } from './selectors';
 import { getUserSubHandle } from '../../lib/user';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
-import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
-import { getProvider as getIndexedDbProvider } from '../../lib/storage/media-cache/idb';
-import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
-import { User } from '../authentication/types';
 import { getZeroUsersQuery } from './queries/getZeroUsersQuery';
 import { queryClient } from '../../lib/web3/rainbowkit/provider';
 import { verifyMatrixProfileDisplayNameIsSynced as verifyMatrixProfileDisplayNameIsSyncedAPI } from '../../lib/chat';
-import * as Sentry from '@sentry/react';
 import { currentUserSelector } from '../authentication/selectors';
+import { isTelegramMatrixId } from '../../lib/chat/matrix/utils';
+import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
+import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
+import { User } from '../channels';
 export function* clearUsers() {
   yield put(removeAll({ schema: schema.key }));
 }
@@ -35,51 +34,6 @@ export function* receiveSearchResults(searchResults) {
     });
 
   yield put(receive(mappedUsers));
-}
-
-/*
-  If the user is logging in for the first time, we fetch the cached image (from indexed-db),
-  and then call the edit profile API to update the profile image in the ZERO-API database.
-  This is because the profile image could not be uploaded to the homeserver during registration
-  (as the matrixClient was not initialized at that time).
-*/
-export function* updateUserProfileImageFromCache(currentUser: User) {
-  try {
-    const { firstName: name } = currentUser.profileSummary || {};
-    const { primaryZID } = currentUser;
-
-    const provider = yield call(getIndexedDbProvider);
-    const profileImage: File = yield call([provider, provider.get], 'profileImage');
-
-    if (profileImage) {
-      const profileImageUrl = yield call(uploadFile, profileImage);
-      const response = yield call(apiEditUserProfile, {
-        name,
-        primaryZID,
-        profileImage: profileImageUrl || undefined,
-      });
-      if (response.success) {
-        // also update the profile image & name in the homeserver user directory
-        yield spawn(matrixEditProfile, { avatarUrl: profileImageUrl, displayName: name });
-
-        return profileImageUrl;
-      } else {
-        console.error('Failed to update user profile on registration:', response.error);
-      }
-    } else {
-      // only update the displayname if the user hasn't uploaded a profile image during registration
-      yield spawn(matrixEditProfile, { displayName: name });
-    }
-  } catch (error) {
-    Sentry.captureException(error, {
-      extra: {
-        context: 'updateUserProfileImageFromCache started',
-        data: { userId: currentUser.id },
-      },
-    });
-  }
-
-  return undefined;
 }
 
 // there seems to be a bug where the profile info (displayname specifically) is not updated in the 'matrix' database
@@ -117,6 +71,23 @@ export function* receiveSearchResultsAction(action) {
  */
 export function* getUsersByMatrixIds(matrixIds: string[]) {
   let users: Map<string, User> = yield select(usersByMatrixIdsSelector, matrixIds);
+
+  // Handle Telegram users as we only have their information in Matrix.
+  for (const matrixId of matrixIds) {
+    const telegramUsers = [];
+    if (isTelegramMatrixId(matrixId)) {
+      const matrixUser = matrixClientInstance.matrix.getUser(matrixId);
+      if (matrixUser) {
+        const user = MatrixAdapter.mapMatrixUserToUser(matrixUser);
+        telegramUsers.push(user);
+      }
+    }
+    if (telegramUsers.length > 0) {
+      yield put(receive(telegramUsers));
+      users = yield select(usersByMatrixIdsSelector, matrixIds);
+    }
+  }
+
   // TODO: Once we have all user data in Matrix, we can try to load the user from there before fetching from the API
   // We still don't store primaryZID or primaryWalletAddress in Matrix, so we need to fetch them from the API
   const missingUsers = [...new Set(matrixIds)].filter((id) => !users.has(id));

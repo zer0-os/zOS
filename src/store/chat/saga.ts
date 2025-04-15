@@ -39,16 +39,7 @@ function* initChat(userId: string, token: string) {
   yield spawn(activateWhenConversationsLoaded, activate);
 }
 
-// This will wait until all the initial batch of "snapshot state" rooms
-// have been loaded into the state AND the "catchup events" have all been
-// published. However, there is no way to know if all the handlers of those
-// "catchup events" have actually completed as any handler may have async
-// operations.
-//
-// This function will set the loadingConversationProgress to 100% when the
-// chat connection is complete. This could do with some refactoring to make it
-// more readable.
-// TODO zos-619: Look this over and see if it's still needed.
+// Handles updating loading state while waiting for matrix to connect and the initial sync to complete
 export function* waitForChatConnectionCompletion() {
   const isComplete = yield select((state) => state.chat.isChatConnectionComplete);
   if (isComplete) {
@@ -58,7 +49,7 @@ export function* waitForChatConnectionCompletion() {
   yield put(setLoadingConversationProgress(5));
 
   const progressTracker = yield fork(function* () {
-    for (let progress = 5; progress < 60; progress += 0.5) {
+    for (let progress = 5; progress < 100; progress += 1.5) {
       yield delay(50);
       yield put(setLoadingConversationProgress(progress));
     }
@@ -72,22 +63,9 @@ export function* waitForChatConnectionCompletion() {
   yield cancel(progressTracker);
 
   if (complete) {
-    const currentProgress = yield select((state) => state.chat.loadingConversationProgress);
-
-    for (let p = currentProgress; p <= 60; p += 0.5) {
-      yield put(setLoadingConversationProgress(p));
-      yield delay(50);
-    }
-
-    yield put(setIsChatConnectionComplete(true));
-
-    // for (let progress = 61; progress <= 95; progress += 0.5) {
-    //   yield put(setLoadingConversationProgress(progress));
-    //   yield delay(50);
-    // }
-
     yield put(setLoadingConversationProgress(100));
-
+    yield delay(50);
+    yield put(setIsChatConnectionComplete(true));
     return true;
   }
 

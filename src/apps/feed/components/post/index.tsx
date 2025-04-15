@@ -200,7 +200,14 @@ const Wrapper = ({ children, postId, variant, channelZid }: WrapperProps) => {
   };
 
   return (
-    <div className={styles.Wrapper} data-variant={variant} onClick={handleOnClick} tabIndex={0} role='button'>
+    <div
+      className={styles.Wrapper}
+      data-variant={variant}
+      data-post-id={postId}
+      onClick={handleOnClick}
+      tabIndex={0}
+      role='button'
+    >
       {children}
     </div>
   );

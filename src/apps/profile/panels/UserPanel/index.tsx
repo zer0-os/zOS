@@ -23,7 +23,7 @@ export const UserPanel = () => {
           </div>
           <div className={styles.Name}>
             <h1>{isLoading ? <Skeleton /> : handle}</h1>
-            <h2>{isLoading ? <Skeleton /> : zid}</h2>
+            <h2>{isLoading ? <Skeleton /> : zid ? '0://' + zid : null}</h2>
           </div>
         </div>
       </PanelBody>

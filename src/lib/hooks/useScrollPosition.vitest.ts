@@ -46,7 +46,7 @@ describe('useScrollPosition', () => {
 
     expect(window.scrollTo).toHaveBeenCalledWith(0, 100);
     expect(mockElement.scrollIntoView).toHaveBeenCalledWith({
-      behavior: 'instant',
+      behavior: 'auto',
       block: 'center',
     });
   });

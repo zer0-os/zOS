@@ -15,7 +15,7 @@ export const useScrollPosition = (postId?: string) => {
         const postElement = document.querySelector(`[data-post-id="${clickedPostIdRef.current}"]`);
         if (postElement) {
           postElement.scrollIntoView({
-            behavior: 'instant',
+            behavior: 'auto',
             block: 'center',
           });
         }

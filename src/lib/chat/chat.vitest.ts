@@ -505,7 +505,7 @@ describe('Chat', () => {
     it('restores secure backup', async () => {
       const key = 'recovery-key';
       await chat.restoreSecureBackup(key);
-      expect(mockMatrixClient.restoreSecureBackup).toHaveBeenCalledWith(key);
+      expect(mockMatrixClient.restoreSecureBackup).toHaveBeenCalledWith(key, undefined);
     });
   });
 

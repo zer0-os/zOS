@@ -11,7 +11,10 @@ import {
 } from 'matrix-js-sdk/lib/sliding-sync';
 import { defer, sleep } from 'matrix-js-sdk/lib/utils';
 
-const SLIDING_SYNC_TIMEOUT_MS = 20 * 1000;
+// Heroku has a hard limit of 30 seconds requests.
+// So we set a 19 second timeout for a /sync request and then
+// SlidingSync will add another 10 second buffer to this
+const SLIDING_SYNC_TIMEOUT_MS = 19_000;
 
 const REQUIRED_STATE_LIST = [
   [EventType.RoomJoinRules, ''],

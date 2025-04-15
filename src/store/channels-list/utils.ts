@@ -6,7 +6,7 @@ import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
 import { EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
 import { MatrixConstants } from '../../lib/chat/matrix/types';
 
-export const isOneOnOne = (channel: Channel) => channel.totalMembers === 2;
+export const isOneOnOne = (channel: { totalMembers: number }) => channel.totalMembers === 2;
 
 export function byBumpStamp(a: { bumpStamp: number }, b: { bumpStamp: number }) {
   return b.bumpStamp - a.bumpStamp;

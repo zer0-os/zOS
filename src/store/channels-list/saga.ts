@@ -138,7 +138,7 @@ function* batchedRoomDataAction(action: RoomDataAction) {
       initialUpdates.push(update.roomId);
     }
     if (mappedChannel) {
-      yield fork(receiveChannel, mappedChannel);
+      yield spawn(receiveChannel, mappedChannel);
     }
   }
   if (initialUpdates.length > 0) {
@@ -150,7 +150,7 @@ function* batchedRoomDataAction(action: RoomDataAction) {
         yield call(matrixClientInstance.autoJoinRoom, roomId);
       }
     }
-    yield fork(loadMembersIfNeeded, initialUpdates);
+    yield spawn(loadMembersIfNeeded, initialUpdates);
   }
 }
 
@@ -209,7 +209,7 @@ export function* addChannel(channelId) {
     ...channel,
     ...newChannelData,
   });
-  yield call(loadMembersIfNeeded, [channelId]);
+  yield spawn(loadMembersIfNeeded, [channelId]);
 }
 
 export function* roomNameChanged(id: string, name: string) {
@@ -236,7 +236,7 @@ export function* otherUserJoinedChannel(roomId: string, userId: string) {
   }
 
   let user = yield call(getUserByMatrixId, userId);
-  if (!channel?.otherMembers?.some(({ userId }) => userId === user.userId)) {
+  if (user && !channel?.otherMembers?.some(({ userId }) => userId === user.userId)) {
     const otherMembers = [...(channel?.otherMembers || []), user];
     yield call(receiveChannel, { id: channel.id, otherMembers });
   }

@@ -1,8 +1,7 @@
 import getDeepProperty from 'lodash.get';
-import { fork, put, call, take, all, select, spawn } from 'redux-saga/effects';
+import { fork, put, call, take, select, spawn } from 'redux-saga/effects';
 import { chat, downloadFile } from '../../lib/chat';
 
-import { AsyncListStatus } from '../normalized';
 import { updateChannelWithRoomData } from './utils';
 import {
   clearChannels,

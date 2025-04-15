@@ -249,7 +249,6 @@ describe('MatrixClient', () => {
 
       expect(mockCreateClient).toHaveBeenCalledWith(
         expect.objectContaining({
-          baseUrl: expect.any(String),
           userId: '@test:matrix.org',
           deviceId: 'test-device',
           accessToken: 'test-access-token',

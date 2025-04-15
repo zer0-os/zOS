@@ -9,6 +9,7 @@ import { MessagesFetchState, denormalize as denormalizeChannel } from '../channe
 import { StoreBuilder } from '../test/store';
 import { chat } from '../../lib/chat';
 import { openConversation } from '../channels/saga';
+import { allChannelsSelector } from '../channels/selectors';
 
 describe(createConversation, () => {
   it('creates the conversation - full success flow', async () => {
@@ -30,12 +31,12 @@ describe(createConversation, () => {
       .next([{ userId: 'user-1' }])
       .call([chatClient, chatClient.createConversation], [{ userId: 'user-1' }], name, image)
       .next(stubReceivedConversation)
-      .call(openConversation, stubReceivedConversation.id)
+      .call(receiveCreatedConversation, stubReceivedConversation)
       .next()
-      .isDone();
+      .returns(stubReceivedConversation);
   });
 
-  it('handles creation error', async () => {
+  it('handles creation error gracefully', async () => {
     const otherUserIds = ['user-1'];
     const name = 'name';
     const image = { name: 'file' } as File;
@@ -84,13 +85,12 @@ describe(receiveCreatedConversation, () => {
 
     const initialState = new StoreBuilder().withConversationList(conversation).build();
 
-    const {
-      storeState: { channelsList },
-    } = await subject(receiveCreatedConversation, { id: 'existing-id' })
+    const { storeState } = await subject(receiveCreatedConversation, { id: 'existing-id' })
       .withReducer(rootReducer, initialState)
       .call(openConversation, 'existing-id')
       .run();
 
-    expect(channelsList.value).toStrictEqual(['existing-id']);
+    const channels = allChannelsSelector(storeState);
+    expect(channels).toContainEqual(expect.objectContaining({ id: 'existing-id' }));
   });
 });

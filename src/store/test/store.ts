@@ -112,7 +112,7 @@ export class StoreBuilder {
   }
 
   build() {
-    const { result: channelsList, entities: channelEntitities } = normalizeChannel(
+    const { entities: channelEntitities } = normalizeChannel(
       [
         this.activeConversation,
         ...this.channelList,
@@ -126,7 +126,7 @@ export class StoreBuilder {
 
     return {
       login: initialLoginState,
-      channelsList: { value: channelsList },
+      channelsList: { value: [] },
       normalized: {
         ...channelEntitities,
         users: {

@@ -1,7 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Chat } from './index';
-import { MatrixClient } from './matrix-client';
-import { MatrixAdapter } from './matrix/matrix-adapter';
 import { PowerLevels } from './types';
 import { EventType, GuestAccess, Preset, Visibility } from 'matrix-js-sdk/lib/matrix';
 import { CustomEventType } from './matrix/types';
@@ -71,7 +69,7 @@ const createMockMatrixUser = (userId, displayName = null, avatarUrl = null) => (
 });
 
 // Create a mock room
-const createMockRoom = (roomId, options = {}) => ({
+const createMockRoom = (roomId, options: any = {}) => ({
   roomId,
   name: options.name || `Room ${roomId}`,
   getCreator: vi.fn().mockReturnValue('@creator:example.org'),
@@ -139,12 +137,10 @@ describe('Chat', () => {
       setUserAsModerator: vi.fn().mockResolvedValue(undefined),
       removeUserAsModerator: vi.fn().mockResolvedValue(undefined),
       leaveRoom: vi.fn().mockResolvedValue(undefined),
-      getRoomsUserIsIn: vi
-        .fn()
-        .mockResolvedValue([
-          createMockRoom('room-1', { memberCount: 3 }),
-          createMockRoom('room-2', { memberCount: 2 }),
-        ]),
+      getRoomsUserIsIn: vi.fn().mockResolvedValue([
+        createMockRoom('room-1', { memberCount: 3 }),
+        createMockRoom('room-2', { memberCount: 2 }),
+      ]),
       initializeRoomEventHandlers: vi.fn(),
       lowerMinimumInviteAndKickLevels: vi.fn().mockResolvedValue(undefined),
     };
@@ -399,7 +395,6 @@ describe('Chat', () => {
   describe('member management', () => {
     it('loads members for a room', async () => {
       const roomId = 'room-id';
-      const mockOtherMembers = [{ userId: '@other1:matrix.org' }, { userId: '@other2:matrix.org' }];
 
       // Skip the detailed member loading test as it relies on matrixClientInstance
       // which would require extensive mocking

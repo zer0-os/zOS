@@ -1,13 +1,6 @@
-import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import {
-  clearChannelsAndConversations,
-  userLeftChannel,
-  addChannel,
-  otherUserJoinedChannel,
-  otherUserLeftChannel,
-} from './saga';
+import { userLeftChannel, otherUserJoinedChannel, otherUserLeftChannel } from './saga';
 
 import { rootReducer } from '../reducer';
 import { denormalize as denormalizeChannel } from '../channels';
@@ -16,22 +9,7 @@ import { expectSaga } from '../../test/saga';
 import { openFirstConversation } from '../channels/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { getUserByMatrixId } from '../users/saga';
-
-const mockConversation = (id: string) => ({
-  id: `conversation_${id}`,
-  name: `conversation ${id}`,
-  icon: 'conversation-icon',
-  messages: [
-    { isAdmin: true, admin: { userId: 'admin-id-1' } },
-    { sender: { userId: 'user-id-1' } },
-  ],
-});
-
-const MOCK_CONVERSATIONS = [mockConversation('0001'), mockConversation('0002')];
-
-const chatClient = {
-  getConversations: () => MOCK_CONVERSATIONS,
-};
+import { allChannelsSelector } from '../channels/selectors';
 
 // Refactor as this works differently now
 
@@ -48,24 +26,27 @@ describe('channels list saga', () => {
         .withReducer(rootReducer, initialState.build())
         .run();
 
-      expect(storeState.channelsList.value).toHaveLength(2);
-      expect(storeState.channelsList.value).not.toContain(roomId);
+      const channels = allChannelsSelector(storeState);
+      expect(channels).toHaveLength(2);
+      expect(channels).not.toContainEqual({ id: roomId });
     });
 
     it('does not remove room if user is not the current user', async () => {
       const roomId = 'room-id';
       const userId = 'current-user-id';
+      const channel = { id: roomId };
       const initialState = new StoreBuilder()
         .withCurrentUserId(userId)
         .withUsers({ userId, matrixId: 'matrix-id' })
-        .withConversationList({ id: roomId });
+        .withConversationList(channel);
 
       const { storeState } = await expectSaga(userLeftChannel, roomId, 'other-matrix-id')
         .withReducer(rootReducer, initialState.build())
         .run();
 
-      expect(storeState.channelsList.value).toHaveLength(1);
-      expect(storeState.channelsList.value).toContain(roomId);
+      const channels = allChannelsSelector(storeState);
+      expect(channels).toHaveLength(1);
+      expect(channels).toContainEqual(channel);
     });
 
     it('changes active conversation if user leaves (is removed from) the currently active one', async () => {
@@ -130,59 +111,6 @@ describe('channels list saga', () => {
         .call(clearLastActiveConversation)
         .call(openFirstConversation)
         .run();
-    });
-  });
-
-  it('removes the channels list and channels', async () => {
-    const channelsList = { value: ['id-one'] };
-    const channels = { 'id-one': { id: 'id-one', name: 'this should be removed' } };
-    const notifications = { 'id-two': { id: 'id-two', name: 'do not remove this one' } };
-
-    const {
-      storeState: { normalized, channelsList: channelsListResult },
-    } = await expectSaga(clearChannelsAndConversations)
-      .withReducer(rootReducer)
-      .withState({
-        channelsList,
-        normalized: { channels, notifications },
-      })
-      .run();
-
-    expect(normalized).toEqual({
-      channels: {},
-      notifications,
-    });
-
-    expect(channelsListResult).toEqual({ value: [] });
-  });
-
-  describe(addChannel, () => {
-    function subject(...args: Parameters<typeof expectSaga>) {
-      return expectSaga(...args);
-    }
-
-    it('adds channel to list', async () => {
-      const initialState = new StoreBuilder().withConversationList({ id: 'conversation-id' });
-
-      const { storeState } = await subject(addChannel, { id: 'new-convo', messages: [], otherMembers: [] })
-        .withReducer(rootReducer, initialState.build())
-        .run();
-
-      expect(storeState.channelsList.value).toIncludeSameMembers(['conversation-id', 'new-convo']);
-    });
-
-    it('does not duplicate the conversation', async () => {
-      const initialState = new StoreBuilder().withConversationList({ id: 'existing-conversation-id' });
-
-      const { storeState } = await subject(addChannel, {
-        id: 'existing-conversation-id',
-        messages: [],
-        otherMembers: [],
-      })
-        .withReducer(rootReducer, initialState.build())
-        .run();
-
-      expect(storeState.channelsList.value).toIncludeSameMembers(['existing-conversation-id']);
     });
   });
 

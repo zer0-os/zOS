@@ -15,10 +15,12 @@ import {
 } from './saga';
 
 import { rootReducer } from '../reducer';
-import { ConversationStatus, DefaultRoomLabels, denormalize as denormalizeChannel } from '../channels';
+import { DefaultRoomLabels, denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { addRoomToLabel, chat, removeRoomFromLabel, sendTypingEvent } from '../../lib/chat';
 import { getHistory } from '../../lib/browser';
+import { PowerLevels } from '../../lib/chat/types';
+import { userByMatrixIdSelector } from '../users/selectors';
 
 const userId = 'user-id';
 
@@ -37,7 +39,7 @@ describe('channels list saga', () => {
         [matchers.call.fn(mockChatClient.markRoomAsRead), 200],
       ])
       .call(chat.get)
-      .call([mockChatClient, mockChatClient.markRoomAsRead], channelId, userId)
+      .call([mockChatClient, mockChatClient.markRoomAsRead], channelId)
       .run();
   });
 
@@ -88,40 +90,45 @@ describe(unreadCountUpdated, () => {
 });
 
 describe(receiveChannel, () => {
-  it('puts only the provided values if channel already exists', async () => {
-    const initialChannel = { id: 'channel-id', unreadCount: { total: 5, highlight: 0 }, name: 'channel-name' };
-    const initialState = new StoreBuilder().withConversationList(initialChannel);
+  it('updates an existing channel with new values', async () => {
+    const initialState = new StoreBuilder()
+      .withConversationList({
+        id: 'room-id',
+        moderatorIds: ['user-1'],
+        name: 'Test Room',
+        unreadCount: { total: 5, highlight: 0 },
+      })
+      .build();
+
     const { storeState } = await expectSaga(receiveChannel, {
-      id: 'channel-id',
-      unreadCount: { total: 3, highlight: 0 },
+      id: 'room-id',
+      moderatorIds: ['user-1', 'user-2'],
+      unreadCount: { total: 0, highlight: 0 },
     })
-      .withReducer(rootReducer, initialState.build())
+      .withReducer(rootReducer, initialState)
       .run();
 
-    const channel = denormalizeChannel('channel-id', storeState);
-    // Clean up because full comparison is important here
-    delete channel.__denormalized;
-    expect(channel).toEqual({ ...initialChannel, unreadCount: { total: 3, highlight: 0 } });
+    const channel = denormalizeChannel('room-id', storeState);
+    expect(channel.moderatorIds).toEqual(['user-1', 'user-2']);
+    expect(channel.unreadCount).toEqual({ total: 0, highlight: 0 });
+    expect(channel.name).toEqual('Test Room');
   });
 
-  it('defaults the conversation state if channel does not exist yet', async () => {
+  it('creates a new channel with default values if it does not exist', async () => {
     const { storeState } = await expectSaga(receiveChannel, {
-      id: 'channel-id',
-      unreadCount: { total: 3, highlight: 0 },
-      zid: null,
+      id: 'new-room-id',
+      moderatorIds: ['user-1'],
+      name: 'New Room',
     })
       .withReducer(rootReducer)
       .run();
 
-    const channel = denormalizeChannel('channel-id', storeState);
-    // Clean up because full comparison is important here
-    delete channel.__denormalized;
-    expect(channel).toEqual({
-      ...CHANNEL_DEFAULTS,
-      id: 'channel-id',
-      unreadCount: { total: 3, highlight: 0 },
-      zid: null,
-    });
+    const channel = denormalizeChannel('new-room-id', storeState);
+    expect(channel.moderatorIds).toEqual(['user-1']);
+    expect(channel.name).toEqual('New Room');
+    expect(channel.unreadCount).toEqual({ total: 0, highlight: 0 });
+    expect(channel.messages).toEqual([]);
+    expect(channel.otherMembers).toEqual([]);
   });
 });
 
@@ -219,15 +226,16 @@ describe(receivedRoomMembersTyping, () => {
   it('updates otherMembersTyping for room', async () => {
     const initialState = new StoreBuilder()
       .withConversationList({ id: 'room-id' })
+      .withCurrentUser({ id: 'current-user-id', matrixId: 'matrix-id-3' })
       .withUsers(
-        { matrixId: 'matrix-id-1', firstName: 'Ashneer' },
-        { matrixId: 'matrix-id-2', firstName: 'Aman' },
-        { matrixId: 'matrix-id-3', firstName: 'Anupam' }
+        { userId: 'user-id-1', matrixId: '@user-id-1:matrix.org', firstName: 'Ashneer' },
+        { userId: 'user-id-2', matrixId: '@user-id-2:matrix.org', firstName: 'Aman' },
+        { userId: 'user-id-3', matrixId: '@user-id-3:matrix.org', firstName: 'Anupam' }
       )
       .build();
 
     const { storeState } = await expectSaga(receivedRoomMembersTyping, {
-      payload: { roomId: 'room-id', userIds: ['matrix-id-1', 'matrix-id-2'] },
+      payload: { roomId: 'room-id', userIds: ['@user-id-1:matrix.org', '@user-id-2:matrix.org'] },
     })
       .withReducer(rootReducer, initialState)
       .run();
@@ -258,75 +266,75 @@ describe(receivedRoomMembersTyping, () => {
 });
 
 describe(receivedRoomMemberPowerLevelChanged, () => {
-  it('adds a new moderator if the user is not already a moderator and a real time event is received', async () => {
+  it('adds a new moderator when their power level is set to Moderator', async () => {
     const initialState = new StoreBuilder()
-      .withConversationList({ id: 'room-id', moderatorIds: [] })
+      .withConversationList({
+        id: 'room-id',
+        moderatorIds: [],
+        name: 'Test Room',
+        unreadCount: { total: 0, highlight: 0 },
+      })
       .withUsers({ userId: 'user-id-1', matrixId: 'matrix-id-1', firstName: 'Ashneer' })
       .build();
 
     const { storeState } = await expectSaga(receivedRoomMemberPowerLevelChanged, {
-      payload: { roomId: 'room-id', matrixId: 'matrix-id-1', powerLevel: 50 },
+      payload: { roomId: 'room-id', matrixId: 'matrix-id-1', powerLevel: PowerLevels.Moderator },
     })
       .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1' }],
+      ])
       .run();
 
     const channel = denormalizeChannel('room-id', storeState);
     expect(channel.moderatorIds).toEqual(['user-id-1']);
   });
 
-  it('does not add a new moderator if the user is already a moderator', async () => {
+  it('does not add a moderator if they are already a moderator', async () => {
     const initialState = new StoreBuilder()
-      .withConversationList({ id: 'room-id', moderatorIds: ['user-id-1'] })
+      .withConversationList({
+        id: 'room-id',
+        moderatorIds: ['user-id-1'],
+        name: 'Test Room',
+        unreadCount: { total: 0, highlight: 0 },
+      })
       .withUsers({ userId: 'user-id-1', matrixId: 'matrix-id-1', firstName: 'Ashneer' })
       .build();
 
     const { storeState } = await expectSaga(receivedRoomMemberPowerLevelChanged, {
-      payload: { roomId: 'room-id', matrixId: 'matrix-id-1', powerLevel: 50 },
+      payload: { roomId: 'room-id', matrixId: 'matrix-id-1', powerLevel: PowerLevels.Moderator },
     })
       .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1' }],
+      ])
       .run();
 
     const channel = denormalizeChannel('room-id', storeState);
     expect(channel.moderatorIds).toEqual(['user-id-1']);
   });
 
-  it('removes a moderator if the user is a moderator and the new power_level is 0', async () => {
+  it('removes a moderator when their power level is set to Viewer', async () => {
     const initialState = new StoreBuilder()
-      .withConversationList({ id: 'room-id', moderatorIds: ['user-id-1'] })
+      .withConversationList({
+        id: 'room-id',
+        moderatorIds: ['user-id-1'],
+        name: 'Test Room',
+        unreadCount: { total: 0, highlight: 0 },
+      })
       .withUsers({ userId: 'user-id-1', matrixId: 'matrix-id-1', firstName: 'Ashneer' })
       .build();
 
     const { storeState } = await expectSaga(receivedRoomMemberPowerLevelChanged, {
-      payload: { roomId: 'room-id', matrixId: 'matrix-id-1', powerLevel: 0 },
+      payload: { roomId: 'room-id', matrixId: 'matrix-id-1', powerLevel: PowerLevels.Viewer },
     })
       .withReducer(rootReducer, initialState)
+      .provide([
+        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1' }],
+      ])
       .run();
 
     const channel = denormalizeChannel('room-id', storeState);
     expect(channel.moderatorIds).toEqual([]);
   });
 });
-
-const CHANNEL_DEFAULTS = {
-  optimisticId: '',
-  name: '',
-  messages: [],
-  otherMembers: [],
-  memberHistory: [],
-  hasMore: true,
-  hasMorePosts: true,
-  createdAt: 0,
-  lastMessage: null,
-  unreadCount: { total: 0, highlight: 0 },
-  icon: '',
-  totalMembers: 2,
-  hasLoadedMessages: false,
-  conversationStatus: ConversationStatus.CREATED,
-  messagesFetchStatus: null,
-  adminMatrixIds: [],
-  moderatorIds: [],
-  otherMembersTyping: [],
-  labels: [],
-  isSocialChannel: false,
-  zid: null,
-};

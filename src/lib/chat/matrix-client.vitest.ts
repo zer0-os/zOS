@@ -1,15 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MatrixClient } from './matrix-client';
-import {
-  ConnectionStatus,
-  MatrixConstants,
-  ReadReceiptPreferenceType,
-  ReactionKeys,
-  CustomEventType,
-} from './matrix/types';
+import { ConnectionStatus, MatrixConstants, ReadReceiptPreferenceType, CustomEventType } from './matrix/types';
 import { EventType, MsgType, ReceiptType } from 'matrix-js-sdk/lib/matrix';
-import { PowerLevels } from './types';
 import { RelationType } from 'matrix-js-sdk/lib/@types/event';
+
+// Add fetch mock type
+vi.stubGlobal('fetch', vi.fn());
+vi.stubGlobal('URL', {
+  createObjectURL: vi.fn(),
+});
 
 // Mock matrix-js-sdk
 vi.mock('matrix-js-sdk/lib/matrix', async () => {
@@ -187,8 +186,16 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 // Mock global fetch
-global.fetch = vi.fn();
-global.URL.createObjectURL = vi.fn((blob) => `blob:${Math.random()}`);
+const mockFetch = vi.mocked(global.fetch);
+mockFetch.mockResolvedValueOnce({
+  ok: true,
+  blob: vi.fn().mockResolvedValue(new Blob(['test content'])),
+} as any);
+
+// In the test where URL.createObjectURL is used:
+const mockCreateObjectURL = vi.mocked(global.URL.createObjectURL);
+const blobUrl = 'blob:1234';
+mockCreateObjectURL.mockReturnValueOnce(blobUrl);
 
 describe('MatrixClient', () => {
   let matrixClient;
@@ -512,18 +519,18 @@ describe('MatrixClient', () => {
       const blobUrl = 'blob:1234';
 
       // Mock successful fetch
-      global.fetch.mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: true,
         blob: vi.fn().mockResolvedValue(new Blob(['test content'])),
-      });
+      } as any);
 
       // Mock URL.createObjectURL
-      global.URL.createObjectURL.mockReturnValueOnce(blobUrl);
+      mockCreateObjectURL.mockReturnValueOnce(blobUrl);
 
       await matrixClient.connect('@test:matrix.org', 'test-access-token');
       const result = await matrixClient.downloadFile(fileUrl);
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledWith(
         'http://example.com/file-id',
         expect.objectContaining({
           headers: { Authorization: 'Bearer test-access-token' },
@@ -537,13 +544,13 @@ describe('MatrixClient', () => {
       const fileUrl = 'https://example.com/file.jpg';
 
       // Reset fetch mock before this test
-      global.fetch.mockReset();
+      mockFetch.mockReset();
 
       await matrixClient.connect('@test:matrix.org', 'test-access-token');
       const result = await matrixClient.downloadFile(fileUrl);
 
       expect(result).toBe(fileUrl);
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(mockFetch).not.toHaveBeenCalled();
     });
   });
 

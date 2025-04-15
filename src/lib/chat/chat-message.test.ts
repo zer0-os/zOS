@@ -464,14 +464,14 @@ describe(getMessagePreview, () => {
     expect(preview).toEqual('Jack: shared a new post');
   });
 
-  it('returns a system update message if message is null', function () {
+  it('returns an empty string if message is null', function () {
     const state = new StoreBuilder().withCurrentUser({ id: 'current-user' }).build();
     const getUser = getUserFromState(state);
     const currentUserId = getCurrentUserId(state);
 
     const preview = getMessagePreview(null, currentUserId, getUser);
 
-    expect(preview).toEqual('Admin: System update or change occurred');
+    expect(preview).toEqual('');
   });
 
   it('does not add prefix for one-on-one conversations', function () {

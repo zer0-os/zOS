@@ -25,7 +25,7 @@ export const allDenormalizedChannelsSelector = (state: RootState): Channel[] => 
 
 export const isOneOnOneSelector = createSelector(
   [(state: RootState, channelId: string) => channelSelector(channelId)(state)],
-  (channel) => isOneOnOne(channel)
+  (channel: Channel | undefined) => channel && isOneOnOne(channel)
 );
 
 export const oneOnOnesSelector = createSelector([allChannelsSelector], (channels) =>

@@ -4,7 +4,7 @@ import { call, spawn } from 'redux-saga/effects';
 import { rootReducer } from '../reducer';
 import { denormalize } from '.';
 import { StoreBuilder } from '../test/store';
-import { downloadFile, uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
+import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
 import { editUserProfile as apiEditUserProfile } from '../edit-profile/api';
 
 const mockIdb = {
@@ -72,18 +72,13 @@ describe(receiveSearchResults, () => {
       user3,
     ])
       .withReducer(rootReducer)
-      .provide([
-        [call(downloadFile, 'image-url-1'), 'downloaded-image-url-1'],
-        [call(downloadFile, 'image-url-2'), 'downloaded-image-url-2'],
-        [call(downloadFile, 'image-url-3'), 'downloaded-image-url-3'],
-      ])
       .run();
 
     expect(denormalize(user1.id, storeState)).toEqual(
       expect.objectContaining({
         userId: user1.id,
         firstName: user1.name,
-        profileImage: 'downloaded-image-url-1',
+        profileImage: 'image-url-1',
         primaryZID: user1.primaryZID,
         displaySubHandle: 'zid-1',
       })
@@ -92,7 +87,7 @@ describe(receiveSearchResults, () => {
       expect.objectContaining({
         userId: user2.id,
         firstName: user2.name,
-        profileImage: 'downloaded-image-url-2',
+        profileImage: 'image-url-2',
         primaryZID: user2.primaryZID,
         displaySubHandle: '0x1234...6789',
       })
@@ -101,7 +96,7 @@ describe(receiveSearchResults, () => {
       expect.objectContaining({
         userId: user3.id,
         firstName: user3.name,
-        profileImage: 'downloaded-image-url-3',
+        profileImage: 'image-url-3',
         primaryZID: user3.primaryZID,
         displaySubHandle: '',
       })

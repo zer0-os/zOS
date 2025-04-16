@@ -53,5 +53,8 @@ export const useProfile = ({ id }: UseProfileParams) => {
         userId: response.body.userId,
       };
     },
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
   });
 };

@@ -5,22 +5,21 @@ import { Feed } from '../../../feed/components/feed';
 import styles from './styles.module.scss';
 
 export const Switcher = () => {
-  const { userId, isLoading } = useSwitcher();
+  const { userId } = useSwitcher();
 
   return (
     <div className={styles.Container}>
       <div className={styles.Content}>
-        <Feed isPostingEnabled={false} userId={userId} isLoading={isLoading} />
+        <Feed isPostingEnabled={false} userId={userId} />
       </div>
     </div>
   );
 };
 
 const useSwitcher = () => {
-  const { data, isLoading } = useProfileApp();
+  const { data } = useProfileApp();
 
   return {
     userId: data?.userId,
-    isLoading,
   };
 };

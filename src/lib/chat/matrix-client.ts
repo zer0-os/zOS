@@ -1344,6 +1344,18 @@ export class MatrixClient {
         });
       }
 
+      const silentLogger =
+        process.env.NODE_ENV === 'production'
+          ? {
+              trace: () => {},
+              debug: () => {},
+              info: () => {},
+              warn: console.warn,
+              error: console.error,
+              getChild: () => silentLogger,
+            }
+          : undefined;
+
       const userCreds = await this.getCredentials(userId, ssoToken);
       const createClientOpts: ICreateClientOpts = {
         cryptoStore,
@@ -1354,6 +1366,7 @@ export class MatrixClient {
         },
         store: matrixStore,
         timelineSupport: true,
+        logger: silentLogger,
         ...userCreds,
       };
 

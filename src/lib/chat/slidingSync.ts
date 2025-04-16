@@ -2,8 +2,6 @@ import { type MatrixClient, ClientEvent, EventType, type Room } from 'matrix-js-
 import {
   type MSC3575List,
   type MSC3575SlidingSyncResponse,
-  MSC3575_STATE_KEY_LAZY,
-  MSC3575_STATE_KEY_ME,
   MSC3575_WILDCARD,
   SlidingSync,
   SlidingSyncEvent,
@@ -23,8 +21,9 @@ const REQUIRED_STATE_LIST = [
   [EventType.RoomTombstone, ''],
   [EventType.RoomEncryption, ''],
   [EventType.RoomCreate, ''],
+  [EventType.Receipt, MSC3575_WILDCARD],
   [CustomEventType.GROUP_TYPE, MSC3575_WILDCARD],
-  [EventType.RoomMember, MSC3575_STATE_KEY_ME],
+  [EventType.RoomMember, MSC3575_WILDCARD],
 ];
 
 // the things to fetch when a user clicks on a room
@@ -39,8 +38,7 @@ const DEFAULT_ROOM_SUBSCRIPTION_INFO = {
 const UNENCRYPTED_SUBSCRIPTION_NAME = 'unencrypted';
 const UNENCRYPTED_SUBSCRIPTION = {
   required_state: [
-    [EventType.RoomMember, MSC3575_STATE_KEY_ME],
-    [EventType.RoomMember, MSC3575_STATE_KEY_LAZY],
+    [EventType.RoomMember, MSC3575_WILDCARD],
   ],
   ...DEFAULT_ROOM_SUBSCRIPTION_INFO,
 };

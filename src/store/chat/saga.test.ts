@@ -32,7 +32,6 @@ describe(performValidateActiveConversation, () => {
       [matchers.call.fn(openFirstConversation), null],
       [matchers.call.fn(isRoomMember), true],
       [matchers.call.fn(channelSagas.addRoomToSync), undefined],
-      [matchers.call.fn(channelSagas.loadMembersIfNeeded), undefined],
       [
         matchers.call.fn(getHistory),
         {
@@ -77,7 +76,6 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(getRoomIdForAlias), conversationId],
         [matchers.call.fn(isMemberOfActiveConversation), true],
         [matchers.call.fn(channelSagas.addRoomToSync), undefined],
-        [matchers.call.fn(channelSagas.loadMembersIfNeeded), undefined],
         [
           matchers.call.fn(getHistory),
           {
@@ -173,7 +171,6 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(isMemberOfActiveConversation), true],
         [matchers.call.fn(isRoomMember), true],
         [matchers.call.fn(channelSagas.addRoomToSync), undefined],
-        [matchers.call.fn(channelSagas.loadMembersIfNeeded), undefined],
         [
           matchers.call.fn(getHistory),
           {
@@ -208,7 +205,6 @@ describe(performValidateActiveConversation, () => {
         [matchers.call.fn(getRoomIdForAlias), resolvedRoomId],
         [matchers.call.fn(isRoomMember), true],
         [matchers.call.fn(channelSagas.addRoomToSync), undefined],
-        [matchers.spawn.fn(channelSagas.loadMembersIfNeeded), undefined],
         [matchers.call.fn(getHistory), history],
         [matchers.spawn.fn(postsSagas.startPollingPosts), undefined],
         [matchers.spawn.fn(markConversationAsRead), undefined],

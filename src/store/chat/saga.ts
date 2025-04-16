@@ -23,7 +23,6 @@ import { getHistory } from '../../lib/browser';
 import { addRoomToSync, markConversationAsRead, openFirstConversation } from '../channels/saga';
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
-import { loadMembersIfNeeded } from '../channels/saga';
 import { startPollingPosts } from '../posts/saga';
 import { allChannelsSelector, channelSelector } from '../channels/selectors';
 
@@ -236,7 +235,6 @@ export function* performValidateActiveConversation(activeConversationId: string)
 
     // Set up the conversation with necessary initialization steps
     yield call(addRoomToSync, conversationId);
-    yield call(loadMembersIfNeeded, [conversationId]);
     yield call(startPollingPosts, conversationId);
   }
 

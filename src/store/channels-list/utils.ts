@@ -1,10 +1,10 @@
 import { Channel, User } from './../channels/index';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
-import { MatrixClient } from 'matrix-js-sdk/lib/client';
+import { MatrixClient } from '../../lib/chat/matrix-client';
 import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
 import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
 import { EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
-import { CustomEventType, MatrixConstants } from '../../lib/chat/matrix/types';
+import { MatrixConstants } from '../../lib/chat/matrix/types';
 
 export const isOneOnOne = (channel: { totalMembers: number }) => channel.totalMembers === 2;
 
@@ -28,72 +28,58 @@ export function rawUserToDomainUser(u): User {
   };
 }
 
-// TODO zos-619: This should be in MatrixAdapter
-// Also, there should be handlers for each of the required_state events that match up
-// with the events we're adding to the SlidingSync in /lib/chat/slidingSync.ts
 export async function updateChannelWithRoomData(
   roomId: string,
   roomData: MSC3575RoomData,
   client: MatrixClient
 ): Promise<Partial<Channel> | null> {
-  const room = client.getRoom(roomId);
+  const room = client.matrix.getRoom(roomId);
   if (!room) return null;
-  const groupTypeState = roomData.required_state.find((event) => event.type === CustomEventType.GROUP_TYPE);
-  const groupType = groupTypeState?.content?.group_type;
-
   const baseChannel = MatrixAdapter.mapRoomToChannel(room);
 
   const initialChannelUpdates: Partial<Channel> = {};
 
-  if (roomData.initial) {
-    const liveTimeline = room.getLiveTimeline();
-    const timelineEvents = liveTimeline.getEvents();
-    const timeline = timelineEvents.reduce<IEvent[]>((acc, event) => {
-      if (event.getType() === EventType.RoomMessageEncrypted) {
-        client.decryptEventIfNeeded(event);
-        const evt = event.getEffectiveEvent();
-        // Handle edited messages
-        const relatesTo = evt.content[MatrixConstants.RELATES_TO];
-        let id = evt.event_id;
-        if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
-          id = relatesTo.event_id;
-        }
-        acc.push({
-          ...evt,
-          event_id: id,
-          content: { body: 'Decrypting...', msgtype: 'm.text' },
-        });
-      } else {
-        acc.push(event.getEffectiveEvent());
+  const liveTimeline = room.getLiveTimeline();
+  const timelineEvents = liveTimeline.getEvents();
+  const timeline = timelineEvents.reduce<IEvent[]>((acc, event) => {
+    if (event.getType() === EventType.RoomMessageEncrypted) {
+      client.matrix.decryptEventIfNeeded(event);
+      const evt = event.getEffectiveEvent();
+      // Handle edited messages
+      const relatesTo = evt.content[MatrixConstants.RELATES_TO];
+      let id = evt.event_id;
+      if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
+        id = relatesTo.event_id;
       }
-      return acc;
-    }, []);
-
-    // TODO zos-619: This should be in MatrixAdapter and not on the matrix client instance
-    const messages = await matrixClientInstance.processRawEventsToMessages(timeline);
-    let lastMessage = baseChannel.lastMessage;
-    if (messages.length > 0 && messages[messages.length - 1]) {
-      lastMessage = messages[messages.length - 1];
+      acc.push({
+        ...evt,
+        event_id: id,
+        content: { body: 'Decrypting...', msgtype: 'm.text' },
+      });
+    } else {
+      acc.push(event.getEffectiveEvent());
     }
+    return acc;
+  }, []);
 
-    initialChannelUpdates.messages = messages;
-    initialChannelUpdates.lastMessage = lastMessage;
-
-    initialChannelUpdates.unreadCount = {
-      total: roomData.notification_count,
-      highlight: roomData.highlight_count,
-    };
+  // TODO zos-619: This should be in MatrixAdapter and not on the matrix client instance
+  const messages = await matrixClientInstance.processRawEventsToMessages(timeline);
+  let lastMessage = baseChannel.lastMessage;
+  if (messages.length > 0 && messages[messages.length - 1]) {
+    lastMessage = messages[messages.length - 1];
   }
 
-  const updatedChannel = {
+  initialChannelUpdates.messages = messages;
+  initialChannelUpdates.lastMessage = lastMessage;
+
+  initialChannelUpdates.unreadCount = {
+    total: roomData.notification_count,
+    highlight: roomData.highlight_count,
+  };
+
+  return {
     ...baseChannel,
     bumpStamp: roomData.bump_stamp,
     ...initialChannelUpdates,
   };
-
-  if (groupType && groupType === 'social') {
-    updatedChannel.isSocialChannel = true;
-  }
-
-  return updatedChannel;
 }

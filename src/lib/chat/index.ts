@@ -15,7 +15,6 @@ import { Preset } from 'matrix-js-sdk/lib/matrix';
 import { ICreateRoomOpts } from 'matrix-js-sdk/lib/matrix';
 import { GuestAccess } from 'matrix-js-sdk/lib/matrix';
 import { EventType } from 'matrix-js-sdk/lib/matrix';
-import { User as MatrixUser } from 'matrix-js-sdk/lib/models/user';
 import { ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 
 export interface RealtimeChatEvents {
@@ -130,14 +129,6 @@ export class Chat {
   getRoomGroupTypeById(roomId: string) {
     const room = this.client.matrix.getRoom(roomId);
     return this.client.getRoomGroupType(room);
-  }
-
-  async getNewChannelDataById(roomId: string) {
-    const room = this.client.matrix.getRoom(roomId);
-    const name = room.name;
-    const avatar = this.client.getRoomAvatar(room);
-    const groupType = this.client.getRoomGroupType(room);
-    return { name, avatar, groupType };
   }
 
   async setupConversations() {
@@ -317,30 +308,6 @@ export class Chat {
       optimisticId,
       isSocialChannel || false
     );
-  }
-
-  async loadMembersIfNeeded(
-    roomId: string
-  ): Promise<{ otherMembers: User[]; memberHistory: User[]; totalMembers: number } | undefined> {
-    const room = this.client.matrix.getRoom(roomId);
-    if (room) {
-      await room.loadMembersIfNeeded();
-      const otherMembers = this.client
-        .getOtherMembersFromRoom(room)
-        .map((m) => matrixClientInstance.matrix.getUser(m.userId))
-        .filter(Boolean)
-        .map((user: MatrixUser) => MatrixAdapter.mapMatrixUserToUser(user));
-      const memberHistory = room
-        .getMembers()
-        .map((m) => matrixClientInstance.matrix.getUser(m.userId))
-        .filter(Boolean)
-        .map((user: MatrixUser) => MatrixAdapter.mapMatrixUserToUser(user));
-      return {
-        otherMembers,
-        memberHistory,
-        totalMembers: room.getInvitedAndJoinedMemberCount(),
-      };
-    }
   }
 
   async markRoomAsRead(roomId: string): Promise<void> {

@@ -77,25 +77,6 @@ export function* openFirstConversation() {
   }
 }
 
-export function* loadMembersIfNeeded(conversationIds: string[]) {
-  const chatClient: Chat = yield call(chat.get);
-  for (const conversationId of conversationIds) {
-    const members = yield call([chatClient, chatClient.loadMembersIfNeeded], conversationId);
-    if (members) {
-      yield call(receiveChannel, {
-        id: conversationId,
-        otherMembers: members.otherMembers,
-        memberHistory: members.memberHistory,
-        totalMembers: members.totalMembers,
-      });
-      yield call(
-        getUsersByMatrixIds,
-        members.memberHistory.map((m) => m.matrixId)
-      );
-    }
-  }
-}
-
 export function* addRoomToSync(conversationId: string) {
   yield call(() => SlidingSyncManager.instance.addRoomToSync(conversationId));
 }
@@ -106,7 +87,6 @@ export function* openConversation(conversationId: string) {
   }
 
   yield call(addRoomToSync, conversationId);
-  yield call(loadMembersIfNeeded, [conversationId]);
   yield call(setLastActiveConversation, conversationId);
   yield call(setActiveConversation, conversationId);
   yield spawn(markConversationAsRead, conversationId);
@@ -149,6 +129,12 @@ export function* onRemoveReply() {
 
 export function* clearChannels() {
   yield put(removeAll({ schema: schema.key }));
+}
+
+export function* channelUpdater(id: string, updater: (prev: Partial<Channel> | undefined) => Partial<Channel>) {
+  const existing = yield select(channelSelector(id));
+  const updates = updater(existing);
+  yield put(rawReceive(updates));
 }
 
 export function* receiveChannel(channel: Partial<Channel>) {

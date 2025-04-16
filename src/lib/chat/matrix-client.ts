@@ -1366,7 +1366,6 @@ export class MatrixClient {
 
       const slidingSync = await SlidingSyncManager.instance.setup(this.matrix);
       const startClientOpts: IStartClientOpts = {
-        lazyLoadMembers: true,
         resolveInvitesToProfiles: true,
         slidingSync,
       };
@@ -1472,31 +1471,25 @@ export class MatrixClient {
   private publishMembershipChange = async (event) => {
     const userId = event.state_key;
     const membership = event.content.membership;
+    const previousMembership = event.unsigned?.prev_content?.membership;
     const roomId = event.room_id;
 
     if (event.state_key !== this.userId) {
-      if (membership === MembershipStateType.Leave) {
+      if (membership === MembershipStateType.Leave && previousMembership !== MembershipStateType.Leave) {
         this.events.onOtherUserLeftChannel(roomId, userId);
-      } else {
+      } else if (membership === MembershipStateType.Join && previousMembership !== MembershipStateType.Join) {
         this.events.onOtherUserJoinedChannel(roomId, userId);
       }
     } else {
-      if (membership === MembershipStateType.Leave) {
+      if (membership === MembershipStateType.Leave && previousMembership !== MembershipStateType.Leave) {
         this.events.onUserLeft(roomId, userId);
-      }
-
-      if (membership === MembershipStateType.Join) {
+      } else if (membership === MembershipStateType.Join && previousMembership !== MembershipStateType.Join) {
         const room = this.matrix.getRoom(roomId);
         if (room) {
           this.events.onUserJoinedChannel(room.roomId);
           this.initializeRoomEventHandlers(room);
         }
       }
-    }
-
-    const message = mapEventToAdminMessage(event);
-    if (message) {
-      this.events.receiveNewMessage(roomId, message);
     }
   };
 

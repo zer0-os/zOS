@@ -1,4 +1,4 @@
-import { call, put, select, spawn, take, takeEvery } from 'redux-saga/effects';
+import { call, put, select, spawn, take, takeEvery, delay } from 'redux-saga/effects';
 import { schema, removeAll, receive, SagaActionTypes } from '.';
 import { usersByMatrixIdsSelector } from './selectors';
 import { getUserSubHandle } from '../../lib/user';
@@ -109,4 +109,25 @@ export function* getUsersByMatrixIds(matrixIds: string[]) {
 export function* getUserByMatrixId(matrixId: string) {
   const users: Map<string, User> = yield call(getUsersByMatrixIds, [matrixId]);
   return users.get(matrixId);
+}
+
+let pendingMatrixIds = new Set<string>();
+let isProcessing = false;
+/**
+ * Batch processes matrix IDs by accumulating them and processing every 500ms
+ * @param matrixId - matrix id to add to the batch
+ */
+export function* batchGetUsersByMatrixId(matrixId: string) {
+  pendingMatrixIds.add(matrixId);
+
+  if (!isProcessing) {
+    isProcessing = true;
+    yield delay(500);
+
+    const matrixIds = Array.from(pendingMatrixIds);
+    pendingMatrixIds.clear();
+    isProcessing = false;
+
+    yield call(getUsersByMatrixIds, matrixIds);
+  }
 }

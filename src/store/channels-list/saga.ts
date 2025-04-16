@@ -3,13 +3,7 @@ import { put, call, take, select, spawn } from 'redux-saga/effects';
 import { chat, downloadFile } from '../../lib/chat';
 
 import { updateChannelWithRoomData } from './utils';
-import {
-  clearChannels,
-  loadMembersIfNeeded,
-  openConversation,
-  openFirstConversation,
-  receiveChannel,
-} from '../channels/saga';
+import { clearChannels, openConversation, openFirstConversation, receiveChannel } from '../channels/saga';
 import { ConversationEvents, getConversationsBus } from './channels';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -25,7 +19,7 @@ import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
 import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
 import { userSelector } from '../users/selectors';
-import { MembershipStateType } from '../../lib/chat/matrix/types';
+import { handleRoomDataEvents } from '../../lib/chat/matrix/event-type-handlers/handleRoomDataEvents';
 
 export function* fetchChannels() {
   // Get initial channels from Matrix store for faster initial load
@@ -125,32 +119,17 @@ function* batchedRoomDataAction(action: RoomDataAction) {
   const batchedUpdates = [...pendingRoomData];
   pendingRoomData = [];
 
-  let initialUpdates = [];
   for (const update of batchedUpdates) {
-    const mappedChannel: Partial<Channel> = yield call(
-      updateChannelWithRoomData,
-      update.roomId,
-      update.roomData,
-      matrixClientInstance.matrix
-    );
-    // Get all user ids from all channels and fetch them from the store. If they don't exist, fetch them from the API
+    yield call(handleRoomDataEvents, update.roomId, update.roomData, matrixClientInstance);
     if (update.roomData.initial) {
-      initialUpdates.push(update.roomId);
-    }
-    if (mappedChannel) {
+      const mappedChannel: Partial<Channel> = yield call(
+        updateChannelWithRoomData,
+        update.roomId,
+        update.roomData,
+        matrixClientInstance
+      );
       yield spawn(receiveChannel, mappedChannel);
     }
-  }
-  if (initialUpdates.length > 0) {
-    for (const roomId of initialUpdates) {
-      const room = matrixClientInstance.matrix.getRoom(roomId);
-      // User was invited to the room, so we need to auto-join it
-      // This could be updated to show Accept/Reject buttons in the UI like mobile does
-      if (room.getMyMembership() === MembershipStateType.Invite) {
-        yield call(matrixClientInstance.autoJoinRoom, roomId);
-      }
-    }
-    yield spawn(loadMembersIfNeeded, initialUpdates);
   }
 }
 
@@ -171,8 +150,6 @@ export function* saga() {
 }
 
 function* userJoinedChannelAction({ payload }) {
-  yield addChannel(payload.channelId);
-
   const conversationBus = yield call(getConversationsBus);
   yield put(conversationBus, { type: ConversationEvents.UserJoinedConversation, conversationId: payload.channelId });
 }
@@ -195,21 +172,6 @@ function* otherUserJoinedChannelAction({ payload }) {
 
 function* otherUserLeftChannelAction({ payload }) {
   yield otherUserLeftChannel(payload.channelId, payload.userId);
-}
-
-export function* addChannel(channelId) {
-  const channel = yield select(channelSelector(channelId));
-  if (!channel) {
-    return;
-  }
-
-  const chatClient = yield call(chat.get);
-  const newChannelData = yield call([chatClient, chatClient.getNewChannelDataById], channelId);
-  yield call(receiveChannel, {
-    ...channel,
-    ...newChannelData,
-  });
-  yield spawn(loadMembersIfNeeded, [channelId]);
 }
 
 export function* roomNameChanged(id: string, name: string) {

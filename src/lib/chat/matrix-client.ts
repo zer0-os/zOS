@@ -1378,6 +1378,17 @@ export class MatrixClient {
       await this.matrix.startClient(startClientOpts);
       await this.waitForSync();
 
+      /**
+       * Temporary workaround to remove MatrixRTC from processing events.
+       * There is a bug in the sdk that's not working properly with SlidingSync
+       * and we're not using MatrixRTC yet, so we can safely remove these events
+       * Issue opened on the sdk: https://github.com/matrix-org/matrix-js-sdk/issues/4808
+       */
+      const rtcSessionManager = this.matrix.matrixRTC;
+      if (rtcSessionManager) {
+        rtcSessionManager.stop();
+      }
+
       return createClientOpts.userId;
     }
   }

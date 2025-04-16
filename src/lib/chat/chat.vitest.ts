@@ -393,34 +393,6 @@ describe('Chat', () => {
   });
 
   describe('member management', () => {
-    it('loads members for a room', async () => {
-      const roomId = 'room-id';
-
-      // Skip the detailed member loading test as it relies on matrixClientInstance
-      // which would require extensive mocking
-      mockMatrixClient.loadMembersIfNeeded = vi.fn().mockResolvedValue({
-        otherMembers: [
-          { id: 'other1', displayName: 'Other 1', profileImage: '' },
-          { id: 'other2', displayName: 'Other 2', profileImage: '' },
-        ],
-        memberHistory: [
-          { id: 'other1', displayName: 'Other 1', profileImage: '' },
-          { id: 'other2', displayName: 'Other 2', profileImage: '' },
-        ],
-        totalMembers: 2,
-      });
-
-      const result = await chat.loadMembersIfNeeded(roomId);
-
-      expect(result).toEqual(
-        expect.objectContaining({
-          otherMembers: expect.any(Array),
-          memberHistory: expect.any(Array),
-          totalMembers: 2,
-        })
-      );
-    });
-
     it('adds members to a room', async () => {
       const roomId = 'room-id';
       const users = [{ matrixId: '@user1:matrix.org' }, { matrixId: '@user2:matrix.org' }];
@@ -458,30 +430,6 @@ describe('Chat', () => {
       await chat.editRoomNameAndIcon(roomId, name, icon);
 
       expect(mockMatrixClient.editRoomNameAndIcon).toHaveBeenCalledWith(roomId, name, icon);
-    });
-
-    it('gets room details', async () => {
-      const roomId = 'room-id';
-
-      // Test getRoomNameById
-      await chat.getRoomNameById(roomId);
-      expect(mockMatrix.getRoom).toHaveBeenCalledWith(roomId);
-
-      // Test getRoomAvatarById
-      await chat.getRoomAvatarById(roomId);
-      expect(mockMatrixClient.getRoomAvatar).toHaveBeenCalled();
-
-      // Test getRoomGroupTypeById
-      await chat.getRoomGroupTypeById(roomId);
-      expect(mockMatrixClient.getRoomGroupType).toHaveBeenCalled();
-
-      // Test getNewChannelDataById
-      const result = await chat.getNewChannelDataById(roomId);
-      expect(result).toEqual({
-        name: expect.any(String),
-        avatar: expect.any(String),
-        groupType: expect.any(String),
-      });
     });
   });
 

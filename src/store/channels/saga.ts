@@ -8,7 +8,6 @@ import {
   sendTypingEvent as matrixSendUserTypingEvent,
   addRoomToLabel,
   removeRoomFromLabel,
-  Chat,
 } from '../../lib/chat';
 import { mostRecentConversation } from '../channels/selectors';
 import { setActiveConversation } from '../chat/saga';
@@ -25,7 +24,6 @@ import { startPollingPosts } from '../posts/saga';
 import { setLastActiveConversation, getLastActiveConversation } from '../../lib/last-conversation';
 import { SlidingSyncManager } from '../../lib/chat/slidingSync';
 import { extractUserIdFromMatrixId } from '../../lib/chat/matrix/utils';
-import { getUsersByMatrixIds } from '../users/saga';
 
 export function* markAllMessagesAsRead(channelId, userId) {
   if (!userId) {

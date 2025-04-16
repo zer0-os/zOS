@@ -68,6 +68,8 @@ export const Feed = ({ zid, isPostingEnabled = true, userId }: FeedProps) => {
                     timestamp={reply.createdAt}
                     userMeowBalance={userMeowBalance}
                     variant='default'
+                    authorPrimaryZid={reply.sender?.primaryZid}
+                    authorPublicAddress={reply.sender?.publicAddress}
                   />
                 </li>
               ))

@@ -1,4 +1,5 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
@@ -36,6 +37,8 @@ export interface PostProps {
   variant?: Variant;
   numberOfReplies?: number;
   isSinglePostView?: boolean;
+  authorPrimaryZid?: string;
+  authorPublicAddress?: string;
 
   meowPost: (postId: string, meowAmount: string) => void;
 }
@@ -58,6 +61,8 @@ export const Post = ({
   variant = 'default',
   numberOfReplies = 0,
   isSinglePostView = false,
+  authorPrimaryZid,
+  authorPublicAddress,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
@@ -98,7 +103,9 @@ export const Post = ({
       <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
         {variant === 'default' && (
           <div className={styles.Avatar}>
-            <MatrixAvatar size='regular' imageURL={avatarUrl} />
+            <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress}>
+              <MatrixAvatar size='regular' imageURL={avatarUrl} />
+            </ProfileLink>
           </div>
         )}
         <ZUIPost
@@ -116,13 +123,17 @@ export const Post = ({
             <div className={styles.Details}>
               {variant === 'expanded' && (
                 <div className={styles.Avatar}>
-                  <MatrixAvatar size='regular' imageURL={avatarUrl} />
+                  <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress}>
+                    <MatrixAvatar size='regular' imageURL={avatarUrl} />
+                  </ProfileLink>
                 </div>
               )}
               <div className={styles.Wrapper}>
                 {/* @ts-ignore */}
                 <Name className={styles.Name} variant='name'>
-                  {nickname}
+                  <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress}>
+                    {nickname}
+                  </ProfileLink>
                   <span>⋅</span>
                   {variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
                 </Name>
@@ -230,5 +241,21 @@ const renderLink = ({ attributes, content }) => {
     >
       {content}
     </a>
+  );
+};
+
+const ProfileLink = ({
+  primaryZid,
+  publicAddress,
+  children,
+}: {
+  primaryZid: string;
+  publicAddress: string;
+  children: ReactNode;
+}) => {
+  return (
+    <PreventPropagation>
+      <Link to={`/profile/${primaryZid ?? publicAddress}`}>{children}</Link>
+    </PreventPropagation>
   );
 };

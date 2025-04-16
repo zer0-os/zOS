@@ -18,9 +18,10 @@ export interface FeedProps {
    */
   userId?: string;
   isPostingEnabled?: boolean;
+  isLoading?: boolean;
 }
 
-export const Feed = ({ zid, isPostingEnabled = true, userId }: FeedProps) => {
+export const Feed = ({ zid, isPostingEnabled = true, userId, isLoading: isLoadingProp }: FeedProps) => {
   const {
     channelZid,
     fetchNextPage,
@@ -35,7 +36,7 @@ export const Feed = ({ zid, isPostingEnabled = true, userId }: FeedProps) => {
     posts,
     currentUserId,
     userMeowBalance,
-  } = useFeed(zid, userId);
+  } = useFeed({ zid, userId, isLoading: isLoadingProp });
 
   return (
     <Panel className={styles.Feed}>

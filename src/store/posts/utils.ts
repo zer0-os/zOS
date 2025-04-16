@@ -59,11 +59,9 @@ export function mapPostToMatrixMessage(post) {
     sendStatus: 0,
     sender: {
       userId: post.userId,
-      firstName: post.userProfileView?.firstName,
+      firstName: post.user?.profileSummary?.firstName,
       displaySubHandle: '0://' + post.zid,
-      avatarUrl: post.userProfileView?.profileImage,
-      primaryZid: post.userProfileView?.primaryZid?.replace('0://', ''),
-      publicAddress: post.userProfileView?.publicAddress,
+      avatarUrl: post.user?.profileSummary?.profileImage,
     },
     replyTo: post.replyToPost,
     numberOfReplies: post.replies?.length ?? 0,

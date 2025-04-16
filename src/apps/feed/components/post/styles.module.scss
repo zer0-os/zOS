@@ -94,6 +94,10 @@
   }
 }
 
+.Avatar {
+  pointer-events: none;
+}
+
 .Name {
   display: flex;
   gap: 4px;

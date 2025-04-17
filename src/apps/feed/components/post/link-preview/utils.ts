@@ -1,6 +1,6 @@
 import { PostLinkPreviewType, PostLinkPreviewData } from './index';
 
-const YOUTUBE_REGEX = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
+const YOUTUBE_REGEX = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
 
 export function detectLinkType(url: string): PostLinkPreviewType | null {
   if (!url) return null;

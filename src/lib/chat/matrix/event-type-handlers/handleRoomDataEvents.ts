@@ -4,6 +4,8 @@ import { isGroupTypeEvent } from './groupType';
 import { isRoomMemberEvent } from './roomMember';
 import { handleGroupTypeEvent } from './groupType';
 import { handleRoomMemberEvent } from './roomMember';
+import { handleRoomMessageEvent, isRoomMessageEvent } from './roomMessage';
+import { spawn } from 'redux-saga/effects';
 
 export function* handleRoomDataEvents(roomId: string, roomData: MSC3575RoomData, client: MatrixClient) {
   const room = client.matrix.getRoom(roomId);
@@ -11,11 +13,21 @@ export function* handleRoomDataEvents(roomId: string, roomData: MSC3575RoomData,
 
   for (const event of roomData.required_state) {
     if (isGroupTypeEvent(event)) {
-      yield* handleGroupTypeEvent(event, roomId);
+      yield spawn(handleGroupTypeEvent, event, roomId);
     }
 
     if (isRoomMemberEvent(event)) {
-      yield* handleRoomMemberEvent(event, roomId, client);
+      yield spawn(handleRoomMemberEvent, event, roomId, client);
+    }
+  }
+
+  // Initial sync handling is done in the saga batchedRoomDataAction as there can be large
+  // amounts of events coming through at once. This is for incremental even thandling
+  if (!roomData.initial) {
+    for (const event of roomData.timeline) {
+      if (isRoomMessageEvent(event)) {
+        yield spawn(handleRoomMessageEvent, event, roomId, roomData);
+      }
     }
   }
 }

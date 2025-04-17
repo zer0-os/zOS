@@ -21,7 +21,6 @@ const REQUIRED_STATE_LIST = [
   [EventType.RoomTombstone, ''],
   [EventType.RoomEncryption, ''],
   [EventType.RoomCreate, ''],
-  [EventType.Receipt, MSC3575_WILDCARD],
   [CustomEventType.GROUP_TYPE, MSC3575_WILDCARD],
   [EventType.RoomMember, MSC3575_WILDCARD],
 ];

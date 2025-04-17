@@ -128,7 +128,7 @@ const slice = createNormalizedSlice({
 });
 
 export const removeChannel = (channelId: string) => remove({ schema: schema.key, id: channelId });
-export const { receive } = slice.actions;
+export const { receiveNormalized, receive } = slice.actions;
 export const rawReceive: typeof receive = (data: Partial<Channel>) => {
   // @ts-ignore - Removing denormalized flag
   const { __denormalized, otherMembers, memberHistory, ...rest } = data;

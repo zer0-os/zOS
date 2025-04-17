@@ -128,6 +128,6 @@ export function* batchGetUsersByMatrixId(matrixId: string) {
     pendingMatrixIds.clear();
     isProcessing = false;
 
-    yield call(getUsersByMatrixIds, matrixIds);
+    yield spawn(getUsersByMatrixIds, matrixIds);
   }
 }

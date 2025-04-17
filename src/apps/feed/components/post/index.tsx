@@ -13,6 +13,8 @@ import { ShowMoreButton } from '../show-more-button';
 import { analyzePostContent } from '../../lib/analyzePostContent';
 import { usePostRoute } from './lib/usePostRoute';
 import Linkify from 'linkify-react';
+import { PostLinkPreview } from './link-preview';
+import { detectLinkType } from './link-preview/utils';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -81,11 +83,17 @@ export const Post = ({
 
   const multilineText = useMemo(
     () =>
-      displayText?.split('\n').map((line, index) => (
-        <p key={index} className={styles.Text}>
-          {line}
-        </p>
-      )),
+      displayText?.split('\n').map((line, index) => {
+        const linkType = detectLinkType(line);
+        const hasPreview = linkType !== null;
+
+        return (
+          <div key={index}>
+            <p className={styles.Text}>{line}</p>
+            {hasPreview && <PostLinkPreview url={line} />}
+          </div>
+        );
+      }),
     [displayText]
   );
 

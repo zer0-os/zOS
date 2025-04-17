@@ -98,7 +98,7 @@
     "code-format:fix": "prettier --write 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
     "prepare": "husky install",
     "generate-mocks": "BUILD_MOCKS=true npm test -- --watchAll=false src/app-sandbox/index.test.tsx",
-    "post-install": "npx patch-package",
+    "postinstall": "npx patch-package",
     "heroku-cleanup": "npx patch-package"
   },
   "browserslist": {

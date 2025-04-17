@@ -1,13 +1,9 @@
 import { chat } from '../../../lib/chat';
 import { User as ChannelMember } from '../../../store/channels';
 
-export async function searchMentionableUsersForChannel(
-  channelId: string,
-  search: string,
-  channelMembers: ChannelMember[]
-) {
+export async function searchMentionableUsersForChannel(search: string, channelMembers: ChannelMember[]) {
   const chatClient = chat.get();
-  return await chatClient.searchMentionableUsersForChannel(channelId, search, channelMembers);
+  return await chatClient.searchMentionableUsersForChannel(search, channelMembers);
 }
 
 export async function searchMyNetworksByName(search: string) {

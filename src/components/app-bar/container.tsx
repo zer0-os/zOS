@@ -5,8 +5,7 @@ import { getLastActiveConversation } from '../../lib/last-conversation';
 import { useMemo } from 'react';
 import { activeZAppFeatureSelector } from '../../store/active-zapp/selectors';
 import { activeConversationIdSelector, rawActiveConversationSelector } from '../../store/chat/selectors';
-import { hasUnreadHighlightsSelector } from '../../store/channels-list/selectors';
-import { hasUnreadNotificationsSelector } from '../../store/channels-list/selectors';
+import { hasUnreadHighlightsSelector, hasUnreadNotificationsSelector } from '../../store/channels/selectors';
 
 export const AppBar = () => {
   const {

@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 
 import { Item, Option } from '../lib/types';
-import { Avatar, Input } from '@zero-tech/zui/components';
+import { Input } from '@zero-tech/zui/components';
 import { highlightFilter, itemToOption } from '../lib/utils';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { Waypoint } from '../../waypoint';
@@ -9,6 +9,7 @@ import classNames from 'classnames';
 
 import './styles.scss';
 import '../list/styles.scss';
+import { MatrixAvatar } from '../../matrix-avatar';
 
 const PAGE_SIZE = 20;
 export interface Properties {
@@ -129,7 +130,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
                   onKeyDown={this.handleKeyDown}
                   onClick={this.itemClicked}
                 >
-                  <Avatar size='regular' imageURL={r.image} tabIndex={-1} />
+                  <MatrixAvatar size='regular' imageURL={r.image} tabIndex={-1} />
 
                   <div className='autocomplete-members__user-details'>
                     <div className='autocomplete-members__label'>

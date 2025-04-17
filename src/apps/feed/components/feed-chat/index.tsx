@@ -3,7 +3,7 @@ import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
 import { ChatViewContainer } from '../../../../components/chat-view-container/chat-view-container';
 import { validateFeedChat } from '../../../../store/chat';
-import { Channel, denormalize, onRemoveReply } from '../../../../store/channels';
+import { Channel, onRemoveReply } from '../../../../store/channels';
 import { MessageInput } from '../../../../components/message-input/container';
 import { send as sendMessage } from '../../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../../store/messages/saga';
@@ -14,7 +14,7 @@ import { ErrorDialogContent } from '../../../../store/chat/types';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 import { Panel as PanelEnum } from '../../../../store/panels/constants';
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
-import { rawChannelSelector } from '../../../../store/channels/saga';
+import { channelSelector } from '../../../../store/channels/selectors';
 import { toggleSecondarySidekick } from '../../../../store/group-management';
 import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
@@ -53,8 +53,7 @@ export class Container extends React.Component<Properties> {
       chat: { activeConversationId, joinRoomErrorContent, isJoiningConversation, isConversationsLoaded },
     } = state;
 
-    const channel = denormalize(activeConversationId, state);
-    const rawChannel = rawChannelSelector(activeConversationId)(state);
+    const channel = channelSelector(activeConversationId)(state);
 
     return {
       channel,
@@ -62,7 +61,7 @@ export class Container extends React.Component<Properties> {
       joinRoomErrorContent,
       isJoiningConversation,
       isConversationsLoaded,
-      otherMembersTypingInRoom: rawChannel?.otherMembersTyping || [],
+      otherMembersTypingInRoom: channel?.otherMembersTyping || [],
     };
   }
 
@@ -96,11 +95,7 @@ export class Container extends React.Component<Properties> {
   };
 
   searchMentionableUsers = async (search: string) => {
-    return await searchMentionableUsersForChannel(
-      this.props.activeConversationId,
-      search,
-      this.props.channel.otherMembers
-    );
+    return await searchMentionableUsersForChannel(search, this.props.channel.otherMembers);
   };
 
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {

@@ -339,10 +339,23 @@ describe('ConversationListPanel', () => {
 
   it('renders conversation group names as well in the filtered conversation list', function () {
     const conversations = [
-      { id: 'convo-id-1', name: '', otherMembers: [{ firstName: 'test' }], unreadCount: { total: 0, highlight: 0 } },
-      { id: 'convo-id-2', name: '', otherMembers: [{ firstName: 'bob' }], unreadCount: { total: 0, highlight: 0 } },
+      {
+        id: 'convo-id-1',
+        bumpStamp: 11,
+        name: '',
+        otherMembers: [{ firstName: 'test' }],
+        unreadCount: { total: 0, highlight: 0 },
+      },
+      {
+        id: 'convo-id-2',
+        bumpStamp: 7,
+        name: '',
+        otherMembers: [{ firstName: 'bob' }],
+        unreadCount: { total: 0, highlight: 0 },
+      },
       {
         id: 'convo-id-3',
+        bumpStamp: 3,
         name: 'Test Group',
         otherMembers: [
           { firstName: 'name-1' },
@@ -352,6 +365,7 @@ describe('ConversationListPanel', () => {
       },
       {
         id: 'convo-id-4',
+        bumpStamp: 4,
         name: 'My Awesome group',
         otherMembers: [
           { firstName: 'name-1' },
@@ -375,8 +389,8 @@ describe('ConversationListPanel', () => {
     wrapper.find('Input').simulate('change', 'test');
     displayChatNames = renderedConversations(wrapper).map((c) => c.name);
     expect(displayChatNames).toStrictEqual([
-      '', // convo-id-1 chat (one-2-one)
       'Test Group',
+      '', // convo-id-1 chat (one-2-one)
     ]);
 
     // change to -> 'Group'

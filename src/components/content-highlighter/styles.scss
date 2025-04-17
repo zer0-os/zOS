@@ -4,6 +4,7 @@
 .content-highlighter {
   overflow: hidden;
   text-overflow: ellipsis;
+  min-height: 15px;
 
   &__user-mention {
     font-size: 14px;

@@ -1,5 +1,7 @@
 import { expectSaga } from '../../test/saga';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import * as channelSagas from '../channels/saga';
+import * as postsSagas from '../posts/saga';
 
 import {
   closeErrorDialog,
@@ -10,7 +12,7 @@ import {
   setWhenUserJoinedRoom,
   waitForChatConnectionCompletion,
 } from './saga';
-import { markConversationAsRead, openFirstConversation } from '../channels/saga';
+import { openFirstConversation, markConversationAsRead } from '../channels/saga';
 import { rootReducer } from '../reducer';
 import { StoreBuilder } from '../test/store';
 import { User } from '../channels';
@@ -28,6 +30,8 @@ describe(performValidateActiveConversation, () => {
       [matchers.call.fn(getRoomIdForAlias), 'room-id'],
       [matchers.call.fn(joinRoom), undefined],
       [matchers.call.fn(openFirstConversation), null],
+      [matchers.call.fn(isRoomMember), true],
+      [matchers.call.fn(channelSagas.addRoomToSync), undefined],
       [
         matchers.call.fn(getHistory),
         {
@@ -70,7 +74,8 @@ describe(performValidateActiveConversation, () => {
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(getRoomIdForAlias), conversationId],
-        [matchers.call.fn(markConversationAsRead), undefined],
+        [matchers.call.fn(isMemberOfActiveConversation), true],
+        [matchers.call.fn(channelSagas.addRoomToSync), undefined],
         [
           matchers.call.fn(getHistory),
           {
@@ -79,7 +84,9 @@ describe(performValidateActiveConversation, () => {
         ],
       ])
       .call(getRoomIdForAlias, '#' + alias)
-      .not.call(apiJoinRoom, conversationId)
+      .call(isMemberOfActiveConversation, conversationId)
+      .call(getHistory)
+      .call(channelSagas.addRoomToSync, conversationId)
       .put(rawSetActiveConversationId(conversationId))
       .spawn(markConversationAsRead, conversationId)
       .run();
@@ -161,14 +168,20 @@ describe(performValidateActiveConversation, () => {
       .withReducer(rootReducer, initialState.build())
       .provide([
         [matchers.call.fn(getRoomIdForAlias), 'social-channel'],
+        [matchers.call.fn(isMemberOfActiveConversation), true],
+        [matchers.call.fn(isRoomMember), true],
+        [matchers.call.fn(channelSagas.addRoomToSync), undefined],
         [
           matchers.call.fn(getHistory),
           {
             location: { pathname: '/feed/social-channel' },
           },
         ],
-        [matchers.call.fn(markConversationAsRead), undefined],
       ])
+      .call(getRoomIdForAlias, '#social-channel')
+      .call(isMemberOfActiveConversation, 'social-channel')
+      .call(getHistory)
+      .call(channelSagas.addRoomToSync, 'social-channel')
       .put(rawSetActiveConversationId('social-channel'))
       .spawn(markConversationAsRead, 'social-channel')
       .not.call(openFirstConversation)
@@ -177,23 +190,32 @@ describe(performValidateActiveConversation, () => {
 
   it('sets active conversation ID if URL path has not changed during validation', async () => {
     const initialState = new StoreBuilder()
-      .withCurrentUser({ id: 'current-user' })
+      .withCurrentUser({ id: 'current-user', matrixId: 'current-user' })
       .withConversationList({ id: 'convo-1', name: 'Conversation 1', otherMembers: [{ userId: 'user-2' } as User] });
 
     const history = {
       location: { pathname: '/conversation/convo-1' },
     };
 
+    const resolvedRoomId = 'room-id';
+
     await subject(performValidateActiveConversation, 'convo-1')
       .withReducer(rootReducer, initialState.build())
       .provide([
-        [matchers.call.fn(isMemberOfActiveConversation), true],
-        [matchers.call.fn(markConversationAsRead), undefined],
-        [matchers.call.fn(getRoomIdForAlias), 'convo-1'],
+        [matchers.call.fn(getRoomIdForAlias), resolvedRoomId],
+        [matchers.call.fn(isRoomMember), true],
+        [matchers.call.fn(channelSagas.addRoomToSync), undefined],
         [matchers.call.fn(getHistory), history],
+        [matchers.spawn.fn(postsSagas.startPollingPosts), undefined],
+        [matchers.spawn.fn(markConversationAsRead), undefined],
       ])
-      .put(rawSetActiveConversationId('convo-1'))
-      .spawn(markConversationAsRead, 'convo-1')
+      .call(getHistory)
+      .call(getRoomIdForAlias, '#convo-1')
+      .call(isMemberOfActiveConversation, resolvedRoomId)
+      .call(getHistory)
+      .call(channelSagas.addRoomToSync, resolvedRoomId)
+      .put(rawSetActiveConversationId(resolvedRoomId))
+      .spawn(markConversationAsRead, resolvedRoomId)
       .run();
   });
 
@@ -240,6 +262,7 @@ describe(isMemberOfActiveConversation, () => {
 
     const { returnValue } = await expectSaga(isMemberOfActiveConversation, 'convo-1')
       .withReducer(rootReducer, initialState.build())
+      .provide([[matchers.call.fn(isRoomMember), true]])
       .run();
 
     expect(returnValue).toBe(true);
@@ -249,7 +272,7 @@ describe(isMemberOfActiveConversation, () => {
     const initialState = new StoreBuilder().withCurrentUser({ id: 'user-id' }).withConversationList({ id: 'convo-1' });
 
     const { returnValue } = await expectSaga(isMemberOfActiveConversation, 'not-in-state')
-      .provide([[call(isRoomMember, 'user-id', 'not-in-state'), true]])
+      .provide([[matchers.call.fn(isRoomMember), true]])
       .withReducer(rootReducer, initialState.build())
       .run();
 
@@ -260,7 +283,7 @@ describe(isMemberOfActiveConversation, () => {
     const initialState = new StoreBuilder().withCurrentUser({ id: 'user-id' }).withConversationList({ id: 'convo-1' });
 
     const { returnValue } = await expectSaga(isMemberOfActiveConversation, 'not-a-member')
-      .provide([[call(isRoomMember, 'user-id', 'not-a-member'), false]])
+      .provide([[matchers.call.fn(isRoomMember), false]])
       .withReducer(rootReducer, initialState.build())
       .run();
 

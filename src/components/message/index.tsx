@@ -15,7 +15,7 @@ import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';
 import EditMessageActions from './edit-message-actions/edit-message-actions';
 import { IconHeart } from '@zero-tech/zui/icons';
-import { Avatar, IconButton } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
 import { ContentHighlighter } from '../content-highlighter';
 import { bemClassName } from '../../lib/bem';
 import { ParentMessage } from './parent-message';
@@ -27,6 +27,7 @@ import { Reactions } from './reactions/reactions';
 import { useContextMenu } from './hooks/useContextMenu';
 import { MessageMenu, MessageMenuProps } from './menu/messageMenu';
 import { useMatrixMedia } from '../../lib/hooks/useMatrixMedia';
+import { MatrixAvatar } from '../matrix-avatar';
 
 import './styles.scss';
 
@@ -391,7 +392,7 @@ export const Message: React.FC<Properties> = ({
       {showSenderAvatar && (
         <div {...cn('left')}>
           <div {...cn('author-avatar')}>
-            <Avatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
+            <MatrixAvatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
           </div>
         </div>
       )}

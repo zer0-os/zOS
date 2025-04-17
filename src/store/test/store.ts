@@ -112,7 +112,7 @@ export class StoreBuilder {
   }
 
   build() {
-    const { result: channelsList, entities: channelEntitities } = normalizeChannel(
+    const { entities: channelEntitities } = normalizeChannel(
       [
         this.activeConversation,
         ...this.channelList,
@@ -126,7 +126,7 @@ export class StoreBuilder {
 
     return {
       login: initialLoginState,
-      channelsList: { value: channelsList },
+      channelsList: { value: [] },
       normalized: {
         ...channelEntitities,
         users: {
@@ -194,6 +194,8 @@ export function stubConversation(attrs: Partial<Channel> = {}): Partial<Channel>
   return {
     id: `conversation-id-${stubCount}`,
     otherMembers: [],
+    totalMembers: 3,
+    bumpStamp: 1000,
     ...attrs,
   };
 }

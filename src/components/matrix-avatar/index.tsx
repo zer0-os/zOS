@@ -10,10 +10,11 @@ import { useMatrixImage } from '../../lib/hooks/useMatrixImage';
 
 interface MatrixAvatarProps extends AvatarProps {
   imageURL?: string;
+  className?: string;
 }
 
-export const MatrixAvatar = ({ imageURL, size = 'regular' }: MatrixAvatarProps) => {
+export const MatrixAvatar = ({ imageURL, size = 'regular', ...rest }: MatrixAvatarProps) => {
   const { data: authenticatedUrl } = useMatrixImage(imageURL, { isThumbnail: true });
 
-  return <Avatar size={size} imageURL={authenticatedUrl} />;
+  return <Avatar size={size} imageURL={authenticatedUrl} {...rest} />;
 };

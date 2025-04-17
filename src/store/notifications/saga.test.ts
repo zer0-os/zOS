@@ -4,6 +4,7 @@ import { call } from 'redux-saga/effects';
 import { openNotificationConversation } from './saga';
 import { getHistory } from '../../lib/browser';
 import { openConversation } from '../channels/saga';
+import { CHANNEL_DEFAULTS } from '../channels';
 
 describe('notifications saga', () => {
   describe('openNotificationConversation', () => {
@@ -12,12 +13,22 @@ describe('notifications saga', () => {
       const mockHistory = {
         push: jest.fn(),
       };
+      const mockChannel = { ...CHANNEL_DEFAULTS, id: roomId, isSocialChannel: false };
+      const mockState = {
+        normalized: {
+          channels: {
+            [roomId]: mockChannel,
+          },
+        },
+      };
 
       await expectSaga(openNotificationConversation, { payload: roomId })
+        .withState(mockState)
         .provide([
           [call(openConversation, roomId), undefined],
           [call(getHistory), mockHistory],
         ])
+        .hasFinalState(mockState)
         .call(openConversation, roomId)
         .call(getHistory)
         .run();
@@ -38,9 +49,21 @@ describe('notifications saga', () => {
       const roomId = 'room-123';
       const error = new Error('Failed to open conversation');
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const mockChannel = { ...CHANNEL_DEFAULTS, id: roomId, isSocialChannel: false };
+      const mockState = {
+        normalized: {
+          channels: {
+            [roomId]: mockChannel,
+          },
+        },
+      };
 
       await expectSaga(openNotificationConversation, { payload: roomId })
-        .provide([[call(openConversation, roomId), Promise.reject(error)]])
+        .withState(mockState)
+        .provide([
+          [call(openConversation, roomId), Promise.reject(error)],
+        ])
+        .hasFinalState(mockState)
         .call(openConversation, roomId)
         .run();
 

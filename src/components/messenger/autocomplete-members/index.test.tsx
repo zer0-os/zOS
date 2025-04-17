@@ -29,7 +29,7 @@ describe('autocomplete-members', () => {
 
     await searchFor(wrapper, 'name');
 
-    expect(wrapper.find('.autocomplete-members__search-results Avatar').prop('imageURL')).toEqual('image-1');
+    expect(wrapper.find('.autocomplete-members__search-results MatrixAvatar').prop('imageURL')).toEqual('image-1');
   });
 
   it('displays filtered results excluding selected options', async () => {

@@ -1,4 +1,4 @@
-import { createNormalizedSlice, removeAll } from '../normalized';
+import { createNormalizedSlice, remove, removeAll } from '../normalized';
 
 import { Message, schema as messageSchema } from '../messages';
 import { schema as userSchema } from '../users';
@@ -6,6 +6,8 @@ import { createAction } from '@reduxjs/toolkit';
 import { UnreadCountUpdatedPayload } from './types';
 import { ParentMessage } from '../../lib/chat/types';
 import { Wallet } from '../authentication/types';
+import { toSimplifiedUser } from '../users/utils';
+import { SimplifiedUser } from '../users/types';
 
 export interface User {
   userId: string;
@@ -51,13 +53,17 @@ export interface Channel {
   messages: Message[];
   otherMembers: User[];
   memberHistory: User[];
+  totalMembers: number;
+  /**
+   * timestamp used for sorting when timeline is unknown (from sliding sync)
+   */
+  bumpStamp: number;
   hasMore: boolean;
   hasMorePosts?: boolean;
   createdAt: number;
   lastMessage: Message;
   unreadCount?: { total: number; highlight: number };
   icon?: string;
-  isOneOnOne: boolean;
   hasLoadedMessages: boolean;
   conversationStatus: ConversationStatus;
   messagesFetchStatus: MessagesFetchState;
@@ -76,13 +82,13 @@ export const CHANNEL_DEFAULTS = {
   messages: [],
   otherMembers: [],
   memberHistory: [],
+  totalMembers: 0,
   hasMore: true,
   hasMorePosts: true,
   createdAt: 0,
   lastMessage: null,
   unreadCount: { total: 0, highlight: 0 },
   icon: '',
-  isOneOnOne: true,
   hasLoadedMessages: false,
   conversationStatus: ConversationStatus.CREATED,
   messagesFetchStatus: null,
@@ -121,7 +127,23 @@ const slice = createNormalizedSlice({
   },
 });
 
-export const { receive: rawReceive } = slice.actions;
+export const removeChannel = (channelId: string) => remove({ schema: schema.key, id: channelId });
+export const { receiveNormalized, receive } = slice.actions;
+export const rawReceive: typeof receive = (data: Partial<Channel>) => {
+  const { otherMembers, memberHistory, ...rest } = data;
+  // Simplifying users when saving to control update flow. See `store/users/utils.ts` for more details.
+  const simplifiedUsers: { otherMembers?: SimplifiedUser[]; memberHistory?: SimplifiedUser[] } = {};
+  if (otherMembers) {
+    simplifiedUsers.otherMembers = otherMembers.map(toSimplifiedUser);
+  }
+  if (memberHistory) {
+    simplifiedUsers.memberHistory = memberHistory.map(toSimplifiedUser);
+  }
+  return receive({
+    ...rest,
+    ...simplifiedUsers,
+  });
+};
 export const { normalize, denormalize, schema } = slice;
 export {
   unreadCountUpdated,

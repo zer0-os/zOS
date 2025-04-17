@@ -4,12 +4,11 @@ import { Option } from '../../lib/types';
 import { highlightFilter } from '../../lib/utils';
 import { Waypoint } from '../../../waypoint';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
-import { Avatar } from '@zero-tech/zui/components';
+import { MatrixAvatar } from '../../../matrix-avatar';
 
 import { bemClassName } from '../../../../lib/bem';
 import './user-search-results.scss';
 import '../styles.scss';
-
 const cn = bemClassName('user-search-results');
 
 const PAGE_SIZE = 20;
@@ -84,7 +83,7 @@ export class UserSearchResults extends React.Component<Properties, State> {
             onClick={() => this.handleUserClick(userResult.value)}
             key={userResult.value}
           >
-            <Avatar size='regular' imageURL={userResult.image} tabIndex={-1} />
+            <MatrixAvatar size='regular' imageURL={userResult.image} tabIndex={-1} />
 
             <div {...cn('user-details')}>
               <div {...cn('label')}>{highlightFilter(userResult.label, filter)}</div>

@@ -1,8 +1,9 @@
 import { takeLatest, call, select } from 'redux-saga/effects';
 import { SagaActionTypes } from '.';
-import { openConversation, rawChannelSelector } from '../channels/saga';
+import { openConversation } from '../channels/saga';
 import { getHistory } from '../../lib/browser';
 import { getAliasForRoomId } from '../../lib/chat';
+import { channelSelector } from '../channels/selectors';
 
 export function* openNotificationConversation(action) {
   const roomId = action.payload;
@@ -12,7 +13,7 @@ export function* openNotificationConversation(action) {
       return;
     }
 
-    const channel = yield select(rawChannelSelector(roomId));
+    const channel = yield select(channelSelector(roomId));
 
     if (channel?.isSocialChannel) {
       const zid = yield call(getAliasForRoomId, roomId);

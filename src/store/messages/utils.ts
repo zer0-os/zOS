@@ -51,6 +51,7 @@ export function createOptimisticMessageObject(
     parentMessageMedia: parentMessage ? parentMessage.media : null,
     sender: {
       userId: user.id,
+      matrixId: user.matrixId,
       firstName: user.profileSummary.firstName,
       lastName: user.profileSummary.lastName,
       profileImage: user.profileSummary.profileImage,

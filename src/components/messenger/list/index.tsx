@@ -3,7 +3,9 @@ import { debounce } from 'lodash';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { Channel, onAddLabel, onRemoveLabel, openConversation, User } from '../../../store/channels';
-import { denormalizeConversations } from '../../../store/channels-list';
+import { allDenormalizedChannelsSelector } from '../../../store/channels/selectors';
+import { byBumpStamp, isOneOnOne } from '../../../store/channels-list/utils';
+import { denormalize as denormalizeUser } from '../../../store/users';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
@@ -15,7 +17,7 @@ import {
   membersSelected,
   startCreateConversation,
 } from '../../../store/create-conversation';
-import { CreateMessengerConversation } from '../../../store/channels-list/types';
+import { CreateMessengerConversation } from '../../../store/channels/types';
 import { closeConversationErrorDialog } from '../../../store/chat';
 
 import CreateConversationPanel from './create-conversation-panel';
@@ -34,13 +36,15 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
-import { AdminMessageType } from '../../../store/messages';
+import { AdminMessageType, Message } from '../../../store/messages';
 import { Content as SidekickContent } from '../../sidekick/components/content';
 
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 
 const cn = bemClassName('direct-message-members');
+
+type GetUser = (id: string) => User | undefined;
 
 export interface PublicProperties {}
 
@@ -87,10 +91,15 @@ export class Container extends React.Component<Properties, State> {
       rewards,
     } = state;
 
-    const conversations = denormalizeConversations(state)
-      .filter((c) => !c.isSocialChannel)
-      .map(addLastMessageMeta(state))
-      .sort(byLastMessageOrCreation);
+    const currentUserId = user?.data?.id;
+    const getUser: GetUser = (id) => denormalizeUser(id, state);
+    const mapWithMessageMeta = addLastMessageMeta(currentUserId, getUser);
+    const conversations = allDenormalizedChannelsSelector(state)
+      // Ensure that we have a bumpstamp. If not, the channel doesn't have all it's data yet
+      // and it'll be filled in on the next sync
+      .filter((c: Channel) => !c.isSocialChannel && 'bumpStamp' in c)
+      .map(mapWithMessageMeta)
+      .sort(byBumpStamp);
     return {
       conversations,
       activeConversationId,
@@ -335,8 +344,16 @@ export class Container extends React.Component<Properties, State> {
   }
 }
 
-function addLastMessageMeta(state: RootState): any {
-  return (conversation) => {
+type ConversationWithMessageMeta = Channel & {
+  mostRecentMessage?: Message;
+  messagePreview?: string;
+  previewDisplayDate?: string;
+};
+function addLastMessageMeta(
+  currentUserId: string,
+  getUser: GetUser
+): (conversation: Channel) => ConversationWithMessageMeta {
+  return (conversation: Channel): ConversationWithMessageMeta => {
     const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
 
     const filteredMessages = sortedMessages.filter(
@@ -357,16 +374,10 @@ function addLastMessageMeta(state: RootState): any {
     return {
       ...conversation,
       mostRecentMessage,
-      messagePreview: getMessagePreview(mostRecentMessage, state, conversation.isOneOnOne),
+      messagePreview: getMessagePreview(mostRecentMessage, currentUserId, getUser, isOneOnOne(conversation)),
       previewDisplayDate: previewDisplayDate(mostRecentMessage?.createdAt),
     };
   };
-}
-
-function byLastMessageOrCreation(a, b) {
-  const aDate = a.mostRecentMessage?.createdAt || a.createdAt;
-  const bDate = b.mostRecentMessage?.createdAt || b.createdAt;
-  return compareDatesDesc(aDate, bDate);
 }
 
 export const MessengerList = connectContainer<PublicProperties>(Container);

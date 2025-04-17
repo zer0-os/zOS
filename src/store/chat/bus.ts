@@ -1,4 +1,4 @@
-import { eventChannel, multicastChannel } from 'redux-saga';
+import { eventChannel, MulticastChannel, multicastChannel } from 'redux-saga';
 import { call } from 'redux-saga/effects';
 import { Chat } from '../../lib/chat';
 
@@ -22,11 +22,11 @@ export enum Events {
   RoomMemberPowerLevelChanged = 'chat/channel/roomMemberPowerLevelChanged',
   ReadReceiptReceived = 'chat/message/readReceiptReceived',
   RoomLabelChange = 'chat/channel/roomLabelChange',
-  PostMessageReactionChange = 'chat/message/postMessageReactionChange',
   MessageEmojiReactionChange = 'chat/message/messageEmojiReactionChange',
+  RoomData = 'chat/roomData',
 }
 
-let theBus;
+let theBus: MulticastChannel<unknown>;
 export function* getChatBus() {
   if (!theBus) {
     theBus = yield call(multicastChannel);
@@ -34,7 +34,7 @@ export function* getChatBus() {
   return theBus;
 }
 
-export function createChatConnection(userId, chatAccessToken, chatClient: Chat) {
+export function createChatConnection(userId: string, chatAccessToken: string, chatClient: Chat) {
   let setActivationResult = null;
   let connectionPromise;
   const chatConnection = eventChannel((rawEmit) => {
@@ -82,24 +82,23 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
         payload: { channelId, unreadCount: { total: unreadCount.total, highlight: unreadCount.highlight } },
       });
     const onUserLeft = (channelId, userId) => emit({ type: Events.UserLeftChannel, payload: { channelId, userId } });
-    const onUserJoinedChannel = (channel) => emit({ type: Events.UserJoinedChannel, payload: { channel } });
+    const onUserJoinedChannel = (channelId) => emit({ type: Events.UserJoinedChannel, payload: { channelId } });
     const onRoomNameChanged = (roomId, name) => emit({ type: Events.RoomNameChanged, payload: { id: roomId, name } });
     const onRoomAvatarChanged = (roomId, url) => emit({ type: Events.RoomAvatarChanged, payload: { id: roomId, url } });
     const onRoomGroupTypeChanged = (roomId, groupType) =>
       emit({ type: Events.RoomGroupTypeChanged, payload: { id: roomId, groupType } });
-    const onOtherUserJoinedChannel = (channelId, user) =>
-      emit({ type: Events.OtherUserJoinedChannel, payload: { channelId, user } });
-    const onOtherUserLeftChannel = (channelId, user) =>
-      emit({ type: Events.OtherUserLeftChannel, payload: { channelId, user } });
+    const onOtherUserJoinedChannel = (channelId, userId) =>
+      emit({ type: Events.OtherUserJoinedChannel, payload: { channelId, userId } });
+    const onOtherUserLeftChannel = (channelId, userId) =>
+      emit({ type: Events.OtherUserLeftChannel, payload: { channelId, userId } });
     const receiveLiveRoomEvent = (eventData) => emit({ type: Events.LiveRoomEventReceived, payload: { eventData } });
+    const receiveRoomData = (roomId, roomData) => emit({ type: Events.RoomData, payload: { roomId, roomData } });
     const roomMemberTyping = (roomId, userIds) => emit({ type: Events.RoomMemberTyping, payload: { roomId, userIds } });
     const roomMemberPowerLevelChanged = (roomId, matrixId, powerLevel) =>
       emit({ type: Events.RoomMemberPowerLevelChanged, payload: { roomId, matrixId, powerLevel } });
     const readReceiptReceived = (messageId, userId, roomId) =>
       emit({ type: Events.ReadReceiptReceived, payload: { messageId, userId, roomId } });
     const roomLabelChange = (roomId, labels) => emit({ type: Events.RoomLabelChange, payload: { roomId, labels } });
-    const postMessageReactionChange = (roomId, reaction) =>
-      emit({ type: Events.PostMessageReactionChange, payload: { roomId, reaction } });
     const messageEmojiReactionChange = (roomId, reaction) =>
       emit({ type: Events.MessageEmojiReactionChange, payload: { roomId, reaction } });
 
@@ -120,8 +119,8 @@ export function createChatConnection(userId, chatAccessToken, chatClient: Chat) 
       roomMemberPowerLevelChanged,
       readReceiptReceived,
       roomLabelChange,
-      postMessageReactionChange,
       messageEmojiReactionChange,
+      receiveRoomData,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

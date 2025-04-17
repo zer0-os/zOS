@@ -1,4 +1,4 @@
-import { EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk';
+import { EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk/lib/matrix';
 import { User as ChannelMember } from '../../../store/channels';
 import isEqual from 'lodash.isequal';
 
@@ -40,7 +40,6 @@ export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: s
   await matrix.setAccountData(EventType.Direct, Object.fromEntries(dmRoomMap));
 }
 
-// TODO: follow up to use zOS user instead of matrix user
 export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMember[] = [], filter: string = '') {
   const normalizedFilter = filter.toLowerCase(); // Case-insensitive search
 
@@ -48,11 +47,7 @@ export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMemb
   for (const member of roomMembers) {
     let displayName = `${member.firstName || ''} ${member.lastName || ''}`.toLowerCase();
     if (displayName.includes(normalizedFilter)) {
-      let id = member.userId || member.matrixId;
-      if (id.startsWith('@')) {
-        // Safely extract UUID from both formats: @uuid:server and plain uuid
-        id = id.replace(/^@([^:]+).*$/, '$1');
-      }
+      let id = extractUserIdFromMatrixId(member.userId || member.matrixId);
       filteredResults.push({
         id,
         displayName: `${member.firstName || ''} ${member.lastName || ''}`,
@@ -104,3 +99,51 @@ export const getObjectDiff = (obj1, obj2, compareRef = false) => {
     return result;
   }, Object.keys(obj2));
 };
+
+/**
+ * Extracts the user ID from a Matrix ID
+ * @param matrixId - The Matrix ID in format @uuid:server or plain uuid
+ * @returns The extracted user ID (UUID)
+ * @example
+ * extractUserIdFromMatrixId('@50c6e12e-1fe2-43f9-8991-ab269696588f:homeserver.domain.com')
+ * // Returns: '50c6e12e-1fe2-43f9-8991-ab269696588f'
+ */
+export function extractUserIdFromMatrixId(matrixId: string): string {
+  if (!matrixId) return '';
+  if (matrixId.startsWith('@')) {
+    return matrixId.replace(/^@([^:]+).*$/, '$1');
+  }
+  return matrixId;
+}
+
+/**
+ * Checks if a matrix ID is valid
+ * @param matrixId - The Matrix ID in format @uuid:server
+ * @returns True if the matrix ID is valid, false otherwise
+ * @example
+ * isMatrixId('@50c6e12e-1fe2-43f9-8991-ab269696588f:homeserver.domain.com')
+ * // Returns: true
+ * isMatrixId('50c6e12e-1fe2-43f9-8991-ab269696588f')
+ * // Returns: false
+ */
+export function isMatrixId(matrixId: string): boolean {
+  return /^@(.|-){36}:/.test(matrixId);
+}
+
+/**
+ * Checks if a matrix ID is a valid admin matrix ID
+ * @param matrixId - The Matrix ID in format @uuid:server
+ * @returns Boolean
+ */
+export function isAdminMatrixId(matrixId: string): boolean {
+  return matrixId === 'admin';
+}
+
+/**
+ * Checks if a matrix ID is a valid telegram matrix ID
+ * @param matrixId - The Matrix ID in format @telegram:server
+ * @returns Boolean
+ */
+export function isTelegramMatrixId(matrixId: string): boolean {
+  return matrixId.includes('telegram');
+}

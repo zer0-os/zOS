@@ -1,4 +1,4 @@
-import { rawChannelSelector } from '../channels/saga';
+import { rawChannel } from '../channels/selectors';
 import { RootState } from '../reducer';
 
 export function activeConversationIdSelector(state: RootState) {
@@ -6,5 +6,5 @@ export function activeConversationIdSelector(state: RootState) {
 }
 
 export function rawActiveConversationSelector(state: RootState) {
-  return rawChannelSelector(activeConversationIdSelector(state))(state);
+  return rawChannel(state, activeConversationIdSelector(state));
 }

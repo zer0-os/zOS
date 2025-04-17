@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
-import { Channel, denormalize, onRemoveReply } from '../../../store/channels';
+import { Channel, onRemoveReply } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { send as sendMessage } from '../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
@@ -14,9 +14,10 @@ import { Media } from '../../message-input/utils';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
 
 import './styles.scss';
-import { rawChannelSelector } from '../../../store/channels/saga';
 import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
 import { Panel, PanelBody } from '../../layout/panel';
+import { channelSelector } from '../../../store/channels/selectors';
+import { isOneOnOne } from '../../../store/channels-list/utils';
 
 export interface PublicProperties {}
 
@@ -45,15 +46,14 @@ export class Container extends React.Component<Properties> {
       groupManagement,
     } = state;
 
-    const directMessage = denormalize(activeConversationId, state);
-    const channel = rawChannelSelector(activeConversationId)(state);
+    const directMessage = channelSelector(activeConversationId)(state);
 
     return {
       activeConversationId,
       directMessage,
       isJoiningConversation,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
-      otherMembersTypingInRoom: channel?.otherMembersTyping || [],
+      otherMembersTypingInRoom: directMessage?.otherMembersTyping || [],
     };
   }
 
@@ -66,7 +66,7 @@ export class Container extends React.Component<Properties> {
   }
 
   isOneOnOne() {
-    return this.props.directMessage?.isOneOnOne;
+    return isOneOnOne(this.props.directMessage);
   }
 
   get isLeaveGroupDialogOpen() {
@@ -92,11 +92,7 @@ export class Container extends React.Component<Properties> {
   };
 
   searchMentionableUsers = async (search: string) => {
-    return await searchMentionableUsersForChannel(
-      this.props.activeConversationId,
-      search,
-      this.props.directMessage.otherMembers
-    );
+    return await searchMentionableUsersForChannel(search, this.props.directMessage.otherMembers);
   };
 
   handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {

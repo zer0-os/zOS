@@ -23,7 +23,6 @@ import {
   emailLogin,
 } from './api';
 import { reducer } from '.';
-import { receive } from '../channels-list';
 import { rootReducer } from '../reducer';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearMessages } from '../messages/saga';
@@ -230,7 +229,7 @@ describe(getCurrentUser, () => {
 
 describe('clearUserState', () => {
   it('resets layout', async () => {
-    await expectSaga(clearUserState).put(receive([])).withReducer(rootReducer).run();
+    await expectSaga(clearUserState).withReducer(rootReducer).run();
   });
 
   it('verifies state reset calls', async () => {

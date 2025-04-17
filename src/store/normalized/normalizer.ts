@@ -13,7 +13,6 @@ export class Normalizer {
     if (Array.isArray(item)) {
       return this.normalizeMany(item);
     }
-
     return this.normalizeSingle(item);
   };
 
@@ -21,29 +20,26 @@ export class Normalizer {
     if (Array.isArray(idOrIds)) {
       return this.denormalizeMany(idOrIds, state);
     }
-
     return this.denormalizeSingle(idOrIds, state);
   };
 
   private normalizeMany(items) {
     this.throwIfInvalid(items);
-
-    return normalize(items, this._listSchema);
+    const normalized = normalize(items, this._listSchema);
+    return normalized;
   }
 
   private normalizeSingle(item) {
     this.throwIfInvalid([item]);
-
-    return normalize(item, this._schema);
+    const normalized = normalize(item, this._schema);
+    return normalized;
   }
 
   private denormalizeSingle(id: string, state: any) {
     const denormalized = denormalize(id, this._schema, state.normalized);
-
     if (denormalized) {
       denormalized.__denormalized = true;
     }
-
     return denormalized;
   }
 
@@ -55,6 +51,7 @@ export class Normalizer {
   private throwIfInvalid(items) {
     items.forEach((item) => {
       if (item.__denormalized) {
+        console.error('Invalid item:', item);
         throw new Error(
           'Tried to normalize an object that was previously denormalized from the store. This can cause infinite loops.'
         );

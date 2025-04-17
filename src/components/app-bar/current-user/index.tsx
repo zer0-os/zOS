@@ -1,12 +1,12 @@
 import { useCurrentUserDetails } from './lib/useCurrentUserDetails';
 
-import { Avatar } from '@zero-tech/zui/components/Avatar';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { Modal } from '@zero-tech/zui/components/Modal';
 import { RewardsToolTipContainer } from '../../messenger/list/rewards-tooltip/container';
 import { VerifyIdDialog } from '../../verify-id-dialog';
 
 import styles from './styles.module.scss';
+import { MatrixAvatar } from '../../matrix-avatar';
 
 export const CurrentUser = () => {
   const {
@@ -25,7 +25,7 @@ export const CurrentUser = () => {
   return (
     <>
       <div className={styles.Container} onClick={onClick}>
-        <Avatar imageURL={userAvatarUrl} isActive={hasUnviewedRewards} size={'medium'} statusType={'active'} />
+        <MatrixAvatar imageURL={userAvatarUrl} isActive={hasUnviewedRewards} size={'medium'} statusType={'active'} />
         <div className={styles.Drawer}>
           <div className={styles.Details}>
             <div className={styles.Name}>{userName}</div>

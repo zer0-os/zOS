@@ -22,6 +22,7 @@ import { MessageSendStatus } from '.';
 import { chat, getMessageEmojiReactions, sendEmojiReactionEvent } from '../../lib/chat';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { DefaultRoomLabels } from '../channels';
+import { LinkPreviewType } from '../../lib/link-preview';
 
 const chatClient = {
   editMessage: (_channelId: string, _messageId: string, _message: string, _mentionedUserIds: string[]) => ({}),
@@ -354,7 +355,26 @@ describe(receiveUpdateMessage, () => {
 
 describe(replaceOptimisticMessage, () => {
   it('returns null if there is no optimisticId on the new message', async () => {
-    const newMessage = { id: 'new-message' };
+    const newMessage = {
+      id: 'new-message',
+      isAdmin: false,
+      createdAt: 0,
+      updatedAt: 0,
+      sender: {
+        userId: 'test',
+        matrixId: 'test',
+        firstName: 'test',
+        lastName: 'test',
+        profileImage: '',
+        profileId: '',
+        primaryZID: '',
+      },
+      mentionedUsers: [],
+      hidePreview: false,
+      preview: {} as any,
+      sendStatus: MessageSendStatus.SUCCESS,
+      isPost: false,
+    };
     const { returnValue } = await expectSaga(replaceOptimisticMessage, [], newMessage).run();
 
     expect(returnValue).toEqual(null);
@@ -362,7 +382,27 @@ describe(replaceOptimisticMessage, () => {
 
   it('returns null if there is no message identified by the optimisticId', async () => {
     const currentMessages = ['message-1', 'message-2'];
-    const newMessage = { id: 'new-message', optimisticId: 'optimistic-id' };
+    const newMessage = {
+      id: 'new-message',
+      optimisticId: 'optimistic-id',
+      isAdmin: false,
+      createdAt: 0,
+      updatedAt: 0,
+      sender: {
+        userId: 'test',
+        matrixId: 'test',
+        firstName: 'test',
+        lastName: 'test',
+        profileImage: '',
+        profileId: '',
+        primaryZID: '',
+      },
+      mentionedUsers: [],
+      hidePreview: false,
+      preview: {} as any,
+      sendStatus: MessageSendStatus.SUCCESS,
+      isPost: false,
+    };
 
     const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage).run();
 
@@ -376,7 +416,27 @@ describe(replaceOptimisticMessage, () => {
       { id: 'optimistic-id', optimisticId: 'optimistic-id' },
       { id: 'message-2' },
     ] as any;
-    const newMessage = { id: 'new-message', optimisticId: 'optimistic-id' };
+    const newMessage = {
+      id: 'new-message',
+      optimisticId: 'optimistic-id',
+      isAdmin: false,
+      createdAt: 0,
+      updatedAt: 0,
+      sender: {
+        userId: 'test',
+        matrixId: 'test',
+        firstName: 'test',
+        lastName: 'test',
+        profileImage: '',
+        profileId: '',
+        primaryZID: '',
+      },
+      mentionedUsers: [],
+      hidePreview: false,
+      preview: {} as any,
+      sendStatus: MessageSendStatus.SUCCESS,
+      isPost: false,
+    };
     const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
 
     const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage)
@@ -389,11 +449,42 @@ describe(replaceOptimisticMessage, () => {
 
   it('replaces the preview with the new one if exists', async () => {
     const currentMessages = ['optimistic-id'];
-    const oldMessages = [{ id: 'optimistic-id', preview: { url: 'example.com/old-preview' } }] as any;
+    const oldMessages = [
+      {
+        id: 'optimistic-id',
+        preview: {
+          url: 'example.com/old-preview',
+          type: LinkPreviewType.Link,
+          title: 'Old Title',
+          description: 'Old Description',
+        },
+      },
+    ] as any;
     const newMessage = {
       id: 'new-message',
       optimisticId: 'optimistic-id',
-      preview: { url: 'example.com/new-preview' },
+      preview: {
+        url: 'example.com/new-preview',
+        type: LinkPreviewType.Link,
+        title: 'New Title',
+        description: 'New Description',
+      },
+      isAdmin: false,
+      createdAt: 0,
+      updatedAt: 0,
+      sender: {
+        userId: 'test',
+        matrixId: 'test',
+        firstName: 'test',
+        lastName: 'test',
+        profileImage: '',
+        profileId: '',
+        primaryZID: '',
+      },
+      mentionedUsers: [],
+      hidePreview: false,
+      sendStatus: MessageSendStatus.SUCCESS,
+      isPost: false,
     };
     const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
 
@@ -401,20 +492,65 @@ describe(replaceOptimisticMessage, () => {
       .withReducer(rootReducer, initialState.build())
       .run();
 
-    expect(returnValue[0].preview).toEqual({ url: 'example.com/new-preview' });
+    expect(returnValue[0].preview).toEqual({
+      url: 'example.com/new-preview',
+      type: LinkPreviewType.Link,
+      title: 'New Title',
+      description: 'New Description',
+    });
   });
 
   it('maintains the optimistic preview if no new one received', async () => {
     const currentMessages = ['optimistic-id'];
-    const oldMessages = [{ id: 'optimistic-id', preview: { url: 'example.com/old-preview' } }] as any;
-    const newMessage = { id: 'new-message', optimisticId: 'optimistic-id' };
+    const oldMessages = [
+      {
+        id: 'optimistic-id',
+        preview: {
+          url: 'example.com/old-preview',
+          type: LinkPreviewType.Link,
+          title: 'Old Title',
+          description: 'Old Description',
+        },
+      },
+    ] as any;
+    const newMessage = {
+      id: 'new-message',
+      optimisticId: 'optimistic-id',
+      isAdmin: false,
+      createdAt: 0,
+      updatedAt: 0,
+      sender: {
+        userId: 'test',
+        matrixId: 'test',
+        firstName: 'test',
+        lastName: 'test',
+        profileImage: '',
+        profileId: '',
+        primaryZID: '',
+      },
+      mentionedUsers: [],
+      hidePreview: false,
+      preview: {
+        url: 'example.com/old-preview',
+        type: LinkPreviewType.Link,
+        title: 'Old Title',
+        description: 'Old Description',
+      },
+      sendStatus: MessageSendStatus.SUCCESS,
+      isPost: false,
+    };
     const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
 
     const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage)
       .withReducer(rootReducer, initialState.build())
       .run();
 
-    expect(returnValue[0].preview).toEqual({ url: 'example.com/old-preview' });
+    expect(returnValue[0].preview).toEqual({
+      url: 'example.com/old-preview',
+      type: LinkPreviewType.Link,
+      title: 'Old Title',
+      description: 'Old Description',
+    });
   });
 });
 

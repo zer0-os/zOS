@@ -1,4 +1,5 @@
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
+import { isOneOnOne } from '../../../../store/channels-list/utils';
 
 function matchesConversationName(conversation, searchRegEx) {
   return searchRegEx.test(conversation.name ?? '');
@@ -15,7 +16,7 @@ function matchesMembersPrimaryZID(conversation, searchRegEx) {
 
 function isOneOnOneConversationMatch(conversation, searchRegEx) {
   return (
-    conversation.otherMembers.length === 1 &&
+    isOneOnOne(conversation) &&
     (matchesMembersName(conversation, searchRegEx) || matchesMembersPrimaryZID(conversation, searchRegEx))
   );
 }

@@ -50,7 +50,7 @@
     "lodash.kebabcase": "^4.1.1",
     "lodash.uniqby": "^4.7.0",
     "matrix-encrypt-attachment": "^1.0.3",
-    "matrix-js-sdk": "^37.2.0",
+    "matrix-js-sdk": "^37.3.0",
     "millify": "^6.1.0",
     "moment": "^2.29.4",
     "normalizr": "^3.6.2",
@@ -97,7 +97,9 @@
     "code-format:validate": "prettier --check 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
     "code-format:fix": "prettier --write 'src/**/*.{ts,tsx,json,md,js,yml,html,scss}'",
     "prepare": "husky install",
-    "generate-mocks": "BUILD_MOCKS=true npm test -- --watchAll=false src/app-sandbox/index.test.tsx"
+    "generate-mocks": "BUILD_MOCKS=true npm test -- --watchAll=false src/app-sandbox/index.test.tsx",
+    "postinstall": "npx patch-package",
+    "heroku-cleanup": "npx patch-package"
   },
   "browserslist": {
     "production": [

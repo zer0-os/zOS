@@ -12,7 +12,8 @@ describe('Container', () => {
         existingConversations: [
           {
             id: 'existing-convo',
-            isOneOnOne: true,
+            bumpStamp: 1,
+            totalMembers: 2,
             otherMembers: [{ userId: config.telegramBotUserId }],
           } as Channel,
         ],

@@ -5,7 +5,7 @@ import { getOtherMembersTypingDisplayText, highlightFilter } from '../../lib/uti
 import { Channel, DefaultRoomLabels } from '../../../../store/channels';
 
 import { MoreMenu } from './more-menu';
-import { Avatar } from '@zero-tech/zui/components';
+import { MatrixAvatar } from '../../../matrix-avatar';
 
 import { ContentHighlighter } from '../../../content-highlighter';
 import { IconBellOff1 } from '@zero-tech/zui/icons';
@@ -13,6 +13,7 @@ import { IconBellOff1 } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-item.scss';
 import '../styles.scss';
+import { isOneOnOne } from '../../../../store/channels-list/utils';
 
 const cn = bemClassName('conversation-item');
 
@@ -72,22 +73,15 @@ export class ConversationItem extends React.Component<Properties, State> {
   };
 
   renderAvatar() {
+    const oneOnOne = isOneOnOne(this.props.conversation);
     let imageUrl;
     if (this.props.conversation.icon) {
       imageUrl = this.props.conversation.icon;
-    } else if (this.props.conversation.isOneOnOne && this.props.conversation.otherMembers[0]?.profileImage) {
+    } else if (oneOnOne && this.props.conversation.otherMembers[0]?.profileImage) {
       imageUrl = this.props.conversation.otherMembers[0].profileImage;
     }
 
-    return (
-      <Avatar
-        size={'regular'}
-        imageURL={imageUrl}
-        tabIndex={-1}
-        isRaised
-        isGroup={!this.props.conversation.isOneOnOne}
-      />
-    );
+    return <MatrixAvatar size={'regular'} imageURL={imageUrl} tabIndex={-1} isRaised isGroup={!oneOnOne} />;
   }
 
   renderMoreMenu() {

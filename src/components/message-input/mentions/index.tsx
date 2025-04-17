@@ -6,7 +6,7 @@ import { highlightFilter } from '../../messenger/lib/utils';
 import { userMentionsConfig } from './mentions-config';
 
 import { Mention, MentionsInput } from 'react-mentions';
-import { Avatar } from '@zero-tech/zui/components';
+import { MatrixAvatar } from '../../matrix-avatar';
 
 import './styles.scss';
 
@@ -62,7 +62,7 @@ export class Mentions extends React.Component<Properties> {
         displayTransform={userMentionsConfig.displayTransform}
         renderSuggestion={(suggestion) => (
           <>
-            <Avatar size={'small'} imageURL={suggestion.profileImage} />
+            <MatrixAvatar size='small' imageURL={suggestion.profileImage} />
             <div {...cn('suggestions-user-details')}>
               <div {...cn('suggestions-name')}>{this.highlightedText(suggestion.display)}</div>
               <div {...cn('suggestions-handle')}>{suggestion.displayHandle}</div>

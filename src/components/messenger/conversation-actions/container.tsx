@@ -14,6 +14,7 @@ import {
 import { ConversationActions } from '.';
 import { openReportUserModal } from '../../../store/report-user';
 import './styles.scss';
+import { isOneOnOneSelector } from '../../../store/channels/selectors';
 
 export interface PublicProperties {
   className?: string;
@@ -46,6 +47,7 @@ export class Container extends React.Component<Properties> {
     } = state;
 
     const directMessage = denormalize(activeConversationId, state);
+    const isOneOnOne = isOneOnOneSelector(state, activeConversationId);
     const currentUser = currentUserSelector(state);
     const hasMultipleMembers = (directMessage?.otherMembers || []).length > 1;
     const isSocialChannel = directMessage?.isSocialChannel;
@@ -53,11 +55,10 @@ export class Container extends React.Component<Properties> {
     const isCurrentUserRoomModerator = directMessage?.moderatorIds?.includes(currentUser?.id) ?? false;
 
     const canLeaveRoom = !isSocialChannel && !isCurrentUserRoomAdmin && hasMultipleMembers;
-    const canEdit =
-      !isSocialChannel && (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !directMessage?.isOneOnOne;
-    const canAddMembers = !isSocialChannel && isCurrentUserRoomAdmin && !directMessage?.isOneOnOne;
-    const canViewDetails = !directMessage?.isOneOnOne || isSocialChannel;
-    const canReportUser = directMessage?.isOneOnOne && !isSocialChannel;
+    const canEdit = !isSocialChannel && (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !isOneOnOne;
+    const canAddMembers = !isSocialChannel && isCurrentUserRoomAdmin && !isOneOnOne;
+    const canViewDetails = !isOneOnOne || isSocialChannel;
+    const canReportUser = isOneOnOne && !isSocialChannel;
 
     return {
       activeConversationId,

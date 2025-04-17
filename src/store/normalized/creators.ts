@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { schema as nSchema } from 'normalizr';
-
 import { Normalizer } from './normalizer';
-
 import {
   AsyncNormalizedListState,
   AsyncListStatus,
@@ -75,7 +73,7 @@ export class Creators {
         receive: (data) => {
           const normalized = normalizer.normalize(data);
 
-          return receiveNormalized({ ...normalized.entities });
+          return receiveNormalized(normalized.entities);
         },
       },
     };

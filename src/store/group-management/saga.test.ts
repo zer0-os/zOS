@@ -32,7 +32,8 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { getPanelOpenState } from '../panels/selectors';
 import { setPanelState } from '../panels';
 import { Panel } from '../panels/constants';
-import { rawChannelSelector } from '../channels/saga';
+import { channelSelector } from '../channels/selectors';
+import { ConversationStatus } from '../channels';
 
 describe('Group Management Saga', () => {
   const chatClient = {
@@ -57,9 +58,36 @@ describe('Group Management Saga', () => {
     ];
 
     it('successfully adds members to a room', async () => {
+      const initialState = new StoreBuilder()
+        .withUsers({
+          userId: 'user1',
+          matrixId: '@user1:server',
+          firstName: 'User',
+          lastName: 'One',
+          profileId: 'profile1',
+          isOnline: true,
+          profileImage: '',
+          lastSeenAt: new Date().toISOString(),
+          primaryZID: 'user1.zid',
+          displaySubHandle: 'user1',
+        })
+        .withUsers({
+          userId: 'user2',
+          matrixId: '@user2:server',
+          firstName: 'User',
+          lastName: 'Two',
+          profileId: 'profile2',
+          isOnline: true,
+          profileImage: '',
+          lastSeenAt: new Date().toISOString(),
+          primaryZID: 'user2.zid',
+          displaySubHandle: 'user2',
+        })
+        .build();
+
       await expectSaga(roomMembersSelected, action)
         .withReducer(rootReducer)
-        .withState(new StoreBuilder().build())
+        .withState(initialState)
         .provide([
           [matchers.call.fn(chat.get), chatClient],
           [
@@ -441,13 +469,52 @@ describe('Group Management Saga', () => {
 
   describe('openSidekickForSocialChannel', () => {
     const conversationId = 'test-conversation';
-    const socialChannel = { isSocialChannel: true };
-    const nonSocialChannel = { isSocialChannel: false };
+    const socialChannel = {
+      id: conversationId,
+      isSocialChannel: true,
+      name: 'Social Channel',
+      messages: [],
+      otherMembers: [],
+      memberHistory: [],
+      totalMembers: 0,
+      bumpStamp: 0,
+      hasMore: false,
+      createdAt: 0,
+      lastMessage: null,
+      hasLoadedMessages: false,
+      conversationStatus: ConversationStatus.CREATED,
+      messagesFetchStatus: null,
+      adminMatrixIds: [],
+      otherMembersTyping: [],
+      labels: [],
+    };
+    const nonSocialChannel = {
+      id: conversationId,
+      isSocialChannel: false,
+      name: 'Non-Social Channel',
+      messages: [],
+      otherMembers: [],
+      memberHistory: [],
+      totalMembers: 0,
+      bumpStamp: 0,
+      hasMore: false,
+      createdAt: 0,
+      lastMessage: null,
+      hasLoadedMessages: false,
+      conversationStatus: ConversationStatus.CREATED,
+      messagesFetchStatus: null,
+      adminMatrixIds: [],
+      otherMembersTyping: [],
+      labels: [],
+    };
 
     it('does nothing for social channels when panel is already open', async () => {
+      const initialState = new StoreBuilder().withConversationList(socialChannel).build();
+
       await expectSaga(openSidekickForSocialChannel, conversationId)
+        .withReducer(rootReducer, initialState)
         .provide([
-          [matchers.select(rawChannelSelector, conversationId), socialChannel],
+          [matchers.select(channelSelector(conversationId), conversationId), socialChannel],
           [matchers.select(getPanelOpenState, Panel.MEMBERS), true],
         ])
         .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
@@ -455,8 +522,11 @@ describe('Group Management Saga', () => {
     });
 
     it('does nothing for non-social channels', async () => {
+      const initialState = new StoreBuilder().withConversationList(nonSocialChannel).build();
+
       await expectSaga(openSidekickForSocialChannel, conversationId)
-        .provide([[matchers.select(rawChannelSelector, conversationId), nonSocialChannel]])
+        .withReducer(rootReducer, initialState)
+        .provide([[matchers.select(channelSelector(conversationId), conversationId), nonSocialChannel]])
         .not.put(setPanelState({ panel: Panel.MEMBERS, isOpen: true }))
         .run();
     });

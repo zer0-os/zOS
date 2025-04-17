@@ -1,5 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CurrentUser } from '.';
 import { CurrentUserDetailsReturn } from './lib/useCurrentUserDetails';
 
@@ -14,8 +15,8 @@ vi.mock('./styles.module.scss', () => ({
   },
 }));
 
-vi.mock('@zero-tech/zui/components/Avatar', () => ({
-  Avatar: ({ imageURL, isActive, size, statusType }) => (
+vi.mock('../../matrix-avatar', () => ({
+  MatrixAvatar: ({ imageURL, isActive, size, statusType }) => (
     <div
       data-testid='mock-avatar'
       data-image-url={imageURL}
@@ -96,6 +97,12 @@ vi.mock('./lib/useCurrentUserDetails', () => ({
   useCurrentUserDetails: () => currentMockHook,
 }));
 
+const queryClient = new QueryClient();
+
+const renderWithQueryClient = (component: React.ReactElement) => {
+  return render(<QueryClientProvider client={queryClient}>{component}</QueryClientProvider>);
+};
+
 describe('CurrentUser Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -103,7 +110,7 @@ describe('CurrentUser Component', () => {
   });
 
   it('should render user profile with avatar, name and handle', () => {
-    render(<CurrentUser />);
+    renderWithQueryClient(<CurrentUser />);
 
     const avatar = screen.getByTestId('mock-avatar');
     expect(avatar).toBeInTheDocument();
@@ -123,7 +130,7 @@ describe('CurrentUser Component', () => {
       userHandle: '0x123456789abcdef',
     };
 
-    render(<CurrentUser />);
+    renderWithQueryClient(<CurrentUser />);
 
     const verifyButton = screen.getByTestId('mock-button');
     expect(verifyButton).toBeInTheDocument();
@@ -139,7 +146,7 @@ describe('CurrentUser Component', () => {
       isRewardsTooltipOpen: true,
     };
 
-    render(<CurrentUser />);
+    renderWithQueryClient(<CurrentUser />);
 
     expect(screen.getByTestId('mock-rewards-tooltip')).toBeInTheDocument();
 
@@ -148,7 +155,7 @@ describe('CurrentUser Component', () => {
   });
 
   it('should dispatch actions when user profile is clicked', () => {
-    const { container } = render(<CurrentUser />);
+    const { container } = renderWithQueryClient(<CurrentUser />);
 
     const containerElement = container.querySelector('.Container');
     expect(containerElement).toBeInTheDocument();
@@ -185,7 +192,7 @@ describe('CurrentUser Component', () => {
       isHandleAWalletAddress: true,
     };
 
-    render(<CurrentUser />);
+    renderWithQueryClient(<CurrentUser />);
 
     const verifyButton = screen.getByTestId('mock-button');
     expect(verifyButton).toBeInTheDocument();
@@ -199,7 +206,7 @@ describe('CurrentUser Component', () => {
       isVerifyIdDialogOpen: true,
     };
 
-    render(<CurrentUser />);
+    renderWithQueryClient(<CurrentUser />);
 
     expect(screen.getByTestId('mock-verify-id-dialog')).toBeInTheDocument();
 
@@ -216,7 +223,7 @@ describe('CurrentUser Component', () => {
       isVerifyIdDialogOpen: true,
     };
 
-    render(<CurrentUser />);
+    renderWithQueryClient(<CurrentUser />);
 
     expect(screen.getByTestId('mock-verify-id-dialog')).toBeInTheDocument();
 

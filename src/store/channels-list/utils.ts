@@ -1,93 +1,15 @@
-import { Channel, ConversationStatus, User } from './../channels/index';
-import { select } from 'redux-saga/effects';
-import { currentUserSelector } from '../authentication/selectors';
-import { getUserSubHandle } from '../../lib/user';
+import { Channel, User } from './../channels/index';
+import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
+import { MatrixClient } from '../../lib/chat/matrix-client';
+import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
+import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
+import { EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
+import { MatrixConstants } from '../../lib/chat/matrix/types';
 
-export const toLocalChannel = (input): Partial<Channel> => {
-  const otherMembers = input.otherMembers || [];
+export const isOneOnOne = (channel: { totalMembers: number }) => channel.totalMembers === 2;
 
-  return {
-    id: input.id,
-    name: input.name,
-    icon: input.icon,
-    unreadCount: input.unreadCount,
-    createdAt: input.createdAt,
-    otherMembers,
-    lastMessage: input.lastMessage || null,
-    conversationStatus: ConversationStatus.CREATED,
-    isOneOnOne: input.isOneOnOne,
-  };
-};
-
-export const mapChannelMembers = (channels: Channel[], zeroUsersMap: { [id: string]: User }) => {
-  for (const channel of channels) {
-    for (const member of channel.otherMembers) {
-      replaceZOSUserFields(member, zeroUsersMap[member.matrixId]);
-    }
-    for (const member of channel.memberHistory) {
-      replaceZOSUserFields(member as User, zeroUsersMap[member.matrixId]);
-    }
-
-    channel.moderatorIds = channel.moderatorIds.map((matrixId) => zeroUsersMap[matrixId]?.userId || matrixId);
-  }
-};
-
-export function* mapChannelMessages(channels: Channel[], zeroUsersMap: { [id: string]: User }) {
-  for (const channel of channels) {
-    for (const message of channel.messages) {
-      if (message.isAdmin) {
-        continue;
-      }
-      replaceZOSUserFields(message.sender, zeroUsersMap[message.sender.userId]);
-    }
-  }
-  yield mapAdminUserIdToZeroUserId(channels, zeroUsersMap);
-}
-
-export function* mapAdminUserIdToZeroUserId(messageContainers, zeroUsersMap) {
-  const currentUser = yield select(currentUserSelector);
-
-  if (!currentUser || !currentUser.matrixId) {
-    return;
-  }
-
-  const currentUserId = currentUser.id;
-
-  for (const container of messageContainers) {
-    for (const message of container.messages) {
-      if (message.isAdmin && message.admin.userId) {
-        if (message.admin.userId === currentUser.matrixId) {
-          message.admin.userId = currentUserId;
-        } else {
-          const user = zeroUsersMap[message.admin.userId];
-          message.admin.userId = user?.userId || message.admin.userId;
-        }
-      }
-    }
-  }
-}
-
-export function replaceZOSUserFields(
-  member: {
-    userId: string;
-    firstName: string;
-    lastName: string;
-    profileImage: string;
-    profileId: string;
-    primaryZID: string;
-    displaySubHandle?: string;
-  },
-  zeroUser: User
-) {
-  if (zeroUser) {
-    member.userId = zeroUser.userId;
-    member.profileId = zeroUser.profileId;
-    member.firstName = zeroUser.firstName;
-    member.lastName = zeroUser.lastName;
-    member.profileImage = zeroUser.profileImage;
-    member.primaryZID = zeroUser.primaryZID;
-    member.displaySubHandle = getUserSubHandle(zeroUser.primaryZID, zeroUser.primaryWallet?.publicAddress);
-  }
+export function byBumpStamp(a: { bumpStamp: number }, b: { bumpStamp: number }) {
+  return b.bumpStamp - a.bumpStamp;
 }
 
 export function rawUserToDomainUser(u): User {
@@ -103,5 +25,61 @@ export function rawUserToDomainUser(u): User {
     primaryZID: u.primaryZID,
     primaryWallet: u.primaryWallet,
     wallets: u.wallets,
+  };
+}
+
+export async function updateChannelWithRoomData(
+  roomId: string,
+  roomData: MSC3575RoomData,
+  client: MatrixClient
+): Promise<Partial<Channel> | null> {
+  const room = client.matrix.getRoom(roomId);
+  if (!room) return null;
+  const baseChannel = MatrixAdapter.mapRoomToChannel(room);
+
+  const initialChannelUpdates: Partial<Channel> = {};
+
+  const liveTimeline = room.getLiveTimeline();
+  const timelineEvents = liveTimeline.getEvents();
+  const timeline = timelineEvents.reduce<IEvent[]>((acc, event) => {
+    if (event.getType() === EventType.RoomMessageEncrypted) {
+      client.matrix.decryptEventIfNeeded(event);
+      const evt = event.getEffectiveEvent();
+      // Handle edited messages
+      const relatesTo = evt.content[MatrixConstants.RELATES_TO];
+      let id = evt.event_id;
+      if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
+        id = relatesTo.event_id;
+      }
+      acc.push({
+        ...evt,
+        event_id: id,
+        content: { body: 'Decrypting...', msgtype: 'm.text' },
+      });
+    } else {
+      acc.push(event.getEffectiveEvent());
+    }
+    return acc;
+  }, []);
+
+  // TODO zos-619: This should be in MatrixAdapter and not on the matrix client instance
+  const messages = await matrixClientInstance.processRawEventsToMessages(timeline);
+  let lastMessage = baseChannel.lastMessage;
+  if (messages.length > 0 && messages[messages.length - 1]) {
+    lastMessage = messages[messages.length - 1];
+  }
+
+  initialChannelUpdates.messages = messages;
+  initialChannelUpdates.lastMessage = lastMessage;
+
+  initialChannelUpdates.unreadCount = {
+    total: roomData.notification_count,
+    highlight: roomData.highlight_count,
+  };
+
+  return {
+    ...baseChannel,
+    bumpStamp: roomData.bump_stamp,
+    ...initialChannelUpdates,
   };
 }

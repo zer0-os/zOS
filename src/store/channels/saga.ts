@@ -98,7 +98,7 @@ export function* unreadCountUpdated(action) {
     unreadCount: { total, highlight },
   } = action.payload;
 
-  const channel = yield select(channelSelector(channelId));
+  const channel = yield select((state) => rawChannel(state, channelId));
 
   if (!channel) {
     return;

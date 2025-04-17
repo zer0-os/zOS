@@ -66,9 +66,7 @@ export function* receiveCreatedConversation(conversation: Partial<Channel>) {
     return;
   }
 
-  const existing = yield select(channelSelector(conversation.id));
-
-  const newConversation: Partial<Channel> = { ...existing, ...conversation };
+  const newConversation: Partial<Channel> = { ...conversation };
   newConversation.hasLoadedMessages = true;
   newConversation.messagesFetchStatus = MessagesFetchState.SUCCESS;
 

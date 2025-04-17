@@ -1,0 +1,15 @@
+diff --git a/node_modules/matrix-js-sdk/lib/sliding-sync-sdk.js b/node_modules/matrix-js-sdk/lib/sliding-sync-sdk.js
+index 04d1b20..f8e57fc 100644
+--- a/node_modules/matrix-js-sdk/lib/sliding-sync-sdk.js
++++ b/node_modules/matrix-js-sdk/lib/sliding-sync-sdk.js
+@@ -515,7 +515,9 @@ export class SlidingSyncSdk {
+       var encrypted = room.hasEncryptionStateEvent();
+       // we do this first so it's correct when any of the events fire
+       if (roomData.notification_count != null) {
+-        room.setUnreadNotificationCount(NotificationCountType.Total, roomData.notification_count);
++        if (!encrypted || encrypted && room.getUnreadNotificationCount(NotificationCountType.Total) <= 0) {
++          room.setUnreadNotificationCount(NotificationCountType.Total, roomData.notification_count);
++        }
+       }
+       if (roomData.highlight_count != null) {
+         // We track unread notifications ourselves in encrypted rooms, so don't

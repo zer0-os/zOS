@@ -32,24 +32,26 @@ export interface NormalizedSliceConfig {
 
 const receiveNormalized = (state, action: PayloadAction<any>) => {
   const tableNames = Object.keys(action.payload);
-  const newState = {};
+  const newState = { ...state };
 
+  // Merge each table's entities into the existing state
   for (const tableName of tableNames) {
     const newTableState = action.payload[tableName];
     const existingTableState = state[tableName] || {};
+    const mergedTableState = { ...existingTableState };
 
-    Object.keys(existingTableState).forEach((id) => {
-      const item = newTableState[id] || {};
-      newTableState[id] = { ...state[tableName][id], ...item };
-    });
+    // Merge each individual entity in the table
+    for (const entityId of Object.keys(newTableState)) {
+      mergedTableState[entityId] = {
+        ...existingTableState[entityId],
+        ...newTableState[entityId],
+      };
+    }
 
-    newState[tableName] = newTableState;
+    newState[tableName] = mergedTableState;
   }
 
-  return {
-    ...state,
-    ...newState,
-  };
+  return newState;
 };
 
 const slice = createSlice({

@@ -130,8 +130,7 @@ const slice = createNormalizedSlice({
 export const removeChannel = (channelId: string) => remove({ schema: schema.key, id: channelId });
 export const { receiveNormalized, receive } = slice.actions;
 export const rawReceive: typeof receive = (data: Partial<Channel>) => {
-  // @ts-ignore - Removing denormalized flag
-  const { __denormalized, otherMembers, memberHistory, ...rest } = data;
+  const { otherMembers, memberHistory, ...rest } = data;
   // Simplifying users when saving to control update flow. See `store/users/utils.ts` for more details.
   const simplifiedUsers: { otherMembers?: SimplifiedUser[]; memberHistory?: SimplifiedUser[] } = {};
   if (otherMembers) {

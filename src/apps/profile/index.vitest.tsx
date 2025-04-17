@@ -2,9 +2,14 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { useRouteMatch } from 'react-router-dom';
 import { ProfileApp } from './';
+import { useScrollPosition } from '../../lib/hooks/useScrollPosition';
 
 vi.mock('react-router-dom', () => ({
   useRouteMatch: vi.fn(),
+}));
+
+vi.mock('../../lib/hooks/useScrollPosition', () => ({
+  useScrollPosition: vi.fn(),
 }));
 
 vi.mock('./panels/UserPanel', () => ({
@@ -21,6 +26,7 @@ vi.mock('../feed/components/post-view-container', () => ({
 
 describe('ProfileApp', () => {
   const mockUseRouteMatch = useRouteMatch as unknown as ReturnType<typeof vi.fn>;
+  const mockUseScrollPosition = useScrollPosition as unknown as ReturnType<typeof vi.fn>;
 
   it('should render Switcher and UserPanel when not viewing a post', () => {
     mockUseRouteMatch.mockReturnValue({
@@ -47,5 +53,27 @@ describe('ProfileApp', () => {
     expect(screen.getByTestId('post-view')).toHaveTextContent('post123');
     expect(screen.queryByTestId('switcher')).not.toBeInTheDocument();
     expect(screen.queryByTestId('user-panel')).not.toBeInTheDocument();
+  });
+
+  it('should call useScrollPosition with postId when viewing a post', () => {
+    mockUseRouteMatch.mockReturnValue({
+      params: { zid: 'user123', postId: 'post123' },
+      path: '/profile/user123/post123',
+    });
+
+    render(<ProfileApp />);
+
+    expect(mockUseScrollPosition).toHaveBeenCalledWith('post123');
+  });
+
+  it('should not call useScrollPosition when not viewing a post', () => {
+    mockUseRouteMatch.mockReturnValue({
+      params: { zid: 'user123' },
+      path: '/profile/user123',
+    });
+
+    render(<ProfileApp />);
+
+    expect(mockUseScrollPosition).toHaveBeenCalledWith(undefined);
   });
 });

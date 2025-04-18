@@ -8,7 +8,13 @@ import { useMeowPost } from '../../../lib/useMeowPost';
 import { primaryZIDSelector, userIdSelector } from '../../../../../store/authentication/selectors';
 import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/selectors';
 
-export const useFeed = (zid?: string, userId?: string) => {
+interface UseFeedParams {
+  zid?: string;
+  userId?: string;
+  isLoading?: boolean;
+}
+
+export const useFeed = ({ zid, userId, isLoading: isLoadingProp }: UseFeedParams) => {
   const currentUserId = useSelector(userIdSelector);
   const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
   const primaryZID = useSelector(primaryZIDSelector);
@@ -39,7 +45,7 @@ export const useFeed = (zid?: string, userId?: string) => {
 
   const { meowPostFeed } = useMeowPost();
 
-  const hasLoadedMessages = data?.pages.some((page) => page.length > 0);
+  const hasLoadedMessages = !isLoadingProp && data?.pages.some((page) => page.length > 0);
 
   const isEmpty = data?.pages.every((page) => page.length === 0);
 
@@ -51,8 +57,8 @@ export const useFeed = (zid?: string, userId?: string) => {
     headerText: zid ? `0://${zid}` : 'All',
     isEmpty,
     isError,
-    isFetchingNextPage,
-    isLoading,
+    isFetchingNextPage: !isLoadingProp && isFetchingNextPage,
+    isLoading: isLoadingProp || isLoading,
     meowPostFeed,
     posts: data,
     currentUserId,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import {
@@ -269,29 +269,47 @@ export const Message: React.FC<Properties> = ({
     closeReactionPicker();
   };
 
-  const Menu = ({ isMenuOpen, isMenuFlying }: Pick<MessageMenuProps, 'isMenuOpen' | 'isMenuFlying'>) => {
-    return (
-      <MessageMenu
-        {...cn('menu-item')}
-        isOwner={isOwner}
-        message={message}
-        sendStatus={sendStatus}
-        media={media}
-        onDelete={deleteMessage}
-        onEdit={toggleEdit}
-        onReply={onMenuReply}
-        onInfo={onMenuInfo}
-        onDownload={downloadImage}
-        onCopy={copyImage}
-        onOpenChange={handleOpenMenu}
-        onCloseMenu={handleCloseMenu}
-        onReportUser={onMenuReportUser}
-        isMenuOpen={isMenuOpen}
-        isMenuFlying={isMenuFlying}
-        isHidden={isHidden}
-      />
-    );
-  };
+  const Menu = useCallback(
+    ({ isMenuOpen, isMenuFlying }: Pick<MessageMenuProps, 'isMenuOpen' | 'isMenuFlying'>) => {
+      return (
+        <MessageMenu
+          {...cn('menu-item')}
+          isOwner={isOwner}
+          message={message}
+          sendStatus={sendStatus}
+          media={media}
+          onDelete={deleteMessage}
+          onEdit={toggleEdit}
+          onReply={onMenuReply}
+          onInfo={onMenuInfo}
+          onDownload={downloadImage}
+          onCopy={copyImage}
+          onOpenChange={handleOpenMenu}
+          onCloseMenu={handleCloseMenu}
+          onReportUser={onMenuReportUser}
+          isMenuOpen={isMenuOpen}
+          isMenuFlying={isMenuFlying}
+          isHidden={isHidden}
+        />
+      );
+    },
+    [
+      isOwner,
+      message,
+      sendStatus,
+      media,
+      deleteMessage,
+      toggleEdit,
+      onMenuReply,
+      onMenuInfo,
+      downloadImage,
+      copyImage,
+      handleOpenMenu,
+      handleCloseMenu,
+      onMenuReportUser,
+      isHidden,
+    ]
+  );
 
   const renderMenu = () => {
     const isGif = media?.mimetype === 'image/gif';

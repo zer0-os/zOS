@@ -17,6 +17,11 @@ jest.mock('../../lib/hooks/useMatrixMedia', () => ({
   useMatrixMedia: (file) => mockUseMatrixMedia(file),
 }));
 
+const mockUseLinkPreview = jest.fn();
+jest.mock('../../lib/hooks/useLinkPreview', () => ({
+  useLinkPreview: (message: string | undefined) => mockUseLinkPreview(message),
+}));
+
 describe('message', () => {
   const sender = {
     firstName: 'John',
@@ -44,6 +49,17 @@ describe('message', () => {
         isError: false,
       };
     });
+    mockUseLinkPreview.mockImplementation(() => {
+      return {
+        data: null,
+        isPending: false,
+        isError: false,
+      };
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('renders message text', () => {
@@ -325,15 +341,21 @@ describe('message', () => {
   });
 
   it('renders LinkPreview when there is a message', () => {
+    const message = 'message text accompanying link preview';
     const preview = {
       url: 'http://url.com/index.cfm',
       type: LinkPreviewType.Photo,
       title: 'the-title',
       description: 'the description',
     };
-    const message = 'message text accompanying link preview';
 
-    const wrapper = subject({ preview, message, hidePreview: false });
+    mockUseLinkPreview.mockReturnValue({
+      data: preview,
+      isPending: false,
+      isError: false,
+    });
+
+    const wrapper = subject({ message, hidePreview: false });
 
     expect(wrapper.find(LinkPreview).props()).toEqual(expect.objectContaining(preview));
     expect(wrapper.find(ContentHighlighter).first().prop('message').includes(message)).toBeTruthy();
@@ -347,45 +369,75 @@ describe('message', () => {
       description: 'the description',
     };
 
-    const wrapper = subject({ preview, message: undefined, hidePreview: false });
+    mockUseLinkPreview.mockReturnValue({
+      data: preview,
+      isPending: false,
+      isError: false,
+    });
+
+    const wrapper = subject({ message: undefined, hidePreview: false });
 
     expect(wrapper.find(LinkPreview).props()).toEqual(expect.objectContaining(preview));
   });
 
   it('does not render LinkPreview when there is a message but hidePreview is true', () => {
+    const message = 'message text accompanying link preview';
     const preview = {
       url: 'http://url.com/index.cfm',
       type: LinkPreviewType.Photo,
       title: 'the-title',
       description: 'the description',
     };
-    const message = 'message text accompanying link preview';
 
-    const wrapper = subject({ preview, message, hidePreview: true });
+    mockUseLinkPreview.mockReturnValue({
+      data: preview,
+      isPending: false,
+      isError: false,
+    });
+
+    const wrapper = subject({ message, hidePreview: true });
 
     expect(wrapper.find(LinkPreview)).toEqual({});
   });
 
   it('renders remove link preview icon when there is a message owned by current user', () => {
+    const message = 'message';
+    const id = 'id';
+    const onEdit = jest.fn();
     const preview = {
       url: 'http://url.com/index.cfm',
       type: LinkPreviewType.Photo,
       title: 'the-title',
       description: 'the description',
     };
-    const message = 'message';
-    const id = 'id';
-    const onEdit = jest.fn();
 
-    const wrapper = subject({ messageId: id, preview, message, hidePreview: false, isOwner: true, onEdit });
+    mockUseLinkPreview.mockReturnValue({
+      data: preview,
+      isPending: false,
+      isError: false,
+    });
+
+    const wrapper = subject({ messageId: id, message, hidePreview: false, isOwner: true, onEdit });
 
     expect(wrapper.find(LinkPreview).simulate('remove'));
     expect(onEdit).toHaveBeenCalledWith(id, message, [], { hidePreview: true });
   });
 
   it('does not render link preview if there is a file', () => {
+    const preview = {
+      url: 'http://url.com/index.cfm',
+      type: LinkPreviewType.Photo,
+      title: 'the-title',
+      description: 'the description',
+    };
+
+    mockUseLinkPreview.mockReturnValue({
+      data: preview,
+      isPending: false,
+      isError: false,
+    });
+
     const wrapper = subject({
-      preview: { url: 'example.com' },
       hidePreview: false,
       media: { url: 'https://image.com/image.png', type: MediaType.Image },
     });
@@ -394,8 +446,20 @@ describe('message', () => {
   });
 
   it('does not render link preview if message is a reply', () => {
+    const preview = {
+      url: 'http://url.com/index.cfm',
+      type: LinkPreviewType.Photo,
+      title: 'the-title',
+      description: 'the description',
+    };
+
+    mockUseLinkPreview.mockReturnValue({
+      data: preview,
+      isPending: false,
+      isError: false,
+    });
+
     const wrapper = subject({
-      preview: { url: 'example.com' },
       hidePreview: false,
       parentMessageText: 'quoted message',
     });

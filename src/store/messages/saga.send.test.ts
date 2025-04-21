@@ -1,12 +1,9 @@
-import { call } from 'redux-saga/effects';
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { getLinkPreviews } from './api';
 import {
   createOptimisticMessage,
   createOptimisticMessages,
-  createOptimisticPreview,
   messageSendFailed,
   performSend,
   publishMessageSent,
@@ -27,7 +24,7 @@ jest.mock('./uploadable', () => ({
 }));
 
 describe(send, () => {
-  it('creates optimistic messages then fetches preview and sends the message in parallel', async () => {
+  it('creates optimistic messages and sends them in parallel', async () => {
     const channelId = 'channel-id';
     const message = 'hello';
     const mentionedUserIds = [
@@ -40,8 +37,6 @@ describe(send, () => {
       .next()
       .call(createOptimisticMessages, channelId, message, parentMessage, [])
       .next({ optimisticRootMessage: { id: 'optimistic-message-id' } })
-      .spawn(createOptimisticPreview, channelId, { id: 'optimistic-message-id' })
-      .next()
       .call(performSend, channelId, message, mentionedUserIds, parentMessage, 'optimistic-message-id', false)
       .next({ id: 'message-id' })
       .next()
@@ -76,7 +71,6 @@ describe(send, () => {
     testSaga(send, { payload: { channelId, files } })
       .next()
       .next({ optimisticRootMessage: { id: 'root-id' }, uploadableFiles: [uploadableFile] })
-      .next()
       .next({ id: 'root-id' })
       .call(uploadFileMessages, channelId, 'root-id', [uploadableFile])
       .next()
@@ -100,7 +94,6 @@ describe(send, () => {
           uploadableFile2,
         ],
       })
-      .next()
       .next(null) // Fail
       .call(uploadFileMessages, channelId, '', [uploadableFile2])
       .next()
@@ -113,7 +106,6 @@ describe(send, () => {
     testSaga(send, { payload: { channelId: 'channel-id', message: 'hello' } })
       .next()
       .next({ optimisticRootMessage: { id: 'optimistic-message-id' } })
-      .next()
       .next({ id: 'message-id' })
       .next()
       .call(publishMessageSent, 'channel-id')
@@ -173,67 +165,6 @@ describe(createOptimisticMessage, () => {
     expect(channel.messages[0].id).not.toBeNull();
     expect(channel.messages[0].sender).not.toBeNull();
     expect(returnValue.optimisticMessage).toEqual(expect.objectContaining({ message: 'test message' }));
-  });
-});
-
-describe(createOptimisticPreview, () => {
-  it('sets initial partial preview on optimistic message', async () => {
-    const channelId = 'channel-id';
-    const optimisticMessage = { id: 'optimistic-id', message: 'example.com' } as any;
-
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [optimisticMessage] });
-
-    const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
-      // stub empty response to retain the initial, optmistic preview
-      .provide([[call(getLinkPreviews, 'http://example.com'), { success: false }]])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].preview).toEqual({ url: 'http://example.com' });
-  });
-
-  it('fetches the preview and adds it to the optimistic message', async () => {
-    const channelId = 'channel-id';
-    const optimisticMessage = { id: 'optimistic-id', message: 'example.com' } as any;
-    const linkPreview = { id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0' };
-
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [optimisticMessage] });
-
-    const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
-      .provide([
-        stubResponse(call(getLinkPreviews, 'http://example.com'), {
-          success: true,
-          body: linkPreview,
-        }),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].preview).toEqual(linkPreview);
-  });
-
-  it('sets the preview on the previously optimistically rendered message when it has already been truly rendered', async () => {
-    const channelId = 'channel-id';
-    const optimisticMessage = { id: 'optimistic-id', optimisticId: 'optimistic-id', message: 'example.com' } as any;
-    const receivedMessage = { id: 'id-from-server', optimisticId: 'optimistic-id', message: 'example.com' } as any;
-    const linkPreview = { url: 'http://example.com', width: 25 };
-
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: [receivedMessage] });
-
-    const { storeState } = await expectSaga(createOptimisticPreview, channelId, optimisticMessage)
-      .provide([
-        stubResponse(call(getLinkPreviews, 'http://example.com'), {
-          success: true,
-          body: linkPreview,
-        }),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].preview).toEqual(linkPreview);
   });
 });
 

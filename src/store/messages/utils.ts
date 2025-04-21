@@ -59,7 +59,6 @@ export function createOptimisticMessageObject(
       primaryZID: user.primaryZID,
     },
     updatedAt: 0,
-    preview: null,
     media,
     sendStatus: MessageSendStatus.IN_PROGRESS,
     isPost: false,
@@ -67,7 +66,13 @@ export function createOptimisticMessageObject(
 }
 
 export function extractLink(messageText: string): linkifyType[] {
-  return linkifyjs.find(messageText || '');
+  return linkifyjs.find(messageText);
+}
+
+export function getFirstUrl(message: string) {
+  const link: linkifyType[] = extractLink(message);
+  if (!link.length) return;
+  return link[0].href;
 }
 
 export const enum FileType {

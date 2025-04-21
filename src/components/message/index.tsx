@@ -30,6 +30,7 @@ import { useMatrixMedia } from '../../lib/hooks/useMatrixMedia';
 import { MatrixAvatar } from '../matrix-avatar';
 
 import './styles.scss';
+import { useLinkPreview } from '../../lib/hooks/useLinkPreview';
 
 const cn = bemClassName('message');
 
@@ -95,7 +96,6 @@ export const Message: React.FC<Properties> = ({
   sender,
   mentionedUsers,
   hidePreview,
-  preview,
   admin,
   optimisticId,
   rootMessageId,
@@ -112,6 +112,8 @@ export const Message: React.FC<Properties> = ({
   const media = useMemo(() => {
     return mediaMessage ? mediaMessage.media : baseMedia;
   }, [mediaMessage, baseMedia]);
+
+  const { data: linkPreview } = useLinkPreview(message);
 
   const isMenuTriggerAlwaysVisible = sendStatus === MessageSendStatus.FAILED;
 
@@ -368,17 +370,17 @@ export const Message: React.FC<Properties> = ({
 
   const renderLinkPreview = () => {
     if (
-      !preview?.title ||
-      !preview?.description ||
-      !preview?.type ||
-      !preview?.url ||
+      !linkPreview?.title ||
+      !linkPreview?.description ||
+      !linkPreview?.type ||
+      !linkPreview?.url ||
       hidePreview ||
       media ||
       parentMessageText
     ) {
       return null;
     }
-    return <LinkPreview url={preview.url} {...preview} allowRemove={false} onRemove={onRemovePreview} />;
+    return <LinkPreview url={linkPreview.url} {...linkPreview} allowRemove={false} onRemove={onRemovePreview} />;
   };
 
   return (
@@ -405,7 +407,7 @@ export const Message: React.FC<Properties> = ({
           })
         )}
       >
-        {(message || media || preview) && (
+        {(message || media || linkPreview) && (
           <>
             {showAuthorName && !isEditing && (
               <div {...cn('author-name')}>

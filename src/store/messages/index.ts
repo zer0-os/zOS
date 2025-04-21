@@ -3,7 +3,6 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice, removeAll } from '../normalized';
 
-import { LinkPreview } from '../../lib/link-preview';
 import { ParentMessage } from '../../lib/chat/types';
 import { User } from '../authentication/types';
 import { EncryptedFile } from 'matrix-js-sdk/lib/types';
@@ -85,7 +84,6 @@ export interface Message {
   sender: Sender;
   mentionedUsers: { id: string }[];
   hidePreview: boolean;
-  preview: LinkPreview;
   media?: Media;
   image?: Media;
   admin?: {

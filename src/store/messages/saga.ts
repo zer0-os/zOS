@@ -16,8 +16,7 @@ import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../ch
 import { markConversationAsRead, receiveChannel } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
-import { getLinkPreviews } from './api';
-import { extractLink, linkifyType, createOptimisticMessageObject } from './utils';
+import { createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { takeEveryFromBus } from '../../lib/saga';
@@ -103,11 +102,6 @@ export function* mapMessagesAndPreview(messages: Message[], channelId: string) {
   for (const message of messagesWithSenders) {
     if (message.isHidden) {
       message.message = 'Message hidden';
-    }
-
-    const preview = yield call(getPreview, message.message);
-    if (preview) {
-      message.preview = preview;
     }
 
     const relatedReactions = reactions.filter((reaction) => reaction.eventId === message.id);
@@ -198,8 +192,6 @@ export function* send(action) {
 
   let rootMessageId = '';
   if (optimisticRootMessage) {
-    yield spawn(createOptimisticPreview, channelId, optimisticRootMessage);
-
     const textMessage = yield call(
       performSend,
       channelId,
@@ -253,27 +245,6 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
   yield call(receiveChannel, { id: channelId, messages: [...existingMessages, temporaryMessage] });
 
   return { optimisticMessage: temporaryMessage };
-}
-
-export function* createOptimisticPreview(channelId: string, optimisticMessage) {
-  const url = getFirstUrl(optimisticMessage.message);
-  if (!url) {
-    return;
-  }
-
-  yield put(receiveMessage({ id: optimisticMessage.id, preview: { url } }));
-  const preview = yield getPreview(optimisticMessage.message);
-
-  if (preview) {
-    yield put(receiveMessage({ id: optimisticMessage.id, preview }));
-    // In case the optimistic message has been replaced by a real message
-    const existingMessageIds = yield select(rawMessagesSelector(channelId));
-    const fullMessages = yield select((state) => denormalize(existingMessageIds, state));
-    const message = fullMessages.find((m) => m.optimisticId === optimisticMessage.id);
-    if (message) {
-      yield put(receiveMessage({ id: message.id, preview }));
-    }
-  }
 }
 
 export function* performSend(
@@ -512,26 +483,6 @@ export function* receiveUpdateMessage(action) {
   message = messageList[0];
 
   yield put(receiveMessage(message));
-}
-
-export function* getPreview(message) {
-  if (!message) return;
-
-  const firstUrl = getFirstUrl(message);
-  if (firstUrl) {
-    const previewResult = yield call(getLinkPreviews, firstUrl);
-    if (previewResult.success) {
-      return previewResult.body;
-    } else {
-      return null;
-    }
-  }
-}
-
-function getFirstUrl(message: string) {
-  const link: linkifyType[] = extractLink(message);
-  if (!link.length) return;
-  return link[0].href;
 }
 
 export function* clearMessages() {

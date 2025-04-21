@@ -2,8 +2,7 @@ import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { call } from 'redux-saga/effects';
 
-import { getLinkPreviews } from './api';
-import { batchedReceiveNewMessage, getPreview, receiveNewMessage, sendBrowserNotification } from './saga';
+import { batchedReceiveNewMessage, receiveNewMessage, sendBrowserNotification } from './saga';
 import { rootReducer } from '../reducer';
 
 import { denormalize as denormalizeChannel } from '../channels';
@@ -16,7 +15,6 @@ import { getUsersByMatrixIds } from '../users/saga';
 describe(receiveNewMessage, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
-      [matchers.call.fn(getLinkPreviews), null],
       [matchers.spawn.fn(sendBrowserNotification), undefined],
       [matchers.call.fn(markConversationAsRead), undefined],
       // Execute immediately without debouncing
@@ -78,35 +76,15 @@ describe(receiveNewMessage, () => {
     expect(channel.messages[0].sender.firstName).toEqual('the real user');
   });
 
-  it('adds the link previews to the message', async () => {
-    const channelId = 'channel-id';
-    const message = { id: 'message-id', message: 'www.google.com' };
-    const stubPreview = { id: 'simulated-preview' };
-    const initialState = new StoreBuilder().withConversationList({ id: channelId });
-
-    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-        stubResponse(call(getPreview, 'www.google.com'), stubPreview),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].preview).toEqual(stubPreview);
-  });
-
   it('adds the reactions to the message', async () => {
     const channelId = 'channel-id';
     const message = { id: 'message-id', message: 'www.google.com' };
-    const stubPreview = { id: 'simulated-preview' };
     const stubReactions = [{ eventId: 'message-id', key: '😂' }];
     const initialState = new StoreBuilder().withConversationList({ id: channelId });
 
     const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
       .provide([
         stubResponse(call(getMessageEmojiReactions, channelId), stubReactions),
-        stubResponse(call(getPreview, 'www.google.com'), stubPreview),
       ])
       .withReducer(rootReducer, initialState.build())
       .run();
@@ -218,7 +196,6 @@ describe(receiveNewMessage, () => {
   describe(batchedReceiveNewMessage, () => {
     function subject(...args: Parameters<typeof expectSaga>) {
       return expectSaga(...args).provide([
-        [matchers.call.fn(getLinkPreviews), null],
         [matchers.spawn.fn(sendBrowserNotification), undefined],
         [matchers.call.fn(markConversationAsRead), undefined],
       ]);

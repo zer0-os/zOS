@@ -79,7 +79,6 @@ export function mapMatrixMessage(matrixEvent: Partial<IEvent>): MessageWithoutSe
     sender: undefined,
     senderId,
     isPost: false,
-    preview: null,
     sendStatus: MessageSendStatus.SUCCESS,
     isAdmin: false,
     optimisticId: content.optimisticId,
@@ -121,7 +120,6 @@ export function mapEventToAdminMessage(matrixEvent: IEvent): Message {
     sender: ADMIN_USER,
     mentionedUsers: [],
     hidePreview: false,
-    preview: null,
     sendStatus: MessageSendStatus.SUCCESS,
     isPost: false,
   };
@@ -146,7 +144,6 @@ export function mapEventToPostMessage(matrixEvent: IEvent): MessageWithoutSender
     isAdmin: false,
     mentionedUsers: [],
     hidePreview: false,
-    preview: null,
     sendStatus: MessageSendStatus.SUCCESS,
     isPost: true,
     media,

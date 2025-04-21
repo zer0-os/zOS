@@ -4,7 +4,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   receiveDelete,
   editMessage,
-  getPreview,
   clearMessages,
   sendBrowserNotification,
   receiveUpdateMessage,
@@ -22,7 +21,6 @@ import { MessageSendStatus } from '.';
 import { chat, getMessageEmojiReactions, sendEmojiReactionEvent } from '../../lib/chat';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { DefaultRoomLabels } from '../channels';
-import { LinkPreviewType } from '../../lib/link-preview';
 
 const chatClient = {
   editMessage: (_channelId: string, _messageId: string, _message: string, _mentionedUserIds: string[]) => ({}),
@@ -239,14 +237,6 @@ describe('messages saga', () => {
     ]);
   });
 
-  describe('getPreview', () => {
-    it('guards from empty messages (like when you upload a file)', () => {
-      const generator = getPreview(null);
-
-      expect(generator.next().value).toEqual(undefined);
-    });
-  });
-
   it('removes the messages', async () => {
     const messages = { 'id-one': { id: 'id-one', name: 'this should be removed' } };
     const channels = { 'id-two': { id: 'id-two', name: 'do not remove this one' } };
@@ -289,30 +279,11 @@ describe(receiveUpdateMessage, () => {
     const { storeState } = await expectSaga(receiveUpdateMessage, {
       payload: { channelId: 'channel-1', message: editedMessage },
     })
-      .provide([...successResponses(), [call(getMessageEmojiReactions, 'channel-1'), [{}]]])
+      .provide([[call(getMessageEmojiReactions, 'channel-1'), [{}]]])
       .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.normalized.messages).toEqual({ 8667728016: editedMessage });
-  });
-
-  it('adds the preview if exists', async () => {
-    const message = { id: 8667728016, message: 'original message' };
-    const editedMessage = { id: 8667728016, message: 'edited message: www.example.com' };
-    const preview = { id: 'fdf2ce2b-062e-4a83-9c27-03f36c81c0c0', type: 'link' };
-    const initialState = new StoreBuilder().withConversationList({ id: 'channel-1', messages: [message] as any });
-    const { storeState } = await expectSaga(receiveUpdateMessage, {
-      payload: { channelId: 'channel-1', message: editedMessage },
-    })
-      .provide([
-        [call(getMessageEmojiReactions, 'channel-1'), [{}]],
-        [call(getPreview, editedMessage.message), preview],
-
-        ...successResponses(),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-    expect(storeState.normalized.messages[message.id]).toEqual({ ...editedMessage, preview });
   });
 
   it('adds the reactions if they exist', async () => {
@@ -335,22 +306,12 @@ describe(receiveUpdateMessage, () => {
     })
       .provide([
         [call(getMessageEmojiReactions, 'channel-1'), reactions],
-        ...successResponses(),
       ])
       .withReducer(rootReducer, initialState.build())
       .run();
 
     expect(storeState.normalized.messages[message.id]).toEqual({ ...editedMessage, reactions: expectedReactions });
   });
-
-  function successResponses() {
-    return [
-      [
-        matchers.call.fn(getPreview),
-        null,
-      ],
-    ] as any;
-  }
 });
 
 describe(replaceOptimisticMessage, () => {
@@ -371,7 +332,6 @@ describe(replaceOptimisticMessage, () => {
       },
       mentionedUsers: [],
       hidePreview: false,
-      preview: {} as any,
       sendStatus: MessageSendStatus.SUCCESS,
       isPost: false,
     };
@@ -399,7 +359,6 @@ describe(replaceOptimisticMessage, () => {
       },
       mentionedUsers: [],
       hidePreview: false,
-      preview: {} as any,
       sendStatus: MessageSendStatus.SUCCESS,
       isPost: false,
     };
@@ -433,7 +392,6 @@ describe(replaceOptimisticMessage, () => {
       },
       mentionedUsers: [],
       hidePreview: false,
-      preview: {} as any,
       sendStatus: MessageSendStatus.SUCCESS,
       isPost: false,
     };
@@ -445,112 +403,6 @@ describe(replaceOptimisticMessage, () => {
 
     const expectedNewMessage = { ...newMessage, sendStatus: MessageSendStatus.SUCCESS };
     expect(returnValue).toEqual(['message-1', expectedNewMessage, 'message-2']);
-  });
-
-  it('replaces the preview with the new one if exists', async () => {
-    const currentMessages = ['optimistic-id'];
-    const oldMessages = [
-      {
-        id: 'optimistic-id',
-        preview: {
-          url: 'example.com/old-preview',
-          type: LinkPreviewType.Link,
-          title: 'Old Title',
-          description: 'Old Description',
-        },
-      },
-    ] as any;
-    const newMessage = {
-      id: 'new-message',
-      optimisticId: 'optimistic-id',
-      preview: {
-        url: 'example.com/new-preview',
-        type: LinkPreviewType.Link,
-        title: 'New Title',
-        description: 'New Description',
-      },
-      isAdmin: false,
-      createdAt: 0,
-      updatedAt: 0,
-      sender: {
-        userId: 'test',
-        matrixId: 'test',
-        firstName: 'test',
-        lastName: 'test',
-        profileImage: '',
-        profileId: '',
-        primaryZID: '',
-      },
-      mentionedUsers: [],
-      hidePreview: false,
-      sendStatus: MessageSendStatus.SUCCESS,
-      isPost: false,
-    };
-    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
-
-    const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage)
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    expect(returnValue[0].preview).toEqual({
-      url: 'example.com/new-preview',
-      type: LinkPreviewType.Link,
-      title: 'New Title',
-      description: 'New Description',
-    });
-  });
-
-  it('maintains the optimistic preview if no new one received', async () => {
-    const currentMessages = ['optimistic-id'];
-    const oldMessages = [
-      {
-        id: 'optimistic-id',
-        preview: {
-          url: 'example.com/old-preview',
-          type: LinkPreviewType.Link,
-          title: 'Old Title',
-          description: 'Old Description',
-        },
-      },
-    ] as any;
-    const newMessage = {
-      id: 'new-message',
-      optimisticId: 'optimistic-id',
-      isAdmin: false,
-      createdAt: 0,
-      updatedAt: 0,
-      sender: {
-        userId: 'test',
-        matrixId: 'test',
-        firstName: 'test',
-        lastName: 'test',
-        profileImage: '',
-        profileId: '',
-        primaryZID: '',
-      },
-      mentionedUsers: [],
-      hidePreview: false,
-      preview: {
-        url: 'example.com/old-preview',
-        type: LinkPreviewType.Link,
-        title: 'Old Title',
-        description: 'Old Description',
-      },
-      sendStatus: MessageSendStatus.SUCCESS,
-      isPost: false,
-    };
-    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
-
-    const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage)
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    expect(returnValue[0].preview).toEqual({
-      url: 'example.com/old-preview',
-      type: LinkPreviewType.Link,
-      title: 'Old Title',
-      description: 'Old Description',
-    });
   });
 });
 

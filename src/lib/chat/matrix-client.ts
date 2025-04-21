@@ -32,7 +32,7 @@ import {
   mapMatrixMessage,
   mapToLiveRoomEvent,
 } from './matrix/chat-message';
-import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, Message, MessagesResponse, MessageWithoutSender } from '../../store/messages';
 import { FileUploadResult } from '../../store/messages/saga';
 import { ChatMessageType, MatrixKeyBackupInfo, MatrixProfileInfo, ParentMessage, PowerLevels } from './types';
 import { config } from '../../config';
@@ -381,21 +381,21 @@ export class MatrixClient {
     return result;
   }
 
-  async processRawEventsToMessages(events: IEvent[]): Promise<Message[]> {
+  processRawEventsToMessages(events: IEvent[]): (Message | MessageWithoutSender)[] {
     const messages = events.map((event) => this.convertEventToMessage(event)).filter((message) => message !== null);
 
     this.applyEditEventsToMessages(events, messages);
     return messages;
   }
 
-  private convertEventToMessage(event: IEvent): Message | null {
+  private convertEventToMessage(event: IEvent): Message | MessageWithoutSender | null {
     if (this.isDeleted(event) || this.isEditEvent(event)) {
       return null;
     }
     switch (event.type) {
       case EventType.RoomMessageEncrypted:
       case EventType.RoomMessage:
-        return mapMatrixMessage(event, this.matrix);
+        return mapMatrixMessage(event);
 
       case EventType.RoomCreate:
         return mapEventToAdminMessage(event);
@@ -412,7 +412,7 @@ export class MatrixClient {
         return null;
 
       case CustomEventType.ROOM_POST:
-        return mapEventToPostMessage(event, this.matrix);
+        return mapEventToPostMessage(event);
 
       case EventType.RoomPowerLevels:
         return mapEventToAdminMessage(event);
@@ -622,7 +622,7 @@ export class MatrixClient {
   async getMessageByRoomId(channelId: string, messageId: string) {
     await this.waitForConnection();
     const newMessage = await this.matrix.fetchRoomEvent(channelId, messageId);
-    return mapMatrixMessage(newMessage, this.matrix);
+    return mapMatrixMessage(newMessage);
   }
 
   mxcUrlToHttp(mxcUrl: string, isThumbnail: boolean = false): string {
@@ -1437,11 +1437,11 @@ export class MatrixClient {
   };
 
   private async publishMessageEvent(event) {
-    this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event, this.matrix) as any);
+    this.events.receiveNewMessage(event.room_id, mapMatrixMessage(event) as any);
   }
 
   private async publishPostEvent(event) {
-    this.events.receiveNewMessage(event.room_id, mapEventToPostMessage(event, this.matrix) as any);
+    this.events.receiveNewMessage(event.room_id, mapEventToPostMessage(event) as any);
   }
 
   private publishRoomNameChange = (room: Room) => {

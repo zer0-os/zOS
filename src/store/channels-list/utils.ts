@@ -1,10 +1,11 @@
 import { Channel, User } from './../channels/index';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
-import { MatrixClient } from '../../lib/chat/matrix-client';
 import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
 import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
 import { EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
 import { MatrixConstants } from '../../lib/chat/matrix/types';
+import { mapMessagesAndPreview } from '../messages/saga';
+import { call } from 'redux-saga/effects';
 
 export const isOneOnOne = (channel: { totalMembers: number }) => channel.totalMembers === 2;
 
@@ -28,12 +29,8 @@ export function rawUserToDomainUser(u): User {
   };
 }
 
-export async function updateChannelWithRoomData(
-  roomId: string,
-  roomData: MSC3575RoomData,
-  client: MatrixClient
-): Promise<Partial<Channel> | null> {
-  const room = client.matrix.getRoom(roomId);
+export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575RoomData) {
+  const room = matrixClientInstance.matrix.getRoom(roomId);
   if (!room) return null;
   const baseChannel = MatrixAdapter.mapRoomToChannel(room);
 
@@ -43,7 +40,7 @@ export async function updateChannelWithRoomData(
   const timelineEvents = liveTimeline.getEvents();
   const timeline = timelineEvents.reduce<IEvent[]>((acc, event) => {
     if (event.getType() === EventType.RoomMessageEncrypted) {
-      client.matrix.decryptEventIfNeeded(event);
+      matrixClientInstance.matrix.decryptEventIfNeeded(event);
       const evt = event.getEffectiveEvent();
       // Handle edited messages
       const relatesTo = evt.content[MatrixConstants.RELATES_TO];
@@ -63,7 +60,8 @@ export async function updateChannelWithRoomData(
   }, []);
 
   // TODO zos-619: This should be in MatrixAdapter and not on the matrix client instance
-  const messages = await matrixClientInstance.processRawEventsToMessages(timeline);
+  let messages = matrixClientInstance.processRawEventsToMessages(timeline);
+  messages = yield call(mapMessagesAndPreview, messages, roomId);
   let lastMessage = baseChannel.lastMessage;
   if (messages.length > 0 && messages[messages.length - 1]) {
     lastMessage = messages[messages.length - 1];

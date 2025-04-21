@@ -1,11 +1,11 @@
 import { Payload, PostPayload } from './saga';
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
-import { Message } from '../messages';
+import { Message, MessageWithoutSender } from '../messages';
 
 export interface PostsResponse {
   hasMore: boolean;
-  postMessages: Message[];
+  postMessages: (Message | MessageWithoutSender)[];
 }
 
 export enum SagaActionTypes {

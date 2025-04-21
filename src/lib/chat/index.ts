@@ -1,4 +1,4 @@
-import { EditMessageOptions, Message, MessagesResponse } from '../../store/messages';
+import { EditMessageOptions, Message, MessagesResponse, MessageWithoutSender } from '../../store/messages';
 import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
@@ -18,9 +18,9 @@ import { EventType } from 'matrix-js-sdk/lib/matrix';
 import { ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 
 export interface RealtimeChatEvents {
-  receiveNewMessage: (channelId: string, message: Message) => void;
+  receiveNewMessage: (channelId: string, message: Message | MessageWithoutSender) => void;
   receiveDeleteMessage: (roomId: string, messageId: string) => void;
-  onMessageUpdated: (channelId: string, message: Message) => void;
+  onMessageUpdated: (channelId: string, message: Message | MessageWithoutSender) => void;
   receiveUnreadCount: (channelId: string, unreadCount: { total: number; highlight: number }) => void;
   onUserJoinedChannel: (channelId: string) => void;
   onUserLeft: (channelId: string, userId: string) => void;
@@ -52,7 +52,6 @@ export interface IChatClient {
   searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
   searchMentionableUsersForChannel: (channelId: string, search: string, channelMembers?: UserModel[]) => Promise<any[]>;
   getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
-  getMessageByRoomId: (channelId: string, messageId: string) => Promise<any>;
   createConversation: (
     users: User[],
     name: string,
@@ -158,10 +157,6 @@ export class Chat {
 
   async leaveRoom(roomId: string, userId: string) {
     return this.client.leaveRoom(roomId, userId);
-  }
-
-  async getMessageByRoomId(channelId: string, messageId: string) {
-    return this.client.getMessageByRoomId(channelId, messageId);
   }
 
   async createConversation(users: User[], name: string = null, image: File = null) {
@@ -447,10 +442,6 @@ export async function removeRoomFromLabel(roomId: string, label: string) {
 
 export async function sendPostByChannelId(channelId: string, message: string, optimisticId?: string) {
   return matrixClientInstance.sendPostsByChannelId(channelId, message, optimisticId);
-}
-
-export async function getPostMessagesByChannelId(channelId: string, lastCreatedAt?: number) {
-  return matrixClientInstance.getPostMessagesByChannelId(channelId, lastCreatedAt);
 }
 
 export async function sendMeowReactionEvent(

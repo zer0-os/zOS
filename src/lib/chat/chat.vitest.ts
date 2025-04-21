@@ -117,7 +117,6 @@ describe('Chat', () => {
       disconnect: vi.fn().mockResolvedValue(undefined),
       reconnect: vi.fn(),
       getMessagesByChannelId: vi.fn().mockResolvedValue({ messages: [], hasMore: false }),
-      getMessageByRoomId: vi.fn().mockResolvedValue({}),
       sendMessagesByChannelId: vi.fn().mockResolvedValue({ id: 'message-id', optimisticId: 'optimistic-id' }),
       editMessage: vi.fn().mockResolvedValue({ id: 'edit-id' }),
       deleteMessageByRoomId: vi.fn().mockResolvedValue(undefined),
@@ -355,10 +354,6 @@ describe('Chat', () => {
       // Test getMessagesByChannelId
       await chat.getMessagesByChannelId(channelId);
       expect(mockMatrixClient.getMessagesByChannelId).toHaveBeenCalledWith(channelId, undefined);
-
-      // Test getMessageByRoomId
-      await chat.getMessageByRoomId(channelId, messageId);
-      expect(mockMatrixClient.getMessageByRoomId).toHaveBeenCalledWith(channelId, messageId);
 
       // Test sendMessagesByChannelId
       await chat.sendMessagesByChannelId(channelId, message, mentionedUserIds, parentMessage, null, optimisticId);

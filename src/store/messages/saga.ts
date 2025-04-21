@@ -10,6 +10,7 @@ import {
   MediaType,
   MessageSendStatus,
   Message,
+  MessageWithoutSender,
 } from '.';
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../channels';
@@ -94,12 +95,12 @@ export const roomLabelSelector = (channelId) => (state) => {
   return getDeepProperty(state, `normalized.channels['${channelId}'].labels`, []);
 };
 
-export function* mapMessagesAndPreview(messages: Message[], channelId: string) {
+export function* mapMessagesAndPreview(messages: (Message | MessageWithoutSender)[], channelId: string) {
   const reactions = yield call(getMessageEmojiReactions, channelId);
 
   const messagesWithSenders = yield call(mapMessageSenders, messages);
 
-  for (const message of messagesWithSenders) {
+  const newMessages = messagesWithSenders.map((message) => {
     if (message.isHidden) {
       message.message = 'Message hidden';
     }
@@ -112,9 +113,11 @@ export function* mapMessagesAndPreview(messages: Message[], channelId: string) {
         return acc;
       }, message.reactions || {});
     }
-  }
 
-  return messages;
+    return message;
+  });
+
+  return newMessages;
 }
 
 export function* fetch(action) {

@@ -120,12 +120,7 @@ function* batchedRoomDataAction(action: RoomDataAction) {
   for (const update of batchedUpdates) {
     yield call(handleRoomDataEvents, update.roomId, update.roomData, matrixClientInstance);
     if (update.roomData.initial) {
-      const mappedChannel: Partial<Channel> = yield call(
-        updateChannelWithRoomData,
-        update.roomId,
-        update.roomData,
-        matrixClientInstance
-      );
+      const mappedChannel: Partial<Channel> = yield call(updateChannelWithRoomData, update.roomId, update.roomData);
       yield spawn(receiveChannel, mappedChannel);
     }
   }

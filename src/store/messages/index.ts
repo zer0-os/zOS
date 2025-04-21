@@ -47,7 +47,7 @@ export interface Media {
 
 export interface MessagesResponse {
   hasMore: boolean;
-  messages: Message[];
+  messages: (Message | MessageWithoutSender)[];
 }
 export interface InfoUploadResponse {
   apiUrl: string;
@@ -100,6 +100,15 @@ export interface Message {
   reactions?: { [key: string]: number };
   isHidden?: boolean;
 }
+
+export interface MessageWithoutSender extends Message {
+  sender: undefined;
+  senderId: string;
+}
+
+export const isMessageWithoutSender = (message: Message | MessageWithoutSender): message is MessageWithoutSender => {
+  return message.sender === undefined && 'senderId' in message;
+};
 
 export interface MessageAttachment {
   name: string;

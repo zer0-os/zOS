@@ -1,6 +1,6 @@
 import { CustomEventType, MatrixConstants, MembershipStateType, NotifiableEventType } from './types';
-import { EventType, IContent, IEvent, MsgType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk/lib/matrix';
-import { AdminMessageType, MediaType, Message, MessageSendStatus } from '../../../store/messages';
+import { EventType, IContent, IEvent, MsgType } from 'matrix-js-sdk/lib/matrix';
+import { AdminMessageType, MediaType, Message, MessageSendStatus, MessageWithoutSender } from '../../../store/messages';
 import { extractUserIdFromMatrixId, getObjectDiff, parsePlainBody } from './utils';
 import { PowerLevels } from '../types';
 
@@ -54,11 +54,10 @@ export function buildMediaObject(content: IContent) {
 }
 
 // TODO: zos-619: This should be part of the MatrixAdapter
-export function mapMatrixMessage(matrixEvent: Partial<IEvent>, sdkMatrixClient: SDKMatrixClient): Message {
+export function mapMatrixMessage(matrixEvent: Partial<IEvent>): MessageWithoutSender {
   const { event_id, content, origin_server_ts, sender: senderId } = matrixEvent;
 
   const parent = matrixEvent.content['m.relates_to'];
-  const senderData = sdkMatrixClient.getUser(senderId);
 
   let messageContent = content.body;
   if (parent && parent['m.in_reply_to']) {
@@ -75,15 +74,10 @@ export function mapMatrixMessage(matrixEvent: Partial<IEvent>, sdkMatrixClient: 
     message,
     createdAt: origin_server_ts,
     updatedAt: 0,
-    sender: {
-      userId: extractUserIdFromMatrixId(senderId),
-      matrixId: senderId,
-      firstName: senderData?.displayName ?? '',
-      lastName: '',
-      profileImage: senderData?.avatarUrl ?? '',
-      profileId: '',
-      primaryZID: '',
-    },
+    // Left as undefined since we need data from redux. This will be populated in a saga
+    // as a post processing step
+    sender: undefined,
+    senderId,
     isPost: false,
     sendStatus: MessageSendStatus.SUCCESS,
     isAdmin: false,
@@ -118,11 +112,10 @@ export function mapEventToAdminMessage(matrixEvent: IEvent): Message {
 
   return {
     id: event_id,
-    message: 'Conversation was started',
+    message: '',
     createdAt: origin_server_ts,
     isAdmin: true,
     admin: adminData,
-
     updatedAt: 0,
     sender: ADMIN_USER,
     mentionedUsers: [],
@@ -133,10 +126,9 @@ export function mapEventToAdminMessage(matrixEvent: IEvent): Message {
 }
 
 // TODO: zos-619: This should be part of the MatrixAdapter
-export function mapEventToPostMessage(matrixEvent: IEvent, sdkMatrixClient: SDKMatrixClient): Message {
+export function mapEventToPostMessage(matrixEvent: IEvent): MessageWithoutSender {
   const { event_id, content, origin_server_ts, sender: senderId } = matrixEvent;
 
-  const senderData = sdkMatrixClient.getUser(senderId);
   const { media, image, rootMessageId } = parseMediaData(matrixEvent);
 
   return {
@@ -145,18 +137,10 @@ export function mapEventToPostMessage(matrixEvent: IEvent, sdkMatrixClient: SDKM
     createdAt: origin_server_ts,
     updatedAt: 0,
     optimisticId: content.optimisticId,
-
-    sender: {
-      userId: extractUserIdFromMatrixId(senderId),
-      matrixId: senderId,
-      firstName: senderData?.displayName ?? '',
-      lastName: '',
-      profileImage: senderData?.avatarUrl ?? '',
-      profileId: '',
-      displaySubHandle: '',
-      primaryZID: '',
-    },
-
+    // Left as undefined since we need data from redux. This will be populated in a saga
+    // as a post processing step
+    sender: undefined,
+    senderId,
     isAdmin: false,
     mentionedUsers: [],
     hidePreview: false,

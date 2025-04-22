@@ -91,7 +91,7 @@ describe(OverviewPanel, () => {
 
     wrapper
       .find(Button)
-      .filterWhere((n) => n.prop('startEnhancer')?.type === IconUser1)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconUser1)
       .prop('onPress')();
 
     expect(onOpenEditProfile).toHaveBeenCalled();
@@ -103,7 +103,7 @@ describe(OverviewPanel, () => {
 
     wrapper
       .find(Button)
-      .filterWhere((n) => n.prop('startEnhancer')?.type === IconLock1)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconLock1)
       .prop('onPress')();
 
     expect(onOpenBackupDialog).toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe(OverviewPanel, () => {
 
     wrapper
       .find(Button)
-      .filterWhere((n) => n.prop('startEnhancer')?.type === IconSettings2)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconSettings2)
       .prop('onPress')();
 
     expect(onOpenSettings).toHaveBeenCalled();
@@ -142,7 +142,7 @@ describe(OverviewPanel, () => {
 
     wrapper
       .find(Button)
-      .filterWhere((n) => n.prop('startEnhancer')?.type === IconDownload2)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconDownload2)
       .prop('onPress')();
 
     expect(onOpenDownloads).toHaveBeenCalled();
@@ -154,7 +154,7 @@ describe(OverviewPanel, () => {
 
     wrapper
       .find(Button)
-      .filterWhere((n) => n.prop('startEnhancer')?.type === IconWallet3)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconWallet3)
       .prop('onPress')();
 
     expect(onOpenAccountManagement).toHaveBeenCalled();
@@ -168,7 +168,7 @@ describe(OverviewPanel, () => {
 
     wrapper
       .find(Button)
-      .filterWhere((n) => n.prop('startEnhancer')?.type === IconLink1)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconLink1)
       .prop('onPress')();
 
     expect(onOpenLinkedAccounts).toHaveBeenCalled();

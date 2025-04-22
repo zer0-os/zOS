@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MatrixClient } from './matrix-client';
 import { ConnectionStatus, MatrixConstants, ReadReceiptPreferenceType, CustomEventType } from './matrix/types';
-import { EventType, MsgType, ReceiptType } from 'matrix-js-sdk/lib/matrix';
+import { EventType, MsgType } from 'matrix-js-sdk/lib/matrix';
 import { RelationType } from 'matrix-js-sdk/lib/@types/event';
 
 // Add fetch mock type

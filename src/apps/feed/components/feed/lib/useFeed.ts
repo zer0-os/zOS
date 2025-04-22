@@ -35,15 +35,6 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp }: UseFeedParams
       }
 
       const res = await getPosts(endpoint, { limit: PAGE_SIZE, skip: pageParam * PAGE_SIZE });
-
-      console.log('XXXX Raw Post Data:', {
-        endpoint,
-        firstPost: res.posts?.[0],
-        userProfileView: res.posts?.[0]?.userProfileView,
-        user: res.posts?.[0]?.user,
-        sender: res.posts?.[0]?.sender,
-      });
-
       return res.posts?.map((post) => mapPostToMatrixMessage(post));
     },
     getNextPageParam: (lastPage, allPages) => {

@@ -44,7 +44,6 @@ export const useProfile = ({ id }: UseProfileParams) => {
 
       const endpoint = `/api/v2/users/profile/${ethers.utils.isAddress(id) ? 'address' : 'zid'}/${id}`;
       const response = await get(endpoint);
-      console.log('XXXX Profile API Response:', response);
 
       return {
         handle: response.body.firstName,

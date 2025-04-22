@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 
 import { bemClassName } from '../../../../lib/bem';
 
@@ -22,6 +22,7 @@ import { featureFlags } from '../../../../lib/feature-flags';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 
 import './styles.scss';
+import { useMatrixImage } from '../../../../lib/hooks/useMatrixImage';
 
 const cn = bemClassName('overview-panel');
 
@@ -41,73 +42,68 @@ export interface Properties {
   onOpenLinkedAccounts: () => void;
 }
 
-interface State {
-  isInviteDialogOpen: boolean;
-}
+export const OverviewPanel: React.FC<Properties> = (props) => {
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const { data: imageUrl } = useMatrixImage(props.image);
 
-export class OverviewPanel extends React.Component<Properties, State> {
-  state = {
-    isInviteDialogOpen: false,
+  const navigateBack = () => {
+    props.onBack();
   };
 
-  navigateBack = () => {
-    this.props.onBack();
+  const openInviteDialog = () => {
+    setIsInviteDialogOpen(true);
   };
 
-  openInviteDialog = () => {
-    this.setState({ isInviteDialogOpen: true });
+  const closeInviteDialog = () => {
+    setIsInviteDialogOpen(false);
   };
 
-  closeInviteDialog = () => {
-    this.setState({ isInviteDialogOpen: false });
-  };
-
-  renderInviteDialog = (): JSX.Element => {
+  const renderInviteDialog = (): JSX.Element => {
     return (
-      <Modal open={this.state.isInviteDialogOpen} onOpenChange={this.closeInviteDialog}>
-        <InviteDialogContainer onClose={this.closeInviteDialog} />
+      <Modal open={isInviteDialogOpen} onOpenChange={closeInviteDialog}>
+        <InviteDialogContainer onClose={closeInviteDialog} />
       </Modal>
     );
   };
 
-  openLogoutDialog = () => {
-    this.props.onOpenLogoutDialog();
+  const openLogoutDialog = () => {
+    props.onOpenLogoutDialog();
   };
 
-  openBackupDialog = () => {
-    this.props.onOpenBackupDialog();
+  const openBackupDialog = () => {
+    props.onOpenBackupDialog();
   };
 
-  openEditProfile = () => {
-    this.props.onOpenEditProfile();
+  const openEditProfile = () => {
+    props.onOpenEditProfile();
   };
 
-  openRewards = () => {
-    this.props.onOpenRewards();
+  const openRewards = () => {
+    props.onOpenRewards();
   };
 
-  openSettings = () => {
-    this.props.onOpenSettings();
+  const openSettings = () => {
+    props.onOpenSettings();
   };
 
-  openDownloads = () => {
-    this.props.onOpenDownloads();
+  const openDownloads = () => {
+    props.onOpenDownloads();
   };
 
-  onManageAccounts = () => {
-    this.props.onManageAccounts();
+  const onManageAccounts = () => {
+    props.onManageAccounts();
   };
 
-  openLinkedAccounts = () => {
-    this.props.onOpenLinkedAccounts();
+  const openLinkedAccounts = () => {
+    props.onOpenLinkedAccounts();
   };
 
-  renderDetails = () => {
+  const renderDetails = () => {
     return (
       <div {...cn('details')}>
         <div {...cn('image-conatiner')}>
-          {this.props.image ? (
-            <Image {...cn('image')} src={this.props.image} alt='Custom Profile Image' />
+          {imageUrl ? (
+            <Image {...cn('image')} src={imageUrl} alt='Custom Profile Image' />
           ) : (
             <div {...cn('image')}>
               <IconCurrencyEthereum size={50} />
@@ -116,20 +112,20 @@ export class OverviewPanel extends React.Component<Properties, State> {
         </div>
 
         <div {...cn('name-container')}>
-          {<div {...cn('name')}>{this.props.name}</div>}
-          {this.props.subHandle && <div {...cn('sub-handle')}>{this.props.subHandle}</div>}
+          <div {...cn('name')}>{props.name}</div>
+          {props.subHandle && <div {...cn('sub-handle')}>{props.subHandle}</div>}
         </div>
       </div>
     );
   };
 
-  renderActions() {
+  const renderActions = () => {
     return (
       <div {...cn('action-button-container')}>
         <Button
           {...cn('action-button', 'highlighted')}
           variant={ButtonVariant.Secondary}
-          onPress={this.openInviteDialog}
+          onPress={openInviteDialog}
           startEnhancer={<IconPlus size={20} isFilled />}
         >
           Invite Friends
@@ -138,7 +134,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
         <Button
           {...cn('action-button')}
           variant={ButtonVariant.Secondary}
-          onPress={this.openEditProfile}
+          onPress={openEditProfile}
           startEnhancer={<IconUser1 size={20} />}
           color={ButtonColor.Greyscale}
         >
@@ -148,7 +144,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
         <Button
           {...cn('action-button')}
           variant={ButtonVariant.Secondary}
-          onPress={this.onManageAccounts}
+          onPress={onManageAccounts}
           startEnhancer={<IconWallet3 size={20} />}
           color={ButtonColor.Greyscale}
         >
@@ -158,7 +154,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
         <Button
           {...cn('action-button')}
           variant={ButtonVariant.Secondary}
-          onPress={this.openBackupDialog}
+          onPress={openBackupDialog}
           startEnhancer={<IconLock1 size={20} />}
           color={ButtonColor.Greyscale}
         >
@@ -169,7 +165,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
           <Button
             {...cn('action-button')}
             variant={ButtonVariant.Secondary}
-            onPress={this.openSettings}
+            onPress={openSettings}
             startEnhancer={<IconSettings2 size={20} />}
             color={ButtonColor.Greyscale}
           >
@@ -180,7 +176,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
         <Button
           {...cn('action-button')}
           variant={ButtonVariant.Secondary}
-          onPress={this.openDownloads}
+          onPress={openDownloads}
           startEnhancer={<IconDownload2 size={20} />}
           color={ButtonColor.Greyscale}
         >
@@ -191,7 +187,7 @@ export class OverviewPanel extends React.Component<Properties, State> {
           <Button
             {...cn('action-button')}
             variant={ButtonVariant.Secondary}
-            onPress={this.openLinkedAccounts}
+            onPress={openLinkedAccounts}
             startEnhancer={<IconLink1 size={20} />}
             color={ButtonColor.Greyscale}
           >
@@ -200,56 +196,54 @@ export class OverviewPanel extends React.Component<Properties, State> {
         )}
       </div>
     );
-  }
+  };
 
-  renderFooter() {
+  const renderFooter = () => {
     return (
       <div {...cn('footer')}>
         <Button
           {...cn('footer-button')}
           variant={ButtonVariant.Secondary}
           color={ButtonColor.Greyscale}
-          onPress={this.openLogoutDialog}
+          onPress={openLogoutDialog}
           startEnhancer={<IconLogOut3 size={20} />}
         >
           Log Out
         </Button>
       </div>
     );
-  }
+  };
 
-  renderRewards() {
+  const renderRewards = () => {
     return (
-      <div {...cn('rewards')} onClick={this.openRewards}>
+      <div {...cn('rewards')} onClick={openRewards}>
         <RewardsItemContainer />
       </div>
     );
-  }
+  };
 
-  render() {
-    return (
-      <div {...cn()}>
-        <div {...cn('header-container')}>
-          <PanelHeader title={'Profile'} onBack={this.navigateBack} />
-        </div>
+  return (
+    <div {...cn()}>
+      <div {...cn('header-container')}>
+        <PanelHeader title={'Profile'} onBack={navigateBack} />
+      </div>
 
-        <ScrollbarContainer variant='on-hover'>
-          <div {...cn('panel-content-wrapper')}>
-            <div {...cn('body')}>
-              <div {...cn('section')}>
-                {this.renderDetails()}
-                {featureFlags.enableRewards && this.renderRewards()}
-              </div>
-
-              {this.renderActions()}
+      <ScrollbarContainer variant='on-hover'>
+        <div {...cn('panel-content-wrapper')}>
+          <div {...cn('body')}>
+            <div {...cn('section')}>
+              {renderDetails()}
+              {featureFlags.enableRewards && renderRewards()}
             </div>
 
-            {this.renderFooter()}
+            {renderActions()}
           </div>
-        </ScrollbarContainer>
 
-        {this.renderInviteDialog()}
-      </div>
-    );
-  }
-}
+          {renderFooter()}
+        </div>
+      </ScrollbarContainer>
+
+      {renderInviteDialog()}
+    </div>
+  );
+};

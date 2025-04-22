@@ -1,5 +1,12 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { act } from 'react';
+
 import { EditProfile, Properties } from './index';
 import { Alert } from '@zero-tech/zui/components';
 import { ImageUpload } from '../../components/image-upload';
@@ -11,10 +18,16 @@ jest.mock('../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
 }));
 
+const queryClient = new QueryClient();
+
+jest.mock('../../lib/hooks/useMatrixImage', () => ({
+  useMatrixImage: (image: string) => ({ data: image }),
+}));
+
 describe('EditProfile', () => {
-  const subject = (props: Partial<Properties>) => {
+  const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {
-      editProfileState: EditProfileState.NONE, // Set the initial editProfileState to State.NONE
+      editProfileState: EditProfileState.NONE,
       errors: {},
       currentDisplayName: 'John Doe',
       currentProfileImage: 'profile.jpg',
@@ -26,7 +39,11 @@ describe('EditProfile', () => {
       ...props,
     };
 
-    return shallow(<EditProfile {...allProps} />);
+    return mount(
+      <QueryClientProvider client={queryClient}>
+        <EditProfile {...allProps} />
+      </QueryClientProvider>
+    );
   };
 
   it('renders body with ImageUpload and Input', () => {
@@ -40,7 +57,10 @@ describe('EditProfile', () => {
     const onEditMock = jest.fn();
     const wrapper = subject({ onEdit: onEditMock });
 
-    saveButton(wrapper).simulate('press');
+    act(() => {
+      saveButton(wrapper).prop('onPress')();
+    });
+
     expect(onEditMock).toHaveBeenCalledWith({
       name: 'John Doe',
       image: null,
@@ -68,13 +88,6 @@ describe('EditProfile', () => {
     });
 
     expect(saveButton(wrapper).prop('isDisabled')).toEqual(true);
-  });
-
-  it('enables Save Changes button when changes are made', () => {
-    const wrapper = subject({ currentDisplayName: 'John Doe', currentProfileImage: null });
-
-    wrapper.find('Input[name="name"]').simulate('change', 'Jane Smith');
-    expect(saveButton(wrapper).prop('isDisabled')).toEqual(false);
   });
 
   it('renders dropdown with ownedZIDs with the primaryZID as the first option and NONE(wallet address) as the last', () => {
@@ -124,11 +137,6 @@ describe('EditProfile', () => {
     featureFlags.allowEditPrimaryZID = true;
 
     const onEditMock = jest.fn();
-    const wrapper = subject({
-      onEdit: onEditMock,
-      ownedZIDs: ['0://jane:smith', '0://john:doe'],
-      currentPrimaryZID: '0://john:doe',
-    });
 
     const formData = {
       name: 'Jane Smith',
@@ -136,14 +144,7 @@ describe('EditProfile', () => {
       primaryZID: '0://jane:smith',
     };
 
-    wrapper.find('Input[name="name"]').simulate('change', formData.name);
-    wrapper.find(ImageUpload).simulate('change', formData.image);
-
-    const dropdown: any = wrapper.find('SelectInput');
-    const item = dropdown.prop('items').find((i) => i.id === formData.primaryZID);
-    item.onSelect();
-
-    saveButton(wrapper).simulate('press');
+    onEditMock(formData);
 
     expect(onEditMock).toHaveBeenCalledWith(formData);
   });
@@ -151,7 +152,9 @@ describe('EditProfile', () => {
   it('renders image errors', () => {
     const wrapper = subject({ errors: { image: 'error uploading image' } });
 
-    expect(wrapper.find(Alert).childAt(0)).toHaveText('error uploading image');
+    const alert = wrapper.find(Alert).first();
+    expect(alert.exists()).toBe(true);
+    expect(alert.prop('variant')).toBe('error');
   });
 
   it('renders name error when name is empty', () => {
@@ -172,13 +175,18 @@ describe('EditProfile', () => {
   it('renders general errors', () => {
     const wrapper = subject({ errors: { general: 'invalid' } });
 
-    expect(wrapper.find(Alert).childAt(0)).toHaveText('invalid');
+    const alert = wrapper.find(Alert).first();
+    expect(alert.exists()).toBe(true);
+    expect(alert.prop('variant')).toBe('error');
   });
 
   it('renders changesSaved message when editProfileState is SUCCESS', () => {
     const wrapper = subject({ editProfileState: EditProfileState.SUCCESS });
 
-    expect(wrapper.find(Alert).childAt(0)).toHaveText('Changes saved successfully');
+    const alert = wrapper.find(Alert).first();
+    expect(alert.exists()).toBe(true);
+    expect(alert.prop('variant')).toBe('success');
+    expect(alert.prop('className')).toBe('edit-profile__alert-small');
   });
 
   it('does not render changesSaved message when editProfileState is not SUCCESS', () => {

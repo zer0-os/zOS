@@ -1,6 +1,6 @@
-import * as React from 'react';
+import React, { useState, useMemo, useCallback, ReactNode } from 'react';
 
-import { Alert, Input, Tooltip, SelectInput, LoadingIndicator } from '@zero-tech/zui/components';
+import { Alert, Input, Tooltip, SelectInput, LoadingIndicator, AlertProps } from '@zero-tech/zui/components';
 import { ImageUpload } from '../../components/image-upload';
 import { IconUpload2, IconHelpCircle, IconCheck } from '@zero-tech/zui/icons';
 import { State as EditProfileState } from '../../store/edit-profile';
@@ -11,6 +11,7 @@ import { ScrollbarContainer } from '../scrollbar-container';
 
 import { bem } from '../../lib/bem';
 import './styles.scss';
+import { useMatrixImage } from '../../lib/hooks/useMatrixImage';
 
 const c = bem('edit-profile');
 
@@ -26,222 +27,228 @@ export interface Properties {
   currentProfileImage: string;
   ownedZIDs: string[];
   loadingZIDs: boolean;
-  onEdit: (data: { name: string; image: File; primaryZID: string }) => void;
+  onEdit: (data: { name: string; image: File | null; primaryZID: string }) => void;
   onClose?: () => void;
 }
 
-interface State {
-  name: string;
-  image: File | null;
-  primaryZID: string;
-}
+export const EditProfile: React.FC<Properties> = ({
+  editProfileState,
+  errors,
+  currentDisplayName,
+  currentPrimaryZID,
+  currentProfileImage,
+  ownedZIDs,
+  loadingZIDs,
+  onEdit,
+  onClose,
+}) => {
+  const [name, setName] = useState(currentDisplayName);
+  const [primaryZID, setPrimaryZID] = useState(currentPrimaryZID);
+  const [image, setImage] = useState<File | null>(null);
+  const { data: imageUrl } = useMatrixImage(currentProfileImage);
 
-export class EditProfile extends React.Component<Properties, State> {
-  state = {
-    name: this.props.currentDisplayName,
-    primaryZID: this.props.currentPrimaryZID,
-    image: null,
-  };
-
-  handleEdit = () => {
-    this.props.onEdit({
-      name: this.state.name,
-      image: this.state.image,
-      primaryZID: this.state.primaryZID === 'None (wallet address)' ? '' : this.state.primaryZID,
+  const handleEdit = useCallback(() => {
+    onEdit({
+      name: name,
+      image: image,
+      primaryZID: primaryZID === 'None (wallet address)' ? '' : primaryZID,
     });
-  };
+  }, [
+    name,
+    image,
+    primaryZID,
+    onEdit,
+  ]);
 
-  trackName = (value) => this.setState({ name: value });
-  trackImage = (image) => this.setState({ image });
-  trackPrimaryZID = (value) => this.setState({ primaryZID: value });
+  const trackName = useCallback((value: string) => setName(value), []);
+  const trackImage = useCallback((img: File | null) => setImage(img), []);
+  const trackPrimaryZID = useCallback((value: string) => setPrimaryZID(value), []);
 
-  get isValid() {
-    return this.state.name.trim().length > 0;
-  }
+  const isValid = useMemo(() => name.trim().length > 0, [name]);
 
-  get nameError() {
-    if (!this.isValid) {
-      return { variant: 'error', text: 'name cannot be empty' } as any;
+  const nameError = useMemo<{ variant: AlertProps['variant']; text: ReactNode } | null>(() => {
+    if (!isValid) {
+      return { variant: 'error', text: 'name cannot be empty' };
     }
     return null;
-  }
+  }, [isValid]);
 
-  get generalError() {
-    return this.props.errors.general;
-  }
+  const generalError = errors.general;
+  const imageError = errors.image;
+  const isLoading = editProfileState === EditProfileState.INPROGRESS;
+  const changesSaved = editProfileState === EditProfileState.SUCCESS;
 
-  get imageError() {
-    return this.props.errors.image;
-  }
-
-  get isLoading() {
-    return this.props.editProfileState === EditProfileState.INPROGRESS;
-  }
-
-  get changesSaved() {
-    return this.props.editProfileState === EditProfileState.SUCCESS;
-  }
-
-  get isDisabled() {
+  const isDisabled = useMemo(() => {
     return (
-      !!this.nameError ||
-      this.isLoading ||
-      (this.state.name === this.props.currentDisplayName &&
-        this.state.image === null &&
-        this.state.primaryZID === this.props.currentPrimaryZID)
+      !!nameError || isLoading || (name === currentDisplayName && image === null && primaryZID === currentPrimaryZID)
     );
-  }
+  }, [
+    nameError,
+    isLoading,
+    name,
+    currentDisplayName,
+    image,
+    primaryZID,
+    currentPrimaryZID,
+  ]);
 
-  renderImageUploadIcon = (): JSX.Element => <IconUpload2 isFilled={true} />;
+  const renderImageUploadIcon = useCallback((): JSX.Element => <IconUpload2 isFilled={true} />, []);
 
-  renderZeroIDLabel = (): JSX.Element => (
-    <div className={c('primary-zid-lable')}>
-      Primary ZERO ID
-      {/* See: ZOS-115
-       * @ts-ignore */}
-      <Tooltip content='Your primary ZERO ID is displayed with your username and other members can find you by searching for it.'>
-        <div className={c('info-tooltip')}>
-          <IconHelpCircle size={16} />
-        </div>
-      </Tooltip>
-    </div>
+  const renderZeroIDLabel = useCallback(
+    (): JSX.Element => (
+      <div className={c('primary-zid-lable')}>
+        Primary ZERO ID
+        <Tooltip content='Your primary ZERO ID is displayed with your username and other members can find you by searching for it.'>
+          <div className={c('info-tooltip')}>
+            <IconHelpCircle size={16} />
+          </div>
+        </Tooltip>
+      </div>
+    ),
+    []
   );
 
-  renderOwnedZIDItem(label, icon = null) {
+  const renderOwnedZIDItem = useCallback((label: string, icon: JSX.Element | null = null) => {
     return (
       <div className={c('zid-menu-item-option')}>
         <div className={c('zid-menu-item-option-label')}>{label}</div> {icon}
       </div>
     );
-  }
+  }, []);
 
-  getNoneOption() {
+  const getNoneOption = useCallback(() => {
     return {
       id: 'None (wallet address)',
-      label: this.renderOwnedZIDItem('None (wallet address)'),
-      onSelect: () => this.trackPrimaryZID('None (wallet address)'),
+      label: renderOwnedZIDItem('None (wallet address)'),
+      onSelect: () => trackPrimaryZID('None (wallet address)'),
     };
-  }
+  }, [renderOwnedZIDItem, trackPrimaryZID]);
 
-  renderLoadingState() {
+  const renderLoadingState = useCallback(() => {
     return [
       {
         id: 'Fetching ZERO IDs',
-        label: this.renderOwnedZIDItem(
+        label: renderOwnedZIDItem(
           'Fetching ZERO IDs',
           <LoadingIndicator className={c('zid-menu-item-option-loading-spinner')} />
         ),
         onSelect: () => {},
       },
     ];
-  }
+  }, [renderOwnedZIDItem]);
 
-  get menuItems() {
-    if (this.props.loadingZIDs) {
-      return this.renderLoadingState();
+  const menuItems = useMemo(() => {
+    if (loadingZIDs) {
+      return renderLoadingState();
     }
 
     const options = [];
-    if (this.props.currentPrimaryZID) {
+    if (currentPrimaryZID) {
       options.push({
-        id: this.props.currentPrimaryZID,
-        label: this.renderOwnedZIDItem(
-          this.props.currentPrimaryZID,
+        id: currentPrimaryZID,
+        label: renderOwnedZIDItem(
+          currentPrimaryZID,
           <IconCheck className={c('zid-menu-item-option-icon')} size={24} />
         ),
-        onSelect: () => this.trackPrimaryZID(this.props.currentPrimaryZID),
+        onSelect: () => trackPrimaryZID(currentPrimaryZID),
       });
     }
 
-    for (const zid of this.props.ownedZIDs) {
-      if (zid === this.props.currentPrimaryZID) continue;
+    for (const zid of ownedZIDs) {
+      if (zid === currentPrimaryZID) continue;
 
       options.push({
         id: zid,
-        label: this.renderOwnedZIDItem(zid),
-        onSelect: () => this.trackPrimaryZID(zid),
+        label: renderOwnedZIDItem(zid),
+        onSelect: () => trackPrimaryZID(zid),
       });
     }
 
-    if (this.props.currentPrimaryZID) {
-      options.push(this.getNoneOption());
+    if (currentPrimaryZID) {
+      options.push(getNoneOption());
     }
     return options;
-  }
+  }, [
+    loadingZIDs,
+    currentPrimaryZID,
+    ownedZIDs,
+    renderLoadingState,
+    renderOwnedZIDItem,
+    trackPrimaryZID,
+    getNoneOption,
+  ]);
 
-  render() {
-    return (
-      <div className={c('')}>
-        <div className={c('header-container')}>
-          <PanelHeader title='Edit Profile' onBack={this.props.onClose} />
-        </div>
-
-        <ScrollbarContainer variant='on-hover'>
-          <div className={c('content-wrapper')}>
-            <div className={c('body')}>
-              <ImageUpload
-                className={c('image-upload')}
-                onChange={this.trackImage}
-                icon={this.renderImageUploadIcon()}
-                uploadText='Select or drag and drop'
-                isError={Boolean(this.props.errors.image)}
-                errorMessage={this.props.errors.image}
-                imageSrc={this.props.currentProfileImage} // to show the existing image
-              />
-              <Input
-                label='Display Name'
-                name='name'
-                value={this.state.name}
-                onChange={this.trackName}
-                error={!!this.nameError}
-                alert={this.nameError}
-                className={c('body-input')}
-              />
-              {featureFlags.allowEditPrimaryZID && (
-                <div className={c('select-input')}>
-                  {this.renderZeroIDLabel()}
-                  <SelectInput
-                    items={this.menuItems}
-                    label=''
-                    placeholder={this.props.currentPrimaryZID || 'None (wallet address)'}
-                    value={this.state.primaryZID || ''}
-                    itemSize='spacious'
-                    menuClassName={c('zid-select-menu')}
-                  />
-                </div>
-              )}
-            </div>
-            {this.imageError && (
-              <Alert className={c('alert-small')} variant='error'>
-                <div className={c('alert-text')}>{this.imageError}</div>
-              </Alert>
-            )}
-            {this.generalError && (
-              <Alert className={c('alert-small')} variant='error'>
-                <div className={c('alert-text')}>{this.generalError}</div>
-              </Alert>
-            )}
-
-            {this.changesSaved && (
-              <Alert className={c('alert-small')} variant='success'>
-                <div className={c('alert-text')}>Changes saved successfully</div>
-              </Alert>
-            )}
-
-            <div className={c('footer')}>
-              <Button
-                isLoading={this.isLoading}
-                isSubmit
-                isDisabled={this.isDisabled}
-                onPress={this.handleEdit}
-                variant={ButtonVariant.Secondary}
-              >
-                Save Changes
-              </Button>
-            </div>
-          </div>
-        </ScrollbarContainer>
+  return (
+    <div className={c('')}>
+      <div className={c('header-container')}>
+        <PanelHeader title='Edit Profile' onBack={onClose} />
       </div>
-    );
-  }
-}
+
+      <ScrollbarContainer variant='on-hover'>
+        <div className={c('content-wrapper')}>
+          <div className={c('body')}>
+            <ImageUpload
+              className={c('image-upload')}
+              onChange={trackImage}
+              icon={renderImageUploadIcon()}
+              uploadText='Select or drag and drop'
+              isError={Boolean(errors.image)}
+              errorMessage={errors.image}
+              imageSrc={imageUrl}
+            />
+            <Input
+              label='Display Name'
+              name='name'
+              value={name}
+              onChange={trackName}
+              error={!!nameError}
+              alert={nameError}
+              className={c('body-input')}
+            />
+            {featureFlags.allowEditPrimaryZID && (
+              <div className={c('select-input')}>
+                {renderZeroIDLabel()}
+                <SelectInput
+                  items={menuItems}
+                  label=''
+                  placeholder={currentPrimaryZID || 'None (wallet address)'}
+                  value={primaryZID || ''}
+                  itemSize='spacious'
+                  menuClassName={c('zid-select-menu')}
+                />
+              </div>
+            )}
+          </div>
+          {imageError && (
+            <Alert className={c('alert-small')} variant='error'>
+              <div className={c('alert-text')}>{imageError}</div>
+            </Alert>
+          )}
+          {generalError && (
+            <Alert className={c('alert-small')} variant='error'>
+              <div className={c('alert-text')}>{generalError}</div>
+            </Alert>
+          )}
+
+          {changesSaved && (
+            <Alert className={c('alert-small')} variant='success'>
+              <div className={c('alert-text')}>Changes saved successfully</div>
+            </Alert>
+          )}
+
+          <div className={c('footer')}>
+            <Button
+              isLoading={isLoading}
+              isSubmit
+              isDisabled={isDisabled}
+              onPress={handleEdit}
+              variant={ButtonVariant.Secondary}
+            >
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </ScrollbarContainer>
+    </div>
+  );
+};

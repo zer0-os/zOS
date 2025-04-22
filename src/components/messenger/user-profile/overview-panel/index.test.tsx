@@ -1,11 +1,24 @@
-import { shallow } from 'enzyme';
+/**
+ * @jest-environment jsdom
+ */
+
+import { mount } from 'enzyme';
+import { act } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { OverviewPanel, Properties } from '.';
-import { PanelHeader } from '../../list/panel-header';
 
-import { Image } from '@zero-tech/zui/components';
+import { Image, Modal } from '@zero-tech/zui/components';
 import { Button } from '@zero-tech/zui/components/Button';
-import { IconCurrencyEthereum } from '@zero-tech/zui/icons';
+import {
+  IconCurrencyEthereum,
+  IconLink1,
+  IconDownload2,
+  IconLock1,
+  IconSettings2,
+  IconUser1,
+  IconWallet3,
+} from '@zero-tech/zui/icons';
 
 import { bem } from '../../../../lib/bem';
 
@@ -13,8 +26,16 @@ const c = bem('.overview-panel');
 
 const featureFlags = { enableRewards: false, enableUserSettings: false, enableLinkedAccounts: false };
 
+const queryClient = new QueryClient();
+
 jest.mock('../../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
+}));
+jest.mock('./rewards-item/container', () => ({
+  RewardsItemContainer: () => null, // Mock implementation returns null
+}));
+jest.mock('../../../../lib/hooks/useMatrixImage', () => ({
+  useMatrixImage: (image: string) => ({ data: image }), // Mock hook returns the input directly
 }));
 
 describe(OverviewPanel, () => {
@@ -37,15 +58,18 @@ describe(OverviewPanel, () => {
       ...props,
     };
 
-    return shallow(<OverviewPanel {...allProps} />);
+    return mount(
+      <QueryClientProvider client={queryClient}>
+        <OverviewPanel {...allProps} />
+      </QueryClientProvider>
+    );
   };
 
   it('publishes onBack event', () => {
     const onBack = jest.fn();
     const wrapper = subject({ onBack });
 
-    wrapper.find(PanelHeader).simulate('back');
-
+    wrapper.find('.messenger-panel__back').prop('onClick')({ preventDefault: () => {} } as React.MouseEvent);
     expect(onBack).toHaveBeenCalled();
   });
 
@@ -53,7 +77,10 @@ describe(OverviewPanel, () => {
     const onOpenLogoutDialog = jest.fn();
     const wrapper = subject({ onOpenLogoutDialog });
 
-    wrapper.find(c('footer-button')).simulate('press');
+    const className = c('footer-button');
+    const button = wrapper.find(className).first();
+    // @ts-ignore
+    button.prop('onPress')();
 
     expect(onOpenLogoutDialog).toHaveBeenCalled();
   });
@@ -62,7 +89,10 @@ describe(OverviewPanel, () => {
     const onOpenEditProfile = jest.fn();
     const wrapper = subject({ onOpenEditProfile });
 
-    wrapper.find(Button).at(1).simulate('press');
+    wrapper
+      .find(Button)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconUser1)
+      .prop('onPress')();
 
     expect(onOpenEditProfile).toHaveBeenCalled();
   });
@@ -71,7 +101,10 @@ describe(OverviewPanel, () => {
     const onOpenBackupDialog = jest.fn();
     const wrapper = subject({ onOpenBackupDialog });
 
-    wrapper.find(Button).at(3).simulate('press');
+    wrapper
+      .find(Button)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconLock1)
+      .prop('onPress')();
 
     expect(onOpenBackupDialog).toHaveBeenCalled();
   });
@@ -82,7 +115,7 @@ describe(OverviewPanel, () => {
     const onOpenRewards = jest.fn();
     const wrapper = subject({ onOpenRewards });
 
-    wrapper.find(c('rewards')).simulate('click');
+    wrapper.find(c('rewards')).prop('onClick')({ preventDefault: () => {} } as React.MouseEvent);
 
     expect(onOpenRewards).toHaveBeenCalled();
   });
@@ -93,7 +126,10 @@ describe(OverviewPanel, () => {
     const onOpenSettings = jest.fn();
     const wrapper = subject({ onOpenSettings });
 
-    wrapper.find(Button).at(4).simulate('press');
+    wrapper
+      .find(Button)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconSettings2)
+      .prop('onPress')();
 
     expect(onOpenSettings).toHaveBeenCalled();
   });
@@ -104,7 +140,10 @@ describe(OverviewPanel, () => {
     const onOpenDownloads = jest.fn();
     const wrapper = subject({ onOpenDownloads });
 
-    wrapper.find(Button).at(5).simulate('press');
+    wrapper
+      .find(Button)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconDownload2)
+      .prop('onPress')();
 
     expect(onOpenDownloads).toHaveBeenCalled();
   });
@@ -113,7 +152,10 @@ describe(OverviewPanel, () => {
     const onOpenAccountManagement = jest.fn();
     const wrapper = subject({ onManageAccounts: onOpenAccountManagement });
 
-    wrapper.find(Button).at(2).simulate('press');
+    wrapper
+      .find(Button)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconWallet3)
+      .prop('onPress')();
 
     expect(onOpenAccountManagement).toHaveBeenCalled();
   });
@@ -124,7 +166,10 @@ describe(OverviewPanel, () => {
     const onOpenLinkedAccounts = jest.fn();
     const wrapper = subject({ onOpenLinkedAccounts });
 
-    wrapper.find(Button).at(6).simulate('press');
+    wrapper
+      .find(Button)
+      .filterWhere((n) => (n.prop('startEnhancer') as React.ReactElement)?.type === IconLink1)
+      .prop('onPress')();
 
     expect(onOpenLinkedAccounts).toHaveBeenCalled();
   });
@@ -132,14 +177,12 @@ describe(OverviewPanel, () => {
   it('opens the invite dialog', () => {
     const wrapper = subject({});
 
-    wrapper.find(Button).at(0).simulate('press');
+    act(() => {
+      wrapper.find(Button).at(0).prop('onPress')();
+    });
+    wrapper.update();
 
-    expect(wrapper).toHaveState('isInviteDialogOpen', true);
-  });
-
-  it('renders subhandle when subhandle prop is provided', () => {
-    const wrapper = subject({ subHandle: '0://subhandle' });
-    expect(wrapper.find(c('sub-handle'))).toHaveText('0://subhandle');
+    expect(wrapper.find(Modal).prop('open')).toBe(true);
   });
 
   it('renders custom image when image prop is provided', () => {

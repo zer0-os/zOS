@@ -79,7 +79,7 @@
     "web3-utils": "^4.1.1"
   },
   "scripts": {
-    "start": "vite --force",
+    "start": "vite",
     "build": "tsc && NODE_OPTIONS='--max-old-space-size=6144' vite build",
     "test": "craco test --env=node",
     "test:vitest": "vitest",

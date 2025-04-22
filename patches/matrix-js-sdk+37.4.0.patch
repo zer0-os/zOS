@@ -1,0 +1,25 @@
+diff --git a/node_modules/matrix-js-sdk/lib/models/room.js b/node_modules/matrix-js-sdk/lib/models/room.js
+index 11449c2..2bc1cbb 100644
+--- a/node_modules/matrix-js-sdk/lib/models/room.js
++++ b/node_modules/matrix-js-sdk/lib/models/room.js
+@@ -1157,13 +1157,19 @@ export class Room extends ReadReceipt {
+       }
+       var events = timeline.getEvents();
+       var highlightCount = 0;
++      var lastEvent = events[events.length - 1];
++      var lastEventId = lastEvent ? lastEvent.getId() : null;
+       for (var i = events.length - 1; i >= 0; i--) {
+         var _pushActions$tweaks;
+         if (i === events.length - maxHistory) return; // limit reached
+ 
+         var _event = events[i];
++        // If the user has read the event, then the counting is done.
+         if (this.hasUserReadEvent(this.client.getUserId(), _event.getId())) {
+-          // If the user has read the event, then the counting is done.
++          // If the read event is the last event in the timeline, reset total count
++          if (threadId === "main" && _event.getId() === lastEventId) {
++            this.setUnreadNotificationCount(NotificationCountType.Total, 0);
++          }
+           break;
+         }
+         var pushActions = this.client.getPushActionsForEvent(_event);

@@ -23,6 +23,7 @@ import {
   IEvent,
   IContent,
   NotificationCount,
+  NotificationCountType,
 } from 'matrix-js-sdk/lib/matrix';
 import { CryptoApi, CryptoCallbacks, decodeRecoveryKey, ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 import { RealtimeChatEvents } from './';
@@ -1034,23 +1035,26 @@ export class MatrixClient {
 
     const receiptType =
       userReceiptPreference === ReadReceiptPreferenceType.Public ? ReceiptType.Read : ReceiptType.ReadPrivate;
+    const rrEvent = receiptType === ReceiptType.Read ? latestEvent : undefined;
+    const rpEvent = receiptType === ReceiptType.ReadPrivate ? latestEvent : undefined;
 
-    await this.processSendReadReceipt(room, latestEvent, receiptType);
-    await this.matrix.setRoomReadMarkers(roomId, latestEvent.event.event_id);
+    const targetEvent = await this.getReadReceiptTargetEvent(room, latestEvent);
+    await this.matrix.setRoomReadMarkers(roomId, targetEvent.getId(), rrEvent, rpEvent);
+    room.setUnreadNotificationCount(NotificationCountType.Total, 0);
+    room.setUnreadNotificationCount(NotificationCountType.Highlight, 0);
   }
 
-  async processSendReadReceipt(room: Room, latestEvent: MatrixEvent, receiptType: ReceiptType): Promise<void> {
+  async getReadReceiptTargetEvent(room: Room, latestEvent: MatrixEvent): Promise<MatrixEvent> {
     const editedEvent = latestEvent?.event?.content?.['m.relates_to'];
 
     if (editedEvent && editedEvent.rel_type === 'm.replace' && editedEvent.event_id) {
       const originalEvent = room.findEventById(editedEvent.event_id);
       if (originalEvent) {
-        await this.matrix.sendReadReceipt(originalEvent, receiptType);
-        return;
+        return originalEvent;
       }
     }
 
-    await this.matrix.sendReadReceipt(latestEvent, receiptType);
+    return latestEvent;
   }
 
   async leaveRoom(roomId: string, userId: string): Promise<void> {

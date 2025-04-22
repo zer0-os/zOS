@@ -9,11 +9,11 @@ export function inputEvent(attrs = {}) {
 }
 
 export function buttonLabelled(wrapper, label) {
-  return wrapper.findWhere((node) => node.type() === Button && node.children().text() === label);
+  return wrapper.findWhere((node) => node.type() === Button && node.prop('children') === label);
 }
 
 export function pressButton(wrapper, label: string) {
-  buttonLabelled(wrapper, label).simulate('press');
+  buttonLabelled(wrapper, label).prop('onPress')();
 }
 
 export async function releaseThread() {

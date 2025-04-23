@@ -70,11 +70,6 @@ export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575Room
   initialChannelUpdates.messages = messages;
   initialChannelUpdates.lastMessage = lastMessage;
 
-  initialChannelUpdates.unreadCount = {
-    total: roomData.notification_count,
-    highlight: roomData.highlight_count,
-  };
-
   return {
     ...baseChannel,
     bumpStamp: roomData.bump_stamp,

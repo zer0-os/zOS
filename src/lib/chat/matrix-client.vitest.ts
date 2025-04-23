@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MatrixClient } from './matrix-client';
 import { ConnectionStatus, MatrixConstants, ReadReceiptPreferenceType, CustomEventType } from './matrix/types';
-import { EventType, MsgType, ReceiptType } from 'matrix-js-sdk/lib/matrix';
+import { EventType, MsgType } from 'matrix-js-sdk/lib/matrix';
 import { RelationType } from 'matrix-js-sdk/lib/@types/event';
 
 // Add fetch mock type
@@ -102,6 +102,7 @@ const createMockRoom = (overrides = {}) => ({
   getReceiptsForEvent: vi.fn().mockReturnValue([]),
   hasEncryptionStateEvent: vi.fn().mockReturnValue(false),
   getInvitedAndJoinedMemberCount: vi.fn().mockReturnValue(2),
+  setUnreadNotificationCount: vi.fn(),
   on: vi.fn(),
   ...overrides,
 });
@@ -577,8 +578,7 @@ describe('MatrixClient', () => {
       await matrixClient.connect('@test:matrix.org', 'test-access-token');
       await matrixClient.markRoomAsRead(roomId);
 
-      expect(mockMatrix.sendReadReceipt).toHaveBeenCalledWith(latestEvent, ReceiptType.ReadPrivate);
-      expect(mockMatrix.setRoomReadMarkers).toHaveBeenCalledWith(roomId, 'latest-event-id');
+      expect(mockMatrix.setRoomReadMarkers).toHaveBeenCalledWith(roomId, 'latest-event-id', undefined, latestEvent);
     });
 
     it('gets room alias correctly', async () => {

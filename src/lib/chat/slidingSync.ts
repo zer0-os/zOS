@@ -23,6 +23,7 @@ const REQUIRED_STATE_LIST = [
   [EventType.RoomCreate, ''],
   [CustomEventType.GROUP_TYPE, MSC3575_WILDCARD],
   [EventType.RoomMember, MSC3575_WILDCARD],
+  [EventType.Receipt, ''],
 ];
 
 // the things to fetch when a user clicks on a room
@@ -38,6 +39,7 @@ const UNENCRYPTED_SUBSCRIPTION_NAME = 'unencrypted';
 const UNENCRYPTED_SUBSCRIPTION = {
   required_state: [
     [EventType.RoomMember, MSC3575_WILDCARD],
+    [EventType.Receipt, ''],
   ],
   ...DEFAULT_ROOM_SUBSCRIPTION_INFO,
 };

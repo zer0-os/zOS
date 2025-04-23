@@ -1,7 +1,8 @@
 import { EventType } from 'matrix-js-sdk';
-import { put } from 'redux-saga/effects';
+import { put, select } from 'redux-saga/effects';
 import { receive } from '../../../../store/channels';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
+import { rawChannel } from '../../../../store/channels/selectors';
 
 type RoomMessageEvent = {
   type: EventType.RoomMessage | EventType.RoomMessageEncrypted;
@@ -17,6 +18,9 @@ export const isRoomMessageEvent = (event: unknown): event is RoomMessageEvent =>
 };
 
 export function* handleRoomMessageEvent(_event: RoomMessageEvent, roomId: string, roomData: MSC3575RoomData) {
+  const channel = yield select((state) => rawChannel(state, roomId));
+  if (channel.bumpStamp === roomData.bump_stamp) return;
+
   // Ensure the bump stamp is updated when new messages are received
   yield put(
     receive({

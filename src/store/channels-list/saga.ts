@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { put, call, take, select, spawn } from 'redux-saga/effects';
+import { put, call, take, select, spawn, fork } from 'redux-saga/effects';
 import { chat, downloadFile } from '../../lib/chat';
 
 import { updateChannelWithRoomData } from './utils';
@@ -10,7 +10,6 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/selectors';
 import { Channel, MessagesFetchState, removeChannel } from '../channels';
-import { getUserByMatrixId } from '../users/saga';
 import { channelSelector } from '../channels/selectors';
 import { setIsConversationsLoaded } from '../chat';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
@@ -160,11 +159,11 @@ function* roomGroupTypeChangedAction(action) {
 }
 
 function* otherUserJoinedChannelAction({ payload }) {
-  yield otherUserJoinedChannel(payload.channelId, payload.userId);
+  yield fork(roomMemberUpdated, payload.channelId);
 }
 
 function* otherUserLeftChannelAction({ payload }) {
-  yield otherUserLeftChannel(payload.channelId, payload.userId);
+  yield fork(roomMemberUpdated, payload.channelId);
 }
 
 export function* roomNameChanged(id: string, name: string) {
@@ -184,33 +183,34 @@ export function* roomGroupTypeChanged(id: string, type: string) {
   yield call(receiveChannel, { id, isSocialChannel: type === 'social' });
 }
 
-export function* otherUserJoinedChannel(roomId: string, userId: string) {
+const roomTimeouts = new Map<string, any>();
+function* processRoomUpdate(roomId: string) {
   const channel = yield select(channelSelector(roomId));
-  if (!channel) {
-    return;
-  }
+  if (!channel) return;
 
-  let user = yield call(getUserByMatrixId, userId);
-  if (user && !channel?.otherMembers?.some(({ userId }) => userId === user.userId)) {
-    const otherMembers = [...(channel?.otherMembers || []), user];
-    yield call(receiveChannel, { id: channel.id, otherMembers });
+  const members = MatrixAdapter.getRoomMembers(roomId);
+  if (members) {
+    yield call(receiveChannel, {
+      id: channel.id,
+      otherMembers: members.otherMembers,
+      memberHistory: members.memberHistory,
+      totalMembers: members.totalMembers,
+    });
   }
 }
 
-export function* otherUserLeftChannel(roomId: string, userId: string) {
-  const channel = yield select(channelSelector(roomId));
-  if (!channel) {
-    return;
+export function* roomMemberUpdated(roomId: string) {
+  // Cancel any existing timeout for this room
+  if (roomTimeouts.has(roomId)) {
+    roomTimeouts.get(roomId).cancel();
   }
 
-  const existingUser = yield call(getUserByMatrixId, userId);
-  if (!existingUser) {
-    return;
-  }
-
-  const newMembers = channel?.otherMembers?.filter(({ userId }) => userId !== existingUser.userId) || [];
-  yield call(receiveChannel, {
-    id: channel.id,
-    otherMembers: newMembers,
+  // Create a new timeout
+  const timeout = yield spawn(function* () {
+    yield delay(1000);
+    roomTimeouts.delete(roomId);
+    yield call(processRoomUpdate, roomId);
   });
+
+  roomTimeouts.set(roomId, timeout);
 }

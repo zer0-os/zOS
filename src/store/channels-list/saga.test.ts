@@ -1,17 +1,13 @@
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { userLeftChannel, otherUserJoinedChannel, otherUserLeftChannel } from './saga';
+import { userLeftChannel } from './saga';
 
 import { rootReducer } from '../reducer';
-import { denormalize as denormalizeChannel } from '../channels';
 import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { openFirstConversation } from '../channels/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
-import { getUserByMatrixId } from '../users/saga';
 import { allChannelsSelector } from '../channels/selectors';
-
-// Refactor as this works differently now
 
 describe('channels list saga', () => {
   describe(userLeftChannel, () => {
@@ -111,55 +107,6 @@ describe('channels list saga', () => {
         .call(clearLastActiveConversation)
         .call(openFirstConversation)
         .run();
-    });
-  });
-
-  describe(otherUserJoinedChannel, () => {
-    it('finds the zOS user and adds the user to the otherMember list', async () => {
-      const existingMembers = [
-        { userId: 'user-1', matrixId: 'user-1' },
-        { userId: 'user-2', matrixId: 'user-2' },
-      ] as any;
-      const newUser = { userId: 'new-user', matrixId: 'new-user', firstName: 'Jane', lastName: 'doe' };
-      const initialState = new StoreBuilder()
-        .withConversationList({
-          id: 'conversation-id',
-          otherMembers: existingMembers,
-        })
-        .withUsers(newUser);
-
-      const { storeState } = await expectSaga(otherUserJoinedChannel, 'conversation-id', newUser.userId)
-        .provide([[matchers.call.fn(getUserByMatrixId), newUser]])
-        .withReducer(rootReducer, initialState.build())
-        .run();
-
-      const conversation = denormalizeChannel('conversation-id', storeState);
-      expect(conversation.otherMembers.map((u) => u.matrixId)).toIncludeSameMembers(['user-1', 'user-2', 'new-user']);
-    });
-  });
-
-  describe(otherUserLeftChannel, () => {
-    it('removes the user from the otherMember list', async () => {
-      const existingMembers = [
-        { userId: 'user-1', matrixId: 'user-1' },
-        { userId: 'user-2', matrixId: 'user-2' },
-        { userId: 'user-3', matrixId: 'user-3' },
-      ] as any;
-      const initialState = new StoreBuilder().withConversationList({
-        id: 'conversation-id',
-        otherMembers: existingMembers,
-      });
-
-      const { storeState } = await expectSaga(otherUserLeftChannel, 'conversation-id', {
-        userId: 'user-2',
-        matrixId: 'user-2',
-      })
-        .provide([[matchers.call.fn(getUserByMatrixId), { userId: 'user-2' }]])
-        .withReducer(rootReducer, initialState.build())
-        .run();
-
-      const conversation = denormalizeChannel('conversation-id', storeState);
-      expect(conversation.otherMembers.map((u) => u.matrixId)).toIncludeSameMembers(['user-1', 'user-3']);
     });
   });
 });

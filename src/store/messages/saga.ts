@@ -30,6 +30,7 @@ import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
 import { rawChannel } from '../channels/selectors';
+import { getUsersByMatrixIds } from '../users/saga';
 
 export interface Payload {
   channelId: string;
@@ -512,7 +513,10 @@ export function* sendBrowserNotification(eventData) {
 export function* mapMessageReadByUsers(messageId, channelId) {
   const receipts = yield call(getMessageReadReceipts, channelId, messageId);
   if (receipts) {
-    const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
+    const zeroUsersMap: Map<string, User> = yield call(
+      getUsersByMatrixIds,
+      receipts.map((receipt) => receipt.userId)
+    );
 
     const selectedMessage = yield select(messageSelector(messageId));
     const filteredReceipts = receipts.filter((receipt) => receipt.ts >= selectedMessage?.createdAt);
@@ -520,7 +524,7 @@ export function* mapMessageReadByUsers(messageId, channelId) {
 
     const readByUsers = filteredReceipts
       .map((receipt) => {
-        return Object.values(zeroUsersMap).find((user) => user.matrixId === receipt.userId);
+        return zeroUsersMap.get(receipt.userId);
       })
       .filter((user) => user && user.userId !== currentUser.id);
 

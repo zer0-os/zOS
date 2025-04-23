@@ -48,6 +48,10 @@ export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575Room
       if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
         id = relatesTo.event_id;
       }
+      // Only add the placeholder event if it's not already in the timeline (to avoid duplicates from edits)
+      if (acc.find((e) => e.event_id === id)) {
+        return acc;
+      }
       acc.push({
         ...evt,
         event_id: id,

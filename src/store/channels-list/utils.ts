@@ -6,6 +6,7 @@ import { EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
 import { MatrixConstants } from '../../lib/chat/matrix/types';
 import { mapMessagesAndPreview } from '../messages/saga';
 import { call } from 'redux-saga/effects';
+import { getUserSubHandle } from '../../lib/user';
 
 export const isOneOnOne = (channel: { totalMembers: number }) => channel.totalMembers === 2;
 
@@ -26,6 +27,7 @@ export function rawUserToDomainUser(u): User {
     primaryZID: u.primaryZID,
     primaryWallet: u.primaryWallet,
     wallets: u.wallets,
+    displaySubHandle: getUserSubHandle(u.primaryZID, u.primaryWallet?.publicAddress),
   };
 }
 

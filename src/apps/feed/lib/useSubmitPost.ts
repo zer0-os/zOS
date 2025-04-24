@@ -34,7 +34,7 @@ export const useSubmitPost = () => {
     /**
      * @note this mutation function is an almost exact copy of the saga logic. This will be refactored in the future.
      */
-    mutationFn: async ({ message, replyToId, channelZid }: SubmitPostParams) => {
+    mutationFn: async ({ message, media, replyToId, channelZid }: SubmitPostParams) => {
       const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
 
       const authorAddress = featureFlags.enableZeroWalletSigning ? account?.address : connectedAddress;
@@ -47,11 +47,11 @@ export const useSubmitPost = () => {
         throw new Error('Channel ZID is invalid');
       }
 
-      if (!message || message.trim() === '') {
+      if ((!message || message.trim() === '') && (!media || media.length === 0)) {
         throw new Error('Post is empty');
       }
 
-      if (message.length > POST_MAX_LENGTH) {
+      if (message && message.length > POST_MAX_LENGTH) {
         throw new Error(`Post must be less than ${POST_MAX_LENGTH} characters`);
       }
 
@@ -95,6 +95,14 @@ export const useSubmitPost = () => {
       formData.append('walletAddress', authorAddress);
       if (replyToId) {
         formData.append('replyTo', replyToId);
+      }
+
+      if (featureFlags.enablePostMedia && media?.length) {
+        media.forEach((file, index) => {
+          if (file.nativeFile) {
+            formData.append(`media[${index}]`, file.nativeFile);
+          }
+        });
       }
 
       let res;

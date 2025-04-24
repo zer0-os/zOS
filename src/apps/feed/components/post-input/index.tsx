@@ -21,6 +21,7 @@ import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../
 import { EmojiPicker } from '../../../../components/message-input/emoji-picker/emoji-picker';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { POST_MAX_LENGTH } from '../../lib/constants';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 const SHOW_MAX_LABEL_THRESHOLD = 0.8 * POST_MAX_LENGTH;
 
@@ -190,7 +191,7 @@ export class PostInput extends React.Component<Properties, State> {
           noClick
           accept={this.mimeTypes}
           maxSize={config.cloudinary.max_file_size}
-          disabled={true}
+          disabled={!featureFlags.enablePostMedia}
         >
           {({ getRootProps }) => (
             <div {...getRootProps({ ...cn('drop-zone-text-area') })}>

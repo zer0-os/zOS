@@ -37,6 +37,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableAuraZApp: boolean;
   declare enableProfile: boolean;
   declare enableUserProfiles: boolean;
+  declare enablePostMedia: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

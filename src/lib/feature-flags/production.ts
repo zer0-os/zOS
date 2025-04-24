@@ -35,4 +35,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   },
   enableProfile: { defaultValue: true },
   enableUserProfiles: { defaultValue: true },
+  enablePostMedia: { defaultValue: false },
 };

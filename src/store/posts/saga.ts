@@ -66,7 +66,7 @@ export function* fetchPost(action) {
 }
 
 export function* sendPost(action) {
-  const { channelId, message, replyToId } = action.payload;
+  const { channelId, message, replyToId, media } = action.payload;
 
   const channel = yield select(channelSelector(channelId));
 
@@ -94,7 +94,7 @@ export function* sendPost(action) {
     }
 
     // If the message contect is empty, or the channel does not have a name
-    if (!message || message.trim() === '') {
+    if ((!message || message.trim() === '') && (!media || media.length === 0)) {
       throw new Error('Post is empty');
     }
 

@@ -3,6 +3,7 @@ import { get, post } from '../../lib/api/rest';
 import { getWagmiConfig } from '../../lib/web3/wagmi-config';
 import { getWalletClient } from '@wagmi/core';
 import { ethers } from 'ethers';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface SignedMessagePayload {
   created_at: string;
@@ -46,7 +47,15 @@ export function mapPostToMatrixMessage(post) {
     image: undefined,
     isAdmin: false,
     isPost: true,
-    media: null,
+    media: post.media
+      ? {
+          id: post.media.id,
+          type: post.media.type,
+          url: post.media.url,
+          filecoinCid: post.media.filecoinCid,
+          filecoinStatus: post.media.filecoinStatus,
+        }
+      : null,
     mentionedUsers: [],
     message: post.text,
     optimisticId: post.id,
@@ -91,6 +100,16 @@ export async function uploadPost(formData: FormData, worldZid: string) {
     const replyTo = formData.get('replyTo');
     if (replyTo) {
       request = request.field('replyTo', replyTo);
+    }
+
+    if (featureFlags.enablePostMedia) {
+      const mediaFiles = Array.from(formData.entries())
+        .filter(([key]) => key.startsWith('media['))
+        .map(([_, file]) => file as File);
+
+      mediaFiles.forEach((file, index) => {
+        request = request.attach(`media[${index}]`, file);
+      });
     }
 
     request.end((err, res) => {

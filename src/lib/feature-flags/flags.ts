@@ -26,7 +26,8 @@ export type FeatureFlagKey =
   | 'enableFeedChat'
   | 'enableAuraZApp'
   | 'enableProfile'
-  | 'enableUserProfiles';
+  | 'enableUserProfiles'
+  | 'enablePostMedia';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

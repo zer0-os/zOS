@@ -24,6 +24,7 @@ import {
   IContent,
   NotificationCount,
   NotificationCountType,
+  EventStatus,
 } from 'matrix-js-sdk/lib/matrix';
 import { CryptoApi, CryptoCallbacks, decodeRecoveryKey, ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 import { RealtimeChatEvents } from './';
@@ -1199,6 +1200,9 @@ export class MatrixClient {
     removed: boolean,
     data: IRoomTimelineData
   ) {
+    if (event.getSender() === this.userId && event.status !== EventStatus.SENDING) {
+      this.publishMessageEvent(event.getEffectiveEvent());
+    }
     if (removed) return;
     if (!data.liveEvent || !!toStartOfTimeline) return;
     if (event.getTs() < this.initializationTimestamp) return;

@@ -44,10 +44,6 @@ export class MatrixAdapter {
     const createdAt = matrixClientInstance.getRoomCreatedAt(room);
     const labels = Object.keys(room.tags || {});
     const [admins, mods] = matrixClientInstance.getRoomAdminsAndMods(room);
-    const unreadCount = {
-      total: room.getUnreadNotificationCount(),
-      highlight: room.getUnreadNotificationCount(NotificationCountType.Highlight),
-    };
 
     const members = MatrixAdapter.getRoomMembers(room.roomId);
 
@@ -60,7 +56,6 @@ export class MatrixAdapter {
       memberHistory: members.memberHistory,
       totalMembers: members.totalMembers,
       createdAt,
-      unreadCount,
       conversationStatus: ConversationStatus.CREATED,
       adminMatrixIds: admins,
       moderatorIds: mods,

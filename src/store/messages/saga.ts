@@ -13,7 +13,7 @@ import {
   MessageWithoutSender,
 } from '.';
 import { receive as receiveMessage } from './';
-import { ConversationStatus, MessagesFetchState, DefaultRoomLabels } from '../channels';
+import { ConversationStatus, MessagesFetchState, DefaultRoomLabels, User } from '../channels';
 import { markConversationAsRead, receiveChannel } from '../channels/saga';
 import uniqBy from 'lodash.uniqby';
 
@@ -24,7 +24,6 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat, getMessageEmojiReactions, getMessageReadReceipts, sendEmojiReactionEvent } from '../../lib/chat';
-import { User } from '../channels';
 import { mapMessageSenders } from './utils.matrix';
 import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';

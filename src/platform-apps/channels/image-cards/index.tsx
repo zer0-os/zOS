@@ -1,7 +1,6 @@
 import React from 'react';
 import ImageCard from './image-card';
-import { ImageModel } from './types';
-import ImageSizes from './types';
+import ImageSizes, { ImageModel } from './types';
 
 import './styles.scss';
 

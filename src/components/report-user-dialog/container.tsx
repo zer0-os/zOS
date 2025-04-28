@@ -2,9 +2,8 @@ import * as React from 'react';
 
 import { connectContainer } from '../../store/redux-container';
 import { RootState } from '../../store/reducer';
-import { reportUser } from '../../store/report-user';
+import { reportUser, ReportUserPayload } from '../../store/report-user';
 import { ReportUserModal } from '.';
-import { ReportUserPayload } from '../../store/report-user';
 import { displayName } from '../../lib/user';
 import { denormalize as denormalizeUser } from '../../store/users';
 

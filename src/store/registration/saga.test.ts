@@ -30,8 +30,7 @@ import {
   initialState as initialRegistrationState,
 } from '.';
 import { rootReducer } from '../reducer';
-import { fetchCurrentUser } from '../authentication/api';
-import { nonce as nonceApi } from '../authentication/api';
+import { fetchCurrentUser, nonce as nonceApi } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { getSignedToken } from '../web3/saga';
 import { completeUserLogin } from '../authentication/saga';

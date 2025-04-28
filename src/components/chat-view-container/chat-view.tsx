@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Message as MessageModel, MediaType, EditMessageOptions } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
 import { User } from '../../store/authentication/types';
-import { User as ChannelMember } from '../../store/channels';
+import { User as ChannelMember, MessagesFetchState } from '../../store/channels';
 import { ParentMessage } from '../../lib/chat/types';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import { Message } from '../message';
@@ -14,7 +14,6 @@ import { Payload as PayloadFetchMessages } from '../../store/messages/saga';
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
 import { createMessageGroups, filterAdminMessages, getMessageRenderProps } from './utils';
-import { MessagesFetchState } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
 
 // Note: this is the component convention. Existing styles reference channel-view which

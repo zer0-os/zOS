@@ -1,9 +1,7 @@
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import { MatrixClient } from '../../matrix-client';
-import { isGroupTypeEvent } from './groupType';
-import { isRoomMemberEvent } from './roomMember';
-import { handleGroupTypeEvent } from './groupType';
-import { handleRoomMemberEvent } from './roomMember';
+import { isGroupTypeEvent, handleGroupTypeEvent } from './groupType';
+import { isRoomMemberEvent, handleRoomMemberEvent } from './roomMember';
 import { handleRoomMessageEvent, isRoomMessageEvent } from './roomMessage';
 import { spawn } from 'redux-saga/effects';
 

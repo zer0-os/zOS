@@ -22,7 +22,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { getHistory } from '../../lib/browser';
 import { startPollingPosts } from '../posts/saga';
 import { setLastActiveConversation, getLastActiveConversation } from '../../lib/last-conversation';
-import { SlidingSyncManager } from '../../lib/chat/slidingSync';
+import { SlidingSyncManager } from '../../lib/chat/sliding-sync';
 import { extractUserIdFromMatrixId } from '../../lib/chat/matrix/utils';
 
 export function* markAllMessagesAsRead(channelId, userId) {
@@ -127,12 +127,6 @@ export function* onRemoveReply() {
 
 export function* clearChannels() {
   yield put(removeAll({ schema: schema.key }));
-}
-
-export function* channelUpdater(id: string, updater: (prev: Partial<Channel> | undefined) => Partial<Channel>) {
-  const existing = yield select(channelSelector(id));
-  const updates = updater(existing);
-  yield put(rawReceive(updates));
 }
 
 export function* receiveChannel(channel: Partial<Channel>) {

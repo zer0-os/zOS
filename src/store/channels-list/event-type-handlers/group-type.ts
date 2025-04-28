@@ -1,6 +1,6 @@
-import { CustomEventType } from '../types';
 import { call } from 'redux-saga/effects';
-import { receiveChannel } from '../../../../store/channels/saga';
+import { receiveChannel } from '../../channels/saga';
+import { CustomEventType } from '../../../lib/chat/matrix/types';
 
 export type GroupTypeEvent = {
   type: CustomEventType.GROUP_TYPE;

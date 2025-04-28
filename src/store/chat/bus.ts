@@ -23,7 +23,7 @@ export enum Events {
   ReadReceiptReceived = 'chat/message/readReceiptReceived',
   RoomLabelChange = 'chat/channel/roomLabelChange',
   MessageEmojiReactionChange = 'chat/message/messageEmojiReactionChange',
-  RoomData = 'chat/roomData',
+  RoomData = 'chat/channel/roomData',
 }
 
 let theBus: MulticastChannel<unknown>;

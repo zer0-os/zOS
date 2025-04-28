@@ -1,38 +1,11 @@
 import { Channel, ConversationStatus } from '../../../store/channels';
 import matrixClientInstance from './matrix-client-instance';
-import { IN_ROOM_MEMBERSHIP_STATES } from './types';
 import { Room } from 'matrix-js-sdk/lib/models/room';
 import { User } from '../../../store/channels';
 import { User as MatrixUser } from 'matrix-js-sdk/lib/models/user';
 import { extractUserIdFromMatrixId } from './utils';
 
 export class MatrixAdapter {
-  public static async matrixInitialized() {
-    await matrixClientInstance.connectionAwaiter;
-  }
-
-  /**
-   * Returns a list of room ids that the user is a member of
-   * @returns string[]
-   */
-  public static getChannelIds(): string[] {
-    const rooms = matrixClientInstance.matrix.getRooms();
-    return rooms
-      .filter((room) => IN_ROOM_MEMBERSHIP_STATES.includes(room.getMyMembership()))
-      .map(({ roomId }) => roomId);
-  }
-
-  /**
-   * Returns a list of channels that the user is a member of
-   * @returns Partial<Channel>[]
-   */
-  public static getChannels(): Partial<Channel>[] {
-    return matrixClientInstance.matrix
-      .getRooms()
-      .filter((room) => IN_ROOM_MEMBERSHIP_STATES.includes(room.getMyMembership()))
-      .map((room) => MatrixAdapter.mapRoomToChannel(room));
-  }
-
   /**
    * Maps a room to a channel with the data we can get from Matrix
    * @param room - The room to map
@@ -44,15 +17,15 @@ export class MatrixAdapter {
     const labels = Object.keys(room.tags || {});
     const [admins, mods] = matrixClientInstance.getRoomAdminsAndMods(room);
 
-    const members = MatrixAdapter.getRoomMembers(room.roomId);
+    const members = matrixClientInstance.getRoomMembers(room.roomId);
 
     return {
       id: room.roomId,
       name: room.name,
       bumpStamp: room.getBumpStamp(),
       icon,
-      otherMembers: members.otherMembers,
-      memberHistory: members.memberHistory,
+      otherMembers: members.otherMembers.map((m) => MatrixAdapter.mapMatrixUserToUser(m)),
+      memberHistory: members.memberHistory.map((m) => MatrixAdapter.mapMatrixUserToUser(m)),
       totalMembers: members.totalMembers,
       createdAt,
       conversationStatus: ConversationStatus.CREATED,
@@ -79,33 +52,5 @@ export class MatrixAdapter {
       lastSeenAt: '',
       primaryZID: '',
     };
-  }
-
-  /**
-   * Returns the members of a channel
-   * @param roomId - The id of the room
-   * @returns { otherMembers: User[]; memberHistory: User[]; totalMembers: number }
-   */
-  public static getRoomMembers(
-    roomId: string
-  ): { otherMembers: User[]; memberHistory: User[]; totalMembers: number } | undefined {
-    const room = matrixClientInstance.matrix.getRoom(roomId);
-    if (room) {
-      const otherMembers = matrixClientInstance
-        .getOtherMembersFromRoom(room)
-        .map((m) => matrixClientInstance.matrix.getUser(m.userId))
-        .filter(Boolean)
-        .map((user: MatrixUser) => MatrixAdapter.mapMatrixUserToUser(user));
-      const memberHistory = room
-        .getMembers()
-        .map((m) => matrixClientInstance.matrix.getUser(m.userId))
-        .filter(Boolean)
-        .map((user: MatrixUser) => MatrixAdapter.mapMatrixUserToUser(user));
-      return {
-        otherMembers,
-        memberHistory,
-        totalMembers: room.getInvitedAndJoinedMemberCount(),
-      };
-    }
   }
 }

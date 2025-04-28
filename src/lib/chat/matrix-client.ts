@@ -25,6 +25,7 @@ import {
   NotificationCount,
   NotificationCountType,
   EventStatus,
+  User,
 } from 'matrix-js-sdk/lib/matrix';
 import { CryptoApi, CryptoCallbacks, decodeRecoveryKey, ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 import { RealtimeChatEvents } from './';
@@ -58,7 +59,7 @@ import { getFileFromCache, putFileToCache } from '../storage/media-cache';
 import * as Sentry from '@sentry/browser';
 import { CryptoStore } from 'matrix-js-sdk/lib/crypto/store/base';
 import { SecretStorageKeyDescription } from 'matrix-js-sdk/lib/secret-storage';
-import { SlidingSyncManager } from './slidingSync';
+import { SlidingSyncManager } from './sliding-sync';
 import { ReactionEventContent, RoomMessageEventContent } from 'matrix-js-sdk/lib/types';
 import { RelationType } from 'matrix-js-sdk/lib/@types/event';
 
@@ -146,6 +147,29 @@ export class MatrixClient {
   }
 
   /**
+   * Returns the members of a room
+   * @param roomId - The id of the room
+   * @returns { otherMembers: User[]; memberHistory: User[]; totalMembers: number }
+   */
+  getRoomMembers(roomId: string): { otherMembers: User[]; memberHistory: User[]; totalMembers: number } | undefined {
+    const room = this.matrix.getRoom(roomId);
+    if (room) {
+      const otherMembers = this.getOtherMembersFromRoom(room)
+        .map((m) => this.matrix.getUser(m.userId))
+        .filter(Boolean);
+      const memberHistory = room
+        .getMembers()
+        .map((m) => this.matrix.getUser(m.userId))
+        .filter(Boolean);
+      return {
+        otherMembers,
+        memberHistory,
+        totalMembers: room.getInvitedAndJoinedMemberCount(),
+      };
+    }
+  }
+
+  /**
    * Get the admins and mods of a room.
    * @param room Matrix Room
    * @returns [admins: string[], mods: string[]]
@@ -209,6 +233,27 @@ export class MatrixClient {
         console.error(`Error lowering minimum invite and kick levels for room ${room.roomId} `, error);
       }
     }
+  }
+
+  async initializeRooms() {
+    const rooms = await this.getRoomsUserIsIn();
+
+    const failedToJoin = [];
+    for (const room of rooms) {
+      const membership = room.getMyMembership();
+
+      this.initializeRoomEventHandlers(room);
+
+      if (membership === MembershipStateType.Invite) {
+        if (!(await this.autoJoinRoom(room.roomId))) {
+          failedToJoin.push(room.roomId);
+        }
+      }
+    }
+
+    const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
+
+    await this.lowerMinimumInviteAndKickLevels(filteredRooms);
   }
 
   /**
@@ -1387,12 +1432,11 @@ export class MatrixClient {
 
       const slidingSync = await SlidingSyncManager.instance.setup(this.matrix);
       const startClientOpts: IStartClientOpts = {
-        resolveInvitesToProfiles: true,
         slidingSync,
       };
       // Load all rooms into store
       await this.matrix.getJoinedRooms();
-      this.initSlidingSyncHanlders();
+      this.initSlidingSyncHandlers();
 
       // Start client
       await this.matrix.startClient(startClientOpts);
@@ -1413,7 +1457,7 @@ export class MatrixClient {
     }
   }
 
-  initSlidingSyncHanlders() {
+  initSlidingSyncHandlers() {
     SlidingSyncManager.instance.slidingSync.on(SlidingSyncEvent.RoomData, (roomId, roomData) => {
       this.events.receiveRoomData(roomId, roomData);
     });

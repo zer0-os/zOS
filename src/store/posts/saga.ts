@@ -2,16 +2,14 @@ import { takeLatest, call, select, put, delay } from 'redux-saga/effects';
 import uniqBy from 'lodash.uniqby';
 import BN from 'bn.js';
 
-import { SagaActionTypes, setCount, setError, setInitialCount, setIsLoadingPost, setPost } from '.';
+import { SagaActionTypes, setCount, setError, setInitialCount, setIsLoadingPost, setPost, setIsSubmitting } from '.';
 import { MediaType } from '../messages';
 import { messageSelector, rawMessagesSelector } from '../messages/saga';
 import { currentUserSelector } from '../authentication/saga';
 import { receiveChannel } from '../channels/saga';
-import { ConversationStatus, MessagesFetchState } from '../channels';
-import { SagaActionTypes as ChannelsEvents } from '../channels';
+import { ConversationStatus, MessagesFetchState, SagaActionTypes as ChannelsEvents } from '../channels';
 import { updateUserMeowBalance } from '../rewards/saga';
 import { POSTS_PAGE_SIZE } from './constants';
-import { setIsSubmitting } from '.';
 import {
   getWallet,
   mapPostToMatrixMessage,

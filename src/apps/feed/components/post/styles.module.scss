@@ -5,6 +5,8 @@
 .Container {
   display: flex;
   gap: 8px;
+  max-width: 100%;
+  overflow-x: hidden;
 
   &:not([has-author]) {
     [class*='_Header'] {
@@ -41,6 +43,8 @@
 .Post {
   padding: 0;
   flex: 1;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .Body {

@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { put, call, take, select, spawn, fork } from 'redux-saga/effects';
+import { put, call, take, select, spawn, fork, delay } from 'redux-saga/effects';
 import { chat, downloadFile } from '../../lib/chat';
 
 import { updateChannelWithRoomData } from './utils';
@@ -13,7 +13,6 @@ import { Channel, MessagesFetchState, removeChannel } from '../channels';
 import { channelSelector } from '../channels/selectors';
 import { setIsConversationsLoaded } from '../chat';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
-import { delay } from 'redux-saga/effects';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
 import { userSelector } from '../users/selectors';

@@ -2,7 +2,7 @@ import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { setUser } from '.';
+import { setUser, reducer } from '.';
 import {
   nonceOrAuthorize,
   terminate,
@@ -22,7 +22,6 @@ import {
   clearSession as clearSessionApi,
   emailLogin,
 } from './api';
-import { reducer } from '.';
 import { rootReducer } from '../reducer';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearMessages } from '../messages/saga';

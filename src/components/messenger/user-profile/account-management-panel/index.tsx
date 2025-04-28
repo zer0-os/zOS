@@ -5,11 +5,10 @@ import { PanelHeader } from '../../list/panel-header';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { Alert, Modal as ZuiModal, IconButton } from '@zero-tech/zui/components';
 
-import { IconPlus } from '@zero-tech/zui/icons';
+import { IconPlus, IconXClose } from '@zero-tech/zui/icons';
 import './styles.scss';
 import { WalletListItem } from '../../../wallet-list-item';
 import { CitizenListItem } from '../../../citizen-list-item';
-import { IconXClose } from '@zero-tech/zui/icons';
 import { CreateEmailAccountContainer } from '../../../../authentication/create-email-account/container';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { ConnectButton } from '@rainbow-me/rainbowkit';

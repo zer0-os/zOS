@@ -2,6 +2,16 @@
   background: none !important;
 }
 
+.Container {
+  span {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+}
+
 .Disabled {
   pointer-events: none;
   opacity: 0.5;

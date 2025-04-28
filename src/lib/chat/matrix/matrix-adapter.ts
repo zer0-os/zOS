@@ -1,7 +1,6 @@
-import { Channel, ConversationStatus } from '../../../store/channels';
+import { Channel, ConversationStatus, User } from '../../../store/channels';
 import matrixClientInstance from './matrix-client-instance';
 import { Room } from 'matrix-js-sdk/lib/models/room';
-import { User } from '../../../store/channels';
 import { User as MatrixUser } from 'matrix-js-sdk/lib/models/user';
 import { extractUserIdFromMatrixId } from './utils';
 

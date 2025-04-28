@@ -2,9 +2,8 @@ import * as React from 'react';
 
 import { RootState } from '../../../../store/reducer';
 import { connectContainer } from '../../../../store/redux-container';
-import { openConversation } from '../../../../store/channels';
+import { openConversation, Channel } from '../../../../store/channels';
 import { createConversation } from '../../../../store/create-conversation';
-import { Channel } from '../../../../store/channels';
 import { config } from '../../../../config';
 import { LinkedAccountsPanel } from '.';
 import { isOneOnOne } from '../../../../store/channels-list/utils';

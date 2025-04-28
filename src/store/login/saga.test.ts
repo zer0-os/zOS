@@ -2,7 +2,7 @@ import { expectSaga } from '../../test/saga';
 
 import { emailLogin, redirectToRoot, validateEmailLogin, web3Login } from './saga';
 import { getSignedToken } from '../web3/saga';
-import { nonceOrAuthorize } from '../authentication/saga';
+import { nonceOrAuthorize, authenticateByEmail } from '../authentication/saga';
 
 import { call } from 'redux-saga/effects';
 
@@ -10,7 +10,6 @@ import { EmailLoginErrors, Web3LoginErrors, initialState } from '.';
 
 import { rootReducer } from '../reducer';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { authenticateByEmail } from '../authentication/saga';
 import { StoreBuilder } from '../test/store';
 
 function subject(...args: Parameters<typeof expectSaga>) {

@@ -2,8 +2,7 @@ import React from 'react';
 import { connectContainer } from '../../../store/redux-container';
 import { RootState } from '../../../store/reducer';
 import { closeMessageInfo } from '../../../store/message-info';
-import { denormalize as denormalizeChannel } from '../../../store/channels';
-import { User } from '../../../store/channels';
+import { denormalize as denormalizeChannel, User } from '../../../store/channels';
 import { OverviewPanel } from './overview-panel';
 
 export interface PublicProperties {}

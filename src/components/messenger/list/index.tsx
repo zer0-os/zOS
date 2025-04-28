@@ -5,7 +5,7 @@ import { RootState } from '../../../store/reducer';
 import { Channel, onAddLabel, onRemoveLabel, openConversation, User } from '../../../store/channels';
 import { allDenormalizedChannelsSelector } from '../../../store/channels/selectors';
 import { byBumpStamp, isOneOnOne } from '../../../store/channels-list/utils';
-import { denormalize as denormalizeUser } from '../../../store/users';
+import { denormalize as denormalizeUser, receiveSearchResults } from '../../../store/users';
 import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
@@ -29,7 +29,6 @@ import { getMessagePreview, previewDisplayDate } from '../../../lib/chat/chat-me
 import { Modal } from '@zero-tech/zui/components';
 import { ErrorDialog } from '../../error-dialog';
 import { ErrorDialogContent } from '../../../store/chat/types';
-import { receiveSearchResults } from '../../../store/users';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';

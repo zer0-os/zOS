@@ -10,11 +10,7 @@ import { MatrixAdapter } from './matrix/matrix-adapter';
 import { MemberNetworks } from '../../store/users/types';
 import { get } from '../api/rest';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
-import { Visibility } from 'matrix-js-sdk/lib/matrix';
-import { Preset } from 'matrix-js-sdk/lib/matrix';
-import { ICreateRoomOpts } from 'matrix-js-sdk/lib/matrix';
-import { GuestAccess } from 'matrix-js-sdk/lib/matrix';
-import { EventType } from 'matrix-js-sdk/lib/matrix';
+import { Visibility, Preset, ICreateRoomOpts, GuestAccess, EventType } from 'matrix-js-sdk/lib/matrix';
 import { ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 
 export interface RealtimeChatEvents {

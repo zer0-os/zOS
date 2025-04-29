@@ -4,7 +4,7 @@ import { RequestPasswordResetErrors } from '.';
 import { call, put, take, fork, cancel } from 'redux-saga/effects';
 
 export function validateRequestPasswordResetEmail({ email }) {
-  const validationErrors = [];
+  const validationErrors: RequestPasswordResetErrors[] = [];
   if (!email || !email.trim()) {
     validationErrors.push(RequestPasswordResetErrors.EMAIL_REQUIRED);
   }

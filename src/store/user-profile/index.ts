@@ -29,7 +29,7 @@ export type UserProfileState = {
 
 export const initialState: UserProfileState = {
   stage: Stage.None,
-  isPublicReadReceipts: null,
+  isPublicReadReceipts: false,
 };
 
 export const openUserProfile = createAction(SagaActionTypes.OpenUserProfile);

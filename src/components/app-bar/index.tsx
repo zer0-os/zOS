@@ -100,7 +100,7 @@ export class AppBar extends React.Component<Properties, State> {
 
     return (
       <div {...cn('notification-icon-wrapper')}>
-        <IconBell {...cn('notification-icon', hasUnreadHighlights && 'highlight')} size={22} />
+        <IconBell {...cn('notification-icon', hasUnreadHighlights ? 'highlight' : '')} size={22} />
         {hasUnreadNotifications && !hasUnreadHighlights && <div {...cn('notification-dot')} />}
         {hasUnreadHighlights && <div {...cn('highlight-dot')} />}
       </div>
@@ -120,7 +120,7 @@ export class AppBar extends React.Component<Properties, State> {
 
     return (
       <>
-        <div {...cn('', zAppIsFullscreen && 'zapp-fullscreen')}>
+        <div {...cn('', zAppIsFullscreen ? 'zapp-fullscreen' : '')}>
           <Link to='/home' {...cn('logo-wrapper')}>
             <IconLogoZero size={24} />
           </Link>

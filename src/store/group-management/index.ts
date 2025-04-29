@@ -1,5 +1,5 @@
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit';
-import { EditConversationState, GroupManagementErrors } from './types';
+import { EditConversationErrors, EditConversationState, GroupManagementErrors } from './types';
 
 export interface MembersSelectedPayload {
   roomId: string;
@@ -80,7 +80,7 @@ export const toggleSecondarySidekick = createAction(SagaActionTypes.ToggleSecond
 export type GroupManagementState = {
   stage: Stage;
   isAddingMembers: boolean;
-  addMemberError: string;
+  addMemberError: string | null;
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
   memberManagement: {
     type: MemberManagementAction;
@@ -124,17 +124,19 @@ const slice = createSlice({
     setAddMemberError: (state, action: PayloadAction<GroupManagementState['addMemberError']>) => {
       state.addMemberError = action.payload;
     },
-    setEditConversationImageError: (
-      state,
-      action: PayloadAction<GroupManagementState['errors']['editConversationErrors']['image']>
-    ) => {
-      state.errors.editConversationErrors.image = action.payload;
+    setEditConversationImageError: (state, action: PayloadAction<EditConversationErrors['image']>) => {
+      if (!state.errors.editConversationErrors) {
+        state.errors.editConversationErrors = { image: action.payload, general: '' };
+      } else {
+        state.errors.editConversationErrors.image = action.payload;
+      }
     },
-    setEditConversationGeneralError: (
-      state,
-      action: PayloadAction<GroupManagementState['errors']['editConversationErrors']['general']>
-    ) => {
-      state.errors.editConversationErrors.general = action.payload;
+    setEditConversationGeneralError: (state, action: PayloadAction<EditConversationErrors['general']>) => {
+      if (!state.errors.editConversationErrors) {
+        state.errors.editConversationErrors = { image: '', general: action.payload };
+      } else {
+        state.errors.editConversationErrors.general = action.payload;
+      }
     },
     setLeaveGroupStatus: (state, action: PayloadAction<GroupManagementState['leaveGroupDialogStatus']>) => {
       state.leaveGroupDialogStatus = action.payload;

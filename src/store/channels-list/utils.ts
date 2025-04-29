@@ -7,6 +7,7 @@ import { MatrixConstants } from '../../lib/chat/matrix/types';
 import { mapMessagesAndPreview } from '../messages/saga';
 import { call } from 'redux-saga/effects';
 import { getUserSubHandle } from '../../lib/user';
+import { Message } from '../messages';
 
 export const isOneOnOne = (channel: { totalMembers: number }) => channel.totalMembers === 2;
 
@@ -23,7 +24,6 @@ export function rawUserToDomainUser(u): User {
     firstName: u.profileSummary?.firstName,
     lastName: u.profileSummary?.lastName,
     profileImage: u.profileSummary?.profileImage,
-    lastSeenAt: u.lastActiveAt,
     primaryZID: u.primaryZID,
     primaryWallet: u.primaryWallet,
     wallets: u.wallets,
@@ -48,7 +48,7 @@ export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575Room
       const relatesTo = evt.content[MatrixConstants.RELATES_TO];
       let id = evt.event_id;
       if (relatesTo && relatesTo.rel_type === MatrixConstants.REPLACE) {
-        id = relatesTo.event_id;
+        id = relatesTo.event_id ?? '';
       }
       // Only add the placeholder event if it's not already in the timeline (to avoid duplicates from edits)
       if (acc.find((e) => e.event_id === id)) {
@@ -66,14 +66,14 @@ export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575Room
   }, []);
 
   // TODO zos-619: This should be in MatrixAdapter and not on the matrix client instance
-  let messages = matrixClientInstance.processRawEventsToMessages(timeline);
-  messages = yield call(mapMessagesAndPreview, messages, roomId);
+  const messages = matrixClientInstance.processRawEventsToMessages(timeline);
+  const mappedMessages: Message[] = yield call(mapMessagesAndPreview, messages, roomId);
   let lastMessage = baseChannel.lastMessage;
-  if (messages.length > 0 && messages[messages.length - 1]) {
-    lastMessage = messages[messages.length - 1];
+  if (mappedMessages.length > 0 && mappedMessages[mappedMessages.length - 1]) {
+    lastMessage = mappedMessages[mappedMessages.length - 1];
   }
 
-  initialChannelUpdates.messages = messages;
+  initialChannelUpdates.messages = mappedMessages;
   initialChannelUpdates.lastMessage = lastMessage;
 
   return {

@@ -18,7 +18,7 @@ export function* fetchInvite() {
     yield put(
       setInviteDetails({
         code: invitation.slug,
-        url: config.inviteUrl,
+        url: config.inviteUrl || '',
         inviteCount: invitation.inviteCount,
       })
     );

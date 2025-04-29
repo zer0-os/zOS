@@ -25,7 +25,7 @@ export const allDenormalizedChannelsSelector = (state: RootState): Channel[] => 
 
 export const isOneOnOneSelector = createSelector(
   [(state: RootState, channelId: string) => channelSelector(channelId)(state)],
-  (channel: Channel | undefined) => channel && isOneOnOne(channel)
+  (channel: Channel | null) => channel && isOneOnOne(channel)
 );
 
 export const oneOnOnesSelector = createSelector([allChannelsSelector], (channels) =>
@@ -44,7 +44,7 @@ export function hasUnreadNotificationsSelector(state: RootState) {
   const conversations = allDenormalizedChannelsSelector(state);
   return conversations.some(
     (channel) =>
-      channel.unreadCount?.total > 0 &&
+      (channel.unreadCount?.total ?? 0) > 0 &&
       !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
       !channel.labels?.includes(DefaultRoomLabels.MUTE)
   );
@@ -54,7 +54,7 @@ export function hasUnreadHighlightsSelector(state: RootState) {
   const conversations = allDenormalizedChannelsSelector(state);
   return conversations.some(
     (channel) =>
-      channel.unreadCount?.highlight > 0 &&
+      (channel.unreadCount?.highlight ?? 0) > 0 &&
       !channel.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
       !channel.labels?.includes(DefaultRoomLabels.MUTE)
   );

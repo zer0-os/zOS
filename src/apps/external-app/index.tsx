@@ -34,7 +34,7 @@ interface State {
 }
 
 class ExternalAppComponent extends Component<Properties, State> {
-  state = {
+  state: State = {
     loadedUrl: '',
     messagePort: null,
   };

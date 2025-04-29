@@ -9,6 +9,7 @@ export const initialState: PanelsState = {
   openStates: {
     [Panel.FEED_CHAT]: true,
     [Panel.MEMBERS]: false,
+    [Panel.NONE]: false,
   },
 };
 

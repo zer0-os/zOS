@@ -11,8 +11,8 @@ export interface CreateAccountMethodProps {
   stage: RegistrationStage;
   isConnecting: boolean;
 
-  registerWithEmail: () => Action<string>;
-  registerWithWallet: () => Action<string>;
+  registerWithEmail: (payload: null) => Action<string>;
+  registerWithWallet: (payload: null) => Action<string>;
 }
 
 export class Container extends React.Component<CreateAccountMethodProps> {
@@ -25,14 +25,14 @@ export class Container extends React.Component<CreateAccountMethodProps> {
   }
 
   static mapActions(_props: CreateAccountMethodProps): Partial<CreateAccountMethodProps> {
-    return { registerWithEmail: registerWithEmail, registerWithWallet: registerWithWallet };
+    return { registerWithEmail, registerWithWallet };
   }
 
   handleSelectionChange = (selectedOption: string) => {
     if (selectedOption === 'web3') {
-      this.props.registerWithWallet();
+      this.props.registerWithWallet(null);
     } else if (selectedOption === 'email') {
-      this.props.registerWithEmail();
+      this.props.registerWithEmail(null);
     }
   };
 

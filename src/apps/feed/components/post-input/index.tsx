@@ -47,7 +47,7 @@ interface State {
 }
 
 export class PostInput extends React.Component<Properties, State> {
-  state = {
+  state: State = {
     value: this.props.initialValue || '',
     media: [],
     isEmojisActive: false,
@@ -136,12 +136,12 @@ export class PostInput extends React.Component<Properties, State> {
       media: media.filter((m) => m.id !== mediaToRemove.id),
     });
 
-    this.props.onPostInputRendered(this.textareaRef);
+    this.props.onPostInputRendered?.(this.textareaRef);
   };
 
   mediaSelected = (newMedia: Media[]): void => {
     this.setState({ media: [...this.state.media, ...newMedia] });
-    this.props.onPostInputRendered(this.textareaRef);
+    this.props.onPostInputRendered?.(this.textareaRef);
   };
 
   imagesSelected = (acceptedFiles): void => {

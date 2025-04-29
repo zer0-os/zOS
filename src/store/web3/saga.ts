@@ -34,12 +34,12 @@ export function* setConnectionError(action) {
   }
 }
 
-export function* getSignedToken(address = null) {
+export function* getSignedToken(address: string | null = null) {
   const wagmiConfig = yield call(getWagmiConfig);
   const walletClient: WalletClient = yield call(getWalletClient, wagmiConfig);
 
   if (!address) {
-    address = walletClient.account.address;
+    address = walletClient.account?.address ?? null;
   }
 
   try {

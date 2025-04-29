@@ -15,7 +15,7 @@ export const initializeErrorBoundary = () => {
   });
 };
 
-export const setSentryUser = (userId: string) => {
+export const setSentryUser = (userId: string | null) => {
   if (userId) {
     Sentry.setUser({ id: userId });
   } else {

@@ -36,7 +36,7 @@ export interface Properties {
   otherMembers: ChannelMember[];
   onFetchMore: () => void;
   fetchMessages: (payload: PayloadFetchMessages) => void;
-  user: User;
+  user: User | null;
   deleteMessage: (messageId: string) => void;
   editMessage: (
     messageId: string,
@@ -135,8 +135,8 @@ export class ChatView extends React.Component<Properties, State> {
     }
   }
 
-  isUserOwnerOfMessage(message: { sender: { userId: string } }) {
-    return this.props.user && message?.sender && this.props.user.id === message.sender.userId;
+  isUserOwnerOfMessage(message: { sender: { userId: string } } | undefined): boolean {
+    return !!this.props.user && !!message?.sender && this.props.user.id === message.sender.userId;
   }
 
   renderMessageGroup(groupMessages: MessageModel[]) {
@@ -153,7 +153,7 @@ export class ChatView extends React.Component<Properties, State> {
           isUserOwner
         );
         const mediaMessage =
-          this.props.mediaMessages.get(message.id) || this.props.mediaMessages.get(message.optimisticId);
+          this.props.mediaMessages.get(message.id) || this.props.mediaMessages.get(message.optimisticId ?? '');
 
         return (
           <div
@@ -169,7 +169,6 @@ export class ChatView extends React.Component<Properties, State> {
                 })}
                 onImageClick={this.openLightbox}
                 messageId={message.id}
-                updatedAt={message.updatedAt}
                 isOwner={isUserOwner}
                 isHidden={message.isHidden}
                 onDelete={this.props.deleteMessage}
@@ -218,7 +217,7 @@ export class ChatView extends React.Component<Properties, State> {
     const cn = bemClassName('messages');
 
     return (
-      <div {...cn('container', this.state.rendered && 'rendered')}>
+      <div {...cn('container', this.state.rendered ? 'rendered' : '')}>
         {Object.keys(filteredMessagesByDay)
           .sort((a, b) => (a > b ? 1 : -1))
           .map((day) => {

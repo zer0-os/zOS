@@ -4,20 +4,20 @@ import { getPanelOpenState } from './selectors';
 import { RootState } from '../reducer';
 import { Panel } from './constants';
 
-function panelStateSelector(panel?: Panel) {
+function panelStateSelector(panel: Panel | undefined) {
   return (state: RootState) => getPanelOpenState(state, panel);
 }
 
-export const usePanelState = (panel?: Panel) => {
+export const usePanelState = (panel: Panel | undefined) => {
   const dispatch = useDispatch();
   const isOpen = !!useSelector(panelStateSelector(panel));
 
   return {
     panel,
     isOpen: !panel ? true : isOpen,
-    toggle: () => dispatch(togglePanel(panel)),
-    open: () => dispatch(openPanel(panel)),
-    close: () => dispatch(closePanel(panel)),
-    setIsOpen: (isOpen: boolean) => dispatch(setPanelState({ panel, isOpen })),
+    toggle: () => (panel ? dispatch(togglePanel(panel)) : undefined),
+    open: () => (panel ? dispatch(openPanel(panel)) : undefined),
+    close: () => (panel ? dispatch(closePanel(panel)) : undefined),
+    setIsOpen: (isOpen: boolean) => (panel ? dispatch(setPanelState({ panel, isOpen })) : undefined),
   };
 };

@@ -22,6 +22,7 @@ import { ConversationActionsContainer } from '../../../../components/messenger/c
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
+import InvertedScroll from '../../../../components/inverted-scroll';
 
 export interface PublicProperties {
   zid?: string;
@@ -41,11 +42,11 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties> {
-  chatViewContainerRef = null;
+  chatViewContainerRef = React.createRef<InvertedScroll>();
 
   constructor(props: Properties) {
     super(props);
-    this.chatViewContainerRef = React.createRef();
+    this.chatViewContainerRef = React.createRef<InvertedScroll>();
   }
 
   static mapState(state: RootState): Partial<Properties> {
@@ -53,7 +54,7 @@ export class Container extends React.Component<Properties> {
       chat: { activeConversationId, joinRoomErrorContent, isJoiningConversation, isConversationsLoaded },
     } = state;
 
-    const channel = channelSelector(activeConversationId)(state);
+    const channel = channelSelector(activeConversationId)(state) ?? undefined;
 
     return {
       channel,

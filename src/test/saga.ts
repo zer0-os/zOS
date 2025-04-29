@@ -22,7 +22,7 @@ export function expectSaga(...args: Parameters<typeof sourceExpectSaga>) {
   const saga = sourceExpectSaga(...args);
   const originalProvide = saga.provide;
 
-  let providedStubs = [];
+  let providedStubs: any[] = [];
   saga.provide = (stubs) => {
     providedStubs = [...stubs, ...providedStubs];
     return originalProvide.call(saga, providedStubs);

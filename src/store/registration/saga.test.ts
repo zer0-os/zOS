@@ -302,7 +302,7 @@ describe('updateProfile', () => {
         ],
         [matchers.call.fn(createWelcomeConversation), null],
         [
-          call(createConversation, ['inviter-id'], '', null),
+          call(createConversation, ['inviter-id'], '', undefined),
           null,
         ],
         [
@@ -349,7 +349,7 @@ describe('updateProfile', () => {
           null,
         ],
         [
-          call(createConversation, ['inviter-id'], '', null),
+          call(createConversation, ['inviter-id'], '', undefined),
           null,
         ],
         [matchers.call.fn(createWelcomeConversation), null],
@@ -518,7 +518,7 @@ describe(createWelcomeConversation, () => {
     await subject(createWelcomeConversation, 'new-user-id', { id: 'inviter-id', matrixId: 'inviter-matrix-id' })
       .provide([[call(getZEROUsersAPI, ['inviter-matrix-id']), [{ userId: 'inviter-id', firstName: 'The inviter' }]]])
       .withReducer(rootReducer, initialState.build())
-      .call(createConversation, ['inviter-id'], '', null)
+      .call(createConversation, ['inviter-id'], '', undefined)
       .run();
   });
 

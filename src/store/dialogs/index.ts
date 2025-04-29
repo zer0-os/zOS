@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type DialogState = {
-  deleteMessageId: string;
+  deleteMessageId: string | null;
   lightbox: {
     isOpen: boolean;
     media: any[];

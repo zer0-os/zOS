@@ -3,12 +3,11 @@ import { useSpring } from 'framer-motion';
 import { CONFIG, getScale } from './lib';
 
 export const useMeowAction = () => {
-  const intervalRef = useRef(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const scale = useSpring(1, { stiffness: 300, damping: 7 });
 
   const [amount, setAmount] = useState<number | null>(null);
   const [isActive, setIsActive] = useState(false);
-  const [userAmount, setUserAmount] = useState<number>(0);
 
   /**
    * Starts the MEOW action
@@ -42,8 +41,6 @@ export const useMeowAction = () => {
    * Successfully trigger MEOW
    */
   const stop = () => {
-    // Send data to matrix, then reset
-    setUserAmount(amount);
     resetValues();
   };
 
@@ -63,12 +60,11 @@ export const useMeowAction = () => {
 
   return {
     amount,
-    backgroundOpacity: (1 / CONFIG.max) * amount,
+    backgroundOpacity: (1 / CONFIG.max) * (amount ?? 0),
     cancel,
     isActive,
     scale,
     start,
     stop,
-    userAmount,
   };
 };

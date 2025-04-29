@@ -69,7 +69,7 @@ describe(App, () => {
     });
 
     it('should render main element with default class names', () => {
-      expect(container.querySelector('div.main').classList).toContain('messenger-full-screen');
+      expect(container.querySelector('div.main')?.classList).toContain('messenger-full-screen');
     });
 
     it('should render ThemeEngine', () => {
@@ -98,9 +98,11 @@ describe(App, () => {
     beforeEach(() => {
       container = renderWithProviders(<App />, {
         preloadedState: {
-          // @ts-ignore
           authentication: {
-            user: null,
+            user: {
+              data: undefined,
+            },
+            displayLogoutModal: false,
           },
         },
       }).container;
@@ -172,7 +174,7 @@ describe(App, () => {
       expect(getMainBackgroundVideoSrc).toHaveBeenCalledWith('foo');
 
       const video = screen.getByTestId('app-video-background');
-      expect(video.querySelector('source').src).toBe('https://foo.bar/src');
+      expect(video.querySelector('source')?.src).toBe('https://foo.bar/src');
     });
   });
 });

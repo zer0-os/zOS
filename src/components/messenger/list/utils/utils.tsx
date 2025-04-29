@@ -1,17 +1,4 @@
-import { monthsSince, fromNow } from '../../../../lib/date';
 import { User } from '../../../../store/channels';
-
-export function lastSeenText(user): string {
-  if (user.isOnline) {
-    return 'Online';
-  }
-
-  if (user.lastSeenAt && monthsSince(user.lastSeenAt) >= 6) {
-    return '';
-  }
-
-  return fromNow(user.lastSeenAt);
-}
 
 export function isUserAdmin(user: User, adminIds: string[]) {
   return adminIds?.includes(user.matrixId);

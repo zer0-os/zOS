@@ -20,6 +20,7 @@ import { clearRewards } from '../rewards/saga';
 import { clearLastActiveFeed } from '../../lib/last-feed';
 import { clearCache, performCacheMaintenance } from '../../lib/storage/media-cache';
 import { setSentryUser } from '../../utils';
+import { User } from './types';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -37,12 +38,12 @@ export function* nonceOrAuthorize(action) {
   return { nonce };
 }
 
-export function* completeUserLogin(user = null) {
+export function* completeUserLogin(user?: User | (User & { isPending: boolean })) {
   if (!user) {
     user = yield call(fetchCurrentUser);
   }
 
-  if (user.isPending) {
+  if (user && 'isPending' in user && user.isPending) {
     yield call(completePendingUserProfile, user);
     return;
   }
@@ -53,7 +54,7 @@ export function* completeUserLogin(user = null) {
 }
 
 export function* terminate(isAccountChange = false) {
-  yield put(setUser({ data: null, nonce: null }));
+  yield put(setUser({ data: null, nonce: undefined }));
 
   try {
     yield call(clearSessionApi);

@@ -42,7 +42,9 @@ export function* linkNewWalletToZEROAccount() {
       yield call(updateCurrentUserWallets, apiResult.response.wallet, apiResult.response.primaryZID);
       yield put(setSuccessMessage('Wallet added successfully'));
     } else {
-      yield put(setErrors([apiResult.error]));
+      if (apiResult.error) {
+        yield put(setErrors([apiResult.error]));
+      }
       return;
     }
   } catch (e) {
@@ -54,7 +56,7 @@ export function* linkNewWalletToZEROAccount() {
   return;
 }
 
-export function* updateCurrentUserWallets({ publicAddress, ...walletRest }, primaryZID) {
+export function* updateCurrentUserWallets({ publicAddress, ...walletRest }, primaryZID: string | undefined) {
   if (!publicAddress) {
     return; // Ensure wallet has a valid publicAddress
   }
@@ -65,7 +67,7 @@ export function* updateCurrentUserWallets({ publicAddress, ...walletRest }, prim
   const updatedWallets = [...(currentUser.wallets || []), { publicAddress, ...walletRest }];
 
   // Update primaryZID, either from the argument or derive from the wallet's publicAddress
-  const updatedPrimaryZID = primaryZID || getUserSubHandle(undefined, publicAddress);
+  const updatedPrimaryZID = getUserSubHandle(primaryZID, publicAddress);
 
   yield put(
     setUser({

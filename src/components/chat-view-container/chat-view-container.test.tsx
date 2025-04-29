@@ -282,12 +282,12 @@ describe('ChannelViewContainer', () => {
 
       const { channel } = Container.mapState(state, { channelId: 'the-second-id' });
 
-      expect(channel.messages).toIncludeAllPartialMembers([
+      expect(channel?.messages).toIncludeAllPartialMembers([
         { id: 'the-second-message-id', name: 'the second message' },
         { id: 'the-third-message-id', name: 'the third message' },
       ]);
 
-      expect(channel.hasMore).toEqual(true);
+      expect(channel?.hasMore).toEqual(true);
     });
 
     test('channel with no id set', () => {

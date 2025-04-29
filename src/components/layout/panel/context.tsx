@@ -3,13 +3,21 @@ import { Panel } from '../../../store/panels/constants';
 import { usePanelState } from '../../../store/panels/hooks';
 
 type PanelContextType = {
-  panel: Panel;
+  panel: Panel | undefined;
   name?: string;
 };
 
 const PanelContext = createContext<PanelContextType | undefined>(undefined);
 
-export const PanelProvider = ({ children, panel, name }: { children: ReactNode; panel: Panel; name?: string }) => {
+export const PanelProvider = ({
+  children,
+  panel,
+  name,
+}: {
+  children: ReactNode;
+  panel: Panel | undefined;
+  name?: string;
+}) => {
   return <PanelContext.Provider value={{ panel, name }}>{children}</PanelContext.Provider>;
 };
 

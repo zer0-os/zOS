@@ -27,7 +27,7 @@ export const initialState: RewardsState = {
   showRewardsInPopup: false,
   showNewRewardsIndicator: false,
   transferLoading: false,
-  transferError: null,
+  transferError: undefined,
 };
 
 export const totalRewardsViewed = createAction(SagaActionTypes.TotalRewardsViewed);
@@ -71,7 +71,7 @@ const slice = createSlice({
     setShowNewRewardsIndicator: (state, action: PayloadAction<RewardsState['showNewRewardsIndicator']>) => {
       state.showNewRewardsIndicator = action.payload;
     },
-    setTransferError: (state, action: PayloadAction<{ error: string }>) => {
+    setTransferError: (state, action: PayloadAction<{ error: string | undefined }>) => {
       state.transferError = action.payload.error;
     },
     setTransferLoading: (state, action: PayloadAction<RewardsState['transferLoading']>) => {

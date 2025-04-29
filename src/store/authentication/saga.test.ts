@@ -139,7 +139,7 @@ describe('terminate', () => {
       .withReducer(rootReducer)
       .run();
 
-    expect(storeState.authentication.user).toMatchObject({ data: null, nonce: null });
+    expect(storeState.authentication.user).toMatchObject({ data: null, nonce: undefined });
   });
 
   it('clears the user state', async () => {

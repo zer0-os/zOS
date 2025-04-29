@@ -74,7 +74,7 @@ export function* getUsersByMatrixIds(matrixIds: string[]) {
 
   // Handle Telegram users as we only have their information in Matrix.
   for (const matrixId of matrixIds) {
-    const telegramUsers = [];
+    const telegramUsers: User[] = [];
     if (isTelegramMatrixId(matrixId)) {
       const matrixUser = matrixClientInstance.matrix.getUser(matrixId);
       if (matrixUser) {

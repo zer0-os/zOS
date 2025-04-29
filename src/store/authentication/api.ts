@@ -21,7 +21,7 @@ export async function nonce(signedWeb3Token?: string): Promise<AuthorizationResp
   return response.body;
 }
 
-export async function fetchCurrentUser(): Promise<User> {
+export async function fetchCurrentUser(): Promise<User | null> {
   try {
     const response = await get('/api/users/current');
     return response.body;

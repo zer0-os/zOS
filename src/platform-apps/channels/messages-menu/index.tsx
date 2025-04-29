@@ -58,11 +58,11 @@ export class MessageMenu extends React.Component<Properties> {
   onReply = () => this.delayEvent(this.props.onReply);
 
   onInfo = () => {
-    this.props.onInfo();
+    this.props.onInfo?.();
   };
 
   renderItems = () => {
-    const menuItems = [];
+    const menuItems: { id: string; label: ReactNode; onSelect: () => void }[] = [];
 
     if (this.props.onEdit && this.props.canEdit) {
       menuItems.push({

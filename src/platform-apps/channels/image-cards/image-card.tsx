@@ -11,7 +11,7 @@ export interface Properties {
   onRemoveImage?: () => void;
 }
 
-export default class ImageCard extends React.Component<Properties, undefined> {
+export default class ImageCard extends React.Component<Properties> {
   deleteIcon() {
     const { onRemoveImage } = this.props;
 

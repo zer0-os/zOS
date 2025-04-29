@@ -32,7 +32,7 @@ export function* emailLogin(action) {
 }
 
 export function validateEmailLogin({ email, password }) {
-  const validationErrors = [];
+  const validationErrors: EmailLoginErrors[] = [];
 
   if (!email.trim()) {
     validationErrors.push(EmailLoginErrors.EMAIL_REQUIRED);

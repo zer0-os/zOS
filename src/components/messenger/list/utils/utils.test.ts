@@ -1,4 +1,4 @@
-import { getTagForUser, isUserAdmin, isUserModerator, lastSeenText, sortMembers } from './utils';
+import { getTagForUser, isUserAdmin, isUserModerator, sortMembers } from './utils';
 import { User } from '../../../../store/channels';
 
 describe('sortMembers', () => {
@@ -94,23 +94,6 @@ describe(isUserModerator, () => {
     const moderatorIds: string[] = [];
 
     expect(isUserModerator(user, moderatorIds)).toBe(false);
-  });
-});
-
-describe('lastSeenText', () => {
-  it('returns "Online" if the user is currently online', () => {
-    const user = { isOnline: true };
-    expect(lastSeenText(user)).toEqual('Online');
-  });
-
-  it('returns an empty string if lastSeenAt is more than 6 months ago', () => {
-    const user = { isOnline: false, lastSeenAt: new Date('2020-01-01') };
-    expect(lastSeenText(user)).toEqual('');
-  });
-
-  it('returns an empty string if lastSeenAt is null', () => {
-    const user = { isOnline: false, lastSeenAt: null };
-    expect(lastSeenText(user)).toEqual('');
   });
 });
 

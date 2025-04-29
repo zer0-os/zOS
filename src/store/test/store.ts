@@ -179,11 +179,10 @@ export function stubUser(attrs: Partial<User> = {}): User {
     firstName: 'DefaultStubFirstName',
     lastName: 'DefaultStubLastName',
     profileImage: '/default-stub-image.jpg',
-    lastSeenAt: '',
     primaryZID: 'DefaultStubPrimaryZID',
     displaySubHandle: 'DefaultStubDisplaySubHandle',
     isOnline: false,
-    primaryWallet: null,
+    primaryWallet: undefined,
     wallets: [],
     ...attrs,
   };

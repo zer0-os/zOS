@@ -35,14 +35,14 @@ export function* getChatBus() {
 }
 
 export function createChatConnection(userId: string, chatAccessToken: string, chatClient: Chat) {
-  let setActivationResult = null;
-  let connectionPromise;
+  let setActivationResult: (result: boolean) => void = () => {};
+  let connectionPromise: Promise<string | undefined> | undefined;
   const chatConnection = eventChannel((rawEmit) => {
     const activationPromise = new Promise((resolve) => {
       setActivationResult = (result) => resolve(result);
     });
 
-    const queuedEvents = [];
+    const queuedEvents: Promise<void>[] = [];
     let queueing = true;
     const processQueuePromise = new Promise(async (resolve) => {
       await activationPromise;

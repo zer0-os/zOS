@@ -29,7 +29,7 @@ export const CreateAccountMethod: React.FC<CreateAccountMethodProps> = ({ stage,
   const isConnectingWithWallet = isConnecting && isWalletAccountCreationStage;
 
   return (
-    <div {...cn('', isConnecting && isWalletAccountCreationStage && 'is-connecting')}>
+    <div {...cn('', isConnecting && isWalletAccountCreationStage ? 'is-connecting' : '')}>
       <h3 {...cn('heading')}>Create Account</h3>
 
       <FeatureFlag featureFlag='allowEmailRegistration'>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, createRef, RefObject } from 'react';
 import classNames from 'classnames';
 import { RootState } from '../../../store/reducer';
 import { connectContainer } from '../../../store/redux-container';
@@ -18,12 +18,13 @@ import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
 import { Panel, PanelBody } from '../../layout/panel';
 import { channelSelector } from '../../../store/channels/selectors';
 import { isOneOnOne } from '../../../store/channels-list/utils';
+import InvertedScroll from '../../inverted-scroll';
 
 export interface PublicProperties {}
 
 export interface Properties extends PublicProperties {
   activeConversationId: string;
-  directMessage: Channel;
+  directMessage: Channel | null;
   isJoiningConversation: boolean;
   otherMembersTypingInRoom: string[];
   leaveGroupDialogStatus: LeaveGroupDialogStatus;
@@ -32,13 +33,8 @@ export interface Properties extends PublicProperties {
   onRemoveReply: () => void;
 }
 
-export class Container extends React.Component<Properties> {
-  chatViewContainerRef = null;
-
-  constructor(props: Properties) {
-    super(props);
-    this.chatViewContainerRef = React.createRef();
-  }
+export class Container extends Component<Properties> {
+  chatViewContainerRef: RefObject<InvertedScroll> = createRef();
 
   static mapState(state: RootState): Partial<Properties> {
     const {
@@ -46,10 +42,10 @@ export class Container extends React.Component<Properties> {
       groupManagement,
     } = state;
 
-    const directMessage = channelSelector(activeConversationId)(state);
+    const directMessage = channelSelector(activeConversationId ?? '')(state);
 
     return {
-      activeConversationId,
+      activeConversationId: activeConversationId ?? '',
       directMessage,
       isJoiningConversation,
       leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
@@ -66,7 +62,7 @@ export class Container extends React.Component<Properties> {
   }
 
   isOneOnOne() {
-    return isOneOnOne(this.props.directMessage);
+    return this.props.directMessage && isOneOnOne(this.props.directMessage);
   }
 
   get isLeaveGroupDialogOpen() {
@@ -77,7 +73,9 @@ export class Container extends React.Component<Properties> {
     this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
   };
 
-  renderLeaveGroupDialog = (): JSX.Element => {
+  renderLeaveGroupDialog = (): JSX.Element | null => {
+    if (!this.props.directMessage) return null;
+
     return (
       <LeaveGroupDialogContainer
         groupName={this.props.directMessage.name}
@@ -92,6 +90,8 @@ export class Container extends React.Component<Properties> {
   };
 
   searchMentionableUsers = async (search: string) => {
+    if (!this.props.directMessage) return [];
+
     return await searchMentionableUsersForChannel(search, this.props.directMessage.otherMembers);
   };
 
@@ -102,7 +102,7 @@ export class Container extends React.Component<Properties> {
       channelId: activeConversationId,
       message,
       mentionedUserIds,
-      parentMessage: this.props.directMessage.reply,
+      parentMessage: this.props.directMessage?.reply,
       files: media,
     };
 
@@ -137,7 +137,7 @@ export class Container extends React.Component<Properties> {
             {!this.props.isJoiningConversation && (
               <>
                 <ChatViewContainer
-                  key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
+                  key={this.props.directMessage?.optimisticId || this.props.directMessage?.id} // Render new component for a new chat
                   channelId={this.props.activeConversationId}
                   className='direct-message-chat__channel'
                   showSenderAvatar={!this.isOneOnOne()}

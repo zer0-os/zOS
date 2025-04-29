@@ -17,7 +17,6 @@ export interface User {
   profileId: string;
   isOnline: Boolean;
   profileImage: string;
-  lastSeenAt: string;
   primaryZID: string;
   primaryWallet?: Wallet;
   wallets?: Wallet[];
@@ -76,7 +75,7 @@ export interface Channel {
   zid?: string;
 }
 
-export const CHANNEL_DEFAULTS = {
+export const CHANNEL_DEFAULTS: Partial<Channel> = {
   optimisticId: '',
   name: '',
   messages: [],
@@ -86,18 +85,18 @@ export const CHANNEL_DEFAULTS = {
   hasMore: true,
   hasMorePosts: true,
   createdAt: 0,
-  lastMessage: null,
+  lastMessage: undefined,
   unreadCount: { total: 0, highlight: 0 },
   icon: '',
   hasLoadedMessages: false,
   conversationStatus: ConversationStatus.CREATED,
-  messagesFetchStatus: null,
+  messagesFetchStatus: undefined,
   adminMatrixIds: [],
   moderatorIds: [],
   otherMembersTyping: [],
   labels: [],
   isSocialChannel: false,
-  zid: null,
+  zid: undefined,
 };
 
 export enum SagaActionTypes {

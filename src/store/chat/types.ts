@@ -6,8 +6,8 @@ export type ErrorDialogContent = {
 };
 
 export interface ChatState {
-  activeConversationId: string;
-  joinRoomErrorContent: ErrorDialogContent;
+  activeConversationId: string | null;
+  joinRoomErrorContent: ErrorDialogContent | null;
   isJoiningConversation: boolean;
   isChatConnectionComplete: boolean;
   isConversationsLoaded: boolean;

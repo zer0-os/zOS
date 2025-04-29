@@ -101,7 +101,7 @@ export interface Message {
   isHidden?: boolean;
 }
 
-export interface MessageWithoutSender extends Message {
+export interface MessageWithoutSender extends Omit<Message, 'sender'> {
   sender: undefined;
   senderId: string;
 }

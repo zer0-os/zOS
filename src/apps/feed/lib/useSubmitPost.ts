@@ -10,7 +10,7 @@ import { featureFlags } from '../../../lib/feature-flags';
 import { primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
 
 interface SubmitPostParams {
-  channelZid: string;
+  channelZid: string | undefined;
   media: Media[];
   message: string;
   replyToId?: string;

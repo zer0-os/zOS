@@ -125,7 +125,7 @@ export function* authorizeAndCreateWeb3Account() {
 }
 
 export function validateAccountInfo({ email, password }) {
-  const validationErrors = [];
+  const validationErrors: AccountCreationErrors[] = [];
 
   if (!email.trim()) {
     validationErrors.push(AccountCreationErrors.EMAIL_REQUIRED);
@@ -249,7 +249,7 @@ export function* createWelcomeConversation(userId: string, inviter: { id: string
     const inviterZeroUserData = yield call(getZEROUsersAPI, [inviter.matrixId]);
     const inviterUser = inviterZeroUserData?.[0];
     yield put(receiveUser(inviterUser));
-    yield call(createConversation, [inviterUser.userId], '', null);
+    yield call(createConversation, [inviterUser.userId], '', undefined);
   } catch (error) {}
 }
 

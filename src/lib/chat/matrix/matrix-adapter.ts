@@ -16,7 +16,11 @@ export class MatrixAdapter {
     const labels = Object.keys(room.tags || {});
     const [admins, mods] = matrixClientInstance.getRoomAdminsAndMods(room);
 
-    const members = matrixClientInstance.getRoomMembers(room.roomId);
+    const members = matrixClientInstance.getRoomMembers(room.roomId) || {
+      otherMembers: [],
+      memberHistory: [],
+      totalMembers: 0,
+    };
 
     return {
       id: room.roomId,
@@ -43,12 +47,11 @@ export class MatrixAdapter {
     return {
       userId: extractUserIdFromMatrixId(matrixUser.userId),
       matrixId: matrixUser.userId,
-      firstName: matrixUser?.displayName,
+      firstName: matrixUser?.displayName ?? '',
       lastName: '',
       profileId: '',
       isOnline: false,
-      profileImage: matrixUser?.avatarUrl,
-      lastSeenAt: '',
+      profileImage: matrixUser?.avatarUrl ?? '',
       primaryZID: '',
     };
   }

@@ -26,9 +26,15 @@ export enum Chains {
   Local = 5777,
 }
 
-export async function personalSignToken(walletClient: WalletClient, currentAddress: string): Promise<`0x${string}`> {
+export async function personalSignToken(
+  walletClient: WalletClient,
+  currentAddress: string | null
+): Promise<`0x${string}`> {
+  if (!currentAddress) {
+    throw new Error('No address to sign message with');
+  }
+
   return await walletClient.signMessage({
-    // @ts-ignore
     account: currentAddress,
     message: config.web3AuthenticationMessage,
   });

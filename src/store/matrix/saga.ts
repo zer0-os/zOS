@@ -93,6 +93,9 @@ export function* generateBackup() {
 
   try {
     const key: GeneratedSecretStorageKey = yield call([chatClient, chatClient.generateSecureBackup]);
+    if (!key.encodedPrivateKey) {
+      throw new Error('Failed to generate backup key');
+    }
     yield put(setGeneratedRecoveryKey(key.encodedPrivateKey));
   } catch (error) {
     yield put(setErrorMessage('Failed to generate backup key. Please try again.'));

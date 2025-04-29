@@ -98,7 +98,7 @@ export const roomLabelSelector = (channelId) => (state) => {
 export function* mapMessagesAndPreview(messages: (Message | MessageWithoutSender)[], channelId: string) {
   const reactions = yield call(getMessageEmojiReactions, channelId);
 
-  const messagesWithSenders = yield call(mapMessageSenders, messages);
+  const messagesWithSenders: Message[] = yield call(mapMessageSenders, messages);
 
   const newMessages = messagesWithSenders.map((message) => {
     if (message.isHidden) {
@@ -159,7 +159,7 @@ export function* fetch(action) {
     if (yield select(_isActive(channelId))) {
       const currentUser = yield select(currentUserSelector());
 
-      let latestUserMessage = null;
+      let latestUserMessage: Message | undefined = undefined;
       for (let i = messages?.length - 1; i >= 0; i--) {
         const msg = messages[i];
 
@@ -222,7 +222,7 @@ export function* publishMessageSent(channelId: string) {
 }
 
 export function* createOptimisticMessages(channelId, message, parentMessage, uploadableFiles?) {
-  let optimisticRootMessage = null;
+  let optimisticRootMessage: Message | undefined = undefined;
   if (message?.trim()) {
     const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
     optimisticRootMessage = optimisticMessage;
@@ -274,7 +274,7 @@ export function* performSend(
     isSocialChannel
   );
 
-  const result = yield sendMessage(messageCall, channelId, optimisticId);
+  const result = yield sendMessage(messageCall, optimisticId);
 
   // Ensure media data is preserved in the sent message
   if (result && parentMessage) {
@@ -287,7 +287,7 @@ export function* performSend(
 // note: we're not replacing the optimistic message with the real message here anymore
 // because we're now relying on receiving the real-time message event from matrix,
 // which will replace the optimistic message
-export function* sendMessage(apiCall, channelId, optimisticId) {
+export function* sendMessage(apiCall, optimisticId: string) {
   try {
     return yield apiCall;
   } catch (e) {
@@ -369,7 +369,7 @@ export function* editMessage(action) {
   }
 }
 
-export function* uploadFileMessages(channelId = null, rootMessageId = '', uploadableFiles: Uploadable[]) {
+export function* uploadFileMessages(channelId, rootMessageId = '', uploadableFiles: Uploadable[]) {
   // Opportunities for parallelization here.
   for (const uploadableFile of uploadableFiles) {
     const upload = call(
@@ -380,7 +380,7 @@ export function* uploadFileMessages(channelId = null, rootMessageId = '', upload
       channelId,
       rootMessageId
     );
-    yield sendMessage(upload, channelId, uploadableFile.optimisticMessage.id);
+    yield sendMessage(upload, uploadableFile.optimisticMessage?.id || '');
     rootMessageId = ''; // only the first file should connect to the root message for now.
   }
 }
@@ -397,7 +397,7 @@ export function* receiveDelete(action) {
   yield call(receiveChannel, { id: channelId, messages: existingMessages.filter((id) => id !== messageId) });
 }
 
-let savedMessages = [];
+let savedMessages: any[] = [];
 export function* receiveNewMessage(action) {
   const BATCH_INTERVAL = 500;
 

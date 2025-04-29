@@ -35,7 +35,7 @@ export class Container extends React.Component<Properties> {
     this.props.setViewMode(viewMode);
   }
 
-  isLightModeIsSaved = (keyStorageLightMode: string): string => {
+  isLightModeIsSaved = (keyStorageLightMode: string): string | null => {
     return localStorage.getItem(keyStorageLightMode);
   };
 

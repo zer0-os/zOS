@@ -79,7 +79,7 @@ export function* addRoomToSync(conversationId: string) {
   yield call(() => SlidingSyncManager.instance.addRoomToSync(conversationId));
 }
 
-export function* openConversation(conversationId: string) {
+export function* openConversation(conversationId: string | undefined) {
   if (!conversationId) {
     return;
   }
@@ -122,7 +122,7 @@ export function* onRemoveReply() {
     return;
   }
 
-  yield call(receiveChannel, { id: activeConversationId, reply: null });
+  yield call(receiveChannel, { id: activeConversationId, reply: undefined });
 }
 
 export function* clearChannels() {
@@ -130,8 +130,8 @@ export function* clearChannels() {
 }
 
 export function* receiveChannel(channel: Partial<Channel>) {
-  const existing = yield select(channelSelector(channel.id));
-  let data = { ...channel };
+  const existing = yield select(channelSelector(channel.id ?? ''));
+  let data: Partial<Channel> = { ...channel };
   if (!existing) {
     data = { ...CHANNEL_DEFAULTS, ...data };
   }
@@ -179,7 +179,7 @@ export function* receivedRoomMembersTyping(action) {
 
   const currentUser = yield select(currentUserSelector());
   const users = yield select((state) => state.normalized.users);
-  const otherMembersTyping = [];
+  const otherMembersTyping: string[] = [];
   for (const matrixId of matrixIds) {
     if (matrixId === currentUser.matrixId) {
       continue;

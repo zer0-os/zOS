@@ -19,7 +19,7 @@ interface ProfileSummary {
 }
 
 export interface UserPayload {
-  data?: User;
+  data?: User | null;
   nonce?: string;
 }
 
@@ -34,7 +34,7 @@ export interface User {
   updatedAt: string;
   profileSummary: ProfileSummary;
   wallets: Wallet[];
-  matrixId?: string;
+  matrixId: string;
   matrixAccessToken?: string;
   primaryZID?: string;
   primaryWalletAddress?: string;

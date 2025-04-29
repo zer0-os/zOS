@@ -33,7 +33,7 @@ export function* fetchChannels() {
   yield call([chatClient, chatClient.setupConversations]);
 }
 
-export function* createConversation(userIds: string[], name: string = null, image: File = null) {
+export function* createConversation(userIds: string[], name?: string, image?: File) {
   const chatClient = yield call(chat.get);
   try {
     const users = yield select(userSelector, userIds);
@@ -43,12 +43,7 @@ export function* createConversation(userIds: string[], name: string = null, imag
   } catch {}
 }
 
-export function* createUnencryptedConversation(
-  userIds: string[],
-  name: string = null,
-  image: File = null,
-  groupType?: string
-) {
+export function* createUnencryptedConversation(userIds: string[], name?: string, image?: File, groupType?: string) {
   const chatClient = yield call(chat.get);
   try {
     const users = yield select(userSelector, userIds);

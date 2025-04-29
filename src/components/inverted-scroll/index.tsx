@@ -16,15 +16,17 @@ interface State {
 }
 
 export class InvertedScroll extends React.Component<Properties, State> {
-  state = { pinnedBottom: false };
-  scrollWrapper: HTMLElement;
+  state: State = { pinnedBottom: false };
+  scrollWrapper: HTMLElement | null = null;
 
   scrollToBottom() {
     this.pinBottom();
-    this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
+    if (this.scrollWrapper) {
+      this.scrollWrapper.scrollTop = this.scrollWrapper.scrollHeight;
+    }
   }
 
-  setScrollWrapper = (element: HTMLElement) => {
+  setScrollWrapper = (element: HTMLElement | null) => {
     if (!element) {
       return;
     }
@@ -58,7 +60,7 @@ export class InvertedScroll extends React.Component<Properties, State> {
         ref={this.setScrollWrapper}
       >
         <Waypoint onEnter={this.preventHigherScroll} />
-        <div {...cn('content', this.state.pinnedBottom && 'pinned-bottom')}>{this.props.children}</div>
+        <div {...cn('content', this.state.pinnedBottom ? 'pinned-bottom' : '')}>{this.props.children}</div>
         <div {...cn('bottom-anchor')}>
           <Waypoint onEnter={this.pinBottom} onLeave={this.unpinBottom} />
         </div>

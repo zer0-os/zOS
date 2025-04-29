@@ -16,12 +16,12 @@ export const createUploadableFile = (file): Uploadable => {
 
 export interface Uploadable {
   file: any;
-  optimisticMessage: Message;
+  optimisticMessage: Message | undefined;
   upload: (channelId, rootMessageId, isPost?) => Generator<CallEffect<Message | unknown>>;
 }
 
 export class UploadableMedia implements Uploadable {
-  public optimisticMessage: Message;
+  public optimisticMessage: Message | undefined;
 
   constructor(public file) {}
   *upload(channelId, rootMessageId, isPost = false) {
@@ -37,7 +37,7 @@ export class UploadableMedia implements Uploadable {
 }
 
 export class UploadableGiphy implements Uploadable {
-  public optimisticMessage: Message;
+  public optimisticMessage: Message | undefined;
 
   constructor(public file) {}
   *upload(channelId, rootMessageId) {
@@ -57,7 +57,7 @@ export class UploadableGiphy implements Uploadable {
 }
 
 export class UploadableAttachment implements Uploadable {
-  public optimisticMessage: Message;
+  public optimisticMessage: Message | undefined;
 
   constructor(public file) {}
 

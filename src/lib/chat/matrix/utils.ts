@@ -43,7 +43,7 @@ export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: s
 export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMember[] = [], filter: string = '') {
   const normalizedFilter = filter.toLowerCase(); // Case-insensitive search
 
-  const filteredResults = [];
+  const filteredResults: { id: string; displayName: string; profileImage: string; displayHandle?: string }[] = [];
   for (const member of roomMembers) {
     let displayName = `${member.firstName || ''} ${member.lastName || ''}`.toLowerCase();
     if (displayName.includes(normalizedFilter)) {

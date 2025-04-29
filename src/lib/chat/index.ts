@@ -51,17 +51,17 @@ export class Chat {
 
   async getRoomNameById(roomId: string) {
     const room = this.client.matrix.getRoom(roomId);
-    return room.name;
+    return room?.name;
   }
 
   async getRoomAvatarById(roomId: string) {
     const room = this.client.matrix.getRoom(roomId);
-    return this.client.getRoomAvatar(room);
+    return room ? this.client.getRoomAvatar(room) : '';
   }
 
   getRoomGroupTypeById(roomId: string) {
     const room = this.client.matrix.getRoom(roomId);
-    return this.client.getRoomGroupType(room);
+    return room ? this.client.getRoomGroupType(room) : '';
   }
 
   async setupConversations() {
@@ -87,7 +87,15 @@ export class Chat {
   getChannelMembers(
     channelId: string
   ): { otherMembers: User[]; memberHistory: User[]; totalMembers: number } | undefined {
-    const { otherMembers, memberHistory, totalMembers } = this.client.getRoomMembers(channelId);
+    const roomMembers = this.client.getRoomMembers(channelId);
+    if (!roomMembers) {
+      return {
+        otherMembers: [],
+        memberHistory: [],
+        totalMembers: 0,
+      };
+    }
+    const { otherMembers, memberHistory, totalMembers } = roomMembers;
     return {
       otherMembers: otherMembers.map((m) => MatrixAdapter.mapMatrixUserToUser(m)),
       memberHistory: memberHistory.map((m) => MatrixAdapter.mapMatrixUserToUser(m)),
@@ -103,7 +111,7 @@ export class Chat {
     return this.client.leaveRoom(roomId, userId);
   }
 
-  async createConversation(users: User[], name: string = null, image: File = null) {
+  async createConversation(users: User[], name: string | null = null, image: File | null = null) {
     await this.waitForConnection();
     const coverUrl = await this.client.uploadCoverImage(image);
 
@@ -143,6 +151,9 @@ export class Chat {
     await setAsDM(this.client.matrix, result.room_id, users[0].matrixId);
 
     const room = this.client.matrix.getRoom(result.room_id);
+    if (!room) {
+      throw new Error('Room not found');
+    }
     this.client.initializeRoomEventHandlers(room);
     for (const user of users) {
       await this.client.matrix.invite(result.room_id, user.matrixId);
@@ -150,7 +161,12 @@ export class Chat {
     return MatrixAdapter.mapRoomToChannel(room);
   }
 
-  async createUnencryptedConversation(users: User[], name: string = null, image: File = null, groupType?: string) {
+  async createUnencryptedConversation(
+    users: User[],
+    name: string | null = null,
+    image: File | null = null,
+    groupType?: string
+  ) {
     await this.waitForConnection();
     const coverUrl = await this.client.uploadCoverImage(image);
 
@@ -192,6 +208,9 @@ export class Chat {
     await setAsDM(this.client.matrix, result?.room_id, users[0].matrixId);
 
     const room = this.client.matrix.getRoom(result?.room_id);
+    if (!room) {
+      throw new Error('Room not found');
+    }
     this.client.initializeRoomEventHandlers(room);
     for (const user of users) {
       await this.client.matrix.invite(result?.room_id, user.matrixId);
@@ -337,7 +356,7 @@ export async function uploadImageUrl(
   height: number,
   size: number,
   rootMessageId: string,
-  optimisticId: string
+  optimisticId: string | undefined
 ) {
   return await matrixClientInstance.uploadImageUrl(channelId, url, width, height, size, rootMessageId, optimisticId);
 }
@@ -452,7 +471,7 @@ export async function verifyMatrixProfileDisplayNameIsSynced(displayName: string
   return chat.get().matrix.verifyMatrixProfileDisplayNameIsSynced(displayName);
 }
 
-let chatClient: Chat;
+let chatClient: Chat | null = null;
 export const chat = {
   get() {
     if (!chatClient) {

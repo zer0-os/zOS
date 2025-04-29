@@ -6,5 +6,5 @@ export function activeConversationIdSelector(state: RootState) {
 }
 
 export function rawActiveConversationSelector(state: RootState) {
-  return rawChannel(state, activeConversationIdSelector(state));
+  return rawChannel(state, activeConversationIdSelector(state) ?? '');
 }

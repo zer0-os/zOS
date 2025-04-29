@@ -38,9 +38,9 @@ const useAppBar = () => {
 
   const lastActiveMessengerConversationId = useMemo(() => {
     if (!isActiveConversationSocialChannel) {
-      return getLastActiveConversation();
+      return getLastActiveConversation() ?? undefined;
     }
-    return null;
+    return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!isActiveConversationSocialChannel ? activeConversationId : null]);
 

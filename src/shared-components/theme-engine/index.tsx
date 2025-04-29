@@ -1,7 +1,7 @@
 import React from 'react';
 import kebabCase from 'lodash.kebabcase';
 
-import theme from './theme.json';
+import themeJson from './theme.json';
 
 export enum ViewModes {
   Light = 'light',
@@ -10,7 +10,7 @@ export enum ViewModes {
 
 export interface Properties {
   viewMode: ViewModes;
-  element: HTMLElement;
+  element?: HTMLElement;
   theme: { [viewMode: string]: { [styleProp: string]: any } };
 }
 
@@ -29,7 +29,7 @@ export class Component extends React.Component<Properties> {
     const modeObject = this.props.theme[viewMode];
 
     Object.keys(modeObject).forEach((prop) => {
-      this.props.element.style.setProperty(`--${kebabCase(prop)}`, modeObject[prop]);
+      this.props.element && this.props.element.style.setProperty(`--${kebabCase(prop)}`, modeObject[prop]);
     });
   }
 
@@ -38,6 +38,10 @@ export class Component extends React.Component<Properties> {
   }
 }
 
-export function ThemeEngine(props: Partial<Properties>) {
-  return <Component viewMode={props.viewMode} theme={theme} element={document.documentElement} />;
+export function ThemeEngine({
+  viewMode,
+  theme = themeJson,
+  element,
+}: Omit<Properties, 'theme'> & { theme?: Properties['theme'] }) {
+  return <Component viewMode={viewMode} theme={theme} element={element} />;
 }

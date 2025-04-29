@@ -205,7 +205,7 @@ describe('FeedChatContainer', () => {
       const actions = FeedChatContainer.mapActions();
       const id = 'test-id';
 
-      expect(actions.validateFeedChat(id)).toEqual(validateFeedChat({ id }));
+      expect(actions.validateFeedChat?.(id)).toEqual(validateFeedChat({ id }));
     });
 
     it('maps sendMessage to dispatch send action', () => {
@@ -217,7 +217,7 @@ describe('FeedChatContainer', () => {
         files: [],
       };
 
-      expect(actions.sendMessage(payload)).toEqual(send(payload));
+      expect(actions.sendMessage?.(payload)).toEqual(send(payload));
     });
   });
 });

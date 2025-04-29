@@ -36,6 +36,7 @@ describe('ThemeEngine', () => {
   it('passes viewMode to theme engine', () => {
     const setViewMode = jest.fn();
     const wrapper = subject({ setViewMode, viewMode: ViewModes.Dark });
+    console.log(wrapper.debug());
 
     expect(wrapper.find(ThemeEngine).prop('viewMode')).toBe(ViewModes.Dark);
   });

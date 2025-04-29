@@ -9,7 +9,7 @@ export function displayName(user: User) {
   return name || 'Unknown';
 }
 
-export function getUserSubHandle(primaryZID: string, primaryWalletAddress: string) {
+export function getUserSubHandle(primaryZID: string | undefined, primaryWalletAddress: string | undefined) {
   if (primaryZID) {
     return primaryZID;
   }

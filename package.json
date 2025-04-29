@@ -122,6 +122,7 @@
     "@testing-library/react": "^16.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/enzyme": "^3.10.10",
+    "@types/history": "^4.7.11",
     "@types/jest-when": "^3.5.2",
     "@types/react-portal": "^4.0.4",
     "concurrently": "^7.1.0",

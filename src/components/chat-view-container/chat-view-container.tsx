@@ -248,7 +248,7 @@ export class Container extends React.Component<Properties> {
           hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
           onFetchMore={this.fetchMore}
           fetchMessages={this.props.fetchMessages}
-          user={this.props.user.data}
+          user={this.props.user.data ?? null}
           deleteMessage={this.handleDeleteMessage}
           editMessage={this.handleEditMessage}
           showSenderAvatar={this.props.showSenderAvatar}

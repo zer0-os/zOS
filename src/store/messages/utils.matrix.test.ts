@@ -21,7 +21,6 @@ describe(mapMessageSenders, () => {
       profileImage: 'image-url-1',
       profileId: 'profile-1',
       isOnline: true,
-      lastSeenAt: null, // Keep as null (valid string | null)
       primaryZID: 'zid-1',
     };
     user2 = {
@@ -32,7 +31,6 @@ describe(mapMessageSenders, () => {
       profileImage: 'image-url-2',
       profileId: 'profile-2',
       isOnline: false,
-      lastSeenAt: new Date().toISOString(), // Use ISO string
       primaryZID: 'zid-2',
     };
 
@@ -179,7 +177,6 @@ describe(mapNotificationSenders, () => {
       profileImage: 'image-url-1',
       profileId: 'profile-1',
       isOnline: true,
-      lastSeenAt: null, // Keep as null
       primaryZID: 'zid-1',
     };
     user2 = {
@@ -190,7 +187,6 @@ describe(mapNotificationSenders, () => {
       profileImage: 'image-url-2',
       profileId: 'profile-2',
       isOnline: false,
-      lastSeenAt: new Date().toISOString(), // Use ISO string
       primaryZID: 'zid-2',
     };
 

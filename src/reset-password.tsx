@@ -28,7 +28,7 @@ export class Container extends React.Component<Properties> {
     const token = urlSearchParams.get('token');
     return {
       shouldRender: pageload.isComplete,
-      token,
+      token: token ?? undefined,
     };
   }
 

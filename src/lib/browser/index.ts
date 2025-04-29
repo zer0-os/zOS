@@ -1,4 +1,4 @@
-import { createBrowserHistory, createHashHistory } from 'history';
+import { createBrowserHistory, createHashHistory, History } from 'history';
 import { getProvider } from '../../lib/cloudinary/provider';
 import { Message } from '../../store/messages';
 import { isElectron } from '../../utils';
@@ -31,7 +31,7 @@ export function mapMessage(message: Message) {
   return { heading: DEFAULT_HEADING, body: 'You have received a message', tag: message.id };
 }
 
-let theHistory = null;
+let theHistory: History<unknown> | null = null;
 export function getHistory() {
   theHistory = theHistory ?? createHistory();
   return theHistory;

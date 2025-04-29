@@ -36,6 +36,7 @@ describe('usePanelState', () => {
         openStates: {
           [Panel.FEED_CHAT]: false,
           [Panel.MEMBERS]: true,
+          [Panel.NONE]: false,
         },
       }),
     });

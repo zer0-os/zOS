@@ -1,8 +1,8 @@
-import { createChatConnection } from './bus';
+import { createChatConnection, Events } from './bus';
 
 describe('chat bus', () => {
   it('emits user joined channel event', async () => {
-    const receivedEvents = [];
+    const receivedEvents: any[] = [];
     function trackEvents(action) {
       receivedEvents.push(action);
     }
@@ -22,7 +22,7 @@ describe('chat bus', () => {
   });
 
   it('delays events until system is prepared to receive them', async () => {
-    const receivedEvents = [];
+    const receivedEvents: { type: Events; payload: any }[] = [];
     function trackEvents(action) {
       receivedEvents.push(action);
     }
@@ -38,9 +38,14 @@ describe('chat bus', () => {
   });
 });
 
-const stubClient = {
-  handlers: null,
-  initChat(handlers) {
+const stubClient: {
+  handlers: Record<string, any>;
+  initChat: (handlers: Record<string, any>) => void;
+  connect: jest.Mock;
+  disconnect: jest.Mock;
+} = {
+  handlers: {},
+  initChat(handlers: Record<string, any>) {
     this.handlers = handlers;
   },
   connect: jest.fn(),

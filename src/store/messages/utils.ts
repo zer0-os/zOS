@@ -17,7 +17,7 @@ export interface linkifyType {
 export function createOptimisticMessageObject(
   messageText: string,
   user: User,
-  parentMessage: ParentMessage = null,
+  parentMessage: ParentMessage | undefined = undefined,
   file?: { name: string; url: string; mediaType: MediaType; giphy: any; nativeFile: File },
   rootMessageId?: string
 ): Message {
@@ -48,7 +48,7 @@ export function createOptimisticMessageObject(
     isAdmin: false,
     parentMessageText: parentMessage ? parentMessage.message : '',
     parentMessage,
-    parentMessageMedia: parentMessage ? parentMessage.media : null,
+    parentMessageMedia: parentMessage ? parentMessage.media : undefined,
     sender: {
       userId: user.id,
       matrixId: user.matrixId,
@@ -56,7 +56,7 @@ export function createOptimisticMessageObject(
       lastName: user.profileSummary.lastName,
       profileImage: user.profileSummary.profileImage,
       profileId: user.profileId,
-      primaryZID: user.primaryZID,
+      primaryZID: user.primaryZID ?? '',
     },
     updatedAt: 0,
     media,

@@ -132,7 +132,7 @@ export const clearRewards = (): void => {
 };
 
 export function* transferMeow(action) {
-  yield put(setTransferError({ error: null }));
+  yield put(setTransferError({ error: undefined }));
 
   const { meowSenderId, postOwnerId, postMessageId, meowAmount, roomId } = action.payload;
 

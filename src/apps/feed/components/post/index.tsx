@@ -68,7 +68,7 @@ export const Post = ({
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
-    formatWeiAmount(userMeowBalance) <= '0' || ownerUserId?.toLowerCase() === currentUserId?.toLowerCase();
+    formatWeiAmount(userMeowBalance ?? '0') <= '0' || ownerUserId?.toLowerCase() === currentUserId?.toLowerCase();
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -166,7 +166,7 @@ export const Post = ({
                       isDisabled={isDisabled}
                       messageId={messageId}
                       meowPost={meowPost}
-                      hasUserVoted={reactions?.VOTED > 0}
+                      hasUserVoted={!!(reactions?.VOTED ?? 0)}
                     />
                   </PreventPropagation>
                   {featureFlags.enableComments && (
@@ -257,10 +257,14 @@ const ProfileLink = ({
   publicAddress,
   children,
 }: {
-  primaryZid: string;
-  publicAddress: string;
+  primaryZid: string | undefined;
+  publicAddress: string | undefined;
   children: ReactNode;
 }) => {
+  if (!primaryZid && !publicAddress) {
+    return null;
+  }
+
   return (
     <PreventPropagation>
       <Link to={`/profile/${primaryZid ?? publicAddress}`}>{children}</Link>

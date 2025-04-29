@@ -22,7 +22,9 @@ export const selectMutedChannels = createSelector(
     return conversations
       .filter((c) => c.isSocialChannel && c.zid)
       .reduce((acc, channel) => {
-        acc[channel.zid!] = channel.labels?.includes(DefaultRoomLabels.MUTE);
+        if (channel.zid) {
+          acc[channel.zid] = !!channel.labels?.includes(DefaultRoomLabels.MUTE);
+        }
         return acc;
       }, {} as { [zid: string]: boolean });
   }

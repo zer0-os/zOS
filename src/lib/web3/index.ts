@@ -33,12 +33,9 @@ export async function personalSignToken(
   if (!currentAddress) {
     throw new Error('No address to sign message with');
   }
-  if (!config.web3AuthenticationMessage) {
-    throw new Error('Signature message not set in config');
-  }
 
   return await walletClient.signMessage({
     account: currentAddress,
-    message: config.web3AuthenticationMessage,
+    message: config.web3AuthenticationMessage ?? '',
   });
 }

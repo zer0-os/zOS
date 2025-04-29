@@ -1,11 +1,11 @@
-import { EditMessageOptions, Message, MessagesResponse, MessageWithoutSender } from '../../store/messages';
+import { EditMessageOptions, Message, MessageWithoutSender } from '../../store/messages';
 import { Channel, User as UserModel } from '../../store/channels/index';
 import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
-import { MatrixKeyBackupInfo, MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
+import { MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import matrixClientInstance from './matrix/matrix-client-instance';
-import { CustomEventType, MembershipStateType } from './matrix/types';
+import { CustomEventType, IN_ROOM_MEMBERSHIP_STATES } from './matrix/types';
 import { MatrixAdapter } from './matrix/matrix-adapter';
 import { MemberNetworks } from '../../store/users/types';
 import { get } from '../api/rest';
@@ -32,68 +32,6 @@ export interface RealtimeChatEvents {
   roomLabelChange: (roomId: string, labels: string[]) => void;
   messageEmojiReactionChange: (roomId: string, reaction: any) => void;
   receiveRoomData: (roomId: string, roomData: MSC3575RoomData) => void;
-}
-
-export interface IChatClient {
-  init: (events: RealtimeChatEvents) => void;
-  connect: (userId: string, accessToken: string) => Promise<string | null>;
-  disconnect: () => void;
-  reconnect: () => void;
-  supportsOptimisticCreateConversation: () => boolean;
-  getRoomNameById: (id: string) => Promise<string>;
-  getRoomAvatarById: (id: string) => Promise<string>;
-  getRoomGroupTypeById: (id: string) => Promise<string>;
-  getChannels: (id: string) => Promise<Partial<Channel>[]>;
-  getConversations: () => Promise<Partial<Channel>[]>;
-  searchMyNetworksByName: (filter: string) => Promise<MemberNetworks[] | any>;
-  searchMentionableUsersForChannel: (channelId: string, search: string, channelMembers?: UserModel[]) => Promise<any[]>;
-  getMessagesByChannelId: (channelId: string, lastCreatedAt?: number) => Promise<MessagesResponse>;
-  createConversation: (
-    users: User[],
-    name: string,
-    image: File,
-    optimisticId: string
-  ) => Promise<Partial<Channel> | void>;
-  sendMessagesByChannelId: (
-    channelId: string,
-    message: string,
-    mentionedUserIds: string[],
-    parentMessage?: ParentMessage,
-    file?: FileUploadResult,
-    optimisticId?: string,
-    isSocialChannel?: boolean
-  ) => Promise<MessagesResponse>;
-  fetchConversationsWithUsers: (users: User[]) => Promise<Partial<Channel>[]>;
-  deleteMessageByRoomId: (roomId: string, messageId: string) => Promise<void>;
-  leaveRoom: (roomId: string, userId: string) => Promise<void>;
-  editMessage(
-    roomId: string,
-    messageId: string,
-    message: string,
-    mentionedUserIds: string[],
-    data?: Partial<EditMessageOptions>
-  ): Promise<any>;
-  markRoomAsRead: (roomId: string, userId?: string) => Promise<void>;
-  getSecureBackup: () => Promise<MatrixKeyBackupInfo>;
-  generateSecureBackup: () => Promise<any>;
-  saveSecureBackup: (key: string) => Promise<void>;
-  restoreSecureBackup: (
-    recoveryKey: string,
-    onProgress?: (progress: ImportRoomKeyProgressData) => void
-  ) => Promise<void>;
-  getRoomIdForAlias: (alias: string) => Promise<string | undefined>;
-  uploadFile(file: File): Promise<string>;
-  downloadFile(fileUrl: string): Promise<any>;
-  batchDownloadFiles(
-    fileUrls: string[],
-    isThumbnail: boolean,
-    batchSize: number
-  ): Promise<{ [fileUrl: string]: string }>;
-  verifyMatrixProfileDisplayNameIsSynced(displayName: string): Promise<void>;
-  editProfile(profileInfo: MatrixProfileInfo): Promise<void>;
-  getAccessToken(): string | null;
-  mxcUrlToHttp(mxcUrl: string): string;
-  getProfileInfo(userId: string): Promise<{ avatar_url?: string; displayname?: string }>;
 }
 
 export class Chat {
@@ -127,24 +65,34 @@ export class Chat {
   }
 
   async setupConversations() {
-    const rooms = await this.client.getRoomsUserIsIn();
+    this.client.initializeRooms();
+  }
 
-    const failedToJoin = [];
-    for (const room of rooms) {
-      const membership = room.getMyMembership();
+  /**
+   * Returns a list of channels that the user is a member of
+   * @returns Partial<Channel>[]
+   */
+  getChannels(): Partial<Channel>[] {
+    return matrixClientInstance.matrix
+      .getRooms()
+      .filter((room) => IN_ROOM_MEMBERSHIP_STATES.includes(room.getMyMembership()))
+      .map((room) => MatrixAdapter.mapRoomToChannel(room));
+  }
 
-      this.client.initializeRoomEventHandlers(room);
-
-      if (membership === MembershipStateType.Invite) {
-        if (!(await this.client.autoJoinRoom(room.roomId))) {
-          failedToJoin.push(room.roomId);
-        }
-      }
-    }
-
-    const filteredRooms = rooms.filter((r) => !failedToJoin.includes(r.roomId));
-
-    await this.client.lowerMinimumInviteAndKickLevels(filteredRooms);
+  /**
+   * Returns the members of a channel
+   * @param channelId - The id of the channel
+   * @returns { otherMembers: User[]; memberHistory: User[]; totalMembers: number }
+   */
+  getChannelMembers(
+    channelId: string
+  ): { otherMembers: User[]; memberHistory: User[]; totalMembers: number } | undefined {
+    const { otherMembers, memberHistory, totalMembers } = this.client.getRoomMembers(channelId);
+    return {
+      otherMembers: otherMembers.map((m) => MatrixAdapter.mapMatrixUserToUser(m)),
+      memberHistory: memberHistory.map((m) => MatrixAdapter.mapMatrixUserToUser(m)),
+      totalMembers,
+    };
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {

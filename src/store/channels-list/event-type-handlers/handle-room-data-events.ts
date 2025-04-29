@@ -1,8 +1,8 @@
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
-import { MatrixClient } from '../../matrix-client';
-import { isGroupTypeEvent, handleGroupTypeEvent } from './groupType';
-import { isRoomMemberEvent, handleRoomMemberEvent } from './roomMember';
-import { handleRoomMessageEvent, isRoomMessageEvent } from './roomMessage';
+import { MatrixClient } from '../../../lib/chat/matrix-client';
+import { isGroupTypeEvent, handleGroupTypeEvent } from './group-type';
+import { isRoomMemberEvent, handleRoomMemberEvent } from './room-member';
+import { handleRoomMessageEvent, isRoomMessageEvent } from './room-message';
 import { spawn } from 'redux-saga/effects';
 
 export function* handleRoomDataEvents(roomId: string, roomData: MSC3575RoomData, client: MatrixClient) {
@@ -20,7 +20,7 @@ export function* handleRoomDataEvents(roomId: string, roomData: MSC3575RoomData,
   }
 
   // Initial sync handling is done in the saga batchedRoomDataAction as there can be large
-  // amounts of events coming through at once. This is for incremental even thandling
+  // amounts of events coming through at once. This is for incremental event handling
   if (!roomData.initial) {
     for (const event of roomData.timeline) {
       if (isRoomMessageEvent(event)) {

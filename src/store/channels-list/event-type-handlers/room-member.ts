@@ -1,7 +1,7 @@
 import { EventType, Membership } from 'matrix-js-sdk';
-import { MatrixClient } from '../../matrix-client';
+import { MatrixClient } from '../../../lib/chat/matrix-client';
 import { call, spawn } from 'redux-saga/effects';
-import { batchGetUsersByMatrixId } from '../../../../store/users/saga';
+import { batchGetUsersByMatrixId } from '../../users/saga';
 
 type RoomMemberEvent = {
   type: EventType.RoomMember;

@@ -1,8 +1,8 @@
 import { EventType } from 'matrix-js-sdk';
 import { put, select } from 'redux-saga/effects';
-import { receive } from '../../../../store/channels';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
-import { rawChannel } from '../../../../store/channels/selectors';
+import { receive } from '../../channels';
+import { rawChannel } from '../../channels/selectors';
 
 type RoomMessageEvent = {
   type: EventType.RoomMessage | EventType.RoomMessageEncrypted;

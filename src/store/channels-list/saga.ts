@@ -15,13 +15,13 @@ import { setIsConversationsLoaded } from '../chat';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
-import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
 import { userSelector } from '../users/selectors';
-import { handleRoomDataEvents } from '../../lib/chat/matrix/event-type-handlers/handleRoomDataEvents';
+import { handleRoomDataEvents } from './event-type-handlers/handle-room-data-events';
 
 export function* fetchChannels() {
   // Get initial channels from Matrix store for faster initial load
-  const initChannels = yield call(MatrixAdapter.getChannels);
+  const chatClient = yield call(chat.get);
+  const initChannels = yield call([chatClient, chatClient.getChannels]);
   for (const channel of initChannels) {
     yield call(receiveChannel, channel);
   }
@@ -30,7 +30,6 @@ export function* fetchChannels() {
   yield put(conversationBus, { type: ConversationEvents.ConversationsLoaded });
   yield call(matrixClientInstance.waitForConnection);
   // Setup the channels with event handlers
-  const chatClient = yield call(chat.get);
   yield call([chatClient, chatClient.setupConversations]);
 }
 
@@ -80,7 +79,8 @@ function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
   while (true) {
     yield take(userChannel, AuthEvents.UserLogin);
-    yield call(MatrixAdapter.matrixInitialized);
+    const chatClient = yield call(chat.get);
+    yield call([chatClient, chatClient.waitForConnection]);
     yield call(fetchChannels);
   }
 }
@@ -105,6 +105,11 @@ function* currentUserLeftChannel(channelId: string) {
 
 type RoomDataAction = { payload: { roomId: string; roomData: MSC3575RoomData } };
 let pendingRoomData: RoomDataAction['payload'][] = [];
+/**
+ * Batches room data events from Sliding Sync. MSC3575RoomData contains various information about the room,
+ * based on the room subscription list in sliding-sync.ts
+ * @param action The room data action.
+ */
 function* batchedRoomDataAction(action: RoomDataAction) {
   pendingRoomData.push(action.payload);
   if (pendingRoomData.length > 1) {
@@ -187,7 +192,8 @@ function* processRoomUpdate(roomId: string) {
   const channel = yield select(channelSelector(roomId));
   if (!channel) return;
 
-  const members = MatrixAdapter.getRoomMembers(roomId);
+  const chatClient = yield call(chat.get);
+  const members = yield call([chatClient, chatClient.getChannelMembers], roomId);
   if (members) {
     yield call(receiveChannel, {
       id: channel.id,

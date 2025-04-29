@@ -116,6 +116,7 @@ describe('Chat', () => {
       init: vi.fn(),
       disconnect: vi.fn().mockResolvedValue(undefined),
       reconnect: vi.fn(),
+      initializeRooms: vi.fn(),
       getMessagesByChannelId: vi.fn().mockResolvedValue({ messages: [], hasMore: false }),
       sendMessagesByChannelId: vi.fn().mockResolvedValue({ id: 'message-id', optimisticId: 'optimistic-id' }),
       editMessage: vi.fn().mockResolvedValue({ id: 'edit-id' }),
@@ -200,33 +201,7 @@ describe('Chat', () => {
 
       await chat.setupConversations();
 
-      expect(mockMatrixClient.getRoomsUserIsIn).toHaveBeenCalled();
-      expect(mockMatrixClient.initializeRoomEventHandlers).toHaveBeenCalledTimes(2);
-      expect(mockMatrixClient.lowerMinimumInviteAndKickLevels).toHaveBeenCalled();
-    });
-
-    it('auto-joins rooms with invite status', async () => {
-      // Mock a room with invite status
-      const inviteRoom = createMockRoom('invite-room', { getMyMembership: vi.fn().mockReturnValue('invite') });
-      mockMatrixClient.getRoomsUserIsIn.mockResolvedValueOnce([inviteRoom]);
-      mockMatrixClient.autoJoinRoom = vi.fn().mockResolvedValue(true);
-
-      await chat.setupConversations();
-
-      expect(mockMatrixClient.autoJoinRoom).toHaveBeenCalledWith('invite-room');
-      expect(mockMatrixClient.initializeRoomEventHandlers).toHaveBeenCalledWith(inviteRoom);
-    });
-
-    it('filters out failed join attempts', async () => {
-      // Mock a room with invite status that fails to join
-      const inviteRoom = createMockRoom('invite-room', { getMyMembership: vi.fn().mockReturnValue('invite') });
-      mockMatrixClient.getRoomsUserIsIn.mockResolvedValueOnce([inviteRoom]);
-      mockMatrixClient.autoJoinRoom = vi.fn().mockResolvedValue(false);
-
-      await chat.setupConversations();
-
-      // Shouldn't initialize event handlers for a room we failed to join
-      expect(mockMatrixClient.lowerMinimumInviteAndKickLevels).toHaveBeenCalledWith([]);
+      expect(mockMatrixClient.initializeRooms).toHaveBeenCalled();
     });
   });
 

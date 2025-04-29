@@ -51,7 +51,7 @@ const ENCRYPTED_SUBSCRIPTION = {
   ...DEFAULT_ROOM_SUBSCRIPTION_INFO,
 };
 
-const sssLists: Record<string, MSC3575List> = {
+const roomSubscriptionLists: Record<string, MSC3575List> = {
   invites: {
     ranges: [[0, 20]],
     timeline_limit: 1,
@@ -117,8 +117,8 @@ export class SlidingSyncManager {
   private configure(client: MatrixClient, proxyUrl: string): SlidingSync {
     this.client = client;
     const lists = new Map();
-    for (const listName in sssLists) {
-      lists.set(listName, sssLists[listName]);
+    for (const listName in roomSubscriptionLists) {
+      lists.set(listName, roomSubscriptionLists[listName]);
     }
     this.slidingSync = new SlidingSync(proxyUrl, lists, ENCRYPTED_SUBSCRIPTION, client, SLIDING_SYNC_TIMEOUT_MS);
     this.slidingSync.addCustomSubscription(UNENCRYPTED_SUBSCRIPTION_NAME, UNENCRYPTED_SUBSCRIPTION);
@@ -176,8 +176,8 @@ export class SlidingSyncManager {
     gapBetweenRequestsMs: number
   ): Promise<void> {
     const listToUpperBound = new Map(
-      Object.keys(sssLists).map((listName) => {
-        return [listName, sssLists[listName].ranges[0][1]];
+      Object.keys(roomSubscriptionLists).map((listName) => {
+        return [listName, roomSubscriptionLists[listName].ranges[0][1]];
       })
     );
 

@@ -6,6 +6,7 @@ export type DialogState = {
     isOpen: boolean;
     media: any[];
     startingIndex: number;
+    hasActions?: boolean;
   };
 };
 
@@ -15,6 +16,7 @@ export const initialState: DialogState = {
     isOpen: false,
     media: [],
     startingIndex: 0,
+    hasActions: true,
   },
 };
 
@@ -28,11 +30,12 @@ const slice = createSlice({
     closeDeleteMessage: (state) => {
       state.deleteMessageId = null;
     },
-    openLightbox: (state, action: PayloadAction<{ media: any[]; startingIndex: number }>) => {
+    openLightbox: (state, action: PayloadAction<{ media: any[]; startingIndex: number; hasActions?: boolean }>) => {
       state.lightbox = {
         isOpen: true,
         media: action.payload.media,
         startingIndex: action.payload.startingIndex,
+        hasActions: action.payload.hasActions,
       };
     },
     closeLightbox: (state) => {

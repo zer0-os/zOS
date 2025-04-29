@@ -26,6 +26,7 @@ export interface Properties extends PublicProperties {
     isOpen: boolean;
     media: any[];
     startingIndex: number;
+    hasActions: boolean;
   };
 
   closeCreateBackupDialog: () => void;
@@ -128,6 +129,7 @@ export class Container extends React.Component<Properties> {
         items={this.props.lightbox.media}
         startingIndex={this.props.lightbox.startingIndex}
         onClose={this.closeLightbox}
+        hasActions={this.props.lightbox.hasActions}
       />
     );
   };

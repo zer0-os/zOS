@@ -3,24 +3,27 @@ import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { getPlaceholderDimensions } from './utils';
 import { PostMedia as PostMediaType } from './types';
+import { useDispatch } from 'react-redux';
+import { openLightbox } from '../../../../store/dialogs';
 
 import styles from './styles.module.scss';
 
 interface PostMediaProps {
   media: PostMediaType;
-  onImageClick?: (media: PostMediaType) => void;
 }
 
-export const PostMedia = ({ media, onImageClick }: PostMediaProps) => {
+export const PostMedia = ({ media }: PostMediaProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const { width, height } = getPlaceholderDimensions(media.width, media.height);
+  const dispatch = useDispatch();
 
   const handleImageLoad = () => {
     setIsImageLoaded(true);
   };
 
-  const onClick = () => {
-    onImageClick?.(media);
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(openLightbox({ media: [media], startingIndex: 0, hasActions: false }));
   };
 
   const renderPlaceholderContent = () => (
@@ -43,7 +46,7 @@ export const PostMedia = ({ media, onImageClick }: PostMediaProps) => {
   }
 
   return (
-    <div className={styles.BlockImage} onClick={onClick}>
+    <div className={styles.BlockImage} onClick={handleClick}>
       <img src={media.url} alt={media.name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
     </div>
   );

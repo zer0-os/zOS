@@ -22,9 +22,11 @@ export interface LightboxProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getSource: (options: { src: string; options: any }) => string;
   };
+  /** Whether to show action buttons (copy/download). Defaults to true */
+  hasActions?: boolean;
 }
 
-export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: LightboxProps) => {
+export const Lightbox = ({ items, startingIndex = 0, onClose, provider, hasActions = true }: LightboxProps) => {
   const [index, setIndex] = useState(startingIndex);
   const [isCopied, setIsCopied] = useState(false);
   const currentItem = items[index];
@@ -160,7 +162,7 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider }: Lightb
       <div className={styles.Controls}>
         <div className={styles.TopBar}>
           <div className={styles.Tools}>
-            {!isCurrentItemGif && (
+            {!isCurrentItemGif && hasActions && (
               <>
                 <IconButton onClick={copyImage} Icon={IconCopy2} size='large' isFilled={isCopied} />
                 <IconButton onClick={downloadImage} Icon={IconDownload2} size='large' />

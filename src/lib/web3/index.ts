@@ -36,6 +36,6 @@ export async function personalSignToken(
 
   return await walletClient.signMessage({
     account: currentAddress,
-    message: config.web3AuthenticationMessage ?? '',
+    message: config.web3AuthenticationMessage,
   });
 }

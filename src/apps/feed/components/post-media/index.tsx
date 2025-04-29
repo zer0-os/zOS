@@ -19,6 +19,10 @@ export const PostMedia = ({ media, onImageClick }: PostMediaProps) => {
     setIsImageLoaded(true);
   };
 
+  const onClick = () => {
+    onImageClick?.(media);
+  };
+
   const renderPlaceholderContent = () => (
     <>
       {media.filecoinStatus === 'failed' ? (
@@ -39,7 +43,7 @@ export const PostMedia = ({ media, onImageClick }: PostMediaProps) => {
   }
 
   return (
-    <div className={styles.BlockImage} onClick={() => onImageClick?.(media)}>
+    <div className={styles.BlockImage} onClick={onClick}>
       <img src={media.url} alt={media.name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
     </div>
   );

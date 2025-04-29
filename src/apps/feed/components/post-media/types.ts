@@ -1,6 +1,5 @@
 export enum PostMediaType {
   Image = 'image',
-  Video = 'video',
 }
 
 export interface PostMedia {

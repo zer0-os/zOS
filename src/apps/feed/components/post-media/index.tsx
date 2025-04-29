@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { getPlaceholderDimensions } from './utils';
-import { PostMedia as PostMediaType, PostMediaType as MediaType } from './types';
+import { PostMedia as PostMediaType } from './types';
 
 import styles from './styles.module.scss';
 
@@ -38,26 +38,9 @@ export const PostMedia = ({ media, onImageClick }: PostMediaProps) => {
     );
   }
 
-  if (media.type === MediaType.Image) {
-    return (
-      <div className={styles.BlockImage} onClick={() => onImageClick?.(media)}>
-        <img
-          src={media.url}
-          alt={media.name}
-          onLoad={handleImageLoad}
-          style={!isImageLoaded ? { width, height } : {}}
-        />
-      </div>
-    );
-  } else if (media.type === MediaType.Video) {
-    return (
-      <div className={styles.BlockVideo}>
-        <video controls>
-          <source src={media.url} />
-        </video>
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div className={styles.BlockImage} onClick={() => onImageClick?.(media)}>
+      <img src={media.url} alt={media.name} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
+    </div>
+  );
 };

@@ -15,21 +15,6 @@
   animation: fadein 1s ease-in forwards;
 }
 
-.BlockVideo {
-  position: relative;
-  width: 100%;
-  margin-top: 16px;
-
-  video {
-    display: block;
-    margin: auto;
-    max-width: 100%;
-    max-height: 520px;
-    border-radius: 16px;
-    border: 1px solid rgba(52, 56, 60, 0.5);
-  }
-}
-
 .PlaceholderContainer {
   display: flex;
   justify-content: center;

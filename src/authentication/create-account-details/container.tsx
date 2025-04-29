@@ -2,8 +2,7 @@ import * as React from 'react';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import { CreateAccountDetails } from '.';
-import { ProfileDetailsErrors } from '../../store/registration';
-import { updateProfile } from '../../store/registration';
+import { ProfileDetailsErrors, updateProfile } from '../../store/registration';
 
 export interface PublicProperties {}
 

@@ -10,7 +10,8 @@
         "varsIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^_"
       }
-    ]
+    ],
+    "import/no-duplicates": "error"
   },
   "plugins": ["react-redux"],
   "overrides": [

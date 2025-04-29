@@ -3,9 +3,7 @@ import {
   MessageMenu as MessageMenuComponent,
   Properties as MessageMenuComponentProps,
 } from '../../../platform-apps/channels/messages-menu';
-import { MediaType } from '../../../store/messages';
-import { Media } from '../../../store/messages';
-import { MessageSendStatus } from '../../../store/messages';
+import { MediaType, Media, MessageSendStatus } from '../../../store/messages';
 
 const cn = bemClassName('message');
 

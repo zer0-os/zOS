@@ -2,10 +2,9 @@
  * @jest-environment jsdom
  */
 
-import React from 'react';
+import React, { act } from 'react';
 import { mount } from 'enzyme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act } from 'react';
 
 import { EditProfile, Properties } from './index';
 import { Alert } from '@zero-tech/zui/components';

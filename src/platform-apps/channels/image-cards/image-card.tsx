@@ -1,8 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 
-import { ImageModel } from './types';
-import ImageSizes from './types';
+import ImageSizes, { ImageModel } from './types';
 import { IconTrash4 } from '@zero-tech/zui/icons';
 
 export interface Properties {

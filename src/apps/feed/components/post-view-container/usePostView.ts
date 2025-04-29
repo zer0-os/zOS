@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
-import { getPost } from '../../../../store/posts/utils';
-import { mapPostToMatrixMessage } from '../../../../store/posts/utils';
+import { getPost, mapPostToMatrixMessage } from '../../../../store/posts/utils';
 import { useMeowPost } from '../../lib/useMeowPost';
 import { userIdSelector } from '../../../../store/authentication/selectors';
 import { userRewardsMeowBalanceSelector } from '../../../../store/rewards/selectors';

@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import { User } from '../../store/channels';
+import { User, userTypingInRoom } from '../../store/channels';
 import { UserForMention, Media } from './utils';
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
@@ -7,7 +7,6 @@ import { ViewModes } from '../../shared-components/theme-engine';
 import { MessageInput as MessageInputComponent } from './index';
 import { ParentMessage } from '../../lib/chat/types';
 import { currentUserSelector } from '../../store/authentication/saga';
-import { userTypingInRoom } from '../../store/channels';
 
 export interface PublicProperties {
   onSubmit: (message: string, mentionedUserIds: User['userId'][], media: Media[]) => void;

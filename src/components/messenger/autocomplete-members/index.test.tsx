@@ -1,10 +1,9 @@
 import React from 'react';
 
 import { shallow } from 'enzyme';
-import { AutocompleteMembers } from './';
+import { AutocompleteMembers, Properties } from './';
 import { when } from 'jest-when';
 
-import { Properties } from './';
 import { Waypoint } from '../../waypoint';
 
 describe('autocomplete-members', () => {

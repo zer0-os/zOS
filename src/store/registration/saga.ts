@@ -20,8 +20,7 @@ import {
   completeAccount as apiCompleteAccount,
   addEmailAccount as apiAddEmailAccount,
 } from './api';
-import { fetchCurrentUser } from '../authentication/api';
-import { nonce as nonceApi } from '../authentication/api';
+import { fetchCurrentUser, nonce as nonceApi } from '../authentication/api';
 import { isPasswordValid } from '../../lib/password';
 import { getSignedToken } from '../web3/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';

@@ -141,7 +141,8 @@ export class PostInput extends React.Component<Properties, State> {
   };
 
   mediaSelected = (newMedia: Media[]): void => {
-    this.setState({ media: [...this.state.media, ...newMedia] });
+    const mediaToAdd = newMedia[0] ? [newMedia[0]] : [];
+    this.setState({ media: mediaToAdd });
     this.props.onPostInputRendered(this.textareaRef);
   };
 
@@ -150,7 +151,7 @@ export class PostInput extends React.Component<Properties, State> {
       ? this.props.dropzoneToMedia(acceptedFiles)
       : dropzoneToMedia(acceptedFiles);
     if (newImages.length) {
-      this.mediaSelected(newImages);
+      this.mediaSelected([newImages[0]]);
     }
   };
 

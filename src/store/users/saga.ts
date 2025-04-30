@@ -8,7 +8,7 @@ import { queryClient } from '../../lib/web3/rainbowkit/provider';
 import { verifyMatrixProfileDisplayNameIsSynced as verifyMatrixProfileDisplayNameIsSyncedAPI } from '../../lib/chat';
 import { currentUserSelector } from '../authentication/selectors';
 import { isTelegramMatrixId } from '../../lib/chat/matrix/utils';
-import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
+import Matrix from '../../lib/chat/matrix/matrix-client-instance';
 import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
 import { User } from '../channels';
 export function* clearUsers() {
@@ -76,7 +76,7 @@ export function* getUsersByMatrixIds(matrixIds: string[]) {
   for (const matrixId of matrixIds) {
     const telegramUsers = [];
     if (isTelegramMatrixId(matrixId)) {
-      const matrixUser = matrixClientInstance.matrix.getUser(matrixId);
+      const matrixUser = Matrix.client.getUser(matrixId);
       if (matrixUser) {
         const user = MatrixAdapter.mapMatrixUserToUser(matrixUser);
         telegramUsers.push(user);

@@ -1,9 +1,10 @@
-import { EventType, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk/lib/matrix';
+import { EventType } from 'matrix-js-sdk/lib/matrix';
 import { User as ChannelMember } from '../../../store/channels';
 import isEqual from 'lodash.isequal';
+import { MatrixClient } from '../matrix-client';
 
 // Copied from the matrix-react-sdk
-export async function setAsDM(matrix: SDKMatrixClient, roomId: string, userId: string): Promise<void> {
+export async function setAsDM(matrix: MatrixClient, roomId: string, userId: string): Promise<void> {
   const mDirectEvent = matrix.getAccountData(EventType.Direct);
   const currentContent = mDirectEvent?.getContent() || {};
 

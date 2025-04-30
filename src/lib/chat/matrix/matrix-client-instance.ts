@@ -1,5 +1,20 @@
 import { MatrixClient } from '../matrix-client';
 
-const matrixClientInstance = new MatrixClient();
+class MatrixInstance {
+  private _clientInstance: MatrixClient;
 
-export default matrixClientInstance;
+  constructor() {
+    this._clientInstance = new MatrixClient();
+  }
+
+  get client() {
+    return this._clientInstance;
+  }
+
+  resetClientInstance() {
+    this._clientInstance = new MatrixClient();
+  }
+}
+
+const Matrix = new MatrixInstance();
+export default Matrix;

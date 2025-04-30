@@ -14,7 +14,7 @@ import { channelSelector } from '../channels/selectors';
 import { setIsConversationsLoaded } from '../chat';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
-import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
+import Matrix from '../../lib/chat/matrix/matrix-client-instance';
 import { userSelector } from '../users/selectors';
 import { handleRoomDataEvents } from './event-type-handlers/handle-room-data-events';
 
@@ -28,7 +28,7 @@ export function* fetchChannels() {
   yield put(setIsConversationsLoaded(true));
   const conversationBus = yield call(getConversationsBus);
   yield put(conversationBus, { type: ConversationEvents.ConversationsLoaded });
-  yield call(matrixClientInstance.waitForConnection);
+  yield call(Matrix.client.waitForConnection);
   // Setup the channels with event handlers
   yield call([chatClient, chatClient.setupConversations]);
 }
@@ -121,7 +121,7 @@ function* batchedRoomDataAction(action: RoomDataAction) {
   pendingRoomData = [];
 
   for (const update of batchedUpdates) {
-    yield call(handleRoomDataEvents, update.roomId, update.roomData, matrixClientInstance);
+    yield call(handleRoomDataEvents, update.roomId, update.roomData, Matrix.client);
     if (update.roomData.initial) {
       const mappedChannel: Partial<Channel> = yield call(updateChannelWithRoomData, update.roomId, update.roomData);
       yield spawn(receiveChannel, mappedChannel);

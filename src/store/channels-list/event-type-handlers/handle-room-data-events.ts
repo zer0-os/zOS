@@ -6,7 +6,7 @@ import { handleRoomMessageEvent, isRoomMessageEvent } from './room-message';
 import { spawn } from 'redux-saga/effects';
 
 export function* handleRoomDataEvents(roomId: string, roomData: MSC3575RoomData, client: MatrixClient) {
-  const room = client.matrix.getRoom(roomId);
+  const room = client.getRoom(roomId);
   if (!room) return;
 
   for (const event of roomData.required_state) {

@@ -74,7 +74,7 @@ export class Chat {
    * @returns Partial<Channel>[]
    */
   getChannels(): Partial<Channel>[] {
-    return Matrix.client
+    return this.client
       .getRooms()
       .filter((room) => IN_ROOM_MEMBERSHIP_STATES.includes(room.getMyMembership()))
       .map((room) => MatrixAdapter.mapRoomToChannel(room));

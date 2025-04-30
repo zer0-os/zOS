@@ -284,7 +284,6 @@ describe('MatrixClient', () => {
       expect(mockSessionStorage.set).toHaveBeenCalledWith({
         userId: '@new-user:matrix.org',
         deviceId: 'new-device',
-        accessToken: 'new-access-token',
       });
     });
   });

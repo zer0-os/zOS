@@ -101,6 +101,7 @@ export function createChatConnection(userId: string, chatAccessToken: string, ch
     const roomLabelChange = (roomId, labels) => emit({ type: Events.RoomLabelChange, payload: { roomId, labels } });
     const messageEmojiReactionChange = (roomId, reaction) =>
       emit({ type: Events.MessageEmojiReactionChange, payload: { roomId, reaction } });
+    const tokenRefreshLogout = () => emit({ type: Events.InvalidToken });
 
     chatClient.initChat({
       receiveNewMessage,
@@ -121,6 +122,7 @@ export function createChatConnection(userId: string, chatAccessToken: string, ch
       roomLabelChange,
       messageEmojiReactionChange,
       receiveRoomData,
+      tokenRefreshLogout,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

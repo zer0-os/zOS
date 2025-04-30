@@ -32,6 +32,7 @@ export interface RealtimeChatEvents {
   roomLabelChange: (roomId: string, labels: string[]) => void;
   messageEmojiReactionChange: (roomId: string, reaction: any) => void;
   receiveRoomData: (roomId: string, roomData: MSC3575RoomData) => void;
+  tokenRefreshLogout: () => void;
 }
 
 export class Chat {

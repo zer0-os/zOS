@@ -1286,6 +1286,8 @@ export class MatrixClient {
       (type === EventType.RoomMessage || type === EventType.RoomMessageEncrypted)
     ) {
       const effectiveEvent = event.getEffectiveEvent();
+      if (effectiveEvent.content['m.relates_to']?.rel_type === 'm.replace') return;
+
       this.publishMessageEvent(effectiveEvent);
     }
   }

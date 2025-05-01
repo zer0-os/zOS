@@ -1274,6 +1274,22 @@ export class MatrixClient {
     }
   }
 
+  private async processRoomLocalEchoUpdated(
+    event: MatrixEvent,
+    _room: Room,
+    _eventId: string,
+    eventStatus: EventStatus
+  ) {
+    const type = event.getType();
+    if (
+      eventStatus === EventStatus.SENT &&
+      (type === EventType.RoomMessage || type === EventType.RoomMessageEncrypted)
+    ) {
+      const effectiveEvent = event.getEffectiveEvent();
+      this.publishMessageEvent(effectiveEvent);
+    }
+  }
+
   private async processRoomTimelineEvent(
     event: MatrixEvent,
     _room: Room | undefined,
@@ -1281,9 +1297,6 @@ export class MatrixClient {
     removed: boolean,
     data: IRoomTimelineData
   ) {
-    if (event.getSender() === this.userId && event.status !== EventStatus.SENDING) {
-      this.publishMessageEvent(event.getEffectiveEvent());
-    }
     if (removed) return;
     if (!data.liveEvent || !!toStartOfTimeline) return;
     if (event.getTs() < this.initializationTimestamp) return;
@@ -1355,6 +1368,7 @@ export class MatrixClient {
     });
 
     this.matrix.on(RoomEvent.Name, this.publishRoomNameChange);
+    this.matrix.on(RoomEvent.LocalEchoUpdated, this.processRoomLocalEchoUpdated.bind(this));
     this.matrix.on(RoomMemberEvent.Typing, this.publishRoomMemberTyping);
     this.matrix.on(RoomMemberEvent.PowerLevel, this.publishRoomMemberPowerLevelsChanged);
 

@@ -3,6 +3,7 @@ import { get, post } from '../../lib/api/rest';
 import { getWagmiConfig } from '../../lib/web3/wagmi-config';
 import { getWalletClient } from '@wagmi/core';
 import { ethers } from 'ethers';
+import { featureFlags } from '../../lib/feature-flags';
 
 export interface SignedMessagePayload {
   created_at: string;
@@ -47,6 +48,7 @@ export function mapPostToMatrixMessage(post) {
     isAdmin: false,
     isPost: true,
     media: null,
+    mediaId: post.mediaId,
     mentionedUsers: [],
     message: post.text,
     optimisticId: post.id,
@@ -91,6 +93,11 @@ export async function uploadPost(formData: FormData, worldZid: string) {
     const replyTo = formData.get('replyTo');
     if (replyTo) {
       request = request.field('replyTo', replyTo);
+    }
+
+    const mediaId = formData.get('mediaId');
+    if (featureFlags.enablePostMedia && mediaId) {
+      request = request.field('mediaId', mediaId);
     }
 
     request.end((err, res) => {

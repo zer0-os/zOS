@@ -35,6 +35,7 @@ export const Replies = ({ postId, isFeed }: RepliesProps) => {
                 numberOfReplies={reply.numberOfReplies}
                 channelZid={reply.channelZid}
                 avatarUrl={reply.sender?.avatarUrl}
+                mediaId={reply.mediaId}
               />
             </li>
           ))

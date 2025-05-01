@@ -10,6 +10,8 @@ import ImageCards from '../../../../platform-apps/channels/image-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { ViewModes } from '../../../../shared-components/theme-engine';
 import { IconFaceSmile } from '@zero-tech/zui/icons';
+import { PostMediaMenu } from './menu';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 import { bemClassName } from '../../../../lib/bem';
 import classNames from 'classnames';
@@ -136,12 +138,17 @@ export class PostInput extends React.Component<Properties, State> {
       media: media.filter((m) => m.id !== mediaToRemove.id),
     });
 
-    this.props.onPostInputRendered(this.textareaRef);
+    if (this.props.onPostInputRendered) {
+      this.props.onPostInputRendered(this.textareaRef);
+    }
   };
 
   mediaSelected = (newMedia: Media[]): void => {
-    this.setState({ media: [...this.state.media, ...newMedia] });
-    this.props.onPostInputRendered(this.textareaRef);
+    const mediaToAdd = newMedia[0] ? [newMedia[0]] : [];
+    this.setState({ media: mediaToAdd });
+    if (this.props.onPostInputRendered) {
+      this.props.onPostInputRendered(this.textareaRef);
+    }
   };
 
   imagesSelected = (acceptedFiles): void => {
@@ -149,7 +156,7 @@ export class PostInput extends React.Component<Properties, State> {
       ? this.props.dropzoneToMedia(acceptedFiles)
       : dropzoneToMedia(acceptedFiles);
     if (newImages.length) {
-      this.mediaSelected(newImages);
+      this.mediaSelected([newImages[0]]);
     }
   };
 
@@ -190,7 +197,7 @@ export class PostInput extends React.Component<Properties, State> {
           noClick
           accept={this.mimeTypes}
           maxSize={config.cloudinary.max_file_size}
-          disabled={true}
+          disabled={!featureFlags.enablePostMedia}
         >
           {({ getRootProps }) => (
             <div {...getRootProps({ ...cn('drop-zone-text-area') })}>
@@ -229,6 +236,7 @@ export class PostInput extends React.Component<Properties, State> {
                   <div {...cn('actions')}>
                     <div {...cn('icon-wrapper')}>
                       <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
+                      {featureFlags.enablePostMedia && <PostMediaMenu onSelected={this.mediaSelected} />}
                       <AnimatePresence>
                         {this.state.value.length > SHOW_MAX_LABEL_THRESHOLD && (
                           <motion.span

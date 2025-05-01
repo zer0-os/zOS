@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Media } from '../../../components/message-input/utils';
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
+import { uploadMedia } from '../../../store/posts/media-api';
 import { POST_MAX_LENGTH } from './constants';
 import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
 import { featureFlags } from '../../../lib/feature-flags';
@@ -34,7 +35,7 @@ export const useSubmitPost = () => {
     /**
      * @note this mutation function is an almost exact copy of the saga logic. This will be refactored in the future.
      */
-    mutationFn: async ({ message, replyToId, channelZid }: SubmitPostParams) => {
+    mutationFn: async ({ message, replyToId, channelZid, media }: SubmitPostParams) => {
       const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
 
       const authorAddress = featureFlags.enableZeroWalletSigning ? account?.address : connectedAddress;
@@ -48,7 +49,11 @@ export const useSubmitPost = () => {
       }
 
       if (!message || message.trim() === '') {
-        throw new Error('Post is empty');
+        throw new Error(!media ? 'Post is empty' : 'Please add a message to your post');
+      }
+
+      if (media && media.length > 1) {
+        throw new Error('Only one media file is supported at the moment');
       }
 
       if (message.length > POST_MAX_LENGTH) {
@@ -61,6 +66,22 @@ export const useSubmitPost = () => {
 
       if (!userWallets.find((w) => w.publicAddress.toLowerCase() === authorAddress.toLowerCase())) {
         throw new Error('Wallet is not linked to your account');
+      }
+
+      // Handle media upload first if present
+      let mediaId: string | undefined;
+      if (media && media.length > 0) {
+        try {
+          const file = media[0].nativeFile;
+          if (!file) {
+            throw new Error('Media file is missing');
+          }
+          const uploadResponse = await uploadMedia(file);
+          mediaId = uploadResponse.id;
+        } catch (e) {
+          console.error('Failed to upload media:', e);
+          throw new Error('Failed to upload media');
+        }
       }
 
       const createdAt = new Date().getTime();
@@ -96,6 +117,9 @@ export const useSubmitPost = () => {
       if (replyToId) {
         formData.append('replyTo', replyToId);
       }
+      if (mediaId) {
+        formData.append('mediaId', mediaId);
+      }
 
       let res;
 
@@ -105,6 +129,8 @@ export const useSubmitPost = () => {
         if (!res) {
           throw new Error('Failed to submit post');
         }
+
+        return res;
       } catch (e) {
         throw new Error((e as any).message ?? 'Failed to submit post');
       }

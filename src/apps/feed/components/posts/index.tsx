@@ -30,6 +30,7 @@ export const Posts = ({
               reactions={post.reactions}
               meowPost={meowPost}
               numberOfReplies={post.numberOfReplies}
+              mediaId={post.mediaId}
             />
           </li>
         ))}

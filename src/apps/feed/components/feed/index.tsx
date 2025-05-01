@@ -71,6 +71,7 @@ export const Feed = ({ zid, isPostingEnabled = true, userId, isLoading: isLoadin
                     variant='default'
                     authorPrimaryZid={reply.sender?.primaryZid}
                     authorPublicAddress={reply.sender?.publicAddress}
+                    mediaId={reply.mediaId}
                   />
                 </li>
               ))

@@ -16,6 +16,7 @@ import { usePostRoute } from './lib/usePostRoute';
 import Linkify from 'linkify-react';
 import { PostLinkPreview } from './link-preview';
 import { detectLinkType } from './link-preview/utils';
+import { PostMedia } from '../post-media';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -41,6 +42,7 @@ export interface PostProps {
   isSinglePostView?: boolean;
   authorPrimaryZid?: string;
   authorPublicAddress?: string;
+  mediaId?: string;
 
   meowPost: (postId: string, meowAmount: string) => void;
 }
@@ -65,6 +67,7 @@ export const Post = ({
   isSinglePostView = false,
   authorPrimaryZid,
   authorPublicAddress,
+  mediaId,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
@@ -125,6 +128,7 @@ export const Post = ({
               {variant === 'expanded' && (
                 <span className={styles.Date}>{moment(timestamp).format('h:mm A - D MMM YYYY')}</span>
               )}
+              {featureFlags.enablePostMedia && mediaId && <PostMedia mediaId={mediaId} />}
             </div>
           }
           details={
@@ -231,7 +235,6 @@ const Wrapper = ({ children, postId, variant, channelZid }: WrapperProps) => {
     </div>
   );
 };
-
 const PreventPropagation = ({ children }: { children: React.ReactNode }) => {
   return <div onClick={(e) => e.stopPropagation()}>{children}</div>;
 };

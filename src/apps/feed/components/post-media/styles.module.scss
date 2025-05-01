@@ -1,0 +1,77 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.BlockImage {
+  position: relative;
+  width: 100%;
+  margin-top: 16px;
+  cursor: pointer;
+
+  img {
+    display: block;
+    margin: auto;
+    max-width: 100%;
+    max-height: 520px;
+    border-radius: 16px;
+  }
+
+  animation: fadein 1s ease-in forwards;
+}
+
+.PlaceholderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px auto 0;
+  max-width: 100%;
+  max-height: 520px;
+}
+
+.PlaceholderContent {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(253, 252, 253, 0.07);
+  border-radius: 8px;
+}
+
+.Placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+.Loading {
+  position: absolute;
+  padding: 4px;
+  border-top: 0.125rem solid theme.$color-greyscale-11;
+}
+
+.Failed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: none;
+  border: none;
+  color: var(--color-failure-11);
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes loadingShimmer {
+  0% {
+    background-position: -600px 0;
+  }
+  100% {
+    background-position: 600px 0;
+  }
+}

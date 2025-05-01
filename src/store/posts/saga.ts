@@ -178,6 +178,7 @@ export function* sendPost(action) {
             },
             userId: user.id,
             zid: userZid,
+            mediaId: res.mediaId,
           }),
         ],
       });

@@ -26,6 +26,7 @@ import {
   NotificationCountType,
   EventStatus,
   User,
+  TokenRefreshLogoutError,
 } from 'matrix-js-sdk/lib/matrix';
 import { CryptoApi, CryptoCallbacks, decodeRecoveryKey, ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
 import { RealtimeChatEvents } from './';
@@ -1355,29 +1356,31 @@ export class MatrixClient {
   private async getCredentials(userId: string, accessToken: string) {
     const credentials = this.sessionStorage.get();
 
+    let deviceId: string | undefined = undefined;
     if (credentials && credentials.userId === userId) {
-      return credentials;
+      deviceId = credentials.deviceId;
     }
 
     this.sessionStorage.clear();
-    return await this.login(accessToken);
+    return await this.login(accessToken, deviceId);
   }
 
-  private async login(token: string) {
+  private async login(token: string, deviceId: string | undefined) {
     const tempClient = this.sdk.createClient({ baseUrl: config.matrix.homeServerUrl });
 
-    const { user_id, device_id, access_token } = await tempClient.loginRequest({
+    const { user_id, device_id, access_token, refresh_token } = await tempClient.loginRequest({
       type: 'org.matrix.login.jwt',
       token,
+      device_id: deviceId,
+      refresh_token: true,
     });
 
     this.sessionStorage.set({
       userId: user_id,
       deviceId: device_id,
-      accessToken: access_token,
     });
 
-    return { accessToken: access_token, userId: user_id, deviceId: device_id };
+    return { accessToken: access_token, userId: user_id, deviceId: device_id, refreshToken: refresh_token };
   }
 
   private async initializeClient(userId: string, ssoToken: string) {
@@ -1409,6 +1412,19 @@ export class MatrixClient {
             }
           : undefined;
 
+      const tokenRefreshFunction = async (refreshToken: string) => {
+        try {
+          const { access_token, refresh_token } = await this.matrix.refreshToken(refreshToken);
+          return { accessToken: access_token, refreshToken: refresh_token };
+        } catch (error) {
+          // If the refresh token is invalid, we need to logout the user
+          if (error instanceof TokenRefreshLogoutError) {
+            this.events.tokenRefreshLogout();
+          }
+          return null;
+        }
+      };
+
       const userCreds = await this.getCredentials(userId, ssoToken);
       const createClientOpts: ICreateClientOpts = {
         cryptoStore,
@@ -1420,6 +1436,7 @@ export class MatrixClient {
         store: matrixStore,
         timelineSupport: true,
         logger: silentLogger,
+        tokenRefreshFunction,
         ...userCreds,
       };
 

@@ -17,7 +17,6 @@ describe('session storage', () => {
   it('sets localStorage vars', async () => {
     const matrixSession = {
       deviceId: 'abc123',
-      accessToken: 'token-4321',
       userId: '@bob:zos-matrix',
     };
 
@@ -26,7 +25,6 @@ describe('session storage', () => {
     client.set(matrixSession);
 
     expect(setItem).toHaveBeenCalledWith('mxz_device_id', 'abc123');
-    expect(setItem).toHaveBeenCalledWith('mxz_access_token_abc123', 'token-4321');
     expect(setItem).toHaveBeenCalledWith('mxz_user_id', '@bob:zos-matrix');
   });
 
@@ -37,21 +35,18 @@ describe('session storage', () => {
     client.clear();
 
     expect(removeItem).toHaveBeenCalledWith('mxz_device_id');
-    expect(removeItem).toHaveBeenCalledWith('mxz_access_token_abc123');
     expect(removeItem).toHaveBeenCalledWith('mxz_user_id');
   });
 
   it('gets from localStorage vars', async () => {
     const matrixSession = {
       deviceId: 'abc123',
-      accessToken: 'token-4321',
       userId: '@bob:zos-matrix',
     };
 
     const getItem = jest.fn((key) => {
       return {
         mxz_device_id: 'abc123',
-        mxz_access_token_abc123: 'token-4321',
         mxz_user_id: '@bob:zos-matrix',
       }[key];
     });
@@ -65,7 +60,6 @@ describe('session storage', () => {
     const getItem = jest.fn((key) => {
       return {
         mxz_device_id: '',
-        mxz_access_token_abc123: 'token-4321',
         mxz_user_id: '@bob:zos-matrix',
       }[key];
     });

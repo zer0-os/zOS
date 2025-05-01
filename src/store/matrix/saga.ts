@@ -27,6 +27,7 @@ import { waitForChatConnectionCompletion } from '../chat/saga';
 import * as Sentry from '@sentry/browser';
 import type { MatrixKeyBackupInfo } from '../../lib/chat/types';
 import { GeneratedSecretStorageKey } from 'matrix-js-sdk/lib/crypto-api';
+import Matrix from '../../lib/chat/matrix/matrix-client-instance';
 import { publishUserLogout } from '../authentication/saga';
 
 export function* saga() {
@@ -259,6 +260,7 @@ function* listenForUserLogout() {
   while (true) {
     yield take(userChannel, AuthEvents.UserLogout);
     yield call(receiveBackupData, null);
+    yield call(() => Matrix.resetClientInstance());
   }
 }
 

@@ -111,6 +111,9 @@ describe('Chat', () => {
 
     mockMatrixClient = {
       matrix: mockMatrix,
+      createRoom: vi.fn((options) => mockMatrix.createRoom(options)),
+      getRoom: vi.fn((roomId) => mockMatrix.getRoom(roomId)),
+      invite: vi.fn((roomId, userId) => mockMatrix.invite(roomId, userId)),
       connect: vi.fn().mockResolvedValue('@test:matrix.org'),
       waitForConnection: vi.fn().mockResolvedValue(undefined),
       init: vi.fn(),

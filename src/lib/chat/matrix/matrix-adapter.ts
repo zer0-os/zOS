@@ -1,5 +1,5 @@
 import { Channel, ConversationStatus, User } from '../../../store/channels';
-import matrixClientInstance from './matrix-client-instance';
+import Matrix from './matrix-client-instance';
 import { Room } from 'matrix-js-sdk/lib/models/room';
 import { User as MatrixUser } from 'matrix-js-sdk/lib/models/user';
 import { extractUserIdFromMatrixId } from './utils';
@@ -11,12 +11,12 @@ export class MatrixAdapter {
    * @returns Partial<Channel>
    */
   public static mapRoomToChannel(room: Room): Partial<Channel> {
-    const icon = matrixClientInstance.getRoomAvatar(room);
-    const createdAt = matrixClientInstance.getRoomCreatedAt(room);
+    const icon = Matrix.client.getRoomAvatar(room);
+    const createdAt = Matrix.client.getRoomCreatedAt(room);
     const labels = Object.keys(room.tags || {});
-    const [admins, mods] = matrixClientInstance.getRoomAdminsAndMods(room);
+    const [admins, mods] = Matrix.client.getRoomAdminsAndMods(room);
 
-    const members = matrixClientInstance.getRoomMembers(room.roomId);
+    const members = Matrix.client.getRoomMembers(room.roomId);
 
     return {
       id: room.roomId,

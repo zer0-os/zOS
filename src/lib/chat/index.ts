@@ -4,7 +4,7 @@ import { MatrixClient } from './matrix-client';
 import { FileUploadResult } from '../../store/messages/saga';
 import { MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
-import matrixClientInstance from './matrix/matrix-client-instance';
+import Matrix from './matrix/matrix-client-instance';
 import { CustomEventType, IN_ROOM_MEMBERSHIP_STATES } from './matrix/types';
 import { MatrixAdapter } from './matrix/matrix-adapter';
 import { MemberNetworks } from '../../store/users/types';
@@ -51,17 +51,17 @@ export class Chat {
   }
 
   async getRoomNameById(roomId: string) {
-    const room = this.client.matrix.getRoom(roomId);
+    const room = this.client.getRoom(roomId);
     return room.name;
   }
 
   async getRoomAvatarById(roomId: string) {
-    const room = this.client.matrix.getRoom(roomId);
+    const room = this.client.getRoom(roomId);
     return this.client.getRoomAvatar(room);
   }
 
   getRoomGroupTypeById(roomId: string) {
-    const room = this.client.matrix.getRoom(roomId);
+    const room = this.client.getRoom(roomId);
     return this.client.getRoomGroupType(room);
   }
 
@@ -74,7 +74,7 @@ export class Chat {
    * @returns Partial<Channel>[]
    */
   getChannels(): Partial<Channel>[] {
-    return matrixClientInstance.matrix
+    return this.client
       .getRooms()
       .filter((room) => IN_ROOM_MEMBERSHIP_STATES.includes(room.getMyMembership()))
       .map((room) => MatrixAdapter.mapRoomToChannel(room));
@@ -139,14 +139,14 @@ export class Chat {
       options.name = name;
     }
 
-    const result = await this.client.matrix.createRoom(options);
+    const result = await this.client.createRoom(options);
     // Any room is only set as a DM based on a single user. We'll use the first one.
-    await setAsDM(this.client.matrix, result.room_id, users[0].matrixId);
+    await setAsDM(this.client, result.room_id, users[0].matrixId);
 
-    const room = this.client.matrix.getRoom(result.room_id);
+    const room = this.client.getRoom(result.room_id);
     this.client.initializeRoomEventHandlers(room);
     for (const user of users) {
-      await this.client.matrix.invite(result.room_id, user.matrixId);
+      await this.client.invite(result.room_id, user.matrixId);
     }
     return MatrixAdapter.mapRoomToChannel(room);
   }
@@ -189,13 +189,13 @@ export class Chat {
       options.name = name;
     }
 
-    const result = await this.client.matrix.createRoom(options);
-    await setAsDM(this.client.matrix, result?.room_id, users[0].matrixId);
+    const result = await this.client.createRoom(options);
+    await setAsDM(this.client, result?.room_id, users[0].matrixId);
 
-    const room = this.client.matrix.getRoom(result?.room_id);
+    const room = this.client.getRoom(result?.room_id);
     this.client.initializeRoomEventHandlers(room);
     for (const user of users) {
-      await this.client.matrix.invite(result?.room_id, user.matrixId);
+      await this.client.invite(result?.room_id, user.matrixId);
     }
     return MatrixAdapter.mapRoomToChannel(room);
   }
@@ -320,15 +320,15 @@ export class Chat {
 }
 
 export async function getRoomIdForAlias(alias: string) {
-  return chat.get().getRoomIdForAlias(alias);
+  return Matrix.client.getRoomIdForAlias(alias);
 }
 
 export async function isRoomMember(userId: string, roomId: string) {
-  return await matrixClientInstance.isRoomMember(userId, roomId);
+  return await Matrix.client.isRoomMember(userId, roomId);
 }
 
 export async function getSecureBackup() {
-  return await matrixClientInstance.getSecureBackup();
+  return await Matrix.client.getSecureBackup();
 }
 
 export async function uploadImageUrl(
@@ -340,31 +340,31 @@ export async function uploadImageUrl(
   rootMessageId: string,
   optimisticId: string
 ) {
-  return await matrixClientInstance.uploadImageUrl(channelId, url, width, height, size, rootMessageId, optimisticId);
+  return await Matrix.client.uploadImageUrl(channelId, url, width, height, size, rootMessageId, optimisticId);
 }
 
 export async function sendTypingEvent(roomId: string, isTyping: boolean) {
-  return await matrixClientInstance.sendTypingEvent(roomId, isTyping);
+  return await Matrix.client.sendTypingEvent(roomId, isTyping);
 }
 
 export async function setUserAsModerator(roomId: string, userId: string) {
-  return await matrixClientInstance.setUserAsModerator(roomId, userId);
+  return await Matrix.client.setUserAsModerator(roomId, userId);
 }
 
 export async function removeUserAsModerator(roomId: string, userId: string) {
-  return await matrixClientInstance.removeUserAsModerator(roomId, userId);
+  return await Matrix.client.removeUserAsModerator(roomId, userId);
 }
 
 export async function setReadReceiptPreference(preference: string) {
-  return await matrixClientInstance.setReadReceiptPreference(preference);
+  return await Matrix.client.setReadReceiptPreference(preference);
 }
 
 export async function getReadReceiptPreference() {
-  return await matrixClientInstance.getReadReceiptPreference();
+  return await Matrix.client.getReadReceiptPreference();
 }
 
 export async function getMessageReadReceipts(roomId: string, messageId: string) {
-  return await matrixClientInstance.getMessageReadReceipts(roomId, messageId);
+  return await Matrix.client.getMessageReadReceipts(roomId, messageId);
 }
 
 export async function uploadFileMessage(
@@ -374,19 +374,19 @@ export async function uploadFileMessage(
   optimisticId = '',
   isPost: boolean = false
 ) {
-  return matrixClientInstance.uploadFileMessage(channelId, media, rootMessageId, optimisticId, isPost);
+  return Matrix.client.uploadFileMessage(channelId, media, rootMessageId, optimisticId, isPost);
 }
 
 export async function addRoomToLabel(roomId: string, label: string) {
-  return await matrixClientInstance.addRoomToLabel(roomId, label);
+  return await Matrix.client.addRoomToLabel(roomId, label);
 }
 
 export async function removeRoomFromLabel(roomId: string, label: string) {
-  return await matrixClientInstance.removeRoomFromLabel(roomId, label);
+  return await Matrix.client.removeRoomFromLabel(roomId, label);
 }
 
 export async function sendPostByChannelId(channelId: string, message: string, optimisticId?: string) {
-  return matrixClientInstance.sendPostsByChannelId(channelId, message, optimisticId);
+  return Matrix.client.sendPostsByChannelId(channelId, message, optimisticId);
 }
 
 export async function sendMeowReactionEvent(
@@ -395,27 +395,27 @@ export async function sendMeowReactionEvent(
   postOwnerId: string,
   meowAmount: number
 ) {
-  return matrixClientInstance.sendMeowReactionEvent(roomId, postMessageId, postOwnerId, meowAmount);
+  return Matrix.client.sendMeowReactionEvent(roomId, postMessageId, postOwnerId, meowAmount);
 }
 
 export async function sendEmojiReactionEvent(roomId: string, messageId: string, key: string) {
-  return matrixClientInstance.sendEmojiReactionEvent(roomId, messageId, key);
+  return Matrix.client.sendEmojiReactionEvent(roomId, messageId, key);
 }
 
 export async function getPostMessageReactions(roomId: string) {
-  return matrixClientInstance.getPostMessageReactions(roomId);
+  return Matrix.client.getPostMessageReactions(roomId);
 }
 
 export async function getMessageEmojiReactions(roomId: string) {
-  return matrixClientInstance.getMessageEmojiReactions(roomId);
+  return Matrix.client.getMessageEmojiReactions(roomId);
 }
 
 export async function uploadFile(file: File): Promise<string> {
-  return matrixClientInstance.uploadFile(file);
+  return Matrix.client.uploadFile(file);
 }
 
 export async function downloadFile(fileUrl: string) {
-  return matrixClientInstance.downloadFile(fileUrl);
+  return Matrix.client.downloadFile(fileUrl);
 }
 
 export async function batchDownloadFiles(
@@ -423,41 +423,41 @@ export async function batchDownloadFiles(
   isThumbnail: boolean = false,
   batchSize: number = 25
 ): Promise<{ [fileUrl: string]: string }> {
-  return matrixClientInstance.batchDownloadFiles(fileUrls, isThumbnail, batchSize);
+  return Matrix.client.batchDownloadFiles(fileUrls, isThumbnail, batchSize);
 }
 
 export async function editProfile(profileInfo: MatrixProfileInfo) {
-  return matrixClientInstance.editProfile(profileInfo);
+  return Matrix.client.editProfile(profileInfo);
 }
 
 export function getAccessToken(): string | null {
-  return matrixClientInstance.getAccessToken();
+  return Matrix.client.getAccessToken();
 }
 
 export function mxcUrlToHttp(mxcUrl: string): string {
-  return matrixClientInstance.mxcUrlToHttp(mxcUrl);
+  return Matrix.client.mxcUrlToHttp(mxcUrl);
 }
 
 export function getProfileInfo(userId: string): Promise<{
   avatar_url?: string;
   displayname?: string;
 }> {
-  return matrixClientInstance.getProfileInfo(userId);
+  return Matrix.client.getProfileInfo(userId);
 }
 
 export async function getAliasForRoomId(roomId: string) {
-  return matrixClientInstance.getAliasForRoomId(roomId);
+  return Matrix.client.getAliasForRoomId(roomId);
 }
 
 export async function verifyMatrixProfileDisplayNameIsSynced(displayName: string) {
-  return chat.get().matrix.verifyMatrixProfileDisplayNameIsSynced(displayName);
+  return Matrix.client.verifyMatrixProfileDisplayNameIsSynced(displayName);
 }
 
 let chatClient: Chat;
 export const chat = {
   get() {
     if (!chatClient) {
-      chatClient = new Chat(matrixClientInstance, () => {
+      chatClient = new Chat(Matrix.client, () => {
         chatClient = null;
       });
     }

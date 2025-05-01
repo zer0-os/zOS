@@ -67,8 +67,8 @@ import { RelationType } from 'matrix-js-sdk/lib/@types/event';
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
 export class MatrixClient {
-  matrix: SDKMatrixClient = null;
-  cryptoApi: CryptoApi = null;
+  private matrix: SDKMatrixClient = null;
+  private cryptoApi: CryptoApi = null;
   private events: RealtimeChatEvents = null;
   private connectionStatus = ConnectionStatus.Disconnected;
 
@@ -86,12 +86,47 @@ export class MatrixClient {
     this.addConnectionAwaiter();
   }
 
+  /**
+   * Matrix SDK methods to expose on the MatrixClient instance
+   */
+  createRoom: SDKMatrixClient['createRoom'] = (options) => {
+    return this.matrix.createRoom(options);
+  };
+
+  decryptEventIfNeeded: SDKMatrixClient['decryptEventIfNeeded'] = (event, options) => {
+    return this.matrix.decryptEventIfNeeded(event, options);
+  };
+
+  getAccessToken: SDKMatrixClient['getAccessToken'] = () => {
+    return this.matrix.getAccessToken();
+  };
+
+  getRoom: SDKMatrixClient['getRoom'] = (roomId) => {
+    return this.matrix.getRoom(roomId);
+  };
+
+  getRooms: SDKMatrixClient['getRooms'] = () => {
+    return this.matrix.getRooms();
+  };
+
+  getUser: SDKMatrixClient['getUser'] = (userId) => {
+    return this.matrix.getUser(userId);
+  };
+
+  getAccountData: SDKMatrixClient['getAccountData'] = (type) => {
+    return this.matrix.getAccountData(type);
+  };
+
+  invite: SDKMatrixClient['invite'] = (roomId, userId) => {
+    return this.matrix.invite(roomId, userId);
+  };
+
+  setAccountData: SDKMatrixClient['setAccountData'] = (type, content) => {
+    return this.matrix.setAccountData(type, content);
+  };
+
   init(events: RealtimeChatEvents) {
     this.events = events;
-  }
-
-  getAccessToken(): string | null {
-    return this.matrix.getAccessToken();
   }
 
   async connect(userId: string, accessToken: string) {

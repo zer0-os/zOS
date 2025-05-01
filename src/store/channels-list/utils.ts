@@ -1,7 +1,7 @@
 import { Channel, User } from './../channels/index';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
-import matrixClientInstance from '../../lib/chat/matrix/matrix-client-instance';
+import Matrix from '../../lib/chat/matrix/matrix-client-instance';
 import { EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
 import { MatrixConstants } from '../../lib/chat/matrix/types';
 import { mapMessagesAndPreview } from '../messages/saga';
@@ -32,7 +32,7 @@ export function rawUserToDomainUser(u): User {
 }
 
 export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575RoomData) {
-  const room = matrixClientInstance.matrix.getRoom(roomId);
+  const room = Matrix.client.getRoom(roomId);
   if (!room) return null;
   const baseChannel = MatrixAdapter.mapRoomToChannel(room);
 
@@ -42,7 +42,7 @@ export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575Room
   const timelineEvents = liveTimeline.getEvents();
   const timeline = timelineEvents.reduce<IEvent[]>((acc, event) => {
     if (event.getType() === EventType.RoomMessageEncrypted) {
-      matrixClientInstance.matrix.decryptEventIfNeeded(event);
+      Matrix.client.decryptEventIfNeeded(event);
       const evt = event.getEffectiveEvent();
       // Handle edited messages
       const relatesTo = evt.content[MatrixConstants.RELATES_TO];
@@ -66,7 +66,7 @@ export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575Room
   }, []);
 
   // TODO zos-619: This should be in MatrixAdapter and not on the matrix client instance
-  let messages = matrixClientInstance.processRawEventsToMessages(timeline);
+  let messages = Matrix.client.processRawEventsToMessages(timeline);
   messages = yield call(mapMessagesAndPreview, messages, roomId);
   let lastMessage = baseChannel.lastMessage;
   if (messages.length > 0 && messages[messages.length - 1]) {

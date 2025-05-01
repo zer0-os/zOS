@@ -56,6 +56,7 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
                 variant='expanded'
                 channelZid={post.channelZid}
                 isSinglePostView={true}
+                mediaId={post.mediaId}
               />
               <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
             </div>

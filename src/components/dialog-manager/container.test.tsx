@@ -27,6 +27,7 @@ describe('DialogManager', () => {
         isOpen: false,
         media: [],
         startingIndex: 0,
+        hasActions: true,
       },
       closeCreateBackupDialog: () => null,
       closeRestoreBackupDialog: () => null,
@@ -134,7 +135,7 @@ describe('DialogManager', () => {
 
   it('renders Lightbox when lightbox.isOpen is true', () => {
     const wrapper = subject({
-      lightbox: { isOpen: true, media: [], startingIndex: 0 },
+      lightbox: { isOpen: true, media: [], startingIndex: 0, hasActions: true },
     });
 
     expect(wrapper).toHaveElement(Lightbox);
@@ -142,7 +143,7 @@ describe('DialogManager', () => {
 
   it('does not render Lightbox when lightbox.isOpen is false', () => {
     const wrapper = subject({
-      lightbox: { isOpen: false, media: [], startingIndex: 0 },
+      lightbox: { isOpen: false, media: [], startingIndex: 0, hasActions: true },
     });
 
     expect(wrapper).not.toHaveElement(Lightbox);
@@ -166,6 +167,7 @@ describe('DialogManager', () => {
           isOpen: true,
           media: [],
           startingIndex: 0,
+          hasActions: true,
         },
       },
       reportUser: {
@@ -216,6 +218,7 @@ describe('DialogManager', () => {
         isOpen: true,
         media: [],
         startingIndex: 0,
+        hasActions: true,
       });
     });
   });

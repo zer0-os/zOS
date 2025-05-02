@@ -33,7 +33,7 @@ export const PostMedia = ({ mediaId }: PostMediaProps) => {
       const media: Media = {
         type: MediaType.Image,
         url: mediaUrl,
-        name: 'Post image',
+        name: 'Post media',
         width: mediaDetails.width,
         height: mediaDetails.height,
         mimetype: mediaDetails.mimeType,

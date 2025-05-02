@@ -2,7 +2,7 @@ import delayP from '@redux-saga/delay-p';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { call } from 'redux-saga/effects';
 
-import { batchedReceiveNewMessage, receiveNewMessage, sendBrowserNotification } from './saga';
+import { batchedReceiveNewMessage, receiveNewMessageAction, sendBrowserNotification } from './saga';
 import { rootReducer } from '../reducer';
 
 import { denormalize as denormalizeChannel } from '../channels';
@@ -10,25 +10,25 @@ import { expectSaga, stubResponse } from '../../test/saga';
 import { markConversationAsRead } from '../channels/saga';
 import { StoreBuilder } from '../test/store';
 import { getMessageEmojiReactions } from '../../lib/chat';
-import { getUsersByMatrixIds } from '../users/saga';
+import { Message, MessageSendStatus } from '.';
 
-describe(receiveNewMessage, () => {
+describe(receiveNewMessageAction, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
       [matchers.spawn.fn(sendBrowserNotification), undefined],
-      [matchers.call.fn(markConversationAsRead), undefined],
+      [matchers.spawn.fn(markConversationAsRead), undefined],
       // Execute immediately without debouncing
       [matchers.call.fn(delayP), true], // delayP is what delay calls behind the scenes. Not ideal but it works.
     ]);
   }
 
-  it('adds the message to the channel', async () => {
+  it('updates the lastMessage when receiving a new message', async () => {
     const channelId = 'channel-id';
     const message = { id: 'new-message', message: 'a new message', optimisticId: 'other-front-end-id' };
     const existingMessages = [{ id: 'message-1', message: 'message_0001' }] as any;
     const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
 
-    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
+    const { storeState } = await subject(receiveNewMessageAction, { payload: { channelId, message } })
       .provide([
         stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
       ])
@@ -37,160 +37,30 @@ describe(receiveNewMessage, () => {
       .run();
 
     const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].id).toEqual('message-1');
-    expect(channel.messages[1].id).toEqual('new-message');
-  });
-
-  it('maps the message users', async () => {
-    const channelId = 'channel-id';
-    const message = {
-      id: 'message-id',
-      message: 'test message',
-      sender: { userId: 'user-1', matrixId: 'matrix-id' },
-    };
-    const initialState = new StoreBuilder()
-      .withConversationList({ id: channelId })
-      .withUsers({ userId: 'user-1', matrixId: 'matrix-id', firstName: 'the real user' });
-
-    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(
-          call(getUsersByMatrixIds, ['matrix-id']),
-          new Map([
-            [
-              'matrix-id',
-              {
-                userId: 'user-1',
-                matrixId: 'matrix-id',
-                firstName: 'the real user',
-              },
-            ],
-          ])
-        ),
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].sender.firstName).toEqual('the real user');
-  });
-
-  it('adds the reactions to the message', async () => {
-    const channelId = 'channel-id';
-    const message = { id: 'message-id', message: 'www.google.com' };
-    const stubReactions = [{ eventId: 'message-id', key: '😂' }];
-    const initialState = new StoreBuilder().withConversationList({ id: channelId });
-
-    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), stubReactions),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].reactions).toEqual({ '😂': 1 });
+    expect(channel.lastMessage.id).toEqual('new-message');
   });
 
   it('does nothing if the channel does not exist', async () => {
     const channelId = 'non-existing-channel-id';
     const initialState = new StoreBuilder().withConversationList({ id: 'other-channel' });
 
-    await subject(receiveNewMessage, { payload: { channelId, message: {} } })
+    await subject(receiveNewMessageAction, { payload: { channelId, message: {} } })
       .withReducer(rootReducer, initialState.build())
       .not.put.like({ action: { type: 'normalized/receive' } })
       .run();
-  });
-
-  it('favors the new version if message already exists', async () => {
-    const channelId = 'channel-id';
-    const message = { id: 'new-message', message: 'the new message' };
-    const existingMessages = [
-      { id: 'new-message', message: 'message_0001' },
-      { id: 'other-message', message: 'message_0002' },
-    ] as any;
-    const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
-
-    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages.map((m) => m.id)).toEqual(['other-message', 'new-message']);
-    expect(channel.messages[1].message).toEqual('the new message');
   });
 
   it('does not call markConversationAsRead when new message is received but conversation is NOT active', async () => {
     const message = { id: 'message-id', message: '' };
     const conversationState = new StoreBuilder().withConversationList({ id: 'channel-id' });
 
-    await subject(receiveNewMessage, { payload: { channelId: 'channel-id', message } })
+    await subject(receiveNewMessageAction, { payload: { channelId: 'channel-id', message } })
       .provide([
         stubResponse(call(getMessageEmojiReactions, 'channel-id'), [{}]),
       ])
       .withReducer(rootReducer, conversationState.build())
       .not.call(markConversationAsRead, 'channel-id')
       .run();
-  });
-
-  it('replaces optimistically rendered message', async () => {
-    const channelId = 'channel-id';
-    const message = {
-      id: 'system-provided-id',
-      message: 'test message for asserting. normally would not change.',
-      optimisticId: 'optimistic-id',
-    };
-    const existingMessages = [
-      { id: 'optimistic-id', message: 'optimistic', optimisticId: 'optimistic-id' },
-      { id: 'standard-id', message: 'message_0001' },
-    ] as any;
-
-    const initialState = new StoreBuilder().withConversationList({
-      id: channelId,
-      messages: existingMessages,
-    });
-
-    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].id).toEqual('system-provided-id');
-    expect(channel.messages[0].message).toEqual('test message for asserting. normally would not change.');
-    expect(channel.messages[1].id).toEqual('standard-id');
-  });
-
-  it('replaces the correct optimistic message if multiple have been sent', async () => {
-    const channelId = 'channel-id';
-    const message = { id: 'system-provided-id', optimisticId: 'optimistic-id-2' };
-    const existingMessages = [
-      { id: 'optimistic-id-1', message: 'optimistic1', optimisticId: 'optimistic-id-1' },
-      { id: 'optimistic-id-2', message: 'optimistic2', optimisticId: 'optimistic-id-2' },
-      { id: 'standard-id', message: 'message_0001' },
-    ] as any;
-
-    const initialState = new StoreBuilder().withConversationList({
-      id: channelId,
-      messages: existingMessages,
-    });
-
-    const { storeState } = await subject(receiveNewMessage, { payload: { channelId, message } })
-      .provide([
-        stubResponse(call(getMessageEmojiReactions, channelId), [{}]),
-      ])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const channel = denormalizeChannel(channelId, storeState);
-    expect(channel.messages[0].id).toEqual('optimistic-id-1');
-    expect(channel.messages[1].id).toEqual('system-provided-id');
   });
 
   describe(batchedReceiveNewMessage, () => {
@@ -201,15 +71,52 @@ describe(receiveNewMessage, () => {
       ]);
     }
 
-    it('adds all messages to the channel', async () => {
+    it('processes only the most recent message for each channel', async () => {
       const channelId = 'channel-id';
       const eventPayloads = [
-        { channelId, message: { id: 'new-message', message: 'a new message' } },
-        { channelId, message: { id: 'second-new-message', message: 'another' } },
+        {
+          channelId,
+          message: {
+            id: 'first-message',
+            message: 'first message',
+            createdAt: 100,
+            updatedAt: 100,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        },
+        {
+          channelId,
+          message: {
+            id: 'newer-message',
+            message: 'newer message',
+            createdAt: 200,
+            updatedAt: 200,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        },
       ];
 
       const existingMessages = [{ id: 'message-1', message: 'message_0001' }] as any;
-      const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
+      const initialState = new StoreBuilder().withConversationList({
+        id: channelId,
+        messages: existingMessages,
+        lastMessage: {
+          id: 'message-1',
+          message: 'message_0001',
+          createdAt: 50,
+          updatedAt: 50,
+          isAdmin: false,
+          sender: { userId: 'user-1' },
+          mentionedUsers: [],
+          sendStatus: MessageSendStatus.SUCCESS,
+        } as Message,
+      });
 
       const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
         .provide([
@@ -219,24 +126,84 @@ describe(receiveNewMessage, () => {
         .run();
 
       const channel = denormalizeChannel(channelId, storeState);
-      expect(channel.messages[0].id).toEqual('message-1');
-      expect(channel.messages[1].id).toEqual('new-message');
-      expect(channel.messages[2].id).toEqual('second-new-message');
+      // Check if lastMessage was updated to the newer message
+      expect(channel.lastMessage.id).toEqual('newer-message');
     });
 
-    it('adds all messages to multiple channels', async () => {
+    it('updates lastMessage property when receiving newer messages', async () => {
       const channelId1 = 'channel-1';
       const channelId2 = 'channel-2';
       const eventPayloads = [
-        { channelId: channelId1, message: { id: '1-1', message: 'a new message' } },
-        { channelId: channelId1, message: { id: '1-2', message: 'another' } },
-        { channelId: channelId2, message: { id: '2-1', message: 'another' } },
-        { channelId: channelId2, message: { id: '2-2', message: 'another' } },
+        {
+          channelId: channelId1,
+          message: {
+            id: '1-1',
+            message: 'a new message',
+            createdAt: 100,
+            updatedAt: 100,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        },
+        {
+          channelId: channelId1,
+          message: {
+            id: '1-2',
+            message: 'another',
+            createdAt: 200,
+            updatedAt: 200,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        },
+        {
+          channelId: channelId2,
+          message: {
+            id: '2-1',
+            message: 'another',
+            createdAt: 300,
+            updatedAt: 300,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        },
       ];
 
       const initialState = new StoreBuilder().withConversationList(
-        { id: channelId1, messages: [{ id: 'message-1', message: 'message_0001' }] as any },
-        { id: channelId2, messages: [{ id: 'message-2', message: 'message_0002' }] as any }
+        {
+          id: channelId1,
+          messages: [{ id: 'message-1', message: 'message_0001' }] as any,
+          lastMessage: {
+            id: 'old-last',
+            message: 'old message',
+            createdAt: 50,
+            updatedAt: 50,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        },
+        {
+          id: channelId2,
+          messages: [{ id: 'message-2', message: 'message_0002' }] as any,
+          lastMessage: {
+            id: 'old-last-2',
+            message: 'old message 2',
+            createdAt: 50,
+            updatedAt: 50,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        }
       );
 
       const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
@@ -248,24 +215,58 @@ describe(receiveNewMessage, () => {
         .run();
 
       const channel1 = denormalizeChannel(channelId1, storeState);
-      expect(channel1.messages[0].id).toEqual('message-1');
-      expect(channel1.messages[1].id).toEqual('1-1');
-      expect(channel1.messages[2].id).toEqual('1-2');
       const channel2 = denormalizeChannel(channelId2, storeState);
-      expect(channel2.messages[0].id).toEqual('message-2');
-      expect(channel2.messages[1].id).toEqual('2-1');
-      expect(channel2.messages[2].id).toEqual('2-2');
+
+      // Check lastMessage was updated to the most recent message for each channel
+      expect(channel1.lastMessage.id).toEqual('1-2');
+      expect(channel2.lastMessage.id).toEqual('2-1');
     });
 
-    it('only adds a new message to the list once if the same message is received multiple times in batch', async () => {
+    it('only updates lastMessage once with the most recent message when receiving multiple messages', async () => {
       const channelId = 'channel-id';
       const eventPayloads = [
-        { channelId, message: { id: 'new-message', message: 'a new message' } },
-        { channelId, message: { id: 'new-message', message: 'second event' } },
+        {
+          channelId,
+          message: {
+            id: 'new-message',
+            message: 'first version',
+            createdAt: 100,
+            updatedAt: 100,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        },
+        {
+          channelId,
+          message: {
+            id: 'new-message',
+            message: 'second version',
+            createdAt: 200,
+            updatedAt: 200,
+            isAdmin: false,
+            sender: { userId: 'user-1' },
+            mentionedUsers: [],
+            sendStatus: MessageSendStatus.SUCCESS,
+          } as Message,
+        },
       ];
 
-      const existingMessages = [{ id: 'message-1', message: 'message_0001' }] as any;
-      const initialState = new StoreBuilder().withConversationList({ id: channelId, messages: existingMessages });
+      const initialState = new StoreBuilder().withConversationList({
+        id: channelId,
+        messages: [{ id: 'message-1', message: 'message_0001' }] as any,
+        lastMessage: {
+          id: 'old-last',
+          message: 'old message',
+          createdAt: 50,
+          updatedAt: 50,
+          isAdmin: false,
+          sender: { userId: 'user-1' },
+          mentionedUsers: [],
+          sendStatus: MessageSendStatus.SUCCESS,
+        } as Message,
+      });
 
       const { storeState } = await subject(batchedReceiveNewMessage, eventPayloads)
         .provide([
@@ -275,9 +276,9 @@ describe(receiveNewMessage, () => {
         .run();
 
       const channel = denormalizeChannel(channelId, storeState);
-      expect(channel.messages.map((m) => m.id)).toEqual(['message-1', 'new-message']);
-      // Should favor the second event as it's the most recent
-      expect(channel.messages[1].message).toEqual('second event');
+      // Should have the most recent version of the message as lastMessage
+      expect(channel.lastMessage.id).toEqual('new-message');
+      expect(channel.lastMessage.message).toEqual('second version');
     });
   });
 });

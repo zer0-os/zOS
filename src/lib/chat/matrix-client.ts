@@ -467,8 +467,7 @@ export class MatrixClient {
   processRawEventsToMessages(events: IEvent[]): (Message | MessageWithoutSender)[] {
     const messages = events.map((event) => this.convertEventToMessage(event)).filter((message) => message !== null);
 
-    this.applyEditEventsToMessages(events, messages);
-    return messages;
+    return this.applyEditEventsToMessages(events, messages);
   }
 
   private convertEventToMessage(event: IEvent): Message | MessageWithoutSender | null {
@@ -507,38 +506,40 @@ export class MatrixClient {
     }
   }
 
-  private applyEditEventsToMessages(events: IEvent[], messages: Message[]): void {
-    events.filter(this.isEditEvent).forEach((editEvent) => {
-      this.updateMessageWithEdit(messages, editEvent);
+  private applyEditEventsToMessages(events: IEvent[], messages: Message[]): Message[] {
+    const editEvents = events.filter(this.isEditEvent).reduce((acc, cur) => {
+      const relatedEventId = this.getRelatedEventId(cur);
+      if (relatedEventId) {
+        acc[relatedEventId] = cur;
+      }
+      return acc;
+    }, {});
+
+    return messages.map((message) => {
+      const editEvent = editEvents[message.id];
+      if (editEvent) {
+        return this.updateMessageWithEdit(message, editEvent);
+      }
+      return message;
     });
   }
 
-  private updateMessageWithEdit(messages: Message[], editEvent: IEvent): void {
-    const relatedEventId = this.getRelatedEventId(editEvent);
-    const messageIndex = messages.findIndex((msg) => msg.id === relatedEventId);
-
-    if (messageIndex > -1) {
-      if (editEvent.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
-        messages[messageIndex] = this.applyBadEncryptionReplacementToMessage(
-          messages[messageIndex],
-          editEvent.origin_server_ts
-        );
-      } else {
-        const newContent = this.getNewContent(editEvent);
-        if (newContent) {
-          messages[messageIndex] = this.applyNewContentToMessage(
-            messages[messageIndex],
-            newContent,
-            editEvent.origin_server_ts
-          );
-        }
+  private updateMessageWithEdit(message: Message, editEvent: IEvent): Message {
+    if (editEvent.content.msgtype === MatrixConstants.BAD_ENCRYPTED_MSGTYPE) {
+      return this.applyBadEncryptionReplacementToMessage(message, editEvent.origin_server_ts);
+    } else {
+      const newContent = this.getNewContent(editEvent);
+      if (newContent) {
+        return this.applyNewContentToMessage(message, newContent, editEvent.origin_server_ts);
       }
+      return message;
     }
   }
 
   private applyNewContentToMessage(message: Message, newContent: IContent, timestamp: number): Message {
     return {
       ...message,
+      message: newContent.body,
       updatedAt: timestamp,
       isHidden: false,
     };
@@ -580,7 +581,6 @@ export class MatrixClient {
 
     const effectiveEvents = events.map((event) => event.getEffectiveEvent());
     const messages = await this.getAllChatMessagesFromRoom(effectiveEvents);
-
     return { messages, hasMore };
   }
 
@@ -1276,7 +1276,7 @@ export class MatrixClient {
 
   private async processRoomLocalEchoUpdated(
     event: MatrixEvent,
-    _room: Room,
+    room: Room,
     _eventId: string,
     eventStatus: EventStatus
   ) {
@@ -1288,7 +1288,7 @@ export class MatrixClient {
       const effectiveEvent = event.getEffectiveEvent();
       if (effectiveEvent.content['m.relates_to']?.rel_type === 'm.replace') return;
 
-      this.publishMessageEvent(effectiveEvent);
+      this.events.updateOptimisticMessage(effectiveEvent, room.roomId);
     }
   }
 

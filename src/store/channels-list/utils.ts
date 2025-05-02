@@ -7,6 +7,7 @@ import { MatrixConstants } from '../../lib/chat/matrix/types';
 import { mapMessagesAndPreview } from '../messages/saga';
 import { call } from 'redux-saga/effects';
 import { getUserSubHandle } from '../../lib/user';
+import { Message } from '../messages';
 
 export const isOneOnOne = (channel: { totalMembers: number }) => channel.totalMembers === 2;
 
@@ -68,9 +69,10 @@ export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575Room
   // TODO zos-619: This should be in MatrixAdapter and not on the matrix client instance
   let messages = Matrix.client.processRawEventsToMessages(timeline);
   messages = yield call(mapMessagesAndPreview, messages, roomId);
+  const lastRoomMessage = messages.reverse().find((m: Message) => !m.admin) ?? null;
   let lastMessage = baseChannel.lastMessage;
-  if (messages.length > 0 && messages[messages.length - 1]) {
-    lastMessage = messages[messages.length - 1];
+  if (lastRoomMessage) {
+    lastMessage = lastRoomMessage;
   }
 
   initialChannelUpdates.messages = messages;

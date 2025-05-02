@@ -15,6 +15,17 @@ import './conversation-item.scss';
 import '../styles.scss';
 import { isOneOnOne } from '../../../../store/channels-list/utils';
 
+const randomLoadingMessageText = () => {
+  const texts = [
+    'Loading message preview...',
+    'Fetching latest message...',
+    'Just a moment...',
+    'Retrieving conversation details...',
+    'Connecting to chat...',
+  ];
+  return texts[Math.floor(Math.random() * texts.length)];
+};
+
 const cn = bemClassName('conversation-item');
 
 export interface Properties {
@@ -31,11 +42,13 @@ export interface Properties {
 
 export interface State {
   isContextMenuOpen: boolean;
+  loadingMessageText: string;
 }
 
 export class ConversationItem extends React.Component<Properties, State> {
   state = {
     isContextMenuOpen: false,
+    loadingMessageText: randomLoadingMessageText(),
   };
 
   handleMemberClick = () => {
@@ -124,6 +137,8 @@ export class ConversationItem extends React.Component<Properties, State> {
     const isCollapsed = this.props.isCollapsed;
     const isExpanded = !isCollapsed;
 
+    const messagePreview = this.getMessagePreview();
+
     return (
       <div
         {...cn('')}
@@ -153,8 +168,12 @@ export class ConversationItem extends React.Component<Properties, State> {
               <div {...cn('timestamp')}>{previewDisplayDate}</div>
             </div>
             <div {...cn('content')}>
-              <div {...cn('message')} is-unread={isUnread} is-typing={isTyping}>
-                <ContentHighlighter message={this.getMessagePreview()} variant='negative' tabIndex={-1} />
+              <div {...cn('message', !messagePreview && 'loading')} is-unread={isUnread} is-typing={isTyping}>
+                <ContentHighlighter
+                  message={messagePreview || this.state.loadingMessageText}
+                  variant='negative'
+                  tabIndex={-1}
+                />
               </div>
               {hasUnreadMessages && !hasUnreadHighlights && (
                 <div {...cn('unread-count')}>{conversation.unreadCount.total}</div>

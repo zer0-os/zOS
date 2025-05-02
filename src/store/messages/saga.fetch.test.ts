@@ -1,6 +1,6 @@
 import * as matchers from 'redux-saga-test-plan/matchers';
 
-import { fetch, mapMessagesAndPreview } from './saga';
+import { fetchMessages, mapMessagesAndPreview } from './saga';
 import { rootReducer } from '../reducer';
 import { ConversationStatus, denormalize } from '../channels';
 import { chat } from '../../lib/chat';
@@ -12,7 +12,7 @@ const chatClient = {
   getMessagesByChannelId: (_channelId: string, _referenceTimestamp?: number) => ({}),
 };
 
-describe(fetch, () => {
+describe(fetchMessages, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
       [matchers.call.fn(chat.get), chatClient],
@@ -33,7 +33,7 @@ describe(fetch, () => {
       ],
     };
 
-    const { storeState } = await subject(fetch, { payload: { channelId: channel.id } })
+    const { storeState } = await subject(fetchMessages, { payload: { channelId: channel.id } })
       .provide([
         [call([chatClient, chatClient.getMessagesByChannelId], channel.id), messageResponse],
         [matchers.call.fn(mapMessagesAndPreview), messageResponse.messages],
@@ -52,7 +52,7 @@ describe(fetch, () => {
     const channel = { id: 'channel-id', hasMore: true, messages: [] };
     const messageResponse = { hasMore: false, messages: [] };
 
-    const { storeState } = await subject(fetch, { payload: { channelId: channel.id } })
+    const { storeState } = await subject(fetchMessages, { payload: { channelId: channel.id } })
       .provide([
         [matchers.call.fn(chatClient.getMessagesByChannelId), messageResponse],
         [matchers.call.fn(mapMessagesAndPreview), messageResponse.messages],
@@ -67,7 +67,7 @@ describe(fetch, () => {
     const channel = { id: 'channel-id', hasLoadedMessages: false };
     const messageResponse = { hasMore: false, messages: [] };
 
-    const { storeState } = await subject(fetch, { payload: { channelId: channel.id } })
+    const { storeState } = await subject(fetchMessages, { payload: { channelId: channel.id } })
       .provide([
         [matchers.call.fn(mapMessagesAndPreview), messageResponse.messages],
       ])
@@ -89,7 +89,7 @@ describe(fetch, () => {
     const initialState = initialChannelState(channel);
 
     const referenceTimestamp = 1658776625730;
-    const { storeState } = await subject(fetch, { payload: { channelId: channel.id, referenceTimestamp } })
+    const { storeState } = await subject(fetchMessages, { payload: { channelId: channel.id, referenceTimestamp } })
       .withReducer(rootReducer, initialState as any)
       .provide([
         [call([chatClient, chatClient.getMessagesByChannelId], channel.id, referenceTimestamp), messageResponse],
@@ -109,7 +109,7 @@ describe(fetch, () => {
 
     const initialState = initialChannelState({ id: channelId, conversationStatus: ConversationStatus.CREATING });
 
-    await subject(fetch, { payload: { channelId } })
+    await subject(fetchMessages, { payload: { channelId } })
       .withReducer(rootReducer, initialState)
       .not.call.fn(chatClient.getMessagesByChannelId)
       .run();

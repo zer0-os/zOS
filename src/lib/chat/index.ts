@@ -10,8 +10,9 @@ import { MatrixAdapter } from './matrix/matrix-adapter';
 import { MemberNetworks } from '../../store/users/types';
 import { get } from '../api/rest';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
-import { Visibility, Preset, ICreateRoomOpts, GuestAccess, EventType } from 'matrix-js-sdk/lib/matrix';
+import { Visibility, Preset, ICreateRoomOpts, GuestAccess, EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
 import { ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
+import { mapMatrixMessage } from './matrix/chat-message';
 
 export interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message | MessageWithoutSender) => void;
@@ -33,6 +34,7 @@ export interface RealtimeChatEvents {
   messageEmojiReactionChange: (roomId: string, reaction: any) => void;
   receiveRoomData: (roomId: string, roomData: MSC3575RoomData) => void;
   tokenRefreshLogout: () => void;
+  updateOptimisticMessage: (message: IEvent, roomId: string) => void;
 }
 
 export class Chat {
@@ -94,6 +96,21 @@ export class Chat {
       memberHistory: memberHistory.map((m) => MatrixAdapter.mapMatrixUserToUser(m)),
       totalMembers,
     };
+  }
+
+  /**
+   * Sync channel messages from room
+   * @param channelId - The id of the channel
+   * @returns MessageWithoutSender[]
+   */
+  syncChannelMessages(channelId: string): MessageWithoutSender[] | undefined {
+    const room = this.matrix.getRoom(channelId);
+    if (!room) {
+      return;
+    }
+    const liveTimeline = room.getLiveTimeline();
+    const events = liveTimeline.getEvents();
+    return events.map((event) => mapMatrixMessage(event.getEffectiveEvent()));
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {

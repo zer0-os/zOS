@@ -1,6 +1,6 @@
 import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
-import { takeLatest, put, call, select, delay, spawn, takeEvery } from 'redux-saga/effects';
+import { takeLatest, put, call, select, delay, takeEvery, spawn } from 'redux-saga/effects';
 import {
   EditMessageOptions,
   SagaActionTypes,
@@ -25,11 +25,13 @@ import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat, getMessageEmojiReactions, getMessageReadReceipts, sendEmojiReactionEvent } from '../../lib/chat';
 import { mapMessageSenders } from './utils.matrix';
-import { uniqNormalizedList } from '../utils';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
 import { rawChannel } from '../channels/selectors';
 import { getUsersByMatrixIds } from '../users/saga';
+import { ReceiveNewMessageAction, ReceiveOptimisticMessageAction } from './types';
+
+const BATCH_INTERVAL = 500; // Debounce/batch interval in milliseconds
 
 export interface Payload {
   channelId: string;
@@ -120,7 +122,7 @@ export function* mapMessagesAndPreview(messages: (Message | MessageWithoutSender
   return newMessages;
 }
 
-export function* fetch(action) {
+export function* fetchMessages(action) {
   const { channelId, referenceTimestamp } = action.payload;
   const channel = yield select((state) => rawChannel(state, channelId));
   if (channel.conversationStatus !== ConversationStatus.CREATED) {
@@ -147,10 +149,12 @@ export function* fetch(action) {
     // (eg. parentMessage), then it gets written to state
     messages = [...messagesResponse.messages, ...existingMessages];
     messages = uniqBy(messages, (m) => m.id ?? m);
+    const lastRoomMessage = messages.reverse().find((m: Message) => !m.admin) ?? null;
 
     yield call(receiveChannel, {
       id: channelId,
       messages,
+      lastMessage: lastRoomMessage,
       hasMore: messagesResponse.hasMore,
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
@@ -397,11 +401,34 @@ export function* receiveDelete(action) {
   yield call(receiveChannel, { id: channelId, messages: existingMessages.filter((id) => id !== messageId) });
 }
 
-let savedMessages = [];
-export function* receiveNewMessage(action) {
-  const BATCH_INTERVAL = 500;
+export function* receiveNewMessageAction(action: ReceiveNewMessageAction) {
+  const isActiveChannel = yield select(_isActive(action.payload.channelId));
+  if (isActiveChannel) {
+    yield call(scheduleActiveChannelMessageUpdate, action.payload.channelId);
+  } else {
+    yield call(receiveNewMessage, action.payload);
+  }
+}
 
-  savedMessages.push(action.payload);
+let activeChannelDebounceMap: Record<string, boolean> = {};
+function* scheduleActiveChannelMessageUpdate(channelId: string) {
+  if (activeChannelDebounceMap[channelId]) {
+    return;
+  }
+
+  activeChannelDebounceMap[channelId] = true;
+
+  try {
+    yield delay(BATCH_INTERVAL);
+    yield call(receiveActiveChannelMessage, channelId);
+  } finally {
+    activeChannelDebounceMap[channelId] = false;
+  }
+}
+
+let savedMessages: ReceiveNewMessageAction['payload'][] = [];
+function* receiveNewMessage(payload: ReceiveNewMessageAction['payload']) {
+  savedMessages.push(payload);
   if (savedMessages.length > 1) {
     // we already have a leading event that's awaiting the debounce delay
     return;
@@ -413,44 +440,67 @@ export function* receiveNewMessage(action) {
   return yield call(batchedReceiveNewMessage, batchedPayloads);
 }
 
-export function* batchedReceiveNewMessage(batchedPayloads) {
-  const byChannelId = {};
-  batchedPayloads.forEach((m) => {
-    byChannelId[m.channelId] = byChannelId[m.channelId] || [];
-    byChannelId[m.channelId].push(m.message);
+export function* batchedReceiveNewMessage(batchedPayloads: ReceiveNewMessageAction['payload'][]) {
+  const byChannelId: Record<string, Message | undefined> = {};
+  // Only use the most recent message for each channel
+  batchedPayloads.forEach(({ channelId, message }) => {
+    const m = byChannelId[channelId];
+    if (m && m.createdAt < message.createdAt) {
+      byChannelId[channelId] = message;
+    } else if (!m) {
+      byChannelId[channelId] = message;
+    }
   });
 
   for (const channelId of Object.keys(byChannelId)) {
+    const channelMessage = byChannelId[channelId];
+    // Update the message with sender data
+    const newLastMessageWithSender: Message | undefined = yield call(mapMessageSenders, [channelMessage]);
     const channel = yield select((state) => rawChannel(state, channelId));
     if (!channel) {
       continue;
     }
-    const mappedMessages = yield call(mapMessagesAndPreview, byChannelId[channelId], channelId);
-    yield receiveBatchedMessages(channelId, mappedMessages);
-
-    if (yield select(_isActive(channelId))) {
-      yield spawn(markConversationAsRead, channelId);
+    const newLastMessage = newLastMessageWithSender[0];
+    // No existing last message
+    const noLastMessage = !channel.lastMessage;
+    // This is a newer version of the existing last message
+    const updatedLastMessage = channel.lastMessage?.id === newLastMessage?.id;
+    // This is a new message that's more recent than the existing last message
+    const isNewer = newLastMessage && channel.lastMessage?.createdAt < newLastMessage.createdAt;
+    // Update lastMessage property on channel
+    if (!!newLastMessage && (noLastMessage || isNewer || updatedLastMessage)) {
+      yield call(receiveChannel, { id: channelId, lastMessage: newLastMessage });
     }
   }
 }
 
-function* receiveBatchedMessages(channelId, messages) {
-  // Note: This method must be fully synchronous. There can be no
-  // async calls in here because we fetch the current list of channel
-  // messages and replace things and then set the new list at the end.
-  // If there is an async call in between then the channels list of messages
-  // could have changed and we'll end up missing those changes by the time we
-  // save the batch here.
-  const currentChannel = yield select((state) => rawChannel(state, channelId));
-  let currentMessages = currentChannel?.messages || [];
-  for (let message of messages) {
-    let newMessages = yield call(replaceOptimisticMessage, currentMessages, message);
-    if (!newMessages) {
-      newMessages = [...currentMessages, message];
-    }
-    currentMessages = newMessages;
+function* receiveActiveChannelMessage(channelId: string) {
+  // Refetch the latest messages to ensure the active timeline is up-to-date.
+  const chatClient = yield call(chat.get);
+  const messages = yield call([chatClient, chatClient.syncChannelMessages], channelId);
+  if (messages) {
+    const messagesWithSenders = yield call(mapMessagesAndPreview, messages, channelId);
+    yield call(receiveChannel, { id: channelId, messages: messagesWithSenders });
   }
-  yield call(receiveChannel, { id: channelId, messages: uniqNormalizedList(currentMessages, true) });
+
+  // Mark the conversation as read since the user is actively viewing it
+  yield spawn(markConversationAsRead, channelId);
+}
+
+export function* receiveOptimisticMessage(action: ReceiveOptimisticMessageAction) {
+  const { message, roomId } = action.payload;
+  // hydrate message with redux data
+  const newMessage = yield call(mapMessagesAndPreview, [message], roomId);
+  const channel = yield select((state) => rawChannel(state, roomId));
+  const existingMessages = channel.messages;
+  // replace the optimistic message with the real message
+  const newMessages = yield call(replaceOptimisticMessage, existingMessages, newMessage[0]);
+  // update the last message if the new message is more recent
+  let lastMessage = channel.lastMessage;
+  if (newMessages[newMessages.length - 1]?.createdAt > channel.lastMessage?.createdAt) {
+    lastMessage = newMessages[newMessages.length - 1];
+  }
+  yield call(receiveChannel, { id: roomId, messages: newMessages, lastMessage });
 }
 
 export function* replaceOptimisticMessage(currentMessages: string[], message: Message) {
@@ -532,16 +582,17 @@ export function* mapMessageReadByUsers(messageId, channelId) {
 }
 
 export function* saga() {
-  yield takeLatest(SagaActionTypes.Fetch, fetch);
+  yield takeLatest(SagaActionTypes.Fetch, fetchMessages);
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);
   yield takeEvery(SagaActionTypes.SendEmojiReaction, sendEmojiReaction);
 
   const chatBus = yield call(getChatBus);
-  yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessage);
+  yield takeEveryFromBus(chatBus, ChatEvents.MessageReceived, receiveNewMessageAction);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageUpdated, receiveUpdateMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageDeleted, receiveDelete);
+  yield takeEveryFromBus(chatBus, ChatEvents.OptimisticMessageUpdated, receiveOptimisticMessage);
   yield takeEveryFromBus(chatBus, ChatEvents.LiveRoomEventReceived, receiveLiveRoomEventAction);
   yield takeEveryFromBus(chatBus, ChatEvents.ReadReceiptReceived, readReceiptReceived);
   yield takeEveryFromBus(chatBus, ChatEvents.MessageEmojiReactionChange, onMessageEmojiReactionChange);

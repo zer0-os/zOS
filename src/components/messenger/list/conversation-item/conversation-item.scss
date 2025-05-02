@@ -113,6 +113,11 @@
     }
   }
 
+  &__message--loading {
+    filter: blur(4px);
+    opacity: 0.4;
+  }
+
   &__unread-count {
     @include glass-state-default-color;
     @include glass-glow-highlight-small;

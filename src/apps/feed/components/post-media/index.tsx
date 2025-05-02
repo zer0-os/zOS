@@ -31,7 +31,7 @@ export const PostMedia = ({ mediaId }: PostMediaProps) => {
     e.stopPropagation();
     if (mediaUrl && mediaDetails) {
       const media: Media = {
-        type: MediaType.Image,
+        type: mediaDetails.mimeType?.startsWith('video/') ? MediaType.Video : MediaType.Image,
         url: mediaUrl,
         name: 'Post media',
         width: mediaDetails.width,
@@ -57,9 +57,22 @@ export const PostMedia = ({ mediaId }: PostMediaProps) => {
     );
   }
 
+  const isVideo = mediaDetails?.mimeType?.startsWith('video/');
+
   return (
     <div className={styles.BlockImage} onClick={handleClick}>
-      <img src={mediaUrl} alt={'post media'} onLoad={handleImageLoad} style={!isImageLoaded ? { width, height } : {}} />
+      {isVideo ? (
+        <video controls className={styles.Video}>
+          <source src={mediaUrl} type={mediaDetails?.mimeType} />
+        </video>
+      ) : (
+        <img
+          src={mediaUrl}
+          alt={'post media'}
+          onLoad={handleImageLoad}
+          style={!isImageLoaded ? { width, height } : {}}
+        />
+      )}
     </div>
   );
 };

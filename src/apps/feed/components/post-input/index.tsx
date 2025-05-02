@@ -12,6 +12,7 @@ import { ViewModes } from '../../../../shared-components/theme-engine';
 import { IconFaceSmile, IconStickerCircle } from '@zero-tech/zui/icons';
 import { PostMediaMenu } from './menu';
 import { featureFlags } from '../../../../lib/feature-flags';
+import AttachmentCards from '../../../../platform-apps/channels/attachment-cards';
 
 import { bemClassName } from '../../../../lib/bem';
 import classNames from 'classnames';
@@ -108,11 +109,16 @@ export class PostInput extends React.Component<Properties, State> {
   get mimeTypes() {
     return {
       'image/*': [],
+      'video/*': [],
     };
   }
 
   get images() {
     return this.state.media.filter((m) => m.mediaType === MediaType.Image);
+  }
+
+  get videos() {
+    return this.state.media.filter((m) => m.mediaType === MediaType.Video);
   }
 
   onSubmit = (): void => {
@@ -251,6 +257,7 @@ export class PostInput extends React.Component<Properties, State> {
 
                   <div {...cn('image')}>
                     <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
+                    <AttachmentCards attachments={this.videos} onRemove={this.removeMediaPreview} />
                   </div>
 
                   <div {...cn('actions')}>

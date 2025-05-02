@@ -8,7 +8,7 @@ import { config } from '../../../../../config';
 import './styles.scss';
 
 export interface Properties {
-  onSelected: (images: Media[]) => void;
+  onSelected: (media: Media[]) => void;
 }
 
 interface State {
@@ -18,13 +18,13 @@ interface State {
 export class PostMediaMenu extends React.Component<Properties, State> {
   state = { isDropRejectedNotificationOpen: false };
 
-  imagesSelected = (acceptedFiles): void => {
+  mediaSelected = (acceptedFiles): void => {
     this.setState({ isDropRejectedNotificationOpen: false });
 
-    const newImages: Media[] = dropzoneToMedia(acceptedFiles);
+    const newMedia: Media[] = dropzoneToMedia(acceptedFiles);
 
-    if (newImages.length) {
-      this.props.onSelected(newImages);
+    if (newMedia.length) {
+      this.props.onSelected(newMedia);
     }
   };
 
@@ -55,8 +55,8 @@ export class PostMediaMenu extends React.Component<Properties, State> {
       <>
         <Dropzone
           onDropRejected={this.onDropRejected}
-          onDrop={this.imagesSelected}
-          accept={{ 'image/*': [], 'image/gif': ['.gif'] }}
+          onDrop={this.mediaSelected}
+          accept={{ 'image/*': [], 'image/gif': ['.gif'], 'video/*': [] }}
           maxSize={config.cloudinary.max_file_size}
         >
           {({ getRootProps, getInputProps, open }) => (

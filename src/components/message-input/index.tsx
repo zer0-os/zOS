@@ -354,8 +354,6 @@ export class MessageInput extends React.Component<Properties, State> {
 
           {!this.props.isEditing && (
             <div {...cn('icon-wrapper')}>
-              {/* See: ZOS-115
-               * @ts-ignore */}
               <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
                 <IconButton
                   {...cn('icon', 'end-action')}

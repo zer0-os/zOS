@@ -16,8 +16,6 @@ export const App = () => {
   const { isAuthenticated, mainClassName, videoBackgroundSrc, wrapperClassName } = useAppMain();
 
   return (
-    // See: ZOS-115
-    // @ts-ignore
     <ZUIProvider>
       <BackgroundStyleProvider />
       <div className={mainClassName}>

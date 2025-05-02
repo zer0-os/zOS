@@ -56,7 +56,7 @@ export class PostMediaMenu extends React.Component<Properties, State> {
         <Dropzone
           onDropRejected={this.onDropRejected}
           onDrop={this.imagesSelected}
-          accept={{ 'image/*': [] }}
+          accept={{ 'image/*': [], 'image/gif': ['.gif'] }}
           maxSize={config.cloudinary.max_file_size}
         >
           {({ getRootProps, getInputProps, open }) => (

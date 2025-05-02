@@ -74,10 +74,19 @@ export const useSubmitPost = () => {
         try {
           const file = media[0].nativeFile;
           if (!file) {
-            throw new Error('Media file is missing');
+            if (media[0].giphy) {
+              const response = await fetch(media[0].giphy.images.original.url);
+              const blob = await response.blob();
+              const gifFile = new File([blob], `${media[0].giphy.id}.gif`, { type: 'image/gif' });
+              const uploadResponse = await uploadMedia(gifFile);
+              mediaId = uploadResponse.id;
+            } else {
+              throw new Error('Media file is missing');
+            }
+          } else {
+            const uploadResponse = await uploadMedia(file);
+            mediaId = uploadResponse.id;
           }
-          const uploadResponse = await uploadMedia(file);
-          mediaId = uploadResponse.id;
         } catch (e) {
           console.error('Failed to upload media:', e);
           throw new Error('Failed to upload media');

@@ -149,7 +149,7 @@ export function* fetchMessages(action) {
     // (eg. parentMessage), then it gets written to state
     messages = [...messagesResponse.messages, ...existingMessages];
     messages = uniqBy(messages, (m) => m.id ?? m);
-    const lastRoomMessage = messages.reverse().find((m: Message) => !m.admin) ?? null;
+    const lastRoomMessage = [...messages].reverse().find((m: Message) => !m.admin) ?? null;
 
     yield call(receiveChannel, {
       id: channelId,
@@ -411,7 +411,7 @@ export function* receiveNewMessageAction(action: ReceiveNewMessageAction) {
 }
 
 let activeChannelDebounceMap: Record<string, boolean> = {};
-function* scheduleActiveChannelMessageUpdate(channelId: string) {
+export function* scheduleActiveChannelMessageUpdate(channelId: string) {
   if (activeChannelDebounceMap[channelId]) {
     return;
   }
@@ -474,7 +474,7 @@ export function* batchedReceiveNewMessage(batchedPayloads: ReceiveNewMessageActi
   }
 }
 
-function* receiveActiveChannelMessage(channelId: string) {
+export function* receiveActiveChannelMessage(channelId: string) {
   // Refetch the latest messages to ensure the active timeline is up-to-date.
   const chatClient = yield call(chat.get);
   const messages = yield call([chatClient, chatClient.syncChannelMessages], channelId);

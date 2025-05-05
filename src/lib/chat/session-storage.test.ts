@@ -30,7 +30,7 @@ describe('session storage', () => {
 
   it('removes localStorage vars on clear', async () => {
     const getItem = jest.fn((key) => (key === 'mxz_device_id' ? 'abc123' : ''));
-    const client = subject({ getItem });
+    const client = subject({ getItem, mxz_device_id: 'abc123', mxz_user_id: '@bob:zos-matrix' });
 
     client.clear();
 

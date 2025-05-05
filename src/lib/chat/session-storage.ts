@@ -7,11 +7,8 @@ export class SessionStorage {
   constructor(private storage = localStorage) {}
 
   clear() {
-    this.storage.removeItem('mxz_device_id');
-    this.storage.removeItem('mxz_user_id');
-
     const allKeys = Object.keys(this.storage);
-    const filterKeys = allKeys.filter((key) => key.includes('mxjssdk_memory_filter'));
+    const filterKeys = allKeys.filter((key) => key.includes('mxjssdk_memory_filter') || key.includes('mxz_'));
     filterKeys.forEach((key) => this.storage.removeItem(key));
   }
 

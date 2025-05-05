@@ -1,5 +1,5 @@
 import getDeepProperty from 'lodash.get';
-import { put, call, take, select, spawn, fork, delay } from 'redux-saga/effects';
+import { put, call, select, spawn, fork, delay } from 'redux-saga/effects';
 import { chat, downloadFile } from '../../lib/chat';
 
 import { updateChannelWithRoomData } from './utils';
@@ -75,14 +75,15 @@ export function* clearChannelsAndConversations() {
   yield call(clearChannels);
 }
 
+function* handleUserLogin() {
+  const chatClient = yield call(chat.get);
+  yield call([chatClient, chatClient.waitForConnection]);
+  yield call(fetchChannels);
+}
+
 function* listenForUserLogin() {
   const userChannel = yield call(getAuthChannel);
-  while (true) {
-    yield take(userChannel, AuthEvents.UserLogin);
-    const chatClient = yield call(chat.get);
-    yield call([chatClient, chatClient.waitForConnection]);
-    yield call(fetchChannels);
-  }
+  yield takeEveryFromBus(userChannel, AuthEvents.UserLogin, handleUserLogin);
 }
 
 export function* userLeftChannel(channelId: string, matrixId: string) {

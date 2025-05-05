@@ -25,17 +25,26 @@ import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias 
 import { joinRoom as apiJoinRoom } from './api';
 import { startPollingPosts } from '../posts/saga';
 import { allChannelsSelector, channelSelector } from '../channels/selectors';
+import { EventChannel } from 'redux-saga';
 
 function* initChat(userId: string, token: string) {
-  const { chatConnection, connectionPromise, activate } = createChatConnection(userId, token, chat.get());
-  const id = yield connectionPromise;
-  if (id !== userId) {
-    yield call(saveUserMatrixCredentials, id, 'not-used');
+  let chatConnection: EventChannel<unknown> | undefined;
+  try {
+    const {
+      chatConnection: newChatConnection,
+      connectionPromise,
+      activate,
+    } = createChatConnection(userId, token, chat.get());
+    chatConnection = newChatConnection;
+    const id = yield connectionPromise;
+    if (id !== userId) {
+      yield call(saveUserMatrixCredentials, id, 'not-used');
+    }
+    yield takeEvery(chatConnection, convertToBusEvents);
+    yield spawn(activateWhenConversationsLoaded, activate);
+  } finally {
+    yield spawn(closeConnectionOnLogout, chatConnection);
   }
-  yield takeEvery(chatConnection, convertToBusEvents);
-
-  yield spawn(closeConnectionOnLogout, chatConnection);
-  yield spawn(activateWhenConversationsLoaded, activate);
 }
 
 // Handles updating loading state while waiting for matrix to connect and the initial sync to complete
@@ -86,9 +95,11 @@ function* connectOnLogin() {
   yield initChat(userId, token.token);
 }
 
-function* closeConnectionOnLogout(chatConnection) {
+function* closeConnectionOnLogout(chatConnection?: EventChannel<unknown> | undefined) {
   yield take(yield call(getAuthChannel), AuthEvents.UserLogout);
-  chatConnection.close();
+  if (chatConnection) {
+    chatConnection.close();
+  }
   yield spawn(connectOnLogin);
 }
 

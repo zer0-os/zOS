@@ -12,6 +12,7 @@ class MatrixInstance {
   }
 
   resetClientInstance() {
+    this._clientInstance.disconnect();
     this._clientInstance = new MatrixClient();
   }
 }

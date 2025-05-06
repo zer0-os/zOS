@@ -216,13 +216,20 @@ export class PostInput extends React.Component<Properties, State> {
     const isDisabled =
       (!this.state.value.trim() && !this.state.media.length) || this.props.isSubmitting || isPostTooLong;
 
+    // Set maxSize to the largest allowed, Dropzone will still reject based on this
+    const maxSize = Math.max(
+      config.postMedia.imageMaxFileSize,
+      config.postMedia.gifMaxFileSize,
+      config.postMedia.videoMaxFileSize
+    );
+
     return (
       <div>
         <Dropzone
           onDrop={this.imagesSelected}
           noClick
           accept={this.mimeTypes}
-          maxSize={config.cloudinary.max_file_size}
+          maxSize={maxSize}
           disabled={!featureFlags.enablePostMedia}
         >
           {({ getRootProps }) => (

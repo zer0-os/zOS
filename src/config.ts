@@ -32,4 +32,9 @@ export const config = {
   postImageMaxFileSize: process.env.REACT_APP_POST_IMAGE_MAX_FILE_SIZE,
   postGifMaxFileSize: process.env.REACT_APP_POST_GIF_MAX_FILE_SIZE,
   postVideoMaxFileSize: process.env.REACT_APP_POST_VIDEO_MAX_FILE_SIZE,
+  postMedia: {
+    imageMaxFileSize: parseInt(process.env.REACT_APP_POST_IMAGE_MAX_FILE_SIZE) || 5242880,
+    gifMaxFileSize: parseInt(process.env.REACT_APP_POST_GIF_MAX_FILE_SIZE) || 15728640,
+    videoMaxFileSize: parseInt(process.env.REACT_APP_POST_VIDEO_MAX_FILE_SIZE) || 104857600,
+  },
 };

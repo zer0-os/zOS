@@ -20,11 +20,19 @@ import './styles.scss';
 
 // should move these to a shared location
 import { MediaType } from '../../../../store/messages';
-import { Media, addImagePreview, dropzoneToMedia, windowClipboard } from '../../../../components/message-input/utils';
+import {
+  Media,
+  addImagePreview,
+  bytesToMB,
+  dropzoneToMedia,
+  windowClipboard,
+} from '../../../../components/message-input/utils';
 import { EmojiPicker } from '../../../../components/message-input/emoji-picker/emoji-picker';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { POST_MAX_LENGTH } from '../../lib/constants';
 import { Giphy } from '../../../../components/message-input/giphy/giphy';
+import { ToastNotification } from '@zero-tech/zui/components';
+import { getPostMediaMaxFileSize } from './utils';
 
 const SHOW_MAX_LABEL_THRESHOLD = 0.8 * POST_MAX_LENGTH;
 
@@ -49,6 +57,8 @@ interface State {
   media: Media[];
   isEmojisActive: boolean;
   isGiphyActive: boolean;
+  isDropRejectedNotificationOpen: boolean;
+  rejectedType: string | null;
 }
 
 export class PostInput extends React.Component<Properties, State> {
@@ -57,6 +67,8 @@ export class PostInput extends React.Component<Properties, State> {
     media: [],
     isEmojisActive: false,
     isGiphyActive: false,
+    isDropRejectedNotificationOpen: false,
+    rejectedType: null,
   };
 
   private textareaRef: RefObject<HTMLTextAreaElement>;
@@ -161,6 +173,7 @@ export class PostInput extends React.Component<Properties, State> {
   };
 
   imagesSelected = (acceptedFiles): void => {
+    this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null });
     const newImages: Media[] = this.props.dropzoneToMedia
       ? this.props.dropzoneToMedia(acceptedFiles)
       : dropzoneToMedia(acceptedFiles);
@@ -211,6 +224,32 @@ export class PostInput extends React.Component<Properties, State> {
     this.closeGiphy();
   };
 
+  onDropRejected = (rejectedFiles) => {
+    const rejectedFile = rejectedFiles[0];
+    if (rejectedFile?.errors[0]?.code === 'file-too-large') {
+      this.setState({ isDropRejectedNotificationOpen: true, rejectedType: rejectedFile.file.type });
+    }
+  };
+
+  renderToastNotification = () => {
+    let maxSize = config.postMedia.imageMaxFileSize;
+    if (this.state.rejectedType) {
+      maxSize = getPostMediaMaxFileSize(this.state.rejectedType);
+    }
+    const maxSizeMB = bytesToMB(maxSize);
+
+    return (
+      <ToastNotification
+        viewportClassName='post-media-toast-notification'
+        title=''
+        description={`File exceeds ${maxSizeMB} size limit`}
+        actionAltText=''
+        positionVariant='left'
+        openToast={this.state.isDropRejectedNotificationOpen}
+      />
+    );
+  };
+
   renderInput() {
     const isPostTooLong = this.state.value.length > POST_MAX_LENGTH;
     const isDisabled =
@@ -227,10 +266,10 @@ export class PostInput extends React.Component<Properties, State> {
       <div>
         <Dropzone
           onDrop={this.imagesSelected}
+          onDropRejected={this.onDropRejected}
           noClick
           accept={this.mimeTypes}
           maxSize={maxSize}
-          disabled={!featureFlags.enablePostMedia}
         >
           {({ getRootProps }) => (
             <div {...getRootProps({ ...cn('drop-zone-text-area') })}>
@@ -330,6 +369,7 @@ export class PostInput extends React.Component<Properties, State> {
             </div>
           )}
         </Dropzone>
+        {this.renderToastNotification()}
       </div>
     );
   }

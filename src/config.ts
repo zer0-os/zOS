@@ -29,4 +29,7 @@ export const config = {
   telegramBotUserId: process.env.REACT_APP_TELEGRAM_BOT_USER_ID,
   thirwebClientId: process.env.REACT_APP_THIRDWEB_CLIENT_ID,
   matrixHomeServerName: process.env.REACT_APP_MATRIX_HOME_SERVER_NAME,
+  postImageMaxFileSize: process.env.REACT_APP_POST_IMAGE_MAX_FILE_SIZE,
+  postGifMaxFileSize: process.env.REACT_APP_POST_GIF_MAX_FILE_SIZE,
+  postVideoMaxFileSize: process.env.REACT_APP_POST_VIDEO_MAX_FILE_SIZE,
 };

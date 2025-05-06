@@ -29,9 +29,11 @@ export const PostMedia = ({ mediaId }: PostMediaProps) => {
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (mediaUrl && mediaDetails) {
+    if (!mediaUrl || !mediaDetails) return;
+
+    if (!mediaDetails.mimeType?.startsWith('video/')) {
       const media: Media = {
-        type: mediaDetails.mimeType?.startsWith('video/') ? MediaType.Video : MediaType.Image,
+        type: MediaType.Image,
         url: mediaUrl,
         name: 'Post media',
         width: mediaDetails.width,

@@ -26,8 +26,10 @@ import { joinRoom as apiJoinRoom } from './api';
 import { startPollingPosts } from '../posts/saga';
 import { allChannelsSelector, channelSelector } from '../channels/selectors';
 import { EventChannel } from 'redux-saga';
+import { MatrixInitializationError } from '../../lib/chat/matrix/errors';
 
 function* initChat(userId: string, token: string) {
+  const history = yield call(getHistory);
   let chatConnection: EventChannel<unknown> | undefined;
   try {
     const {
@@ -42,6 +44,13 @@ function* initChat(userId: string, token: string) {
     }
     yield takeEvery(chatConnection, convertToBusEvents);
     yield spawn(activateWhenConversationsLoaded, activate);
+  } catch (error) {
+    // If we encounter this error, it means the matrix crypto store is essentially corrupted
+    // and we need to clear everything and restart. The client handles resetting itself
+    // we just need to reload the app.
+    if (error instanceof MatrixInitializationError) {
+      yield history.replace({ pathname: '/error' });
+    }
   } finally {
     yield spawn(closeConnectionOnLogout, chatConnection);
   }

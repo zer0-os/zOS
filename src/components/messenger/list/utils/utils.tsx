@@ -18,7 +18,7 @@ export function isUserAdmin(user: User, adminIds: string[]) {
 }
 
 export function isUserModerator(user: User, moderatorIds: string[]) {
-  return moderatorIds?.includes(user.userId);
+  return moderatorIds?.includes(user.matrixId);
 }
 
 export function sortMembers(members: User[], adminIds: string[], conversationModeratorIds: string[]) {

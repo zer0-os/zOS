@@ -83,7 +83,7 @@ export class Container extends React.Component<Properties> {
     const conversationAdminIds = conversation?.adminMatrixIds;
     const conversationModeratorIds = conversation?.moderatorIds;
     const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
-    const isCurrentUserRoomModerator = conversationModeratorIds?.includes(currentUser?.id) ?? false;
+    const isCurrentUserRoomModerator = conversationModeratorIds?.includes(currentUser?.matrixId) ?? false;
     const existingConversations = allDenormalizedChannelsSelector(state);
 
     return {

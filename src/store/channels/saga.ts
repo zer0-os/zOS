@@ -233,13 +233,13 @@ export function* receivedRoomMemberPowerLevelChanged(action) {
   let moderatorIds = cloneDeep(channel.moderatorIds || []);
 
   if (powerLevel === PowerLevels.Moderator) {
-    if (!moderatorIds.includes(user.userId)) {
-      moderatorIds.push(user.userId);
+    if (!moderatorIds.includes(user.matrixId)) {
+      moderatorIds.push(user.matrixId);
     }
   }
 
   if (powerLevel === PowerLevels.Viewer) {
-    const index = moderatorIds.indexOf(user.userId);
+    const index = moderatorIds.indexOf(user.matrixId);
     if (index !== -1) {
       moderatorIds.splice(index, 1);
     }

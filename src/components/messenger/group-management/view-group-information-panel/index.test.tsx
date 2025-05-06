@@ -211,7 +211,7 @@ describe(ViewGroupInformationPanel, () => {
         { userId: 'otherUser2', matrixId: 'matrix-id-2' },
       ] as User[],
       conversationAdminIds: [],
-      conversationModeratorIds: ['otherUser1'],
+      conversationModeratorIds: ['matrix-id-1'],
     });
 
     expect(wrapper.find(CitizenListItem).at(0)).toHaveProp('tag', null); // current user is displayed at top

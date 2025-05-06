@@ -13,7 +13,7 @@ describe('sortMembers', () => {
       { userId: 'otherMember7', matrixId: 'matrix-id-7', firstName: 'Craig', isOnline: false },
     ] as any;
     const adminIds = ['matrix-id-2', 'matrix-id-3'];
-    const moderatorIds = ['otherMember5', 'otherMember6'];
+    const moderatorIds = ['matrix-id-5', 'matrix-id-6'];
 
     const sortedMembers = sortMembers(members, adminIds, moderatorIds);
     const expectedOrder = [
@@ -76,21 +76,21 @@ describe('isUserAdmin', () => {
 
 describe(isUserModerator, () => {
   it('returns true if the user is a moderator', () => {
-    const user = { userId: 'user1' } as User;
-    const moderatorIds = ['user1', 'user2'];
+    const user = { userId: 'user1', matrixId: 'matrix-id-1' } as User;
+    const moderatorIds = ['matrix-id-1', 'matrix-id-2'];
 
     expect(isUserModerator(user, moderatorIds)).toBe(true);
   });
 
   it('returns false if the user is not a moderator', () => {
-    const user = { userId: 'user3' } as User;
-    const moderatorIds = ['user1', 'user2'];
+    const user = { userId: 'user3', matrixId: 'matrix-id-3' } as User;
+    const moderatorIds = ['matrix-id-1', 'matrix-id-2'];
 
     expect(isUserModerator(user, moderatorIds)).toBe(false);
   });
 
   it('handles empty moderatorIds array', () => {
-    const user = { userId: 'user1' } as User;
+    const user = { userId: 'user1', matrixId: 'matrix-id-1' } as User;
     const moderatorIds: string[] = [];
 
     expect(isUserModerator(user, moderatorIds)).toBe(false);
@@ -123,8 +123,8 @@ describe(getTagForUser, () => {
   });
 
   it('returns "Mod" if the user is a moderator', () => {
-    const user = { userId: 'user1' } as User;
-    const moderatorIds = ['user1', 'user2'];
+    const user = { userId: 'user1', matrixId: 'matrix-id-1' } as User;
+    const moderatorIds = ['matrix-id-1', 'matrix-id-2'];
 
     expect(getTagForUser(user, [], moderatorIds)).toBe('Mod');
   });

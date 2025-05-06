@@ -77,7 +77,7 @@ describe(Container, () => {
       test('gets true when user is moderator', () => {
         const state = new StoreBuilder()
           .managingGroup({})
-          .withCurrentUser({ id: 'user-id' })
+          .withCurrentUser({ matrixId: 'user-id' })
           .withActiveConversation({ id: 'user-id', moderatorIds: ['user-id'] });
 
         expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canAddMembers: true }));
@@ -117,7 +117,7 @@ describe(Container, () => {
       test('gets true when user is moderator', () => {
         const state = new StoreBuilder()
           .managingGroup({})
-          .withCurrentUser({ id: 'user-id' })
+          .withCurrentUser({ matrixId: 'user-id' })
           .withActiveConversation({ id: 'user-id', moderatorIds: ['user-id'] });
 
         expect(Container.mapState(state.build())).toEqual(expect.objectContaining({ canEditGroup: true }));

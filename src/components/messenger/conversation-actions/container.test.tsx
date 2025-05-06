@@ -131,8 +131,10 @@ describe('ConversationActionsContainer', () => {
 
       it('is true when current user is room moderator', () => {
         const state = new StoreBuilder()
-          .withActiveConversation(stubConversation({ moderatorIds: ['current-user-id'], isSocialChannel: false }))
-          .withCurrentUser(stubAuthenticatedUser({ id: 'current-user-id' }));
+          .withActiveConversation(
+            stubConversation({ moderatorIds: ['current-user-matrix-id'], isSocialChannel: false })
+          )
+          .withCurrentUser(stubAuthenticatedUser({ matrixId: 'current-user-matrix-id' }));
 
         expect(ConversationActionsContainer.mapState(state.build())).toEqual(
           expect.objectContaining({ canEdit: true })

@@ -56,7 +56,7 @@ export class Container extends React.Component<Properties> {
 
     const canLeaveRoom = !isSocialChannel && !isCurrentUserRoomAdmin && hasMultipleMembers;
     const canEdit = !isSocialChannel && (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !isOneOnOne;
-    const canAddMembers = !isSocialChannel && isCurrentUserRoomAdmin && !isOneOnOne;
+    const canAddMembers = !isSocialChannel && (isCurrentUserRoomAdmin || isCurrentUserRoomModerator) && !isOneOnOne;
     const canViewDetails = !isOneOnOne || isSocialChannel;
     const canReportUser = isOneOnOne && !isSocialChannel;
 

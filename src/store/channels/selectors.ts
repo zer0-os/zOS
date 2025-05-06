@@ -19,6 +19,10 @@ export const allChannelsSelector = (state: RootState): Channel[] => {
   return Object.values(channels).sort(byBumpStamp);
 };
 
+export const allChannelIdsSelector = (state: RootState): string[] => {
+  return Object.keys(getDeepProperty(state, 'normalized.channels', {}));
+};
+
 export const allDenormalizedChannelsSelector = (state: RootState): Channel[] => {
   return allChannelsSelector(state).map((channel) => denormalize(channel.id, state));
 };

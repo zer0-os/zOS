@@ -18,7 +18,7 @@ vi.mock('./matrix/matrix-adapter', () => ({
       type: 'direct',
       memberCount: 2,
       avatar: room.avatarUrl || '',
-      lastMessage: null,
+      lastMessage: undefined,
       createdAt: Date.now(),
       isEncrypted: room.isEncrypted || false,
       labels: [],

@@ -149,16 +149,16 @@ export function* fetchMessages(action) {
     // (eg. parentMessage), then it gets written to state
     messages = [...messagesResponse.messages, ...existingMessages];
     messages = uniqBy(messages, (m) => m.id ?? m);
-    const lastRoomMessage = [...messages].reverse().find((m: Message) => !m.admin) ?? null;
 
     yield call(receiveChannel, {
       id: channelId,
       messages,
-      lastMessage: lastRoomMessage,
       hasMore: messagesResponse.hasMore,
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
+
+    yield call(batchedUpdateLastMessage, [channelId]);
 
     if (yield select(_isActive(channelId))) {
       const currentUser = yield select(currentUserSelector());
@@ -426,56 +426,44 @@ export function* scheduleActiveChannelMessageUpdate(channelId: string) {
   }
 }
 
-let savedMessages: ReceiveNewMessageAction['payload'][] = [];
+let newChannelIds: string[] = [];
 function* receiveNewMessage(payload: ReceiveNewMessageAction['payload']) {
-  savedMessages.push(payload);
-  if (savedMessages.length > 1) {
+  newChannelIds.push(payload.channelId);
+  if (newChannelIds.length > 1) {
     // we already have a leading event that's awaiting the debounce delay
     return;
   }
   yield delay(BATCH_INTERVAL);
   // Clone and empty so follow up events can debounce again
-  const batchedPayloads = [...savedMessages];
-  savedMessages = [];
-  return yield call(batchedReceiveNewMessage, batchedPayloads);
+  const batchedChannelIds = [...newChannelIds];
+  newChannelIds = [];
+  return yield call(batchedUpdateLastMessage, [...new Set(batchedChannelIds)]);
 }
 
-export function* batchedReceiveNewMessage(batchedPayloads: ReceiveNewMessageAction['payload'][]) {
-  const byChannelId: Record<string, Message | undefined> = {};
-  // Only use the most recent message for each channel
-  batchedPayloads.forEach(({ channelId, message }) => {
-    const m = byChannelId[channelId];
-    if (m && m.createdAt < message.createdAt) {
-      byChannelId[channelId] = message;
-    } else if (!m) {
-      byChannelId[channelId] = message;
-    }
-  });
-
-  for (const channelId of Object.keys(byChannelId)) {
-    const channelMessage = byChannelId[channelId];
-    // Update the message with sender data
-    const newLastMessageWithSender: Message | undefined = yield call(mapMessageSenders, [channelMessage]);
-    const channel = yield select((state) => rawChannel(state, channelId));
-    if (!channel) {
-      continue;
-    }
-    const newLastMessage = newLastMessageWithSender[0];
-    // No existing last message
-    const noLastMessage = !channel.lastMessage;
-    // This is a newer version of the existing last message
-    const updatedLastMessage = channel.lastMessage?.id === newLastMessage?.id;
-    // This is a new message that's more recent than the existing last message
-    const isNewer = newLastMessage && channel.lastMessage?.createdAt < newLastMessage.createdAt;
-    // Update lastMessage property on channel
-    if (!!newLastMessage && (noLastMessage || isNewer || updatedLastMessage)) {
-      yield call(receiveChannel, { id: channelId, lastMessage: newLastMessage });
+/**
+ * Batches the update of the last message for each channel.
+ * @param channelIds - The list of channel ids to update the last message for
+ */
+export function* batchedUpdateLastMessage(channelIds: string[]) {
+  for (const channelId of channelIds) {
+    const chatClient = yield call(chat.get);
+    let lastMessage = yield call([chatClient, chatClient.getLastChannelMessage], channelId);
+    if (lastMessage) {
+      const newLastMessageWithSender: Message[] | undefined = yield call(
+        mapMessagesAndPreview,
+        [lastMessage],
+        channelId
+      );
+      yield call(receiveChannel, { id: channelId, lastMessage: newLastMessageWithSender?.[0] });
     }
   }
 }
 
+/**
+ * Sync the redux state with the latest messages from the Matrix timeline
+ * @param channelId - The id of the channel to sync
+ */
 export function* receiveActiveChannelMessage(channelId: string) {
-  // Refetch the latest messages to ensure the active timeline is up-to-date.
   const chatClient = yield call(chat.get);
   const messages = yield call([chatClient, chatClient.syncChannelMessages], channelId);
   if (messages) {

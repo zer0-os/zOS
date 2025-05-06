@@ -5,7 +5,7 @@ import { FileUploadResult } from '../../store/messages/saga';
 import { MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import Matrix from './matrix/matrix-client-instance';
-import { CustomEventType, IN_ROOM_MEMBERSHIP_STATES } from './matrix/types';
+import { CustomEventType, IN_ROOM_MEMBERSHIP_STATES, MatrixConstants } from './matrix/types';
 import { MatrixAdapter } from './matrix/matrix-adapter';
 import { MemberNetworks } from '../../store/users/types';
 import { get } from '../api/rest';
@@ -103,14 +103,36 @@ export class Chat {
    * @param channelId - The id of the channel
    * @returns MessageWithoutSender[]
    */
-  syncChannelMessages(channelId: string): MessageWithoutSender[] | undefined {
+  syncChannelMessages(channelId: string): (Message | MessageWithoutSender)[] | undefined {
     const room = this.matrix.getRoom(channelId);
     if (!room) {
       return;
     }
     const liveTimeline = room.getLiveTimeline();
     const events = liveTimeline.getEvents();
-    return events.map((event) => mapMatrixMessage(event.getEffectiveEvent()));
+    const effectiveEvents = events.map((event) => event.getEffectiveEvent());
+    return this.matrix.processRawEventsToMessages(effectiveEvents);
+  }
+
+  /**
+   * Get the last channel message from the timeline
+   * @param channelId - The id of the channel
+   * @returns MessageWithoutSender | null
+   */
+  getLastChannelMessage(channelId: string): MessageWithoutSender | null {
+    const room = this.matrix.getRoom(channelId);
+    if (!room) {
+      return null;
+    }
+    const liveTimeline = room.getLiveTimeline();
+    const events = liveTimeline.getEvents();
+    const lastEvent = [...events].reverse().find((event) => {
+      const effectiveEvent = event.getEffectiveEvent();
+      const isRoomMessage = effectiveEvent.type === EventType.RoomMessage;
+      const isEdit = effectiveEvent.content[MatrixConstants.RELATES_TO]?.rel_type === MatrixConstants.REPLACE;
+      return isRoomMessage && !isEdit;
+    });
+    return lastEvent ? mapMatrixMessage(lastEvent.getEffectiveEvent()) : null;
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {

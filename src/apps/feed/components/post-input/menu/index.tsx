@@ -51,7 +51,10 @@ export class PostMediaMenu extends React.Component<Properties, State> {
   onDropRejected = (rejectedFiles) => {
     const rejectedFile = rejectedFiles[0];
     if (rejectedFile?.errors[0]?.code === 'file-too-large') {
-      this.setState({ isDropRejectedNotificationOpen: true, rejectedType: rejectedFile.file.type });
+      // Reset first, then show again
+      this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null }, () => {
+        this.setState({ isDropRejectedNotificationOpen: true, rejectedType: rejectedFile.file.type });
+      });
     }
   };
 

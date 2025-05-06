@@ -42,6 +42,29 @@
     color: theme.$color-greyscale-11;
   }
 
+  &__giphy-picker-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &__giphy-picker-content {
+    background: var(--color-primary-1);
+    border-radius: 8px;
+    padding: 16px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
   &__icon-wrapper {
     display: flex;
     gap: 4px;

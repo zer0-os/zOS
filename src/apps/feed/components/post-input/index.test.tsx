@@ -90,8 +90,10 @@ describe('PostInput', () => {
     const wrapper = subject({});
     const dropZone = wrapper.find(Dropzone);
 
-    expect(dropZone.prop('accept')).toEqual({ 'image/*': [] });
-    expect(dropZone.prop('maxSize')).toEqual(config.cloudinary.max_file_size);
+    expect(dropZone.prop('accept')).toEqual({ 'image/*': [], 'video/*': [] });
+    expect(dropZone.prop('maxSize')).toEqual(
+      Math.max(config.postMedia.imageMaxFileSize, config.postMedia.gifMaxFileSize, config.postMedia.videoMaxFileSize)
+    );
   });
 
   it('call after render', () => {

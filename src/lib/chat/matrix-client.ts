@@ -63,6 +63,7 @@ import { SecretStorageKeyDescription } from 'matrix-js-sdk/lib/secret-storage';
 import { SlidingSyncManager } from './sliding-sync';
 import { ReactionEventContent, RoomMessageEventContent } from 'matrix-js-sdk/lib/types';
 import { RelationType } from 'matrix-js-sdk/lib/@types/event';
+import { MatrixInitializationError } from './matrix/errors';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
@@ -153,8 +154,10 @@ export class MatrixClient {
       try {
         await this.matrix.logout(true);
         this.matrix.removeAllListeners();
-        await this.matrix.clearStores();
         await this.matrix.store?.destroy();
+        // This can't be awaited because it's not properly implemented in the sdk.
+        // If there is an active connection to the db then it will hang indefinitely.
+        this.matrix.clearStores();
       } catch (error) {
         Sentry.captureException(error, {
           extra: {
@@ -1412,7 +1415,6 @@ export class MatrixClient {
       deviceId = credentials.deviceId;
     }
 
-    this.sessionStorage.clear();
     return await this.login(accessToken, deviceId);
   }
 
@@ -1493,10 +1495,14 @@ export class MatrixClient {
 
       this.matrix = this.sdk.createClient(createClientOpts);
       matrixStore?.startup();
-      await this.matrix.initRustCrypto();
-      this.cryptoApi = this.matrix.getCrypto();
-
-      this.cryptoApi.globalBlacklistUnverifiedDevices = false;
+      try {
+        await this.matrix.initRustCrypto();
+        this.cryptoApi = this.matrix.getCrypto();
+        this.cryptoApi.globalBlacklistUnverifiedDevices = false;
+      } catch (error) {
+        await this.disconnect();
+        throw new MatrixInitializationError();
+      }
 
       const slidingSync = await SlidingSyncManager.instance.setup(this.matrix);
       const startClientOpts: IStartClientOpts = {

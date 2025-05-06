@@ -94,7 +94,7 @@ describe(receiveChannel, () => {
     const initialState = new StoreBuilder()
       .withConversationList({
         id: 'room-id',
-        moderatorIds: ['user-1'],
+        moderatorIds: ['matrix-id-1'],
         name: 'Test Room',
         unreadCount: { total: 5, highlight: 0 },
       })
@@ -102,14 +102,14 @@ describe(receiveChannel, () => {
 
     const { storeState } = await expectSaga(receiveChannel, {
       id: 'room-id',
-      moderatorIds: ['user-1', 'user-2'],
+      moderatorIds: ['matrix-id-1', 'matrix-id-2'],
       unreadCount: { total: 0, highlight: 0 },
     })
       .withReducer(rootReducer, initialState)
       .run();
 
     const channel = denormalizeChannel('room-id', storeState);
-    expect(channel.moderatorIds).toEqual(['user-1', 'user-2']);
+    expect(channel.moderatorIds).toEqual(['matrix-id-1', 'matrix-id-2']);
     expect(channel.unreadCount).toEqual({ total: 0, highlight: 0 });
     expect(channel.name).toEqual('Test Room');
   });
@@ -117,14 +117,14 @@ describe(receiveChannel, () => {
   it('creates a new channel with default values if it does not exist', async () => {
     const { storeState } = await expectSaga(receiveChannel, {
       id: 'new-room-id',
-      moderatorIds: ['user-1'],
+      moderatorIds: ['matrix-id-1'],
       name: 'New Room',
     })
       .withReducer(rootReducer)
       .run();
 
     const channel = denormalizeChannel('new-room-id', storeState);
-    expect(channel.moderatorIds).toEqual(['user-1']);
+    expect(channel.moderatorIds).toEqual(['matrix-id-1']);
     expect(channel.name).toEqual('New Room');
     expect(channel.unreadCount).toEqual({ total: 0, highlight: 0 });
     expect(channel.messages).toEqual([]);
@@ -282,19 +282,19 @@ describe(receivedRoomMemberPowerLevelChanged, () => {
     })
       .withReducer(rootReducer, initialState)
       .provide([
-        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1' }],
+        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1', matrixId: 'matrix-id-1' }],
       ])
       .run();
 
     const channel = denormalizeChannel('room-id', storeState);
-    expect(channel.moderatorIds).toEqual(['user-id-1']);
+    expect(channel.moderatorIds).toEqual(['matrix-id-1']);
   });
 
   it('does not add a moderator if they are already a moderator', async () => {
     const initialState = new StoreBuilder()
       .withConversationList({
         id: 'room-id',
-        moderatorIds: ['user-id-1'],
+        moderatorIds: ['matrix-id-1'],
         name: 'Test Room',
         unreadCount: { total: 0, highlight: 0 },
       })
@@ -306,19 +306,19 @@ describe(receivedRoomMemberPowerLevelChanged, () => {
     })
       .withReducer(rootReducer, initialState)
       .provide([
-        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1' }],
+        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1', matrixId: 'matrix-id-1' }],
       ])
       .run();
 
     const channel = denormalizeChannel('room-id', storeState);
-    expect(channel.moderatorIds).toEqual(['user-id-1']);
+    expect(channel.moderatorIds).toEqual(['matrix-id-1']);
   });
 
   it('removes a moderator when their power level is set to Viewer', async () => {
     const initialState = new StoreBuilder()
       .withConversationList({
         id: 'room-id',
-        moderatorIds: ['user-id-1'],
+        moderatorIds: ['matrix-id-1'],
         name: 'Test Room',
         unreadCount: { total: 0, highlight: 0 },
       })
@@ -330,7 +330,7 @@ describe(receivedRoomMemberPowerLevelChanged, () => {
     })
       .withReducer(rootReducer, initialState)
       .provide([
-        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1' }],
+        [matchers.select(userByMatrixIdSelector, 'matrix-id-1'), { userId: 'user-id-1', matrixId: 'matrix-id-1' }],
       ])
       .run();
 

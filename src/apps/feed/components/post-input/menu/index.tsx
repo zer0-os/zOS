@@ -1,6 +1,7 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { bytesToMB, dropzoneToMedia, Media } from '../../../../../components/message-input/utils';
+import { getPostMediaMaxFileSize } from '../utils';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { IconButton, ToastNotification } from '@zero-tech/zui/components';
 import { config } from '../../../../../config';
@@ -8,34 +9,38 @@ import { config } from '../../../../../config';
 import './styles.scss';
 
 export interface Properties {
-  onSelected: (images: Media[]) => void;
+  onSelected: (media: Media[]) => void;
 }
 
 interface State {
   isDropRejectedNotificationOpen: boolean;
+  rejectedType: string | null;
 }
 
 export class PostMediaMenu extends React.Component<Properties, State> {
-  state = { isDropRejectedNotificationOpen: false };
+  state = { isDropRejectedNotificationOpen: false, rejectedType: null };
 
-  imagesSelected = (acceptedFiles): void => {
-    this.setState({ isDropRejectedNotificationOpen: false });
+  mediaSelected = (acceptedFiles): void => {
+    this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null });
 
-    const newImages: Media[] = dropzoneToMedia(acceptedFiles);
+    const newMedia: Media[] = dropzoneToMedia(acceptedFiles);
 
-    if (newImages.length) {
-      this.props.onSelected(newImages);
+    if (newMedia.length) {
+      this.props.onSelected(newMedia);
     }
   };
 
   renderToastNotification = () => {
-    const maxSize = bytesToMB(config.cloudinary.max_file_size);
-
+    let maxSize = config.postMedia.imageMaxFileSize;
+    if (this.state.rejectedType) {
+      maxSize = getPostMediaMaxFileSize(this.state.rejectedType);
+    }
+    const maxSizeMB = bytesToMB(maxSize);
     return (
       <ToastNotification
         viewportClassName='post-media-toast-notification'
         title=''
-        description={`File exceeds ${maxSize} size limit`}
+        description={`File exceeds ${maxSizeMB} size limit`}
         actionAltText=''
         positionVariant='left'
         openToast={this.state.isDropRejectedNotificationOpen}
@@ -46,18 +51,27 @@ export class PostMediaMenu extends React.Component<Properties, State> {
   onDropRejected = (rejectedFiles) => {
     const rejectedFile = rejectedFiles[0];
     if (rejectedFile?.errors[0]?.code === 'file-too-large') {
-      this.setState({ isDropRejectedNotificationOpen: true });
+      // Reset first, then show again
+      this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null }, () => {
+        this.setState({ isDropRejectedNotificationOpen: true, rejectedType: rejectedFile.file.type });
+      });
     }
   };
 
   render() {
+    const maxSize = Math.max(
+      config.postMedia.imageMaxFileSize,
+      config.postMedia.gifMaxFileSize,
+      config.postMedia.videoMaxFileSize
+    );
+
     return (
       <>
         <Dropzone
           onDropRejected={this.onDropRejected}
-          onDrop={this.imagesSelected}
-          accept={{ 'image/*': [] }}
-          maxSize={config.cloudinary.max_file_size}
+          onDrop={this.mediaSelected}
+          accept={{ 'image/*': [], 'image/gif': ['.gif'], 'video/*': [] }}
+          maxSize={maxSize}
         >
           {({ getRootProps, getInputProps, open }) => (
             <div className='post-media-menu'>

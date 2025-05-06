@@ -25,17 +25,35 @@ import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias 
 import { joinRoom as apiJoinRoom } from './api';
 import { startPollingPosts } from '../posts/saga';
 import { allChannelsSelector, channelSelector } from '../channels/selectors';
+import { EventChannel } from 'redux-saga';
+import { MatrixInitializationError } from '../../lib/chat/matrix/errors';
 
 function* initChat(userId: string, token: string) {
-  const { chatConnection, connectionPromise, activate } = createChatConnection(userId, token, chat.get());
-  const id = yield connectionPromise;
-  if (id !== userId) {
-    yield call(saveUserMatrixCredentials, id, 'not-used');
+  const history = yield call(getHistory);
+  let chatConnection: EventChannel<unknown> | undefined;
+  try {
+    const {
+      chatConnection: newChatConnection,
+      connectionPromise,
+      activate,
+    } = createChatConnection(userId, token, chat.get());
+    chatConnection = newChatConnection;
+    const id = yield connectionPromise;
+    if (id !== userId) {
+      yield call(saveUserMatrixCredentials, id, 'not-used');
+    }
+    yield takeEvery(chatConnection, convertToBusEvents);
+    yield spawn(activateWhenConversationsLoaded, activate);
+  } catch (error) {
+    // If we encounter this error, it means the matrix crypto store is essentially corrupted
+    // and we need to clear everything and restart. The client handles resetting itself
+    // we just need to reload the app.
+    if (error instanceof MatrixInitializationError) {
+      yield history.replace({ pathname: '/error' });
+    }
+  } finally {
+    yield spawn(closeConnectionOnLogout, chatConnection);
   }
-  yield takeEvery(chatConnection, convertToBusEvents);
-
-  yield spawn(closeConnectionOnLogout, chatConnection);
-  yield spawn(activateWhenConversationsLoaded, activate);
 }
 
 // Handles updating loading state while waiting for matrix to connect and the initial sync to complete
@@ -86,9 +104,11 @@ function* connectOnLogin() {
   yield initChat(userId, token.token);
 }
 
-function* closeConnectionOnLogout(chatConnection) {
+function* closeConnectionOnLogout(chatConnection?: EventChannel<unknown> | undefined) {
   yield take(yield call(getAuthChannel), AuthEvents.UserLogout);
-  chatConnection.close();
+  if (chatConnection) {
+    chatConnection.close();
+  }
   yield spawn(connectOnLogin);
 }
 

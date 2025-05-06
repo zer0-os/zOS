@@ -24,6 +24,7 @@ const REQUIRED_STATE_LIST = [
   [CustomEventType.GROUP_TYPE, MSC3575_WILDCARD],
   [EventType.RoomMember, MSC3575_WILDCARD],
   [EventType.Receipt, ''],
+  [EventType.RoomPowerLevels, ''],
 ];
 
 // the things to fetch when a user clicks on a room

@@ -148,15 +148,15 @@ describe(EditConversationPanel, () => {
 
     it('renders the members with appropriate tags', function () {
       const wrapper = subject({
-        currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
+        currentUser: { userId: 'currentUser', matrixId: 'matrix-id-0', firstName: 'Tom' } as any,
         otherMembers: [
           { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
           { userId: 'otherMember2', matrixId: 'matrix-id-2', firstName: 'Charlie' },
           { userId: 'otherMember3', matrixId: 'matrix-id-3', firstName: 'Eve' },
           { userId: 'otherMember4', matrixId: 'matrix-id-4', firstName: 'Frank' },
         ] as User[],
-        conversationAdminIds: ['matrix-id-4'],
-        conversationModeratorIds: ['otherMember2', 'otherMember4'],
+        conversationAdminIds: ['matrix-id-0'],
+        conversationModeratorIds: ['matrix-id-2', 'matrix-id-4'],
       });
 
       expect(wrapper.find(CitizenListItem).map((c) => c.prop('tag'))).toEqual([
@@ -212,7 +212,7 @@ describe(EditConversationPanel, () => {
           { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
         ] as User[],
         conversationAdminIds: [],
-        conversationModeratorIds: ['currentUser', 'otherMember1'],
+        conversationModeratorIds: ['matrix-id-4', 'matrix-id-1'],
       });
 
       // current user is a moderator and the member is also a moderator (same power_levels)
@@ -226,7 +226,7 @@ describe(EditConversationPanel, () => {
           { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
         ] as User[],
         conversationAdminIds: [],
-        conversationModeratorIds: ['currentUser'],
+        conversationModeratorIds: ['matrix-id-4'],
       });
 
       // member is a normal user (neither admin nor moderator, lowest power_level)

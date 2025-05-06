@@ -20,6 +20,8 @@ import { clearRewards } from '../rewards/saga';
 import { clearLastActiveFeed } from '../../lib/last-feed';
 import { clearCache, performCacheMaintenance } from '../../lib/storage/media-cache';
 import { setSentryUser } from '../../utils';
+import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { takeEveryFromBus } from '../../lib/saga';
 
 export const currentUserSelector = () => (state) => {
   return getDeepProperty(state, 'authentication.user.data', null);
@@ -118,6 +120,9 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Logout, logoutRequest);
   yield takeLatest(SagaActionTypes.ForceLogout, forceLogout);
   yield takeLatest(SagaActionTypes.CloseLogoutModal, closeLogoutModal);
+
+  const chatBus = yield call(getChatBus);
+  yield takeEveryFromBus(chatBus, ChatEvents.InvalidToken, forceLogout);
 }
 
 export function* logoutRequest() {

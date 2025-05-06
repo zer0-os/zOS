@@ -15,7 +15,6 @@ export enum SagaActionTypes {
   CloseRestoreBackupDialog = 'chat/close-restore-backup-dialog',
   VerifyCreatedKey = 'chat/verify-created-key',
   VerifyRestorationKey = 'chat/verify-restoration-key',
-  InvalidToken = 'chat/invalid-token',
 }
 
 export enum CreateBackupStage {

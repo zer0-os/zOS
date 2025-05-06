@@ -28,7 +28,6 @@ import * as Sentry from '@sentry/browser';
 import type { MatrixKeyBackupInfo } from '../../lib/chat/types';
 import { GeneratedSecretStorageKey } from 'matrix-js-sdk/lib/crypto-api';
 import Matrix from '../../lib/chat/matrix/matrix-client-instance';
-import { publishUserLogout } from '../authentication/saga';
 
 export function* saga() {
   yield spawn(listenForUserLogin);
@@ -45,16 +44,11 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OpenRestoreBackupDialog, userInitiatedRestoreBackupDialog);
   yield takeLatest(SagaActionTypes.VerifyCreatedKey, proceedToVerifyCreatedKey);
   yield takeLatest(SagaActionTypes.VerifyRestorationKey, proceedToVerifyRestorationKey);
-  yield takeLatest(SagaActionTypes.InvalidToken, handleInvalidToken);
 
   // For debugging
   yield takeLatest(SagaActionTypes.DebugDeviceList, debugDeviceList);
   yield takeLatest(SagaActionTypes.DebugRoomKeys, debugRoomKeys);
   yield takeLatest(SagaActionTypes.FetchDeviceInfo, getDeviceInfo);
-}
-
-export function* handleInvalidToken() {
-  yield call(publishUserLogout);
 }
 
 export function* getBackup() {

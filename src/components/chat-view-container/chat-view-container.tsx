@@ -5,6 +5,7 @@ import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
 import {
   fetch as fetchMessages,
+  syncMessages,
   editMessage,
   Message,
   EditMessageOptions,
@@ -14,7 +15,7 @@ import {
 import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
 import { ChatView } from './chat-view';
 import { AuthenticationState } from '../../store/authentication/types';
-import { EditPayload, Payload as PayloadFetchMessages } from '../../store/messages/saga';
+import { EditPayload, Payload as PayloadFetchMessages, SyncMessagesPayload } from '../../store/messages/saga';
 import { openCreateBackupDialog, openRestoreBackupDialog } from '../../store/matrix';
 import { ParentMessage } from '../../lib/chat/types';
 import { openDeleteMessage, openLightbox } from '../../store/dialogs';
@@ -29,6 +30,7 @@ export interface Properties extends PublicProperties {
   channel: Channel;
   backupExists: boolean;
   fetchMessages: (payload: PayloadFetchMessages) => void;
+  syncMessages: (payload: SyncMessagesPayload) => void;
   user: AuthenticationState['user'];
   editMessage: (payload: EditPayload) => void;
   onReply: ({ reply }: { reply: ParentMessage }) => void;
@@ -79,6 +81,7 @@ export class Container extends React.Component<Properties> {
   static mapActions(_props: Properties): Partial<Properties> {
     return {
       fetchMessages,
+      syncMessages,
       editMessage,
       onReply,
       openCreateBackupDialog,
@@ -94,8 +97,12 @@ export class Container extends React.Component<Properties> {
 
   componentDidMount() {
     const { channelId, channel } = this.props;
-    if (channelId && !channel.hasLoadedMessages) {
-      this.props.fetchMessages({ channelId });
+    if (channelId) {
+      if (!channel.hasLoadedMessages) {
+        this.props.fetchMessages({ channelId });
+      } else {
+        this.props.syncMessages({ channelId });
+      }
     }
   }
 

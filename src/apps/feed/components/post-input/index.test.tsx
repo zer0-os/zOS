@@ -54,11 +54,11 @@ describe('PostInput', () => {
     const dropzone = wrapper.find(Dropzone).shallow();
 
     const textarea = dropzone.find('textarea');
-    wrapper.find(Dropzone).simulate('drop', [{ name: 'image1' }]);
+    wrapper.find(Dropzone).simulate('drop', [{ name: 'image1', size: 1024 * 1024, type: 'image/png' }]);
     textarea.simulate('keydown', { preventDefault() {}, key: Key.Enter, shiftKey: false });
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(onSubmit).toHaveBeenCalledWith('', [{ name: 'image1' }]);
+    expect(onSubmit).toHaveBeenCalledWith('', [{ name: 'image1', size: 1024 * 1024, type: 'image/png' }]);
   });
 
   it('submits post when submit button is clicked', () => {
@@ -79,11 +79,11 @@ describe('PostInput', () => {
     const wrapper = subject({ onSubmit, dropzoneToMedia });
     const dropzone = wrapper.find(Dropzone).shallow();
 
-    wrapper.find(Dropzone).simulate('drop', [{ name: 'image1' }]);
+    wrapper.find(Dropzone).simulate('drop', [{ name: 'image1', size: 1024 * 1024, type: 'image/png' }]);
     dropzone.find(Button).simulate('press');
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(onSubmit).toHaveBeenCalledWith('', [{ name: 'image1' }]);
+    expect(onSubmit).toHaveBeenCalledWith('', [{ name: 'image1', size: 1024 * 1024, type: 'image/png' }]);
   });
 
   it('renders Dropzone with correct mime types and max size', () => {

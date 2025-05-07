@@ -32,7 +32,7 @@ import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { POST_MAX_LENGTH } from '../../lib/constants';
 import { Giphy } from '../../../../components/message-input/giphy/giphy';
 import { ToastNotification } from '@zero-tech/zui/components';
-import { getPostMediaMaxFileSize } from './utils';
+import { getPostMediaMaxFileSize, validateMediaFiles } from './utils';
 
 const SHOW_MAX_LABEL_THRESHOLD = 0.8 * POST_MAX_LENGTH;
 
@@ -174,9 +174,15 @@ export class PostInput extends React.Component<Properties, State> {
 
   imagesSelected = (acceptedFiles): void => {
     this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null });
+    const { validFiles, rejectedFiles } = validateMediaFiles(acceptedFiles);
+    if (rejectedFiles.length > 0) {
+      this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null }, () => {
+        this.setState({ isDropRejectedNotificationOpen: true, rejectedType: rejectedFiles[0].file.type });
+      });
+    }
     const newImages: Media[] = this.props.dropzoneToMedia
-      ? this.props.dropzoneToMedia(acceptedFiles)
-      : dropzoneToMedia(acceptedFiles);
+      ? this.props.dropzoneToMedia(validFiles)
+      : dropzoneToMedia(validFiles);
     if (newImages.length) {
       this.mediaSelected([newImages[0]]);
     }

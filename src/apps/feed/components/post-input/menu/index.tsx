@@ -1,7 +1,7 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { bytesToMB, dropzoneToMedia, Media } from '../../../../../components/message-input/utils';
-import { getPostMediaMaxFileSize } from '../utils';
+import { getPostMediaMaxFileSize, validateMediaFiles } from '../utils';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { IconButton, ToastNotification } from '@zero-tech/zui/components';
 import { config } from '../../../../../config';
@@ -22,9 +22,13 @@ export class PostMediaMenu extends React.Component<Properties, State> {
 
   mediaSelected = (acceptedFiles): void => {
     this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null });
-
-    const newMedia: Media[] = dropzoneToMedia(acceptedFiles);
-
+    const { validFiles, rejectedFiles } = validateMediaFiles(acceptedFiles);
+    if (rejectedFiles.length > 0) {
+      this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null }, () => {
+        this.setState({ isDropRejectedNotificationOpen: true, rejectedType: rejectedFiles[0].file.type });
+      });
+    }
+    const newMedia: Media[] = dropzoneToMedia(validFiles);
     if (newMedia.length) {
       this.props.onSelected(newMedia);
     }

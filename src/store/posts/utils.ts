@@ -81,7 +81,7 @@ export function mapPostToMatrixMessage(post) {
  */
 export async function uploadPost(formData: FormData, worldZid: string) {
   return new Promise(async (resolve, reject) => {
-    const endpoint = `/api/v2/posts/channel/${worldZid}`;
+    const endpoint = `/api/v2/posts/channel/${stripZidPrefix(worldZid)}`;
 
     let request = post(endpoint)
       .field('text', formData.get('text'))
@@ -108,6 +108,10 @@ export async function uploadPost(formData: FormData, worldZid: string) {
       }
     });
   });
+}
+
+function stripZidPrefix(zid?: string) {
+  return zid?.replace(/^0:\/\//, '');
 }
 
 export async function getWallet() {

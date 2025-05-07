@@ -209,14 +209,14 @@ export function getRoomPowerLevelsChangedAdminData(content, previousContent) {
     (!previousPowerLevel || previousPowerLevel === PowerLevels.Viewer) &&
     currentPowerLevel === PowerLevels.Moderator
   ) {
-    return { type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId };
+    return { type: AdminMessageType.MEMBER_SET_AS_MODERATOR, userId: extractUserIdFromMatrixId(userId) };
   }
 
   if (
     previousPowerLevel === PowerLevels.Moderator &&
     (currentPowerLevel === PowerLevels.Viewer || !currentPowerLevel)
   ) {
-    return { type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId };
+    return { type: AdminMessageType.MEMBER_REMOVED_AS_MODERATOR, userId: extractUserIdFromMatrixId(userId) };
   }
 
   // Define power level changes to be checked
@@ -236,7 +236,7 @@ export function getRoomPowerLevelsChangedAdminData(content, previousContent) {
   // Check if the power level change matches any defined changes
   for (const { from, to, type } of powerLevelChanges) {
     if (previousPowerLevel === from && currentPowerLevel === to) {
-      return { type, userId };
+      return { type, userId: extractUserIdFromMatrixId(userId) };
     }
   }
 

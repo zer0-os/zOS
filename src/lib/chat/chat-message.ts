@@ -21,7 +21,7 @@ export function previewDisplayDate(timestamp: number, currentDate = moment()) {
 }
 
 export function getMessagePreview(
-  message: Message,
+  message: Message | null | undefined,
   currentUserId: string,
   getUser: (id: string) => User | undefined,
   isOneOnOne: boolean = false

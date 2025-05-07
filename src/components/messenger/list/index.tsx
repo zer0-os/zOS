@@ -6,7 +6,6 @@ import { Channel, onAddLabel, onRemoveLabel, openConversation, User } from '../.
 import { allDenormalizedChannelsSelector } from '../../../store/channels/selectors';
 import { byBumpStamp, isOneOnOne } from '../../../store/channels-list/utils';
 import { denormalize as denormalizeUser, receiveSearchResults } from '../../../store/users';
-import { compareDatesDesc } from '../../../lib/date';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import {
@@ -35,7 +34,7 @@ import { InviteDialogContainer } from '../../invite-dialog/container';
 import { Button } from '@zero-tech/zui/components/Button';
 import { IconPlus } from '@zero-tech/zui/icons';
 import { GroupTypeDialog } from './group-details-panel/group-type-dialog';
-import { AdminMessageType, Message } from '../../../store/messages';
+import { Message } from '../../../store/messages';
 import { Content as SidekickContent } from '../../sidekick/components/content';
 
 import { bemClassName } from '../../../lib/bem';
@@ -353,22 +352,7 @@ function addLastMessageMeta(
   getUser: GetUser
 ): (conversation: Channel) => ConversationWithMessageMeta {
   return (conversation: Channel): ConversationWithMessageMeta => {
-    const sortedMessages = conversation.messages?.sort((a, b) => compareDatesDesc(a.createdAt, b.createdAt)) || [];
-
-    const filteredMessages = sortedMessages.filter(
-      (message) => message?.admin?.type !== AdminMessageType.MEMBER_AVATAR_CHANGED
-    );
-
-    // Use the most recent valid message or fall back to the lastMessage
-    let mostRecentMessage = filteredMessages[0] || conversation.lastMessage;
-
-    // If the message is hidden, set its content to "Message hidden" before generating the preview
-    if (mostRecentMessage?.isHidden) {
-      mostRecentMessage = {
-        ...mostRecentMessage,
-        message: 'Message hidden',
-      };
-    }
+    let mostRecentMessage = conversation.lastMessage;
 
     return {
       ...conversation,

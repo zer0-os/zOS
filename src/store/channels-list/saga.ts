@@ -17,6 +17,7 @@ import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import Matrix from '../../lib/chat/matrix/matrix-client-instance';
 import { userSelector } from '../users/selectors';
 import { handleRoomDataEvents } from './event-type-handlers/handle-room-data-events';
+import { batchedUpdateLastMessage } from '../messages/saga';
 
 export function* fetchChannels() {
   // Get initial channels from Matrix store for faster initial load
@@ -128,6 +129,8 @@ function* batchedRoomDataAction(action: RoomDataAction) {
       yield spawn(receiveChannel, mappedChannel);
     }
   }
+  const channelIds = batchedUpdates.map((update) => update.roomId);
+  yield call(batchedUpdateLastMessage, channelIds);
 }
 
 export function* saga() {

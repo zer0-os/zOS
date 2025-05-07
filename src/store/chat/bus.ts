@@ -1,11 +1,14 @@
 import { eventChannel, MulticastChannel, multicastChannel } from 'redux-saga';
 import { call } from 'redux-saga/effects';
 import { Chat } from '../../lib/chat';
+import { IEvent } from 'matrix-js-sdk';
+import { mapMatrixMessage } from '../../lib/chat/matrix/chat-message';
 
 export enum Events {
   MessageReceived = 'chat/message/received',
   MessageUpdated = 'chat/message/updated',
   MessageDeleted = 'chat/message/deleted',
+  OptimisticMessageUpdated = 'chat/message/optimisticUpdated',
   UnreadCountChanged = 'chat/message/unreadCountChanged',
   InvalidToken = 'chat/invalidToken',
   ChannelInvitationReceived = 'chat/channel/invitationReceived',
@@ -102,6 +105,8 @@ export function createChatConnection(userId: string, chatAccessToken: string, ch
     const messageEmojiReactionChange = (roomId, reaction) =>
       emit({ type: Events.MessageEmojiReactionChange, payload: { roomId, reaction } });
     const tokenRefreshLogout = () => emit({ type: Events.InvalidToken });
+    const updateOptimisticMessage = (messageEvent: IEvent, roomId: string) =>
+      emit({ type: Events.OptimisticMessageUpdated, payload: { message: mapMatrixMessage(messageEvent), roomId } });
 
     chatClient.initChat({
       receiveNewMessage,
@@ -123,6 +128,7 @@ export function createChatConnection(userId: string, chatAccessToken: string, ch
       messageEmojiReactionChange,
       receiveRoomData,
       tokenRefreshLogout,
+      updateOptimisticMessage,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

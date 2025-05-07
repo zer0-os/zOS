@@ -61,7 +61,7 @@ export interface Channel {
   hasMore: boolean;
   hasMorePosts?: boolean;
   createdAt: number;
-  lastMessage: Message;
+  lastMessage: Message | null | undefined;
   unreadCount?: { total: number; highlight: number };
   icon?: string;
   hasLoadedMessages: boolean;
@@ -86,7 +86,7 @@ export const CHANNEL_DEFAULTS = {
   hasMore: true,
   hasMorePosts: true,
   createdAt: 0,
-  lastMessage: null,
+  lastMessage: undefined,
   unreadCount: { total: 0, highlight: 0 },
   icon: '',
   hasLoadedMessages: false,

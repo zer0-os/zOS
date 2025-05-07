@@ -329,7 +329,7 @@ describe('messenger-list', () => {
         ]);
       });
 
-      it('uses most recent of last message in list or lastMessage on conversation', () => {
+      it('uses lastMessage on conversation', () => {
         const state = subject([
           {
             id: 'convo-1',
@@ -350,35 +350,7 @@ describe('messenger-list', () => {
 
         expect(state.conversations.map((c) => c.messagePreview)).toEqual([
           'Jack: lastMessage',
-          'Jack: recent message',
-        ]);
-      });
-
-      it('displays "Message hidden" for hidden messages in the preview', () => {
-        const state = subject([
-          {
-            id: 'convo-1',
-            bumpStamp: 3,
-            lastMessage: {
-              message: 'The last message',
-              sender: { firstName: 'Jack' },
-              isHidden: true,
-            },
-          },
-          {
-            id: 'convo-2',
-            bumpStamp: 2,
-            lastMessage: {
-              message: 'Second message last',
-              sender: { firstName: 'Jack' },
-              isHidden: false,
-            },
-          },
-        ]);
-
-        expect(state.conversations.map((c) => c.messagePreview)).toEqual([
-          'Jack: Message hidden',
-          'Jack: Second message last',
+          'Jack: lastMessage',
         ]);
       });
     });

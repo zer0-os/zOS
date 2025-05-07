@@ -68,13 +68,8 @@ export function* updateChannelWithRoomData(roomId: string, roomData: MSC3575Room
   // TODO zos-619: This should be in MatrixAdapter and not on the matrix client instance
   let messages = Matrix.client.processRawEventsToMessages(timeline);
   messages = yield call(mapMessagesAndPreview, messages, roomId);
-  let lastMessage = baseChannel.lastMessage;
-  if (messages.length > 0 && messages[messages.length - 1]) {
-    lastMessage = messages[messages.length - 1];
-  }
 
   initialChannelUpdates.messages = messages;
-  initialChannelUpdates.lastMessage = lastMessage;
 
   return {
     ...baseChannel,

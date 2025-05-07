@@ -10,8 +10,9 @@ import { MatrixAdapter } from './matrix/matrix-adapter';
 import { MemberNetworks } from '../../store/users/types';
 import { get } from '../api/rest';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
-import { Visibility, Preset, ICreateRoomOpts, GuestAccess, EventType } from 'matrix-js-sdk/lib/matrix';
+import { Visibility, Preset, ICreateRoomOpts, GuestAccess, EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
 import { ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
+import { mapMatrixMessage } from './matrix/chat-message';
 
 export interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message | MessageWithoutSender) => void;
@@ -33,6 +34,7 @@ export interface RealtimeChatEvents {
   messageEmojiReactionChange: (roomId: string, reaction: any) => void;
   receiveRoomData: (roomId: string, roomData: MSC3575RoomData) => void;
   tokenRefreshLogout: () => void;
+  updateOptimisticMessage: (message: IEvent, roomId: string) => void;
 }
 
 export class Chat {
@@ -94,6 +96,38 @@ export class Chat {
       memberHistory: memberHistory.map((m) => MatrixAdapter.mapMatrixUserToUser(m)),
       totalMembers,
     };
+  }
+
+  /**
+   * Sync channel messages from room
+   * @param channelId - The id of the channel
+   * @returns MessageWithoutSender[]
+   */
+  syncChannelMessages(channelId: string): (Message | MessageWithoutSender)[] | undefined {
+    const room = this.matrix.getRoom(channelId);
+    if (!room) {
+      return;
+    }
+    const liveTimeline = room.getLiveTimeline();
+    const events = liveTimeline.getEvents();
+    const effectiveEvents = events.map((event) => event.getEffectiveEvent());
+    return this.matrix.processRawEventsToMessages(effectiveEvents);
+  }
+
+  /**
+   * Get the last channel message from the timeline
+   * @param channelId - The id of the channel
+   * @returns MessageWithoutSender | null
+   */
+  getLastChannelMessage(channelId: string): MessageWithoutSender | null {
+    const room = this.matrix.getRoom(channelId);
+    if (!room) {
+      return null;
+    }
+    const liveTimeline = room.getLiveTimeline();
+    const events = liveTimeline.getEvents();
+    const lastEvent = [...events].reverse().find((event) => event.getType() === EventType.RoomMessage);
+    return lastEvent ? mapMatrixMessage(lastEvent.getEffectiveEvent()) : null;
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {

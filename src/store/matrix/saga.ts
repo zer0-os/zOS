@@ -28,6 +28,8 @@ import * as Sentry from '@sentry/browser';
 import type { MatrixKeyBackupInfo } from '../../lib/chat/types';
 import { GeneratedSecretStorageKey } from 'matrix-js-sdk/lib/crypto-api';
 import Matrix from '../../lib/chat/matrix/matrix-client-instance';
+import { batchedUpdateLastMessage } from '../messages/saga';
+import { allChannelIdsSelector } from '../channels/selectors';
 
 export function* saga() {
   yield spawn(listenForUserLogin);
@@ -161,6 +163,9 @@ export function* restoreBackup(action) {
     yield call(getBackup);
     yield put(setRestoreBackupStage(RestoreBackupStage.Success));
     yield put(setSuccessMessage('Login successfully verified!'));
+    // Update the last message for all channels after decryption is complete
+    const channelIds = yield select(allChannelIdsSelector);
+    yield call(batchedUpdateLastMessage, channelIds);
   } catch (e: any) {
     Sentry.captureException(e, {
       extra: {

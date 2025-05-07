@@ -15,6 +15,7 @@ export class MatrixAdapter {
     const createdAt = Matrix.client.getRoomCreatedAt(room);
     const labels = Object.keys(room.tags || {});
     const [admins, mods] = Matrix.client.getRoomAdminsAndMods(room);
+    const isSocialChannel = Matrix.client.getRoomGroupType(room) === 'social';
 
     const members = Matrix.client.getRoomMembers(room.roomId);
 
@@ -31,6 +32,7 @@ export class MatrixAdapter {
       adminMatrixIds: admins,
       moderatorIds: mods,
       labels,
+      isSocialChannel,
     };
   }
 

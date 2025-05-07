@@ -129,7 +129,7 @@ export const Message: React.FC<Properties> = ({
     setAttachmentPreview(null);
   };
 
-  const downloadImage = () => {
+  const downloadImage = useCallback(() => {
     if (!effectiveMediaUrl) return;
     const link = document.createElement('a');
     link.href = effectiveMediaUrl;
@@ -137,9 +137,9 @@ export const Message: React.FC<Properties> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
+  }, [effectiveMediaUrl, media]);
 
-  const copyImage = async () => {
+  const copyImage = useCallback(async () => {
     if (!effectiveMediaUrl) return;
     try {
       const response = await fetch(effectiveMediaUrl);
@@ -176,7 +176,7 @@ export const Message: React.FC<Properties> = ({
     } catch (err) {
       console.error('Failed to copy image:', err);
     }
-  };
+  }, [effectiveMediaUrl]);
 
   const scrollToMessage = (messageId: string) => {
     requestAnimationFrame(() => {
@@ -198,21 +198,27 @@ export const Message: React.FC<Properties> = ({
     scrollToMessage(messageId);
   };
 
-  const deleteMessage = () => onDelete(messageId);
-  const toggleEdit = () => setIsEditing((prev) => !prev);
-  const editMessageFromInput = (message: string, mentionedUserIds: User['userId'][]) => {
-    editMessage(message, mentionedUserIds);
-  };
-  const editMessage = (content: string, mentionedUserIds: User['userId'][], data?: Partial<EditMessageOptions>) => {
-    onEdit(messageId, content, mentionedUserIds, data);
-    toggleEdit();
-  };
+  const deleteMessage = useCallback(() => onDelete(messageId), [onDelete, messageId]);
+  const toggleEdit = useCallback(() => setIsEditing((prev) => !prev), []);
+  const editMessage = useCallback(
+    (content: string, mentionedUserIds: User['userId'][], data?: Partial<EditMessageOptions>) => {
+      onEdit(messageId, content, mentionedUserIds, data);
+      toggleEdit();
+    },
+    [onEdit, messageId, toggleEdit]
+  );
+  const editMessageFromInput = useCallback(
+    (message: string, mentionedUserIds: User['userId'][]) => {
+      editMessage(message, mentionedUserIds);
+    },
+    [editMessage]
+  );
 
   const onRemovePreview = () => {
     onEdit(messageId, message, [], { hidePreview: true });
   };
 
-  const onMenuReply = () => {
+  const onMenuReply = useCallback(() => {
     const reply = {
       messageId: messageId,
       userId: sender.userId,
@@ -227,11 +233,23 @@ export const Message: React.FC<Properties> = ({
       media: media,
     };
     onReply({ reply });
-  };
+  }, [
+    messageId,
+    sender,
+    message,
+    isAdmin,
+    mentionedUsers,
+    hidePreview,
+    admin,
+    optimisticId,
+    rootMessageId,
+    media,
+    onReply,
+  ]);
 
-  const onMenuReportUser = () => {
+  const onMenuReportUser = useCallback(() => {
     onReportUser({ reportedUserId: sender.userId });
-  };
+  }, [onReportUser, sender.userId]);
 
   const editActions = (value: string, mentionedUserIds: User['userId'][]) => (
     <EditMessageActions
@@ -251,15 +269,15 @@ export const Message: React.FC<Properties> = ({
     onOpen: handleContextMenuOpen,
   });
 
-  const handleOpenMenu = (isMessageMenuOpen: boolean) => setIsMessageMenuOpen(isMessageMenuOpen);
-  const handleCloseMenu = () => {
+  const handleOpenMenu = useCallback((isMessageMenuOpen: boolean) => setIsMessageMenuOpen(isMessageMenuOpen), []);
+  const handleCloseMenu = useCallback(() => {
     setIsMessageMenuOpen(false);
     setIsDropdownMenuOpen(false);
-  };
+  }, []);
 
-  const onMenuInfo = () => {
+  const onMenuInfo = useCallback(() => {
     onInfo(messageId);
-  };
+  }, [onInfo, messageId]);
 
   const openReactionPicker = () => setIsReactionPickerOpen(true);
   const closeReactionPicker = () => setIsReactionPickerOpen(false);

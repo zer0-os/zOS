@@ -1,4 +1,4 @@
-import { Payload, SendPayload, QueryUploadPayload, EditPayload } from './saga';
+import { Payload, SendPayload, QueryUploadPayload, EditPayload, SyncMessagesPayload } from './saga';
 import { createAction } from '@reduxjs/toolkit';
 
 import { createNormalizedSlice, removeAll } from '../normalized';
@@ -122,6 +122,7 @@ export interface EditMessageOptions {
 
 export enum SagaActionTypes {
   Fetch = 'messages/saga/fetch',
+  SyncMessages = 'messages/saga/syncMessages',
   Send = 'messages/saga/send',
   DeleteMessage = 'messages/saga/deleteMessage',
   EditMessage = 'messages/saga/editMessage',
@@ -129,6 +130,7 @@ export enum SagaActionTypes {
 }
 
 const fetch = createAction<Payload>(SagaActionTypes.Fetch);
+const syncMessages = createAction<SyncMessagesPayload>(SagaActionTypes.SyncMessages);
 const send = createAction<SendPayload>(SagaActionTypes.Send);
 const deleteMessage = createAction<Payload>(SagaActionTypes.DeleteMessage);
 const editMessage = createAction<EditPayload>(SagaActionTypes.EditMessage);
@@ -142,4 +144,4 @@ const slice = createNormalizedSlice({
 
 export const { receiveNormalized, receive } = slice.actions;
 export const { normalize, denormalize, schema } = slice;
-export { fetch, send, deleteMessage, editMessage, removeAll, sendEmojiReaction };
+export { fetch, syncMessages, send, deleteMessage, editMessage, removeAll, sendEmojiReaction };

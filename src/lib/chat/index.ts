@@ -5,7 +5,7 @@ import { FileUploadResult } from '../../store/messages/saga';
 import { MatrixProfileInfo, ParentMessage, PowerLevels, User } from './types';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import Matrix from './matrix/matrix-client-instance';
-import { CustomEventType, IN_ROOM_MEMBERSHIP_STATES, MatrixConstants } from './matrix/types';
+import { CustomEventType, IN_ROOM_MEMBERSHIP_STATES } from './matrix/types';
 import { MatrixAdapter } from './matrix/matrix-adapter';
 import { MemberNetworks } from '../../store/users/types';
 import { get } from '../api/rest';
@@ -126,12 +126,7 @@ export class Chat {
     }
     const liveTimeline = room.getLiveTimeline();
     const events = liveTimeline.getEvents();
-    const lastEvent = [...events].reverse().find((event) => {
-      const effectiveEvent = event.getEffectiveEvent();
-      const isRoomMessage = effectiveEvent.type === EventType.RoomMessage;
-      const isEdit = effectiveEvent.content[MatrixConstants.RELATES_TO]?.rel_type === MatrixConstants.REPLACE;
-      return isRoomMessage && !isEdit;
-    });
+    const lastEvent = [...events].reverse().find((event) => event.getType() === EventType.RoomMessage);
     return lastEvent ? mapMatrixMessage(lastEvent.getEffectiveEvent()) : null;
   }
 

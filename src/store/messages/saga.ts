@@ -15,7 +15,6 @@ import {
 import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, DefaultRoomLabels, User } from '../channels';
 import { markConversationAsRead, receiveChannel } from '../channels/saga';
-import uniqBy from 'lodash.uniqby';
 
 import { createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
@@ -29,7 +28,7 @@ import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
 import { rawChannel } from '../channels/selectors';
 import { getUsersByMatrixIds } from '../users/saga';
-import { ReceiveNewMessageAction, ReceiveOptimisticMessageAction } from './types';
+import { ReceiveNewMessageAction, ReceiveOptimisticMessageAction, SyncMessagesAction } from './types';
 
 const BATCH_INTERVAL = 500; // Debounce/batch interval in milliseconds
 
@@ -37,6 +36,9 @@ export interface Payload {
   channelId: string;
   referenceTimestamp?: number;
   messageId?: string;
+}
+export interface SyncMessagesPayload {
+  channelId: string;
 }
 export interface QueryUploadPayload {
   api_key: string;
@@ -130,7 +132,6 @@ export function* fetchMessages(action) {
   }
 
   let messagesResponse: any;
-  let messages: any[];
   try {
     const chatClient = yield call(chat.get);
 
@@ -142,13 +143,8 @@ export function* fetchMessages(action) {
       messagesResponse = yield call([chatClient, chatClient.getMessagesByChannelId], channelId);
     }
 
-    messagesResponse.messages = yield call(mapMessagesAndPreview, messagesResponse.messages, channelId);
-    const existingMessages = yield select(rawMessagesSelector(channelId));
-
-    // we prefer this order (new messages first), so that if any new message has an updated property
-    // (eg. parentMessage), then it gets written to state
-    messages = [...messagesResponse.messages, ...existingMessages];
-    messages = uniqBy(messages, (m) => m.id ?? m);
+    const syncedMessages = yield call([chatClient, chatClient.syncChannelMessages], channelId);
+    const messages = yield call(mapMessagesAndPreview, syncedMessages, channelId);
 
     yield call(receiveChannel, {
       id: channelId,
@@ -463,14 +459,22 @@ export function* batchedUpdateLastMessage(channelIds: string[]) {
  * Sync the redux state with the latest messages from the Matrix timeline
  * @param channelId - The id of the channel to sync
  */
-export function* receiveActiveChannelMessage(channelId: string) {
+export function* syncMessages(channelId: string) {
   const chatClient = yield call(chat.get);
   const messages = yield call([chatClient, chatClient.syncChannelMessages], channelId);
   if (messages) {
     const messagesWithSenders = yield call(mapMessagesAndPreview, messages, channelId);
     yield call(receiveChannel, { id: channelId, messages: messagesWithSenders });
   }
+}
 
+export function* syncMessagesAction(action: SyncMessagesAction) {
+  const { channelId } = action.payload;
+  yield call(syncMessages, channelId);
+}
+
+export function* receiveActiveChannelMessage(channelId: string) {
+  yield call(syncMessages, channelId);
   // Mark the conversation as read since the user is actively viewing it
   yield spawn(markConversationAsRead, channelId);
 }
@@ -571,6 +575,7 @@ export function* mapMessageReadByUsers(messageId, channelId) {
 
 export function* saga() {
   yield takeLatest(SagaActionTypes.Fetch, fetchMessages);
+  yield takeLatest(SagaActionTypes.SyncMessages, syncMessagesAction);
   yield takeLatest(SagaActionTypes.Send, send);
   yield takeLatest(SagaActionTypes.DeleteMessage, deleteMessage);
   yield takeLatest(SagaActionTypes.EditMessage, editMessage);

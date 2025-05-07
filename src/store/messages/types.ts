@@ -1,4 +1,4 @@
-import { MessageWithoutSender } from '.';
+import { MessageWithoutSender, SagaActionTypes } from '.';
 import { Events } from '../chat/bus';
 
 export type ReceiveNewMessageAction = {
@@ -14,5 +14,12 @@ export type ReceiveOptimisticMessageAction = {
   payload: {
     message: MessageWithoutSender;
     roomId: string;
+  };
+};
+
+export type SyncMessagesAction = {
+  type: SagaActionTypes.SyncMessages;
+  payload: {
+    channelId: string;
   };
 };

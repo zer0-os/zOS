@@ -1,0 +1,23 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.FollowCounts {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  line-height: 20px;
+
+  .count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .number {
+      font-weight: 600;
+      color: theme.$color-secondary-11;
+    }
+
+    .label {
+      color: theme.$color-secondary-8;
+    }
+  }
+}

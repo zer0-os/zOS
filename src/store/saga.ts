@@ -28,6 +28,7 @@ import { saga as notifications } from './notifications/saga';
 import { saga as reportUser } from './report-user/saga';
 import { saga as thirdweb } from './thirdweb/saga';
 import { saga as activeZApp } from './active-zapp/saga';
+import { saga as userFollows } from './user-follows/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -59,6 +60,7 @@ export function* rootSaga() {
     reportUser,
     thirdweb,
     activeZApp,
+    userFollows,
   };
 
   yield all(

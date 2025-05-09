@@ -1,0 +1,43 @@
+@use '../../variables' as variables;
+
+.Container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: variables.$border-radius;
+  background: rgba(1, 244, 203, 0.1);
+  border: 1px solid rgba(1, 244, 203, 0.2);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  width: fit-content;
+
+  &:hover {
+    background: rgba(1, 244, 203, 0.15);
+    border-color: rgba(1, 244, 203, 0.3);
+  }
+
+  &.Following {
+    background: rgba(1, 244, 203, 0.2);
+    border-color: rgba(1, 244, 203, 0.4);
+
+    &:hover {
+      background: rgba(1, 244, 203, 0.25);
+      border-color: rgba(1, 244, 203, 0.5);
+    }
+  }
+
+  &.Disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.Text {
+  color: #01f4cb;
+  font-size: 14px;
+  font-weight: 500;
+  text-shadow: 0 0 10px rgba(1, 244, 203, 0.5);
+}

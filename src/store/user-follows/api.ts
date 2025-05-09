@@ -47,7 +47,7 @@ export const unfollowUser = async (followingId: string): Promise<void> => {
 export const getFollowStatus = async (followingId: string): Promise<boolean> => {
   try {
     const response = await get<{ isFollowing: boolean }>(`/api/v2/user-follows/${followingId}/status`);
-    return response.data.isFollowing;
+    return response.body.isFollowing;
   } catch (error: any) {
     if (error.response?.data) {
       throw new Error(error.response.data.reason);

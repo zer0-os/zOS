@@ -33,14 +33,16 @@ export const useProfile = ({ id }: UseProfileParams) => {
         // If ID matches current user's third web address.
         id.toLowerCase() === userThirdWebAddress?.toLowerCase()
       ) {
+        // For current user, always fetch fresh data
+        const response = await get('/api/users/current');
         return {
-          handle: currentUser?.profileSummary?.firstName,
-          primaryZid: currentUser?.primaryZID?.replace('0://', ''),
-          profileImage: currentUser?.profileSummary?.profileImage,
+          handle: response.body.profileSummary?.firstName,
+          primaryZid: response.body.primaryZID?.replace('0://', ''),
+          profileImage: response.body.profileSummary?.profileImage,
           publicAddress: userThirdWebAddress,
-          userId: currentUser?.id,
-          followersCount: currentUser?.followers_count || 0,
-          followingCount: currentUser?.following_count || 0,
+          userId: response.body.id,
+          followersCount: parseInt(response.body.followersCount) || 0,
+          followingCount: parseInt(response.body.followingCount) || 0,
         };
       }
 
@@ -53,8 +55,8 @@ export const useProfile = ({ id }: UseProfileParams) => {
         profileImage: response.body.profileImage,
         publicAddress: response.body.publicAddress,
         userId: response.body.userId,
-        followersCount: response.body.followers_count || 0,
-        followingCount: response.body.following_count || 0,
+        followersCount: parseInt(response.body.followersCount) || 0,
+        followingCount: parseInt(response.body.followingCount) || 0,
       };
     },
     staleTime: 0,

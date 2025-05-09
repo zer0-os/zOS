@@ -83,3 +83,20 @@
     overflow-wrap: anywhere;
   }
 }
+
+.FollowContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.FollowButton {
+  margin-top: 16px;
+}
+
+.FollowCounts {
+  margin-top: 16px;
+  width: 100%;
+  justify-content: center;
+}

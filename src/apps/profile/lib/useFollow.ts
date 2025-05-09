@@ -11,17 +11,27 @@ export const useFollow = (targetUserId: string) => {
   const queryClient = useQueryClient();
   const following = useSelector(followingSelector);
 
-  const { isLoading: isLoadingStatus } = useQuery({
+  const { data: isFollowingFromApi, isLoading: isLoadingStatus } = useQuery({
     queryKey: ['followStatus', targetUserId],
     queryFn: () => getFollowStatus(targetUserId),
+    staleTime: 0,
   });
 
   const followMutation = useMutation({
     mutationFn: () => followUser(targetUserId),
-    onSuccess: () => {
+    onSuccess: async () => {
       dispatch(addFollowing(targetUserId));
-      queryClient.invalidateQueries({ queryKey: ['followStatus', targetUserId] });
-      queryClient.invalidateQueries({ queryKey: ['profile', targetUserId] });
+
+      // Refetch all relevant data
+      await Promise.all([
+        // Refetch current user data in Redux
+        queryClient.invalidateQueries({ queryKey: ['currentUser'] }),
+        // Refetch profile data for both users
+        queryClient.invalidateQueries({ queryKey: ['profile'] }),
+        queryClient.invalidateQueries({ queryKey: ['profile', targetUserId] }),
+        // Refetch follow status
+        queryClient.invalidateQueries({ queryKey: ['followStatus', targetUserId] }),
+      ]);
     },
     onError: (error) => {
       console.error('Follow action failed:', error);
@@ -30,17 +40,26 @@ export const useFollow = (targetUserId: string) => {
 
   const unfollowMutation = useMutation({
     mutationFn: () => unfollowUser(targetUserId),
-    onSuccess: () => {
+    onSuccess: async () => {
       dispatch(removeFollowing(targetUserId));
-      queryClient.invalidateQueries({ queryKey: ['followStatus', targetUserId] });
-      queryClient.invalidateQueries({ queryKey: ['profile', targetUserId] });
+
+      // Refetch all relevant data
+      await Promise.all([
+        // Refetch current user data in Redux
+        queryClient.invalidateQueries({ queryKey: ['currentUser'] }),
+        // Refetch profile data for both users
+        queryClient.invalidateQueries({ queryKey: ['profile'] }),
+        queryClient.invalidateQueries({ queryKey: ['profile', targetUserId] }),
+        // Refetch follow status
+        queryClient.invalidateQueries({ queryKey: ['followStatus', targetUserId] }),
+      ]);
     },
     onError: (error) => {
       console.error('Unfollow action failed:', error);
     },
   });
 
-  const isFollowing = following.includes(targetUserId);
+  const isFollowing = isFollowingFromApi ?? following.includes(targetUserId);
   const isLoading = isLoadingStatus || followMutation.isPending || unfollowMutation.isPending;
 
   return {

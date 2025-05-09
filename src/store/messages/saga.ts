@@ -482,7 +482,7 @@ export function* receiveActiveChannelMessage(channelId: string) {
 export function* receiveOptimisticMessage(action: ReceiveOptimisticMessageAction) {
   const { message, roomId } = action.payload;
   // hydrate message with redux data
-  const newMessage = yield call(mapMessagesAndPreview, [message], roomId);
+  const newMessage: Message[] = yield call(mapMessagesAndPreview, [message], roomId);
   const channel = yield select((state) => rawChannel(state, roomId));
   const existingMessages = channel.messages;
   // replace the optimistic message with the real message
@@ -491,10 +491,10 @@ export function* receiveOptimisticMessage(action: ReceiveOptimisticMessageAction
     existingMessages,
     newMessage[0]
   );
-  if (!newMessages) {
+  if (!newMessages || !newMessage[0]) {
     return;
   }
-  const fullMessage = newMessages.find((message) => typeof message !== 'string' && message.id === newMessage.id) as
+  const fullMessage = newMessages.find((message) => typeof message !== 'string' && message.id === newMessage[0].id) as
     | Message
     | undefined;
   if (!fullMessage) {

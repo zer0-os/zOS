@@ -1,5 +1,5 @@
 import { takeLatest, put, call, select, spawn, take } from 'redux-saga/effects';
-import { SagaActionTypes, rawReceive, schema, removeAll, Channel, CHANNEL_DEFAULTS } from '.';
+import { SagaActionTypes, rawReceive, schema, removeAll, CHANNEL_DEFAULTS, ReceiveChannel } from '.';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { currentUserSelector } from '../authentication/saga';
@@ -129,7 +129,7 @@ export function* clearChannels() {
   yield put(removeAll({ schema: schema.key }));
 }
 
-export function* receiveChannel(channel: Partial<Channel>) {
+export function* receiveChannel(channel: Partial<ReceiveChannel>) {
   const existing = yield select(channelSelector(channel.id));
   let data = { ...channel };
   if (!existing) {

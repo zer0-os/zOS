@@ -39,6 +39,8 @@ export const useProfile = ({ id }: UseProfileParams) => {
           profileImage: currentUser?.profileSummary?.profileImage,
           publicAddress: userThirdWebAddress,
           userId: currentUser?.id,
+          followersCount: currentUser?.followers_count || 0,
+          followingCount: currentUser?.following_count || 0,
         };
       }
 
@@ -51,6 +53,8 @@ export const useProfile = ({ id }: UseProfileParams) => {
         profileImage: response.body.profileImage,
         publicAddress: response.body.publicAddress,
         userId: response.body.userId,
+        followersCount: response.body.followers_count || 0,
+        followingCount: response.body.following_count || 0,
       };
     },
     staleTime: 0,

@@ -15,4 +15,12 @@ export interface ProfileData {
   handle?: string;
   profileImage?: string;
   publicAddress?: string;
+  /**
+   * Number of users following this profile
+   */
+  followersCount?: number;
+  /**
+   * Number of users this profile follows
+   */
+  followingCount?: number;
 }

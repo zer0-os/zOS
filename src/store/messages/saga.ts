@@ -482,15 +482,28 @@ export function* receiveActiveChannelMessage(channelId: string) {
 export function* receiveOptimisticMessage(action: ReceiveOptimisticMessageAction) {
   const { message, roomId } = action.payload;
   // hydrate message with redux data
-  const newMessage = yield call(mapMessagesAndPreview, [message], roomId);
+  const newMessage: Message[] = yield call(mapMessagesAndPreview, [message], roomId);
   const channel = yield select((state) => rawChannel(state, roomId));
   const existingMessages = channel.messages;
   // replace the optimistic message with the real message
-  const newMessages = yield call(replaceOptimisticMessage, existingMessages, newMessage[0]);
+  const newMessages: (string | Message)[] | null = yield call(
+    replaceOptimisticMessage,
+    existingMessages,
+    newMessage[0]
+  );
+  if (!newMessages || !newMessage[0]) {
+    return;
+  }
+  const fullMessage = newMessages.find((message) => typeof message !== 'string' && message.id === newMessage[0].id) as
+    | Message
+    | undefined;
+  if (!fullMessage) {
+    return;
+  }
   // update the last message if the new message is more recent
   let lastMessage = channel.lastMessage;
-  if (newMessages[newMessages.length - 1]?.createdAt > channel.lastMessage?.createdAt) {
-    lastMessage = newMessages[newMessages.length - 1];
+  if (fullMessage.createdAt > channel.lastMessage?.createdAt) {
+    lastMessage = fullMessage;
   }
   yield call(receiveChannel, { id: roomId, messages: newMessages, lastMessage });
 }

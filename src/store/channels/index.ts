@@ -76,6 +76,12 @@ export interface Channel {
   zid?: string;
 }
 
+export interface ReceiveChannel extends Omit<Channel, 'messages' | 'otherMembers' | 'memberHistory'> {
+  messages: (string | Message)[];
+  otherMembers: (string | User)[];
+  memberHistory: (string | User)[];
+}
+
 export const CHANNEL_DEFAULTS = {
   optimisticId: '',
   name: '',

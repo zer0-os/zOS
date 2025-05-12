@@ -43,6 +43,14 @@ export const Feed = ({
   showFollowingToggle = false,
 }: FeedProps) => {
   const [selectedFilter, setSelectedFilter] = useState<FeedFilter>(FeedFilter.Following);
+
+  const feedProps = {
+    zid,
+    userId,
+    isLoading: isLoadingProp,
+    ...(showFollowingToggle ? { following: selectedFilter === FeedFilter.Following } : {}),
+  };
+
   const {
     channelZid,
     fetchNextPage,
@@ -57,12 +65,7 @@ export const Feed = ({
     posts,
     currentUserId,
     userMeowBalance,
-  } = useFeed({
-    zid,
-    userId,
-    isLoading: isLoadingProp,
-    following: selectedFilter === FeedFilter.Following,
-  });
+  } = useFeed(feedProps);
 
   const renderHeader = () => {
     if (!showFollowingToggle) {

@@ -24,12 +24,7 @@ export const useFollow = (targetUserId: string) => {
 
       // Refetch all relevant data
       await Promise.all([
-        // Refetch current user data in Redux
-        queryClient.invalidateQueries({ queryKey: ['currentUser'] }),
-        // Refetch profile data for both users
         queryClient.invalidateQueries({ queryKey: ['profile'] }),
-        queryClient.invalidateQueries({ queryKey: ['profile', targetUserId] }),
-        // Refetch follow status
         queryClient.invalidateQueries({ queryKey: ['followStatus', targetUserId] }),
       ]);
     },
@@ -45,12 +40,7 @@ export const useFollow = (targetUserId: string) => {
 
       // Refetch all relevant data
       await Promise.all([
-        // Refetch current user data in Redux
-        queryClient.invalidateQueries({ queryKey: ['currentUser'] }),
-        // Refetch profile data for both users
         queryClient.invalidateQueries({ queryKey: ['profile'] }),
-        queryClient.invalidateQueries({ queryKey: ['profile', targetUserId] }),
-        // Refetch follow status
         queryClient.invalidateQueries({ queryKey: ['followStatus', targetUserId] }),
       ]);
     },

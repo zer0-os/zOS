@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { debounce } from 'lodash';
-import { RootState } from '../../../store/reducer';
 import { User } from '../../../store/channels';
 import { receiveSearchResults } from '../../../store/users';
 import { MemberNetworks } from '../../../store/users/types';
@@ -20,7 +19,6 @@ import { GroupDetailsPanel } from './group-details-panel';
 import { Option } from '../lib/types';
 import { Modal } from '@zero-tech/zui/components';
 import { ErrorDialog } from '../../error-dialog';
-import { ErrorDialogContent } from '../../../store/chat/types';
 import { RewardsModalContainer } from '../../rewards-modal/container';
 import { closeRewardsDialog as closeRewardsDialogAction } from '../../../store/rewards';
 import { InviteDialogContainer } from '../../invite-dialog/container';
@@ -32,42 +30,40 @@ import { Content as SidekickContent } from '../../sidekick/components/content';
 import { bemClassName } from '../../../lib/bem';
 import './styles.scss';
 import { useSelector, useDispatch } from 'react-redux';
+import { isRewardsDialogOpenSelector } from '../../../store/rewards/selectors';
+import {
+  activeConversationIdSelector,
+  isSecondaryConversationDataLoadedSelector,
+  joinRoomErrorContentSelector,
+} from '../../../store/chat/selectors';
+import {
+  groupUsersSelector,
+  isFetchingExistingConversationsSelector,
+  stageSelector,
+} from '../../../store/create-conversation/selectors';
+import { userIdSelector } from '../../../store/authentication/selectors';
+import { usersMapSelector } from '../../../store/users/selectors';
 
 const cn = bemClassName('direct-message-members');
 
 export type GetUser = (id: string) => User | undefined;
 
-export interface PublicProperties {}
-
-const selectStage = (state: RootState): SagaStage => state.createConversation.stage;
-const selectGroupUsers = (state: RootState): Option[] => state.createConversation.groupUsers;
-const selectIsFetchingExistingConversations = (state: RootState): boolean =>
-  state.createConversation.startGroupChat.isLoading;
-const selectcurrentUserId = (state: RootState): string | undefined => state.authentication.user?.data?.id;
-const selectActiveConversationId = (state: RootState): string | undefined => state.chat.activeConversationId;
-const selectJoinRoomErrorContent = (state: RootState): ErrorDialogContent | undefined =>
-  state.chat.joinRoomErrorContent;
-const selectIsRewardsDialogOpen = (state: RootState): boolean => state.rewards.showRewardsInPopup;
-const selectIsSecondaryConversationDataLoaded = (state: RootState): boolean =>
-  state.chat.isSecondaryConversationDataLoaded;
-const selectUsersMap = (state: RootState): { [id: string]: User } => state.normalized['users'] || {};
-
-const MessengerListContainer: React.FC<PublicProperties> = (_props) => {
+const MessengerListContainer: React.FC = () => {
   const dispatch = useDispatch();
 
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [isGroupTypeDialogOpen, setIsGroupTypeDialogOpen] = useState(false);
   const [isCollapsed] = useState(false);
 
-  const stage = useSelector(selectStage);
-  const groupUsers = useSelector(selectGroupUsers);
-  const isFetchingExistingConversations = useSelector(selectIsFetchingExistingConversations);
-  const currentUserId = useSelector(selectcurrentUserId);
-  const activeConversationId = useSelector(selectActiveConversationId);
-  const joinRoomErrorContent = useSelector(selectJoinRoomErrorContent);
-  const isRewardsDialogOpen = useSelector(selectIsRewardsDialogOpen);
-  const isSecondaryConversationDataLoaded = useSelector(selectIsSecondaryConversationDataLoaded);
-  const usersFromState = useSelector(selectUsersMap);
+  const stage = useSelector(stageSelector);
+  const groupUsers = useSelector(groupUsersSelector);
+  const isFetchingExistingConversations = useSelector(isFetchingExistingConversationsSelector);
+  const currentUserId = useSelector(userIdSelector);
+  const activeConversationId = useSelector(activeConversationIdSelector);
+  const joinRoomErrorContent = useSelector(joinRoomErrorContentSelector);
+  const isRewardsDialogOpen = useSelector(isRewardsDialogOpenSelector);
+  const isSecondaryConversationDataLoaded = useSelector(isSecondaryConversationDataLoadedSelector);
+  const usersFromState = useSelector(usersMapSelector);
   const currentSearchResolveRef = useRef<((value: any) => void) | null>(null);
 
   const performSearch = useCallback(

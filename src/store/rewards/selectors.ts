@@ -1,5 +1,5 @@
 import { RootState } from '../reducer';
 
-export function userRewardsMeowBalanceSelector(state: RootState) {
-  return state.rewards.meow;
-}
+export const userRewardsMeowBalanceSelector = (state: RootState): string => state.rewards.meow;
+
+export const isRewardsDialogOpenSelector = (state: RootState): boolean => state.rewards.showRewardsInPopup;

@@ -26,10 +26,11 @@ import { bemClassName } from '../../../../lib/bem';
 import './conversation-list-panel.scss';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { isOneOnOne } from '../../../../store/channels-list/utils';
-import { RootState } from '../../../../store/reducer';
 import { allChannelsSelector } from '../../../../store/channels/selectors';
 import { MemberNetworks } from '../../../../store/users/types';
 import { CreateConversationButton } from '../create-conversation-button/create-conversation-button';
+import { userIdSelector } from '../../../../store/authentication/selectors';
+import { usersMapSelector } from '../../../../store/users/selectors';
 
 const cn = bemClassName('messages-list');
 
@@ -68,12 +69,7 @@ export interface Properties {
   onCreateConversation: (userId: string) => void;
 }
 
-const selectCurrentUserId = (state: RootState): string | undefined => state.authentication.user?.data?.id;
-
-const selectGetUser = createSelector(
-  (state: RootState) => state.normalized.users,
-  (users: Record<string, User>) => (id: string) => users[id]
-);
+const selectGetUser = createSelector(usersMapSelector, (users: Record<string, User>) => (id: string) => users[id]);
 
 export const ConversationListPanel: React.FC<Properties> = React.memo((props) => {
   const { activeConversationId, isLabelDataLoaded, isCollapsed, search, onCreateConversation } = props;
@@ -81,7 +77,7 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
   const dispatch = useDispatch();
   const conversations = useSelector(allChannelsSelector);
   const getUser = useSelector(selectGetUser);
-  const currentUserId = useSelector(selectCurrentUserId);
+  const currentUserId = useSelector(userIdSelector);
 
   const [filter, setFilter] = useState('');
   const [userSearchResults, setUserSearchResults] = useState<Option[]>([]);

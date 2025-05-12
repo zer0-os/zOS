@@ -20,8 +20,10 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
   const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
   const primaryZID = useSelector(primaryZIDSelector);
 
+  const queryKey = ['posts', { zid, userId, ...(typeof following === 'boolean' ? { following } : {}) }];
+
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['posts', { zid, userId, following }],
+    queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       let endpoint;
 
@@ -35,8 +37,8 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
       if (userId) {
         params.append('user_id', userId);
       }
-      if (following) {
-        params.append('following', 'true');
+      if (typeof following === 'boolean') {
+        params.append('following', String(following));
       }
 
       const queryString = params.toString();

@@ -386,11 +386,22 @@ describe('ConversationItem', () => {
   });
 
   describe('Timestamp Display', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('should display the stubbed timestamp when there is a last message', () => {
+      const specificDate = new Date('2025-05-12T15:32:29.098Z');
+      vi.setSystemTime(specificDate);
+
       const lastMessage: MockMessage = {
         id: 'msg-ts',
         message: 'Timestamp test',
-        createdAt: new Date('2025-05-12T15:32:29.098Z').getTime(),
+        createdAt: Date.now(),
         sender: { userId: 'user-1' },
       };
       renderComponent({

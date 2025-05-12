@@ -57,6 +57,8 @@ export const PostView = ({ postId, isFeed }: PostViewProps) => {
                 channelZid={post.channelZid}
                 isSinglePostView={true}
                 mediaId={post.mediaId}
+                authorPrimaryZid={post.sender?.primaryZid}
+                authorPublicAddress={post.sender?.publicAddress}
               />
               <CommentInput channelZid={post.channelZid} isFeed={isFeed} postId={postId} />
             </div>

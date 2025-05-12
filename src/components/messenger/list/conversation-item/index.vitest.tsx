@@ -6,6 +6,7 @@ import { ConversationItem } from './index';
 import { Channel, ConversationStatus, DefaultRoomLabels, MessagesFetchState, User } from '../../../../store/channels';
 import { MatrixAvatar } from '../../../matrix-avatar';
 import { bemClassName } from '../../../../lib/bem';
+import { previewDisplayDate } from '../../../../lib/chat/chat-message';
 
 vi.mock('../../../matrix-avatar', () => ({
   MatrixAvatar: vi.fn((props) => (
@@ -396,12 +397,15 @@ describe('ConversationItem', () => {
 
     it('should display the stubbed timestamp when there is a last message', () => {
       const specificDate = new Date('2025-05-12T15:32:29.098Z');
+      const timestamp = specificDate.getTime();
       vi.setSystemTime(specificDate);
+
+      const expectedFormattedString = previewDisplayDate(timestamp);
 
       const lastMessage: MockMessage = {
         id: 'msg-ts',
         message: 'Timestamp test',
-        createdAt: Date.now(),
+        createdAt: timestamp,
         sender: { userId: 'user-1' },
       };
       renderComponent({
@@ -410,7 +414,7 @@ describe('ConversationItem', () => {
           lastMessage: lastMessage as any,
         },
       });
-      expect(screen.getByText('8:32 AM')).toBeInTheDocument();
+      expect(screen.getByText(expectedFormattedString)).toBeInTheDocument();
     });
 
     it('should not display a timestamp if there is no last message', () => {

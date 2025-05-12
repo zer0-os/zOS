@@ -1,12 +1,22 @@
 import { useFeed } from './lib/useFeed';
-
 import { Message } from '../message';
 import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
 import { Waypoint } from '../../../../components/waypoint';
-import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
+import { Panel, PanelBody, PanelHeader, PanelTitle, PanelTitleToggle } from '../../../../components/layout/panel';
+import { useState } from 'react';
 
 import styles from './styles.module.scss';
+
+enum FeedFilter {
+  All = 'all',
+  Following = 'following',
+}
+
+const FEED_TOGGLE_OPTIONS = [
+  { key: FeedFilter.Following, label: 'Following' },
+  { key: FeedFilter.All, label: 'All' },
+];
 
 export interface FeedProps {
   /**
@@ -19,9 +29,28 @@ export interface FeedProps {
   userId?: string;
   isPostingEnabled?: boolean;
   isLoading?: boolean;
+  /**
+   * Whether to show the following toggle
+   */
+  showFollowingToggle?: boolean;
 }
 
-export const Feed = ({ zid, isPostingEnabled = true, userId, isLoading: isLoadingProp }: FeedProps) => {
+export const Feed = ({
+  zid,
+  isPostingEnabled = true,
+  userId,
+  isLoading: isLoadingProp,
+  showFollowingToggle = false,
+}: FeedProps) => {
+  const [selectedFilter, setSelectedFilter] = useState<FeedFilter>(FeedFilter.Following);
+
+  const feedProps = {
+    zid,
+    userId,
+    isLoading: isLoadingProp,
+    ...(showFollowingToggle ? { following: selectedFilter === FeedFilter.Following } : {}),
+  };
+
   const {
     channelZid,
     fetchNextPage,
@@ -36,13 +65,24 @@ export const Feed = ({ zid, isPostingEnabled = true, userId, isLoading: isLoadin
     posts,
     currentUserId,
     userMeowBalance,
-  } = useFeed({ zid, userId, isLoading: isLoadingProp });
+  } = useFeed(feedProps);
+
+  const renderHeader = () => {
+    if (!showFollowingToggle) {
+      return <PanelTitle>{headerText}</PanelTitle>;
+    }
+    return (
+      <PanelTitleToggle
+        options={FEED_TOGGLE_OPTIONS}
+        value={selectedFilter}
+        onChange={(key) => setSelectedFilter(key as FeedFilter)}
+      />
+    );
+  };
 
   return (
     <Panel className={styles.Feed}>
-      <PanelHeader>
-        <PanelTitle>{headerText}</PanelTitle>
-      </PanelHeader>
+      <PanelHeader>{renderHeader()}</PanelHeader>
       <PanelBody className={styles.Panel}>
         {channelZid && isPostingEnabled && <PostInput className={styles.Input} channelZid={channelZid} />}
         {isLoading && <Message>Loading posts...</Message>}

@@ -12,15 +12,18 @@ interface UseFeedParams {
   zid?: string;
   userId?: string;
   isLoading?: boolean;
+  following?: boolean;
 }
 
-export const useFeed = ({ zid, userId, isLoading: isLoadingProp }: UseFeedParams) => {
+export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: UseFeedParams) => {
   const currentUserId = useSelector(userIdSelector);
   const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
   const primaryZID = useSelector(primaryZIDSelector);
 
+  const queryKey = ['posts', { zid, userId, ...(typeof following === 'boolean' ? { following } : {}) }];
+
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['posts', { zid, userId }],
+    queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       let endpoint;
 
@@ -30,11 +33,18 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp }: UseFeedParams
         endpoint = '/api/v2/posts';
       }
 
+      const params = new URLSearchParams();
       if (userId) {
-        endpoint += `?user_id=${userId}`;
+        params.append('user_id', userId);
+      }
+      if (typeof following === 'boolean') {
+        params.append('following', String(following));
       }
 
-      const res = await getPosts(endpoint, { limit: PAGE_SIZE, skip: pageParam * PAGE_SIZE });
+      const queryString = params.toString();
+      const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
+
+      const res = await getPosts(fullEndpoint, { limit: PAGE_SIZE, skip: pageParam * PAGE_SIZE });
       return res.posts?.map((post) => mapPostToMatrixMessage(post));
     },
     getNextPageParam: (lastPage, allPages) => {

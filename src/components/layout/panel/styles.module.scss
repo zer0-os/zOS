@@ -118,3 +118,24 @@ $header-color: var(--color-greyscale-11);
 
   cursor: pointer;
 }
+
+.HeaderToggle {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.ToggleOption {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &.Active {
+    opacity: 1;
+    color: var(--color-secondary-11) !important;
+  }
+}

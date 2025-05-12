@@ -18,6 +18,13 @@ export interface PanelProps {
   name?: string;
 }
 
+export interface PanelTitleToggleProps {
+  options: { key: string; label: string }[];
+  value: string;
+  onChange: (key: string) => void;
+  className?: string;
+}
+
 export const LegacyPanel = forwardRef(
   (
     { children, className, panel, name }: Pick<PanelProps, 'children' | 'className' | 'panel' | 'name'>,
@@ -77,6 +84,22 @@ export const PanelHeader = ({ children, className }: Pick<PanelProps, 'children'
 
 export const PanelTitle = ({ children, className }: Pick<PanelProps, 'children' | 'className'>) => {
   return <div className={cn(styles.Title, className)}>{children}</div>;
+};
+
+export const PanelTitleToggle = ({ options, value, onChange, className }: PanelTitleToggleProps) => {
+  return (
+    <div className={cn(styles.HeaderToggle, className)}>
+      {options.map((option) => (
+        <div
+          key={option.key}
+          className={cn(styles.ToggleOption, { [styles.Active]: value === option.key })}
+          onClick={() => onChange(option.key)}
+        >
+          {option.label}
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export const PanelCollapsed = ({ className }: Pick<PanelProps, 'className'>) => {

@@ -20,7 +20,7 @@ export const HomeApp = () => {
 
   return (
     <div className={styles.Home}>
-      <Feed />
+      <Feed showFollowingToggle={true} />
     </div>
   );
 };

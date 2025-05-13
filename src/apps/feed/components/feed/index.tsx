@@ -4,14 +4,10 @@ import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
 import { Waypoint } from '../../../../components/waypoint';
 import { Panel, PanelBody, PanelHeader, PanelTitle, PanelTitleToggle } from '../../../../components/layout/panel';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { FeedFilter, getLastFeedFilter, setLastFeedFilter } from '../../../../lib/last-feed-filter';
 
 import styles from './styles.module.scss';
-
-enum FeedFilter {
-  All = 'all',
-  Following = 'following',
-}
 
 const FEED_TOGGLE_OPTIONS = [
   { key: FeedFilter.Following, label: 'Following' },
@@ -42,7 +38,13 @@ export const Feed = ({
   isLoading: isLoadingProp,
   showFollowingToggle = false,
 }: FeedProps) => {
-  const [selectedFilter, setSelectedFilter] = useState<FeedFilter>(FeedFilter.Following);
+  const [selectedFilter, setSelectedFilter] = useState<FeedFilter>(getLastFeedFilter());
+
+  useEffect(() => {
+    if (showFollowingToggle) {
+      setLastFeedFilter(selectedFilter);
+    }
+  }, [selectedFilter, showFollowingToggle]);
 
   const feedProps = {
     zid,

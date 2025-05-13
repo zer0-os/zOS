@@ -6,6 +6,7 @@ export interface AuthorizationResponse {
 export interface Wallet {
   id: string;
   publicAddress: string;
+  isThirdWeb: boolean;
 }
 
 interface ProfileSummary {

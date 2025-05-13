@@ -7,14 +7,17 @@
 
 import { Avatar, AvatarProps } from '@zero-tech/zui/components/Avatar';
 import { useMatrixImage } from '../../lib/hooks/useMatrixImage';
+import { memo } from 'react';
 
 interface MatrixAvatarProps extends AvatarProps {
   imageURL?: string;
   className?: string;
 }
 
-export const MatrixAvatar = ({ imageURL, size = 'regular', ...rest }: MatrixAvatarProps) => {
+export const MatrixAvatar = memo(({ imageURL, size = 'regular', ...rest }: MatrixAvatarProps) => {
   const { data: authenticatedUrl } = useMatrixImage(imageURL, { isThumbnail: true });
 
   return <Avatar size={size} imageURL={authenticatedUrl} {...rest} />;
-};
+});
+
+MatrixAvatar.displayName = 'MatrixAvatar';

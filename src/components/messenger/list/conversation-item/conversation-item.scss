@@ -114,8 +114,8 @@
   }
 
   &__message--loading {
-    filter: blur(4px);
-    opacity: 0.4;
+    filter: blur(2px);
+    opacity: 0.15;
   }
 
   &__unread-count {

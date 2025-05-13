@@ -1,10 +1,12 @@
 import { rawChannel } from '../channels/selectors';
 import { RootState } from '../reducer';
+import { ErrorDialogContent } from './types';
 
-export function activeConversationIdSelector(state: RootState) {
-  return state.chat.activeConversationId;
-}
+export const rawActiveConversationSelector = (state: RootState) =>
+  rawChannel(state, activeConversationIdSelector(state));
 
-export function rawActiveConversationSelector(state: RootState) {
-  return rawChannel(state, activeConversationIdSelector(state));
-}
+export const activeConversationIdSelector = (state: RootState): string | undefined => state.chat.activeConversationId;
+export const joinRoomErrorContentSelector = (state: RootState): ErrorDialogContent | undefined =>
+  state.chat.joinRoomErrorContent;
+export const isSecondaryConversationDataLoadedSelector = (state: RootState): boolean =>
+  state.chat.isSecondaryConversationDataLoaded;

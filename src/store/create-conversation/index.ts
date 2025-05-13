@@ -25,7 +25,7 @@ export enum Stage {
   GroupDetails = 'group_details',
 }
 
-type CreateConversationState = {
+export type CreateConversationState = {
   stage: Stage;
   groupUsers: {
     value: string;

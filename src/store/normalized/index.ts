@@ -56,7 +56,11 @@ const receiveNormalized = (state, action: PayloadAction<any>) => {
 
 const slice = createSlice({
   name: 'normalized',
-  initialState: {},
+  initialState: {
+    users: {},
+    channels: {},
+    messages: {},
+  },
   reducers: {
     remove: (state, action: PayloadAction<{ schema: string; id: string }>) => {
       const { schema, id } = action.payload;

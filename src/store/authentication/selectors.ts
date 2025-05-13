@@ -1,11 +1,7 @@
 import { RootState } from '../reducer';
-import getDeepProperty from 'lodash.get';
 
-// This is somewhat of a copy of the selector in src/store/authentication/saga.ts
-// The difference is there's no reason to return a function that does the thing
-// when the function can just do the thing.
 export function currentUserSelector(state: RootState) {
-  return getDeepProperty(state, 'authentication.user.data', null);
+  return state.authentication.user?.data;
 }
 
 export function isAuthenticatedSelector(state: RootState) {
@@ -13,21 +9,21 @@ export function isAuthenticatedSelector(state: RootState) {
 }
 
 export function userProfileImageSelector(state: RootState) {
-  return getDeepProperty(state, 'authentication.user.data.profileSummary.profileImage', null);
+  return state.authentication.user?.data?.profileSummary?.profileImage;
 }
 
 export function userIdSelector(state: RootState) {
-  return getDeepProperty(state, 'authentication.user.data.id', null);
+  return state.authentication.user?.data?.id;
 }
 
 export function primaryZIDSelector(state: RootState) {
-  return getDeepProperty(state, 'authentication.user.data.primaryZID', null);
+  return state.authentication.user?.data?.primaryZID;
 }
 
 export function userWalletsSelector(state: RootState) {
-  return getDeepProperty(state, 'authentication.user.data.wallets', null);
+  return state.authentication.user?.data?.wallets;
 }
 
 export function userFirstNameSelector(state: RootState) {
-  return getDeepProperty(state, 'authentication.user.data.profileSummary.firstName', null);
+  return state.authentication.user?.data?.profileSummary?.firstName;
 }

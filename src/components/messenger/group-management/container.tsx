@@ -25,7 +25,6 @@ import { MemberManagementDialogContainer } from '../../group-management/member-m
 import { getUserSubHandle } from '../../../lib/user';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
-import { receiveSearchResults } from '../../../store/users';
 import { CreateMessengerConversation } from '../../../store/channels-list/types';
 import { createConversation } from '../../../store/create-conversation';
 import { openUserProfile } from '../../../store/user-profile';
@@ -53,7 +52,6 @@ export interface Properties extends PublicProperties {
   isOneOnOne: boolean;
   existingConversations: Channel[];
   isSocialChannel: boolean;
-  users: { [id: string]: User };
 
   back: () => void;
   addSelectedMembers: (payload: MembersSelectedPayload) => void;
@@ -61,7 +59,6 @@ export interface Properties extends PublicProperties {
   startEditConversation: () => void;
   startAddGroupMember: () => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
-  receiveSearchResults: (data) => void;
   openConversation: (payload: { conversationId: string }) => void;
   createConversation: (payload: CreateMessengerConversation) => void;
   openUserProfile: () => void;
@@ -104,6 +101,8 @@ export class Container extends React.Component<Properties> {
         isOnline: currentUser?.isOnline || true,
         primaryZID: currentUser?.primaryZID,
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
+        profileId: currentUser?.profileId,
+        lastSeenAt: '',
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,
@@ -116,7 +115,6 @@ export class Container extends React.Component<Properties> {
       conversationModeratorIds,
       isOneOnOne,
       existingConversations,
-      users: state.normalized['users'] || {},
     };
   }
   static mapActions(_props: Properties): Partial<Properties> {
@@ -127,7 +125,6 @@ export class Container extends React.Component<Properties> {
       startEditConversation,
       startAddGroupMember,
       setLeaveGroupStatus,
-      receiveSearchResults,
       openConversation,
       createConversation,
       openUserProfile,
@@ -137,12 +134,10 @@ export class Container extends React.Component<Properties> {
   constructor(props: Properties) {
     super(props);
 
-    // Create a debounced version of the search function
     this.debouncedSearch = debounce(this.performSearch, 800);
   }
 
   componentWillUnmount() {
-    // Cancel any pending debounced searches
     if (this.debouncedSearch && this.debouncedSearch.cancel) {
       this.debouncedSearch.cancel();
     }
@@ -156,7 +151,6 @@ export class Container extends React.Component<Properties> {
   };
 
   performSearch = async (search: string) => {
-    const { users: usersFromState, receiveSearchResults } = this.props;
     const myUserId = this.props.currentUser.userId;
 
     const users: MemberNetworks[] = await searchMyNetworksByName(search);
@@ -165,13 +159,8 @@ export class Container extends React.Component<Properties> {
       ?.filter((user) => user.id !== myUserId)
       .map((user) => ({
         ...user,
-        // since redux state has local blob url image
-        image: usersFromState[user.id]?.profileImage ?? user.profileImage,
-        profileImage: usersFromState[user.id]?.profileImage ?? user.profileImage,
+        image: user.profileImage,
       }));
-
-    // Send the filtered results to the state handler
-    receiveSearchResults(mappedFilteredUsers);
 
     if (this.currentSearchResolve) {
       this.currentSearchResolve(mappedFilteredUsers);

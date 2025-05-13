@@ -27,6 +27,8 @@ describe('AdminMessage', () => {
             users: {
               'inviter-id': { id: 'inviter-id', firstName: 'Courtney' },
             },
+            channels: {},
+            messages: {},
           },
         },
       }

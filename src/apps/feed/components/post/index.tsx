@@ -90,18 +90,21 @@ export const Post = ({
   ]);
 
   const multilineText = useMemo(
-    () =>
-      displayText?.split('\n').map((line, index) => {
-        const linkType = detectLinkType(line);
-        const hasPreview = linkType !== null;
+    () => (
+      <div className={styles.TextContainer}>
+        {displayText.split('\n').map((line, index) => {
+          const linkType = detectLinkType(line);
+          const hasPreview = linkType !== null;
 
-        return (
-          <div key={index}>
-            <p className={styles.Text}>{line}</p>
-            {hasPreview && <PostLinkPreview url={line} />}
-          </div>
-        );
-      }),
+          return (
+            <div key={index} className={styles.TextLine}>
+              <span className={styles.Text}>{line}</span>
+              {hasPreview && <PostLinkPreview url={line} />}
+            </div>
+          );
+        })}
+      </div>
+    ),
     [displayText]
   );
 

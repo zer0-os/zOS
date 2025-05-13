@@ -1,7 +1,6 @@
-import { call, put, select, spawn, take, takeEvery, delay } from 'redux-saga/effects';
-import { schema, removeAll, receive, SagaActionTypes } from '.';
+import { call, put, select, spawn, take, delay } from 'redux-saga/effects';
+import { schema, removeAll, receive } from '.';
 import { usersByMatrixIdsSelector } from './selectors';
-import { getUserSubHandle } from '../../lib/user';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { getZeroUsersQuery } from './queries/getZeroUsersQuery';
 import { queryClient } from '../../lib/web3/rainbowkit/provider';
@@ -13,27 +12,6 @@ import { MatrixAdapter } from '../../lib/chat/matrix/matrix-adapter';
 import { User } from '../channels';
 export function* clearUsers() {
   yield put(removeAll({ schema: schema.key }));
-}
-
-export function* receiveSearchResults(searchResults) {
-  const existingUsers = (yield select((state) => state.normalized.users)) ?? {};
-  const existingUserIds = Object.keys(existingUsers);
-
-  const mappedUsers = searchResults
-    .filter((r) => !existingUserIds.includes(r.id))
-    .map((r) => {
-      return {
-        userId: r.id,
-        firstName: r.name,
-        profileImage: r.profileImage,
-        matrixId: r.matrixId,
-        primaryZID: r.primaryZID,
-        primaryWalletAddress: r.primaryWalletAddress,
-        displaySubHandle: getUserSubHandle(r.primaryZID, r.primaryWalletAddress),
-      };
-    });
-
-  yield put(receive(mappedUsers));
 }
 
 // there seems to be a bug where the profile info (displayname specifically) is not updated in the 'matrix' database
@@ -54,12 +32,6 @@ function* listenForUserLogin() {
 
 export function* saga() {
   yield spawn(listenForUserLogin);
-
-  yield takeEvery(SagaActionTypes.SearchResults, receiveSearchResultsAction);
-}
-
-export function* receiveSearchResultsAction(action) {
-  return yield receiveSearchResults(action.payload);
 }
 
 /**

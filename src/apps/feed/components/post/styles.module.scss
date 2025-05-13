@@ -80,6 +80,17 @@
   }
 }
 
+.TextContainer {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.TextLine {
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 1.5em;
+}
+
 .Text {
   white-space: pre-wrap;
   word-break: break-word;

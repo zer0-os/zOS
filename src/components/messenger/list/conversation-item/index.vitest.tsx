@@ -3,7 +3,13 @@ import { vi } from 'vitest';
 import { renderWithProviders } from '../../../../test-utils';
 
 import { ConversationItem } from './index';
-import { Channel, ConversationStatus, DefaultRoomLabels, MessagesFetchState, User } from '../../../../store/channels';
+import {
+  ConversationStatus,
+  DefaultRoomLabels,
+  MessagesFetchState,
+  NormalizedChannel,
+  User,
+} from '../../../../store/channels';
 import { MatrixAvatar } from '../../../matrix-avatar';
 import { bemClassName } from '../../../../lib/bem';
 import { previewDisplayDate } from '../../../../lib/chat/chat-message';
@@ -79,7 +85,7 @@ describe('ConversationItem', () => {
     sender: { userId: string };
   }
 
-  const baseConversation: Channel = {
+  const baseConversation: NormalizedChannel = {
     id: 'conv-1',
     optimisticId: '',
     name: '',
@@ -121,11 +127,15 @@ describe('ConversationItem', () => {
   describe('Avatar Display', () => {
     it('should render the correct avatar for a one-on-one conversation', () => {
       const user1 = createMockUser('user-1', 'John', 'Doe', 'john.jpg');
+      const users = [user1];
+      mockGetUser.mockImplementation((userId: string) => {
+        return users.find((u) => u.userId === userId) || createMockUser(userId, `User-${userId}`, '');
+      });
       renderComponent({
         conversation: {
           ...baseConversation,
           totalMembers: 2,
-          otherMembers: [user1],
+          otherMembers: [user1.userId],
         },
       });
       expect(MatrixAvatar).toHaveBeenCalledWith(
@@ -142,11 +152,15 @@ describe('ConversationItem', () => {
     it('should render the correct avatar for a group conversation with a group icon', () => {
       const user1 = createMockUser('user-1', 'John', 'Doe');
       const user2 = createMockUser('user-2', 'Jane', 'Smith');
+      const users = [user1, user2];
+      mockGetUser.mockImplementation((userId: string) => {
+        return users.find((u) => u.userId === userId) || createMockUser(userId, `User-${userId}`, '');
+      });
       renderComponent({
         conversation: {
           ...baseConversation,
           icon: 'group-icon.png',
-          otherMembers: [user1, user2],
+          otherMembers: [user1.userId, user2.userId],
         },
       });
       expect(MatrixAvatar).toHaveBeenCalledWith(
@@ -163,11 +177,15 @@ describe('ConversationItem', () => {
     it('should render a generic group avatar for a group conversation without a specific icon', () => {
       const user1 = createMockUser('user-1', 'John', 'Doe');
       const user2 = createMockUser('user-2', 'Jane', 'Smith');
+      const users = [user1, user2];
+      mockGetUser.mockImplementation((userId: string) => {
+        return users.find((u) => u.userId === userId) || createMockUser(userId, `User-${userId}`, '');
+      });
       renderComponent({
         conversation: {
           ...baseConversation,
           icon: '',
-          otherMembers: [user1, user2],
+          otherMembers: [user1.userId, user2.userId],
         },
       });
       expect(MatrixAvatar).toHaveBeenCalledWith(
@@ -185,11 +203,15 @@ describe('ConversationItem', () => {
   describe('Conversation Title Display', () => {
     it("should display the other member's name for a one-on-one conversation", () => {
       const user1 = createMockUser('user-1', 'Alice', 'Wonderland');
+      const users = [user1];
+      mockGetUser.mockImplementation((userId: string) => {
+        return users.find((u) => u.userId === userId) || createMockUser(userId, `User-${userId}`, '');
+      });
       renderComponent({
         conversation: {
           ...baseConversation,
           name: '',
-          otherMembers: [user1],
+          otherMembers: [user1.userId],
         },
       });
       expect(screen.getByText('Alice Wonderland')).toBeInTheDocument();
@@ -198,11 +220,15 @@ describe('ConversationItem', () => {
     it('should display a list of member names for a multi-member conversation', () => {
       const user1 = createMockUser('user-1', 'Bob', 'Builder');
       const user2 = createMockUser('user-2', 'Charlie', 'Chaplin');
+      const users = [user1, user2];
+      mockGetUser.mockImplementation((userId: string) => {
+        return users.find((u) => u.userId === userId) || createMockUser(userId, `User-${userId}`, '');
+      });
       renderComponent({
         conversation: {
           ...baseConversation,
           name: '',
-          otherMembers: [user1, user2],
+          otherMembers: [user1.userId, user2.userId],
         },
       });
       expect(screen.getByText('Bob Builder, Charlie Chaplin')).toBeInTheDocument();
@@ -210,11 +236,15 @@ describe('ConversationItem', () => {
 
     it('should display the custom name if the conversation has one', () => {
       const user1 = createMockUser('user-1', 'David', 'Copperfield');
+      const users = [user1];
+      mockGetUser.mockImplementation((userId: string) => {
+        return users.find((u) => u.userId === userId) || createMockUser(userId, `User-${userId}`, '');
+      });
       renderComponent({
         conversation: {
           ...baseConversation,
           name: 'Custom Group Name',
-          otherMembers: [user1],
+          otherMembers: [user1.userId],
         },
       });
       expect(screen.getByText('Custom Group Name')).toBeInTheDocument();

@@ -76,6 +76,12 @@ export interface Channel {
   zid?: string;
 }
 
+export interface NormalizedChannel extends Omit<Channel, 'messages' | 'otherMembers' | 'memberHistory'> {
+  messages: string[];
+  otherMembers: string[];
+  memberHistory: string[];
+}
+
 export interface ReceiveChannel extends Omit<Channel, 'messages' | 'otherMembers' | 'memberHistory'> {
   messages: (string | Message)[];
   otherMembers: (string | User)[];

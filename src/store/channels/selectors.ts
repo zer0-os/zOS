@@ -1,4 +1,4 @@
-import { Channel, DefaultRoomLabels, denormalize } from '.';
+import { Channel, DefaultRoomLabels, denormalize, NormalizedChannel } from '.';
 import { RootState } from '../reducer';
 import getDeepProperty from 'lodash.get';
 import { createSelector } from '@reduxjs/toolkit';
@@ -14,8 +14,8 @@ export const channelSelector =
     return denormalize(channelId, state);
   };
 
-export const allChannelsSelector = (state: RootState): Channel[] => {
-  const channels = getDeepProperty(state, 'normalized.channels', {}) as Record<string, Channel>;
+export const allChannelsSelector = (state: RootState): NormalizedChannel[] => {
+  const channels = getDeepProperty(state, 'normalized.channels', {}) as Record<string, NormalizedChannel>;
   return Object.values(channels).sort(byBumpStamp);
 };
 

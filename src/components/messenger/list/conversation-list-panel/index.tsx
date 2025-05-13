@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 import {
-  Channel,
   DefaultRoomLabels,
+  NormalizedChannel,
   onAddLabel,
   onRemoveLabel,
   openConversation,
@@ -133,7 +133,7 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
     }
   }, [horizontalScroll]);
 
-  const getConversationsByLabel = useCallback((label: string, conversation: Channel) => {
+  const getConversationsByLabel = useCallback((label: string, conversation: NormalizedChannel) => {
     const isLabelMatch = conversation.labels?.includes(label);
     const isArchived = conversation.labels?.includes(DefaultRoomLabels.ARCHIVED);
     if (label === Tab.All) {
@@ -147,7 +147,7 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
 
   const filteredConversations = useMemo(() => {
     if (!filter) {
-      return conversations.filter((conversation: Channel) => {
+      return conversations.filter((conversation: NormalizedChannel) => {
         const render = !conversation.isSocialChannel && 'bumpStamp' in conversation;
         const labelMatch = getConversationsByLabel(tabLabelMap[selectedTab], conversation);
         return render && labelMatch;
@@ -193,7 +193,7 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
       setFilter(newSearch);
 
       const oneOnOneConversations = conversations.filter((c) => isOneOnOne(c));
-      const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers.map((m) => m.userId));
+      const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers);
 
       const items: MemberNetworks[] = await search(newSearch);
       const filteredUserItems = items?.filter((item) => !oneOnOneConversationMemberIds.includes(item.id) && item.id);

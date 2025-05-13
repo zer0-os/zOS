@@ -1,7 +1,7 @@
 import { memo, MouseEvent, KeyboardEvent, useMemo, useState } from 'react';
 import { otherMembersToString } from '../../../../platform-apps/channels/util';
 import { highlightFilter } from '../../lib/utils';
-import { Channel, DefaultRoomLabels } from '../../../../store/channels';
+import { DefaultRoomLabels, NormalizedChannel } from '../../../../store/channels';
 
 import { MoreMenu } from './more-menu';
 import { MatrixAvatar } from '../../../matrix-avatar';
@@ -19,7 +19,7 @@ import { GetUser } from '..';
 const cn = bemClassName('conversation-item');
 export interface Properties {
   filter: string;
-  conversation: Channel;
+  conversation: NormalizedChannel;
   currentUserId: string;
   activeConversationId: string;
   isCollapsed: boolean;
@@ -71,11 +71,17 @@ export const ConversationItem = memo(
       setIsContextMenuOpen(false);
     };
 
-    const highlightedName = () => {
-      const name = conversation.name || otherMembersToString(conversation.otherMembers);
+    const highlightedName = useMemo(() => {
+      const name = conversation.name || otherMembersToString(conversation.otherMembers.map((m) => getUser(m)));
 
       return highlightFilter(name, filter);
-    };
+    }, [
+      conversation.name,
+      conversation.otherMembers,
+      getUser,
+      filter,
+    ]);
+
     const renderMoreMenu = () => {
       const stopPropagation = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
@@ -113,11 +119,17 @@ export const ConversationItem = memo(
     const avatarUrl = useMemo(() => {
       if (conversation.icon) {
         return conversation.icon;
-      } else if (isOneOnOneConversation && conversation.otherMembers[0]?.profileImage) {
-        return conversation.otherMembers[0].profileImage;
+      } else if (isOneOnOneConversation && conversation.otherMembers[0]) {
+        const user = getUser(conversation.otherMembers[0]);
+        return user.profileImage;
       }
       return undefined;
-    }, [conversation.icon, isOneOnOneConversation, conversation.otherMembers]);
+    }, [
+      conversation.icon,
+      isOneOnOneConversation,
+      getUser,
+      conversation.otherMembers,
+    ]);
 
     return (
       <div
@@ -145,7 +157,7 @@ export const ConversationItem = memo(
           <div {...cn('summary')}>
             <div {...cn('header')}>
               <div {...cn('name')} is-unread={isUnread.toString()}>
-                {highlightedName()}
+                {highlightedName}
               </div>
               {conversation.labels?.includes(DefaultRoomLabels.MUTE) && (
                 <IconBellOff1 {...cn('muted-icon')} size={16} />

@@ -35,6 +35,7 @@ import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
 import { clearIndexedDBStorage } from '../../lib/storage/clear-idb';
 import { clearLastActiveFeed } from '../../lib/last-feed';
+import { clearLastFeedFilter } from '../../lib/last-feed-filter';
 
 // Mock the media-cache module
 jest.mock('../../lib/storage/media-cache', () => ({
@@ -278,6 +279,10 @@ describe(forceLogout, () => {
 
   it('clears the last active feed', async () => {
     await expectLogoutSaga().call(clearLastActiveFeed).call(terminate).run();
+  });
+
+  it('clears the last feed filter', async () => {
+    await expectLogoutSaga().call(clearLastFeedFilter).call(terminate).run();
   });
 
   it('clears the user session', async () => {

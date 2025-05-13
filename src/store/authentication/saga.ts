@@ -18,6 +18,7 @@ import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
 import { clearRewards } from '../rewards/saga';
 import { clearLastActiveFeed } from '../../lib/last-feed';
+import { clearLastFeedFilter } from '../../lib/last-feed-filter';
 import { clearCache, performCacheMaintenance } from '../../lib/storage/media-cache';
 import { setSentryUser } from '../../utils';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
@@ -138,6 +139,7 @@ export function* forceLogout() {
   yield call(clearLastActiveConversation);
   yield call(clearLastActiveTab);
   yield call(clearLastActiveFeed);
+  yield call(clearLastFeedFilter);
   yield call(clearRewards);
   yield call(terminate);
 }

@@ -1,12 +1,13 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderWithProviders } from '../../../../test-utils';
 
 import { ConversationItem } from './index';
 import { Channel, ConversationStatus, DefaultRoomLabels, MessagesFetchState, User } from '../../../../store/channels';
 import { MatrixAvatar } from '../../../matrix-avatar';
 import { bemClassName } from '../../../../lib/bem';
 import { previewDisplayDate } from '../../../../lib/chat/chat-message';
+import { mockAuthenticationState } from '../../../../store/authentication/test/mocks';
 
 vi.mock('../../../matrix-avatar', () => ({
   MatrixAvatar: vi.fn((props) => (
@@ -57,21 +58,18 @@ const mockGetUser = vi.fn();
 
 describe('ConversationItem', () => {
   const renderComponent = (partialProps: Partial<typeof defaultProps> = {}) => {
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-        },
-      },
-    });
-
     const finalProps = { ...defaultProps, ...partialProps };
 
-    return render(
-      <QueryClientProvider client={queryClient}>
-        <ConversationItem {...finalProps} />
-      </QueryClientProvider>
-    );
+    const preloadedState = {
+      authentication: {
+        ...mockAuthenticationState,
+        user: { data: { ...mockAuthenticationState.user.data, id: finalProps.currentUserId } },
+      },
+    };
+
+    return renderWithProviders(<ConversationItem {...finalProps} />, {
+      preloadedState,
+    });
   };
 
   interface MockMessage {

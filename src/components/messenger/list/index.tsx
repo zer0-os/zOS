@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { debounce } from 'lodash';
 import { User } from '../../../store/channels';
-import { receiveSearchResults } from '../../../store/users';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
 import {
@@ -42,7 +41,6 @@ import {
   stageSelector,
 } from '../../../store/create-conversation/selectors';
 import { userIdSelector } from '../../../store/authentication/selectors';
-import { usersMapSelector } from '../../../store/users/selectors';
 
 const cn = bemClassName('direct-message-members');
 
@@ -63,7 +61,6 @@ const MessengerListContainer: React.FC = () => {
   const joinRoomErrorContent = useSelector(joinRoomErrorContentSelector);
   const isRewardsDialogOpen = useSelector(isRewardsDialogOpenSelector);
   const isSecondaryConversationDataLoaded = useSelector(isSecondaryConversationDataLoadedSelector);
-  const usersFromState = useSelector(usersMapSelector);
   const currentSearchResolveRef = useRef<((value: any) => void) | null>(null);
 
   const performSearch = useCallback(
@@ -73,18 +70,15 @@ const MessengerListContainer: React.FC = () => {
         ?.filter((user) => user.id !== currentUserId)
         .map((user) => ({
           ...user,
-          image: usersFromState[user.id]?.profileImage ?? user.profileImage,
-          profileImage: usersFromState[user.id]?.profileImage ?? user.profileImage,
+          image: user.profileImage,
         }));
-
-      dispatch(receiveSearchResults(mappedFilteredUsers));
 
       if (currentSearchResolveRef.current) {
         currentSearchResolveRef.current(mappedFilteredUsers);
         currentSearchResolveRef.current = null;
       }
     },
-    [currentUserId, usersFromState, dispatch]
+    [currentUserId]
   );
 
   const debouncedSearch = useMemo(() => {

@@ -126,8 +126,10 @@ export class Chat {
     }
     const liveTimeline = room.getLiveTimeline();
     const events = liveTimeline.getEvents();
-    const lastEvent = [...events].reverse().find((event) => event.getType() === EventType.RoomMessage);
-    return lastEvent ? mapMatrixMessage(lastEvent.getEffectiveEvent()) : null;
+    const effectiveEvents = events.map((event) => event.getEffectiveEvent());
+    const messages = this.matrix.processRawEventsToMessages(effectiveEvents);
+    const lastMessage = messages.reverse().find((message) => !message.isAdmin) as MessageWithoutSender;
+    return lastMessage ?? null;
   }
 
   async getMessagesByChannelId(channelId: string, lastCreatedAt?: number) {

@@ -12,7 +12,6 @@ import { get } from '../api/rest';
 import { getFilteredMembersForAutoComplete, setAsDM } from './matrix/utils';
 import { Visibility, Preset, ICreateRoomOpts, GuestAccess, EventType, IEvent } from 'matrix-js-sdk/lib/matrix';
 import { ImportRoomKeyProgressData } from 'matrix-js-sdk/lib/crypto-api';
-import { mapMatrixMessage } from './matrix/chat-message';
 
 export interface RealtimeChatEvents {
   receiveNewMessage: (channelId: string, message: Message | MessageWithoutSender) => void;

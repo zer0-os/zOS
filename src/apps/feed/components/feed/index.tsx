@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { useFeed } from './lib/useFeed';
 import { Message } from '../message';
 import { Post } from '../post';
@@ -6,6 +7,8 @@ import { Waypoint } from '../../../../components/waypoint';
 import { Panel, PanelBody, PanelHeader, PanelTitle, PanelTitleToggle } from '../../../../components/layout/panel';
 import { useState, useEffect } from 'react';
 import { FeedFilter, getLastFeedFilter, setLastFeedFilter } from '../../../../lib/last-feed-filter';
+import { useReturnFromProfileNavigation } from '../../lib/useReturnFromProfileNavigation';
+import { BackButton } from '../post-view-container/back-button';
 
 import styles from './styles.module.scss';
 
@@ -39,6 +42,8 @@ export const Feed = ({
   showFollowingToggle = false,
 }: FeedProps) => {
   const [selectedFilter, setSelectedFilter] = useState<FeedFilter>(getLastFeedFilter());
+  const location = useLocation();
+  const isProfileRoute = location.pathname.startsWith('/profile');
 
   useEffect(() => {
     if (showFollowingToggle) {
@@ -69,7 +74,13 @@ export const Feed = ({
     userMeowBalance,
   } = useFeed(feedProps);
 
+  useReturnFromProfileNavigation();
+
   const renderHeader = () => {
+    if (isProfileRoute) {
+      return <BackButton />;
+    }
+
     if (!showFollowingToggle) {
       return <PanelTitle>{headerText}</PanelTitle>;
     }

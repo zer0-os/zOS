@@ -1,15 +1,18 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch, useLocation } from 'react-router-dom';
 import { ProfileApp } from './';
-import { useScrollPosition } from '../../lib/hooks/useScrollPosition';
+import { useReturnFromProfileNavigation } from '../feed/lib/useReturnFromProfileNavigation';
 
 vi.mock('react-router-dom', () => ({
   useRouteMatch: vi.fn(),
+  useLocation: vi.fn(),
 }));
 
-vi.mock('../../lib/hooks/useScrollPosition', () => ({
-  useScrollPosition: vi.fn(),
+vi.mock('../feed/lib/useReturnFromProfileNavigation', () => ({
+  useReturnFromProfileNavigation: vi.fn(),
+  RETURN_POST_ID_KEY: 'returnPostId',
+  RETURN_PATH_KEY: 'returnPath',
 }));
 
 vi.mock('./panels/UserPanel', () => ({
@@ -26,7 +29,17 @@ vi.mock('../feed/components/post-view-container', () => ({
 
 describe('ProfileApp', () => {
   const mockUseRouteMatch = useRouteMatch as unknown as ReturnType<typeof vi.fn>;
-  const mockUseScrollPosition = useScrollPosition as unknown as ReturnType<typeof vi.fn>;
+  const mockUseLocation = useLocation as unknown as ReturnType<typeof vi.fn>;
+  const mockUseReturnFromProfileNavigation = useReturnFromProfileNavigation as unknown as ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    mockUseLocation.mockReturnValue({
+      search: '',
+    });
+    mockUseReturnFromProfileNavigation.mockReturnValue({
+      storeReturnFromProfileData: vi.fn(),
+    });
+  });
 
   it('should render Switcher and UserPanel when not viewing a post', () => {
     mockUseRouteMatch.mockReturnValue({
@@ -55,18 +68,16 @@ describe('ProfileApp', () => {
     expect(screen.queryByTestId('user-panel')).not.toBeInTheDocument();
   });
 
-  it('should call useScrollPosition with postId when viewing a post', () => {
-    mockUseRouteMatch.mockReturnValue({
-      params: { zid: 'user123', postId: 'post123' },
-      path: '/profile/user123/post123',
+  it('should store return data when returnPostId and returnPath are present', () => {
+    const mockStoreReturnFromProfileData = vi.fn();
+    mockUseReturnFromProfileNavigation.mockReturnValue({
+      storeReturnFromProfileData: mockStoreReturnFromProfileData,
     });
 
-    render(<ProfileApp />);
+    mockUseLocation.mockReturnValue({
+      search: '?returnPostId=post123&returnPath=/feed/channel123',
+    });
 
-    expect(mockUseScrollPosition).toHaveBeenCalledWith('post123');
-  });
-
-  it('should not call useScrollPosition when not viewing a post', () => {
     mockUseRouteMatch.mockReturnValue({
       params: { zid: 'user123' },
       path: '/profile/user123',
@@ -74,6 +85,26 @@ describe('ProfileApp', () => {
 
     render(<ProfileApp />);
 
-    expect(mockUseScrollPosition).toHaveBeenCalledWith(undefined);
+    expect(mockStoreReturnFromProfileData).toHaveBeenCalledWith('post123', '/feed/channel123');
+  });
+
+  it('should not store return data when returnPostId or returnPath is missing', () => {
+    const mockStoreReturnFromProfileData = vi.fn();
+    mockUseReturnFromProfileNavigation.mockReturnValue({
+      storeReturnFromProfileData: mockStoreReturnFromProfileData,
+    });
+
+    mockUseLocation.mockReturnValue({
+      search: '?returnPostId=post123', // Missing returnPath
+    });
+
+    mockUseRouteMatch.mockReturnValue({
+      params: { zid: 'user123' },
+      path: '/profile/user123',
+    });
+
+    render(<ProfileApp />);
+
+    expect(mockStoreReturnFromProfileData).not.toHaveBeenCalled();
   });
 });

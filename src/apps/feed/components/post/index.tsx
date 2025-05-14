@@ -17,7 +17,8 @@ import Linkify from 'linkify-react';
 import { PostLinkPreview } from './link-preview';
 import { detectLinkType } from './link-preview/utils';
 import { PostMedia } from '../post-media';
-
+import { useGetReturnFromProfilePath } from '../../lib/useGetReturnFromProfilePath';
+import { RETURN_POST_ID_KEY, RETURN_PATH_KEY } from '../../lib/useReturnFromProfileNavigation';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
@@ -117,7 +118,7 @@ export const Post = ({
       <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
         {variant === 'default' && (
           <div className={styles.Avatar}>
-            <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress}>
+            <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
               <MatrixAvatar size='regular' imageURL={avatarUrl} />
             </ProfileLink>
           </div>
@@ -138,7 +139,7 @@ export const Post = ({
             <div className={styles.Details}>
               {variant === 'expanded' && (
                 <div className={styles.Avatar}>
-                  <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress}>
+                  <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
                     <MatrixAvatar size='regular' imageURL={avatarUrl} />
                   </ProfileLink>
                 </div>
@@ -146,7 +147,7 @@ export const Post = ({
               <div className={styles.Wrapper}>
                 {/* @ts-ignore */}
                 <Name className={styles.Name} variant='name'>
-                  <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress}>
+                  <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
                     {nickname}
                   </ProfileLink>
                   <span>⋅</span>
@@ -262,14 +263,22 @@ const ProfileLink = ({
   primaryZid,
   publicAddress,
   children,
+  postId,
 }: {
   primaryZid: string;
   publicAddress: string;
   children: ReactNode;
+  postId: string;
 }) => {
+  const { returnPath } = useGetReturnFromProfilePath();
+
+  const searchParams = new URLSearchParams();
+  searchParams.set(RETURN_POST_ID_KEY, postId);
+  searchParams.set(RETURN_PATH_KEY, returnPath);
+
   return (
     <PreventPropagation>
-      <Link to={`/profile/${primaryZid ?? publicAddress}`}>{children}</Link>
+      <Link to={`/profile/${primaryZid ?? publicAddress}?${searchParams.toString()}`}>{children}</Link>
     </PreventPropagation>
   );
 };

@@ -1,4 +1,4 @@
-import { useRef, useCallback, FC } from 'react';
+import { useRef, useCallback, FC, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import { onRemoveReply } from '../../../store/channels';
@@ -58,14 +58,15 @@ export const MessengerChat: FC = () => {
 
   const searchMentionableUsers = useCallback(
     async (search: string) => {
-      if (!directMessage) {
+      if (!directMessage?.id) {
         return [];
       }
       return searchMentionableUsersForChannel(search, channelOtherMembers || []);
     },
-    [directMessage, channelOtherMembers]
+    [directMessage?.id, channelOtherMembers]
   );
 
+  const reply = useMemo(() => directMessage?.reply, [directMessage?.reply]);
   const handleSendMessage = useCallback(
     (messageText: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
       if (!activeConversationId) {
@@ -76,7 +77,7 @@ export const MessengerChat: FC = () => {
         channelId: activeConversationId,
         message: messageText,
         mentionedUserIds,
-        parentMessage: directMessage?.reply,
+        parentMessage: reply,
         files: media,
       };
 
@@ -92,7 +93,7 @@ export const MessengerChat: FC = () => {
     },
     [
       activeConversationId,
-      directMessage,
+      reply,
       sendMessage,
       onRemoveReplyAction,
       chatViewContainerRef,
@@ -129,7 +130,7 @@ export const MessengerChat: FC = () => {
                   id={activeConversationId}
                   onSubmit={handleSendMessage}
                   getUsersForMentions={searchMentionableUsers}
-                  reply={directMessage?.reply}
+                  reply={reply}
                   onRemoveReply={onRemoveReplyAction}
                 />
               )}

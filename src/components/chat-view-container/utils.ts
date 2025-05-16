@@ -1,5 +1,7 @@
 import moment from 'moment/moment';
 import { AdminMessageType, Message as MessageModel } from '../../store/messages';
+import { User as CurrentUser } from '../../store/authentication/types';
+import { User } from '../../store/channels';
 
 export function createMessageGroups(messages: MessageModel[]): MessageModel[][] {
   if (!messages.length) {
@@ -127,3 +129,52 @@ export function processMessages(messages: MessageModel[]) {
     mediaMessages,
   };
 }
+
+export const formatDayHeader = (dateString: string): string => {
+  const date = moment(dateString);
+  const today = moment().startOf('day');
+  const yesterday = moment().subtract(1, 'day').startOf('day');
+
+  if (date.isSame(today, 'day')) {
+    return 'Today';
+  } else if (date.isSame(yesterday, 'day')) {
+    return 'Yesterday';
+  } else if (date.year() === today.year()) {
+    return date.format('ddd, MMM D');
+  } else {
+    return date.format('MMM D, YYYY');
+  }
+};
+
+export const isUserOwnerOfMessage = (message: { sender: { userId: string } } | undefined, user: CurrentUser) => {
+  return !!(user && message?.sender && user.id === message.sender.userId);
+};
+
+export const getConversationErrorMessage = (name: string, isOneOnOne: boolean, channelOtherMembers: User[]) => {
+  let reference = 'the group';
+  if (name) {
+    reference = `${name}`;
+  } else if (isOneOnOne) {
+    const otherMember = channelOtherMembers?.[0];
+    if (otherMember) {
+      reference = `${otherMember.firstName} ${otherMember.lastName}`;
+    }
+  }
+  return `Sorry! We couldn't connect you with ${reference}. Please refresh and try again.`;
+};
+
+export const getFailureErrorMessage = (
+  hasLoadedMessages: boolean,
+  channelName: string | undefined,
+  otherMemberFirstName: string | undefined
+) => {
+  if (hasLoadedMessages) {
+    return 'Failed to load new messages.';
+  }
+
+  if (channelName) {
+    return `Failed to load conversation with ${channelName}.`;
+  } else {
+    return `Failed to load your conversation with ${otherMemberFirstName || 'the other participant'}.`;
+  }
+};

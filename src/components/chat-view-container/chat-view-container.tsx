@@ -1,279 +1,111 @@
-import React from 'react';
+import { useEffect, useCallback, useMemo, forwardRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
-import { RootState } from '../../store/reducer';
-
-import { connectContainer } from '../../store/redux-container';
-import {
-  fetch as fetchMessages,
-  syncMessages,
-  editMessage,
-  Message,
-  EditMessageOptions,
-  sendEmojiReaction,
-  AdminMessageType,
-} from '../../store/messages';
-import { Channel, ConversationStatus, denormalize, onReply } from '../../store/channels';
+import { fetch as fetchMessages, syncMessages } from '../../store/messages';
 import { ChatView } from './chat-view';
-import { AuthenticationState } from '../../store/authentication/types';
-import { EditPayload, Payload as PayloadFetchMessages, SyncMessagesPayload } from '../../store/messages/saga';
+import { Payload as PayloadFetchMessages, SyncMessagesPayload } from '../../store/messages/saga';
 import { openCreateBackupDialog, openRestoreBackupDialog } from '../../store/matrix';
-import { ParentMessage } from '../../lib/chat/types';
-import { openDeleteMessage, openLightbox } from '../../store/dialogs';
-import { openMessageInfo } from '../../store/message-info';
-import { toggleSecondarySidekick } from '../../store/group-management';
-import { processMessages } from './utils';
-import { openReportUserModal } from '../../store/report-user';
-import { compareDatesAsc } from '../../lib/date';
-import { isOneOnOne } from '../../store/channels-list/utils';
+import { isOneOnOne as isOneOnOneUtil } from '../../store/channels-list/utils';
+import { useChannelSelector } from '../../store/hooks';
+import { currentUserSelector } from '../../store/authentication/selectors';
+import { backupExistsSelector } from '../../store/matrix/selectors';
+import { isSecondarySidekickOpenSelector } from '../../store/group-management/selectors';
+import InvertedScroll from '../inverted-scroll';
+import { usePrevious } from '../../lib/hooks/usePrevious';
 
-export interface Properties extends PublicProperties {
-  channel: Channel;
-  backupExists: boolean;
-  fetchMessages: (payload: PayloadFetchMessages) => void;
-  syncMessages: (payload: SyncMessagesPayload) => void;
-  user: AuthenticationState['user'];
-  editMessage: (payload: EditPayload) => void;
-  onReply: ({ reply }: { reply: ParentMessage }) => void;
-  openCreateBackupDialog: () => void;
-  openRestoreBackupDialog: () => void;
-  isSecondarySidekickOpen: boolean;
-  openDeleteMessage: (messageId: string) => void;
-  toggleSecondarySidekick: () => void;
-  openMessageInfo: (payload: { roomId: string; messageId: string }) => void;
-  sendEmojiReaction: (payload: { roomId: string; messageId: string; key: string }) => void;
-  openReportUserModal: (payload: { reportedUserId: string }) => void;
-  openLightbox: (payload: { media: any[]; startingIndex: number }) => void;
-}
-
-interface PublicProperties {
+export interface PublicProperties {
   channelId: string;
   className?: string;
-  showSenderAvatar?: boolean;
-
-  // eslint-disable-next-line react-redux/no-unused-prop-types
-  ref?: any;
 }
 
-export class Container extends React.Component<Properties> {
-  chatViewRef: React.RefObject<any>;
+export const ChatViewContainer = forwardRef<InvertedScroll, PublicProperties>((props, ref) => {
+  const { channelId, className } = props;
 
-  constructor(props) {
-    super(props);
-    this.chatViewRef = React.createRef();
-  }
+  const dispatch = useDispatch();
 
-  static mapState(state: RootState, props: PublicProperties): Partial<Properties> {
-    const channel = denormalize(props.channelId, state) || null;
-    const {
-      authentication: { user },
-      groupManagement: { isSecondarySidekickOpen },
-      matrix: { backupExists },
-    } = state;
+  const user = useSelector(currentUserSelector);
+  const isSecondarySidekickOpen = useSelector(isSecondarySidekickOpenSelector);
+  const backupExists = useSelector(backupExistsSelector);
 
-    return {
-      channel,
-      user,
-      isSecondarySidekickOpen,
-      backupExists,
-    };
-  }
+  const channel = useChannelSelector(channelId);
 
-  static mapActions(_props: Properties): Partial<Properties> {
-    return {
-      fetchMessages,
-      syncMessages,
-      editMessage,
-      onReply,
-      openCreateBackupDialog,
-      openRestoreBackupDialog,
-      openDeleteMessage,
-      openMessageInfo,
-      toggleSecondarySidekick,
-      sendEmojiReaction,
-      openReportUserModal,
-      openLightbox,
-    };
-  }
+  const dispatchFetchMessages = useCallback(
+    (payload: PayloadFetchMessages) => dispatch(fetchMessages(payload)),
+    [dispatch]
+  );
+  const dispatchSyncMessages = useCallback(
+    (payload: SyncMessagesPayload) => dispatch(syncMessages(payload)),
+    [dispatch]
+  );
 
-  componentDidMount() {
-    const { channelId, channel } = this.props;
-    if (channelId) {
-      if (!channel.hasLoadedMessages) {
-        this.props.fetchMessages({ channelId });
+  const dispatchOpenCreateBackupDialog = useCallback(() => dispatch(openCreateBackupDialog()), [dispatch]);
+  const dispatchOpenRestoreBackupDialog = useCallback(() => dispatch(openRestoreBackupDialog()), [dispatch]);
+
+  useEffect(() => {
+    if (channelId && user) {
+      if (!channel?.hasLoadedMessages) {
+        dispatchFetchMessages({ channelId });
       } else {
-        this.props.syncMessages({ channelId });
+        dispatchSyncMessages({ channelId });
       }
     }
-  }
+  }, [
+    channelId,
+    user,
+    channel?.hasLoadedMessages,
+    dispatchFetchMessages,
+    dispatchSyncMessages,
+  ]);
 
-  componentDidUpdate(prevProps: Properties) {
-    const { channelId } = this.props;
+  const fetchMoreHandler = useCallback(
+    (timestamp: number): void => {
+      dispatchFetchMessages({ channelId, referenceTimestamp: timestamp });
+    },
+    [dispatchFetchMessages, channelId]
+  );
 
-    if (channelId && channelId !== prevProps.channelId) {
-      this.props.fetchMessages({ channelId });
-      this.setState({ reply: null });
+  const reloadHandler = useCallback(() => {
+    dispatchFetchMessages({ channelId });
+  }, [dispatchFetchMessages, channelId]);
+
+  const prevChannelId = usePrevious(channelId);
+  useEffect(() => {
+    if (channelId && prevChannelId && channelId !== prevChannelId && user) {
+      dispatchFetchMessages({ channelId });
     }
+  }, [
+    channelId,
+    prevChannelId,
+    user,
+    dispatchFetchMessages,
+  ]);
 
-    if (channelId && prevProps.user.data === null && this.props.user.data !== null) {
-      this.props.fetchMessages({ channelId });
-    }
-  }
-
-  scrollToBottom = (): void => {
-    if (this.chatViewRef?.current) {
-      this.chatViewRef.current.scrollToBottom();
-    }
-  };
-
-  getOldestTimestamp(messages: Message[] = []): number {
-    return messages.reduce((previousTimestamp, message: any) => {
-      return message.createdAt < previousTimestamp ? message.createdAt : previousTimestamp;
-    }, Date.now());
-  }
-
-  get channel(): Channel {
-    return this.props.channel || ({} as Channel);
-  }
-
-  fetchMore = (): void => {
-    const { channelId, channel } = this.props;
-
-    if (channel.hasMore) {
-      const referenceTimestamp = this.getOldestTimestamp(channel.messages);
-
-      this.props.fetchMessages({ channelId, referenceTimestamp });
-    }
-  };
-
-  handleDeleteMessage = (messageId: string): void => {
-    const { channelId } = this.props;
-    if (channelId && messageId) {
-      this.props.openDeleteMessage(messageId);
-    }
-  };
-
-  handleEditMessage = (
-    messageId: string,
-    message: string,
-    mentionedUserIds: string[],
-    data?: Partial<EditMessageOptions>
-  ): void => {
-    const { channelId } = this.props;
-    if (channelId && messageId) {
-      this.props.editMessage({ channelId, messageId, message, mentionedUserIds, data });
-    }
-  };
-
-  handleHiddenMessageInfoClick = () => {
-    if (!this.props.backupExists) {
-      this.props.openCreateBackupDialog();
+  const handleHiddenMessageInfoClick = useCallback(() => {
+    if (!backupExists) {
+      dispatchOpenCreateBackupDialog();
     } else {
-      this.props.openRestoreBackupDialog();
+      dispatchOpenRestoreBackupDialog();
     }
-  };
+  }, [backupExists, dispatchOpenCreateBackupDialog, dispatchOpenRestoreBackupDialog]);
 
-  sendEmojiReaction = async (messageId: string, key: string) => {
-    try {
-      await this.props.sendEmojiReaction({ roomId: this.props.channelId, messageId, key });
-    } catch (error) {
-      console.error('Failed to send emoji reaction:', error);
-    }
-  };
+  const isOneOnOne = useMemo(() => (channel ? isOneOnOneUtil(channel) : false), [channel]);
 
-  get messages() {
-    if (!this.channel?.messages) return { messages: [], mediaMessages: new Map() };
-    return processMessages(this.channel.messages);
-  }
+  if (!channel) return null;
 
-  shouldRenderMessage(message: Message) {
-    return (
-      !message.rootMessageId && !message.isPost && (!message.admin || message.admin?.type !== AdminMessageType.REACTION)
-    );
-  }
-
-  sortMessages(messages: Message[]) {
-    return messages.sort((a, b) =>
-      compareDatesAsc(new Date(a.createdAt).toISOString(), new Date(b.createdAt).toISOString())
-    );
-  }
-
-  get sendDisabledMessage() {
-    if (this.props.channel.conversationStatus === ConversationStatus.CREATED) {
-      return '';
-    }
-
-    let reference = ' with the group';
-    if (this.props.channel.name) {
-      reference = ` with ${this.props.channel.name}`;
-    } else if (this.isOneOnOne) {
-      const otherMember = this.props.channel.otherMembers[0];
-      reference = ` with ${otherMember.firstName} ${otherMember.lastName}`;
-    }
-
-    return `We're connecting you${reference}. Try again in a few seconds.`;
-  }
-
-  get conversationErrorMessage() {
-    if (this.props.channel.conversationStatus !== ConversationStatus.ERROR) {
-      return '';
-    }
-
-    let reference = 'the group';
-    if (this.props.channel.name) {
-      reference = `${this.props.channel.name}`;
-    } else if (this.isOneOnOne) {
-      const otherMember = this.props.channel.otherMembers[0];
-      reference = `${otherMember.firstName} ${otherMember.lastName}`;
-    }
-
-    return `Sorry! We couldn't connect you with ${reference}. Please refresh and try again.`;
-  }
-
-  get isOneOnOne() {
-    return isOneOnOne(this.props.channel);
-  }
-
-  onReportUser = ({ reportedUserId }: { reportedUserId: string }) => {
-    this.props.openReportUserModal({ reportedUserId });
-  };
-
-  render() {
-    if (!this.props.channel) return null;
-
-    return (
-      <>
-        <ChatView
-          className={classNames(this.props.className)}
-          id={this.channel.id}
-          name={this.channel.name}
-          messages={this.messages.messages}
-          mediaMessages={this.messages.mediaMessages}
-          shouldRenderMessage={this.shouldRenderMessage}
-          sortMessages={this.sortMessages}
-          messagesFetchStatus={this.channel.messagesFetchStatus}
-          otherMembers={this.channel.otherMembers}
-          hasLoadedMessages={this.channel.hasLoadedMessages ?? false}
-          onFetchMore={this.fetchMore}
-          fetchMessages={this.props.fetchMessages}
-          user={this.props.user.data}
-          deleteMessage={this.handleDeleteMessage}
-          editMessage={this.handleEditMessage}
-          showSenderAvatar={this.props.showSenderAvatar}
-          isOneOnOne={this.isOneOnOne}
-          onReply={this.props.onReply}
-          onReportUser={this.onReportUser}
-          conversationErrorMessage={this.conversationErrorMessage}
-          onHiddenMessageInfoClick={this.handleHiddenMessageInfoClick}
-          ref={this.chatViewRef}
-          isSecondarySidekickOpen={this.props.isSecondarySidekickOpen}
-          toggleSecondarySidekick={this.props.toggleSecondarySidekick}
-          openMessageInfo={this.props.openMessageInfo}
-          sendEmojiReaction={this.sendEmojiReaction}
-          openLightbox={this.props.openLightbox}
-        />
-      </>
-    );
-  }
-}
-
-export const ChatViewContainer = connectContainer<PublicProperties>(Container);
+  return (
+    <>
+      <ChatView
+        className={classNames(className)}
+        id={channel.id}
+        ref={ref}
+        messagesFetchStatus={channel.messagesFetchStatus}
+        hasLoadedMessages={channel.hasLoadedMessages ?? false}
+        onFetchMore={fetchMoreHandler}
+        onReload={reloadHandler}
+        isOneOnOne={isOneOnOne}
+        isSecondarySidekickOpen={isSecondarySidekickOpen}
+        onHiddenMessageInfoClick={handleHiddenMessageInfoClick}
+      />
+    </>
+  );
+});

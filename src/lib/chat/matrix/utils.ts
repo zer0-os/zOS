@@ -41,7 +41,7 @@ export async function setAsDM(matrix: MatrixClient, roomId: string, userId: stri
   await matrix.setAccountData(EventType.Direct, Object.fromEntries(dmRoomMap));
 }
 
-export async function getFilteredMembersForAutoComplete(roomMembers: ChannelMember[] = [], filter: string = '') {
+export function getFilteredMembersForAutoComplete(roomMembers: ChannelMember[] = [], filter: string = '') {
   const normalizedFilter = filter.toLowerCase(); // Case-insensitive search
 
   const filteredResults = [];

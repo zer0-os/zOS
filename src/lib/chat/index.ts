@@ -256,7 +256,7 @@ export class Chat {
   }
 
   async searchMentionableUsersForChannel(search: string, channelMembers: UserModel[]) {
-    const searchResults = await getFilteredMembersForAutoComplete(channelMembers, search);
+    const searchResults = getFilteredMembersForAutoComplete(channelMembers, search);
     return searchResults.map((u) => ({
       id: u.id,
       display: u.displayName,

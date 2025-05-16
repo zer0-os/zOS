@@ -80,13 +80,13 @@ export const ChatView = React.forwardRef<InvertedScroll, Properties>(
     }, []);
 
     const conversationErrorMessage = useMemo(() => {
-      if (channel.conversationStatus !== ConversationStatus.ERROR) return '';
-      return getConversationErrorMessage(channel.name, isOneOnOne, channelOtherMembers);
+      if (channel?.conversationStatus !== ConversationStatus.ERROR) return '';
+      return getConversationErrorMessage(channel?.name, isOneOnOne, channelOtherMembers);
     }, [
-      channel.name,
+      channel?.name,
       isOneOnOne,
       channelOtherMembers,
-      channel.conversationStatus,
+      channel?.conversationStatus,
     ]);
 
     const failureDisplayMessage = useMemo(() => {

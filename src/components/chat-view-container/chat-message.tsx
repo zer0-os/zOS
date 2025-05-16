@@ -3,7 +3,7 @@ import { Message as MessageModel, Media, EditMessageOptions, sendEmojiReaction }
 import { bemClassName } from '../../lib/bem';
 import classNames from 'classnames';
 import { getMessageRenderProps } from './utils';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { openDeleteMessage } from '../../store/dialogs';
 import { useDispatch } from 'react-redux';
 import { editMessage } from '../../store/messages/saga';
@@ -87,7 +87,15 @@ export const ChatMessage = ({
     [channelId, dispatch]
   );
 
-  const messageRenderProps = getMessageRenderProps(renderIndex, groupLength, isOneOnOne, isUserOwner);
+  const messageRenderProps = useMemo(
+    () => getMessageRenderProps(renderIndex, groupLength, isOneOnOne, isUserOwner),
+    [
+      renderIndex,
+      groupLength,
+      isOneOnOne,
+      isUserOwner,
+    ]
+  );
   const mediaMessage = mediaMessages.get(message.id) || mediaMessages.get(message.optimisticId);
 
   return (

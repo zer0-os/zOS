@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType, AdminMessageType, Media } from '../../store/messages';
 import InvertedScroll from '../inverted-scroll';
-import { MessagesFetchState } from '../../store/channels';
+import { ConversationStatus, MessagesFetchState } from '../../store/channels';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import './styles.scss';
 import { ChatSkeleton } from './chat-skeleton';
@@ -80,10 +80,13 @@ export const ChatView = React.forwardRef<InvertedScroll, Properties>(
     }, []);
 
     const conversationErrorMessage = useMemo(() => {
-      return getConversationErrorMessage(channel, channelOtherMembers);
+      if (channel.conversationStatus !== ConversationStatus.ERROR) return '';
+      return getConversationErrorMessage(channel.name, isOneOnOne, channelOtherMembers);
     }, [
-      channel,
+      channel.name,
+      isOneOnOne,
       channelOtherMembers,
+      channel.conversationStatus,
     ]);
 
     const failureDisplayMessage = useMemo(() => {

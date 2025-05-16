@@ -1,8 +1,7 @@
 import moment from 'moment/moment';
 import { AdminMessageType, Message as MessageModel } from '../../store/messages';
 import { User as CurrentUser } from '../../store/authentication/types';
-import { ConversationStatus, NormalizedChannel, User } from '../../store/channels';
-import { isOneOnOne } from '../../store/channels-list/utils';
+import { User } from '../../store/channels';
 
 export function createMessageGroups(messages: MessageModel[]): MessageModel[][] {
   if (!messages.length) {
@@ -151,15 +150,11 @@ export const isUserOwnerOfMessage = (message: { sender: { userId: string } } | u
   return !!(user && message?.sender && user.id === message.sender.userId);
 };
 
-export const getConversationErrorMessage = (channel: NormalizedChannel, channelOtherMembers: User[]) => {
-  if (channel?.conversationStatus !== ConversationStatus.ERROR) {
-    return '';
-  }
-
+export const getConversationErrorMessage = (name: string, isOneOnOne: boolean, channelOtherMembers: User[]) => {
   let reference = 'the group';
-  if (channel?.name) {
-    reference = `${channel.name}`;
-  } else if (isOneOnOne(channel)) {
+  if (name) {
+    reference = `${name}`;
+  } else if (isOneOnOne) {
     const otherMember = channelOtherMembers?.[0];
     if (otherMember) {
       reference = `${otherMember.firstName} ${otherMember.lastName}`;

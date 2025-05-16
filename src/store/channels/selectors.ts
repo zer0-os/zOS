@@ -8,6 +8,13 @@ export const rawChannel = (state: RootState, channelId: string) => {
   return getDeepProperty(state, `normalized.channels['${channelId}']`, null);
 };
 
+/**
+ * Selector for getting a denormalized channel by ID.
+ * Use this sparingly as denormalization causes new references to be created for each render.
+ * useChannelSelector is typically a better choice.
+ * @param channelId - The ID of the channel to select.
+ * @returns The denormalized channel with the given ID.
+ */
 export const channelSelector =
   (channelId: string) =>
   (state: RootState): Channel | null => {
@@ -63,3 +70,12 @@ export function hasUnreadHighlightsSelector(state: RootState) {
       !channel.labels?.includes(DefaultRoomLabels.MUTE)
   );
 }
+export const makeGetChannelById = () => {
+  return createSelector(
+    [(state: RootState) => state.normalized.channels, (_state: RootState, channelId: string) => channelId],
+    (allChannels, channelId) => {
+      if (!allChannels || !channelId) return null;
+      return allChannels[channelId] as NormalizedChannel | null;
+    }
+  );
+};

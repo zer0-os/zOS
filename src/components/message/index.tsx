@@ -28,9 +28,9 @@ import { useContextMenu } from './hooks/useContextMenu';
 import { MessageMenu, MessageMenuProps } from './menu/messageMenu';
 import { useMatrixMedia } from '../../lib/hooks/useMatrixMedia';
 import { MatrixAvatar } from '../matrix-avatar';
+import { useLinkPreview } from '../../lib/hooks/useLinkPreview';
 
 import './styles.scss';
-import { useLinkPreview } from '../../lib/hooks/useLinkPreview';
 
 const cn = bemClassName('message');
 
@@ -375,7 +375,7 @@ export const Message: React.FC<Properties> = ({
   const renderBody = () => {
     return (
       <div {...cn('block-body')}>
-        {media?.body && (
+        {media?.body && media.body !== media.name && (
           <ContentHighlighter
             message={media.body}
             isHidden={isHidden}

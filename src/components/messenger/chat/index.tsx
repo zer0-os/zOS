@@ -1,170 +1,154 @@
-import React from 'react';
+import { useRef, useCallback, FC } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
-import { RootState } from '../../../store/reducer';
-import { connectContainer } from '../../../store/redux-container';
-import { Channel, onRemoveReply } from '../../../store/channels';
+import { onRemoveReply } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
-import { send as sendMessage } from '../../../store/messages';
+import { send as sendMessageAction } from '../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
-import { LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../store/group-management';
+import {
+  LeaveGroupDialogStatus,
+  setLeaveGroupStatus as setLeaveGroupStatusAction,
+} from '../../../store/group-management';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
 import { MessageInput } from '../../message-input/container';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
+import { Panel, PanelBody } from '../../layout/panel';
+import { ChatTypingIndicator } from './typing-indicator';
 
 import './styles.scss';
-import { getOtherMembersTypingDisplayJSX } from '../lib/utils';
-import { Panel, PanelBody } from '../../layout/panel';
-import { channelSelector } from '../../../store/channels/selectors';
-import { isOneOnOne } from '../../../store/channels-list/utils';
+import { leaveGroupDialogStatusSelector } from '../../../store/group-management/selectors';
+import { activeConversationIdSelector, isJoiningConversationSelector } from '../../../store/chat/selectors';
+import { useChannelSelector, useUsersSelector } from '../../../store/hooks';
+import InvertedScroll from '../../inverted-scroll';
 
-export interface PublicProperties {}
+const isNotEmpty = (message: string): boolean => {
+  return !!message && message.trim() !== '';
+};
 
-export interface Properties extends PublicProperties {
-  activeConversationId: string;
-  directMessage: Channel;
-  isJoiningConversation: boolean;
-  otherMembersTypingInRoom: string[];
-  leaveGroupDialogStatus: LeaveGroupDialogStatus;
-  setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
-  sendMessage: (payload: PayloadSendMessage) => void;
-  onRemoveReply: () => void;
-}
+export const MessengerChat: FC = () => {
+  const dispatch = useDispatch();
 
-export class Container extends React.Component<Properties> {
-  chatViewContainerRef = null;
+  const activeConversationId = useSelector(activeConversationIdSelector);
+  const isJoiningConversation = useSelector(isJoiningConversationSelector);
+  const leaveGroupDialogStatus = useSelector(leaveGroupDialogStatusSelector);
+  const directMessage = useChannelSelector(activeConversationId);
+  const channelOtherMembers = useUsersSelector(directMessage?.otherMembers || []);
 
-  constructor(props: Properties) {
-    super(props);
-    this.chatViewContainerRef = React.createRef();
-  }
+  const chatViewContainerRef = useRef<InvertedScroll | null>(null);
 
-  static mapState(state: RootState): Partial<Properties> {
-    const {
-      chat: { activeConversationId, isJoiningConversation },
-      groupManagement,
-    } = state;
+  const setLeaveGroupStatus = useCallback(
+    (status: LeaveGroupDialogStatus) => {
+      dispatch(setLeaveGroupStatusAction(status));
+    },
+    [dispatch]
+  );
 
-    const directMessage = channelSelector(activeConversationId)(state);
+  const onRemoveReplyAction = useCallback(() => {
+    dispatch(onRemoveReply());
+  }, [dispatch]);
 
-    return {
+  const sendMessage = useCallback(
+    (payload: PayloadSendMessage) => {
+      dispatch(sendMessageAction(payload));
+    },
+    [dispatch]
+  );
+
+  const searchMentionableUsers = useCallback(
+    async (search: string) => {
+      if (!directMessage) {
+        return [];
+      }
+      return searchMentionableUsersForChannel(search, channelOtherMembers || []);
+    },
+    [directMessage, channelOtherMembers]
+  );
+
+  const handleSendMessage = useCallback(
+    (messageText: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
+      if (!activeConversationId) {
+        return;
+      }
+
+      const payload: PayloadSendMessage = {
+        channelId: activeConversationId,
+        message: messageText,
+        mentionedUserIds,
+        parentMessage: directMessage?.reply,
+        files: media,
+      };
+
+      sendMessage(payload);
+
+      if (isNotEmpty(messageText)) {
+        onRemoveReplyAction();
+      }
+
+      if (chatViewContainerRef.current) {
+        chatViewContainerRef.current.scrollToBottom();
+      }
+    },
+    [
       activeConversationId,
       directMessage,
-      isJoiningConversation,
-      leaveGroupDialogStatus: groupManagement.leaveGroupDialogStatus,
-      otherMembersTypingInRoom: directMessage?.otherMembersTyping || [],
-    };
-  }
-
-  static mapActions(): Partial<Properties> {
-    return {
-      setLeaveGroupStatus,
-      onRemoveReply,
       sendMessage,
-    };
+      onRemoveReplyAction,
+      chatViewContainerRef,
+    ]
+  );
+
+  if ((!activeConversationId || !directMessage) && !isJoiningConversation) {
+    return null;
   }
 
-  isOneOnOne() {
-    return isOneOnOne(this.props.directMessage);
-  }
+  const isLeaveGroupDialogOpen = leaveGroupDialogStatus !== LeaveGroupDialogStatus.CLOSED;
 
-  get isLeaveGroupDialogOpen() {
-    return this.props.leaveGroupDialogStatus !== LeaveGroupDialogStatus.CLOSED;
-  }
+  return (
+    <Panel className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
+      {!isJoiningConversation && <ConversationHeader />}
 
-  closeLeaveGroupDialog = () => {
-    this.props.setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED);
-  };
+      <PanelBody className='direct-message-chat__panel'>
+        <div className='direct-message-chat__content'>
+          {!isJoiningConversation && directMessage && activeConversationId && (
+            <>
+              <ChatViewContainer
+                key={directMessage.optimisticId || directMessage.id}
+                channelId={activeConversationId}
+                className='direct-message-chat__channel'
+                ref={chatViewContainerRef}
+              />
+            </>
+          )}
 
-  renderLeaveGroupDialog = (): JSX.Element => {
-    return (
-      <LeaveGroupDialogContainer
-        groupName={this.props.directMessage.name}
-        onClose={this.closeLeaveGroupDialog}
-        roomId={this.props.activeConversationId}
-      />
-    );
-  };
-
-  isNotEmpty = (message: string): boolean => {
-    return !!message && message.trim() !== '';
-  };
-
-  searchMentionableUsers = async (search: string) => {
-    return await searchMentionableUsersForChannel(search, this.props.directMessage.otherMembers);
-  };
-
-  handleSendMessage = (message: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
-    const { activeConversationId } = this.props;
-
-    let payloadSendMessage = {
-      channelId: activeConversationId,
-      message,
-      mentionedUserIds,
-      parentMessage: this.props.directMessage.reply,
-      files: media,
-    };
-
-    this.props.sendMessage(payloadSendMessage);
-
-    if (this.isNotEmpty(message)) {
-      this.props.onRemoveReply();
-    }
-
-    if (this.chatViewContainerRef?.current) {
-      this.chatViewContainerRef.current.scrollToBottom();
-    }
-  };
-
-  renderTypingIndicators = () => {
-    const { otherMembersTypingInRoom } = this.props;
-    const text = getOtherMembersTypingDisplayJSX(otherMembersTypingInRoom);
-    return <div className='direct-message-chat__typing-indicator'>{text}</div>;
-  };
-
-  render() {
-    if ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) {
-      return null;
-    }
-
-    return (
-      <Panel className={classNames('direct-message-chat', 'direct-message-chat--full-screen')}>
-        {!this.props.isJoiningConversation && <ConversationHeader />}
-
-        <PanelBody className='direct-message-chat__panel'>
-          <div className='direct-message-chat__content'>
-            {!this.props.isJoiningConversation && (
-              <>
-                <ChatViewContainer
-                  key={this.props.directMessage.optimisticId || this.props.directMessage.id} // Render new component for a new chat
-                  channelId={this.props.activeConversationId}
-                  className='direct-message-chat__channel'
-                  showSenderAvatar={!this.isOneOnOne()}
-                  ref={this.chatViewContainerRef}
-                />
-              </>
-            )}
-
-            <div className='direct-message-chat__footer-position'>
-              <div className='direct-message-chat__footer'>
+          <div className='direct-message-chat__footer-position'>
+            <div className='direct-message-chat__footer'>
+              {activeConversationId && (
                 <MessageInput
-                  id={this.props.activeConversationId}
-                  onSubmit={this.handleSendMessage}
-                  getUsersForMentions={this.searchMentionableUsers}
-                  reply={this.props.directMessage?.reply}
-                  onRemoveReply={this.props.onRemoveReply}
+                  id={activeConversationId}
+                  onSubmit={handleSendMessage}
+                  getUsersForMentions={searchMentionableUsers}
+                  reply={directMessage?.reply}
+                  onRemoveReply={onRemoveReplyAction}
                 />
-                {this.renderTypingIndicators()}
-              </div>
+              )}
+              <ChatTypingIndicator
+                className='direct-message-chat__typing-indicator'
+                usersTyping={directMessage?.otherMembersTyping || []}
+              />
             </div>
-
-            {this.isLeaveGroupDialogOpen && this.renderLeaveGroupDialog()}
           </div>
-        </PanelBody>
-      </Panel>
-    );
-  }
-}
 
-export const MessengerChat = connectContainer<PublicProperties>(Container);
+          {isLeaveGroupDialogOpen && (
+            <LeaveGroupDialogContainer
+              groupName={directMessage.name}
+              onClose={() => setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED)}
+              roomId={activeConversationId}
+            />
+          )}
+        </div>
+      </PanelBody>
+    </Panel>
+  );
+};

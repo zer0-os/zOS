@@ -42,8 +42,7 @@ vi.mock('../../store/hooks', () => ({
 }));
 
 vi.mock('./chat-view', () => ({
-  ChatView: vi.fn(({ onFetchMore, onReload, onHiddenMessageInfoClick, ...props }, ref) => {
-    console.log('ref', ref);
+  ChatView: vi.fn(({ onFetchMore, onReload, onHiddenMessageInfoClick, ...props }) => {
     return (
       <div data-testid='chat-view' {...props}>
         <button onClick={() => onFetchMore?.(12345)}>Fetch More</button>

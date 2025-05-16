@@ -141,8 +141,7 @@ export const ChatView = React.forwardRef<InvertedScroll, Properties>(
         const lightboxMedia = messages
           .filter(shouldRenderMessage)
           .map((message) => message.media || mediaMessages.get(message.id)?.media)
-          .filter((m) => m && [MediaType.Image].includes(m.type))
-          .reverse();
+          .filter((m) => m && [MediaType.Image].includes(m.type));
 
         const lightboxStartIndex = lightboxMedia.indexOf(media);
 

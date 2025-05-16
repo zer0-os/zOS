@@ -25,8 +25,6 @@ export interface Properties {
   conversationModeratorIds: string[];
 
   onAdd: () => void;
-  onMemberSelected: (userId: string) => void;
-  openUserProfile: () => void;
 }
 
 interface State {
@@ -48,14 +46,6 @@ export class ViewMembersPanel extends React.Component<Properties, State> {
 
   addMember = () => {
     this.props.onAdd();
-  };
-
-  memberSelected = (userId: string) => {
-    this.props.onMemberSelected(userId);
-  };
-
-  openProfile = () => {
-    this.props.openUserProfile();
   };
 
   loadMoreMembers = () => {
@@ -96,18 +86,9 @@ export class ViewMembersPanel extends React.Component<Properties, State> {
 
         <div {...cn('member-list')}>
           <ScrollbarContainer>
-            <CitizenListItem
-              user={this.props.currentUser}
-              tag={this.getTag(this.props.currentUser)}
-              onSelected={this.openProfile}
-            ></CitizenListItem>
+            <CitizenListItem user={this.props.currentUser} tag={this.getTag(this.props.currentUser)}></CitizenListItem>
             {visibleMembers.map((u) => (
-              <CitizenListItem
-                key={u.userId}
-                user={u}
-                tag={this.getTag(u)}
-                onSelected={this.memberSelected}
-              ></CitizenListItem>
+              <CitizenListItem key={u.userId} user={u} tag={this.getTag(u)}></CitizenListItem>
             ))}
           </ScrollbarContainer>
 

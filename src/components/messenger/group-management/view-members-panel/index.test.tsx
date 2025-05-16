@@ -20,8 +20,7 @@ describe(ViewMembersPanel, () => {
       conversationModeratorIds: [],
 
       onAdd: () => null,
-      onMemberSelected: () => null,
-      openUserProfile: () => null,
+
       ...props,
     };
 
@@ -75,32 +74,6 @@ describe(ViewMembersPanel, () => {
     wrapper.find(c('add-icon')).simulate('click');
 
     expect(onAdd).toHaveBeenCalled();
-  });
-
-  it('publishes onMemberSelected event', () => {
-    const onMemberSelected = jest.fn();
-    const otherMembers = [
-      { userId: 'otherMember1', matrixId: 'matrix-id-1', firstName: 'Adam' },
-    ] as User[];
-
-    const wrapper = subject({ onMemberSelected, otherMembers });
-
-    wrapper.find(CitizenListItem).at(1).simulate('selected', 'otherMember1');
-
-    expect(onMemberSelected).toHaveBeenCalled();
-  });
-
-  it('publishes openUserProfile event', () => {
-    const openUserProfile = jest.fn();
-
-    const wrapper = subject({
-      openUserProfile,
-      currentUser: { userId: 'currentUser', matrixId: 'matrix-id-4', firstName: 'Tom' } as any,
-    });
-
-    wrapper.find(CitizenListItem).at(0).simulate('selected', 'currentUser');
-
-    expect(openUserProfile).toHaveBeenCalled();
   });
 
   it('renders add icon button when current user can add members', () => {

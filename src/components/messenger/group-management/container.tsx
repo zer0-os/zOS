@@ -19,17 +19,13 @@ import { Option } from '../lib/types';
 import { GroupManagement } from '.';
 import { RootState } from '../../../store/reducer';
 import { GroupManagementErrors, EditConversationState } from '../../../store/group-management/types';
-import { User, denormalize as denormalizeChannel, openConversation, Channel } from '../../../store/channels';
+import { User, denormalize as denormalizeChannel } from '../../../store/channels';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { MemberManagementDialogContainer } from '../../group-management/member-management-dialog/container';
 import { getUserSubHandle } from '../../../lib/user';
 import { MemberNetworks } from '../../../store/users/types';
 import { searchMyNetworksByName } from '../../../platform-apps/channels/util/api';
-import { CreateMessengerConversation } from '../../../store/channels-list/types';
-import { createConversation } from '../../../store/create-conversation';
-import { openUserProfile } from '../../../store/user-profile';
-import { allDenormalizedChannelsSelector, isOneOnOneSelector } from '../../../store/channels/selectors';
-import { isOneOnOne } from '../../../store/channels-list/utils';
+import { isOneOnOneSelector } from '../../../store/channels/selectors';
 
 export interface PublicProperties {}
 
@@ -50,7 +46,6 @@ export interface Properties extends PublicProperties {
   conversationAdminIds: string[];
   conversationModeratorIds: string[];
   isOneOnOne: boolean;
-  existingConversations: Channel[];
   isSocialChannel: boolean;
 
   back: () => void;
@@ -59,9 +54,6 @@ export interface Properties extends PublicProperties {
   startEditConversation: () => void;
   startAddGroupMember: () => void;
   setLeaveGroupStatus: (status: LeaveGroupDialogStatus) => void;
-  openConversation: (payload: { conversationId: string }) => void;
-  createConversation: (payload: CreateMessengerConversation) => void;
-  openUserProfile: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -81,7 +73,6 @@ export class Container extends React.Component<Properties> {
     const conversationModeratorIds = conversation?.moderatorIds;
     const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
     const isCurrentUserRoomModerator = conversationModeratorIds?.includes(currentUser?.matrixId) ?? false;
-    const existingConversations = allDenormalizedChannelsSelector(state);
 
     return {
       activeConversationId,
@@ -114,7 +105,6 @@ export class Container extends React.Component<Properties> {
       conversationAdminIds,
       conversationModeratorIds,
       isOneOnOne,
-      existingConversations,
     };
   }
   static mapActions(_props: Properties): Partial<Properties> {
@@ -125,9 +115,6 @@ export class Container extends React.Component<Properties> {
       startEditConversation,
       startAddGroupMember,
       setLeaveGroupStatus,
-      openConversation,
-      createConversation,
-      openUserProfile,
     };
   }
 
@@ -176,20 +163,6 @@ export class Container extends React.Component<Properties> {
     this.props.editConversationNameAndIcon({ roomId: this.props.activeConversationId, name, image });
   };
 
-  processMemberConversation = (userId) => {
-    const { existingConversations, createConversation, openConversation } = this.props;
-
-    const existingConversation = existingConversations?.find(
-      (conversation) => isOneOnOne(conversation) && conversation.otherMembers[0]?.userId === userId
-    );
-
-    if (existingConversation) {
-      openConversation({ conversationId: existingConversation.id });
-    } else {
-      createConversation({ userIds: [userId] });
-    }
-  };
-
   render() {
     return (
       <>
@@ -216,8 +189,6 @@ export class Container extends React.Component<Properties> {
           conversationModeratorIds={this.props.conversationModeratorIds}
           startAddGroupMember={this.props.startAddGroupMember}
           setLeaveGroupStatus={this.props.setLeaveGroupStatus}
-          onMemberClick={this.processMemberConversation}
-          openUserProfile={this.props.openUserProfile}
           isSocialChannel={this.props.isSocialChannel}
         />
         <MemberManagementDialogContainer />

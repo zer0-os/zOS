@@ -376,7 +376,7 @@ export const Message: React.FC<Properties> = memo(
     const renderBody = () => {
       return (
         <div {...cn('block-body')}>
-          {media?.body && media.body !== media.name && (
+          {media?.body && (
             <ContentHighlighter
               message={media.body}
               isHidden={isHidden}

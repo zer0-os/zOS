@@ -1,13 +1,14 @@
 import * as React from 'react';
-
 import { User } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
 import { displayName } from '../../lib/user';
+import { Wallet } from '../../store/authentication/types';
 
 import './styles.scss';
 import { MemberManagementMenuContainer } from '../messenger/group-management/member-management-menu/container';
 import classNames from 'classnames';
 import { MatrixAvatar } from '../matrix-avatar';
+import { ProfileLinkNavigation } from '../profile-link-navigation';
 
 const cn = bemClassName('citizen-list-item');
 
@@ -27,6 +28,14 @@ interface State {
 export class CitizenListItem extends React.Component<Properties, State> {
   state: State = {
     isMenuOpen: false,
+  };
+
+  getThirdWebWalletAddress = () => {
+    const { wallets } = this.props.user;
+    if (!wallets?.length) return undefined;
+
+    const thirdWebWallet = wallets.find((wallet: Wallet) => wallet.isThirdWeb);
+    return thirdWebWallet?.publicAddress;
   };
 
   publishMemberClick = () => {
@@ -54,7 +63,12 @@ export class CitizenListItem extends React.Component<Properties, State> {
         tabIndex={0}
       >
         <div {...cn('details')}>
-          <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
+          <ProfileLinkNavigation
+            primaryZid={this.props.user.primaryZID}
+            thirdWebAddress={this.getThirdWebWalletAddress()}
+          >
+            <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
+          </ProfileLinkNavigation>
           <div {...cn('text-container')}>
             <span {...cn('name')}>{displayName(this.props.user)}</span>
             <span {...cn('handle')}>{this.props.user.displaySubHandle}</span>

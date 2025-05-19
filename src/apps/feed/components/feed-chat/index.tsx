@@ -155,7 +155,6 @@ export class Container extends React.Component<Properties> {
                 <ChatViewContainer
                   key={this.props.channel.optimisticId || this.props.channel.id} // Render new component for a new chat
                   channelId={this.props.activeConversationId}
-                  showSenderAvatar={true}
                   ref={this.chatViewContainerRef}
                   className='direct-message-chat__channel'
                 />

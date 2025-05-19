@@ -6,6 +6,7 @@ import {
   isTelegramMatrixId,
 } from '../../lib/chat/matrix/utils';
 import { User } from '../channels';
+import { createSelector } from '@reduxjs/toolkit';
 
 export function userByMatrixIdSelector(state: RootState, matrixId: string): User | undefined {
   const userId = extractUserIdFromMatrixId(matrixId);
@@ -33,3 +34,13 @@ export function userSelector(state, userIds: string[]) {
 }
 
 export const usersMapSelector = (state: RootState): { [id: string]: User } => state.normalized['users'] || {};
+
+export const makeGetUsersByIds = () => {
+  return createSelector(
+    [(state: RootState) => state.normalized.users, (_state: RootState, userIds: string[]) => userIds],
+    (allUsers, ids) => {
+      if (!allUsers || !ids) return [];
+      return ids.map((id) => allUsers[id]).filter(Boolean) as User[];
+    }
+  );
+};

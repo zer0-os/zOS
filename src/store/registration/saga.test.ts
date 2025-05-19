@@ -19,7 +19,6 @@ import {
   completeAccount as apiCompleteAccount,
   addEmailAccount as apiAddEmailAccount,
 } from './api';
-import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { call, spawn } from 'redux-saga/effects';
 import {
   AccountCreationErrors,
@@ -35,8 +34,8 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { getSignedToken } from '../web3/saga';
 import { completeUserLogin } from '../authentication/saga';
 import { createConversation } from '../channels-list/saga';
-import { denormalize as denormalizeUser } from '../users';
 import { StoreBuilder } from '../test/store';
+import { getUserByMatrixId, getUsersByMatrixIds } from '../users/saga';
 
 describe('validate invite', () => {
   it('validates invite code, returns true if VALID', async () => {
@@ -508,33 +507,30 @@ describe('authorizeAndCreateWeb3Account', () => {
 describe(createWelcomeConversation, () => {
   function subject(...args: Parameters<typeof expectSaga>) {
     return expectSaga(...args).provide([
-      [matchers.call.fn(getZEROUsersAPI), [{ userId: 'stub-id' }]],
       [matchers.call.fn(createConversation), { id: 'conversation-id' }],
     ]);
   }
   it('creates the welcome conversation between the inviter and new user', async () => {
     const initialState = new StoreBuilder();
+    const inviter = {
+      id: 'inviter-id',
+      userId: 'inviter-id',
+      firstName: 'The inviter',
+      matrixId: '@50c6e12e-1fe2-43f9-8991-ab269696588f:homeserver.domain.com',
+    };
+    initialState.withUsers(inviter);
 
-    await subject(createWelcomeConversation, 'new-user-id', { id: 'inviter-id', matrixId: 'inviter-matrix-id' })
-      .provide([[call(getZEROUsersAPI, ['inviter-matrix-id']), [{ userId: 'inviter-id', firstName: 'The inviter' }]]])
+    await subject(createWelcomeConversation, {
+      id: 'inviter-id',
+      matrixId: '@50c6e12e-1fe2-43f9-8991-ab269696588f:homeserver.domain.com',
+    })
+      .provide([
+        [matchers.call.fn(getUserByMatrixId), inviter],
+        [matchers.call.fn(getUsersByMatrixIds), new Map([[inviter.matrixId, inviter]])],
+      ])
       .withReducer(rootReducer, initialState.build())
       .call(createConversation, ['inviter-id'], '', null)
       .run();
-  });
-
-  it('stores the inviter in state', async () => {
-    const initialState = new StoreBuilder();
-
-    const { storeState } = await subject(createWelcomeConversation, 'new-user-id', {
-      id: 'inviter-id',
-      matrixId: 'inviter-matrix-id',
-    })
-      .provide([[call(getZEROUsersAPI, ['inviter-matrix-id']), [{ userId: 'inviter-id', firstName: 'The inviter' }]]])
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const savedUser = denormalizeUser('inviter-id', storeState);
-    expect(savedUser).toEqual(expect.objectContaining({ userId: 'inviter-id', firstName: 'The inviter' }));
   });
 });
 

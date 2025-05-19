@@ -41,7 +41,7 @@ import {
   stageSelector,
 } from '../../../store/create-conversation/selectors';
 import { userIdSelector } from '../../../store/authentication/selectors';
-import { allChannelsSelector } from '../../../store/channels/selectors';
+
 const cn = bemClassName('direct-message-members');
 
 export type GetUser = (id: string) => User | undefined;
@@ -62,17 +62,12 @@ const MessengerListContainer: React.FC = () => {
   const isRewardsDialogOpen = useSelector(isRewardsDialogOpenSelector);
   const isSecondaryConversationDataLoaded = useSelector(isSecondaryConversationDataLoadedSelector);
   const currentSearchResolveRef = useRef<((value: any) => void) | null>(null);
-  const existingConversations = useSelector(allChannelsSelector);
 
   const performSearch = useCallback(
     async (searchText: string) => {
       const usersApiResult: MemberNetworks[] = await searchMyNetworksByName(searchText);
-
-      const existingUserIds = new Set(existingConversations.flatMap((conversation) => conversation.otherMembers));
-
       const mappedFilteredUsers = usersApiResult
         ?.filter((user) => user.id !== currentUserId)
-        .filter((user) => !existingUserIds.has(user.id))
         .map((user) => ({
           ...user,
           image: user.profileImage,
@@ -83,7 +78,7 @@ const MessengerListContainer: React.FC = () => {
         currentSearchResolveRef.current = null;
       }
     },
-    [currentUserId, existingConversations]
+    [currentUserId]
   );
 
   const debouncedSearch = useMemo(() => {

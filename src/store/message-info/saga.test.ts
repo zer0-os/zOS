@@ -7,19 +7,19 @@ import { resetConversationManagement } from '../group-management/saga';
 import { mapMessageReadByUsers } from '../messages/saga';
 
 describe('message-info saga', () => {
-  const roomId = 'room-id';
+  const channelId = 'room-id';
   const messageId = 'message-id';
 
   describe('openOverview', () => {
     it('sets the selected message ID and maps message readBy users', async () => {
-      await expectSaga(openOverview, { payload: { roomId, messageId } })
+      await expectSaga(openOverview, { payload: { channelId, messageId } })
         .provide([
           [matchers.call.fn(resetConversationManagement), undefined],
           [matchers.call.fn(mapMessageReadByUsers), undefined],
         ])
         .put(setStage(Stage.Overview))
         .put(setSelectedMessageId(messageId))
-        .call(mapMessageReadByUsers, messageId, roomId)
+        .call(mapMessageReadByUsers, messageId, channelId)
         .run();
     });
   });

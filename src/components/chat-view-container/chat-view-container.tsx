@@ -9,9 +9,9 @@ import { isOneOnOne as isOneOnOneUtil } from '../../store/channels-list/utils';
 import { useChannelSelector } from '../../store/hooks';
 import { currentUserSelector } from '../../store/authentication/selectors';
 import { backupExistsSelector } from '../../store/matrix/selectors';
-import { isSecondarySidekickOpenSelector } from '../../store/group-management/selectors';
 import InvertedScroll from '../inverted-scroll';
 import { usePrevious } from '../../lib/hooks/usePrevious';
+import { isMemberPanelOpenSelector } from '../../store/panels/selectors';
 
 export interface PublicProperties {
   channelId: string;
@@ -24,7 +24,7 @@ export const ChatViewContainer = forwardRef<InvertedScroll, PublicProperties>((p
   const dispatch = useDispatch();
 
   const user = useSelector(currentUserSelector);
-  const isSecondarySidekickOpen = useSelector(isSecondarySidekickOpenSelector);
+  const isSecondarySidekickOpen = useSelector(isMemberPanelOpenSelector);
   const backupExists = useSelector(backupExistsSelector);
 
   const channel = useChannelSelector(channelId);

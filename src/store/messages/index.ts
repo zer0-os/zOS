@@ -4,7 +4,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { createNormalizedSlice, removeAll } from '../normalized';
 
 import { ParentMessage } from '../../lib/chat/types';
-import { User } from '../authentication/types';
+import { User, Wallet } from '../authentication/types';
 import { EncryptedFile } from 'matrix-js-sdk/lib/types';
 
 export interface AttachmentUploadResult {
@@ -23,6 +23,7 @@ interface Sender {
   profileId: string;
   primaryZID: string;
   displaySubHandle?: string;
+  wallets?: Wallet[];
 }
 
 export enum MediaType {

@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { FeedFilter, getLastFeedFilter, setLastFeedFilter } from '../../../../lib/last-feed-filter';
 import { useReturnFromProfileNavigation } from '../../lib/useReturnFromProfileNavigation';
 import { BackButton } from '../post-view-container/back-button';
+import { SearchDrawer } from './search-drawer';
 
 import styles from './styles.module.scss';
 
@@ -72,6 +73,10 @@ export const Feed = ({
     posts,
     currentUserId,
     userMeowBalance,
+    searchResults,
+    isSearching,
+    handleSearch,
+    searchValue,
   } = useFeed(feedProps);
 
   useReturnFromProfileNavigation();
@@ -95,7 +100,15 @@ export const Feed = ({
 
   return (
     <Panel className={styles.Feed}>
-      <PanelHeader>{renderHeader()}</PanelHeader>
+      <PanelHeader>
+        {renderHeader()}
+        <SearchDrawer
+          searchResults={searchResults}
+          isSearching={isSearching}
+          onSearch={handleSearch}
+          searchValue={searchValue}
+        />
+      </PanelHeader>
       <PanelBody className={styles.Panel}>
         {channelZid && isPostingEnabled && <PostInput className={styles.Input} channelZid={channelZid} />}
         {isLoading && <Message>Loading posts...</Message>}

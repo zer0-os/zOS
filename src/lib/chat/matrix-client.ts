@@ -203,7 +203,9 @@ export class MatrixClient {
       return {
         otherMembers,
         memberHistory,
-        totalMembers: room.getInvitedAndJoinedMemberCount(),
+        // Even if a member leaves they stay in the member list so this will provide the correct count
+        // for determining if a conversation is 1 on 1
+        totalMembers: room.getMembers().length,
       };
     }
   }

@@ -1,10 +1,12 @@
 import { useProfileApp } from '../../lib/useProfileApp';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { createConversation } from '../../../../store/create-conversation';
 
 export const useUserPanel = () => {
   const { data, isLoading } = useProfileApp();
   const currentUser = useSelector(currentUserSelector);
+  const dispatch = useDispatch();
 
   const handle = data?.handle;
   const profileImageUrl = data?.profileImage;
@@ -13,6 +15,11 @@ export const useUserPanel = () => {
   const isCurrentUser = userId === currentUser?.id;
   const followersCount = data?.followersCount;
   const followingCount = data?.followingCount;
+
+  const handleStartConversation = () => {
+    if (!userId) return;
+    dispatch(createConversation({ userIds: [userId] }));
+  };
 
   return {
     handle,
@@ -23,5 +30,6 @@ export const useUserPanel = () => {
     isLoading,
     followersCount,
     followingCount,
+    handleStartConversation,
   };
 };

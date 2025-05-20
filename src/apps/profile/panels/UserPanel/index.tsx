@@ -2,23 +2,34 @@ import { useUserPanel } from './useUserPanel';
 
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
-import { IconLogoZero } from '@zero-tech/zui/icons';
+import { IconLogoZero, IconMessage01 } from '@zero-tech/zui/icons';
 import MatrixMask from './matrix-mask.svg?react';
 import { FollowButton } from '../../../../components/follow-button';
 import { FollowCounts } from '../../../../components/follow-counts';
 import { Skeleton } from '@zero-tech/zui/components/Skeleton';
+import { IconButton } from '@zero-tech/zui/components';
 
 import styles from './styles.module.scss';
 
 export const UserPanel = () => {
-  const { handle, profileImageUrl, zid, isLoading, userId, isCurrentUser, followersCount, followingCount } =
-    useUserPanel();
+  const {
+    handle,
+    profileImageUrl,
+    zid,
+    isLoading,
+    userId,
+    isCurrentUser,
+    followersCount,
+    followingCount,
+    handleStartConversation,
+  } = useUserPanel();
 
   return (
     <Panel className={styles.Container}>
       <PanelBody className={styles.Body}>
         <div>
           <IconLogoZero size={18} />
+
           <div className={styles.Header}>
             <MatrixAvatar className={styles.Avatar} imageURL={profileImageUrl} size='regular' />
             <MatrixMask className={styles.Mask} />
@@ -38,7 +49,18 @@ export const UserPanel = () => {
                   className={styles.FollowCounts}
                 />
               )}
-              {!isCurrentUser && <FollowButton targetUserId={userId} className={styles.FollowButton} />}
+              <div className={styles.ActionButtons}>
+                {!isCurrentUser && <FollowButton targetUserId={userId} className={styles.FollowButton} />}
+                {!isCurrentUser && (
+                  <IconButton
+                    Icon={IconMessage01}
+                    onClick={handleStartConversation}
+                    aria-label='Start conversation'
+                    className={styles.MessageButton}
+                    data-testid='message-button'
+                  />
+                )}
+              </div>
             </div>
           )}
         </div>

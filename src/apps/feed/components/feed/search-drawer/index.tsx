@@ -69,7 +69,7 @@ export const SearchDrawer = ({ searchResults, isSearching, searchValue, onSearch
               <ProfileLinkNavigation
                 key={user.id}
                 primaryZid={user?.primaryZID}
-                thirdWebAddress={user?.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress}
+                thirdWebAddress={user?.thirdWebWalletAddress}
               >
                 <div className={styles.SearchResultItem}>
                   <MatrixAvatar size='small' imageURL={user.profileImage} />

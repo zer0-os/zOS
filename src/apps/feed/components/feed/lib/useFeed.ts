@@ -38,8 +38,13 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
   const handleSearch = useCallback(
     (value: string) => {
       setSearchValue(value);
-      setIsSearching(true);
-      debouncedSearch(value);
+      if (value.trim()) {
+        setIsSearching(true);
+        debouncedSearch(value);
+      } else {
+        setIsSearching(false);
+        setSearchResults([]);
+      }
     },
     [debouncedSearch]
   );

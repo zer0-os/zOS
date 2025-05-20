@@ -1,12 +1,17 @@
 import { Message } from '../message';
-import { Message as MessageModel, Media, EditMessageOptions, sendEmojiReaction } from '../../store/messages';
+import {
+  Message as MessageModel,
+  Media,
+  EditMessageOptions,
+  sendEmojiReaction,
+  editMessage,
+} from '../../store/messages';
 import { bemClassName } from '../../lib/bem';
 import classNames from 'classnames';
 import { getMessageRenderProps } from './utils';
 import { useCallback, useMemo } from 'react';
 import { openDeleteMessage } from '../../store/dialogs';
 import { useDispatch } from 'react-redux';
-import { editMessage } from '../../store/messages/saga';
 import { UserForMention } from '../message-input/utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { onReply } from '../../store/channels';

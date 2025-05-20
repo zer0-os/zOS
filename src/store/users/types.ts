@@ -6,6 +6,7 @@ export interface MemberNetworks {
   type: string;
   primaryZID: string;
   primaryWalletAddress: string;
+  thirdWebWalletAddress?: string;
 }
 
 export interface SimplifiedUser {

@@ -572,11 +572,9 @@ export function* mapMessageReadByUsers(messageId, channelId) {
       receipts.map((receipt) => receipt.userId)
     );
 
-    const selectedMessage = yield select(messageSelector(messageId));
-    const filteredReceipts = receipts.filter((receipt) => receipt.ts >= selectedMessage?.createdAt);
     const currentUser = yield select(currentUserSelector());
 
-    const readByUsers = filteredReceipts
+    const readByUsers = receipts
       .map((receipt) => {
         return zeroUsersMap.get(receipt.userId);
       })

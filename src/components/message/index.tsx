@@ -29,6 +29,7 @@ import { MessageMenu, MessageMenuProps } from './menu/messageMenu';
 import { useMatrixMedia } from '../../lib/hooks/useMatrixMedia';
 import { MatrixAvatar } from '../matrix-avatar';
 import { useLinkPreview } from '../../lib/hooks/useLinkPreview';
+import { ProfileLinkNavigation } from '../profile-link-navigation';
 
 import './styles.scss';
 
@@ -431,7 +432,12 @@ export const Message: React.FC<Properties> = memo(
         {showSenderAvatar && (
           <div {...cn('left')}>
             <div {...cn('author-avatar')}>
-              <MatrixAvatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
+              <ProfileLinkNavigation
+                primaryZid={sender.primaryZID}
+                thirdWebAddress={sender.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress}
+              >
+                <MatrixAvatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
+              </ProfileLinkNavigation>
             </div>
           </div>
         )}

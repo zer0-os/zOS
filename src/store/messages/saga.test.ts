@@ -35,6 +35,10 @@ describe('messages saga', () => {
       type: NotifiableEventType.RoomMessage,
     };
 
+    const initialState = {
+      authentication: { user: { data: { id: 'test-user-id', matrixId: 'test-user-matrix-id' } } },
+    };
+
     await expectSaga(sendBrowserNotification, eventData as any)
       .provide([
         [
@@ -43,6 +47,7 @@ describe('messages saga', () => {
         ],
       ])
       .call(sendBrowserMessage, mapMessage(eventData as any))
+      .withState(initialState)
       .run();
   });
 
@@ -54,6 +59,10 @@ describe('messages saga', () => {
       type: '',
     };
 
+    const initialState = {
+      authentication: { user: { data: { id: 'test-user-id', matrixId: 'test-user-matrix-id' } } },
+    };
+
     await expectSaga(sendBrowserNotification, eventData as any)
       .provide([
         [
@@ -62,6 +71,7 @@ describe('messages saga', () => {
         ],
       ])
       .not.call(sendBrowserMessage, mapMessage(eventData as any))
+      .withState(initialState)
       .run();
   });
 
@@ -103,6 +113,7 @@ describe('messages saga', () => {
     };
 
     const initialState = {
+      authentication: { user: { data: { id: 'test-user-id', matrixId: 'test-user-matrix-id' } } },
       normalized: {
         channels: {
           'room-id-1': { labels: [] },
@@ -132,6 +143,7 @@ describe('messages saga', () => {
     };
 
     const initialState = {
+      authentication: { user: { data: { id: 'test-user-id', matrixId: 'test-user-matrix-id' } } },
       normalized: {
         channels: {
           'room-id-1': { labels: [DefaultRoomLabels.MUTE] },
@@ -161,6 +173,7 @@ describe('messages saga', () => {
     };
 
     const initialState = {
+      authentication: { user: { data: { id: 'test-user-id', matrixId: 'test-user-matrix-id' } } },
       normalized: {
         channels: {
           'room-id-1': { labels: [DefaultRoomLabels.ARCHIVED] },

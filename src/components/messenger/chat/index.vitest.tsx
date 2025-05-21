@@ -68,7 +68,7 @@ vi.mock('../../group-management/leave-group-dialog/container', () => ({
   LeaveGroupDialogContainer: vi.fn(() => <div data-testid='leave-group-dialog'>LeaveGroupDialogContainer</div>),
 }));
 
-vi.mock('../../message-input/container', () => ({
+vi.mock('../../message-input', () => ({
   MessageInput: vi.fn(({ onSubmit, onRemoveReply, reply }) => (
     <div data-testid='message-input'>
       <button onClick={() => onSubmit('test message', [], [])}>Send</button>

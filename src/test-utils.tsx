@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import type { AppStore, RootState } from './store';
 import { setupStore } from './store';
+import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   preloadedState?: Partial<RootState>;
@@ -27,7 +28,9 @@ export function renderWithProviders(ui: React.ReactElement, extendedRenderOption
 
   const Wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <Provider store={store}>{children}</Provider>
+      <ZUIProvider>
+        <Provider store={store}>{children}</Provider>
+      </ZUIProvider>
     </QueryClientProvider>
   );
 

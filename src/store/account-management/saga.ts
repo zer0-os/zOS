@@ -11,7 +11,7 @@ import {
 } from '.';
 
 import { addEmailAccount } from '../registration/saga';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import { setUser } from '../authentication';
 import cloneDeep from 'lodash/cloneDeep';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
@@ -59,7 +59,7 @@ export function* updateCurrentUserWallets({ publicAddress, ...walletRest }, prim
     return; // Ensure wallet has a valid publicAddress
   }
 
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
 
   // Update wallets immutably
   const updatedWallets = [...(currentUser.wallets || []), { publicAddress, ...walletRest }];
@@ -79,7 +79,7 @@ export function* updateCurrentUserWallets({ publicAddress, ...walletRest }, prim
 }
 
 export function* updateCurrentUserPrimaryEmail(email) {
-  let currentUser = cloneDeep(yield select(currentUserSelector()));
+  let currentUser = cloneDeep(yield select(currentUserSelector));
   currentUser.profileSummary = {
     ...currentUser.profileSummary,
     primaryEmail: email,

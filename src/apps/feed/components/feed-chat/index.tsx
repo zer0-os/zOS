@@ -4,7 +4,7 @@ import { connectContainer } from '../../../../store/redux-container';
 import { ChatViewContainer } from '../../../../components/chat-view-container/chat-view-container';
 import { validateFeedChat } from '../../../../store/chat';
 import { Channel, onRemoveReply } from '../../../../store/channels';
-import { MessageInput } from '../../../../components/message-input/container';
+import { MessageInput } from '../../../../components/message-input';
 import { send as sendMessage } from '../../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../../store/messages/saga';
 import { searchMentionableUsersForChannel } from '../../../../platform-apps/channels/util/api';

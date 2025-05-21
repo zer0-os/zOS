@@ -1,4 +1,3 @@
-import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, all, delay, spawn } from 'redux-saga/effects';
 import { SagaActionTypes, setDisplayLogoutModal, setUser } from '.';
 import {
@@ -23,10 +22,6 @@ import { clearCache, performCacheMaintenance } from '../../lib/storage/media-cac
 import { setSentryUser } from '../../utils';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
-
-export const currentUserSelector = () => (state) => {
-  return getDeepProperty(state, 'authentication.user.data', null);
-};
 
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;

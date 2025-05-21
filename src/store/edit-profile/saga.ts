@@ -7,7 +7,7 @@ import {
 } from './api';
 import { ProfileDetailsErrors } from '../registration';
 import cloneDeep from 'lodash/cloneDeep';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import { setUser } from '../authentication';
 import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
 
@@ -63,7 +63,7 @@ export function* saveUserMatrixCredentials(matrixId, matrixAccessToken) {
   });
 
   if (response.success) {
-    let currentUser = cloneDeep(yield select(currentUserSelector()));
+    let currentUser = cloneDeep(yield select(currentUserSelector));
     currentUser = { ...currentUser, matrixId, matrixAccessToken };
     yield put(setUser({ data: currentUser }));
     return;
@@ -71,7 +71,7 @@ export function* saveUserMatrixCredentials(matrixId, matrixAccessToken) {
 }
 
 export function* updateUserProfile(payload) {
-  let currentUser = cloneDeep(yield select(currentUserSelector()));
+  let currentUser = cloneDeep(yield select(currentUserSelector));
   currentUser.profileSummary = {
     ...currentUser.profileSummary,
     firstName: payload.name,

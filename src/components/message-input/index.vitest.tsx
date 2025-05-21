@@ -4,6 +4,7 @@ import { MessageInput } from './index';
 import { MediaType } from '../../store/messages';
 import { renderWithProviders } from '../../test-utils';
 import { RootState } from '../../store';
+import { ZUIProvider } from '@zero-tech/zui/ZUIProvider';
 
 // Mock dependencies
 vi.mock('../../store/messages', async () => {
@@ -45,7 +46,12 @@ const defaultProps = {
 
 const renderComponent = (partialProps = {}, preloadedState: Partial<RootState> = {}) => {
   const finalProps = { ...defaultProps, ...partialProps };
-  return renderWithProviders(<MessageInput {...finalProps} />, { preloadedState });
+  return renderWithProviders(
+    <ZUIProvider>
+      <MessageInput {...finalProps} />
+    </ZUIProvider>,
+    { preloadedState }
+  );
 };
 
 describe('MessageInput', () => {

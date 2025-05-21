@@ -1,5 +1,6 @@
 export interface MemberNetworks {
   id: string;
+  matrixId: string;
   handle: string;
   profileImage: string;
   name: string;

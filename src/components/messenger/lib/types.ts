@@ -1,5 +1,6 @@
 export interface Item {
   id: string;
+  matrixId: string;
   name: string;
   image?: string;
   primaryZID: string;

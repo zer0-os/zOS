@@ -48,7 +48,10 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
     }
 
     const items = await this.props.search(searchString);
-    const options = items.map(itemToOption);
+    const options = items.map((item) => ({
+      ...itemToOption(item),
+      matrixId: item.matrixId,
+    }));
     const selectedOptions = this.props.selectedOptions || [];
     const filteredOptions = options.filter((o) => !selectedOptions.find((s) => s.value === o.value));
     this.setState({ results: filteredOptions });

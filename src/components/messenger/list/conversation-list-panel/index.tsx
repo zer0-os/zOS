@@ -27,10 +27,10 @@ import './conversation-list-panel.scss';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { isOneOnOne } from '../../../../store/channels-list/utils';
 import { allChannelsSelector } from '../../../../store/channels/selectors';
-import { MemberNetworks } from '../../../../store/users/types';
 import { CreateConversationButton } from '../create-conversation-button/create-conversation-button';
 import { userIdSelector } from '../../../../store/authentication/selectors';
 import { usersMapSelector } from '../../../../store/users/selectors';
+import { MemberNetworks } from '../../../../store/users/types';
 
 const cn = bemClassName('messages-list');
 

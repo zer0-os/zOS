@@ -14,6 +14,7 @@ import {
 } from '../../store/matrix';
 import { ChatView as ImportedChatView } from './chat-view';
 import { NormalizedChannel, MessagesFetchState, CHANNEL_DEFAULTS } from '../../store/channels';
+import { isMemberPanelOpenSelector as importedIsMemberPanelOpenSelector } from '../../store/panels/selectors';
 
 vi.mock('../../store/messages', async () => {
   const actual = await vi.importActual('../../store/messages');
@@ -41,6 +42,10 @@ vi.mock('../../store/hooks', () => ({
   useChannelSelector: vi.fn(),
 }));
 
+vi.mock('../../store/panels/selectors', () => ({
+  isMemberPanelOpenSelector: vi.fn(),
+}));
+
 vi.mock('./chat-view', () => ({
   ChatView: vi.fn(({ onFetchMore, onReload, onHiddenMessageInfoClick, ...props }) => {
     return (
@@ -54,6 +59,7 @@ vi.mock('./chat-view', () => ({
 }));
 
 const mockUseChannelSelector = vi.mocked(importedUseChannelSelector);
+const mockIsMemberPanelOpenSelector = vi.mocked(importedIsMemberPanelOpenSelector);
 const mockIsOneOnOneUtil = vi.mocked(importedIsOneOnOne);
 const mockFetchMessages = vi.mocked(importedFetchMessages);
 const mockSyncMessages = vi.mocked(importedSyncMessages);
@@ -129,6 +135,7 @@ describe('ChatViewContainer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseChannelSelector.mockReturnValue(defaultChannel);
+    mockIsMemberPanelOpenSelector.mockReturnValue(false);
     mockIsOneOnOneUtil.mockReturnValue(false);
   });
 
@@ -235,6 +242,7 @@ describe('ChatViewContainer', () => {
       name: 'Prop Test Channel',
     };
     mockUseChannelSelector.mockReturnValue(channelForPropTest);
+    mockIsMemberPanelOpenSelector.mockReturnValue(true);
     mockIsOneOnOneUtil.mockReturnValue(true);
 
     renderComponent(

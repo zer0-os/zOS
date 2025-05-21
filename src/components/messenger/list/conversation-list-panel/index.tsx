@@ -10,7 +10,7 @@ import {
 } from '../../../../store/channels';
 import { ConversationItem } from '../conversation-item';
 import { Input } from '@zero-tech/zui/components';
-import { Option } from '../../lib/types';
+import { Option, Item } from '../../lib/types';
 import { UserSearchResults } from '../user-search-results';
 import { itemToOption } from '../../lib/utils';
 import { ScrollbarContainer } from '../../../scrollbar-container';
@@ -27,7 +27,6 @@ import './conversation-list-panel.scss';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { isOneOnOne } from '../../../../store/channels-list/utils';
 import { allChannelsSelector } from '../../../../store/channels/selectors';
-import { MemberNetworks } from '../../../../store/users/types';
 import { CreateConversationButton } from '../create-conversation-button/create-conversation-button';
 import { userIdSelector } from '../../../../store/authentication/selectors';
 import { usersMapSelector } from '../../../../store/users/selectors';
@@ -65,7 +64,7 @@ export interface Properties {
   isLabelDataLoaded: boolean;
   isCollapsed: boolean;
 
-  search: (input: string) => Promise<MemberNetworks[]>;
+  search: (input: string) => Promise<Item[]>;
   onCreateConversation: (userId: string) => void;
 }
 
@@ -195,7 +194,7 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
       const oneOnOneConversations = conversations.filter((c) => isOneOnOne(c));
       const oneOnOneConversationMemberIds = oneOnOneConversations.flatMap((c) => c.otherMembers);
 
-      const items: MemberNetworks[] = await search(newSearch);
+      const items: Item[] = await search(newSearch);
       const filteredUserItems = items?.filter((item) => !oneOnOneConversationMemberIds.includes(item.id) && item.id);
 
       scrollToTop();

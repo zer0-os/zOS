@@ -32,6 +32,8 @@ import { getPanelOpenState } from '../panels/selectors';
 import { setPanelState } from '../panels';
 import { Panel } from '../panels/constants';
 import { channelSelector } from '../channels/selectors';
+import { getUsersByMatrixIds } from '../users/saga';
+import { User } from '../channels';
 
 export function* reset() {
   yield put(setStage(Stage.None));
@@ -123,8 +125,9 @@ export function* roomMembersSelected(action) {
   yield put(setIsAddingMembers(true));
 
   try {
-    const userIds = selectedMembers.map((user) => user.value);
-    const users = yield select((state) => denormalizeUsers(userIds, state));
+    const matrixIds = selectedMembers.map((user) => user.matrixId);
+    const usersMap: Map<string, User> = yield call(getUsersByMatrixIds, matrixIds);
+    const users = Array.from(usersMap.values());
 
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.addMembersToRoom], roomId, users);

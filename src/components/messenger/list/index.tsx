@@ -15,7 +15,7 @@ import { closeConversationErrorDialog as closeConversationErrorDialogAction } fr
 import CreateConversationPanel from './create-conversation-panel';
 import { ConversationListPanel } from './conversation-list-panel';
 import { GroupDetailsPanel } from './group-details-panel';
-import { Option } from '../lib/types';
+import { Item, Option } from '../lib/types';
 import { Modal } from '@zero-tech/zui/components';
 import { ErrorDialog } from '../../error-dialog';
 import { RewardsModalContainer } from '../../rewards-modal/container';
@@ -94,7 +94,7 @@ const MessengerListContainer: React.FC = () => {
   }, [debouncedSearch]);
 
   const usersInMyNetworks = useCallback(
-    (search: string): Promise<MemberNetworks[]> => {
+    (search: string): Promise<Item[]> => {
       return new Promise((resolve) => {
         currentSearchResolveRef.current = resolve;
         debouncedSearch(search);

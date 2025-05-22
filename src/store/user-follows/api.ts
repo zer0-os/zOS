@@ -7,6 +7,23 @@ export interface FollowResponse {
   createdAt: string;
 }
 
+export interface UserFollowDetails {
+  userId: string;
+  firstName: string;
+  profileImage: string;
+  primaryZID: string;
+  wallets: {
+    primaryWalletAddress: string;
+    thirdWebWalletAddress?: string;
+  };
+}
+
+export interface PaginatedResponse<T> {
+  users: T[];
+  nextPage: number | null;
+  total: number;
+}
+
 export interface ErrorResponse {
   error: string;
   reason: string;
@@ -82,5 +99,41 @@ export const getFollowersCount = async (userId: string): Promise<number> => {
       throw new Error(error.response.data.reason);
     }
     throw error;
+  }
+};
+
+export const getFollowers = async (
+  userId: string,
+  page = 1,
+  limit = 50
+): Promise<PaginatedResponse<UserFollowDetails>> => {
+  try {
+    const response = await get<PaginatedResponse<UserFollowDetails>>(`/api/v2/user-follows/${userId}/followers`, {
+      params: { page, limit },
+    });
+    return response.body;
+  } catch (error: any) {
+    if (error.response?.data?.reason) {
+      throw new Error(error.response.data.reason);
+    }
+    throw new Error('Failed to fetch followers');
+  }
+};
+
+export const getFollowing = async (
+  userId: string,
+  page = 1,
+  limit = 50
+): Promise<PaginatedResponse<UserFollowDetails>> => {
+  try {
+    const response = await get<PaginatedResponse<UserFollowDetails>>(`/api/v2/user-follows/${userId}/following`, {
+      params: { page, limit },
+    });
+    return response.body;
+  } catch (error: any) {
+    if (error.response?.data?.reason) {
+      throw new Error(error.response.data.reason);
+    }
+    throw new Error('Failed to fetch following users');
   }
 };

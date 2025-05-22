@@ -1,0 +1,54 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.Container {
+  position: relative;
+  width: 270px;
+  overflow: hidden;
+}
+
+.Body {
+  height: 100%;
+}
+
+.BackButton {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: theme.$color-greyscale-12;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+
+  &:hover {
+    color: theme.$color-greyscale-11;
+  }
+}
+
+.Header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.Label {
+  font-size: 14px;
+  font-weight: 400;
+  color: theme.$color-greyscale-11;
+}
+
+.List {
+  overflow: hidden;
+}
+
+.Loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}

@@ -10,6 +10,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 4px;
+
+    &.clickable {
+      cursor: pointer;
+
+      &:hover {
+        .label {
+          color: theme.$color-secondary-11;
+        }
+      }
+    }
 
     .number {
       font-weight: 600;

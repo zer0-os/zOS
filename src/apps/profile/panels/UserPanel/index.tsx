@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { useUserPanel } from './useUserPanel';
 
 import { Panel, PanelBody } from '../../../../components/layout/panel';
@@ -7,12 +8,24 @@ import MatrixMask from './matrix-mask.svg?react';
 import { FollowButton } from '../../../../components/follow-button';
 import { FollowCounts } from '../../../../components/follow-counts';
 import { Skeleton } from '@zero-tech/zui/components/Skeleton';
+import { Follows } from './Follows';
 
 import styles from './styles.module.scss';
+
+type FollowType = 'followers' | 'following';
 
 export const UserPanel = () => {
   const { handle, profileImageUrl, zid, isLoading, userId, isCurrentUser, followersCount, followingCount } =
     useUserPanel();
+  const [activeFollowType, setActiveFollowType] = useState<FollowType | null>(null);
+
+  useEffect(() => {
+    setActiveFollowType(null);
+  }, [userId]);
+
+  if (activeFollowType && userId) {
+    return <Follows type={activeFollowType} userId={userId} onBack={() => setActiveFollowType(null)} />;
+  }
 
   return (
     <Panel className={styles.Container}>
@@ -36,6 +49,8 @@ export const UserPanel = () => {
                   followingCount={followingCount}
                   followersCount={followersCount}
                   className={styles.FollowCounts}
+                  onFollowingClick={() => setActiveFollowType('following')}
+                  onFollowersClick={() => setActiveFollowType('followers')}
                 />
               )}
               {!isCurrentUser && <FollowButton targetUserId={userId} className={styles.FollowButton} />}

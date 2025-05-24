@@ -50,6 +50,13 @@ export const MessengerChat: FC = () => {
     }
   }, [activeConversationId]);
 
+  const reply = useMemo(() => directMessage?.reply, [directMessage?.reply]);
+  useEffect(() => {
+    if (reply) {
+      messageInputRef.current?.focus();
+    }
+  }, [reply]);
+
   const setLeaveGroupStatus = useCallback(
     (status: LeaveGroupDialogStatus) => {
       dispatch(setLeaveGroupStatusAction(status));
@@ -78,7 +85,6 @@ export const MessengerChat: FC = () => {
     [directMessage?.id, channelOtherMembers]
   );
 
-  const reply = useMemo(() => directMessage?.reply, [directMessage?.reply]);
   const handleSendMessage = useCallback(
     (messageText: string, mentionedUserIds: string[] = [], media: Media[] = []): void => {
       if (!activeConversationId) {

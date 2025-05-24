@@ -5,7 +5,7 @@ import BN from 'bn.js';
 import { SagaActionTypes, setCount, setError, setInitialCount, setIsLoadingPost, setPost, setIsSubmitting } from '.';
 import { MediaType } from '../messages';
 import { messageSelector, rawMessagesSelector } from '../messages/saga';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import { receiveChannel } from '../channels/saga';
 import { ConversationStatus, MessagesFetchState, SagaActionTypes as ChannelsEvents } from '../channels';
 import { updateUserMeowBalance } from '../rewards/saga';
@@ -76,7 +76,7 @@ export function* sendPost(action) {
   yield put(setError(undefined));
 
   try {
-    const user = yield select(currentUserSelector());
+    const user = yield select(currentUserSelector);
     const userZid = user.primaryZID?.split('0://')?.[1];
 
     // If user does not have a primary ZID
@@ -251,7 +251,7 @@ export function* fetchPosts(action) {
 
 function* meowPost(action) {
   const { postId, meowAmount, channelId } = action.payload;
-  const user = yield select(currentUserSelector());
+  const user = yield select(currentUserSelector);
 
   if (!postMessage || !meowAmount || !user?.id) {
     return;

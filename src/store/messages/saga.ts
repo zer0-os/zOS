@@ -1,4 +1,3 @@
-import { currentUserSelector } from './../authentication/saga';
 import getDeepProperty from 'lodash.get';
 import { takeLatest, put, call, select, delay, takeEvery, spawn } from 'redux-saga/effects';
 import {
@@ -19,6 +18,7 @@ import { markConversationAsRead, receiveChannel } from '../channels/saga';
 import { createOptimisticMessageObject } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
+import { currentUserSelector } from './../authentication/selectors';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
@@ -157,7 +157,7 @@ export function* fetchMessages(action) {
     yield call(batchedUpdateLastMessage, [channelId]);
 
     if (yield select(_isActive(channelId))) {
-      const currentUser = yield select(currentUserSelector());
+      const currentUser = yield select(currentUserSelector);
 
       let latestUserMessage = null;
       for (let i = messages?.length - 1; i >= 0; i--) {
@@ -241,7 +241,7 @@ export function* createOptimisticMessages(channelId, message, parentMessage, upl
 
 export function* createOptimisticMessage(channelId, message, parentMessage, file?, rootMessageId?) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
 
   const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
 
@@ -554,7 +554,7 @@ export function isOwner(currentUser, entityUserMatrixId) {
 }
 
 export function* sendBrowserNotification(eventData) {
-  if (isOwner(yield select(currentUserSelector()), eventData.sender?.userId)) return;
+  if (isOwner(yield select(currentUserSelector), eventData.sender?.userId)) return;
 
   const roomLabels = yield select(roomLabelSelector(eventData?.roomId));
   if (roomLabels?.includes(DefaultRoomLabels.MUTE) || roomLabels?.includes(DefaultRoomLabels.ARCHIVED)) return;
@@ -572,7 +572,7 @@ export function* mapMessageReadByUsers(messageId, channelId) {
       receipts.map((receipt) => receipt.userId)
     );
 
-    const currentUser = yield select(currentUserSelector());
+    const currentUser = yield select(currentUserSelector);
 
     const readByUsers = receipts
       .map((receipt) => {
@@ -611,7 +611,7 @@ function* readReceiptReceived({ payload }) {
 
   if (yield select(_isActive(roomId))) {
     const zeroUsersMap: { [id: string]: User } = yield select((state) => state.normalized.users || {});
-    const currentUser = yield select(currentUserSelector());
+    const currentUser = yield select(currentUserSelector);
 
     const readByUser = Object.values(zeroUsersMap).find((user) => user.matrixId === userId);
 

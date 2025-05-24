@@ -10,7 +10,7 @@ import {
 import { CHANNEL_DEFAULTS, onRemoveReply as importedOnRemoveReply, NormalizedChannel } from '../../../store/channels';
 import { send as importedSendMessageAction } from '../../../store/messages';
 import { LeaveGroupDialogContainer as ImportedLeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
-import { MessageInput as ImportedMessageInput } from '../../message-input/container';
+import { MessageInput as ImportedMessageInput } from '../../message-input';
 import { useDispatch as importedUseDispatch } from 'react-redux';
 import { searchMentionableUsersForChannel as importedSearchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import {
@@ -68,7 +68,7 @@ vi.mock('../../group-management/leave-group-dialog/container', () => ({
   LeaveGroupDialogContainer: vi.fn(() => <div data-testid='leave-group-dialog'>LeaveGroupDialogContainer</div>),
 }));
 
-vi.mock('../../message-input/container', () => ({
+vi.mock('../../message-input', () => ({
   MessageInput: vi.fn(({ onSubmit, onRemoveReply, reply }) => (
     <div data-testid='message-input'>
       <button onClick={() => onSubmit('test message', [], [])}>Send</button>

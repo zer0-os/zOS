@@ -1,5 +1,5 @@
 import { call, put, select, spawn, take } from 'redux-saga/effects';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 
 import { Account, inAppWallet, SmartWalletOptions } from 'thirdweb/wallets';
@@ -10,7 +10,7 @@ import { getChain, getThirdWebClient } from '../../lib/web3/thirdweb/client';
 import { setUser } from '../authentication';
 
 export function* getLinkedThirdWebWallet() {
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
 
   // Early return if no user or wallets
   if (!currentUser?.wallets) {
@@ -24,7 +24,7 @@ export function* initThirWebWallet() {
   try {
     // Get existing wallet if any
     const linkedThirdwebWallet = yield call(getLinkedThirdWebWallet);
-    const currentUser = yield select(currentUserSelector());
+    const currentUser = yield select(currentUserSelector);
 
     // Validate user exists
     if (!currentUser?.id) {
@@ -79,7 +79,7 @@ export function* initThirWebWallet() {
 }
 
 export function* updateCurrentUserWallets(wallet) {
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
 
   if (!wallet || !wallet.publicAddress) {
     return; // Ensure wallet has a valid publicAddress

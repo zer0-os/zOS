@@ -1,224 +1,190 @@
-import React, { RefObject } from 'react';
+import React, { useRef, useState, useEffect, KeyboardEvent, ChangeEvent, useCallback, forwardRef } from 'react';
 import Dropzone from 'react-dropzone';
-
 import { config } from '../../config';
 import { Key } from '../../lib/keyboard-search';
 import { MediaType } from '../../store/messages';
 import { userMentionsConfig } from './mentions/mentions-config';
-import { Media, dropzoneToMedia, addImagePreview, windowClipboard } from './utils';
-
+import { Media, dropzoneToMedia, addImagePreview, windowClipboard, UserForMention } from './utils';
 import Menu from './menu/menu';
 import { EmojiPicker } from './emoji-picker/emoji-picker';
 import ReplyCard from '../reply-card/reply-card';
 import { Giphy, Properties as GiphyProperties } from './giphy/giphy';
-import { ViewModes } from '../../shared-components/theme-engine';
 import AudioCards from '../../platform-apps/channels/audio-cards';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
-import { PublicProperties as PublicPropertiesContainer } from './container';
 import { IconFaceSmile, IconSend3, IconStickerCircle } from '@zero-tech/zui/icons';
 import { IconButton, Tooltip } from '@zero-tech/zui/components';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
 import { bemClassName } from '../../lib/bem';
 import { Mentions } from './mentions';
-
+import { ParentMessage } from '../../lib/chat/types';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/reducer';
 import './styles.scss';
+
+const mimeTypes = {
+  'image/*': [],
+  'video/*': [],
+  'application/pdf': [],
+  'audio/*': [],
+};
+
+const selectViewMode = (state: RootState) => state.theme.value.viewMode;
 
 const cn = bemClassName('message-input');
 
-export interface Properties extends PublicPropertiesContainer {
-  replyIsCurrentUser: boolean;
+export interface Properties {
+  id?: string;
+  initialValue?: string;
+  isEditing?: boolean;
+  onSubmit: (message: string, mentionedUserIds: string[], media: Media[]) => void;
+  getUsersForMentions: (search: string) => Promise<UserForMention[]>;
+  renderAfterInput?: (value: string, mentionedUserIds: string[]) => React.ReactNode;
+  onRemoveReply?: () => void;
+  reply?: null | ParentMessage;
+  replyIsCurrentUser?: boolean;
   sendDisabledMessage?: string;
-  viewMode: ViewModes;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
   };
   dropzoneToMedia?: (files: any[]) => Media[];
-  onUserTyping: ({ roomId }: { roomId: string }) => void;
-  onMessageInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
+  onUserTyping?: ({ roomId }: { roomId: string }) => void;
 }
 
-interface State {
-  value: string;
-  mentionedUserIds: string[];
-  media: Media[];
-  attachments: Media[];
-  isEmojisActive: boolean;
-  isGiphyActive: boolean;
-  isSendTooltipOpen: boolean;
-}
+export const MessageInput = forwardRef<HTMLTextAreaElement, Properties>((props, ref) => {
+  const localRef = useRef<HTMLTextAreaElement>(null);
+  const [value, setValue] = useState(props.initialValue || '');
+  const [mentionedUserIds, setMentionedUserIds] = useState<string[]>([]);
+  const [media, setMedia] = useState<Media[]>([]);
+  const [isEmojisActive, setIsEmojisActive] = useState(false);
+  const [isGiphyActive, setIsGiphyActive] = useState(false);
+  const [isSendTooltipOpen, setIsSendTooltipOpen] = useState(false);
+  const viewMode = useSelector(selectViewMode);
 
-export class MessageInput extends React.Component<Properties, State> {
-  state: State = {
-    value: this.props.initialValue || '',
-    mentionedUserIds: [],
-    media: [],
-    attachments: [],
-    isEmojisActive: false,
-    isGiphyActive: false,
-    isSendTooltipOpen: false,
+  const clipboard = props.clipboard || windowClipboard();
+  const isSendingEnabled = !props.sendDisabledMessage?.trim();
+
+  // Connect the forwarded ref to our local ref
+  useEffect(() => {
+    if (typeof ref === 'function') {
+      ref(localRef.current);
+    } else if (ref) {
+      ref.current = localRef.current;
+    }
+  }, [ref]);
+
+  useEffect(() => {
+    if (props.isEditing) {
+      focusInput();
+    }
+  }, [props.isEditing]);
+
+  useEffect(() => {
+    if (isSendTooltipOpen && isSendingEnabled) {
+      setIsSendTooltipOpen(false);
+    }
+  }, [isSendTooltipOpen, isSendingEnabled]);
+
+  const focusInput = () => {
+    if (localRef.current) {
+      localRef.current.focus();
+      const textLength = localRef.current.value.length;
+      localRef.current.setSelectionRange(textLength, textLength);
+    }
   };
 
-  private textareaRef: RefObject<HTMLTextAreaElement>;
-
-  constructor(props) {
-    super(props);
-
-    this.textareaRef = React.createRef<HTMLTextAreaElement>();
-  }
-
-  componentDidMount() {
-    if (this.props.isEditing) {
-      this.focusInput();
+  const onSend = (): void => {
+    if (!isSendingEnabled) {
+      return setIsSendTooltipOpen(true);
     }
 
-    if (this.props.onMessageInputRendered) {
-      this.props.onMessageInputRendered(this.textareaRef);
-    }
-    this.clipboard.addPasteListener(this.clipboardEvent);
-  }
-
-  get clipboard() {
-    return this.props.clipboard || windowClipboard();
-  }
-
-  componentDidUpdate() {
-    if (this.props.onMessageInputRendered) {
-      this.props.onMessageInputRendered(this.textareaRef);
-    }
-    if (this.state.isSendTooltipOpen && this.isSendingEnabled) {
-      this.setState({ isSendTooltipOpen: false });
-    }
-  }
-
-  componentWillUnmount() {
-    this.clipboard.removePasteListener(this.clipboardEvent);
-  }
-
-  // NOTE: commenting other types of media for now since we don't support them yet (in matrix)
-  get mimeTypes() {
-    return {
-      'image/*': [],
-      'video/*': [],
-      'application/pdf': [],
-      'audio/*': [],
-    };
-  }
-
-  get images() {
-    return this.state.media.filter((m) => m.mediaType === MediaType.Image);
-  }
-
-  get audios() {
-    return this.state.media.filter((m) => m.mediaType === MediaType.Audio);
-  }
-
-  get videos() {
-    return this.state.media.filter((m) => m.mediaType === MediaType.Video);
-  }
-
-  get files() {
-    return this.state.media.filter((m) => m.mediaType === MediaType.File);
-  }
-
-  focusInput() {
-    if (this.textareaRef && this.textareaRef.current) {
-      const input = this.textareaRef.current;
-
-      // Set focus on the input
-      input.focus();
-
-      // Move the cursor to the end of the text
-      const textLength = input.value.length;
-      input.setSelectionRange(textLength, textLength);
-    }
-  }
-
-  get isSendingDisabled() {
-    return !this.isSendingEnabled;
-  }
-
-  get isSendingEnabled() {
-    return !this.props.sendDisabledMessage?.trim();
-  }
-
-  onSend = (): void => {
-    if (this.isSendingDisabled) {
-      return this.setState({ isSendTooltipOpen: true });
-    }
-
-    const { mentionedUserIds, value, media } = this.state;
     if (value || media.length) {
-      this.props.onSubmit(value, mentionedUserIds, media);
-      this.setState({ value: '', mentionedUserIds: [], media: [] });
+      props.onSubmit(value, mentionedUserIds, media);
+      setValue('');
+      setMentionedUserIds([]);
+      setMedia([]);
     }
   };
 
-  onKeyDown = (event): void => {
+  const onKeyDown = (event: KeyboardEvent): void => {
     if (!event.shiftKey && event.key === Key.Enter) {
       event.preventDefault();
-      this.onSend();
+      onSend();
     }
   };
 
-  contentChanged = (event): void => {
+  const contentChanged = (event: ChangeEvent<HTMLTextAreaElement>): void => {
     let {
-      target: { value },
+      target: { value: newValue },
     } = event;
 
-    this.props.onUserTyping({ roomId: this.props.id });
+    props.onUserTyping && props.onUserTyping({ roomId: props.id });
 
-    value = textToPlainEmojis(value);
-    const mentionedUserIds = this.extractUserIds(value);
-    this.setState({ value, mentionedUserIds });
+    newValue = textToPlainEmojis(newValue);
+    const newMentionedUserIds = extractUserIds(newValue);
+    setValue(newValue);
+    setMentionedUserIds(newMentionedUserIds);
   };
 
-  removeMediaPreview = (mediaToRemove: { id: string }) => {
-    const media = this.state.media;
-
-    this.setState({
-      media: media.filter((m) => m.id !== mediaToRemove.id),
-    });
-    this.props.onMessageInputRendered(this.textareaRef);
+  const removeMediaPreview = (mediaToRemove: { id: string }) => {
+    setMedia(media.filter((m) => m.id !== mediaToRemove.id));
+    focusInput();
   };
 
-  mediaSelected = (newMedia: Media[]): void => {
-    this.setState({ media: [...this.state.media, ...newMedia] });
-    this.props.onMessageInputRendered(this.textareaRef);
-  };
+  const mediaSelected = useCallback(
+    (newMedia: Media[]): void => {
+      setMedia([...media, ...newMedia]);
+      focusInput();
+    },
+    [media]
+  );
 
-  imagesSelected = (acceptedFiles): void => {
-    const newImages: Media[] = this.props.dropzoneToMedia
-      ? this.props.dropzoneToMedia(acceptedFiles)
-      : dropzoneToMedia(acceptedFiles);
-    if (newImages.length) {
-      this.mediaSelected(newImages);
-    }
-  };
+  const imagesSelected = useCallback(
+    (acceptedFiles): void => {
+      const newImages: Media[] = props.dropzoneToMedia
+        ? props.dropzoneToMedia(acceptedFiles)
+        : dropzoneToMedia(acceptedFiles);
+      if (newImages.length) {
+        mediaSelected(newImages);
+      }
+    },
+    [mediaSelected, props]
+  );
 
-  clipboardEvent = async (event) => {
-    if (document.activeElement !== this.textareaRef.current) {
-      return;
-    }
+  const clipboardEvent = useCallback(
+    async (event) => {
+      if (document.activeElement !== localRef.current) {
+        return;
+      }
 
-    const items = event.clipboardData.items;
+      const items = event.clipboardData.items;
 
-    const newImages: any[] = Array.from(items)
-      .filter((item: any) => item.kind === 'file' && /image\/*/.test(item.type))
-      .map((file: any) => file.getAsFile())
-      .filter(Boolean);
+      const newImages: any[] = Array.from(items)
+        .filter((item: any) => item.kind === 'file' && /image\/*/.test(item.type))
+        .map((file: any) => file.getAsFile())
+        .filter(Boolean);
 
-    if (newImages.length !== 0) {
-      this.imagesSelected(await addImagePreview(newImages));
-    }
-  };
+      if (newImages.length !== 0) {
+        imagesSelected(await addImagePreview(newImages));
+      }
+    },
+    [imagesSelected]
+  );
 
-  openGiphy = () => this.setState({ isGiphyActive: true });
-  closeGiphy = () => this.setState({ isGiphyActive: false });
+  useEffect(() => {
+    clipboard.addPasteListener(clipboardEvent);
 
-  onInsertGiphy: GiphyProperties['onClickGif'] = (giphy) => {
-    this.mediaSelected([
+    return () => {
+      clipboard.removePasteListener(clipboardEvent);
+    };
+  }, [clipboard, clipboardEvent]);
+
+  const openGiphy = () => setIsGiphyActive(true);
+  const closeGiphy = () => setIsGiphyActive(false);
+
+  const onInsertGiphy: GiphyProperties['onClickGif'] = (giphy) => {
+    mediaSelected([
       {
         id: giphy.id.toString(),
         name: giphy.title,
@@ -228,151 +194,24 @@ export class MessageInput extends React.Component<Properties, State> {
         giphy,
       },
     ]);
-    this.props.onMessageInputRendered(this.textareaRef);
-    this.closeGiphy();
+    focusInput();
+    closeGiphy();
   };
 
-  openEmojis = () => this.setState({ isEmojisActive: true });
-  closeEmojis = () => this.setState({ isEmojisActive: false });
+  const openEmojis = () => setIsEmojisActive(true);
+  const closeEmojis = () => setIsEmojisActive(false);
 
-  onInsertEmoji = (value: string) => {
-    this.setState({ value });
-    this.closeEmojis();
-    this.focusInput();
+  const onInsertEmoji = (newValue: string) => {
+    setValue(newValue);
+    closeEmojis();
+    focusInput();
   };
 
-  sendHighlighted = () => this.state.value?.length > 0 && this.isSendingEnabled;
+  const sendHighlighted = () => value?.length > 0 && isSendingEnabled;
 
-  get sendDisabledTooltipContent() {
-    return <div {...cn('disabled-tooltip')}>{this.props.sendDisabledMessage}</div>;
-  }
+  const sendDisabledTooltipContent = <div {...cn('disabled-tooltip')}>{props.sendDisabledMessage}</div>;
 
-  get allowGiphy() {
-    return !this.props.isEditing;
-  }
-
-  get allowFileAttachment() {
-    return !this.props.isEditing;
-  }
-
-  get allowLeftIcons() {
-    return this.allowGiphy || this.allowFileAttachment;
-  }
-
-  get hasInputValue() {
-    return this.state.value?.length > 0;
-  }
-
-  renderInput() {
-    const reply = this.props.reply;
-
-    return (
-      <div {...cn('container')}>
-        <div {...cn('addon-row')}>
-          {reply && (
-            <ReplyCard
-              message={reply?.message}
-              senderIsCurrentUser={this.props.replyIsCurrentUser}
-              senderFirstName={reply?.sender?.firstName}
-              senderLastName={reply?.sender?.lastName}
-              media={reply?.media}
-              onRemove={this.props.onRemoveReply}
-            />
-          )}
-        </div>
-
-        <div {...cn('input-row')}>
-          {this.allowLeftIcons && (
-            <div {...cn('icon-wrapper')}>
-              {this.allowGiphy && (
-                <IconButton {...cn('icon', 'giphy')} onClick={this.openGiphy} Icon={IconStickerCircle} size={26} />
-              )}
-
-              {this.allowFileAttachment && (
-                <Menu
-                  onSelected={this.mediaSelected}
-                  mimeTypes={this.mimeTypes}
-                  maxSize={config.cloudinary.max_file_size}
-                />
-              )}
-            </div>
-          )}
-
-          <div {...cn('chat-container', this.props.isEditing && 'editing')}>
-            <div {...cn('scroll-container')}>
-              <div {...cn('text-and-emoji-wrapper')}>
-                <Dropzone
-                  onDrop={this.imagesSelected}
-                  noClick
-                  accept={this.mimeTypes}
-                  maxSize={config.cloudinary.max_file_size}
-                  disabled={!this.allowFileAttachment}
-                >
-                  {({ getRootProps }) => (
-                    <div {...getRootProps({ ...cn('drop-zone-text-area') })}>
-                      <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
-                      <AudioCards audios={this.audios} onRemove={this.removeMediaPreview} />
-                      <AttachmentCards attachments={this.files} type='file' onRemove={this.removeMediaPreview} />
-                      <AttachmentCards attachments={this.videos} type='video' onRemove={this.removeMediaPreview} />
-
-                      <div {...cn('emoji-picker-container')}>
-                        <EmojiPicker
-                          textareaRef={this.textareaRef}
-                          isOpen={this.state.isEmojisActive}
-                          onOpen={this.openEmojis}
-                          onClose={this.closeEmojis}
-                          value={this.state.value}
-                          viewMode={this.props.viewMode}
-                          onSelect={this.onInsertEmoji}
-                        />
-                      </div>
-                      {this.state.isGiphyActive && <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />}
-
-                      <Mentions
-                        id={this.props.id}
-                        value={this.state.value}
-                        onBlur={this._handleBlur}
-                        onChange={this.contentChanged}
-                        onKeyDown={this.onKeyDown}
-                        textareaRef={this.textareaRef}
-                        getUsersForMentions={this.props.getUsersForMentions}
-                      />
-                    </div>
-                  )}
-                </Dropzone>
-
-                <div {...cn('emoji-icon-outer')}>
-                  <div {...cn('icon-wrapper')}>
-                    {!this.props.isEditing && (
-                      <IconButton {...cn('icon', 'emoji')} onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {!this.props.isEditing && (
-            <div {...cn('icon-wrapper')}>
-              <Tooltip content={this.sendDisabledTooltipContent} open={this.state.isSendTooltipOpen}>
-                <IconButton
-                  {...cn('icon', 'end-action')}
-                  onClick={this.onSend}
-                  Icon={IconSend3}
-                  size={26}
-                  isFilled={this.sendHighlighted()}
-                  label='send'
-                />
-              </Tooltip>
-            </div>
-          )}
-        </div>
-        {this.props.renderAfterInput && this.props.renderAfterInput(this.state.value, this.state.mentionedUserIds)}
-      </div>
-    );
-  }
-
-  private extractUserIds = (content: string): string[] => {
+  const extractUserIds = (content: string): string[] => {
     const search = userMentionsConfig.regexGlobal;
     const userIds: string[] = [];
     let result = search.exec(content);
@@ -380,17 +219,124 @@ export class MessageInput extends React.Component<Properties, State> {
       userIds.push(result[2]);
       result = search.exec(content);
     }
-
     return userIds;
   };
 
-  private _handleBlur = (event, clickedSuggestion) => {
+  const handleBlur = (_event, clickedSuggestion) => {
     if (clickedSuggestion) {
       return;
     }
   };
 
-  render() {
-    return <div {...cn('', this.props.isEditing && 'editing')}>{this.renderInput()}</div>;
-  }
-}
+  const allowGiphy = !props.isEditing;
+  const allowFileAttachment = !props.isEditing;
+  const allowLeftIcons = allowGiphy || allowFileAttachment;
+
+  const images = media.filter((m) => m.mediaType === MediaType.Image);
+  const audios = media.filter((m) => m.mediaType === MediaType.Audio);
+  const videos = media.filter((m) => m.mediaType === MediaType.Video);
+  const files = media.filter((m) => m.mediaType === MediaType.File);
+
+  return (
+    <div {...cn('', props.isEditing && 'editing')}>
+      <div {...cn('container')}>
+        <div {...cn('addon-row')}>
+          {props.reply && (
+            <ReplyCard
+              message={props.reply?.message}
+              senderIsCurrentUser={props.replyIsCurrentUser}
+              senderFirstName={props.reply?.sender?.firstName}
+              senderLastName={props.reply?.sender?.lastName}
+              media={props.reply?.media}
+              onRemove={props.onRemoveReply}
+            />
+          )}
+        </div>
+
+        <div {...cn('input-row')}>
+          {allowLeftIcons && (
+            <div {...cn('icon-wrapper')}>
+              {allowGiphy && (
+                <IconButton {...cn('icon', 'giphy')} onClick={openGiphy} Icon={IconStickerCircle} size={26} />
+              )}
+
+              {allowFileAttachment && (
+                <Menu onSelected={mediaSelected} mimeTypes={mimeTypes} maxSize={config.cloudinary.max_file_size} />
+              )}
+            </div>
+          )}
+
+          <div {...cn('chat-container', props.isEditing && 'editing')}>
+            <div {...cn('scroll-container')}>
+              <div {...cn('text-and-emoji-wrapper')}>
+                <Dropzone
+                  onDrop={imagesSelected}
+                  noClick
+                  accept={mimeTypes}
+                  maxSize={config.cloudinary.max_file_size}
+                  disabled={!allowFileAttachment}
+                >
+                  {({ getRootProps }) => (
+                    <div {...getRootProps({ ...cn('drop-zone-text-area') })}>
+                      <ImageCards images={images} onRemoveImage={removeMediaPreview} size='small' />
+                      <AudioCards audios={audios} onRemove={removeMediaPreview} />
+                      <AttachmentCards attachments={files} type='file' onRemove={removeMediaPreview} />
+                      <AttachmentCards attachments={videos} type='video' onRemove={removeMediaPreview} />
+
+                      <div {...cn('emoji-picker-container')}>
+                        <EmojiPicker
+                          textareaRef={localRef}
+                          isOpen={isEmojisActive}
+                          onOpen={openEmojis}
+                          onClose={closeEmojis}
+                          value={value}
+                          viewMode={viewMode}
+                          onSelect={onInsertEmoji}
+                        />
+                      </div>
+                      {isGiphyActive && <Giphy onClickGif={onInsertGiphy} onClose={closeGiphy} />}
+
+                      <Mentions
+                        id={props.id}
+                        value={value}
+                        onBlur={handleBlur}
+                        onChange={contentChanged}
+                        onKeyDown={onKeyDown}
+                        textareaRef={localRef}
+                        getUsersForMentions={props.getUsersForMentions}
+                      />
+                    </div>
+                  )}
+                </Dropzone>
+
+                <div {...cn('emoji-icon-outer')}>
+                  <div {...cn('icon-wrapper')}>
+                    {!props.isEditing && (
+                      <IconButton {...cn('icon', 'emoji')} onClick={openEmojis} Icon={IconFaceSmile} size={26} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {!props.isEditing && (
+            <div {...cn('icon-wrapper')}>
+              <Tooltip content={sendDisabledTooltipContent} open={isSendTooltipOpen}>
+                <IconButton
+                  {...cn('icon', 'end-action')}
+                  onClick={onSend}
+                  Icon={IconSend3}
+                  size={26}
+                  isFilled={sendHighlighted()}
+                  label='send'
+                />
+              </Tooltip>
+            </div>
+          )}
+        </div>
+        {props.renderAfterInput && props.renderAfterInput(value, mentionedUserIds)}
+      </div>
+    </div>
+  );
+});

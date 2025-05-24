@@ -8,7 +8,7 @@ import {
 } from '../../lib/chat';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalize as denormalizeUsers } from '../users';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import {
   SagaActionTypes,
   Stage,
@@ -103,7 +103,7 @@ export function* leaveGroup(action) {
   try {
     yield put(setLeaveGroupStatus(LeaveGroupDialogStatus.IN_PROGRESS));
 
-    const currentUser = yield select(currentUserSelector());
+    const currentUser = yield select(currentUserSelector);
     const chatClient = yield call(chat.get);
     yield call([chatClient, chatClient.leaveRoom], action.payload.roomId, currentUser.id);
 

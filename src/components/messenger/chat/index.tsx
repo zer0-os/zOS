@@ -1,7 +1,7 @@
-import { useRef, useCallback, FC, useMemo } from 'react';
+import { useRef, useCallback, FC, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
-import { onRemoveReply } from '../../../store/channels';
+import { onRemoveReply, userTypingInRoom } from '../../../store/channels';
 import { ChatViewContainer } from '../../chat-view-container/chat-view-container';
 import { send as sendMessageAction } from '../../../store/messages';
 import { SendPayload as PayloadSendMessage } from '../../../store/messages/saga';
@@ -10,7 +10,7 @@ import {
   setLeaveGroupStatus as setLeaveGroupStatusAction,
 } from '../../../store/group-management';
 import { LeaveGroupDialogContainer } from '../../group-management/leave-group-dialog/container';
-import { MessageInput } from '../../message-input/container';
+import { MessageInput } from '../../message-input';
 import { searchMentionableUsersForChannel } from '../../../platform-apps/channels/util/api';
 import { Media } from '../../message-input/utils';
 import { ConversationHeaderContainer as ConversationHeader } from '../conversation-header/container';
@@ -22,6 +22,7 @@ import { leaveGroupDialogStatusSelector } from '../../../store/group-management/
 import { activeConversationIdSelector, isJoiningConversationSelector } from '../../../store/chat/selectors';
 import { useChannelSelector, useUsersSelector } from '../../../store/hooks';
 import InvertedScroll from '../../inverted-scroll';
+import { currentUserSelector } from '../../../store/authentication/selectors';
 
 const isNotEmpty = (message: string): boolean => {
   return !!message && message.trim() !== '';
@@ -35,8 +36,19 @@ export const MessengerChat: FC = () => {
   const leaveGroupDialogStatus = useSelector(leaveGroupDialogStatusSelector);
   const directMessage = useChannelSelector(activeConversationId);
   const channelOtherMembers = useUsersSelector(directMessage?.otherMembers || []);
+  const user = useSelector(currentUserSelector);
+  const currentUserId = user?.id;
 
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const chatViewContainerRef = useRef<InvertedScroll | null>(null);
+
+  useEffect(() => {
+    if (messageInputRef && messageInputRef.current) {
+      if ((activeConversationId && activeConversationId === messageInputRef.current.id) || !activeConversationId) {
+        messageInputRef.current.focus();
+      }
+    }
+  }, [activeConversationId]);
 
   const setLeaveGroupStatus = useCallback(
     (status: LeaveGroupDialogStatus) => {
@@ -100,10 +112,15 @@ export const MessengerChat: FC = () => {
     ]
   );
 
+  const handleUserTyping = ({ roomId }: { roomId: string }) => {
+    dispatch(userTypingInRoom({ roomId }));
+  };
+
   if ((!activeConversationId || !directMessage) && !isJoiningConversation) {
     return null;
   }
 
+  const replyIsCurrentUser = currentUserId && reply?.sender && currentUserId === reply.sender.userId;
   const isLeaveGroupDialogOpen = leaveGroupDialogStatus !== LeaveGroupDialogStatus.CLOSED;
 
   return (
@@ -127,11 +144,14 @@ export const MessengerChat: FC = () => {
             <div className='direct-message-chat__footer'>
               {activeConversationId && (
                 <MessageInput
+                  ref={messageInputRef}
                   id={activeConversationId}
                   onSubmit={handleSendMessage}
                   getUsersForMentions={searchMentionableUsers}
                   reply={reply}
                   onRemoveReply={onRemoveReplyAction}
+                  replyIsCurrentUser={replyIsCurrentUser}
+                  onUserTyping={handleUserTyping}
                 />
               )}
               <ChatTypingIndicator

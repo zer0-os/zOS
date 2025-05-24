@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import { Container as FeedChatContainer } from './index';
 import { ChatViewContainer } from '../../../../components/chat-view-container/chat-view-container';
-import { MessageInput } from '../../../../components/message-input/container';
+import { MessageInput } from '../../../../components/message-input';
 import { RootState } from '../../../../store/reducer';
 import { validateFeedChat } from '../../../../store/chat';
 import { send } from '../../../../store/messages';

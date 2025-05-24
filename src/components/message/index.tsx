@@ -9,7 +9,7 @@ import {
   MessageAttachment,
 } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
-import { MessageInput } from '../message-input/container';
+import { MessageInput } from '../message-input';
 import { User } from '../../store/channels';
 import { ParentMessage as ParentMessageType } from '../../lib/chat/types';
 import { UserForMention } from '../message-input/utils';

@@ -22,7 +22,7 @@ import {
 } from './api';
 import { takeEveryFromBus } from '../../lib/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import { featureFlags } from '../../lib/feature-flags';
 import { sendMeowReactionEvent } from '../../lib/chat';
 
@@ -161,7 +161,7 @@ export function* transferMeow(action) {
 }
 
 export function* updateUserMeowBalance(postOwnerId: string, amount: number) {
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
 
   if (postOwnerId === currentUser.id) {
     const currentMeowBalance = yield select((state) => state.rewards.meow);

@@ -1,7 +1,10 @@
 import { EventType, Membership } from 'matrix-js-sdk';
 import { MatrixClient } from '../../../lib/chat/matrix-client';
-import { call, spawn } from 'redux-saga/effects';
+import { call, select, spawn } from 'redux-saga/effects';
 import { batchGetUsersByMatrixId } from '../../users/saga';
+import { roomMemberUpdated } from '../saga';
+import { activeConversationIdSelector } from '../../chat/selectors';
+import { scheduleActiveChannelMessageUpdate } from '../../messages/saga';
 
 type RoomMemberEvent = {
   type: EventType.RoomMember;
@@ -29,5 +32,10 @@ export function* handleRoomMemberEvent(event: RoomMemberEvent, roomId: string, c
     yield call([client, client.autoJoinRoom], roomId);
   }
 
+  yield spawn(roomMemberUpdated, roomId);
   yield spawn(batchGetUsersByMatrixId, state_key);
+  const activeConversationId = yield select(activeConversationIdSelector);
+  if (activeConversationId === roomId) {
+    yield spawn(scheduleActiveChannelMessageUpdate, roomId);
+  }
 }

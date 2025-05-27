@@ -1,5 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
+import { debounce } from 'lodash';
+import { useCallback, useState, useMemo } from 'react';
 
 import { get } from '../../../../../lib/api/rest';
 import { PAGE_SIZE } from '../../../lib/constants';
@@ -7,6 +9,8 @@ import { mapPostToMatrixMessage } from '../../../../../store/posts/utils';
 import { useMeowPost } from '../../../lib/useMeowPost';
 import { primaryZIDSelector, userIdSelector } from '../../../../../store/authentication/selectors';
 import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/selectors';
+import { searchMyNetworksByName } from '../../../../../platform-apps/channels/util/api';
+import { MemberNetworks } from '../../../../../store/users/types';
 
 interface UseFeedParams {
   zid?: string;
@@ -19,6 +23,31 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
   const currentUserId = useSelector(userIdSelector);
   const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
   const primaryZID = useSelector(primaryZIDSelector);
+  const [searchResults, setSearchResults] = useState<MemberNetworks[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+
+  const performSearch = useCallback(async (searchText: string) => {
+    const usersApiResult = await searchMyNetworksByName(searchText);
+    setSearchResults(usersApiResult);
+    setIsSearching(false);
+  }, []);
+
+  const debouncedSearch = useMemo(() => debounce(performSearch, 800), [performSearch]);
+
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchValue(value);
+      if (value.trim()) {
+        setIsSearching(true);
+        debouncedSearch(value);
+      } else {
+        setIsSearching(false);
+        setSearchResults([]);
+      }
+    },
+    [debouncedSearch]
+  );
 
   const queryKey = ['posts', { zid, userId, ...(typeof following === 'boolean' ? { following } : {}) }];
 
@@ -73,6 +102,10 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
     posts: data,
     currentUserId,
     userMeowBalance,
+    searchResults,
+    isSearching,
+    searchValue,
+    handleSearch,
   };
 };
 

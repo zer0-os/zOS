@@ -160,13 +160,13 @@ export const ChatView = React.forwardRef<InvertedScroll, Properties>(
 
     const openMessageInfoHandler = useCallback(
       (messageId: string) => {
-        dispatch(openMessageInfo({ messageId }));
+        dispatch(openMessageInfo({ messageId, channelId: id }));
 
         if (!isSecondarySidekickOpen) {
           dispatch(toggleSecondarySidekick());
         }
       },
-      [isSecondarySidekickOpen, dispatch]
+      [dispatch, id, isSecondarySidekickOpen]
     );
 
     const searchMentionableUsersHandler = useCallback(

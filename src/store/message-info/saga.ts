@@ -14,13 +14,13 @@ function* authWatcher() {
 }
 
 export function* openOverview(action) {
-  const { roomId, messageId } = action.payload;
+  const { channelId, messageId } = action.payload;
 
   yield call(resetConversationManagement);
   yield put(setStage(Stage.Overview));
   yield put(setSelectedMessageId(messageId));
 
-  yield call(mapMessageReadByUsers, messageId, roomId);
+  yield call(mapMessageReadByUsers, messageId, channelId);
 }
 
 export function* closeOverview() {

@@ -394,7 +394,10 @@ describe('ChatView', () => {
         screen.getByTestId('chat-message').click();
 
         expect(mockDispatch).toHaveBeenCalled();
-        expect(openMessageInfo).toHaveBeenCalledWith({ messageId: mockChatMessageProps.message.id });
+        expect(openMessageInfo).toHaveBeenCalledWith({
+          messageId: mockChatMessageProps.message.id,
+          channelId: 'channel-1',
+        });
       });
 
       it('should dispatch toggleSecondarySidekick if isSecondarySidekickOpen is false when onOpenMessageInfo is called', () => {
@@ -423,7 +426,7 @@ describe('ChatView', () => {
         screen.getByTestId('chat-message').click();
 
         expect(mockDispatch).toHaveBeenCalledTimes(2);
-        expect(openMessageInfo).toHaveBeenCalledWith({ messageId: messageWithoutMedia.id });
+        expect(openMessageInfo).toHaveBeenCalledWith({ messageId: messageWithoutMedia.id, channelId: 'channel-1' });
         expect(toggleSecondarySidekick).toHaveBeenCalledTimes(1);
       });
 
@@ -453,7 +456,7 @@ describe('ChatView', () => {
         screen.getByTestId('chat-message').click();
 
         expect(mockDispatch).toHaveBeenCalledTimes(1);
-        expect(openMessageInfo).toHaveBeenCalledWith({ messageId: messageWithoutMedia.id });
+        expect(openMessageInfo).toHaveBeenCalledWith({ messageId: messageWithoutMedia.id, channelId: 'channel-1' });
         expect(toggleSecondarySidekick).not.toHaveBeenCalled();
       });
 

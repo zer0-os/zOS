@@ -1,0 +1,108 @@
+@use '../../../../../variables' as variables;
+
+.Container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 36px;
+  box-sizing: border-box;
+  transition: width 0.15s ease-in-out;
+  z-index: 1000;
+}
+
+.IconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--color-greyscale-11);
+
+  &:hover {
+    background: var(--color-greyscale-2);
+  }
+}
+
+.Drawer {
+  position: absolute;
+  right: 44px;
+  width: 0;
+  overflow: hidden;
+  transition: width 0.15s ease-in-out;
+  background: var(--color-greyscale-1);
+  border-radius: 18px;
+  border: 1px solid var(--color-greyscale-3);
+  backdrop-filter: blur(30px);
+}
+
+.DrawerOpen {
+  width: 200px;
+}
+
+.InputContainer {
+  width: 100%;
+}
+
+.Input {
+  width: 100%;
+}
+
+.SearchResults {
+  position: absolute;
+  top: 100%;
+  right: 43px;
+  width: 200px;
+  margin-top: 2px;
+  background: var(--color-greyscale-1);
+  border: 1px solid var(--color-greyscale-3);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.SearchLoading {
+  padding: 8px;
+  color: var(--color-greyscale-11);
+  font-size: 14px;
+  text-align: center;
+}
+
+.SearchResultItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--color-greyscale-12);
+  font-size: 14px;
+
+  &:hover {
+    background: var(--color-greyscale-2);
+  }
+}
+
+.UserInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.UserName {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.UserHandle {
+  color: var(--color-greyscale-11);
+  font-size: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

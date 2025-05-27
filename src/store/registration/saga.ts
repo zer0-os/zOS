@@ -28,9 +28,9 @@ import { completeUserLogin } from '../authentication/saga';
 import { getHistory } from '../../lib/browser';
 import { setIsComplete as setPageLoadComplete } from '../page-load';
 import { createConversation } from '../channels-list/saga';
-import { getZEROUsers as getZEROUsersAPI } from '../channels-list/api';
 import { getProvider as getIndexedDbProvider } from '../../lib/storage/media-cache/idb';
-import { receive as receiveUser } from '../users';
+import { getUserByMatrixId } from '../users/saga';
+import { User } from '../channels';
 
 export function* validateInvite(action) {
   const { code } = action.payload;
@@ -167,7 +167,7 @@ export function* updateProfile(action) {
       yield call(completeUserLogin);
       yield put(setStage(RegistrationStage.Done));
 
-      yield call(createWelcomeConversation, userId, response.response.inviter);
+      yield call(createWelcomeConversation, response.response.inviter);
 
       yield spawn(clearRegistrationStateOnLogout);
       return true;
@@ -240,16 +240,16 @@ export function* saga() {
   yield updateProfilePage();
 }
 
-export function* createWelcomeConversation(userId: string, inviter: { id: string; matrixId: string }) {
+export function* createWelcomeConversation(inviter: { id: string; matrixId: string }) {
   if (!inviter?.id || !inviter?.matrixId) {
     return;
   }
 
   try {
-    const inviterZeroUserData = yield call(getZEROUsersAPI, [inviter.matrixId]);
-    const inviterUser = inviterZeroUserData?.[0];
-    yield put(receiveUser(inviterUser));
-    yield call(createConversation, [inviterUser.userId], '', null);
+    const user: User = yield call(getUserByMatrixId, inviter.matrixId);
+    if (user) {
+      yield call(createConversation, [user.userId], '', null);
+    }
   } catch (error) {}
 }
 

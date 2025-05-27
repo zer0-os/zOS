@@ -26,6 +26,9 @@ export const useFollow = (targetUserId: string) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['profile'] }),
         queryClient.invalidateQueries({ queryKey: ['followStatus', targetUserId] }),
+        // Invalidate both the target user's and current user's follow lists
+        queryClient.invalidateQueries({ queryKey: ['followList', targetUserId, 'followers'] }),
+        queryClient.invalidateQueries({ queryKey: ['followList', targetUserId, 'following'] }),
       ]);
     },
     onError: (error) => {
@@ -42,6 +45,9 @@ export const useFollow = (targetUserId: string) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['profile'] }),
         queryClient.invalidateQueries({ queryKey: ['followStatus', targetUserId] }),
+        // Invalidate both the target user's and current user's follow lists
+        queryClient.invalidateQueries({ queryKey: ['followList', targetUserId, 'followers'] }),
+        queryClient.invalidateQueries({ queryKey: ['followList', targetUserId, 'following'] }),
       ]);
     },
     onError: (error) => {

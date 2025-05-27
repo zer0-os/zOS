@@ -3,7 +3,7 @@ import { Message } from '.';
 import { MediaType, MessageSendStatus } from '../../store/messages';
 import { LinkPreview } from '../link-preview';
 import { LinkPreviewType } from '../../lib/link-preview';
-import { MessageInput } from '../message-input/container';
+import { MessageInput } from '../message-input';
 import { ContentHighlighter } from '../content-highlighter';
 import { ParentMessage } from './parent-message';
 import { IconAlertCircle } from '@zero-tech/zui/icons';

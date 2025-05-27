@@ -8,7 +8,7 @@ import {
 } from '../../lib/chat';
 import { Events, getAuthChannel } from '../authentication/channels';
 import { denormalize as denormalizeUsers } from '../users';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import {
   SagaActionTypes,
   Stage,
@@ -32,6 +32,8 @@ import { getPanelOpenState } from '../panels/selectors';
 import { setPanelState } from '../panels';
 import { Panel } from '../panels/constants';
 import { channelSelector } from '../channels/selectors';
+import { getUsersByMatrixIds } from '../users/saga';
+import { User } from '../channels';
 
 export function* reset() {
   yield put(setStage(Stage.None));
@@ -101,7 +103,7 @@ export function* leaveGroup(action) {
   try {
     yield put(setLeaveGroupStatus(LeaveGroupDialogStatus.IN_PROGRESS));
 
-    const currentUser = yield select(currentUserSelector());
+    const currentUser = yield select(currentUserSelector);
     const chatClient = yield call(chat.get);
     yield call([chatClient, chatClient.leaveRoom], action.payload.roomId, currentUser.id);
 
@@ -123,8 +125,9 @@ export function* roomMembersSelected(action) {
   yield put(setIsAddingMembers(true));
 
   try {
-    const userIds = selectedMembers.map((user) => user.value);
-    const users = yield select((state) => denormalizeUsers(userIds, state));
+    const matrixIds = selectedMembers.map((user) => user.matrixId);
+    const usersMap: Map<string, User> = yield call(getUsersByMatrixIds, matrixIds);
+    const users = Array.from(usersMap.values());
 
     const chatClient: Chat = yield call(chat.get);
     yield call([chatClient, chatClient.addMembersToRoom], roomId, users);

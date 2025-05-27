@@ -2,7 +2,7 @@ import { takeLatest, put, call, select, spawn, take } from 'redux-saga/effects';
 import { SagaActionTypes, rawReceive, schema, removeAll, CHANNEL_DEFAULTS, ReceiveChannel } from '.';
 import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
-import { currentUserSelector } from '../authentication/saga';
+import { currentUserSelector } from '../authentication/selectors';
 import {
   chat,
   sendTypingEvent as matrixSendUserTypingEvent,
@@ -39,7 +39,7 @@ export function* markAllMessagesAsRead(channelId, userId) {
 
 // mark all messages in read in current active conversation
 export function* markConversationAsRead(conversationId) {
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
   const conversationInfo = yield select(channelSelector(conversationId));
 
   // We should only mark as read if the user is in the Messenger or Feed app and not in the notifications feed
@@ -177,7 +177,7 @@ export function* roomLabelChange(action) {
 export function* receivedRoomMembersTyping(action) {
   const { roomId, userIds: matrixIds } = action.payload;
 
-  const currentUser = yield select(currentUserSelector());
+  const currentUser = yield select(currentUserSelector);
   const users = yield select((state) => state.normalized.users);
   const otherMembersTyping = [];
   for (const matrixId of matrixIds) {

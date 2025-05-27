@@ -7,6 +7,7 @@ import {
 import { Events, getAuthChannel } from '../authentication/channels';
 import { openConversation } from '../channels/saga';
 import { oneOnOnesSelector } from '../channels/selectors';
+import { NormalizedChannel } from '../channels';
 
 export function* reset() {
   yield put(setGroupUsers([]));
@@ -126,7 +127,7 @@ function* handleInitiation() {
 
   const { userIds } = action.payload;
   const oneOnOnes = yield select(oneOnOnesSelector);
-  const existingOneOnOne = oneOnOnes.find((c) => c.otherMembers[0]?.userId === userIds[0]);
+  const existingOneOnOne = oneOnOnes.find((c: NormalizedChannel) => c.otherMembers[0] === userIds[0]);
 
   if (existingOneOnOne) {
     yield call(openConversation, existingOneOnOne.id);

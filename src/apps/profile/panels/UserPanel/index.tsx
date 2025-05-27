@@ -50,7 +50,18 @@ export const UserPanel = () => {
           <div className={styles.Name}>
             <h1>{isLoading ? <Skeleton /> : handle}</h1>
             <h2>{isLoading ? <Skeleton /> : zid ? '0://' + zid : null}</h2>
+            {!isCurrentUser && !isLoading && (
+              <IconButton
+                Icon={IconMessage01}
+                onClick={handleStartConversation}
+                aria-label='Start conversation'
+                className={styles.MessageButton}
+                data-testid='message-button'
+                size={28}
+              />
+            )}
           </div>
+
           {!isLoading && userId && (
             <div className={styles.FollowContainer}>
               {isLoading ? (
@@ -66,15 +77,6 @@ export const UserPanel = () => {
               )}
               <div className={styles.ActionButtons}>
                 {!isCurrentUser && <FollowButton targetUserId={userId} className={styles.FollowButton} />}
-                {!isCurrentUser && (
-                  <IconButton
-                    Icon={IconMessage01}
-                    onClick={handleStartConversation}
-                    aria-label='Start conversation'
-                    className={styles.MessageButton}
-                    data-testid='message-button'
-                  />
-                )}
               </div>
             </div>
           )}

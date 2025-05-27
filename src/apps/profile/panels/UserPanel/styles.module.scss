@@ -102,21 +102,24 @@
 }
 
 .ActionButtons {
+  position: relative;
+  width: 100%;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
+  min-height: 48px;
 }
 
 .MessageButton {
+  position: absolute;
+  left: 0;
+  top: 38%;
   color: var(--color-secondary-11);
   background: var(--zui-colors-background-secondary);
   border-radius: 8px;
   padding: 4px;
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }

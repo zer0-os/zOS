@@ -32,6 +32,18 @@ vi.mock('./feed', () => ({
   },
 }));
 
+vi.mock('./profile', () => ({
+  ProfileApp: () => {
+    return <div data-testid='profile-app' />;
+  },
+}));
+
+vi.mock('./home', () => ({
+  HomeApp: () => {
+    return <div data-testid='home-app' />;
+  },
+}));
+
 const renderComponent = (route: string | undefined = '/') => {
   renderWithProviders(
     <MemoryRouter initialEntries={[route]}>

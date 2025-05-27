@@ -6,7 +6,7 @@ import { RootState } from '../../../store/reducer';
 
 const followingSelector = (state: RootState) => state.userFollows.following;
 
-export const useFollow = (targetUserId: string) => {
+export const useFollow = (targetUserId?: string) => {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const following = useSelector(followingSelector);
@@ -15,10 +15,17 @@ export const useFollow = (targetUserId: string) => {
     queryKey: ['followStatus', targetUserId],
     queryFn: () => getFollowStatus(targetUserId),
     staleTime: 0,
+    enabled: !!targetUserId,
   });
 
   const followMutation = useMutation({
-    mutationFn: () => followUser(targetUserId),
+    mutationFn: () => {
+      if (targetUserId) {
+        return followUser(targetUserId);
+      } else {
+        throw new Error('Target user ID is required');
+      }
+    },
     onSuccess: async () => {
       dispatch(addFollowing(targetUserId));
 
@@ -37,7 +44,13 @@ export const useFollow = (targetUserId: string) => {
   });
 
   const unfollowMutation = useMutation({
-    mutationFn: () => unfollowUser(targetUserId),
+    mutationFn: () => {
+      if (targetUserId) {
+        return unfollowUser(targetUserId);
+      } else {
+        throw new Error('Target user ID is required');
+      }
+    },
     onSuccess: async () => {
       dispatch(removeFollowing(targetUserId));
 
@@ -59,9 +72,9 @@ export const useFollow = (targetUserId: string) => {
   const isLoading = isLoadingStatus || followMutation.isPending || unfollowMutation.isPending;
 
   return {
-    isFollowing,
+    isFollowing: !!targetUserId && isFollowing,
     isLoading,
-    follow: () => followMutation.mutate(),
-    unfollow: () => unfollowMutation.mutate(),
+    follow: () => targetUserId && followMutation.mutate(),
+    unfollow: () => targetUserId && unfollowMutation.mutate(),
   };
 };

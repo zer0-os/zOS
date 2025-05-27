@@ -13,6 +13,7 @@
     "@ethersproject/bytes": "^5.4.0",
     "@giphy/js-fetch-api": "^4.7.1",
     "@giphy/react-components": "^6.5.2",
+    "@radix-ui/react-hover-card": "^1.1.14",
     "@rainbow-me/rainbowkit": "^2.1.2",
     "@reduxjs/toolkit": "^1.7.1",
     "@sentry/react": "^9.11.0",

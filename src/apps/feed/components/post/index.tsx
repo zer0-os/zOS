@@ -19,6 +19,7 @@ import { detectLinkType } from './link-preview/utils';
 import { PostMedia } from '../post-media';
 import { useGetReturnFromProfilePath } from '../../lib/useGetReturnFromProfilePath';
 import { RETURN_POST_ID_KEY, RETURN_PATH_KEY } from '../../lib/useReturnFromProfileNavigation';
+import { ProfileCardHover } from '../../../../components/profile-card/hover';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
@@ -118,9 +119,9 @@ export const Post = ({
       <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
         {variant === 'default' && (
           <div className={styles.Avatar}>
-            <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
+            <ProfileCardHover userId={authorPrimaryZid}>
               <MatrixAvatar size='regular' imageURL={avatarUrl} />
-            </ProfileLink>
+            </ProfileCardHover>
           </div>
         )}
         <ZUIPost
@@ -140,7 +141,9 @@ export const Post = ({
               {variant === 'expanded' && (
                 <div className={styles.Avatar}>
                   <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
-                    <MatrixAvatar size='regular' imageURL={avatarUrl} />
+                    <ProfileCardHover userId={authorPrimaryZid}>
+                      <MatrixAvatar size='regular' imageURL={avatarUrl} />
+                    </ProfileCardHover>
                   </ProfileLink>
                 </div>
               )}

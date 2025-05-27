@@ -100,3 +100,23 @@
   width: 100%;
   justify-content: center;
 }
+
+.ActionButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.MessageButton {
+  color: var(--color-secondary-11);
+  background: var(--zui-colors-background-secondary);
+  border-radius: 8px;
+  padding: 4px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

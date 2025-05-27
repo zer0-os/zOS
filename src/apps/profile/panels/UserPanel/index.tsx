@@ -3,11 +3,12 @@ import { useUserPanel } from './useUserPanel';
 
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
-import { IconLogoZero } from '@zero-tech/zui/icons';
+import { IconLogoZero, IconMessage01 } from '@zero-tech/zui/icons';
 import MatrixMask from './matrix-mask.svg?react';
 import { FollowButton } from '../../../../components/follow-button';
 import { FollowCounts } from '../../../../components/follow-counts';
 import { Skeleton } from '@zero-tech/zui/components/Skeleton';
+import { IconButton } from '@zero-tech/zui/components';
 import { Follows } from './Follows';
 
 import styles from './styles.module.scss';
@@ -15,8 +16,17 @@ import styles from './styles.module.scss';
 type FollowType = 'followers' | 'following';
 
 export const UserPanel = () => {
-  const { handle, profileImageUrl, zid, isLoading, userId, isCurrentUser, followersCount, followingCount } =
-    useUserPanel();
+  const {
+    handle,
+    profileImageUrl,
+    zid,
+    isLoading,
+    userId,
+    isCurrentUser,
+    followersCount,
+    followingCount,
+    handleStartConversation,
+  } = useUserPanel();
   const [activeFollowType, setActiveFollowType] = useState<FollowType | null>(null);
 
   useEffect(() => {
@@ -32,6 +42,7 @@ export const UserPanel = () => {
       <PanelBody className={styles.Body}>
         <div>
           <IconLogoZero size={18} />
+
           <div className={styles.Header}>
             <MatrixAvatar className={styles.Avatar} imageURL={profileImageUrl} size='regular' />
             <MatrixMask className={styles.Mask} />
@@ -39,7 +50,18 @@ export const UserPanel = () => {
           <div className={styles.Name}>
             <h1>{isLoading ? <Skeleton /> : handle}</h1>
             <h2>{isLoading ? <Skeleton /> : zid ? '0://' + zid : null}</h2>
+            {!isCurrentUser && !isLoading && (
+              <IconButton
+                Icon={IconMessage01}
+                onClick={handleStartConversation}
+                aria-label='Start conversation'
+                className={styles.MessageButton}
+                data-testid='message-button'
+                size={28}
+              />
+            )}
           </div>
+
           {!isLoading && userId && (
             <div className={styles.FollowContainer}>
               {isLoading ? (
@@ -53,7 +75,9 @@ export const UserPanel = () => {
                   onFollowersClick={() => setActiveFollowType('followers')}
                 />
               )}
-              {!isCurrentUser && <FollowButton targetUserId={userId} className={styles.FollowButton} />}
+              <div className={styles.ActionButtons}>
+                {!isCurrentUser && <FollowButton targetUserId={userId} className={styles.FollowButton} />}
+              </div>
             </div>
           )}
         </div>

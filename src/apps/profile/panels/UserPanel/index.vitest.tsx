@@ -35,8 +35,18 @@ vi.mock('../../../../components/follow-counts', () => ({
   )),
 }));
 
+vi.mock('@zero-tech/zui/components', () => ({
+  IconButton: vi.fn(({ onClick, Icon, 'data-testid': testId, ...props }) => (
+    <button onClick={onClick} data-testid={testId} {...props}>
+      <Icon />
+    </button>
+  )),
+}));
+
 describe('UserPanel', () => {
   describe('when user has all profile data', () => {
+    const handleStartConversation = vi.fn();
+
     beforeEach(() => {
       vi.mocked(useUserPanel).mockReturnValue({
         handle: 'testuser',
@@ -47,6 +57,7 @@ describe('UserPanel', () => {
         isCurrentUser: false,
         followersCount: 100,
         followingCount: 50,
+        handleStartConversation,
       });
 
       renderWithProviders(<UserPanel />);
@@ -78,6 +89,17 @@ describe('UserPanel', () => {
       expect(followButton).toBeInTheDocument();
       expect(followButton).toHaveAttribute('data-user-id', 'test-user-id');
     });
+
+    it('renders message button for other users', () => {
+      const messageButton = screen.getByTestId('message-button');
+      expect(messageButton).toBeInTheDocument();
+    });
+
+    it('calls handleStartConversation when message button is clicked', () => {
+      const messageButton = screen.getByTestId('message-button');
+      messageButton.click();
+      expect(handleStartConversation).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('when viewing own profile', () => {
@@ -91,6 +113,7 @@ describe('UserPanel', () => {
         isCurrentUser: true,
         followersCount: 100,
         followingCount: 50,
+        handleStartConversation: vi.fn(),
       });
 
       renderWithProviders(<UserPanel />);
@@ -98,6 +121,10 @@ describe('UserPanel', () => {
 
     it('does not render follow button', () => {
       expect(screen.queryByTestId('mock-follow-button')).not.toBeInTheDocument();
+    });
+
+    it('does not render message button', () => {
+      expect(screen.queryByTestId('message-button')).not.toBeInTheDocument();
     });
 
     it('still renders follow counts', () => {
@@ -117,6 +144,7 @@ describe('UserPanel', () => {
         isCurrentUser: false,
         followersCount: 100,
         followingCount: 50,
+        handleStartConversation: vi.fn(),
       });
 
       renderWithProviders(<UserPanel />);
@@ -125,6 +153,10 @@ describe('UserPanel', () => {
     it('does not render follow button or counts while loading', () => {
       expect(screen.queryByTestId('mock-follow-button')).not.toBeInTheDocument();
       expect(screen.queryByTestId('mock-follow-counts')).not.toBeInTheDocument();
+    });
+
+    it('does not render message button while loading', () => {
+      expect(screen.queryByTestId('message-button')).not.toBeInTheDocument();
     });
   });
 
@@ -138,6 +170,7 @@ describe('UserPanel', () => {
       isCurrentUser: false,
       followersCount: 100,
       followingCount: 50,
+      handleStartConversation: vi.fn(),
     });
 
     renderWithProviders(<UserPanel />);

@@ -1,4 +1,5 @@
 import { MatrixClient } from '../matrix-client';
+import { featureFlags } from '../../feature-flags';
 
 class MatrixInstance {
   private _clientInstance: MatrixClient;
@@ -18,4 +19,9 @@ class MatrixInstance {
 }
 
 const Matrix = new MatrixInstance();
+if (featureFlags.enableMatrixDebug) {
+  // @ts-ignore
+  window.Matrix = Matrix;
+}
+
 export default Matrix;

@@ -4,7 +4,7 @@ import { useProfileCard } from './useProfileCard';
 import { useProfile } from '../../../apps/profile/lib/useProfile';
 import { useFollow } from '../../../apps/profile/lib/useFollow';
 import { useOpenProfile } from '../../../apps/profile/lib/useOpenProfile';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 vi.mock('../../../apps/profile/lib/useProfile', () => ({
   useProfile: vi.fn(),
@@ -16,6 +16,7 @@ vi.mock('../../../apps/profile/lib/useFollow', () => ({
 
 vi.mock('react-redux', () => ({
   useSelector: vi.fn(),
+  useDispatch: vi.fn(),
 }));
 
 vi.mock('../../../apps/profile/lib/useOpenProfile', () => ({
@@ -29,6 +30,7 @@ describe('useProfileCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useSelector as any).mockReturnValue({ id: mockCurrentUserId });
+    (useDispatch as any).mockReturnValue(vi.fn());
     (useFollow as any).mockReturnValue({
       follow: vi.fn(),
       unfollow: vi.fn(),

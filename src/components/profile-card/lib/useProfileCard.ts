@@ -1,9 +1,13 @@
 import millify from 'millify';
 import { useProfile } from '../../../apps/profile/lib/useProfile';
 import { useFollow } from '../../../apps/profile/lib/useFollow';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { useOpenProfile } from '../../../apps/profile/lib/useOpenProfile';
+import { createConversation } from '../../../store/create-conversation';
+import { allChannelsSelector } from '../../../store/channels/selectors';
+import { openConversation } from '../../../store/channels';
+import { isOneOnOne } from '../../../store/channels-list/utils';
 
 export interface UseProfileCardReturn {
   followerCount?: string;
@@ -14,16 +18,18 @@ export interface UseProfileCardReturn {
   isOwnProfile: boolean;
   onClickAvatar: () => void;
   onClickFollow: () => void;
+  onClickChat: () => void;
   profileImage?: string;
   subhandle?: string;
 }
 
 export const useProfileCard = (userId: string): UseProfileCardReturn => {
   const currentUser = useSelector(currentUserSelector);
-
   const { isLoading, data } = useProfile({ id: userId });
   const { follow, unfollow, isFollowing } = useFollow(data?.userId);
   const { onOpenProfile } = useOpenProfile();
+  const dispatch = useDispatch();
+  const allChannels = useSelector(allChannelsSelector);
 
   const isOwnProfile = data?.userId === currentUser?.id;
 
@@ -42,15 +48,29 @@ export const useProfileCard = (userId: string): UseProfileCardReturn => {
     }
   };
 
+  const onClickChat = () => {
+    if (!data?.userId) return;
+    // Find existing 1:1 conversation with this user
+    const existing = allChannels.find(
+      (c) => isOneOnOne(c) && c.otherMembers.length === 1 && c.otherMembers[0] === data.userId
+    );
+    if (existing) {
+      dispatch(openConversation({ conversationId: existing.id }));
+    } else {
+      dispatch(createConversation({ userIds: [data.userId] }));
+    }
+  };
+
   return {
     followerCount: data?.followersCount !== undefined ? millify(data.followersCount) : undefined,
     followingCount: data?.followingCount !== undefined ? millify(data.followingCount) : undefined,
     handle: data?.handle,
     isFollowing,
-    isLoading: isLoading,
+    isLoading,
     isOwnProfile,
     onClickAvatar,
     onClickFollow,
+    onClickChat,
     profileImage: data?.profileImage,
     subhandle: data?.primaryZid ? `0://${data.primaryZid}` : data?.publicAddress,
   };

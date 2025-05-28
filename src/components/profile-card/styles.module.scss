@@ -67,5 +67,17 @@
 }
 
 .Actions {
-  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ChatButton {
+  color: var(--color-secondary-11);
+  background: var(--zui-colors-background-secondary);
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -1,5 +1,6 @@
 import { useProfileCard } from './lib/useProfileCard';
-import { Button, SkeletonText, Variant } from '@zero-tech/zui/components';
+import { Button, SkeletonText, Variant, IconButton } from '@zero-tech/zui/components';
+import { IconMessage01 } from '@zero-tech/zui/icons';
 
 import styles from './styles.module.scss';
 import { MatrixAvatar } from '../matrix-avatar';
@@ -18,6 +19,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
     isOwnProfile,
     onClickAvatar,
     onClickFollow,
+    onClickChat,
     profileImage,
     subhandle,
   } = useProfileCard(userId);
@@ -29,9 +31,22 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
           <MatrixAvatar className={styles.Avatar} imageURL={profileImage} size='regular' />
         </div>
         {!isOwnProfile && !isLoading && (
-          <Button variant={Variant.Primary} onPress={onClickFollow}>
-            {isFollowing ? 'Unfollow' : 'Follow'}
-          </Button>
+          <div className={styles.Actions} data-testid='profile-actions'>
+            <Button
+              aria-label={isFollowing ? 'Unfollow user' : 'Follow user'}
+              variant={Variant.Primary}
+              onPress={onClickFollow}
+            >
+              {isFollowing ? 'Unfollow' : 'Follow'}
+            </Button>
+            <IconButton
+              Icon={IconMessage01}
+              onClick={onClickChat}
+              aria-label='Open conversation with user'
+              size={32}
+              className={styles.ChatButton}
+            />
+          </div>
         )}
       </div>
       <div className={styles.Name}>

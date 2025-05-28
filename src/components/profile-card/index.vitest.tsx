@@ -21,6 +21,7 @@ describe('ProfileCard', () => {
   describe('when profile successfully loaded with all data', () => {
     const mockOnClickAvatar = vi.fn();
     const mockOnClickFollow = vi.fn();
+    const mockOnClickChat = vi.fn();
 
     beforeEach(() => {
       vi.mocked(useProfileCardModule.useProfileCard).mockReturnValue({
@@ -33,6 +34,7 @@ describe('ProfileCard', () => {
         isOwnProfile: false,
         onClickAvatar: mockOnClickAvatar,
         onClickFollow: mockOnClickFollow,
+        onClickChat: mockOnClickChat,
       });
 
       renderComponent();
@@ -54,18 +56,21 @@ describe('ProfileCard', () => {
       expect(screen.getByTestId('following-count')).toHaveTextContent('100 Following');
     });
 
-    it('should show follow button when not own profile', () => {
-      expect(screen.getByRole('button')).toHaveTextContent('Follow');
-    });
-
-    it('should call onClickFollow when follow button is clicked', () => {
-      fireEvent.click(screen.getByRole('button'));
+    it('should be able to click Follow button', () => {
+      const followButton = screen.getByLabelText('Follow user');
+      fireEvent.click(followButton);
       expect(mockOnClickFollow).toHaveBeenCalled();
     });
 
     it('should call onClickAvatar when avatar is clicked', () => {
       fireEvent.click(screen.getByTestId('profile-avatar'));
       expect(mockOnClickAvatar).toHaveBeenCalled();
+    });
+
+    it('should be able to click Chat button', () => {
+      const chatButton = screen.getByLabelText('Open conversation with user');
+      fireEvent.click(chatButton);
+      expect(mockOnClickChat).toHaveBeenCalled();
     });
   });
 
@@ -81,13 +86,15 @@ describe('ProfileCard', () => {
         isOwnProfile: true,
         onClickAvatar: vi.fn(),
         onClickFollow: vi.fn(),
+        onClickChat: vi.fn(),
       });
 
       renderComponent();
     });
 
-    it('should not show follow button', () => {
-      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    it('should not show follow/unfollow button', () => {
+      expect(screen.queryByLabelText('Follow user')).toBeNull();
+      expect(screen.queryByLabelText('Unfollow user')).toBeNull();
     });
   });
 
@@ -103,13 +110,14 @@ describe('ProfileCard', () => {
         isOwnProfile: false,
         onClickAvatar: vi.fn(),
         onClickFollow: vi.fn(),
+        onClickChat: vi.fn(),
       });
 
       renderComponent();
     });
 
     it('should show unfollow button', () => {
-      expect(screen.getByRole('button')).toHaveTextContent('Unfollow');
+      expect(screen.getByLabelText('Unfollow user')).toBeInTheDocument();
     });
   });
 });

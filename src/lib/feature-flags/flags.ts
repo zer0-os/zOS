@@ -27,7 +27,8 @@ export type FeatureFlagKey =
   | 'enableAuraZApp'
   | 'enableProfile'
   | 'enableUserProfiles'
-  | 'enablePostMedia';
+  | 'enablePostMedia'
+  | 'enableMatrixDebug';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

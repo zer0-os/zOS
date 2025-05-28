@@ -1,9 +1,10 @@
-import { useProfileCard } from './lib/useProfileCard';
-import { Button, SkeletonText, Variant, IconButton } from '@zero-tech/zui/components';
 import { IconMessage01 } from '@zero-tech/zui/icons';
+import { Button, SkeletonText, Variant, IconButton } from '@zero-tech/zui/components';
+
+import { MatrixAvatar } from '../matrix-avatar';
+import { useProfileCard } from './lib/useProfileCard';
 
 import styles from './styles.module.scss';
-import { MatrixAvatar } from '../matrix-avatar';
 
 export interface ProfileCardProps {
   userId: string;
@@ -18,8 +19,8 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
     isLoading,
     isOwnProfile,
     onClickAvatar,
-    onClickFollow,
     onClickChat,
+    onClickFollow,
     profileImage,
     subhandle,
   } = useProfileCard(userId);

@@ -1,12 +1,14 @@
 import millify from 'millify';
-import { useProfile } from '../../../apps/profile/lib/useProfile';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { useFollow } from '../../../apps/profile/lib/useFollow';
-import { useSelector, useDispatch } from 'react-redux';
-import { currentUserSelector } from '../../../store/authentication/selectors';
 import { useOpenProfile } from '../../../apps/profile/lib/useOpenProfile';
-import { createConversation } from '../../../store/create-conversation';
+import { useProfile } from '../../../apps/profile/lib/useProfile';
+
+import { currentUserSelector } from '../../../store/authentication/selectors';
 import { allChannelsSelector } from '../../../store/channels/selectors';
 import { openConversation } from '../../../store/channels';
+import { createConversation } from '../../../store/create-conversation';
 import { isOneOnOne } from '../../../store/channels-list/utils';
 
 export interface UseProfileCardReturn {
@@ -17,8 +19,8 @@ export interface UseProfileCardReturn {
   isLoading: boolean;
   isOwnProfile: boolean;
   onClickAvatar: () => void;
-  onClickFollow: () => void;
   onClickChat: () => void;
+  onClickFollow: () => void;
   profileImage?: string;
   subhandle?: string;
 }
@@ -50,7 +52,6 @@ export const useProfileCard = (userId: string): UseProfileCardReturn => {
 
   const onClickChat = () => {
     if (!data?.userId) return;
-    // Find existing 1:1 conversation with this user
     const existing = allChannels.find(
       (c) => isOneOnOne(c) && c.otherMembers.length === 1 && c.otherMembers[0] === data.userId
     );
@@ -69,8 +70,8 @@ export const useProfileCard = (userId: string): UseProfileCardReturn => {
     isLoading,
     isOwnProfile,
     onClickAvatar,
-    onClickFollow,
     onClickChat,
+    onClickFollow,
     profileImage: data?.profileImage,
     subhandle: data?.primaryZid ? `0://${data.primaryZid}` : data?.publicAddress,
   };

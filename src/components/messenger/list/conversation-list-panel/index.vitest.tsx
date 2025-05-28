@@ -158,13 +158,13 @@ describe('ConversationListPanel', () => {
   it('renders the search input and create conversation button when expanded', () => {
     renderComponent({ isCollapsed: false });
     expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /icon/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Create new conversation' })).toBeInTheDocument();
   });
 
   it('does not render search input and create button when collapsed', () => {
     renderComponent({ isCollapsed: true });
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /icon/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Create new conversation' })).not.toBeInTheDocument();
   });
 
   it('renders "All" tab by default', () => {

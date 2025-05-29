@@ -8,6 +8,14 @@ vi.mock('./useUserPanel', () => ({
   useUserPanel: vi.fn(),
 }));
 
+vi.mock('../../../../components/profile-card/hover', () => ({
+  ProfileCardHover: vi.fn(({ userId, children }) => (
+    <div data-testid='mock-profile-card-hover' data-user-id={userId}>
+      {children}
+    </div>
+  )),
+}));
+
 vi.mock('react-router-dom', () => ({
   useRouteMatch: () => ({ params: { id: 'test-id' } }),
 }));

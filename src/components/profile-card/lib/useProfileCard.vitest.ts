@@ -86,6 +86,21 @@ describe('useProfileCard', () => {
     );
   });
 
+  it('should truncate wallet address when used as subhandle', () => {
+    (useProfile as any).mockReturnValue({
+      isLoading: false,
+      data: { publicAddress: '0x123456789abcdef' },
+    });
+
+    const { result } = renderHook(() => useProfileCard(mockUserId));
+
+    expect(result.current).toEqual(
+      expect.objectContaining({
+        subhandle: '0x1234...cdef',
+      })
+    );
+  });
+
   it('should format follower count with millify', () => {
     (useProfile as any).mockReturnValue({
       isLoading: false,

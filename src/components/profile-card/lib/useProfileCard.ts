@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useFollow } from '../../../apps/profile/lib/useFollow';
 import { useOpenProfile } from '../../../apps/profile/lib/useOpenProfile';
 import { useProfile } from '../../../apps/profile/lib/useProfile';
+import { getUserSubHandle } from '../../../lib/user';
 
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { allChannelsSelector } from '../../../store/channels/selectors';
@@ -73,6 +74,6 @@ export const useProfileCard = (userId: string): UseProfileCardReturn => {
     onClickChat,
     onClickFollow,
     profileImage: data?.profileImage,
-    subhandle: data?.primaryZid ? `0://${data.primaryZid}` : data?.publicAddress,
+    subhandle: data?.primaryZid ? `0://${data.primaryZid}` : getUserSubHandle(undefined, data?.publicAddress),
   };
 };

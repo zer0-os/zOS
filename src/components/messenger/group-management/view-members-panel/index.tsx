@@ -89,9 +89,7 @@ export class ViewMembersPanel extends React.Component<Properties, State> {
           <ScrollbarContainer>
             <CitizenListItem user={this.props.currentUser} tag={this.getTag(this.props.currentUser)}></CitizenListItem>
             {visibleMembers.map((u) => (
-              <ProfileCardHover key={u.userId} userId={u.primaryZID}>
-                <CitizenListItem user={u} tag={this.getTag(u)}></CitizenListItem>
-              </ProfileCardHover>
+              <CitizenListItem user={u} tag={this.getTag(u)}></CitizenListItem>
             ))}
           </ScrollbarContainer>
 

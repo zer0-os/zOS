@@ -17,6 +17,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
     handle,
     isFollowing,
     isLoading,
+    isLoadingFollowing,
     isOwnProfile,
     onClickAvatar,
     onClickChat,
@@ -37,6 +38,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
               aria-label={isFollowing ? 'Unfollow user' : 'Follow user'}
               variant={Variant.Primary}
               onPress={onClickFollow}
+              isDisabled={isLoadingFollowing}
             >
               {isFollowing ? 'Unfollow' : 'Follow'}
             </Button>

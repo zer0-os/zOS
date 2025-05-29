@@ -18,6 +18,7 @@ export interface UseProfileCardReturn {
   handle?: string;
   isFollowing: boolean;
   isLoading: boolean;
+  isLoadingFollowing: boolean;
   isOwnProfile: boolean;
   onClickAvatar: () => void;
   onClickChat: () => void;
@@ -29,7 +30,7 @@ export interface UseProfileCardReturn {
 export const useProfileCard = (userId: string): UseProfileCardReturn => {
   const currentUser = useSelector(currentUserSelector);
   const { isLoading, data } = useProfile({ id: userId });
-  const { follow, unfollow, isFollowing } = useFollow(data?.userId);
+  const { follow, unfollow, isFollowing, isLoading: isLoadingFollowing } = useFollow(data?.userId);
   const { onOpenProfile } = useOpenProfile();
   const dispatch = useDispatch();
   const allChannels = useSelector(allChannelsSelector);
@@ -69,6 +70,7 @@ export const useProfileCard = (userId: string): UseProfileCardReturn => {
     handle: data?.handle,
     isFollowing,
     isLoading,
+    isLoadingFollowing,
     isOwnProfile,
     onClickAvatar,
     onClickChat,

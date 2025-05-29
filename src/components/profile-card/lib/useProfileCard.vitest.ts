@@ -71,22 +71,7 @@ describe('useProfileCard', () => {
     );
   });
 
-  it('should use publicAddress as subhandle when primaryZid is not available', () => {
-    (useProfile as any).mockReturnValue({
-      isLoading: false,
-      data: { publicAddress: '0x123' },
-    });
-
-    const { result } = renderHook(() => useProfileCard(mockUserId));
-
-    expect(result.current).toEqual(
-      expect.objectContaining({
-        subhandle: '0x123',
-      })
-    );
-  });
-
-  it('should truncate wallet address when used as subhandle', () => {
+  it('should use truncated publicAddress as subhandle when primaryZid is not available', () => {
     (useProfile as any).mockReturnValue({
       isLoading: false,
       data: { publicAddress: '0x123456789abcdef' },

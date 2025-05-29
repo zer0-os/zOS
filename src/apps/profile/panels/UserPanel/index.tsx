@@ -10,6 +10,7 @@ import { FollowCounts } from '../../../../components/follow-counts';
 import { Skeleton } from '@zero-tech/zui/components/Skeleton';
 import { IconButton } from '@zero-tech/zui/components';
 import { Follows } from './Follows';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 import styles from './styles.module.scss';
 
@@ -67,7 +68,7 @@ export const UserPanel = () => {
               )}
               <div className={styles.ActionButtons}>
                 {!isCurrentUser && <FollowButton targetUserId={userId} className={styles.FollowButton} />}
-                {!isCurrentUser && !isLoading && (
+                {featureFlags.enableProfileDirectMessage && !isCurrentUser && !isLoading && (
                   <IconButton
                     Icon={IconMessage01}
                     onClick={handleStartConversation}

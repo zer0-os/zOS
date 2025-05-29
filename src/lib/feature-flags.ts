@@ -39,6 +39,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableUserProfiles: boolean;
   declare enablePostMedia: boolean;
   declare enableMatrixDebug: boolean;
+  declare enableProfileDirectMessage: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

@@ -30,10 +30,11 @@ export async function uploadImage(file: File): Promise<FileResult> {
   return { url };
 }
 
-export async function getZEROUsers(matrixIds: string[]): Promise<User[]> {
+export async function getZEROUsers(matrixIds?: string[], userIds?: string[]): Promise<User[]> {
   try {
     const response = await post('/matrix/users/zero').send({
       matrixIds,
+      userIds,
     });
 
     if (!response?.body) {

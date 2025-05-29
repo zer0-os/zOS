@@ -1,6 +1,6 @@
 import { call, put, select, spawn, take, delay } from 'redux-saga/effects';
 import { schema, removeAll, receive } from '.';
-import { usersByMatrixIdsSelector } from './selectors';
+import { usersByMatrixIdsSelector, usersByUserIdsSelector } from './selectors';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { getZeroUsersQuery } from './queries/getZeroUsersQuery';
 import { queryClient } from '../../lib/web3/rainbowkit/provider';
@@ -64,9 +64,20 @@ export function* getUsersByMatrixIds(matrixIds: string[]) {
   // We still don't store primaryZID or primaryWalletAddress in Matrix, so we need to fetch them from the API
   const missingUsers = [...new Set(matrixIds)].filter((id) => !users.has(id));
   if (missingUsers.length > 0) {
-    const apiUsers = yield call(() => queryClient.fetchQuery(getZeroUsersQuery(missingUsers))) ?? [];
+    const apiUsers = yield call(() => queryClient.fetchQuery(getZeroUsersQuery({ matrixIds: missingUsers }))) ?? [];
     yield put(receive(apiUsers));
     users = yield select(usersByMatrixIdsSelector, matrixIds);
+  }
+  return users;
+}
+
+export function* getUsersByUserIds(userIds: string[]) {
+  let users: Map<string, User> = yield select(usersByUserIdsSelector, userIds);
+  const missingUsers = [...new Set(userIds)].filter((id) => !users.has(id));
+  if (missingUsers.length > 0) {
+    const apiUsers = yield call(() => queryClient.fetchQuery(getZeroUsersQuery({ userIds: missingUsers }))) ?? [];
+    yield put(receive(apiUsers));
+    users = yield select(usersByUserIdsSelector, userIds);
   }
   return users;
 }

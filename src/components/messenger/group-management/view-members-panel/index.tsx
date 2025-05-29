@@ -11,7 +11,6 @@ import { Waypoint } from '../../../waypoint';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 import './styles.scss';
-import { ProfileCardHover } from '../../../profile-card/hover';
 
 const cn = bemClassName('view-members-panel');
 

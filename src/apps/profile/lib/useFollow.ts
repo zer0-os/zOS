@@ -74,7 +74,15 @@ export const useFollow = (targetUserId?: string) => {
   return {
     isFollowing: !!targetUserId && isFollowing,
     isLoading,
-    follow: () => targetUserId && followMutation.mutate(),
-    unfollow: () => targetUserId && unfollowMutation.mutate(),
+    follow: () => {
+      if (targetUserId) {
+        followMutation.mutate();
+      }
+    },
+    unfollow: () => {
+      if (targetUserId) {
+        unfollowMutation.mutate();
+      }
+    },
   };
 };

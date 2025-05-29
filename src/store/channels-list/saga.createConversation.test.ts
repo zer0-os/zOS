@@ -2,7 +2,7 @@ import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 
 import { createConversation, receiveCreatedConversation } from './saga';
-import { userSelector } from '../users/selectors';
+import { getUsersByUserIds } from '../users/saga';
 
 import { rootReducer } from '../reducer';
 import { MessagesFetchState, denormalize as denormalizeChannel } from '../channels';
@@ -14,29 +14,32 @@ import { allChannelsSelector } from '../channels/selectors';
 describe(createConversation, () => {
   it('creates the conversation - full success flow', async () => {
     const otherUserIds = ['user-1'];
-    const name = 'name';
+    const name = 'channel name';
     const image = { name: 'file' } as File;
 
-    const stubReceivedConversation = { id: 'new-convo-id' };
+    const stubReceivedChannel = { id: 'new-channel-id' };
 
     const chatClient = {
       createConversation: () => undefined,
     };
 
+    const usersMap = new Map();
+    usersMap.set('user-1', { userId: 'user-1' });
+
     testSaga(createConversation, otherUserIds, name, image)
       .next()
       .call(chat.get)
       .next(chatClient)
-      .select(userSelector, otherUserIds)
-      .next([{ userId: 'user-1' }])
+      .call(getUsersByUserIds, otherUserIds)
+      .next(usersMap)
       .call([chatClient, chatClient.createConversation], [{ userId: 'user-1' }], name, image)
-      .next(stubReceivedConversation)
-      .call(receiveCreatedConversation, stubReceivedConversation)
+      .next(stubReceivedChannel)
+      .call(receiveCreatedConversation, stubReceivedChannel)
       .next()
-      .returns(stubReceivedConversation);
+      .isDone();
   });
 
-  it('handles creation error gracefully', async () => {
+  it('handles creation error', async () => {
     const otherUserIds = ['user-1'];
     const name = 'name';
     const image = { name: 'file' } as File;
@@ -45,12 +48,15 @@ describe(createConversation, () => {
       createConversation: () => undefined,
     };
 
+    const usersMap = new Map();
+    usersMap.set('user-1', { userId: 'user-1' });
+
     testSaga(createConversation, otherUserIds, name, image)
       .next()
       .call(chat.get)
       .next(chatClient)
-      .select(userSelector, otherUserIds)
-      .next([{ userId: 'user-1' }])
+      .call(getUsersByUserIds, otherUserIds)
+      .next(usersMap)
       .call([chatClient, chatClient.createConversation], [{ userId: 'user-1' }], name, image)
       .throw(new Error('simulated error'))
       .next()

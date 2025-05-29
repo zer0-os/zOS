@@ -9,6 +9,7 @@ import { MemberManagementMenuContainer } from '../messenger/group-management/mem
 import classNames from 'classnames';
 import { MatrixAvatar } from '../matrix-avatar';
 import { ProfileLinkNavigation } from '../profile-link-navigation';
+import { ProfileCardHover } from '../profile-card/hover';
 
 const cn = bemClassName('citizen-list-item');
 
@@ -67,7 +68,15 @@ export class CitizenListItem extends React.Component<Properties, State> {
             primaryZid={this.props.user.primaryZID}
             thirdWebAddress={this.getThirdWebWalletAddress()}
           >
-            <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
+            {this.props.user.primaryZID || this.getThirdWebWalletAddress() ? (
+              <ProfileCardHover
+                userId={this.props.user.primaryZID?.replace('0://', '') ?? this.getThirdWebWalletAddress()}
+              >
+                <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
+              </ProfileCardHover>
+            ) : (
+              <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
+            )}
           </ProfileLinkNavigation>
           <div {...cn('text-container')}>
             <span {...cn('name')}>{displayName(this.props.user)}</span>

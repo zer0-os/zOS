@@ -9,6 +9,9 @@ beforeEach(() => {
   vi.mock('../components/sidekick/components/current-user-details', () => ({
     CurrentUserDetails: () => <div data-testid='current-user-details' />,
   }));
+  vi.mock('../components/sidekick/components/container', () => ({
+    Container: () => <div data-testid='sidekick-container' />,
+  }));
   vi.mock('../lib/feature-flags', () => ({
     featureFlags: { enableNotificationsApp: true, enableFeedApp: true },
   }));
@@ -29,6 +32,18 @@ vi.mock('./notifications', () => ({
 vi.mock('./feed', () => ({
   FeedApp: () => {
     return <div data-testid='feed-app' />;
+  },
+}));
+
+vi.mock('./profile', () => ({
+  ProfileApp: () => {
+    return <div data-testid='profile-app' />;
+  },
+}));
+
+vi.mock('./home', () => ({
+  HomeApp: () => {
+    return <div data-testid='home-app' />;
   },
 }));
 

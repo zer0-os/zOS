@@ -25,6 +25,7 @@ describe('FollowButton', () => {
         isLoading: false,
         follow,
         unfollow,
+        isMutating: false,
       });
 
       renderWithProviders(<FollowButton targetUserId={mockTargetUserId} />);
@@ -48,6 +49,7 @@ describe('FollowButton', () => {
         isLoading: false,
         follow,
         unfollow,
+        isMutating: false,
       });
 
       renderWithProviders(<FollowButton targetUserId={mockTargetUserId} />);
@@ -69,6 +71,7 @@ describe('FollowButton', () => {
       vi.mocked(useFollow).mockReturnValue({
         isFollowing: false,
         isLoading: true,
+        isMutating: false,
         follow,
         unfollow,
       });

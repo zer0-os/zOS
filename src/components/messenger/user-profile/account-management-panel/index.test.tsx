@@ -12,6 +12,7 @@ jest.mock('@rainbow-me/rainbowkit', () => ({
   ConnectButton: {
     Custom: ({ children }) => children({ account: { address: '0x123' }, openConnectModal: jest.fn() }),
   },
+  getDefaultConfig: jest.fn(),
 }));
 
 jest.mock('../../../../lib/web3/thirdweb/client', () => ({

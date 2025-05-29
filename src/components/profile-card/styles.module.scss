@@ -1,0 +1,83 @@
+@use '../../_variables.scss';
+
+.Container {
+  display: flex;
+  flex-direction: column;
+  gap: variables.$default-gap;
+
+  background: variables.$panel-background;
+  backdrop-filter: variables.$default-background-blur;
+  padding: 16px;
+  border-radius: variables.$border-radius;
+  border: 1px solid variables.$border-color;
+
+  width: 300px;
+  max-width: 300px;
+  min-width: 300px;
+}
+
+.Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.Handle {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.Handle,
+.Subhandle {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Subhandle {
+  font-size: variables.$font-size-small;
+  color: var(--color-greyscale-11);
+}
+
+.Follows {
+  display: flex;
+  gap: 20px;
+  margin-top: calc(variables.$default-gap * 2);
+
+  .Count {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 70px;
+    font-weight: bold;
+  }
+
+  label {
+    color: var(--color-greyscale-11);
+    font-size: variables.$font-size-small;
+  }
+}
+
+.Actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ChatButton {
+  color: var(--color-secondary-11);
+  background: var(--zui-colors-background-secondary);
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

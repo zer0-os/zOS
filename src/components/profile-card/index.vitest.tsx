@@ -35,6 +35,7 @@ describe('ProfileCard', () => {
         onClickAvatar: mockOnClickAvatar,
         onClickFollow: mockOnClickFollow,
         onClickChat: mockOnClickChat,
+        isLoadingFollowing: false,
       });
 
       renderComponent();
@@ -87,6 +88,7 @@ describe('ProfileCard', () => {
         onClickAvatar: vi.fn(),
         onClickFollow: vi.fn(),
         onClickChat: vi.fn(),
+        isLoadingFollowing: false,
       });
 
       renderComponent();
@@ -111,6 +113,7 @@ describe('ProfileCard', () => {
         onClickAvatar: vi.fn(),
         onClickFollow: vi.fn(),
         onClickChat: vi.fn(),
+        isLoadingFollowing: false,
       });
 
       renderComponent();

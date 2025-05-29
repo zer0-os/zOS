@@ -119,7 +119,7 @@ export const Post = ({
       <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
         {variant === 'default' && (
           <div className={styles.Avatar}>
-            <ProfileCardHover userId={authorPrimaryZid}>
+            <ProfileCardHover userId={authorPrimaryZid ?? authorPublicAddress}>
               <MatrixAvatar size='regular' imageURL={avatarUrl} />
             </ProfileCardHover>
           </div>
@@ -141,7 +141,7 @@ export const Post = ({
               {variant === 'expanded' && (
                 <div className={styles.Avatar}>
                   <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
-                    <ProfileCardHover userId={authorPrimaryZid}>
+                    <ProfileCardHover userId={authorPrimaryZid ?? authorPublicAddress}>
                       <MatrixAvatar size='regular' imageURL={avatarUrl} />
                     </ProfileCardHover>
                   </ProfileLink>

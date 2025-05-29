@@ -9,6 +9,9 @@ beforeEach(() => {
   vi.mock('../components/sidekick/components/current-user-details', () => ({
     CurrentUserDetails: () => <div data-testid='current-user-details' />,
   }));
+  vi.mock('../components/sidekick/components/container', () => ({
+    Container: () => <div data-testid='sidekick-container' />,
+  }));
   vi.mock('../lib/feature-flags', () => ({
     featureFlags: { enableNotificationsApp: true, enableFeedApp: true },
   }));

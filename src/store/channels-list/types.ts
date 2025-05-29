@@ -4,22 +4,9 @@ export interface DirectMessage extends Channel {
   otherMembers: User[];
 }
 
-interface CreateMessengerConversationBase {
+export interface CreateMessengerConversation {
   name?: string;
+  userIds: string[];
   image?: File;
   groupType?: string;
 }
-
-export type CreateMessengerConversation = CreateMessengerConversationBase &
-  (
-    | {
-        matrixIds?: string[];
-        userIds?: string[];
-      }
-    | {
-        matrixIds: string[];
-      }
-    | {
-        userIds: string[];
-      }
-  );

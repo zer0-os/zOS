@@ -15,9 +15,9 @@ import { setIsConversationsLoaded } from '../chat';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
 import { MSC3575RoomData } from 'matrix-js-sdk/lib/sliding-sync';
 import Matrix from '../../lib/chat/matrix/matrix-client-instance';
-import { userSelector } from '../users/selectors';
 import { handleRoomDataEvents } from './event-type-handlers/handle-room-data-events';
 import { batchedUpdateLastMessage } from '../messages/saga';
+import { getUsersByUserIds } from '../users/saga';
 
 export function* fetchChannels() {
   // Get initial channels from Matrix store for faster initial load
@@ -37,7 +37,8 @@ export function* fetchChannels() {
 export function* createConversation(userIds: string[], name: string = null, image: File = null) {
   const chatClient = yield call(chat.get);
   try {
-    const users = yield select(userSelector, userIds);
+    const usersMap = yield call(getUsersByUserIds, userIds);
+    const users = Array.from(usersMap.values());
     const conversation = yield call([chatClient, chatClient.createConversation], users, name, image);
     yield call(receiveCreatedConversation, conversation);
     return conversation;
@@ -52,7 +53,8 @@ export function* createUnencryptedConversation(
 ) {
   const chatClient = yield call(chat.get);
   try {
-    const users = yield select(userSelector, userIds);
+    const usersMap = yield call(getUsersByUserIds, userIds);
+    const users = Array.from(usersMap.values());
     const channel = yield call([chatClient, chatClient.createUnencryptedConversation], users, name, image, groupType);
     yield call(receiveCreatedConversation, channel);
     return channel;

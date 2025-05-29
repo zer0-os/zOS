@@ -10,7 +10,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 export function userByMatrixIdSelector(state: RootState, matrixId: string): User | undefined {
   const userId = extractUserIdFromMatrixId(matrixId);
-  return state.normalized['users']?.[userId];
+  return state.normalized.users[userId];
 }
 
 export function usersByMatrixIdsSelector(state: RootState, matrixIds: string[]): Map<string, User> {
@@ -29,6 +29,23 @@ export function usersByMatrixIdsSelector(state: RootState, matrixIds: string[]):
   return userMap;
 }
 
+export function userByUserIdSelector(state: RootState, userId: string): User | undefined {
+  return state.normalized.users[userId];
+}
+
+export function usersByUserIdsSelector(state: RootState, userIds: string[]): Map<string, User> {
+  const userMap = new Map<string, User>();
+  const uniqueUserIds = [...new Set(userIds)];
+  uniqueUserIds.forEach((userId) => {
+    const user = userByUserIdSelector(state, userId);
+    // Check if the user is a complete object. If not, it means the user is not loaded yet and we just have a simplified user
+    // See `store/users/utils.ts` for more details on simplified users
+    if (user && 'firstName' in user) {
+      userMap.set(userId, user);
+    }
+  });
+  return userMap;
+}
 export function userSelector(state, userIds: string[]) {
   return userIds.map((id) => (state.normalized.users || {})[id]);
 }

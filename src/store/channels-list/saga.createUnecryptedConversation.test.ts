@@ -1,7 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 
 import { createUnencryptedConversation, receiveCreatedConversation } from './saga';
-import { userSelector } from '../users/selectors';
+import { getUsersByUserIds } from '../users/saga';
 
 import { chat } from '../../lib/chat';
 
@@ -18,12 +18,15 @@ describe(createUnencryptedConversation, () => {
       createUnencryptedConversation: () => undefined,
     };
 
+    const usersMap = new Map();
+    usersMap.set('user-1', { userId: 'user-1' });
+
     testSaga(createUnencryptedConversation, otherUserIds, name, image, groupType)
       .next()
       .call(chat.get)
       .next(chatClient)
-      .select(userSelector, otherUserIds)
-      .next([{ userId: 'user-1' }])
+      .call(getUsersByUserIds, otherUserIds)
+      .next(usersMap)
       .call([chatClient, chatClient.createUnencryptedConversation], [{ userId: 'user-1' }], name, image, groupType)
       .next(stubReceivedChannel)
       .call(receiveCreatedConversation, stubReceivedChannel)
@@ -41,12 +44,15 @@ describe(createUnencryptedConversation, () => {
       createUnencryptedConversation: () => undefined,
     };
 
+    const usersMap = new Map();
+    usersMap.set('user-1', { userId: 'user-1' });
+
     testSaga(createUnencryptedConversation, otherUserIds, name, image)
       .next()
       .call(chat.get)
       .next(chatClient)
-      .select(userSelector, otherUserIds)
-      .next([{ userId: 'user-1' }])
+      .call(getUsersByUserIds, otherUserIds)
+      .next(usersMap)
       .call([chatClient, chatClient.createUnencryptedConversation], [{ userId: 'user-1' }], name, image, groupType)
       .throw(new Error('simulated error'))
       .next()

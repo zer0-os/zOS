@@ -69,11 +69,13 @@ export const useFollow = (targetUserId?: string) => {
   });
 
   const isFollowing = isFollowingFromApi ?? following.includes(targetUserId);
-  const isLoading = isLoadingStatus || followMutation.isPending || unfollowMutation.isPending;
+  const isLoading = isLoadingStatus;
+  const isMutating = followMutation.isPending || unfollowMutation.isPending;
 
   return {
     isFollowing: !!targetUserId && isFollowing,
     isLoading,
+    isMutating,
     follow: () => {
       if (targetUserId) {
         followMutation.mutate();

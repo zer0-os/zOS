@@ -18,6 +18,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
     isFollowing,
     isLoading,
     isLoadingFollowing,
+    isMutating,
     isOwnProfile,
     onClickAvatar,
     onClickChat,
@@ -34,14 +35,16 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
         </div>
         {!isOwnProfile && !isLoading && (
           <div className={styles.Actions} data-testid='profile-actions'>
-            <Button
-              aria-label={isFollowing ? 'Unfollow user' : 'Follow user'}
-              variant={Variant.Primary}
-              onPress={onClickFollow}
-              isDisabled={isLoadingFollowing}
-            >
-              {isFollowing ? 'Unfollow' : 'Follow'}
-            </Button>
+            {!isLoadingFollowing && (
+              <Button
+                aria-label={isFollowing ? 'Unfollow user' : 'Follow user'}
+                variant={Variant.Primary}
+                onPress={onClickFollow}
+                isDisabled={isMutating}
+              >
+                {isFollowing ? 'Unfollow' : 'Follow'}
+              </Button>
+            )}
             <IconButton
               Icon={IconMessage01}
               onClick={onClickChat}

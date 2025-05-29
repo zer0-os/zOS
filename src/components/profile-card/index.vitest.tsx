@@ -36,6 +36,7 @@ describe('ProfileCard', () => {
         onClickFollow: mockOnClickFollow,
         onClickChat: mockOnClickChat,
         isLoadingFollowing: false,
+        isMutating: false,
       });
 
       renderComponent();
@@ -89,6 +90,7 @@ describe('ProfileCard', () => {
         onClickFollow: vi.fn(),
         onClickChat: vi.fn(),
         isLoadingFollowing: false,
+        isMutating: false,
       });
 
       renderComponent();
@@ -114,6 +116,7 @@ describe('ProfileCard', () => {
         onClickFollow: vi.fn(),
         onClickChat: vi.fn(),
         isLoadingFollowing: false,
+        isMutating: false,
       });
 
       renderComponent();

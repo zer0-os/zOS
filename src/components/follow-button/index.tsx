@@ -10,18 +10,20 @@ interface FollowButtonProps {
 }
 
 export const FollowButton: React.FC<FollowButtonProps> = ({ targetUserId, className }) => {
-  const { isFollowing, isLoading, follow, unfollow } = useFollow(targetUserId);
+  const { isFollowing, isLoading, follow, unfollow, isMutating } = useFollow(targetUserId);
+
+  const isLoadingFollowing = isLoading || isMutating;
 
   return (
     <motion.div
-      className={`${styles.Container} ${isFollowing && styles.Following} ${isLoading && styles.Disabled} ${
+      className={`${styles.Container} ${isFollowing && styles.Following} ${isLoadingFollowing && styles.Disabled} ${
         className || ''
       }`}
-      whileHover={{ scale: isLoading ? 1 : 1.01 }}
-      onClick={isLoading ? () => {} : isFollowing ? unfollow : follow}
+      whileHover={{ scale: isLoadingFollowing ? 1 : 1.01 }}
+      onClick={isLoadingFollowing ? () => {} : isFollowing ? unfollow : follow}
     >
       <AnimatePresence mode='wait'>
-        {isLoading ? (
+        {isLoadingFollowing ? (
           <div className={styles.Text} style={{ width: '80px' }}>
             <Skeleton data-testid='skeleton' />
           </div>

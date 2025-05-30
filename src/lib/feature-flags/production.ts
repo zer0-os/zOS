@@ -37,5 +37,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   enableUserProfiles: { defaultValue: true },
   enablePostMedia: { defaultValue: true },
   enableMatrixDebug: { defaultValue: false },
-  enableProfileDirectMessage: { defaultValue: false },
+  enableProfileDirectMessage: { defaultValue: true },
 };

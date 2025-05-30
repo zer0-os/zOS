@@ -30,6 +30,7 @@ import { useMatrixMedia } from '../../lib/hooks/useMatrixMedia';
 import { MatrixAvatar } from '../matrix-avatar';
 import { useLinkPreview } from '../../lib/hooks/useLinkPreview';
 import { ProfileLinkNavigation } from '../profile-link-navigation';
+import { ProfileCardHover } from '../../components/profile-card/hover';
 
 import './styles.scss';
 
@@ -436,7 +437,14 @@ export const Message: React.FC<Properties> = memo(
                 primaryZid={sender.primaryZID}
                 thirdWebAddress={sender.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress}
               >
-                <MatrixAvatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
+                <ProfileCardHover
+                  userId={
+                    sender.primaryZID?.replace('0://', '') ??
+                    sender.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress
+                  }
+                >
+                  <MatrixAvatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
+                </ProfileCardHover>
               </ProfileLinkNavigation>
             </div>
           </div>

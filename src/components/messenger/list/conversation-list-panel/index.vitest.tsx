@@ -458,6 +458,29 @@ describe('Tab Interactions & State Management', () => {
     expect(allBadgeMany).toBeInTheDocument();
     expect(allBadgeMany).toHaveTextContent('99+');
   });
+
+  it('social channels unread counts do not contribute to All tab notifications', () => {
+    const conversationsWithSocialChannel = [
+      stubConversation({
+        id: 'social-1',
+        name: 'Social Channel',
+        isSocialChannel: true,
+        unreadCount: { total: 10, highlight: 0 },
+      }),
+      stubConversation({
+        id: 'normal-1',
+        name: 'Normal Channel',
+        isSocialChannel: false,
+        unreadCount: { total: 5, highlight: 0 },
+      }),
+    ];
+    renderComponent({}, conversationsWithSocialChannel);
+
+    const allTab = screen.getByRole('tab', { name: /All tab/i });
+    const allBadge = allTab.querySelector('.' + getClassName('tab-badge') + ' span');
+    expect(allBadge).toBeInTheDocument();
+    expect(allBadge).toHaveTextContent('5'); // Only counts the non-social channel's unread count
+  });
 });
 
 describe('Conversation List Operations & Interactions', () => {

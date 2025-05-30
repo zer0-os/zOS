@@ -242,18 +242,20 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
   );
 
   const tabUnreadCount = useMemo(() => {
-    return conversations.reduce<Record<string, number>>(
-      (acc, c) => {
-        acc[Tab.All] += c.unreadCount.total;
-        for (const label of c.labels) {
-          if (Object.values(DefaultRoomLabels).some((l) => l === label) && label !== DefaultRoomLabels.ARCHIVED) {
-            acc[tabLabelMap[label]] += c.unreadCount.total;
+    return conversations
+      .filter((c) => !c.isSocialChannel)
+      .reduce<Record<string, number>>(
+        (acc, c) => {
+          acc[Tab.All] += c.unreadCount.total;
+          for (const label of c.labels) {
+            if (Object.values(DefaultRoomLabels).some((l) => l === label) && label !== DefaultRoomLabels.ARCHIVED) {
+              acc[tabLabelMap[label]] += c.unreadCount.total;
+            }
           }
-        }
-        return acc;
-      },
-      { [Tab.Favorites]: 0, [Tab.All]: 0, [Tab.Work]: 0, [Tab.Family]: 0, [Tab.Social]: 0 }
-    );
+          return acc;
+        },
+        { [Tab.Favorites]: 0, [Tab.All]: 0, [Tab.Work]: 0, [Tab.Family]: 0, [Tab.Social]: 0 }
+      );
   }, [conversations]);
 
   const renderTabList = () => {

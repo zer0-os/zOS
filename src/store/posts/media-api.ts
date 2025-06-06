@@ -52,9 +52,12 @@ export async function uploadMedia(file: File): Promise<MediaUploadResponse> {
  * @param mediaId The ID of the media to fetch
  * @returns Promise resolving to MediaDetailsResponse
  */
-export async function getMediaDetails(mediaId: string): Promise<MediaDetailsResponse> {
+export async function getMediaDetails(
+  mediaId: string,
+  { isPreview = false }: { isPreview?: boolean } = {}
+): Promise<MediaDetailsResponse> {
   try {
-    const response = await get(`/api/media/${mediaId}`);
+    const response = await get(`/api/media/${mediaId}?is_preview=${isPreview}`);
 
     if (!response.ok) {
       throw new Error(response.body.message ?? 'Failed to fetch media details');

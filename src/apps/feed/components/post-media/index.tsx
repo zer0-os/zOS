@@ -15,7 +15,10 @@ interface PostMediaProps {
 
 export const PostMedia = ({ mediaId }: PostMediaProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const { mediaUrl, mediaDetails, isLoading, error } = usePostMedia(mediaId);
+  const { mediaUrl: previewMediaUrl, mediaDetails, isLoading, error } = usePostMedia(mediaId, { isPreview: true });
+  const { mediaUrl: fullResolutionMediaUrl, mediaDetails: fullResolutionMediaDetails } = usePostMedia(mediaId, {
+    isPreview: false,
+  });
   const dispatch = useDispatch();
 
   // Use fallback dimensions if mediaDetails is not yet available
@@ -29,16 +32,16 @@ export const PostMedia = ({ mediaId }: PostMediaProps) => {
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!mediaUrl || !mediaDetails) return;
+    if (!previewMediaUrl || !mediaDetails) return;
 
     if (!mediaDetails.mimeType?.startsWith('video/')) {
       const media: Media = {
         type: MediaType.Image,
-        url: mediaUrl,
+        url: fullResolutionMediaUrl,
         name: 'Post media',
-        width: mediaDetails.width,
-        height: mediaDetails.height,
-        mimetype: mediaDetails.mimeType,
+        width: fullResolutionMediaDetails.width,
+        height: fullResolutionMediaDetails.height,
+        mimetype: fullResolutionMediaDetails.mimeType,
       };
       dispatch(openLightbox({ media: [media], startingIndex: 0, hasActions: false }));
     }
@@ -51,7 +54,7 @@ export const PostMedia = ({ mediaId }: PostMediaProps) => {
     </>
   );
 
-  if (!mediaUrl) {
+  if (!previewMediaUrl) {
     return (
       <div className={styles.PlaceholderContainer} style={{ width, height }}>
         <div className={styles.PlaceholderContent}>{renderPlaceholderContent()}</div>
@@ -65,11 +68,11 @@ export const PostMedia = ({ mediaId }: PostMediaProps) => {
     <div className={styles.BlockImage} onClick={handleClick}>
       {isVideo ? (
         <video controls className={styles.Video}>
-          <source src={mediaUrl} type={mediaDetails?.mimeType} />
+          <source src={previewMediaUrl} type={mediaDetails?.mimeType} />
         </video>
       ) : (
         <img
-          src={mediaUrl}
+          src={previewMediaUrl}
           alt={'post media'}
           onLoad={handleImageLoad}
           style={!isImageLoaded ? { width, height } : {}}

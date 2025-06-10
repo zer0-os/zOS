@@ -12,7 +12,6 @@ describe('Container', () => {
       inviteCode: '',
       inviteUrl: '',
       assetsPath: '',
-      inviteCount: 0,
       isLoading: false,
       fetchInvite: () => null,
       clearInvite: () => null,

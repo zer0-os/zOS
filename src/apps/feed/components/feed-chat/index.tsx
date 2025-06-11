@@ -132,7 +132,7 @@ export class Container extends React.Component<Properties> {
   renderHeader = () => {
     return (
       <PanelHeader className={styles.PanelHeader}>
-        <PanelTitle className={styles.PanelTitle}>Chat</PanelTitle>
+        <PanelTitle className={styles.PanelTitle}>0://{this.props.zid}</PanelTitle>
         <ConversationActionsContainer />
       </PanelHeader>
     );

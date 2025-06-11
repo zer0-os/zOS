@@ -15,6 +15,7 @@ import {
   IconSettings2,
   IconUser1,
   IconWallet3,
+  IconTag1,
 } from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { RewardsItemContainer } from './rewards-item/container';
@@ -40,6 +41,7 @@ export interface Properties {
   onOpenDownloads: () => void;
   onManageAccounts: () => void;
   onOpenLinkedAccounts: () => void;
+  onOpenZeroPro: () => void;
 }
 
 export const OverviewPanel: React.FC<Properties> = (props) => {
@@ -98,6 +100,10 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
     props.onOpenLinkedAccounts();
   };
 
+  const openZeroPro = () => {
+    props.onOpenZeroPro();
+  };
+
   const renderDetails = () => {
     return (
       <div {...cn('details')}>
@@ -122,8 +128,18 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
   const renderActions = () => {
     return (
       <div {...cn('action-button-container')}>
+        {featureFlags.enableZeroPro && (
+          <Button
+            {...cn('action-button')}
+            variant={ButtonVariant.Secondary}
+            onPress={openZeroPro}
+            startEnhancer={<IconTag1 size={20} />}
+          >
+            Join ZERO Pro
+          </Button>
+        )}
         <Button
-          {...cn('action-button', 'highlighted')}
+          {...cn('action-button')}
           variant={ButtonVariant.Secondary}
           onPress={openInviteDialog}
           startEnhancer={<IconPlus size={20} isFilled />}

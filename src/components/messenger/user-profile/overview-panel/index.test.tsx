@@ -54,6 +54,7 @@ describe(OverviewPanel, () => {
       onOpenDownloads: () => {},
       onManageAccounts: () => {},
       onOpenLinkedAccounts: () => {},
+      onOpenZeroPro: () => {},
 
       ...props,
     };

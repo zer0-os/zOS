@@ -16,6 +16,7 @@ import {
   openDownloads,
   openAccountManagement,
   openLinkedAccounts,
+  openZeroPro,
 } from '../../../store/user-profile';
 import { logout } from '../../../store/authentication';
 import { openCreateBackupDialog, openRestoreBackupDialog } from '../../../store/matrix';
@@ -39,6 +40,7 @@ export interface Properties extends PublicProperties {
   openDownloads: () => void;
   openAccountManagement: () => void;
   openLinkedAccounts: () => void;
+  openZeroPro: () => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -70,6 +72,7 @@ export class Container extends React.Component<Properties> {
       openDownloads,
       openAccountManagement,
       openLinkedAccounts,
+      openZeroPro,
     };
   }
 
@@ -98,6 +101,7 @@ export class Container extends React.Component<Properties> {
         onDownloads={this.props.openDownloads}
         onManageAccounts={this.props.openAccountManagement}
         onOpenLinkedAccounts={this.props.openLinkedAccounts}
+        onOpenZeroPro={this.props.openZeroPro}
       />
     );
   }

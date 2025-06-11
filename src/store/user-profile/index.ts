@@ -10,6 +10,7 @@ export enum SagaActionTypes {
   OpenLinkedAccounts = 'user-profile/openLinkedAccounts',
   PrivateReadReceipts = 'user-profile/privateReadReceipts',
   PublicReadReceipts = 'user-profile/publicReadReceipts',
+  OpenZeroPro = 'user-profile/openZeroPro',
 }
 
 export enum Stage {
@@ -20,6 +21,7 @@ export enum Stage {
   AccountManagement = 'account_management',
   Downloads = 'downloads',
   LinkedAccounts = 'linked_accounts',
+  ZeroPro = 'zero_pro',
 }
 
 export type UserProfileState = {
@@ -41,6 +43,7 @@ export const openAccountManagement = createAction(SagaActionTypes.OpenAccountMan
 export const openLinkedAccounts = createAction(SagaActionTypes.OpenLinkedAccounts);
 export const privateReadReceipts = createAction(SagaActionTypes.PrivateReadReceipts);
 export const publicReadReceipts = createAction(SagaActionTypes.PublicReadReceipts);
+export const openZeroPro = createAction(SagaActionTypes.OpenZeroPro);
 
 const slice = createSlice({
   name: 'user-profile',

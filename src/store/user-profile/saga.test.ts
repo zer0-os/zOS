@@ -11,6 +11,7 @@ import {
   openAccountManagement,
   openDownloads,
   openLinkedAccounts,
+  openZeroPro,
 } from './saga';
 import { UserProfileState, initialState as initialUserProfileState, Stage, setStage, setPublicReadReceipts } from '.';
 import { rootReducer } from '../reducer';
@@ -101,6 +102,17 @@ describe('openDownloads', () => {
       .run();
 
     expect(storeState.userProfile.stage).toEqual(Stage.Downloads);
+  });
+});
+
+describe('openZeroPro', () => {
+  it('should set stage to ZeroPro', async () => {
+    const { storeState } = await expectSaga(openZeroPro)
+      .withReducer(rootReducer, initialState())
+      .put(setStage(Stage.ZeroPro))
+      .run();
+
+    expect(storeState.userProfile.stage).toEqual(Stage.ZeroPro);
   });
 });
 

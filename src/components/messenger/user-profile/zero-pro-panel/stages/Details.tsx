@@ -21,15 +21,23 @@ interface Props {
     country: string;
   }) => void;
   onBack: () => void;
+  initialValues?: {
+    name: string;
+    email: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
 }
 
-export const Details: React.FC<Props> = ({ onNext, onBack }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-  const [country, setCountry] = useState('');
+export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
+  const [name, setName] = useState(initialValues?.name ?? '');
+  const [email, setEmail] = useState(initialValues?.email ?? '');
+  const [address, setAddress] = useState(initialValues?.address ?? '');
+  const [city, setCity] = useState(initialValues?.city ?? '');
+  const [postalCode, setPostalCode] = useState(initialValues?.postalCode ?? '');
+  const [country, setCountry] = useState(initialValues?.country ?? '');
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const emailIsValid = isValidEmail(email);

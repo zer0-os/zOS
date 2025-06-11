@@ -57,7 +57,9 @@ export const ZeroProPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => 
       {activeSheet && (
         <BottomSheet onClose={closeSheet}>
           {activeSheet === ZeroProStage.PaymentPlan && <Plans onNext={openDetails} />}
-          {activeSheet === ZeroProStage.Details && <Details onNext={handleBillingDetails} onBack={openPlan} />}
+          {activeSheet === ZeroProStage.Details && (
+            <Details onNext={handleBillingDetails} onBack={openPlan} initialValues={billingDetails} />
+          )}
           {activeSheet === ZeroProStage.Payment && (
             <Payment billingDetails={billingDetails} onNext={openSuccess} onBack={openDetails} />
           )}

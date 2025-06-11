@@ -7,8 +7,19 @@ import { Input } from '@zero-tech/zui/components/Input';
 
 import styles from './styles.module.scss';
 
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 interface Props {
-  onNext: () => void;
+  onNext: (details: {
+    name: string;
+    email: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  }) => void;
   onBack: () => void;
 }
 
@@ -21,12 +32,15 @@ export const Details: React.FC<Props> = ({ onNext, onBack }) => {
   const [country, setCountry] = useState('');
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
-  const isValid = name && email && address && city && postalCode && country;
+  const emailIsValid = isValidEmail(email);
+  const isValid = name && email && emailIsValid && address && city && postalCode && country;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setAttemptedSubmit(true);
-    if (isValid) onNext();
+    if (isValid) {
+      onNext({ name, email, address, city, postalCode, country });
+    }
   };
 
   return (
@@ -56,7 +70,7 @@ export const Details: React.FC<Props> = ({ onNext, onBack }) => {
             placeholder='Email'
             type='email'
             isRequired
-            error={attemptedSubmit && !email}
+            error={attemptedSubmit && (!email || !emailIsValid)}
           />
           <Input
             className={styles.Input}
@@ -90,12 +104,16 @@ export const Details: React.FC<Props> = ({ onNext, onBack }) => {
             isRequired
             error={attemptedSubmit && !country}
           />
+
           {!attemptedSubmit && !isValid && (
             <div className={styles.FormInfo}>Please complete all fields to continue.</div>
           )}
           {attemptedSubmit && !isValid && (
-            <div className={styles.FormError}>Please complete all fields to continue.</div>
+            <div className={styles.FormError}>
+              {!emailIsValid ? 'Please enter a valid email' : 'Please complete all fields to continue.'}
+            </div>
           )}
+
           <div className={styles.SubmitButtonContainer}>
             <Button
               className={styles.SubmitButton}

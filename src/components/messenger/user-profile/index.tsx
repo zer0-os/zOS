@@ -7,6 +7,7 @@ import { SettingsPanelContainer } from './settings-panel/container';
 import { AccountManagementContainer } from './account-management-panel/container';
 import { DownloadsPanel } from './downloads-panel';
 import { LinkedAccountsPanelContainer } from './linked-accounts-panel/container';
+import { ZeroProPanel } from './zero-pro-panel';
 
 export interface Properties {
   stage: Stage;
@@ -58,6 +59,7 @@ export class UserProfile extends React.Component<Properties> {
         {this.props.stage === Stage.LinkedAccounts && (
           <LinkedAccountsPanelContainer onClose={this.props.onBackToOverview} />
         )}
+        {this.props.stage === Stage.ZeroPro && <ZeroProPanel onClose={this.props.onBackToOverview} />}
       </>
     );
   }

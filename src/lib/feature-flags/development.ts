@@ -33,4 +33,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enablePostMedia: { defaultValue: true },
   enableMatrixDebug: { defaultValue: true },
   enableProfileDirectMessage: { defaultValue: true },
+  enableOAuthLinking: { defaultValue: true },
 };

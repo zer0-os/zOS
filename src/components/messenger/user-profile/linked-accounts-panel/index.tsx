@@ -10,8 +10,8 @@ import { Provider, ProviderLabels } from './types/providers';
 import { ModalConfirmation } from '@zero-tech/zui/components';
 import { useUnlinkAccountMutation } from './queries/useUnlinkAccountMutation';
 import { useCallback, useEffect, useState } from 'react';
-import { queryClient } from '../../../../lib/web3/rainbowkit/provider';
 import { linkedAccountsQueryKeys } from './queries/keys';
+import { useQueryClient } from '@tanstack/react-query';
 
 import './styles.scss';
 
@@ -36,20 +36,25 @@ export function LinkedAccountsPanel({ onBack }: Properties) {
 
   const unlinkAccountMutation = useUnlinkAccountMutation();
   const { data: linkedAccounts = [] } = useLinkedAccountsQuery();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'oauth-callback-success') {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+
+      if (event.data === 'oauth-callback-success') {
         queryClient.invalidateQueries({ queryKey: linkedAccountsQueryKeys.all });
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('message', handleMessage);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('message', handleMessage);
     };
-  }, []);
+  }, [queryClient]);
 
   const handleUnlink = (provider: Provider, providerUserId: string) => {
     setProviderToUnlink(provider);

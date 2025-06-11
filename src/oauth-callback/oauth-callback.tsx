@@ -5,7 +5,10 @@ import { useEffect } from 'react';
 
 export function OAuthCallback() {
   useEffect(() => {
-    localStorage.setItem('oauth-callback-success', Math.random().toString());
+    if (window.opener) {
+      window.opener.postMessage('oauth-callback-success', window.location.origin);
+    }
+
     setTimeout(() => {
       window.close();
     }, 3000);

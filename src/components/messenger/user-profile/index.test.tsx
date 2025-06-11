@@ -34,6 +34,7 @@ describe(UserProfile, () => {
       onDownloads: () => {},
       onManageAccounts: () => {},
       onOpenLinkedAccounts: () => {},
+      onOpenZeroPro: () => {},
       ...props,
     };
 

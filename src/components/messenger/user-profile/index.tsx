@@ -24,6 +24,7 @@ export interface Properties {
   onDownloads: () => void;
   onManageAccounts: () => void;
   onOpenLinkedAccounts: () => void;
+  onOpenZeroPro: () => void;
 }
 
 export class UserProfile extends React.Component<Properties> {
@@ -44,6 +45,7 @@ export class UserProfile extends React.Component<Properties> {
             onOpenDownloads={this.props.onDownloads}
             onManageAccounts={this.props.onManageAccounts}
             onOpenLinkedAccounts={this.props.onOpenLinkedAccounts}
+            onOpenZeroPro={this.props.onOpenZeroPro}
           />
         )}
 

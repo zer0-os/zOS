@@ -199,7 +199,6 @@ export class Container extends React.Component<Properties> {
               {this.renderHeader()}{' '}
               {this.renderBody(this.props.isJoiningConversation || !this.props.isConversationsLoaded)}
             </Panel>
-            <MembersSidekick className={styles.MembersSidekick} />
           </>
         )}
       </>

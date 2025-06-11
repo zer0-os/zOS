@@ -13,6 +13,7 @@ import { FeedChat } from './components/feed-chat/container';
 import { getLastActiveFeed } from '../../lib/last-feed';
 
 import styles from './styles.module.scss';
+import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
 
 export const FeedApp = () => {
   const route = useRouteMatch<{ postId: string }>('/feed/:zid/:postId');
@@ -23,6 +24,7 @@ export const FeedApp = () => {
     <div className={styles.Feed}>
       <Sidekick />
       <div className={styles.Wrapper}>
+        <FeedChat />
         <Switch>
           <Route
             path='/feed/:zid/:postId'
@@ -31,7 +33,7 @@ export const FeedApp = () => {
           <Route path='/feed/:zid' component={({ match }: any) => <Feed zid={match.params.zid} />} />
           <Route path='/feed' component={Loading} />
         </Switch>
-        <FeedChat />
+        <MembersSidekick className={styles.MembersSidekick} />
       </div>
     </div>
   );

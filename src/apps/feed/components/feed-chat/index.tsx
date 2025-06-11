@@ -12,11 +12,9 @@ import { Media } from '../../../../components/message-input/utils';
 import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
-import { Panel as PanelEnum } from '../../../../store/panels/constants';
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
 import { channelSelector } from '../../../../store/channels/selectors';
 import { toggleSecondarySidekick } from '../../../../store/group-management';
-import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { ConversationActionsContainer } from '../../../../components/messenger/conversation-actions/container';
 
@@ -195,7 +193,7 @@ export class Container extends React.Component<Properties> {
       <>
         {shouldRender && (
           <>
-            <Panel className={styles.Container} panel={PanelEnum.FEED_CHAT} name='Chat'>
+            <Panel className={styles.Container}>
               {this.renderHeader()}{' '}
               {this.renderBody(this.props.isJoiningConversation || !this.props.isConversationsLoaded)}
             </Panel>

@@ -37,4 +37,5 @@ export const config = {
     gifMaxFileSize: parseInt(process.env.REACT_APP_POST_GIF_MAX_FILE_SIZE) || 15728640,
     videoMaxFileSize: parseInt(process.env.REACT_APP_POST_VIDEO_MAX_FILE_SIZE) || 104857600,
   },
+  stripePublishableKey: process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY,
 };

@@ -35,6 +35,7 @@ jobs:
       REACT_APP_POST_IMAGE_MAX_FILE_SIZE: ${{vars.POST_IMAGE_MAX_FILE_SIZE}}
       REACT_APP_POST_GIF_MAX_FILE_SIZE: ${{vars.POST_GIF_MAX_FILE_SIZE}}
       REACT_APP_POST_VIDEO_MAX_FILE_SIZE: ${{vars.POST_VIDEO_MAX_FILE_SIZE}}
+      REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY}}
     steps:
       - uses: actions/checkout@v4
       - name: Common Setup

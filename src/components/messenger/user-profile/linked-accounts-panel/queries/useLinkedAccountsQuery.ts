@@ -2,12 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { get } from '../../../../../lib/api/rest';
 import { Provider } from '../types/providers';
 import { linkedAccountsQueryKeys } from './keys';
-
-export interface LinkedAccountType {
-  provider: Provider;
-  providerUserId: string;
-  handle: string;
-}
+import { LinkedAccountType } from '../types/linked-accounts';
 
 export const useLinkedAccountsQuery = () => {
   return useQuery({

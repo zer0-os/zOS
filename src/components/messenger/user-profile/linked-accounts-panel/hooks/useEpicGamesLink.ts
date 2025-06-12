@@ -18,7 +18,7 @@ export const useEpicGamesLink = () => {
         console.error('authorizationURL not found in response');
       }
     } catch (error: any) {
-      throw new Error('Error initiating Epic Games link:', error.response.body);
+      throw new Error(`Error initiating Epic Games link: ${error.response?.body || 'No additional details available'}`);
     }
   };
 

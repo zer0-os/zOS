@@ -1,11 +1,12 @@
 import { config } from '../../../../../config';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { allChannelsSelector } from '../../../../../store/channels/selectors';
 import { isOneOnOne } from '../../../../../store/channels-list/utils';
 import { createConversation } from '../../../../../store/create-conversation';
 import { openConversation } from '../../../../../store/channels';
 
 export const useTelegramLink = () => {
+  const dispatch = useDispatch();
   const conversations = useSelector(allChannelsSelector);
   const telegramBotUserId = config.telegramBotUserId;
 
@@ -15,9 +16,9 @@ export const useTelegramLink = () => {
     );
 
     if (existingConversation) {
-      openConversation({ conversationId: existingConversation.id });
+      dispatch(openConversation({ conversationId: existingConversation.id }));
     } else {
-      createConversation({ userIds: [telegramBotUserId] });
+      dispatch(createConversation({ userIds: [telegramBotUserId] }));
     }
   };
 

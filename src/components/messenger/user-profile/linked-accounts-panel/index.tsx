@@ -12,6 +12,7 @@ import { useUnlinkAccountMutation } from './queries/useUnlinkAccountMutation';
 import { useCallback, useEffect, useState } from 'react';
 import { linkedAccountsQueryKeys } from './queries/keys';
 import { useQueryClient } from '@tanstack/react-query';
+import { AVAILABLE_ACCOUNTS } from './constants';
 
 import './styles.scss';
 
@@ -20,13 +21,6 @@ const cn = bemClassName('linked-accounts-panel');
 export interface Properties {
   onBack: () => void;
 }
-
-export interface LinkedAccountType {
-  provider: string;
-  handle: string;
-}
-
-const AVAILABLE_ACCOUNTS = [Provider.EpicGames, Provider.Telegram];
 
 export function LinkedAccountsPanel({ onBack }: Properties) {
   const enableOAuthLinking = featureFlags.enableOAuthLinking;

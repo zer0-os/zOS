@@ -29,7 +29,8 @@ export type FeatureFlagKey =
   | 'enableUserProfiles'
   | 'enablePostMedia'
   | 'enableMatrixDebug'
-  | 'enableProfileDirectMessage';
+  | 'enableProfileDirectMessage'
+  | 'enableOAuthLinking';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

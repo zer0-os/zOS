@@ -2,7 +2,13 @@ import { call, put, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import { EmailLoginErrors, SagaActionTypes, Web3LoginErrors, reset, setErrors, setLoading, setStage } from '.';
 import { getSignedToken, isWeb3AccountConnected } from '../web3/saga';
-import { authenticateByEmail, forceLogout, nonceOrAuthorize, terminate } from '../authentication/saga';
+import {
+  authenticateByEmail,
+  authenticateByOAuth,
+  forceLogout,
+  nonceOrAuthorize,
+  terminate,
+} from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { getHistory } from '../../lib/browser';
 
@@ -68,6 +74,17 @@ export function* web3Login() {
     yield put(setErrors([Web3LoginErrors.UNKNOWN_ERROR]));
   } finally {
     yield put(setLoading(false));
+  }
+}
+
+export function* oauthLogin(action) {
+  const sessionToken = action.payload;
+
+  const result = yield call(authenticateByOAuth, sessionToken);
+  if (result.success) {
+    yield call(redirectToRoot);
+  } else {
+    yield put(setErrors([result.response]));
   }
 }
 
@@ -152,6 +169,7 @@ export function* saga() {
   yield spawn(listenForUserLogout);
   yield takeLatest(SagaActionTypes.EmailLogin, emailLogin);
   yield takeLatest(SagaActionTypes.Web3Login, web3Login);
+  yield takeLatest(SagaActionTypes.OAuthLogin, oauthLogin);
   yield takeLatest(SagaActionTypes.SwitchLoginStage, switchLoginStage);
 }
 

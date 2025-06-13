@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { config } from '../../../config';
+
 import { OverviewPanel } from './overview-panel';
 import { Stage } from '../../../store/user-profile';
 import { EditProfileContainer } from '../../edit-profile/container';
@@ -8,6 +10,11 @@ import { AccountManagementContainer } from './account-management-panel/container
 import { DownloadsPanel } from './downloads-panel';
 import { LinkedAccountsPanelContainer } from './linked-accounts-panel/container';
 import { ZeroProPanel } from './zero-pro-panel';
+
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(config.stripePublishableKey);
 
 export interface Properties {
   stage: Stage;
@@ -59,7 +66,11 @@ export class UserProfile extends React.Component<Properties> {
         {this.props.stage === Stage.LinkedAccounts && (
           <LinkedAccountsPanelContainer onClose={this.props.onBackToOverview} />
         )}
-        {this.props.stage === Stage.ZeroPro && <ZeroProPanel onClose={this.props.onBackToOverview} />}
+        {this.props.stage === Stage.ZeroPro && (
+          <Elements stripe={stripePromise}>
+            <ZeroProPanel onClose={this.props.onBackToOverview} />
+          </Elements>
+        )}
       </>
     );
   }

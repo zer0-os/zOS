@@ -8,8 +8,8 @@ describe('panels reducer', () => {
   });
 
   describe('default panel values', () => {
-    it('should default FEED_CHAT to true', () => {
-      expect(initialState.openStates[Panel.FEED_CHAT]).toBe(true);
+    it('should default PUBLIC_FEED to false', () => {
+      expect(initialState.openStates[Panel.PUBLIC_FEED]).toBe(false);
     });
 
     it('should default MEMBERS to false', () => {
@@ -58,7 +58,7 @@ describe('panels reducer', () => {
   });
 
   it('should handle closePanel', () => {
-    const panel = Panel.FEED_CHAT;
+    const panel = Panel.PUBLIC_FEED;
 
     let state = reducer(initialState, closePanel(panel));
     expect(state.openStates[panel]).toBe(false);
@@ -72,7 +72,7 @@ describe('panels reducer', () => {
   });
 
   it('should handle multiple panels independently', () => {
-    const panel1 = Panel.FEED_CHAT;
+    const panel1 = Panel.PUBLIC_FEED;
     const panel2 = Panel.MEMBERS;
 
     let state = initialState;

@@ -4,8 +4,15 @@ import { Message } from '../message';
 import { Post } from '../post';
 import { PostInput } from '../post-input-hook';
 import { Waypoint } from '../../../../components/waypoint';
-import { Panel, PanelBody, PanelHeader, PanelTitle, PanelTitleToggle } from '../../../../components/layout/panel';
-import { useState, useEffect } from 'react';
+import {
+  Panel,
+  PanelBody,
+  PanelHeader,
+  PanelProps,
+  PanelTitle,
+  PanelTitleToggle,
+} from '../../../../components/layout/panel';
+import { useState, useEffect, ReactNode } from 'react';
 import { FeedFilter, getLastFeedFilter, setLastFeedFilter } from '../../../../lib/last-feed-filter';
 import { useReturnFromProfileNavigation } from '../../lib/useReturnFromProfileNavigation';
 import { BackButton } from '../post-view-container/back-button';
@@ -33,6 +40,9 @@ export interface FeedProps {
    * Whether to show the following toggle
    */
   showFollowingToggle?: boolean;
+  header?: ReactNode;
+  panel?: PanelProps['panel'];
+  panelName?: PanelProps['name'];
 }
 
 export const Feed = ({
@@ -41,6 +51,9 @@ export const Feed = ({
   userId,
   isLoading: isLoadingProp,
   showFollowingToggle = false,
+  header,
+  panel,
+  panelName,
 }: FeedProps) => {
   const [selectedFilter, setSelectedFilter] = useState<FeedFilter>(getLastFeedFilter());
   const location = useLocation();
@@ -99,15 +112,17 @@ export const Feed = ({
   };
 
   return (
-    <Panel className={styles.Feed}>
+    <Panel className={styles.Feed} panel={panel} name={panelName}>
       <PanelHeader>
-        {renderHeader()}
-        <SearchDrawer
-          searchResults={searchResults}
-          isSearching={isSearching}
-          onSearch={handleSearch}
-          searchValue={searchValue}
-        />
+        <div className={styles.HeaderContent}>
+          {header ?? renderHeader()}
+          <SearchDrawer
+            searchResults={searchResults}
+            isSearching={isSearching}
+            onSearch={handleSearch}
+            searchValue={searchValue}
+          />
+        </div>
       </PanelHeader>
       <PanelBody className={styles.Panel}>
         {channelZid && isPostingEnabled && <PostInput className={styles.Input} channelZid={channelZid} />}

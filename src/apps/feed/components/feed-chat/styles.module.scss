@@ -4,9 +4,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 386px;
-  max-width: 482px;
-  flex-shrink: 2;
+  flex: 1;
+  flex-shrink: 0;
 }
 
 .FeedChat {
@@ -58,8 +57,4 @@
   &--is-active {
     background-color: theme.$color-greyscale-transparency-3;
   }
-}
-
-.MembersSidekick {
-  padding: 0 !important;
 }

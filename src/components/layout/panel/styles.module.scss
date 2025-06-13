@@ -94,7 +94,7 @@ $header-color: var(--color-greyscale-11);
   @include variables.panel-border;
 
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: flex-end;
 
   border-radius: variables.$border-radius;

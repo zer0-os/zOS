@@ -47,3 +47,10 @@
   gap: variables.$default-gap;
   padding: variables.$page-padding-vertical variables.$default-gap;
 }
+
+.HeaderContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}

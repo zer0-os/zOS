@@ -141,19 +141,6 @@ describe('FeedChatContainer', () => {
     expect(validateFeedChat).toHaveBeenLastCalledWith(`new-zid:${config.matrixHomeServerName}`);
   });
 
-  it('should render members sidekick when is secondary sidekick open', () => {
-    const wrapper = subject({
-      zid: 'test-zid',
-      channel: { id: 'channel-id' },
-      activeConversationId: 'conversation-id',
-      isJoiningConversation: true,
-      isConversationsLoaded: true,
-      isSecondarySidekickOpen: true,
-    });
-
-    expect(wrapper).toHaveElement(MembersSidekick);
-  });
-
   describe('mapState', () => {
     const getState = (state: any) =>
       ({

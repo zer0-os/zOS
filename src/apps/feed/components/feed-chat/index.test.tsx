@@ -168,7 +168,7 @@ describe('FeedChatContainer', () => {
         },
         panels: {
           openStates: {
-            [Panel.FEED_CHAT]: true,
+            [Panel.PUBLIC_FEED]: true,
             [Panel.MEMBERS]: false,
           },
         },

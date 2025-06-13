@@ -4,7 +4,7 @@ export const useEpicGamesLink = () => {
   const handle = async () => {
     try {
       const response = await post<any>('/api/oauth/generate-link-token');
-      const returnUrl = window.location.origin + '/oauth/callback';
+      const returnUrl = window.location.origin + '/oauth/link/callback';
 
       const data = response.body;
       const { linkToken } = data;

@@ -22,6 +22,7 @@ import { RainbowKitConnect } from './lib/web3/rainbowkit/connect';
 import { RainbowKitProvider } from './lib/web3/rainbowkit/provider';
 import { App } from './App';
 import { OAuthCallback } from './oauth-callback/oauth-callback';
+import { OAuthLinkCallback } from './oauth-callback/oauth-link-callback';
 
 desktopInit();
 runSagas();
@@ -50,6 +51,7 @@ root.render(
                   <Route path='/get-access' exact component={Invite} />
                   <Route path='/login' exact component={LoginPage} />
                   <Route path='/reset-password' exact component={ResetPassword} />
+                  <Route path='/oauth/link/callback' exact component={OAuthLinkCallback} />
                   <Route path='/oauth/callback' exact component={OAuthCallback} />
                   <Route path='/error' exact component={ErrorPage} />
                   <Route component={App} />

@@ -4,18 +4,28 @@ import { BillingDetails } from '..';
 import { IconButton } from '@zero-tech/zui/components/IconButton';
 import { IconArrowLeft } from '@zero-tech/zui/icons';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
+import { CardElement } from '@stripe/react-stripe-js';
+import { useZeroProSubscription } from '../useZeroProSubscription';
 
 import styles from './styles.module.scss';
 
 interface Props {
-  billingDetails: BillingDetails;
-
+  billingDetails: BillingDetails | null;
   onNext: () => void;
   onBack: () => void;
 }
 
 export const Payment: React.FC<Props> = ({ billingDetails, onNext, onBack }) => {
-  console.log('Billing Details:', billingDetails);
+  const { subscribe, isLoading, error } = useZeroProSubscription(billingDetails);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await subscribe();
+    if (success) {
+      onNext();
+    }
+  };
+
   return (
     <>
       <IconButton className={styles.BackButton} onClick={onBack} Icon={IconArrowLeft} size={24} />
@@ -26,12 +36,29 @@ export const Payment: React.FC<Props> = ({ billingDetails, onNext, onBack }) => 
           <div className={styles.SectionHeader}>Payment Details</div>
           <div className={styles.SectionLine} />
         </div>
-      </div>
 
-      <div className={styles.SubmitButtonContainer}>
-        <Button className={styles.SubmitButton} variant={ButtonVariant.Primary} isSubmit onPress={onNext}>
-          Subscribe for $10 / Month
-        </Button>
+        <form className={styles.Form} onSubmit={handleSubmit}>
+          <label className={styles.Label}>Credit Card</label>
+          <div className={styles.CardElementWrapper}>
+            <CardElement
+              className={styles.CardElement}
+              options={{ style: { base: { fontSize: '16px', color: '#fff' } } }}
+            />
+          </div>
+          {error && <div className={styles.FormError}>{error}</div>}
+          <div className={styles.SubmitButtonContainer}>
+            <Button
+              className={styles.SubmitButton}
+              variant={ButtonVariant.Primary}
+              isSubmit
+              type='submit'
+              isLoading={isLoading}
+              disabled={isLoading}
+            >
+              Subscribe for $12 / Month
+            </Button>
+          </div>
+        </form>
       </div>
     </>
   );

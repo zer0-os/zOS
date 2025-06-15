@@ -7,7 +7,6 @@ import { validateFeedChat } from '../../../../store/chat';
 import { send } from '../../../../store/messages';
 import { config } from '../../../../config';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
-import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
 import { Panel } from '../../../../store/panels/constants';
 
 jest.mock('../../../../components/sidekick/variants/members-sidekick', () => ({

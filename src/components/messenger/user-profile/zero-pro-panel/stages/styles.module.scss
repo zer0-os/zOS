@@ -245,3 +245,10 @@
   border-bottom: 2px solid theme.$color-greyscale-11;
   transform: translateY(-50%) rotate(-45deg);
 }
+
+.CardElement {
+  background-color: theme.$color-greyscale-12;
+  color: theme.$color-greyscale-12;
+  padding: 8px;
+  border-radius: 4px;
+}

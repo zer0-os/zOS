@@ -38,11 +38,12 @@ export const Payment: React.FC<Props> = ({ billingDetails, onNext, onBack }) => 
         </div>
 
         <form className={styles.Form} onSubmit={handleSubmit}>
-          <label className={styles.Label}>Credit Card</label>
-          <div className={styles.CardElementWrapper}>
+          <div className={styles.CardElementWrapper} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <CardElement
               className={styles.CardElement}
-              options={{ style: { base: { fontSize: '16px', color: '#fff' } } }}
+              options={{
+                hidePostalCode: true,
+              }}
             />
           </div>
           {error && <div className={styles.FormError}>{error}</div>}
@@ -55,7 +56,7 @@ export const Payment: React.FC<Props> = ({ billingDetails, onNext, onBack }) => 
               isLoading={isLoading}
               disabled={isLoading}
             >
-              Subscribe for $12 / Month
+              Subscribe for $10 / Month
             </Button>
           </div>
         </form>

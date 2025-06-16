@@ -193,7 +193,7 @@ export const ChatView = React.forwardRef<InvertedScroll, Properties>(
 
           return (
             <ChatMessage
-              key={message.id}
+              key={message.optimisticId || message.id}
               message={message}
               isUserOwner={isUserOwner}
               isUserOwnerOfParentMessage={isUserOwnerOfParentMessage}

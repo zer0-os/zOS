@@ -187,3 +187,61 @@
   margin-top: 12px;
   text-align: center;
 }
+
+.FormSuccess {
+  color: theme.$color-success-11;
+  font-size: 10px;
+  text-align: center;
+}
+
+.SelectWrapper {
+  @include glass-input-inset-default;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  position: relative;
+  transition: border-color 0.1s ease;
+  height: 40px;
+
+  &:focus-within {
+    @include glass-input-inset-active;
+  }
+}
+
+.SelectWrapper[data-status='error'] {
+  border: 1px solid theme.$color-failure-11 !important;
+
+  &:focus-within {
+    border-color: theme.$color-failure-9 !important;
+  }
+}
+
+.Select {
+  appearance: none;
+  background: none;
+  border: none;
+  color: theme.$color-greyscale-12;
+  padding: 8px 36px 8px 12px;
+  border-radius: 0.5rem;
+  width: 100%;
+  outline: none;
+  cursor: pointer;
+  background-color: transparent;
+
+  // Remove default arrow
+  background-image: none;
+}
+
+// Custom arrow for select
+.SelectWrapper::after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 45%;
+  width: 0.6em;
+  height: 0.6em;
+  pointer-events: none;
+  border-left: 2px solid theme.$color-greyscale-11;
+  border-bottom: 2px solid theme.$color-greyscale-11;
+  transform: translateY(-50%) rotate(-45deg);
+}

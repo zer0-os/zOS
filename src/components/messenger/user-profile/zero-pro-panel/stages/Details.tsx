@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import countryList from 'react-select-country-list';
+import { postcodeValidator, postcodeValidatorExistsForCountry } from 'postcode-validator';
 
 import { IconButton } from '@zero-tech/zui/components/IconButton';
 import { IconArrowLeft } from '@zero-tech/zui/icons';
@@ -10,6 +12,8 @@ import styles from './styles.module.scss';
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+const countryOptions = countryList().getData(); // [{ value: 'US', label: 'United States' }, ...]
 
 interface Props {
   onNext: (details: {
@@ -41,7 +45,12 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const emailIsValid = isValidEmail(email);
-  const isValid = name && email && emailIsValid && address && city && postalCode && country;
+  const countryIsValid = !!countryOptions.find((c) => c.value === country);
+  const cityIsValid = !!city;
+  const supportsPostcodeValidation = country && postcodeValidatorExistsForCountry(country);
+  const postalCodeIsValid =
+    country && postalCode ? (supportsPostcodeValidation ? postcodeValidator(postalCode, country) : true) : false;
+  const isValid = name && email && emailIsValid && address && cityIsValid && postalCodeIsValid && countryIsValid;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +89,18 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
             isRequired
             error={attemptedSubmit && (!email || !emailIsValid)}
           />
+          <div className={styles.SelectWrapper} data-status={attemptedSubmit && !countryIsValid ? 'error' : undefined}>
+            <select className={styles.Select} value={country} onChange={(e) => setCountry(e.target.value)}>
+              <option className={styles.SelectOption} value=''>
+                Select a country
+              </option>
+              {countryOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <Input
             className={styles.Input}
             value={address}
@@ -94,7 +115,7 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
             onChange={setCity}
             placeholder='City'
             isRequired
-            error={attemptedSubmit && !city}
+            error={attemptedSubmit && !cityIsValid}
           />
           <Input
             className={styles.Input}
@@ -102,24 +123,27 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
             onChange={setPostalCode}
             placeholder='Zip / Postal Code'
             isRequired
-            error={attemptedSubmit && !postalCode}
-          />
-          <Input
-            className={styles.Input}
-            value={country}
-            onChange={setCountry}
-            placeholder='Country'
-            isRequired
-            error={attemptedSubmit && !country}
+            error={attemptedSubmit && !postalCodeIsValid}
           />
 
-          {!attemptedSubmit && !isValid && (
-            <div className={styles.FormInfo}>Please complete all fields to continue.</div>
-          )}
-          {attemptedSubmit && !isValid && (
+          {/* Error/Info/Success messaging */}
+          {/* TODO: Clean up the form info/error messaging */}
+          {isValid ? (
+            <div className={styles.FormSuccess}>All fields completed ✅</div>
+          ) : attemptedSubmit ? (
             <div className={styles.FormError}>
-              {!emailIsValid ? 'Please enter a valid email' : 'Please complete all fields to continue.'}
+              {!emailIsValid
+                ? 'Please enter a valid email.'
+                : !countryIsValid
+                ? 'Please select a valid country.'
+                : !postalCodeIsValid
+                ? 'Please enter a valid code for the selected country.'
+                : !name || !address || !city
+                ? 'Please complete all fields to continue.'
+                : ''}
             </div>
+          ) : (
+            <div className={styles.FormInfo}>Please complete all fields to continue.</div>
           )}
 
           <div className={styles.SubmitButtonContainer}>

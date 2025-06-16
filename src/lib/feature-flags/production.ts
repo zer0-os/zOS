@@ -52,6 +52,8 @@ export const productionFlags: FeatureFlagDefinitions = {
       '2791334a-f48a-4aa3-88bf-26933c206d2f',
       '93ee6c6e-cf5a-44ea-9f27-7f29c3cc221d',
       '8bed44f1-7886-4607-ad33-0279c077ee41',
+      '1964516c-b8ef-41b8-bb07-d1e206fc7381',
+      '204393da-4ec4-4698-832d-5558a16b98be',
     ],
   },
 };

@@ -43,7 +43,7 @@ function usePollZeroProActiveStatus(
     let start = Date.now();
     async function poll() {
       while (isMounted) {
-        const res = await fetch('/status?type=ZERO');
+        const res = await fetch('/subscription/status?type=ZERO');
         const data = await res.json();
         const status = data.subscription?.status ?? data.status;
         if (status === 'active') {

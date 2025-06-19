@@ -77,7 +77,6 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
             value={name}
             onChange={setName}
             placeholder='Name'
-            isRequired
             error={attemptedSubmit && !name}
           />
           <Input
@@ -86,7 +85,6 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
             onChange={setEmail}
             placeholder='Email'
             type='email'
-            isRequired
             error={attemptedSubmit && (!email || !emailIsValid)}
           />
           <div className={styles.SelectWrapper} data-status={attemptedSubmit && !countryIsValid ? 'error' : undefined}>
@@ -106,7 +104,6 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
             value={address}
             onChange={setAddress}
             placeholder='Address (first line)'
-            isRequired
             error={attemptedSubmit && !address}
           />
           <Input
@@ -114,7 +111,6 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
             value={city}
             onChange={setCity}
             placeholder='City'
-            isRequired
             error={attemptedSubmit && !cityIsValid}
           />
           <Input
@@ -122,7 +118,6 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
             value={postalCode}
             onChange={setPostalCode}
             placeholder='Zip / Postal Code'
-            isRequired
             error={attemptedSubmit && !postalCodeIsValid}
           />
 

@@ -245,3 +245,58 @@
   border-bottom: 2px solid theme.$color-greyscale-11;
   transform: translateY(-50%) rotate(-45deg);
 }
+
+.CardElement {
+  background-color: theme.$color-greyscale-12;
+  color: theme.$color-greyscale-12;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.LoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+}
+
+.Spinner {
+  width: 38px;
+  height: 38px;
+  border: 4px solid rgba(1, 244, 203, 0.2);
+  border-top: 2px solid theme.$color-secondary-11;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+}
+
+.LoadingText {
+  color: theme.$color-secondary-11;
+  font-size: 12px;
+  text-align: center;
+}
+
+.ErrorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+}
+
+.ErrorText {
+  color: theme.$color-failure-11;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 12px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

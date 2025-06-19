@@ -6,6 +6,9 @@ import { Plans } from './stages/Plans';
 import { Details } from './stages/Details';
 import { Payment } from './stages/Payment';
 import { Success } from './stages/Success';
+import { Loading } from './stages/Loading';
+import { Error } from './stages/Error';
+import { usePollZeroProActiveStatus } from './usePollZeroProActiveStatus';
 import { BottomSheet } from './bottom-sheet';
 
 import styles from './styles.module.scss';
@@ -15,6 +18,8 @@ export enum ZeroProStage {
   Details = 'details',
   Payment = 'payment',
   Success = 'success',
+  Loading = 'loading',
+  Error = 'error',
 }
 
 export type ZeroProSheet = ZeroProStage | null;
@@ -31,11 +36,12 @@ export interface BillingDetails {
 export const ZeroProPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [activeSheet, setActiveSheet] = useState<ZeroProSheet>(null);
   const [billingDetails, setBillingDetails] = useState<BillingDetails | null>(null);
+  const [isPolling, setIsPolling] = useState(false);
+  const [pollError, setPollError] = useState<string | null>(null);
 
   const openPlan = useCallback(() => setActiveSheet(ZeroProStage.PaymentPlan), []);
   const openDetails = useCallback(() => setActiveSheet(ZeroProStage.Details), []);
   const openPayment = useCallback(() => setActiveSheet(ZeroProStage.Payment), []);
-  const openSuccess = useCallback(() => setActiveSheet(ZeroProStage.Success), []);
   const closeSheet = useCallback(() => setActiveSheet(null), []);
 
   // Callback to receive details from Details stage and open payment
@@ -45,6 +51,26 @@ export const ZeroProPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => 
       openPayment();
     },
     [openPayment]
+  );
+
+  // After payment, start polling for active status
+  const handlePaymentNext = useCallback(() => {
+    setIsPolling(true);
+    setPollError(null);
+    setActiveSheet(ZeroProStage.Loading);
+  }, []);
+
+  usePollZeroProActiveStatus(
+    isPolling,
+    () => {
+      setIsPolling(false);
+      setActiveSheet(ZeroProStage.Success);
+    },
+    () => {
+      setIsPolling(false);
+      setPollError('Subscription activation timed out. Please contact support or try again.');
+      setActiveSheet(ZeroProStage.Error);
+    }
   );
 
   return (
@@ -61,8 +87,10 @@ export const ZeroProPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => 
             <Details onNext={handleBillingDetails} onBack={openPlan} initialValues={billingDetails} />
           )}
           {activeSheet === ZeroProStage.Payment && (
-            <Payment billingDetails={billingDetails} onNext={openSuccess} onBack={openDetails} />
+            <Payment billingDetails={billingDetails} onNext={handlePaymentNext} onBack={openDetails} />
           )}
+          {activeSheet === ZeroProStage.Loading && <Loading />}
+          {activeSheet === ZeroProStage.Error && <Error error={pollError} />}
           {activeSheet === ZeroProStage.Success && <Success onClose={closeSheet} />}
         </BottomSheet>
       )}

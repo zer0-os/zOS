@@ -34,7 +34,7 @@
     "@web3-react/injected-connector": "^6.0.7",
     "@web3-react/network-connector": "^6.1.9",
     "@web3-react/walletlink-connector": "^6.2.13",
-    "@zero-tech/zui": "^1.27.1",
+    "@zero-tech/zui": "^1.28.1",
     "assert": "^2.1.0",
     "blurhash": "^2.0.5",
     "buffer": "^6.0.3",

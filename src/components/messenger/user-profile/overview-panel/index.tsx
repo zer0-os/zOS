@@ -21,9 +21,10 @@ import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { RewardsItemContainer } from './rewards-item/container';
 import { featureFlags } from '../../../../lib/feature-flags';
 import { ScrollbarContainer } from '../../../scrollbar-container';
+import { useMatrixImage } from '../../../../lib/hooks/useMatrixImage';
+import { useZeroProStatus, isActiveSubscription } from '../zero-pro-panel/useZeroProStatus';
 
 import './styles.scss';
-import { useMatrixImage } from '../../../../lib/hooks/useMatrixImage';
 
 const cn = bemClassName('overview-panel');
 
@@ -47,6 +48,8 @@ export interface Properties {
 export const OverviewPanel: React.FC<Properties> = (props) => {
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const { data: imageUrl } = useMatrixImage(props.image);
+  const { data: statusData } = useZeroProStatus();
+  const isSubscribed = isActiveSubscription(statusData);
 
   const navigateBack = () => {
     props.onBack();
@@ -135,9 +138,10 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
             onPress={openZeroPro}
             startEnhancer={<IconTag1 size={20} />}
           >
-            Join ZERO Pro
+            {isSubscribed ? 'Manage ZERO Pro' : 'Join ZERO Pro'}
           </Button>
         )}
+
         <Button
           {...cn('action-button')}
           variant={ButtonVariant.Secondary}

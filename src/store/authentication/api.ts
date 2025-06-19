@@ -64,3 +64,22 @@ export async function emailLogin({ email, password }: { email: string; password:
     throw error;
   }
 }
+
+export async function oauthLogin({ sessionToken }: { sessionToken: string }) {
+  try {
+    const response = await post('/api/oauth/establish-session').set('Authorization', `Bearer ${sessionToken}`).send();
+    addVercelPreviewAuthHeader(response.body.accessToken);
+    return {
+      success: true,
+      response: response.body,
+    };
+  } catch (error: any) {
+    if (error?.response?.status === 400) {
+      return {
+        success: false,
+        response: error.response.body.code,
+      };
+    }
+    throw error;
+  }
+}

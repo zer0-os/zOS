@@ -11,7 +11,7 @@ interface RequestFilter {
   [x: string]: any;
 }
 
-function apiUrl(path: string): string {
+export function apiUrl(path: string): string {
   return [
     config.ZERO_API_URL,
     path,

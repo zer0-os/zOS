@@ -2,6 +2,7 @@ import uniqBy from 'lodash.uniqby';
 import { actionChannel, call, delay, fork, race, take } from 'redux-saga/effects';
 import { Events as AuthEvents, getAuthChannel } from './authentication/channels';
 import { buffers } from 'redux-saga';
+import { getHistory } from '../lib/browser';
 
 export function uniqNormalizedList(objectsAndIds: ({ id: string } | string)[], favorLast = false): any {
   if (favorLast) {
@@ -39,3 +40,14 @@ export const leadingDebounce = (ms, pattern, task, ...args) =>
       yield delay(ms);
     }
   });
+
+export function* resetHash() {
+  if (typeof window !== 'undefined') {
+    const history = yield call(getHistory);
+    if (history && history.replace) {
+      history.replace({ ...history.location, hash: '' });
+    } else if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }
+}

@@ -6,7 +6,7 @@ import { EditProfileContainer } from '../../edit-profile/container';
 import { SettingsPanelContainer } from './settings-panel/container';
 import { AccountManagementContainer } from './account-management-panel/container';
 import { DownloadsPanel } from './downloads-panel';
-import { LinkedAccountsPanelContainer } from './linked-accounts-panel/container';
+import { LinkedAccountsPanel } from './linked-accounts-panel';
 import { ZeroProPanel } from './zero-pro-panel';
 
 export interface Properties {
@@ -56,9 +56,7 @@ export class UserProfile extends React.Component<Properties> {
         {this.props.stage === Stage.AccountManagement && (
           <AccountManagementContainer onClose={this.props.onBackToOverview} />
         )}
-        {this.props.stage === Stage.LinkedAccounts && (
-          <LinkedAccountsPanelContainer onClose={this.props.onBackToOverview} />
-        )}
+        {this.props.stage === Stage.LinkedAccounts && <LinkedAccountsPanel onBack={this.props.onBackToOverview} />}
         {this.props.stage === Stage.ZeroPro && <ZeroProPanel onClose={this.props.onBackToOverview} />}
       </>
     );

@@ -7,7 +7,7 @@ import { EditProfileContainer } from '../../edit-profile/container';
 import { SettingsPanelContainer } from './settings-panel/container';
 import { AccountManagementContainer } from './account-management-panel/container';
 import { DownloadsPanel } from './downloads-panel';
-import { LinkedAccountsPanelContainer } from './linked-accounts-panel/container';
+import { LinkedAccountsPanel } from './linked-accounts-panel';
 
 jest.mock('../../../lib/web3/thirdweb/client', () => ({
   getThirdWebClient: jest.fn(),
@@ -74,7 +74,7 @@ describe(UserProfile, () => {
   it('renders Linked Accounts Panel Container when stage is Linked Accounts', () => {
     const wrapper = subject({ stage: Stage.LinkedAccounts });
 
-    expect(wrapper).toHaveElement(LinkedAccountsPanelContainer);
+    expect(wrapper).toHaveElement(LinkedAccountsPanel);
   });
 
   it('renders nothing when stage None', () => {

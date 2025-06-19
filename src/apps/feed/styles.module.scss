@@ -3,7 +3,6 @@
 .Feed {
   display: flex;
   width: 100%;
-
   pointer-events: all;
 }
 
@@ -23,4 +22,17 @@
   flex: 1;
   gap: variables.$default-gap;
   padding: variables.$page-padding-vertical variables.$default-gap variables.$page-padding-vertical 0;
+}
+
+.MembersSidekick {
+  padding: 0 !important;
+}
+
+.FeedWrapper {
+  // This forces the feed to take up full height regardless of the content.
+  > div {
+    height: 100%;
+    max-width: 450px;
+    min-width: 450px;
+  }
 }

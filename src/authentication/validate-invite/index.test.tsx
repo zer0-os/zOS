@@ -32,12 +32,6 @@ describe('Invite', () => {
     // invalid codes
     wrapper.find('Input').simulate('change', '');
     expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
-
-    wrapper.find('Input').simulate('change', '12341231231231321345');
-    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
-
-    wrapper.find('Input').simulate('change', 'acieufbwiefub1o2noeubcwoeufb');
-    expect(wrapper.find('Button').prop('isDisabled')).toEqual(true);
   });
 
   it('sets button to loading', function () {

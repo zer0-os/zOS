@@ -14,12 +14,17 @@
   justify-content: center;
   height: 270px;
   pointer-events: none;
+}
 
-  span {
-    width: 90px !important;
-    height: 90px !important;
-    margin-bottom: 16px !important;
-    pointer-events: none !important;
+.Avatar {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 16px;
+  pointer-events: none;
+
+  & > div {
+    width: 100% !important;
+    height: 100% !important;
   }
 }
 

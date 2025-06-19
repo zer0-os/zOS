@@ -8,9 +8,10 @@ import { Payment } from './stages/Payment';
 import { Success } from './stages/Success';
 import { Loading } from './stages/Loading';
 import { Error } from './stages/Error';
-import { BottomSheet } from './bottom-sheet';
-import styles from './styles.module.scss';
 import { usePollZeroProActiveStatus } from './usePollZeroProActiveStatus';
+import { BottomSheet } from './bottom-sheet';
+
+import styles from './styles.module.scss';
 
 export enum ZeroProStage {
   PaymentPlan = 'payment-plan',

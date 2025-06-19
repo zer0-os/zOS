@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Input } from '@zero-tech/zui/components';
+import { IconButton, Input } from '@zero-tech/zui/components';
 import { IconSearchMd } from '@zero-tech/zui/icons';
 import { MatrixAvatar } from '../../../../../components/matrix-avatar';
 import { ProfileLinkNavigation } from '../../../../../components/profile-link-navigation';
@@ -43,9 +43,7 @@ export const SearchDrawer = ({ searchResults, isSearching, searchValue, onSearch
 
   return (
     <div className={styles.Container} ref={containerRef}>
-      <div className={styles.IconContainer} onClick={handleToggleDrawer}>
-        <IconSearchMd size={18} />
-      </div>
+      <IconButton Icon={IconSearchMd} size={24} onClick={handleToggleDrawer} />
       <div className={`${styles.Drawer} ${isOpen ? styles.DrawerOpen : ''}`}>
         {isOpen && (
           <div className={styles.InputContainer}>

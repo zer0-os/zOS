@@ -7,7 +7,7 @@ export type PanelsState = {
 
 export const initialState: PanelsState = {
   openStates: {
-    [Panel.FEED_CHAT]: true,
+    [Panel.PUBLIC_FEED]: false,
     [Panel.MEMBERS]: false,
   },
 };

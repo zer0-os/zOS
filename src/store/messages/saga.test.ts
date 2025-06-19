@@ -385,7 +385,7 @@ describe(replaceOptimisticMessage, () => {
     const currentMessages = ['message-1', 'optimistic-id', 'message-2'];
     const oldMessages = [
       { id: 'message-1' },
-      { id: 'optimistic-id', optimisticId: 'optimistic-id' },
+      { id: 'optimistic-id', optimisticId: 'optimistic-id', createdAt: 1234567890 },
       { id: 'message-2' },
     ] as any;
     const newMessage = {
@@ -414,7 +414,7 @@ describe(replaceOptimisticMessage, () => {
       .withReducer(rootReducer, initialState.build())
       .run();
 
-    const expectedNewMessage = { ...newMessage, sendStatus: MessageSendStatus.SUCCESS };
+    const expectedNewMessage = { ...newMessage, createdAt: 1234567890, sendStatus: MessageSendStatus.SUCCESS };
     expect(returnValue).toEqual(['message-1', expectedNewMessage, 'message-2']);
   });
 });

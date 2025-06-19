@@ -21,7 +21,6 @@ export type FeatureFlagKey =
   | 'enableLoadMore'
   | 'enableComments'
   | 'enableFeedApp'
-  | 'enableLinkedAccounts'
   | 'enableZeroWalletSigning'
   | 'enableFeedChat'
   | 'enableAuraZApp'
@@ -30,8 +29,7 @@ export type FeatureFlagKey =
   | 'enablePostMedia'
   | 'enableMatrixDebug'
   | 'enableProfileDirectMessage'
-  | 'enableZeroPro'
-  | 'enableOAuthLinking';
+  | 'enableZeroPro';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

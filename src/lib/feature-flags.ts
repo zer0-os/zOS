@@ -31,7 +31,6 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableLoadMore: boolean;
   declare enableComments: boolean;
   declare enableFeedApp: boolean;
-  declare enableLinkedAccounts: boolean;
   declare enableZeroWalletSigning: boolean;
   declare enableFeedChat: boolean;
   declare enableAuraZApp: boolean;
@@ -41,7 +40,6 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableMatrixDebug: boolean;
   declare enableProfileDirectMessage: boolean;
   declare enableZeroPro: boolean;
-  declare enableOAuthLinking: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

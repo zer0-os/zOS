@@ -21,7 +21,6 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableLoadMore: { defaultValue: true },
   enableComments: { defaultValue: true },
   enableFeedApp: { defaultValue: true },
-  enableLinkedAccounts: { defaultValue: true },
   enableZeroWalletSigning: { defaultValue: true },
   enableFeedChat: { defaultValue: true },
   enableAuraZApp: {
@@ -34,5 +33,4 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableMatrixDebug: { defaultValue: true },
   enableProfileDirectMessage: { defaultValue: true },
   enableZeroPro: { defaultValue: true },
-  enableOAuthLinking: { defaultValue: true },
 };

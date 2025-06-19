@@ -168,7 +168,17 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
           startEnhancer={<IconWallet3 size={20} />}
           color={ButtonColor.Greyscale}
         >
-          Manage Accounts
+          Manage Wallets
+        </Button>
+
+        <Button
+          {...cn('action-button')}
+          variant={ButtonVariant.Secondary}
+          onPress={openLinkedAccounts}
+          startEnhancer={<IconLink1 size={20} />}
+          color={ButtonColor.Greyscale}
+        >
+          Linked Accounts
         </Button>
 
         <Button
@@ -202,18 +212,6 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
         >
           Download
         </Button>
-
-        {featureFlags.enableLinkedAccounts && (
-          <Button
-            {...cn('action-button')}
-            variant={ButtonVariant.Secondary}
-            onPress={openLinkedAccounts}
-            startEnhancer={<IconLink1 size={20} />}
-            color={ButtonColor.Greyscale}
-          >
-            Linked Accounts
-          </Button>
-        )}
       </div>
     );
   };

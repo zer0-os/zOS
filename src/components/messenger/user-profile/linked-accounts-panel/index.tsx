@@ -4,7 +4,6 @@ import { bemClassName } from '../../../../lib/bem';
 
 import { LinkedAccount } from './components/linked-account';
 import { AvailableAccount } from './components/available-account';
-import { featureFlags } from '../../../../lib/feature-flags';
 import { useLinkedAccountsQuery } from './queries/useLinkedAccountsQuery';
 import { Provider, ProviderLabels } from './types/providers';
 import { ModalConfirmation } from '@zero-tech/zui/components';
@@ -23,7 +22,6 @@ export interface Properties {
 }
 
 export function LinkedAccountsPanel({ onBack }: Properties) {
-  const enableOAuthLinking = featureFlags.enableOAuthLinking;
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [providerToUnlink, setProviderToUnlink] = useState<Provider | null>(null);
   const [providerUserIdToUnlink, setProviderUserIdToUnlink] = useState<string | null>(null);
@@ -77,7 +75,7 @@ export function LinkedAccountsPanel({ onBack }: Properties) {
 
       <ScrollbarContainer variant='on-hover'>
         <div {...cn('body')}>
-          {enableOAuthLinking && linkedAccounts.length > 0 && (
+          {linkedAccounts.length > 0 && (
             <div {...cn('section')}>
               <h3 {...cn('section-title')}>Linked</h3>
               {linkedAccounts.map((account) => (
@@ -94,11 +92,9 @@ export function LinkedAccountsPanel({ onBack }: Properties) {
 
           <div {...cn('section')}>
             <h3 {...cn('section-title')}>Available to Link</h3>
-            {AVAILABLE_ACCOUNTS.map((account) => {
-              if (account !== Provider.Telegram && !enableOAuthLinking) return null;
-
-              return <AvailableAccount key={account} provider={account} />;
-            })}
+            {AVAILABLE_ACCOUNTS.map((account) => (
+              <AvailableAccount key={account} provider={account} />
+            ))}
           </div>
         </div>
       </ScrollbarContainer>

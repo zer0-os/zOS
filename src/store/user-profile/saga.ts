@@ -2,6 +2,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { SagaActionTypes, Stage, setStage, setPublicReadReceipts } from '.';
 import { getReadReceiptPreference, setReadReceiptPreference } from '../../lib/chat';
 import { reset as resetAccountManagementState } from '../account-management/saga';
+import { resetHash } from '../utils';
 
 export function* openUserProfile() {
   yield put(setStage(Stage.Overview));
@@ -65,6 +66,15 @@ export function* getUserReadReceiptPreference() {
 }
 
 export function* saga() {
+  // Note that this won't work in electron as it uses a hash router
+  // Opening the native app from the web will be a future enhancement
+  if (typeof window !== 'undefined' && window.location.hash !== '') {
+    if (window.location.hash === '#linked-accounts') {
+      yield call(openLinkedAccounts);
+      yield call(resetHash);
+    }
+  }
+
   yield takeLatest(SagaActionTypes.OpenUserProfile, openUserProfile);
   yield takeLatest(SagaActionTypes.CloseUserProfile, closeUserProfile);
   yield takeLatest(SagaActionTypes.OpenEditProfile, openEditProfile);

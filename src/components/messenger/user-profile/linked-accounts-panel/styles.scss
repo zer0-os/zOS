@@ -23,18 +23,28 @@
     margin: 0 16px 16px 16px;
   }
 
-  &__section-header {
+  &__section {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 12px;
-    cursor: pointer;
-  }
-
-  &__section-icon {
-    color: theme.$color-secondary-11;
   }
 
   &__section-title {
+    @include glass-text-secondary-color;
+    height: 24px;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  &__no-accounts-message {
+    color: theme.$color-secondary-9;
+    font-style: italic;
+  }
+
+  &__section-icon {
     color: theme.$color-secondary-11;
   }
 

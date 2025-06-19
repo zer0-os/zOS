@@ -528,6 +528,7 @@ export function* replaceOptimisticMessage(currentMessages: string[], message: Me
   messages[messageIndex] = {
     ...optimisticMessage,
     ...message,
+    createdAt: optimisticMessage.createdAt,
     media: optimisticMessage.media,
     sendStatus: MessageSendStatus.SUCCESS,
   };

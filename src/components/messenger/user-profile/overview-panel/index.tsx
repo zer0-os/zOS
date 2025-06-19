@@ -131,14 +131,17 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
   const renderActions = () => {
     return (
       <div {...cn('action-button-container')}>
-        <Button
-          {...cn('action-button')}
-          variant={ButtonVariant.Secondary}
-          onPress={openZeroPro}
-          startEnhancer={<IconTag1 size={20} />}
-        >
-          {isSubscribed ? 'Manage ZERO Pro' : 'Join ZERO Pro'}
-        </Button>
+        {featureFlags.enableZeroPro && (
+          <Button
+            {...cn('action-button')}
+            variant={ButtonVariant.Secondary}
+            onPress={openZeroPro}
+            startEnhancer={<IconTag1 size={20} />}
+          >
+            {isSubscribed ? 'Manage ZERO Pro' : 'Join ZERO Pro'}
+          </Button>
+        )}
+
         <Button
           {...cn('action-button')}
           variant={ButtonVariant.Secondary}

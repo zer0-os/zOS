@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 interface Subscription {
   status: string;
@@ -24,6 +25,8 @@ export function useZeroProStatus() {
     staleTime: 5000,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
+    // prevent query via feature flag enableZeroPro
+    enabled: featureFlags.enableZeroPro,
   });
 }
 

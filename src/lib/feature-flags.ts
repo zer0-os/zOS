@@ -40,6 +40,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enablePostMedia: boolean;
   declare enableMatrixDebug: boolean;
   declare enableProfileDirectMessage: boolean;
+  declare enableZeroPro: boolean;
   declare enableOAuthLinking: boolean;
 
   constructor() {

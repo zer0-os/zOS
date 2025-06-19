@@ -4,6 +4,7 @@ import { Connector } from 'wagmi';
 export enum SagaActionTypes {
   EmailLogin = 'login/emailLogin',
   Web3Login = 'login/web3Login',
+  OAuthLogin = 'login/oauthLogin',
   SwitchLoginStage = 'login/switchLoginStage',
 }
 
@@ -39,6 +40,7 @@ export const initialState: LoginState = {
 
 export const loginByEmail = createAction<{ email: string; password: string }>(SagaActionTypes.EmailLogin);
 export const loginByWeb3 = createAction<Connector['id']>(SagaActionTypes.Web3Login);
+export const loginByOAuth = createAction<string>(SagaActionTypes.OAuthLogin);
 export const switchLoginStage = createAction<LoginStage>(SagaActionTypes.SwitchLoginStage);
 
 const slice = createSlice({

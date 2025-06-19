@@ -7,7 +7,6 @@ import { validateFeedChat } from '../../../../store/chat';
 import { send } from '../../../../store/messages';
 import { config } from '../../../../config';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
-import { MembersSidekick } from '../../../../components/sidekick/variants/members-sidekick';
 import { Panel } from '../../../../store/panels/constants';
 
 jest.mock('../../../../components/sidekick/variants/members-sidekick', () => ({
@@ -141,19 +140,6 @@ describe('FeedChatContainer', () => {
     expect(validateFeedChat).toHaveBeenLastCalledWith(`new-zid:${config.matrixHomeServerName}`);
   });
 
-  it('should render members sidekick when is secondary sidekick open', () => {
-    const wrapper = subject({
-      zid: 'test-zid',
-      channel: { id: 'channel-id' },
-      activeConversationId: 'conversation-id',
-      isJoiningConversation: true,
-      isConversationsLoaded: true,
-      isSecondarySidekickOpen: true,
-    });
-
-    expect(wrapper).toHaveElement(MembersSidekick);
-  });
-
   describe('mapState', () => {
     const getState = (state: any) =>
       ({
@@ -168,7 +154,7 @@ describe('FeedChatContainer', () => {
         },
         panels: {
           openStates: {
-            [Panel.FEED_CHAT]: true,
+            [Panel.PUBLIC_FEED]: true,
             [Panel.MEMBERS]: false,
           },
         },

@@ -34,7 +34,7 @@ describe('usePanelState', () => {
     const { result } = renderHook(() => usePanelState(panelId), {
       wrapper: createWrapper({
         openStates: {
-          [Panel.FEED_CHAT]: false,
+          [Panel.PUBLIC_FEED]: false,
           [Panel.MEMBERS]: true,
         },
       }),

@@ -14,8 +14,6 @@ export interface Properties {
   validateInvite: (data: { code: string }) => void;
 }
 
-const MAX_INVITE_CODE_LENGTH = 6;
-
 interface State {
   inviteCode: string;
   renderAlert: boolean;
@@ -83,18 +81,13 @@ export class Invite extends React.Component<Properties, State> {
               type='text'
               error={isError}
               autoFocus
-              maxLength={MAX_INVITE_CODE_LENGTH}
             />
 
             {isError && this.renderAlert(this.props.inviteCodeStatus)}
           </div>
 
           <Button
-            isDisabled={
-              !this.state.inviteCode.length ||
-              this.state.inviteCode.length > MAX_INVITE_CODE_LENGTH ||
-              this.state.inviteCode === this.state.lastSubmittedInviteCode
-            }
+            isDisabled={!this.state.inviteCode.length || this.state.inviteCode === this.state.lastSubmittedInviteCode}
             isLoading={this.props.isLoading}
             isSubmit
           >

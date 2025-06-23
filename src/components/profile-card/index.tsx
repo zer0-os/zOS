@@ -1,4 +1,4 @@
-import { IconMessage01 } from '@zero-tech/zui/icons';
+import { IconMessage01, IconZeroProVerified } from '@zero-tech/zui/icons';
 import { Button, SkeletonText, Variant, IconButton } from '@zero-tech/zui/components';
 
 import { MatrixAvatar } from '../matrix-avatar';
@@ -25,6 +25,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
     onClickFollow,
     profileImage,
     subhandle,
+    isZeroProSubscribed,
   } = useProfileCard(userId);
 
   return (
@@ -56,7 +57,10 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
         )}
       </div>
       <div className={styles.Name}>
-        <SkeletonText className={styles.Handle} asyncText={{ text: handle, isLoading }} />
+        <div className={styles.NameAndBadgeWrapper}>
+          <SkeletonText className={styles.Handle} asyncText={{ text: handle, isLoading }} />
+          {isZeroProSubscribed && <IconZeroProVerified size={18} />}
+        </div>
         <SkeletonText className={styles.Subhandle} asyncText={{ text: subhandle, isLoading }} />
       </div>
       <div className={styles.Follows}>

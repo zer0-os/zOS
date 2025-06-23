@@ -29,6 +29,12 @@
   width: 100%;
 }
 
+.NameAndBadgeWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .Handle {
   font-weight: bold;
   font-size: 14px;
@@ -36,7 +42,6 @@
 
 .Handle,
 .Subhandle {
-  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

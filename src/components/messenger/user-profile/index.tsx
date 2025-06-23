@@ -21,7 +21,7 @@ export interface Properties {
   name: string;
   image: string;
   subHandle?: string;
-
+  isZeroProSubscriber?: boolean;
   onClose: () => void;
   onLogout: () => void;
   onBackup: () => void;
@@ -43,6 +43,7 @@ export class UserProfile extends React.Component<Properties> {
           <OverviewPanel
             name={this.props.name}
             image={this.props.image}
+            isZeroProSubscriber={this.props.isZeroProSubscriber}
             subHandle={this.props.subHandle}
             onBack={this.props.onClose}
             onOpenLogoutDialog={this.props.onLogout}
@@ -66,7 +67,7 @@ export class UserProfile extends React.Component<Properties> {
         {this.props.stage === Stage.LinkedAccounts && <LinkedAccountsPanel onBack={this.props.onBackToOverview} />}
         {this.props.stage === Stage.ZeroPro && (
           <Elements stripe={stripePromise}>
-            <ZeroProPanel onClose={this.props.onBackToOverview} />
+            <ZeroProPanel isZeroProSubscriber={this.props.isZeroProSubscriber} onClose={this.props.onBackToOverview} />
           </Elements>
         )}
       </>

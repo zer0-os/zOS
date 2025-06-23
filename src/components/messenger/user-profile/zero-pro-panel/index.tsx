@@ -33,7 +33,10 @@ export interface BillingDetails {
   country: string;
 }
 
-export const ZeroProPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const ZeroProPanel: React.FC<{ onClose: () => void; isZeroProSubscriber: boolean }> = ({
+  onClose,
+  isZeroProSubscriber,
+}) => {
   const [activeSheet, setActiveSheet] = useState<ZeroProSheet>(null);
   const [billingDetails, setBillingDetails] = useState<BillingDetails | null>(null);
   const [isPolling, setIsPolling] = useState(false);
@@ -78,7 +81,7 @@ export const ZeroProPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => 
       <PanelHeader title={''} onBack={onClose} />
 
       {/* main stage remains in the background when the bottom sheet is open */}
-      <Main onNext={openPlan} />
+      <Main isZeroProSubscriber={isZeroProSubscriber} onNext={openPlan} />
 
       {activeSheet && (
         <BottomSheet onClose={closeSheet}>

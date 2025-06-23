@@ -22,6 +22,7 @@ import { RETURN_POST_ID_KEY, RETURN_PATH_KEY } from '../../lib/useReturnFromProf
 import { ProfileCardHover } from '../../../../components/profile-card/hover';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
+import { IconZeroProVerified } from '@zero-tech/zui/icons';
 
 type Variant = 'default' | 'expanded';
 
@@ -45,7 +46,7 @@ export interface PostProps {
   authorPrimaryZid?: string;
   authorPublicAddress?: string;
   mediaId?: string;
-
+  isZeroProSubscriber?: boolean;
   meowPost: (postId: string, meowAmount: string) => void;
 }
 
@@ -70,6 +71,7 @@ export const Post = ({
   authorPrimaryZid,
   authorPublicAddress,
   mediaId,
+  isZeroProSubscriber,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
@@ -153,6 +155,7 @@ export const Post = ({
                   <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
                     {nickname}
                   </ProfileLink>
+                  {isZeroProSubscriber && <IconZeroProVerified size={18} />}
                   <span>⋅</span>
                   {variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
                 </Name>

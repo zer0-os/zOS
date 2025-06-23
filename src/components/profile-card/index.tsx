@@ -25,7 +25,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
     onClickFollow,
     profileImage,
     subhandle,
-    isZeroProSubscribed,
+    isZeroProSubscriber,
   } = useProfileCard(userId);
 
   return (
@@ -59,7 +59,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
       <div className={styles.Name}>
         <div className={styles.NameAndBadgeWrapper}>
           <SkeletonText className={styles.Handle} asyncText={{ text: handle, isLoading }} />
-          {isZeroProSubscribed && <IconZeroProVerified size={18} />}
+          {isZeroProSubscriber && !isLoading && <IconZeroProVerified size={18} />}
         </div>
         <SkeletonText className={styles.Subhandle} asyncText={{ text: subhandle, isLoading }} />
       </div>

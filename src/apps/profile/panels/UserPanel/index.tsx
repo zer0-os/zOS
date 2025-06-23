@@ -27,7 +27,7 @@ export const UserPanel = () => {
     followersCount,
     followingCount,
     handleStartConversation,
-    isZeroProSubscribed,
+    isZeroProSubscriber,
   } = useUserPanel();
   const [activeFollowType, setActiveFollowType] = useState<FollowType | null>(null);
 
@@ -52,7 +52,7 @@ export const UserPanel = () => {
           <div className={styles.Name}>
             <div className={styles.NameAndBadgeWrapper}>
               <h1>{isLoading ? <Skeleton /> : handle}</h1>
-              {isZeroProSubscribed && <IconZeroProVerified size={18} />}
+              {isZeroProSubscriber && <IconZeroProVerified size={18} />}
             </div>
             <h2>{isLoading ? <Skeleton /> : zid ? '0://' + zid : null}</h2>
           </div>

@@ -43,7 +43,7 @@ export const useProfile = ({ id }: UseProfileParams) => {
           userId: response.body.id,
           followersCount: parseInt(response.body.followersCount) || 0,
           followingCount: parseInt(response.body.followingCount) || 0,
-          isZeroProSubscribed: response.body.subscriptions?.zeroPro,
+          isZeroProSubscriber: response.body.subscriptions?.zeroPro,
         };
       }
 
@@ -58,7 +58,7 @@ export const useProfile = ({ id }: UseProfileParams) => {
         userId: response.body.userId,
         followersCount: parseInt(response.body.followersCount) || 0,
         followingCount: parseInt(response.body.followingCount) || 0,
-        isZeroProSubscribed: response.body.subscriptions?.zeroPro,
+        isZeroProSubscriber: response.body.subscriptions?.zeroPro,
       };
     },
     staleTime: 0,

@@ -37,7 +37,7 @@ describe('ProfileCard', () => {
         onClickChat: mockOnClickChat,
         isLoadingFollowing: false,
         isMutating: false,
-        isZeroProSubscribed: true,
+        isZeroProSubscriber: true,
       });
 
       renderComponent();
@@ -92,7 +92,7 @@ describe('ProfileCard', () => {
         onClickChat: vi.fn(),
         isLoadingFollowing: false,
         isMutating: false,
-        isZeroProSubscribed: true,
+        isZeroProSubscriber: true,
       });
 
       renderComponent();
@@ -119,7 +119,7 @@ describe('ProfileCard', () => {
         onClickChat: vi.fn(),
         isLoadingFollowing: false,
         isMutating: false,
-        isZeroProSubscribed: true,
+        isZeroProSubscriber: true,
       });
 
       renderComponent();

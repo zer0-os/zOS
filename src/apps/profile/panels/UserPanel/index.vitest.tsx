@@ -70,7 +70,7 @@ describe('UserPanel', () => {
         followersCount: 100,
         followingCount: 50,
         handleStartConversation,
-        isZeroProSubscribed: true,
+        isZeroProSubscriber: true,
       });
 
       renderWithProviders(<UserPanel />);
@@ -127,7 +127,7 @@ describe('UserPanel', () => {
         followersCount: 100,
         followingCount: 50,
         handleStartConversation: vi.fn(),
-        isZeroProSubscribed: true,
+        isZeroProSubscriber: true,
       });
 
       renderWithProviders(<UserPanel />);
@@ -159,7 +159,7 @@ describe('UserPanel', () => {
         followersCount: 100,
         followingCount: 50,
         handleStartConversation: vi.fn(),
-        isZeroProSubscribed: true,
+        isZeroProSubscriber: true,
       });
 
       renderWithProviders(<UserPanel />);
@@ -186,7 +186,7 @@ describe('UserPanel', () => {
       followersCount: 100,
       followingCount: 50,
       handleStartConversation: vi.fn(),
-      isZeroProSubscribed: true,
+      isZeroProSubscriber: true,
     });
 
     renderWithProviders(<UserPanel />);

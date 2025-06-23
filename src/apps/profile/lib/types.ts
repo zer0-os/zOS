@@ -26,5 +26,5 @@ export interface ProfileData {
   /**
    * Whether the profile is subscribed to ZERO Pro
    */
-  isZeroProSubscribed?: boolean;
+  isZeroProSubscriber?: boolean;
 }

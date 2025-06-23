@@ -26,7 +26,7 @@ export interface UseProfileCardReturn {
   onClickFollow: () => void;
   profileImage?: string;
   subhandle?: string;
-  isZeroProSubscribed: boolean;
+  isZeroProSubscriber: boolean;
 }
 
 export const useProfileCard = (userId: string): UseProfileCardReturn => {
@@ -69,7 +69,7 @@ export const useProfileCard = (userId: string): UseProfileCardReturn => {
   return {
     followerCount: data?.followersCount !== undefined ? millify(data.followersCount) : undefined,
     followingCount: data?.followingCount !== undefined ? millify(data.followingCount) : undefined,
-    isZeroProSubscribed: data?.isZeroProSubscribed,
+    isZeroProSubscriber: data?.isZeroProSubscriber,
     handle: data?.handle,
     isFollowing,
     isLoading,

@@ -46,7 +46,7 @@ export interface PostProps {
   authorPrimaryZid?: string;
   authorPublicAddress?: string;
   mediaId?: string;
-  isZeroProSubscribed?: boolean;
+  isZeroProSubscriber?: boolean;
   meowPost: (postId: string, meowAmount: string) => void;
 }
 
@@ -71,7 +71,7 @@ export const Post = ({
   authorPrimaryZid,
   authorPublicAddress,
   mediaId,
-  isZeroProSubscribed,
+  isZeroProSubscriber,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
@@ -155,7 +155,7 @@ export const Post = ({
                   <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
                     {nickname}
                   </ProfileLink>
-                  {isZeroProSubscribed && <IconZeroProVerified size={18} />}
+                  {isZeroProSubscriber && <IconZeroProVerified size={18} />}
                   <span>⋅</span>
                   {variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
                 </Name>

@@ -153,7 +153,7 @@ export const Feed = ({
                     authorPrimaryZid={reply.sender?.primaryZid}
                     authorPublicAddress={reply.sender?.publicAddress}
                     mediaId={reply.mediaId}
-                    isZeroProSubscribed={reply.sender?.isZeroProSubscribed}
+                    isZeroProSubscriber={reply.sender?.isZeroProSubscriber}
                   />
                 </li>
               ))

@@ -31,7 +31,7 @@ export const Posts = ({
               meowPost={meowPost}
               numberOfReplies={post.numberOfReplies}
               mediaId={post.mediaId}
-              isZeroProSubscribed={post.sender.isZeroProSubscribed}
+              isZeroProSubscriber={post.sender.isZeroProSubscriber}
             />
           </li>
         ))}

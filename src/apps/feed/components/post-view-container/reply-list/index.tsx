@@ -38,7 +38,7 @@ export const Replies = ({ postId, isFeed }: RepliesProps) => {
                 mediaId={reply.mediaId}
                 authorPrimaryZid={reply.sender?.primaryZid}
                 authorPublicAddress={reply.sender?.publicAddress}
-                isZeroProSubscribed={reply.sender?.isZeroProSubscribed}
+                isZeroProSubscriber={reply.sender?.isZeroProSubscriber}
               />
             </li>
           ))

@@ -66,7 +66,7 @@ export function mapPostToMatrixMessage(post) {
       avatarUrl: post.userProfileView?.profileImage,
       primaryZid: post.userProfileView?.primaryZid?.replace('0://', ''),
       publicAddress: post.userProfileView?.publicAddress,
-      isZeroProSubscribed: post.userProfileView?.isZeroProSubscribed,
+      isZeroProSubscriber: post.userProfileView?.isZeroProSubscriber,
     },
     replyTo: post.replyToPost,
     numberOfReplies: post.replies?.length ?? 0,

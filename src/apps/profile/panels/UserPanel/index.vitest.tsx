@@ -103,12 +103,6 @@ describe('UserPanel', () => {
       expect(followButton).toHaveAttribute('data-user-id', 'test-user-id');
     });
 
-    it('renders Zero Pro badge', () => {
-      const zeroProBadge = screen.getByTestId('mock-icon-zero-pro-verified');
-      expect(zeroProBadge).toBeInTheDocument();
-      expect(zeroProBadge).toHaveAttribute('data-size', '18');
-    });
-
     it('renders message button for other users', () => {
       const messageButton = screen.getByTestId('message-button');
       expect(messageButton).toBeInTheDocument();

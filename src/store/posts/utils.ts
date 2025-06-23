@@ -39,7 +39,7 @@ export async function signPostPayload(
  */
 export function mapPostToMatrixMessage(post) {
   const meowCount = Math.round(Number(ethers.utils.formatEther(post.postsMeowsSummary?.totalMeowAmount ?? 0)));
-
+  console.log('xxxx post', post);
   return {
     createdAt: post.createdAt,
     hidePreview: false,
@@ -66,6 +66,7 @@ export function mapPostToMatrixMessage(post) {
       avatarUrl: post.userProfileView?.profileImage,
       primaryZid: post.userProfileView?.primaryZid?.replace('0://', ''),
       publicAddress: post.userProfileView?.publicAddress,
+      isZeroProSubscribed: post.userProfileView?.isZeroProSubscribed,
     },
     replyTo: post.replyToPost,
     numberOfReplies: post.replies?.length ?? 0,

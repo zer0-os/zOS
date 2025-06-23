@@ -39,7 +39,7 @@ export async function signPostPayload(
  */
 export function mapPostToMatrixMessage(post) {
   const meowCount = Math.round(Number(ethers.utils.formatEther(post.postsMeowsSummary?.totalMeowAmount ?? 0)));
-  console.log('xxxx post', post);
+
   return {
     createdAt: post.createdAt,
     hidePreview: false,

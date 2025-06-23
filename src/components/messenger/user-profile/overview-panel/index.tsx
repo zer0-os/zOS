@@ -16,13 +16,13 @@ import {
   IconUser1,
   IconWallet3,
   IconTag1,
+  IconZeroProVerified,
 } from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { RewardsItemContainer } from './rewards-item/container';
 import { featureFlags } from '../../../../lib/feature-flags';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { useMatrixImage } from '../../../../lib/hooks/useMatrixImage';
-import { useZeroProStatus, isActiveSubscription } from '../zero-pro-panel/useZeroProStatus';
 
 import './styles.scss';
 
@@ -32,6 +32,7 @@ export interface Properties {
   name: string;
   image: string;
   subHandle?: string;
+  isZeroProSubscriber?: boolean;
 
   onBack: () => void;
   onOpenLogoutDialog: () => void;
@@ -48,8 +49,6 @@ export interface Properties {
 export const OverviewPanel: React.FC<Properties> = (props) => {
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const { data: imageUrl } = useMatrixImage(props.image);
-  const { data: statusData } = useZeroProStatus();
-  const isSubscribed = isActiveSubscription(statusData);
 
   const navigateBack = () => {
     props.onBack();
@@ -121,7 +120,10 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
         </div>
 
         <div {...cn('name-container')}>
-          <div {...cn('name')}>{props.name}</div>
+          <div {...cn('name-container-inner')}>
+            <div {...cn('name')}>{props.name}</div>
+            {props.isZeroProSubscriber && <IconZeroProVerified size={18} />}
+          </div>
           {props.subHandle && <div {...cn('sub-handle')}>{props.subHandle}</div>}
         </div>
       </div>
@@ -138,7 +140,7 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
             onPress={openZeroPro}
             startEnhancer={<IconTag1 size={20} />}
           >
-            {isSubscribed ? 'Manage ZERO Pro' : 'Join ZERO Pro'}
+            {props.isZeroProSubscriber ? 'Manage ZERO Pro' : 'Join ZERO Pro'}
           </Button>
         )}
 

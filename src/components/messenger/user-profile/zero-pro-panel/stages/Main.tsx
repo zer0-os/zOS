@@ -3,7 +3,6 @@ import React from 'react';
 import ZeroProSymbol from '../../../../../zero-pro-symbol.svg?react';
 import { IconCheck } from '@zero-tech/zui/icons';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
-import { useZeroProStatus, isActiveSubscription } from '../useZeroProStatus';
 
 import styles from './styles.module.scss';
 
@@ -23,13 +22,11 @@ const benefits = [
 ];
 
 interface Props {
+  isZeroProSubscriber: boolean;
   onNext: () => void;
 }
 
-export const Main: React.FC<Props> = ({ onNext }) => {
-  const { data: statusData } = useZeroProStatus();
-  const isSubscribed = isActiveSubscription(statusData);
-
+export const Main: React.FC<Props> = ({ isZeroProSubscriber, onNext }) => {
   return (
     <div className={styles.MainPanelContent}>
       <div className={styles.Hero}>
@@ -59,7 +56,7 @@ export const Main: React.FC<Props> = ({ onNext }) => {
       </div>
 
       <div className={styles.SubmitButtonContainer}>
-        {isSubscribed ? (
+        {isZeroProSubscriber ? (
           <div className={styles.SubscribedText}>Subscribed to ZERO Pro!</div>
         ) : (
           <Button className={styles.SubmitButton} variant={ButtonVariant.Primary} isSubmit onPress={onNext}>

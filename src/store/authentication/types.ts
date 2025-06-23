@@ -40,6 +40,7 @@ export interface User {
   primaryZID?: string;
   primaryWalletAddress?: string;
   totalRewards?: string;
+  isZeroProSubscriber?: boolean;
 }
 
 export interface AuthenticationState {

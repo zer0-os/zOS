@@ -22,6 +22,7 @@ export interface User {
   primaryWallet?: Wallet;
   wallets?: Wallet[];
   displaySubHandle?: string;
+  isZeroProSubscriber?: boolean;
 }
 
 export enum MessagesFetchState {

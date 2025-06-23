@@ -44,6 +44,10 @@ vi.mock('../../../../components/follow-counts', () => ({
 }));
 
 vi.mock('@zero-tech/zui/components', () => ({
+  IconZeroProVerified: vi.fn(({ size }) => <div data-testid='mock-icon-zero-pro-verified' data-size={size} />),
+}));
+
+vi.mock('@zero-tech/zui/components', () => ({
   IconButton: vi.fn(({ onClick, Icon, 'data-testid': testId, ...props }) => (
     <button onClick={onClick} data-testid={testId} {...props}>
       <Icon />
@@ -66,6 +70,7 @@ describe('UserPanel', () => {
         followersCount: 100,
         followingCount: 50,
         handleStartConversation,
+        isZeroProSubscribed: true,
       });
 
       renderWithProviders(<UserPanel />);
@@ -122,6 +127,7 @@ describe('UserPanel', () => {
         followersCount: 100,
         followingCount: 50,
         handleStartConversation: vi.fn(),
+        isZeroProSubscribed: true,
       });
 
       renderWithProviders(<UserPanel />);
@@ -153,6 +159,7 @@ describe('UserPanel', () => {
         followersCount: 100,
         followingCount: 50,
         handleStartConversation: vi.fn(),
+        isZeroProSubscribed: true,
       });
 
       renderWithProviders(<UserPanel />);
@@ -179,6 +186,7 @@ describe('UserPanel', () => {
       followersCount: 100,
       followingCount: 50,
       handleStartConversation: vi.fn(),
+      isZeroProSubscribed: true,
     });
 
     renderWithProviders(<UserPanel />);

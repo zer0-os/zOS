@@ -128,3 +128,10 @@
   justify-content: center;
   z-index: 2;
 }
+
+.NameAndBadgeWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

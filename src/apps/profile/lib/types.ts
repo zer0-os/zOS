@@ -23,4 +23,8 @@ export interface ProfileData {
    * Number of users this profile follows
    */
   followingCount?: number;
+  /**
+   * Whether the profile is subscribed to ZERO Pro
+   */
+  isZeroProSubscribed?: boolean;
 }

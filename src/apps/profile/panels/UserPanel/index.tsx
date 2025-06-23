@@ -3,7 +3,7 @@ import { useUserPanel } from './useUserPanel';
 
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
-import { IconLogoZero, IconMessage01 } from '@zero-tech/zui/icons';
+import { IconLogoZero, IconMessage01, IconZeroProVerified } from '@zero-tech/zui/icons';
 import MatrixMask from './matrix-mask.svg?react';
 import { FollowButton } from '../../../../components/follow-button';
 import { FollowCounts } from '../../../../components/follow-counts';
@@ -27,6 +27,7 @@ export const UserPanel = () => {
     followersCount,
     followingCount,
     handleStartConversation,
+    isZeroProSubscribed,
   } = useUserPanel();
   const [activeFollowType, setActiveFollowType] = useState<FollowType | null>(null);
 
@@ -49,7 +50,10 @@ export const UserPanel = () => {
             <MatrixMask className={styles.Mask} />
           </div>
           <div className={styles.Name}>
-            <h1>{isLoading ? <Skeleton /> : handle}</h1>
+            <div className={styles.NameAndBadgeWrapper}>
+              <h1>{isLoading ? <Skeleton /> : handle}</h1>
+              {isZeroProSubscribed && <IconZeroProVerified size={18} />}
+            </div>
             <h2>{isLoading ? <Skeleton /> : zid ? '0://' + zid : null}</h2>
           </div>
 

@@ -18,7 +18,7 @@ export const useUserPanel = () => {
   const isCurrentUser = userId === currentUser?.id;
   const followersCount = data?.followersCount;
   const followingCount = data?.followingCount;
-  const isZeroProSubscriber = data?.isZeroProSubscriber;
+  const isZeroProSubscriber = isCurrentUser ? currentUser?.subscriptions?.zeroPro : data?.isZeroProSubscriber;
   const allChannels = useSelector(allChannelsSelector);
 
   const handleStartConversation = () => {

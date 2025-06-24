@@ -58,7 +58,7 @@ export const useProfile = ({ id }: UseProfileParams) => {
         userId: response.body.userId,
         followersCount: parseInt(response.body.followersCount) || 0,
         followingCount: parseInt(response.body.followingCount) || 0,
-        isZeroProSubscriber: response.body.subscriptions?.zeroPro,
+        isZeroProSubscriber: response.body.isZeroProSubscriber,
       };
     },
     staleTime: 0,

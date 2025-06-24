@@ -53,7 +53,7 @@ export class Container extends React.Component<Properties> {
         firstName: currentUser?.profileSummary.firstName,
         profileImage: currentUser?.profileSummary.profileImage,
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
-        isZeroProSubscriber: currentUser?.isZeroProSubscriber,
+        subscriptions: currentUser?.subscriptions,
       } as User,
       stage: userProfile.stage,
       backupExists: matrix.backupExists,
@@ -91,7 +91,7 @@ export class Container extends React.Component<Properties> {
         stage={this.props.stage}
         name={this.props.currentUser.firstName}
         image={this.props.currentUser.profileImage}
-        isZeroProSubscriber={this.props.currentUser.isZeroProSubscriber}
+        isZeroProSubscriber={this.props.currentUser.subscriptions?.zeroPro}
         subHandle={this.props.currentUser.displaySubHandle}
         onClose={this.props.closeUserProfile}
         onLogout={this.props.logout}

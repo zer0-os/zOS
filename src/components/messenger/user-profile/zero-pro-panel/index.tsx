@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { PanelHeader } from '../../list/panel-header';
 import { Main } from './stages/Main';
@@ -10,6 +11,7 @@ import { Loading } from './stages/Loading';
 import { Error } from './stages/Error';
 import { usePollZeroProActiveStatus } from './usePollZeroProActiveStatus';
 import { BottomSheet } from './bottom-sheet';
+import { refreshCurrentUser } from '../../../../store/authentication';
 
 import styles from './styles.module.scss';
 
@@ -41,6 +43,7 @@ export const ZeroProPanel: React.FC<{ onClose: () => void; isZeroProSubscriber: 
   const [billingDetails, setBillingDetails] = useState<BillingDetails | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const [pollError, setPollError] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   const openPlan = useCallback(() => setActiveSheet(ZeroProStage.PaymentPlan), []);
   const openDetails = useCallback(() => setActiveSheet(ZeroProStage.Details), []);
@@ -68,6 +71,7 @@ export const ZeroProPanel: React.FC<{ onClose: () => void; isZeroProSubscriber: 
     () => {
       setIsPolling(false);
       setActiveSheet(ZeroProStage.Success);
+      dispatch(refreshCurrentUser());
     },
     () => {
       setIsPolling(false);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { get } from '../../../../lib/api/rest';
 
 export function usePollZeroProActiveStatus(
   shouldPoll: boolean,
@@ -13,8 +14,8 @@ export function usePollZeroProActiveStatus(
     let start = Date.now();
     async function poll() {
       while (isMounted) {
-        const res = await fetch('/subscription/status?type=ZERO');
-        const data = await res.json();
+        const response = await get('/subscription/status?type=ZERO');
+        const data = response.body;
         const status = data.subscription?.status ?? data.status;
         if (status === 'active') {
           onActive();

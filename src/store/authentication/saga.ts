@@ -1,5 +1,5 @@
 import { takeLatest, put, call, all, delay, spawn } from 'redux-saga/effects';
-import { SagaActionTypes, setDisplayLogoutModal, setUser } from '.';
+import { SagaActionTypes, setDisplayLogoutModal, setUser, refreshCurrentUser } from '.';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
   fetchCurrentUser,
@@ -126,6 +126,7 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.Logout, logoutRequest);
   yield takeLatest(SagaActionTypes.ForceLogout, forceLogout);
   yield takeLatest(SagaActionTypes.CloseLogoutModal, closeLogoutModal);
+  yield takeLatest(refreshCurrentUser.type, getCurrentUser);
 
   const chatBus = yield call(getChatBus);
   yield takeEveryFromBus(chatBus, ChatEvents.InvalidToken, forceLogout);

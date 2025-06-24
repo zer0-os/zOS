@@ -22,7 +22,10 @@ export interface User {
   primaryWallet?: Wallet;
   wallets?: Wallet[];
   displaySubHandle?: string;
-  isZeroProSubscriber?: boolean;
+  subscriptions?: {
+    zeroPro?: boolean;
+    wilderPro?: boolean;
+  };
 }
 
 export enum MessagesFetchState {

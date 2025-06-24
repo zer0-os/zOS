@@ -8,8 +8,8 @@ describe('panels reducer', () => {
   });
 
   describe('default panel values', () => {
-    it('should default PUBLIC_FEED to false', () => {
-      expect(initialState.openStates[Panel.PUBLIC_FEED]).toBe(false);
+    it('should default PUBLIC_FEED to true', () => {
+      expect(initialState.openStates[Panel.PUBLIC_FEED]).toBe(true);
     });
 
     it('should default MEMBERS to false', () => {

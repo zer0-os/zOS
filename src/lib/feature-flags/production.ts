@@ -37,5 +37,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   enablePostMedia: { defaultValue: true },
   enableMatrixDebug: { defaultValue: false },
   enableProfileDirectMessage: { defaultValue: true },
-  enableZeroPro: { defaultValue: true },
+  enableZeroPro: { defaultValue: false },
 };

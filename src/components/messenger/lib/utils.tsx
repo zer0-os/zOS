@@ -8,6 +8,7 @@ export const itemToOption = (item: Item): Option => {
     label: item.name,
     image: item.image,
     subLabel: getUserSubHandle(item.primaryZID, item.primaryWalletAddress),
+    isZeroProSubscriber: item.subscriptions?.zeroPro,
   };
 };
 

@@ -5,6 +5,10 @@ export interface Item {
   image?: string;
   primaryZID: string;
   primaryWalletAddress: string;
+  subscriptions?: {
+    zeroPro: boolean;
+    wilderPro: boolean;
+  };
 }
 
 export interface Option {
@@ -12,4 +16,5 @@ export interface Option {
   label: string;
   image?: string;
   subLabel?: string;
+  isZeroProSubscriber?: boolean;
 }

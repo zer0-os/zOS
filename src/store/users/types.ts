@@ -8,6 +8,10 @@ export interface MemberNetworks {
   primaryZID: string;
   primaryWalletAddress: string;
   thirdWebWalletAddress?: string;
+  subscriptions?: {
+    zeroPro: boolean;
+    wilderPro: boolean;
+  };
 }
 
 export interface SimplifiedUser {

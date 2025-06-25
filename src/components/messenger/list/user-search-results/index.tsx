@@ -5,6 +5,7 @@ import { highlightFilter } from '../../lib/utils';
 import { Waypoint } from '../../../waypoint';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { MatrixAvatar } from '../../../matrix-avatar';
+import { IconZeroProVerified } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
 import './user-search-results.scss';
@@ -86,7 +87,10 @@ export class UserSearchResults extends React.Component<Properties, State> {
             <MatrixAvatar size='regular' imageURL={userResult.image} tabIndex={-1} />
 
             <div {...cn('user-details')}>
-              <div {...cn('label')}>{highlightFilter(userResult.label, filter)}</div>
+              <div {...cn('label-container')}>
+                <div {...cn('label')}>{highlightFilter(userResult.label, filter)}</div>
+                {userResult.isZeroProSubscriber && <IconZeroProVerified size={16} />}
+              </div>
               {userResult?.subLabel && <div {...cn('sub-label')}>{userResult.subLabel}</div>}
             </div>
           </div>

@@ -27,6 +27,14 @@
     }
   }
 
+  &[data-disabled] {
+    cursor: unset;
+
+    &:hover {
+      background-color: unset !important;
+    }
+  }
+
   &[data-variant='default'] {
     padding: 12px 18px 12px 18px;
 
@@ -217,6 +225,10 @@
 .Wrapper {
   &[data-variant='default'] {
     cursor: pointer;
+  }
+
+  &[data-disabled] {
+    cursor: unset;
   }
 }
 

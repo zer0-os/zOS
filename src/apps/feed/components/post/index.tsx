@@ -23,6 +23,9 @@ import { ProfileCardHover } from '../../../../components/profile-card/hover';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 import { IconZeroProVerified } from '@zero-tech/zui/icons';
+import { StatusAction } from './actions/status';
+import { useSelector } from 'react-redux';
+import { isOptimisticPostSelector } from '../../../../store/post-queue/selectors';
 
 type Variant = 'default' | 'expanded';
 
@@ -47,6 +50,8 @@ export interface PostProps {
   authorPublicAddress?: string;
   mediaId?: string;
   isZeroProSubscriber?: boolean;
+  isPending?: boolean;
+  isFailed?: boolean;
   meowPost: (postId: string, meowAmount: string) => void;
 }
 
@@ -72,6 +77,8 @@ export const Post = ({
   authorPublicAddress,
   mediaId,
   isZeroProSubscriber,
+  isPending,
+  isFailed,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
@@ -118,7 +125,12 @@ export const Post = ({
 
   return (
     <Wrapper postId={messageId} variant={variant} channelZid={channelZid}>
-      <div className={classNames(styles.Container, className)} has-author={author ? '' : null} data-variant={variant}>
+      <div
+        className={classNames(styles.Container, className)}
+        has-author={author ? '' : null}
+        data-variant={variant}
+        data-disabled={isPending || isFailed ? '' : null}
+      >
         {variant === 'default' && (
           <div className={styles.Avatar}>
             <ProfileCardHover userId={authorPrimaryZid ?? authorPublicAddress}>
@@ -174,30 +186,41 @@ export const Post = ({
             isMeowsEnabled && (
               <Actions variant={variant}>
                 <div>
-                  <PreventPropagation>
-                    <MeowAction
-                      meows={reactions?.MEOW || 0}
-                      isDisabled={isDisabled}
-                      messageId={messageId}
-                      meowPost={meowPost}
-                      hasUserVoted={reactions?.VOTED > 0}
-                    />
-                  </PreventPropagation>
-                  {featureFlags.enableComments && (
-                    <PreventPropagation>
-                      <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
-                    </PreventPropagation>
+                  {!(isPending || isFailed) && (
+                    <>
+                      <PreventPropagation>
+                        <MeowAction
+                          meows={reactions?.MEOW || 0}
+                          isDisabled={isDisabled}
+                          messageId={messageId}
+                          meowPost={meowPost}
+                          hasUserVoted={reactions?.VOTED > 0}
+                        />
+                      </PreventPropagation>
+                      {featureFlags.enableComments && (
+                        <PreventPropagation>
+                          <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
+                        </PreventPropagation>
+                      )}
+                    </>
                   )}
                 </div>
                 <div>
-                  {channelZid && (
+                  {(isPending || isFailed) && (
+                    <PreventPropagation>
+                      <StatusAction status={isPending ? 'pending' : 'failed'} />
+                    </PreventPropagation>
+                  )}
+                  {channelZid && !isPending && !isFailed && (
                     <PreventPropagation>
                       <FeedAction channelZid={channelZid} />
                     </PreventPropagation>
                   )}
-                  <PreventPropagation>
-                    <ArweaveAction arweaveId={arweaveId} />
-                  </PreventPropagation>
+                  {!isPending && !isFailed && (
+                    <PreventPropagation>
+                      <ArweaveAction arweaveId={arweaveId} />
+                    </PreventPropagation>
+                  )}
                 </div>
               </Actions>
             )
@@ -225,8 +248,13 @@ interface WrapperProps {
 
 const Wrapper = ({ children, postId, variant, channelZid }: WrapperProps) => {
   const { navigateToPost } = usePostRoute(postId, channelZid);
+  const isOptimisticPost = useSelector(isOptimisticPostSelector(postId));
 
   const handleOnClick = () => {
+    if (isOptimisticPost) {
+      return;
+    }
+
     if (variant === 'default') {
       navigateToPost();
     }
@@ -235,6 +263,7 @@ const Wrapper = ({ children, postId, variant, channelZid }: WrapperProps) => {
   return (
     <div
       className={styles.Wrapper}
+      data-disabled={isOptimisticPost ? '' : null}
       data-variant={variant}
       data-post-id={postId}
       onClick={handleOnClick}

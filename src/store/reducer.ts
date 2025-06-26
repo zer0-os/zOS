@@ -23,6 +23,7 @@ import { reducer as userProfile } from './user-profile';
 import { reducer as background } from './background';
 import { reducer as accountManagement } from './account-management';
 import { reducer as posts } from './posts';
+import { reducer as postQueue } from './post-queue';
 import { reducer as reportUser } from './report-user';
 import { reducer as thirdweb } from './thirdweb';
 import { reducer as panels } from './panels';
@@ -53,6 +54,7 @@ export const rootReducer = combineReducers({
   background,
   accountManagement,
   posts,
+  postQueue,
   reportUser,
   thirdweb,
   panels,

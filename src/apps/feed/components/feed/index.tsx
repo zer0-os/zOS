@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { useFeed } from './lib/useFeed';
 import { Message } from '../message';
 import { Post } from '../post';
@@ -17,6 +18,7 @@ import { FeedFilter, getLastFeedFilter, setLastFeedFilter } from '../../../../li
 import { useReturnFromProfileNavigation } from '../../lib/useReturnFromProfileNavigation';
 import { BackButton } from '../post-view-container/back-button';
 import { SearchDrawer } from './search-drawer';
+import { postStatusSelector } from '../../../../store/post-queue/selectors';
 
 import styles from './styles.module.scss';
 
@@ -44,6 +46,48 @@ export interface FeedProps {
   panel?: PanelProps['panel'];
   panelName?: PanelProps['name'];
 }
+
+interface PostItemProps {
+  reply: any;
+  currentUserId?: string;
+  userMeowBalance?: string;
+  meowPostFeed: (postId: string, meowAmount: string) => void;
+}
+
+const PostItem = ({ reply, currentUserId, userMeowBalance, meowPostFeed }: PostItemProps) => {
+  const status = useSelector(postStatusSelector(reply.optimisticId));
+  const isPending = status === 'pending';
+  const isFailed = status === 'failed';
+
+  return (
+    <li key={reply.id}>
+      <Post
+        className={styles.Post}
+        arweaveId={reply.arweaveId}
+        avatarUrl={reply.sender?.avatarUrl}
+        author={reply.sender?.displaySubHandle}
+        channelZid={reply.channelZid}
+        currentUserId={currentUserId}
+        meowPost={meowPostFeed}
+        messageId={reply.id.toString()}
+        nickname={reply.sender?.firstName}
+        numberOfReplies={reply.numberOfReplies}
+        ownerUserId={reply.sender?.userId}
+        reactions={reply.reactions}
+        text={reply.message}
+        timestamp={reply.createdAt}
+        userMeowBalance={userMeowBalance}
+        variant='default'
+        authorPrimaryZid={reply.sender?.primaryZid}
+        authorPublicAddress={reply.sender?.publicAddress}
+        mediaId={reply.mediaId}
+        isZeroProSubscriber={reply.sender?.isZeroProSubscriber}
+        isPending={isPending}
+        isFailed={isFailed}
+      />
+    </li>
+  );
+};
 
 export const Feed = ({
   zid,
@@ -132,30 +176,13 @@ export const Feed = ({
           <ol>
             {posts?.pages.map((page) =>
               page.map((reply) => (
-                <li key={reply.id}>
-                  <Post
-                    className={styles.Post}
-                    arweaveId={reply.arweaveId}
-                    avatarUrl={reply.sender?.avatarUrl}
-                    author={reply.sender?.displaySubHandle}
-                    channelZid={reply.channelZid}
-                    currentUserId={currentUserId}
-                    meowPost={meowPostFeed}
-                    messageId={reply.id.toString()}
-                    nickname={reply.sender?.firstName}
-                    numberOfReplies={reply.numberOfReplies}
-                    ownerUserId={reply.sender?.userId}
-                    reactions={reply.reactions}
-                    text={reply.message}
-                    timestamp={reply.createdAt}
-                    userMeowBalance={userMeowBalance}
-                    variant='default'
-                    authorPrimaryZid={reply.sender?.primaryZid}
-                    authorPublicAddress={reply.sender?.publicAddress}
-                    mediaId={reply.mediaId}
-                    isZeroProSubscriber={reply.sender?.isZeroProSubscriber}
-                  />
-                </li>
+                <PostItem
+                  key={reply.id}
+                  reply={reply}
+                  currentUserId={currentUserId}
+                  userMeowBalance={userMeowBalance}
+                  meowPostFeed={meowPostFeed}
+                />
               ))
             )}
           </ol>

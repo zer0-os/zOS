@@ -40,9 +40,7 @@ const cn = bemClassName('post-input-container');
 
 export interface Properties extends PublicPropertiesContainer {
   avatarUrl?: string;
-  isSubmitting?: boolean;
   viewMode: ViewModes;
-  error?: string;
   clipboard?: {
     addPasteListener: (listener: EventListenerOrEventListenerObject) => void;
     removePasteListener: (listener: EventListenerOrEventListenerObject) => void;
@@ -261,8 +259,7 @@ export class PostInput extends React.Component<Properties, State> {
 
   renderInput() {
     const isPostTooLong = this.state.value.length > POST_MAX_LENGTH;
-    const isDisabled =
-      (!this.state.value.trim() && !this.state.media.length) || this.props.isSubmitting || isPostTooLong;
+    const isDisabled = (!this.state.value.trim() && !this.state.media.length) || isPostTooLong;
 
     // Set maxSize to the largest allowed, Dropzone will still reject based on this
     const maxSize = Math.max(
@@ -288,17 +285,6 @@ export class PostInput extends React.Component<Properties, State> {
                 </div>
                 <div {...cn('create-inner')}>
                   <div {...cn('input')}>
-                    <AnimatePresence>
-                      {this.props.isSubmitting && (
-                        <motion.div
-                          {...cn('loading')}
-                          initial={{ width: 0, opacity: 1 }}
-                          animate={{ width: '60%', opacity: 1 }}
-                          exit={{ width: '100%', opacity: 0 }}
-                          transition={{ duration: 0.4 }}
-                        />
-                      )}
-                    </AnimatePresence>
                     <textarea
                       {...cn('input')}
                       onChange={this.onChange}
@@ -342,13 +328,7 @@ export class PostInput extends React.Component<Properties, State> {
                     </div>
 
                     <div {...cn('wrapper')}>
-                      <p {...cn('error')}>{this.props.error}</p>
-                      <Button
-                        {...cn('button')}
-                        isDisabled={isDisabled}
-                        isLoading={this.props.isSubmitting}
-                        onPress={this.onSubmit}
-                      >
+                      <Button {...cn('button')} isDisabled={isDisabled} onPress={this.onSubmit}>
                         Create
                       </Button>
                     </div>

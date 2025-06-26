@@ -1,0 +1,29 @@
+.Action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.Failed {
+  border-color: var(--color-failure-7);
+  color: var(--color-failure-7);
+
+  &:enabled {
+    &:hover {
+      background: var(--color-failure-2);
+    }
+  }
+}
+
+.LoadingIcon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

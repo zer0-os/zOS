@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useAccount, useSignMessage } from 'wagmi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -8,9 +8,11 @@ import { uploadMedia } from '../../../store/posts/media-api';
 import { POST_MAX_LENGTH } from './constants';
 import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
 import { featureFlags } from '../../../lib/feature-flags';
-import { primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
+import { currentUserSelector, primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
+import { v4 as uuidv4 } from 'uuid';
+import { addQueuedPost, removeQueuedPost, updateQueuedPostStatus } from '../../../store/post-queue';
 
-interface SubmitPostParams {
+export interface SubmitPostParams {
   channelZid: string;
   media: Media[];
   message: string;
@@ -19,9 +21,11 @@ interface SubmitPostParams {
 
 export const useSubmitPost = () => {
   const queryClient = useQueryClient();
+  const dispatch = useDispatch();
 
   const userPrimaryZid = useSelector(primaryZIDSelector);
   const userWallets = useSelector(userWalletsSelector);
+  const currentUser = useSelector(currentUserSelector);
 
   const { address: connectedAddress } = useAccount();
   const { signMessageAsync } = useSignMessage();
@@ -35,7 +39,8 @@ export const useSubmitPost = () => {
     /**
      * @note this mutation function is an almost exact copy of the saga logic. This will be refactored in the future.
      */
-    mutationFn: async ({ message, replyToId, channelZid, media }: SubmitPostParams) => {
+    mutationFn: async (params: SubmitPostParams) => {
+      const { message, replyToId, channelZid, media } = params;
       const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
 
       const authorAddress = featureFlags.enableZeroWalletSigning ? account?.address : connectedAddress;
@@ -144,14 +149,73 @@ export const useSubmitPost = () => {
         throw new Error((e as any).message ?? 'Failed to submit post');
       }
     },
-    onSuccess: (_data, { replyToId, channelZid }) => {
+    onMutate: async (params: SubmitPostParams) => {
+      const { channelZid, message, replyToId } = params;
+      await queryClient.cancelQueries({ queryKey: ['posts', { zid: channelZid }] });
+
+      if (replyToId) {
+        await queryClient.cancelQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
+      }
+
+      const formattedZid = currentUser?.primaryZID?.replace('0://', '');
+
+      const optimisticId = uuidv4();
+
+      const optimisticPost = {
+        createdAt: new Date().toISOString(),
+        hidePreview: false,
+        id: optimisticId,
+        isAdmin: false,
+        isPost: true,
+        message,
+        optimisticId: optimisticId,
+        reactions: {
+          MEOW: 0,
+          VOTED: 0,
+        },
+        sender: {
+          userId: currentUser?.id,
+          firstName: currentUser?.profileSummary?.firstName,
+          displaySubHandle: formattedZid ?? currentUser?.primaryWalletAddress,
+          avatarUrl: currentUser?.profileSummary?.profileImage,
+          primaryZid: formattedZid,
+          publicAddress: currentUser?.primaryWalletAddress,
+          isZeroProSubscriber: false,
+        },
+        numberOfReplies: 0,
+        channelZid: channelZid?.replace('0://', ''),
+        arweaveId: uuidv4(),
+      };
+
+      dispatch(
+        addQueuedPost({
+          id: optimisticId,
+          optimisticPost,
+          params,
+          feedZid: channelZid,
+          replyToId,
+          status: 'pending',
+        })
+      );
+
+      return { optimisticId };
+    },
+    onSuccess: (_data, { replyToId, channelZid }, { optimisticId }) => {
+      dispatch(removeQueuedPost(optimisticId));
+
       queryClient.invalidateQueries({ queryKey: ['posts', { zid: channelZid }] });
-      queryClient.invalidateQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
+
+      if (replyToId) {
+        queryClient.invalidateQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
+      }
 
       // Also invalidate the "Everything" feed. This is a bit of a hack! Ideally we shouldn't
       // invalidate this feed every time a post is submitted. We should only invalidate it when
       // the user posts in the "Everything" feed.
       queryClient.invalidateQueries({ queryKey: ['posts', { zid: undefined }] });
+    },
+    onError: (_error, _variables, { optimisticId }) => {
+      dispatch(updateQueuedPostStatus({ tempId: optimisticId, status: 'failed' }));
     },
   });
 

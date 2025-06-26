@@ -208,7 +208,7 @@ export const Post = ({
                 <div>
                   {(isPending || isFailed) && (
                     <PreventPropagation>
-                      <StatusAction status={isPending ? 'pending' : 'failed'} />
+                      <StatusAction status={isPending ? 'pending' : 'failed'} optimisticId={messageId} />
                     </PreventPropagation>
                   )}
                   {channelZid && !isPending && !isFailed && (

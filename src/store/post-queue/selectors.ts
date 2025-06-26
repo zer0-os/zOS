@@ -3,6 +3,14 @@ import { PostQueueState } from './index';
 
 export const postQueueSelector = (state: RootState): PostQueueState => state.postQueue;
 
+export const queuedPostByIdSelector = (optimisticId?: string) => (state: RootState) => {
+  const allQueuedPosts = postQueueSelector(state);
+  if (!optimisticId) {
+    return undefined;
+  }
+  return allQueuedPosts.find((post) => post.id === optimisticId);
+};
+
 export const queuedPostsByFeedSelector = (feedZid?: string) => (state: RootState) => {
   const allQueuedPosts = postQueueSelector(state);
   if (!feedZid) {

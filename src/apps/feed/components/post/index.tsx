@@ -53,6 +53,7 @@ export interface PostProps {
   isPending?: boolean;
   isFailed?: boolean;
   meowPost: (postId: string, meowAmount: string) => void;
+  error?: string;
 }
 
 export const Post = ({
@@ -79,6 +80,7 @@ export const Post = ({
   isZeroProSubscriber,
   isPending,
   isFailed,
+  error,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
@@ -206,6 +208,7 @@ export const Post = ({
                   )}
                 </div>
                 <div>
+                  {error && <div className={styles.Error}>{error}</div>}
                   {(isPending || isFailed) && (
                     <PreventPropagation>
                       <StatusAction status={isPending ? 'pending' : 'failed'} optimisticId={messageId} />

@@ -8,6 +8,7 @@ export interface QueuedPost {
   feedZid: string;
   replyToId?: string;
   status?: 'pending' | 'confirmed' | 'failed';
+  error?: string;
 }
 
 export type PostQueueState = QueuedPost[];
@@ -19,6 +20,7 @@ export const updateQueuedPostStatus = createAction<{
   tempId: string;
   status: 'pending' | 'confirmed' | 'failed';
   postId?: string;
+  error?: string;
 }>('postQueue/updateQueuedPostStatus');
 export const removeQueuedPost = createAction<string>('postQueue/removeQueuedPost');
 
@@ -32,10 +34,11 @@ const slice = createSlice({
         state.push(action.payload);
       })
       .addCase(updateQueuedPostStatus, (state, action) => {
-        const { tempId, status } = action.payload;
+        const { tempId, status, error } = action.payload;
         const post = state.find((p) => p.id === tempId);
         if (post) {
           post.status = status;
+          post.error = error;
         }
       })
       .addCase(removeQueuedPost, (state, action) => {

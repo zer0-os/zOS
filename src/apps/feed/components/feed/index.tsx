@@ -18,7 +18,7 @@ import { FeedFilter, getLastFeedFilter, setLastFeedFilter } from '../../../../li
 import { useReturnFromProfileNavigation } from '../../lib/useReturnFromProfileNavigation';
 import { BackButton } from '../post-view-container/back-button';
 import { SearchDrawer } from './search-drawer';
-import { postStatusSelector } from '../../../../store/post-queue/selectors';
+import { queuedPostByIdSelector } from '../../../../store/post-queue/selectors';
 
 import styles from './styles.module.scss';
 
@@ -55,9 +55,10 @@ interface PostItemProps {
 }
 
 const PostItem = ({ reply, currentUserId, userMeowBalance, meowPostFeed }: PostItemProps) => {
-  const status = useSelector(postStatusSelector(reply.optimisticId));
-  const isPending = status === 'pending';
-  const isFailed = status === 'failed';
+  const optimisticPost = useSelector(queuedPostByIdSelector(reply.optimisticId));
+  const isPending = optimisticPost?.status === 'pending';
+  const isFailed = optimisticPost?.status === 'failed';
+  const error = optimisticPost?.error;
 
   return (
     <li key={reply.id}>
@@ -84,6 +85,7 @@ const PostItem = ({ reply, currentUserId, userMeowBalance, meowPostFeed }: PostI
         isZeroProSubscriber={reply.sender?.isZeroProSubscriber}
         isPending={isPending}
         isFailed={isFailed}
+        error={error}
       />
     </li>
   );

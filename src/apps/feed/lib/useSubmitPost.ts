@@ -184,8 +184,14 @@ export const useSubmitPost = () => {
       // the user posts in the "Everything" feed.
       queryClient.invalidateQueries({ queryKey: ['posts', { zid: undefined }] });
     },
-    onError: (_error, _variables, { optimisticId }) => {
-      dispatch(updateQueuedPostStatus({ tempId: optimisticId, status: 'failed' }));
+    onError: (error, _variables, { optimisticId }) => {
+      dispatch(
+        updateQueuedPostStatus({
+          tempId: optimisticId,
+          status: 'failed',
+          error: error.message,
+        })
+      );
     },
   });
 

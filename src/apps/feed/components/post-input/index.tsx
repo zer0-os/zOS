@@ -206,6 +206,7 @@ export function PostInput(props: Properties) {
     return () => {
       clipboard.removePasteListener(clipboardEvent);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -222,6 +223,7 @@ export function PostInput(props: Properties) {
     if (props.onPostInputRendered) {
       props.onPostInputRendered(textareaRef);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [media]);
 
   const renderInput = () => {

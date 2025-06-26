@@ -217,7 +217,8 @@ export function PostInput(props: Properties) {
     if (props.onPostInputRendered) {
       props.onPostInputRendered(textareaRef);
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (props.onPostInputRendered) {

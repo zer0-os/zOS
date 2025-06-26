@@ -86,6 +86,7 @@ export function PostInput(props: Properties) {
       props.onSubmit(value, uploadedMediaId);
       setValue('');
       setMedia(undefined);
+      removeUploadedMedia();
     }
   };
 

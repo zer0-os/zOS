@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Media } from '../../../../components/message-input/utils';
 import { SagaActionTypes } from '../../../../store/posts';
 import { useSubmitPost } from '../../lib/useSubmitPost';
 import { userProfileImageSelector } from '../../../../store/authentication/selectors';
@@ -19,8 +18,8 @@ export const useCommentInput = (postId: string, channelZid?: string) => {
     dispatch({ type: SagaActionTypes.SendPost, payload: { channelId, replyToId: postId, message } });
   };
 
-  const onSubmitFeed = (value: string, media: Media[]) => {
-    handleOnSubmitPost({ message: value, media, channelZid, replyToId: postId });
+  const onSubmitFeed = (value: string, mediaId?: string) => {
+    handleOnSubmitPost({ message: value, mediaId, channelZid, replyToId: postId });
   };
 
   return {

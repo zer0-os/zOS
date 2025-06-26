@@ -7,16 +7,13 @@ import { ViewModes } from '../../../../shared-components/theme-engine';
 
 import { PostInput } from '.';
 
-// should move this to a shared location
-import { Media } from '../../../../components/message-input/utils';
-
 export interface PublicProperties {
   id?: string;
   initialValue?: string;
   className?: string;
   variant?: 'comment' | 'post';
 
-  onSubmit: (message: string, media: Media[]) => void;
+  onSubmit: (message: string, mediaId?: string) => void;
 }
 
 export interface Properties extends PublicProperties {

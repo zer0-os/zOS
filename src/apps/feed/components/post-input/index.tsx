@@ -6,13 +6,11 @@ import { Key } from '../../../../lib/keyboard-search';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@zero-tech/zui/components/Button';
 import { IconButton } from '@zero-tech/zui/components/IconButton';
-import ImageCards from '../../../../platform-apps/channels/image-cards';
 import { PublicProperties as PublicPropertiesContainer } from './container';
 import { ViewModes } from '../../../../shared-components/theme-engine';
-import { IconFaceSmile, IconStickerCircle } from '@zero-tech/zui/icons';
+import { IconFaceSmile, IconLoading2, IconStickerCircle } from '@zero-tech/zui/icons';
 import { PostMediaMenu } from './menu';
 import { featureFlags } from '../../../../lib/feature-flags';
-import AttachmentCards from '../../../../platform-apps/channels/attachment-cards';
 
 import { bemClassName } from '../../../../lib/bem';
 import classNames from 'classnames';
@@ -33,6 +31,8 @@ import { POST_MAX_LENGTH } from '../../lib/constants';
 import { Giphy } from '../../../../components/message-input/giphy/giphy';
 import { ToastNotification } from '@zero-tech/zui/components';
 import { getPostMediaMaxFileSize, validateMediaFiles } from './utils';
+import { useMediaUpload } from './useMediaUpload';
+import ImageCard from '../../../../platform-apps/channels/image-cards/image-card';
 
 const SHOW_MAX_LABEL_THRESHOLD = 0.8 * POST_MAX_LENGTH;
 
@@ -52,11 +52,13 @@ export interface Properties extends PublicPropertiesContainer {
 
 export function PostInput(props: Properties) {
   const [value, setValue] = useState(props.initialValue || '');
-  const [media, setMedia] = useState<Media[]>([]);
+  const [media, setMedia] = useState<Media | undefined>();
   const [isEmojisActive, setIsEmojisActive] = useState(false);
   const [isGiphyActive, setIsGiphyActive] = useState(false);
   const [isDropRejectedNotificationOpen, setIsDropRejectedNotificationOpen] = useState(false);
   const [rejectedType, setRejectedType] = useState<string | null>(null);
+
+  const { uploadMedia, isPending: isUploadingMedia, removeUploadedMedia, uploadedMediaId } = useMediaUpload();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -79,14 +81,11 @@ export function PostInput(props: Properties) {
     'video/*': [],
   };
 
-  const images = media.filter((m) => m.mediaType === MediaType.Image);
-  const videos = media.filter((m) => m.mediaType === MediaType.Video);
-
   const onSubmit = (): void => {
-    if (value || media.length) {
-      props.onSubmit(value, media);
+    if (value || uploadedMediaId) {
+      props.onSubmit(value, uploadedMediaId);
       setValue('');
-      setMedia([]);
+      setMedia(undefined);
     }
   };
 
@@ -101,13 +100,17 @@ export function PostInput(props: Properties) {
     setValue(event.target.value);
   };
 
-  const removeMediaPreview = (mediaToRemove: { id: string }) => {
-    setMedia(media.filter((m) => m.id !== mediaToRemove.id));
+  const handleRemoveMediaPreview = () => {
+    removeUploadedMedia();
+    setMedia(undefined);
   };
 
-  const mediaSelected = (newMedia: Media[]): void => {
-    const mediaToAdd = newMedia[0] ? [newMedia[0]] : [];
-    setMedia(mediaToAdd);
+  const mediaSelected = (newMedia: Media): void => {
+    setMedia(newMedia);
+
+    if (newMedia) {
+      uploadMedia(newMedia.nativeFile);
+    }
   };
 
   const imagesSelected = (acceptedFiles): void => {
@@ -120,7 +123,7 @@ export function PostInput(props: Properties) {
     }
     const newImages: Media[] = props.dropzoneToMedia ? props.dropzoneToMedia(validFiles) : dropzoneToMedia(validFiles);
     if (newImages.length) {
-      mediaSelected([newImages[0]]);
+      mediaSelected(newImages[0]);
     }
   };
 
@@ -153,16 +156,14 @@ export function PostInput(props: Properties) {
   const closeGiphy = () => setIsGiphyActive(false);
 
   const onInsertGiphy = (giphy) => {
-    mediaSelected([
-      {
-        id: giphy.id.toString(),
-        name: giphy.title,
-        url: giphy.images.preview_gif.url,
-        type: MediaType.Image,
-        mediaType: MediaType.Image,
-        giphy,
-      },
-    ]);
+    mediaSelected({
+      id: giphy.id.toString(),
+      name: giphy.title,
+      url: giphy.images.preview_gif.url,
+      type: MediaType.Image,
+      mediaType: MediaType.Image,
+      giphy,
+    });
     closeGiphy();
   };
 
@@ -224,7 +225,7 @@ export function PostInput(props: Properties) {
 
   const renderInput = () => {
     const isPostTooLong = value.length > POST_MAX_LENGTH;
-    const isDisabled = (!value.trim() && !media.length) || isPostTooLong;
+    const isDisabled = (!value.trim() && !media) || isPostTooLong || isUploadingMedia;
 
     // Set maxSize to the largest allowed, Dropzone will still reject based on this
     const maxSize = Math.max(
@@ -256,8 +257,22 @@ export function PostInput(props: Properties) {
                   </div>
 
                   <div {...cn('image')}>
-                    <ImageCards images={images} onRemoveImage={removeMediaPreview} size='small' />
-                    <AttachmentCards attachments={videos} onRemove={removeMediaPreview} />
+                    {media && (
+                      <div {...cn('image-container')} data-is-uploading={isUploadingMedia ? '' : null}>
+                        {isUploadingMedia && (
+                          <span>
+                            <IconLoading2 size={16} />
+                          </span>
+                        )}
+                        <ImageCard
+                          showName={false}
+                          {...cn('image-card')}
+                          image={media}
+                          size='small'
+                          onRemoveImage={isUploadingMedia ? undefined : handleRemoveMediaPreview}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div {...cn('actions')}>
@@ -266,7 +281,7 @@ export function PostInput(props: Properties) {
                       {featureFlags.enablePostMedia && (
                         <>
                           <IconButton onClick={openGiphy} Icon={IconStickerCircle} size={26} />
-                          <PostMediaMenu onSelected={mediaSelected} />
+                          <PostMediaMenu onSelected={(newMedia) => mediaSelected(newMedia[0])} />
                         </>
                       )}
                       <AnimatePresence>

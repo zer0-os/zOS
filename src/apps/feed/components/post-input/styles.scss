@@ -31,7 +31,34 @@
   }
 
   &__image {
-    width: 100%;
+    align-self: flex-start;
+  }
+
+  &__image-container {
+    position: relative;
+
+    span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+
+      animation: spin 1s linear infinite;
+
+      @keyframes spin {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+    }
+
+    &[data-is-uploading] {
+      .image-card {
+        opacity: 0.2;
+      }
+    }
   }
 
   &__emoji-picker-container {

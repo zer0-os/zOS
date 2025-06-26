@@ -2,9 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useAccount, useSignMessage } from 'wagmi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Media } from '../../../components/message-input/utils';
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
-import { uploadMedia } from '../../../store/posts/media-api';
 import { POST_MAX_LENGTH } from './constants';
 import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
 import { featureFlags } from '../../../lib/feature-flags';
@@ -14,7 +12,7 @@ import { addQueuedPost, removeQueuedPost, updateQueuedPostStatus } from '../../.
 
 export interface SubmitPostParams {
   channelZid: string;
-  media: Media[];
+  mediaId?: string;
   message: string;
   replyToId?: string;
 }
@@ -40,7 +38,7 @@ export const useSubmitPost = () => {
      * @note this mutation function is an almost exact copy of the saga logic. This will be refactored in the future.
      */
     mutationFn: async (params: SubmitPostParams) => {
-      const { message, replyToId, channelZid, media } = params;
+      const { message, replyToId, channelZid, mediaId } = params;
       const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
 
       const authorAddress = featureFlags.enableZeroWalletSigning ? account?.address : connectedAddress;
@@ -54,11 +52,7 @@ export const useSubmitPost = () => {
       }
 
       if (!message || message.trim() === '') {
-        throw new Error(!media ? 'Post is empty' : 'Please add a message to your post');
-      }
-
-      if (media && media.length > 1) {
-        throw new Error('Only one media file is supported at the moment');
+        throw new Error(mediaId ? 'Post is empty' : 'Please add a message to your post');
       }
 
       if (message.length > POST_MAX_LENGTH) {
@@ -71,31 +65,6 @@ export const useSubmitPost = () => {
 
       if (!userWallets.find((w) => w.publicAddress.toLowerCase() === authorAddress.toLowerCase())) {
         throw new Error('Wallet is not linked to your account');
-      }
-
-      // Handle media upload first if present
-      let mediaId: string | undefined;
-      if (media && media.length > 0) {
-        try {
-          const file = media[0].nativeFile;
-          if (!file) {
-            if (media[0].giphy) {
-              const response = await fetch(media[0].giphy.images.original.url);
-              const blob = await response.blob();
-              const gifFile = new File([blob], `${media[0].giphy.id}.gif`, { type: 'image/gif' });
-              const uploadResponse = await uploadMedia(gifFile);
-              mediaId = uploadResponse.id;
-            } else {
-              throw new Error('Media file is missing');
-            }
-          } else {
-            const uploadResponse = await uploadMedia(file);
-            mediaId = uploadResponse.id;
-          }
-        } catch (e) {
-          console.error('Failed to upload media:', e);
-          throw new Error('Failed to upload media');
-        }
       }
 
       const createdAt = new Date().getTime();
@@ -150,7 +119,7 @@ export const useSubmitPost = () => {
       }
     },
     onMutate: async (params: SubmitPostParams) => {
-      const { channelZid, message, replyToId } = params;
+      const { channelZid, message, replyToId, mediaId } = params;
       await queryClient.cancelQueries({ queryKey: ['posts', { zid: channelZid }] });
 
       if (replyToId) {
@@ -168,6 +137,7 @@ export const useSubmitPost = () => {
         isAdmin: false,
         isPost: true,
         message,
+        mediaId,
         optimisticId: optimisticId,
         reactions: {
           MEOW: 0,

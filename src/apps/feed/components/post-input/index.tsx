@@ -226,7 +226,7 @@ export function PostInput(props: Properties) {
 
   const renderInput = () => {
     const isPostTooLong = value.length > POST_MAX_LENGTH;
-    const isDisabled = (!value.trim() && !media) || isPostTooLong || isUploadingMedia;
+    const isDisabled = !value.trim() || isPostTooLong || isUploadingMedia;
 
     // Set maxSize to the largest allowed, Dropzone will still reject based on this
     const maxSize = Math.max(

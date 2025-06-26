@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React, { RefObject, useState, useEffect, useRef } from 'react';
 import Dropzone from 'react-dropzone';
 
 import { config } from '../../../../config';
@@ -50,64 +50,22 @@ export interface Properties extends PublicPropertiesContainer {
   onPostInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
 }
 
-interface State {
-  value: string;
-  media: Media[];
-  isEmojisActive: boolean;
-  isGiphyActive: boolean;
-  isDropRejectedNotificationOpen: boolean;
-  rejectedType: string | null;
-}
+export function PostInput(props: Properties) {
+  const [value, setValue] = useState(props.initialValue || '');
+  const [media, setMedia] = useState<Media[]>([]);
+  const [isEmojisActive, setIsEmojisActive] = useState(false);
+  const [isGiphyActive, setIsGiphyActive] = useState(false);
+  const [isDropRejectedNotificationOpen, setIsDropRejectedNotificationOpen] = useState(false);
+  const [rejectedType, setRejectedType] = useState<string | null>(null);
 
-export class PostInput extends React.Component<Properties, State> {
-  state = {
-    value: this.props.initialValue || '',
-    media: [],
-    isEmojisActive: false,
-    isGiphyActive: false,
-    isDropRejectedNotificationOpen: false,
-    rejectedType: null,
-  };
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  private textareaRef: RefObject<HTMLTextAreaElement>;
+  const clipboard = props.clipboard || windowClipboard();
 
-  constructor(props) {
-    super(props);
-
-    this.textareaRef = React.createRef<HTMLTextAreaElement>();
-  }
-
-  componentDidMount() {
-    if (this.props.onPostInputRendered) {
-      this.props.onPostInputRendered(this.textareaRef);
-    }
-
-    this.clipboard.addPasteListener(this.clipboardEvent);
-    this.adjustTextareaHeight();
-  }
-
-  get clipboard() {
-    return this.props.clipboard || windowClipboard();
-  }
-
-  componentDidUpdate(_prevProps, prevState) {
-    if (prevState.value !== this.state.value) {
-      this.adjustTextareaHeight();
-    }
-
-    if (this.props.onPostInputRendered) {
-      this.props.onPostInputRendered(this.textareaRef);
-    }
-  }
-
-  componentWillUnmount() {
-    this.clipboard.removePasteListener(this.clipboardEvent);
-  }
-
-  adjustTextareaHeight = () => {
-    if (this.textareaRef.current) {
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
       requestAnimationFrame(() => {
-        const textarea = this.textareaRef.current;
+        const textarea = textareaRef.current;
         if (textarea) {
           textarea.style.height = 'auto';
           textarea.style.height = `${textarea.scrollHeight}px`;
@@ -116,78 +74,58 @@ export class PostInput extends React.Component<Properties, State> {
     }
   };
 
-  get mimeTypes() {
-    return {
-      'image/*': [],
-      'video/*': [],
-    };
-  }
+  const mimeTypes = {
+    'image/*': [],
+    'video/*': [],
+  };
 
-  get images() {
-    return this.state.media.filter((m) => m.mediaType === MediaType.Image);
-  }
+  const images = media.filter((m) => m.mediaType === MediaType.Image);
+  const videos = media.filter((m) => m.mediaType === MediaType.Video);
 
-  get videos() {
-    return this.state.media.filter((m) => m.mediaType === MediaType.Video);
-  }
-
-  onSubmit = (): void => {
-    const { value, media } = this.state;
+  const onSubmit = (): void => {
     if (value || media.length) {
-      this.props.onSubmit(value, media);
-      this.setState({ value: '', media: [] });
+      props.onSubmit(value, media);
+      setValue('');
+      setMedia([]);
     }
   };
 
-  onKeyDown = (event): void => {
+  const onKeyDown = (event): void => {
     if (!event.shiftKey && event.key === Key.Enter) {
       event.preventDefault();
-      this.onSubmit();
+      onSubmit();
     }
   };
 
-  onChange = (event): void => {
-    this.setState({ value: event.target.value });
+  const onChange = (event): void => {
+    setValue(event.target.value);
   };
 
-  removeMediaPreview = (mediaToRemove: { id: string }) => {
-    const media = this.state.media;
-
-    this.setState({
-      media: media.filter((m) => m.id !== mediaToRemove.id),
-    });
-
-    if (this.props.onPostInputRendered) {
-      this.props.onPostInputRendered(this.textareaRef);
-    }
+  const removeMediaPreview = (mediaToRemove: { id: string }) => {
+    setMedia(media.filter((m) => m.id !== mediaToRemove.id));
   };
 
-  mediaSelected = (newMedia: Media[]): void => {
+  const mediaSelected = (newMedia: Media[]): void => {
     const mediaToAdd = newMedia[0] ? [newMedia[0]] : [];
-    this.setState({ media: mediaToAdd });
-    if (this.props.onPostInputRendered) {
-      this.props.onPostInputRendered(this.textareaRef);
-    }
+    setMedia(mediaToAdd);
   };
 
-  imagesSelected = (acceptedFiles): void => {
-    this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null });
+  const imagesSelected = (acceptedFiles): void => {
+    setIsDropRejectedNotificationOpen(false);
+    setRejectedType(null);
     const { validFiles, rejectedFiles } = validateMediaFiles(acceptedFiles);
     if (rejectedFiles.length > 0) {
-      this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null }, () => {
-        this.setState({ isDropRejectedNotificationOpen: true, rejectedType: rejectedFiles[0].file.type });
-      });
+      setRejectedType(rejectedFiles[0].file.type);
+      setIsDropRejectedNotificationOpen(true);
     }
-    const newImages: Media[] = this.props.dropzoneToMedia
-      ? this.props.dropzoneToMedia(validFiles)
-      : dropzoneToMedia(validFiles);
+    const newImages: Media[] = props.dropzoneToMedia ? props.dropzoneToMedia(validFiles) : dropzoneToMedia(validFiles);
     if (newImages.length) {
-      this.mediaSelected([newImages[0]]);
+      mediaSelected([newImages[0]]);
     }
   };
 
-  clipboardEvent = async (event) => {
-    if (document.activeElement !== this.textareaRef.current) {
+  const clipboardEvent = async (event) => {
+    if (document.activeElement !== textareaRef.current) {
       return;
     }
 
@@ -199,23 +137,23 @@ export class PostInput extends React.Component<Properties, State> {
       .filter(Boolean);
 
     if (newImages.length !== 0) {
-      this.imagesSelected(await addImagePreview(newImages));
+      imagesSelected(await addImagePreview(newImages));
     }
   };
 
-  openEmojis = () => this.setState({ isEmojisActive: true });
-  closeEmojis = () => this.setState({ isEmojisActive: false });
+  const openEmojis = () => setIsEmojisActive(true);
+  const closeEmojis = () => setIsEmojisActive(false);
 
-  onInsertEmoji = (value: string) => {
-    this.setState({ value });
-    this.closeEmojis();
+  const onInsertEmoji = (newValue: string) => {
+    setValue(newValue);
+    closeEmojis();
   };
 
-  openGiphy = () => this.setState({ isGiphyActive: true });
-  closeGiphy = () => this.setState({ isGiphyActive: false });
+  const openGiphy = () => setIsGiphyActive(true);
+  const closeGiphy = () => setIsGiphyActive(false);
 
-  onInsertGiphy = (giphy) => {
-    this.mediaSelected([
+  const onInsertGiphy = (giphy) => {
+    mediaSelected([
       {
         id: giphy.id.toString(),
         name: giphy.title,
@@ -225,23 +163,21 @@ export class PostInput extends React.Component<Properties, State> {
         giphy,
       },
     ]);
-    this.closeGiphy();
+    closeGiphy();
   };
 
-  onDropRejected = (rejectedFiles) => {
+  const onDropRejected = (rejectedFiles) => {
     const rejectedFile = rejectedFiles[0];
     if (rejectedFile?.errors[0]?.code === 'file-too-large') {
-      // Reset first, then show again
-      this.setState({ isDropRejectedNotificationOpen: false, rejectedType: null }, () => {
-        this.setState({ isDropRejectedNotificationOpen: true, rejectedType: rejectedFile.file.type });
-      });
+      setRejectedType(rejectedFile.file.type);
+      setIsDropRejectedNotificationOpen(true);
     }
   };
 
-  renderToastNotification = () => {
+  const renderToastNotification = () => {
     let maxSize = config.postMedia.imageMaxFileSize;
-    if (this.state.rejectedType) {
-      maxSize = getPostMediaMaxFileSize(this.state.rejectedType);
+    if (rejectedType) {
+      maxSize = getPostMediaMaxFileSize(rejectedType);
     }
     const maxSizeMB = bytesToMB(maxSize);
 
@@ -252,14 +188,43 @@ export class PostInput extends React.Component<Properties, State> {
         description={`File exceeds ${maxSizeMB} size limit`}
         actionAltText=''
         positionVariant='left'
-        openToast={this.state.isDropRejectedNotificationOpen}
+        openToast={isDropRejectedNotificationOpen}
       />
     );
   };
 
-  renderInput() {
-    const isPostTooLong = this.state.value.length > POST_MAX_LENGTH;
-    const isDisabled = (!this.state.value.trim() && !this.state.media.length) || isPostTooLong;
+  useEffect(() => {
+    if (props.onPostInputRendered) {
+      props.onPostInputRendered(textareaRef);
+    }
+
+    clipboard.addPasteListener(clipboardEvent);
+    adjustTextareaHeight();
+
+    return () => {
+      clipboard.removePasteListener(clipboardEvent);
+    };
+  }, []);
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [value]);
+
+  useEffect(() => {
+    if (props.onPostInputRendered) {
+      props.onPostInputRendered(textareaRef);
+    }
+  });
+
+  useEffect(() => {
+    if (props.onPostInputRendered) {
+      props.onPostInputRendered(textareaRef);
+    }
+  }, [media]);
+
+  const renderInput = () => {
+    const isPostTooLong = value.length > POST_MAX_LENGTH;
+    const isDisabled = (!value.trim() && !media.length) || isPostTooLong;
 
     // Set maxSize to the largest allowed, Dropzone will still reject based on this
     const maxSize = Math.max(
@@ -270,48 +235,42 @@ export class PostInput extends React.Component<Properties, State> {
 
     return (
       <div>
-        <Dropzone
-          onDrop={this.imagesSelected}
-          onDropRejected={this.onDropRejected}
-          noClick
-          accept={this.mimeTypes}
-          maxSize={maxSize}
-        >
+        <Dropzone onDrop={imagesSelected} onDropRejected={onDropRejected} noClick accept={mimeTypes} maxSize={maxSize}>
           {({ getRootProps }) => (
             <div {...getRootProps({ ...cn('drop-zone-text-area') })}>
               <div {...cn('create-outer')}>
                 <div>
-                  <MatrixAvatar imageURL={this.props.avatarUrl} size={'regular'} />
+                  <MatrixAvatar imageURL={props.avatarUrl} size={'regular'} />
                 </div>
                 <div {...cn('create-inner')}>
                   <div {...cn('input')}>
                     <textarea
                       {...cn('input')}
-                      onChange={this.onChange}
-                      onKeyDown={this.onKeyDown}
-                      placeholder={this.props.variant === 'comment' ? 'Write a Comment...' : 'Write a Post...'}
-                      ref={this.textareaRef}
+                      onChange={onChange}
+                      onKeyDown={onKeyDown}
+                      placeholder={props.variant === 'comment' ? 'Write a Comment...' : 'Write a Post...'}
+                      ref={textareaRef}
                       rows={2}
-                      value={this.state.value}
+                      value={value}
                     />
                   </div>
 
                   <div {...cn('image')}>
-                    <ImageCards images={this.images} onRemoveImage={this.removeMediaPreview} size='small' />
-                    <AttachmentCards attachments={this.videos} onRemove={this.removeMediaPreview} />
+                    <ImageCards images={images} onRemoveImage={removeMediaPreview} size='small' />
+                    <AttachmentCards attachments={videos} onRemove={removeMediaPreview} />
                   </div>
 
                   <div {...cn('actions')}>
                     <div {...cn('icon-wrapper')}>
-                      <IconButton onClick={this.openEmojis} Icon={IconFaceSmile} size={26} />
+                      <IconButton onClick={openEmojis} Icon={IconFaceSmile} size={26} />
                       {featureFlags.enablePostMedia && (
                         <>
-                          <IconButton onClick={this.openGiphy} Icon={IconStickerCircle} size={26} />
-                          <PostMediaMenu onSelected={this.mediaSelected} />
+                          <IconButton onClick={openGiphy} Icon={IconStickerCircle} size={26} />
+                          <PostMediaMenu onSelected={mediaSelected} />
                         </>
                       )}
                       <AnimatePresence>
-                        {this.state.value.length > SHOW_MAX_LABEL_THRESHOLD && (
+                        {value.length > SHOW_MAX_LABEL_THRESHOLD && (
                           <motion.span
                             initial={{ y: -8, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
@@ -321,14 +280,14 @@ export class PostInput extends React.Component<Properties, State> {
                             data-is-too-long={isPostTooLong ? '' : null}
                             data-testid='character-count'
                           >
-                            {this.state.value.length} / {POST_MAX_LENGTH}
+                            {value.length} / {POST_MAX_LENGTH}
                           </motion.span>
                         )}
                       </AnimatePresence>
                     </div>
 
                     <div {...cn('wrapper')}>
-                      <Button {...cn('button')} isDisabled={isDisabled} onPress={this.onSubmit}>
+                      <Button {...cn('button')} isDisabled={isDisabled} onPress={onSubmit}>
                         Create
                       </Button>
                     </div>
@@ -336,20 +295,20 @@ export class PostInput extends React.Component<Properties, State> {
 
                   <div {...cn('emoji-picker-container')}>
                     <EmojiPicker
-                      textareaRef={this.textareaRef}
-                      isOpen={this.state.isEmojisActive}
-                      onOpen={this.openEmojis}
-                      onClose={this.closeEmojis}
-                      value={this.state.value}
-                      viewMode={this.props.viewMode}
-                      onSelect={this.onInsertEmoji}
+                      textareaRef={textareaRef}
+                      isOpen={isEmojisActive}
+                      onOpen={openEmojis}
+                      onClose={closeEmojis}
+                      value={value}
+                      viewMode={props.viewMode}
+                      onSelect={onInsertEmoji}
                     />
                   </div>
 
-                  {this.state.isGiphyActive && (
-                    <div {...cn('giphy-picker-container')} onClick={this.closeGiphy}>
+                  {isGiphyActive && (
+                    <div {...cn('giphy-picker-container')} onClick={closeGiphy}>
                       <div {...cn('giphy-picker-content')} onClick={(e) => e.stopPropagation()}>
-                        <Giphy onClickGif={this.onInsertGiphy} onClose={this.closeGiphy} />
+                        <Giphy onClickGif={onInsertGiphy} onClose={closeGiphy} />
                       </div>
                     </div>
                   )}
@@ -358,12 +317,10 @@ export class PostInput extends React.Component<Properties, State> {
             </div>
           )}
         </Dropzone>
-        {this.renderToastNotification()}
+        {renderToastNotification()}
       </div>
     );
-  }
+  };
 
-  render() {
-    return <div className={classNames(cn('').className, this.props.className)}>{this.renderInput()}</div>;
-  }
+  return <div className={classNames(cn('').className, props.className)}>{renderInput()}</div>;
 }

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Option } from '../../lib/types';
 
 import { IconButton } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { IconXClose, IconZeroProVerified } from '@zero-tech/zui/icons';
 
 import classNames from 'classnames';
 import { bemClassName } from '../../../../lib/bem';
@@ -42,7 +42,10 @@ export class SelectedUserTag extends React.Component<Properties> {
         </div>
 
         <div {...cn('user-details')}>
-          <span {...cn('user-label')}>{option.label}</span>
+          <div {...cn('user-label-container')}>
+            <span {...cn('user-label')}>{option.label}</span>
+            {option.isZeroProSubscriber && <IconZeroProVerified size={16} />}
+          </div>
           {option.subLabel && <span {...cn('user-sublabel')}>{option.subLabel}</span>}
         </div>
 

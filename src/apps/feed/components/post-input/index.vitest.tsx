@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { PostInput } from './';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { POST_MAX_LENGTH } from '../../lib/constants';
 import { ViewModes } from '../../../../shared-components/theme-engine';
+import { renderWithProviders } from '../../../../test-utils';
 
 vi.mock('../../../../components/matrix-avatar', () => ({
   MatrixAvatar: () => {
@@ -12,7 +13,7 @@ vi.mock('../../../../components/matrix-avatar', () => ({
 
 describe('PostInput', () => {
   it('should only show the character count when the post is too long', () => {
-    render(<PostInput viewMode={ViewModes.Dark} onSubmit={() => {}} />);
+    renderWithProviders(<PostInput viewMode={ViewModes.Dark} onSubmit={() => {}} />);
 
     const textarea = screen.getByRole('textbox');
 

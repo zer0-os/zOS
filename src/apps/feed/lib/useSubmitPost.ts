@@ -51,14 +51,6 @@ export const useSubmitPost = () => {
         throw new Error('Channel ZID is invalid');
       }
 
-      if (!message || message.trim() === '') {
-        throw new Error(mediaId ? 'Post is empty' : 'Please add a message to your post');
-      }
-
-      if (message.length > POST_MAX_LENGTH) {
-        throw new Error(`Post must be less than ${POST_MAX_LENGTH} characters`);
-      }
-
       if (!authorAddress) {
         throw new Error('ZERO wallet is not connected');
       }

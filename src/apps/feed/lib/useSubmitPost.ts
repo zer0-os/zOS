@@ -1,27 +1,28 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useAccount, useSignMessage } from 'wagmi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Media } from '../../../components/message-input/utils';
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
-import { uploadMedia } from '../../../store/posts/media-api';
-import { POST_MAX_LENGTH } from './constants';
 import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
 import { featureFlags } from '../../../lib/feature-flags';
-import { primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
+import { currentUserSelector, primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
+import { v4 as uuidv4 } from 'uuid';
+import { addQueuedPost, removeQueuedPost, updateQueuedPostStatus } from '../../../store/post-queue';
 
-interface SubmitPostParams {
+export interface SubmitPostParams {
   channelZid: string;
-  media: Media[];
+  mediaId?: string;
   message: string;
   replyToId?: string;
 }
 
 export const useSubmitPost = () => {
   const queryClient = useQueryClient();
+  const dispatch = useDispatch();
 
   const userPrimaryZid = useSelector(primaryZIDSelector);
   const userWallets = useSelector(userWalletsSelector);
+  const currentUser = useSelector(currentUserSelector);
 
   const { address: connectedAddress } = useAccount();
   const { signMessageAsync } = useSignMessage();
@@ -35,7 +36,8 @@ export const useSubmitPost = () => {
     /**
      * @note this mutation function is an almost exact copy of the saga logic. This will be refactored in the future.
      */
-    mutationFn: async ({ message, replyToId, channelZid, media }: SubmitPostParams) => {
+    mutationFn: async (params: SubmitPostParams) => {
+      const { message, replyToId, channelZid, mediaId } = params;
       const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
 
       const authorAddress = featureFlags.enableZeroWalletSigning ? account?.address : connectedAddress;
@@ -48,49 +50,12 @@ export const useSubmitPost = () => {
         throw new Error('Channel ZID is invalid');
       }
 
-      if (!message || message.trim() === '') {
-        throw new Error(!media ? 'Post is empty' : 'Please add a message to your post');
-      }
-
-      if (media && media.length > 1) {
-        throw new Error('Only one media file is supported at the moment');
-      }
-
-      if (message.length > POST_MAX_LENGTH) {
-        throw new Error(`Post must be less than ${POST_MAX_LENGTH} characters`);
-      }
-
       if (!authorAddress) {
         throw new Error('ZERO wallet is not connected');
       }
 
       if (!userWallets.find((w) => w.publicAddress.toLowerCase() === authorAddress.toLowerCase())) {
         throw new Error('Wallet is not linked to your account');
-      }
-
-      // Handle media upload first if present
-      let mediaId: string | undefined;
-      if (media && media.length > 0) {
-        try {
-          const file = media[0].nativeFile;
-          if (!file) {
-            if (media[0].giphy) {
-              const response = await fetch(media[0].giphy.images.original.url);
-              const blob = await response.blob();
-              const gifFile = new File([blob], `${media[0].giphy.id}.gif`, { type: 'image/gif' });
-              const uploadResponse = await uploadMedia(gifFile);
-              mediaId = uploadResponse.id;
-            } else {
-              throw new Error('Media file is missing');
-            }
-          } else {
-            const uploadResponse = await uploadMedia(file);
-            mediaId = uploadResponse.id;
-          }
-        } catch (e) {
-          console.error('Failed to upload media:', e);
-          throw new Error('Failed to upload media');
-        }
       }
 
       const createdAt = new Date().getTime();
@@ -144,14 +109,80 @@ export const useSubmitPost = () => {
         throw new Error((e as any).message ?? 'Failed to submit post');
       }
     },
-    onSuccess: (_data, { replyToId, channelZid }) => {
+    onMutate: async (params: SubmitPostParams) => {
+      const { channelZid, message, replyToId, mediaId } = params;
+      await queryClient.cancelQueries({ queryKey: ['posts', { zid: channelZid }] });
+
+      if (replyToId) {
+        await queryClient.cancelQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
+      }
+
+      const formattedZid = currentUser?.primaryZID?.replace('0://', '');
+
+      const optimisticId = uuidv4();
+
+      const optimisticPost = {
+        createdAt: new Date().toISOString(),
+        hidePreview: false,
+        id: optimisticId,
+        isAdmin: false,
+        isPost: true,
+        message,
+        mediaId,
+        optimisticId: optimisticId,
+        reactions: {
+          MEOW: 0,
+          VOTED: 0,
+        },
+        sender: {
+          userId: currentUser?.id,
+          firstName: currentUser?.profileSummary?.firstName,
+          displaySubHandle: currentUser?.primaryZID,
+          avatarUrl: currentUser?.profileSummary?.profileImage,
+          primaryZid: formattedZid,
+          publicAddress: currentUser?.primaryWalletAddress,
+          isZeroProSubscriber: false,
+        },
+        numberOfReplies: 0,
+        channelZid: channelZid?.replace('0://', ''),
+        arweaveId: uuidv4(),
+      };
+
+      dispatch(
+        addQueuedPost({
+          id: optimisticId,
+          optimisticPost,
+          params,
+          feedZid: channelZid,
+          replyToId,
+          status: 'pending',
+        })
+      );
+
+      return { optimisticId };
+    },
+    onSuccess: (_data, { replyToId, channelZid }, { optimisticId }) => {
+      dispatch(removeQueuedPost(optimisticId));
+
       queryClient.invalidateQueries({ queryKey: ['posts', { zid: channelZid }] });
-      queryClient.invalidateQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
+
+      if (replyToId) {
+        queryClient.invalidateQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
+      }
 
       // Also invalidate the "Everything" feed. This is a bit of a hack! Ideally we shouldn't
       // invalidate this feed every time a post is submitted. We should only invalidate it when
       // the user posts in the "Everything" feed.
       queryClient.invalidateQueries({ queryKey: ['posts', { zid: undefined }] });
+    },
+    onError: (error, _variables, { optimisticId }) => {
+      dispatch(
+        updateQueuedPostStatus({
+          tempId: optimisticId,
+          status: 'failed',
+          error: error.message,
+        })
+      );
     },
   });
 

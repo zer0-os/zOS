@@ -49,6 +49,7 @@
     "if-emoji": "^0.1.0",
     "linkify-react": "^4.0.2",
     "linkifyjs": "^4.0.2",
+    "lodash.chunk": "^4.2.0",
     "lodash.get": "^4.4.2",
     "lodash.kebabcase": "^4.1.1",
     "lodash.uniqby": "^4.7.0",

@@ -7,18 +7,13 @@ import { ViewModes } from '../../../../shared-components/theme-engine';
 
 import { PostInput } from '.';
 
-// should move this to a shared location
-import { Media } from '../../../../components/message-input/utils';
-
 export interface PublicProperties {
   id?: string;
   initialValue?: string;
-  isSubmitting?: boolean;
-  error?: string;
   className?: string;
   variant?: 'comment' | 'post';
 
-  onSubmit: (message: string, media: Media[]) => void;
+  onSubmit: (message: string, mediaId?: string) => void;
 }
 
 export interface Properties extends PublicProperties {
@@ -33,10 +28,9 @@ export class Container extends React.Component<Properties> {
       theme: {
         value: { viewMode },
       },
-      posts: { error },
     } = state;
 
-    return { user, error, viewMode };
+    return { user, viewMode };
   }
 
   static mapActions(_props: Properties): Partial<Properties> {
@@ -57,9 +51,7 @@ export class Container extends React.Component<Properties> {
       <PostInput
         id={this.props.id}
         className={this.props.className}
-        error={this.props.error}
         initialValue={this.props.initialValue}
-        isSubmitting={this.props.isSubmitting}
         onSubmit={this.props.onSubmit}
         onPostInputRendered={this.onPostInputRendered}
         avatarUrl={this.props.user.data?.profileSummary.profileImage}

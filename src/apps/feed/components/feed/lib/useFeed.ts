@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
-import { debounce } from 'lodash';
+import { debounce, chunk } from 'lodash';
 import { useCallback, useState, useMemo } from 'react';
 
 import { get } from '../../../../../lib/api/rest';
@@ -11,6 +11,7 @@ import { primaryZIDSelector, userIdSelector } from '../../../../../store/authent
 import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/selectors';
 import { searchMyNetworksByName } from '../../../../../platform-apps/channels/util/api';
 import { MemberNetworks } from '../../../../../store/users/types';
+import { queuedPostsByFeedSelector } from '../../../../../store/post-queue/selectors';
 
 interface UseFeedParams {
   zid?: string;
@@ -26,6 +27,8 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
   const [searchResults, setSearchResults] = useState<MemberNetworks[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+
+  const queuedPosts = useSelector(queuedPostsByFeedSelector(zid));
 
   const performSearch = useCallback(async (searchText: string) => {
     const usersApiResult = await searchMyNetworksByName(searchText);
@@ -80,6 +83,31 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
     },
     initialPageParam: 0,
+    select: (data) => {
+      const relevantQueuedPosts = queuedPosts
+        .filter((queuedPost) => {
+          if (zid) {
+            return queuedPost.feedZid === zid;
+          }
+          return true;
+        })
+        .map((queuedPost) => queuedPost.optimisticPost);
+
+      const allFetchedPosts = data.pages.flat();
+
+      const allPosts = [...allFetchedPosts, ...relevantQueuedPosts].sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
+      });
+
+      const chunkedPages = chunk(allPosts, PAGE_SIZE);
+
+      return {
+        pages: chunkedPages,
+        pageParams: data.pageParams,
+      };
+    },
   });
 
   const { meowPostFeed } = useMeowPost();

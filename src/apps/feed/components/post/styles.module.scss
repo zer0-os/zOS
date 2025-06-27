@@ -27,6 +27,14 @@
     }
   }
 
+  &[data-disabled] {
+    cursor: unset;
+
+    &:hover {
+      background-color: unset !important;
+    }
+  }
+
   &[data-variant='default'] {
     padding: 12px 18px 12px 18px;
 
@@ -218,9 +226,19 @@
   &[data-variant='default'] {
     cursor: pointer;
   }
+
+  &[data-disabled] {
+    cursor: unset;
+  }
 }
 
 .Link {
   text-decoration: underline;
   color: var(--color-secondary-11);
+}
+
+.Error {
+  font-size: 12px;
+  color: var(--color-failure-11);
+  margin: auto 0;
 }

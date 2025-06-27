@@ -94,6 +94,7 @@ export class Container extends React.Component<Properties> {
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
         profileId: currentUser?.profileId,
         lastSeenAt: '',
+        subscriptions: currentUser?.subscriptions,
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],
       editConversationState: groupManagement.editConversationState,

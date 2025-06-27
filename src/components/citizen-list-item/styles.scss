@@ -40,12 +40,24 @@
     white-space: nowrap;
   }
 
+  &__name-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    width: 100%;
+  }
+
   &__name {
     font-size: 14px;
     line-height: 20px;
     flex-grow: 1;
 
     @include glass-text-primary-color;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   &__handle {

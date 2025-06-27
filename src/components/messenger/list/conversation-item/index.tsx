@@ -6,7 +6,7 @@ import { DefaultRoomLabels, NormalizedChannel } from '../../../../store/channels
 import { MoreMenu } from './more-menu';
 import { MatrixAvatar } from '../../../matrix-avatar';
 
-import { IconBellOff1 } from '@zero-tech/zui/icons';
+import { IconBellOff1, IconZeroProVerified } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-item.scss';
@@ -109,27 +109,28 @@ export const ConversationItem = memo(
     const isExpanded = !isCollapsed;
     const isOneOnOneConversation = isOneOnOne(conversation);
 
+    const user = useMemo(() => {
+      if (isOneOnOneConversation && conversation.otherMembers[0]) {
+        return getUser(conversation.otherMembers[0]);
+      }
+      return undefined;
+    }, [isOneOnOneConversation, conversation.otherMembers, getUser]);
+
+    const avatarUrl = useMemo(() => {
+      if (conversation.icon) {
+        return conversation.icon;
+      } else if (user) {
+        return user.profileImage;
+      }
+      return undefined;
+    }, [conversation.icon, user]);
+
     const displayDate = useMemo(() => {
       if (conversation.lastMessage) {
         return previewDisplayDate(conversation.lastMessage.createdAt);
       }
       return null;
     }, [conversation.lastMessage]);
-
-    const avatarUrl = useMemo(() => {
-      if (conversation.icon) {
-        return conversation.icon;
-      } else if (isOneOnOneConversation && conversation.otherMembers[0]) {
-        const user = getUser(conversation.otherMembers[0]);
-        return user.profileImage;
-      }
-      return undefined;
-    }, [
-      conversation.icon,
-      isOneOnOneConversation,
-      getUser,
-      conversation.otherMembers,
-    ]);
 
     return (
       <div
@@ -156,8 +157,11 @@ export const ConversationItem = memo(
         {isExpanded && (
           <div {...cn('summary')}>
             <div {...cn('header')}>
-              <div {...cn('name')} is-unread={isUnread.toString()}>
-                {highlightedName}
+              <div {...cn('name-container')}>
+                <div {...cn('name')} is-unread={isUnread.toString()}>
+                  {highlightedName}
+                </div>
+                {user?.subscriptions?.zeroPro && <IconZeroProVerified {...cn('badge-icon')} size={16} />}
               </div>
               {conversation.labels?.includes(DefaultRoomLabels.MUTE) && (
                 <IconBellOff1 {...cn('muted-icon')} size={16} />

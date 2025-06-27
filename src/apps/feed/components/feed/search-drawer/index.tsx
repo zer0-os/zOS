@@ -74,7 +74,7 @@ export const SearchDrawer = ({ searchResults, isSearching, searchValue, onSearch
                   <div className={styles.UserInfo}>
                     <div className={styles.UserNameContainer}>
                       <span className={styles.UserName}>{user.name}</span>
-                      {!user?.subscriptions?.zeroPro && <IconZeroProVerified size={14} />}
+                      {user?.subscriptions?.zeroPro && <IconZeroProVerified size={14} />}
                     </div>
                     {user?.primaryZID && <span className={styles.UserHandle}>{user.primaryZID}</span>}
                   </div>

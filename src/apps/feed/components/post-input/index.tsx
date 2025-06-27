@@ -99,6 +99,7 @@ export function PostInput(props: Properties) {
 
   const onChange = (event): void => {
     setValue(event.target.value);
+    adjustTextareaHeight();
   };
 
   const handleRemoveMediaPreview = () => {
@@ -208,24 +209,6 @@ export function PostInput(props: Properties) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    adjustTextareaHeight();
-  }, [value]);
-
-  useEffect(() => {
-    if (props.onPostInputRendered) {
-      props.onPostInputRendered(textareaRef);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (props.onPostInputRendered) {
-      props.onPostInputRendered(textareaRef);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [media]);
 
   const renderInput = () => {
     const isPostTooLong = value.length > POST_MAX_LENGTH;

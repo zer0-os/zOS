@@ -3,7 +3,6 @@ import { useAccount, useSignMessage } from 'wagmi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
-import { POST_MAX_LENGTH } from './constants';
 import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
 import { featureFlags } from '../../../lib/feature-flags';
 import { currentUserSelector, primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';

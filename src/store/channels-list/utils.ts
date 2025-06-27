@@ -28,6 +28,7 @@ export function rawUserToDomainUser(u): User {
     primaryWallet: u.primaryWallet,
     wallets: u.wallets,
     displaySubHandle: getUserSubHandle(u.primaryZID, u.primaryWallet?.publicAddress),
+    subscriptions: u.subscriptions,
   };
 }
 

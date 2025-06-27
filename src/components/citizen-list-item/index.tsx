@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import { MatrixAvatar } from '../matrix-avatar';
 import { ProfileLinkNavigation } from '../profile-link-navigation';
 import { ProfileCardHover } from '../profile-card/hover';
-
+import { IconZeroProVerified } from '@zero-tech/zui/icons';
 const cn = bemClassName('citizen-list-item');
 
 export interface Properties {
@@ -79,7 +79,10 @@ export class CitizenListItem extends React.Component<Properties, State> {
             )}
           </ProfileLinkNavigation>
           <div {...cn('text-container')}>
-            <span {...cn('name')}>{displayName(this.props.user)}</span>
+            <div {...cn('name-container')}>
+              <span {...cn('name')}>{displayName(this.props.user)}</span>
+              {this.props.user?.subscriptions?.zeroPro && <IconZeroProVerified size={16} />}
+            </div>
             <span {...cn('handle')}>{this.props.user.displaySubHandle}</span>
           </div>
         </div>

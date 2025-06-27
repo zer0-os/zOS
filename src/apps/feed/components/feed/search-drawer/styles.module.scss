@@ -92,6 +92,12 @@
   min-width: 0;
 }
 
+.UserNameContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .UserName {
   font-size: 12px;
   overflow: hidden;

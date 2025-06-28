@@ -2,7 +2,7 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import { bytesToMB, dropzoneToMedia, Media } from '../../../../../components/message-input/utils';
 import { getPostMediaMaxFileSize, validateMediaFiles } from '../utils';
-import { IconPlus } from '@zero-tech/zui/icons';
+import { IconImage1 } from '@zero-tech/zui/icons';
 import { IconButton, ToastNotification } from '@zero-tech/zui/components';
 import { config } from '../../../../../config';
 
@@ -40,6 +40,11 @@ export class PostMediaMenu extends React.Component<Properties, State> {
       maxSize = getPostMediaMaxFileSize(this.state.rejectedType);
     }
     const maxSizeMB = bytesToMB(maxSize);
+
+    if (!this.state.isDropRejectedNotificationOpen) {
+      return null;
+    }
+
     return (
       <ToastNotification
         viewportClassName='post-media-toast-notification'
@@ -81,7 +86,7 @@ export class PostMediaMenu extends React.Component<Properties, State> {
             <div className='post-media-menu'>
               <div {...getRootProps({ className: 'post-media-menu__dropzone' })}>
                 <input {...getInputProps()} />
-                <IconButton onClick={open} Icon={IconPlus} size={26} />
+                <IconButton onClick={open} Icon={IconImage1} size={26} />
               </div>
             </div>
           )}

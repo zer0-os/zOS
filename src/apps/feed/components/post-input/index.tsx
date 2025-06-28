@@ -290,7 +290,7 @@ export function PostInput(props: Properties) {
 
                     <div {...cn('wrapper')}>
                       <Button {...cn('button')} isDisabled={isDisabled} onPress={onSubmit}>
-                        Create
+                        Post
                       </Button>
                     </div>
                   </div>

@@ -22,7 +22,7 @@ export const PostButton = () => {
       <IconButton
         className={styles.Button}
         size={32}
-        Icon={() => <IconPlus size={24} />}
+        Icon={() => <IconPlus color='var(--color-greyscale-11)' size={24} />}
         onClick={() => setIsPostModalOpen(true)}
         title='Write a Post'
         aria-label='Write a Post'

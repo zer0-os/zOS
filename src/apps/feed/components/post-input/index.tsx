@@ -267,10 +267,10 @@ export function PostInput(props: Properties) {
                       {featureFlags.enablePostMedia && (
                         <>
                           <PostMediaMenu onSelected={(newMedia) => mediaSelected(newMedia[0])} />
-                          <IconButton onClick={openGiphy} Icon={IconStickerCircle} size={26} />
+                          <IconButton onClick={openGiphy} Icon={() => <IconStickerCircle size={18} />} size={36} />
                         </>
                       )}
-                      <IconButton onClick={openEmojis} Icon={IconFaceSmile} size={26} />
+                      <IconButton onClick={openEmojis} Icon={() => <IconFaceSmile size={18} />} size={36} />
                       <AnimatePresence>
                         {value.length > SHOW_MAX_LABEL_THRESHOLD && (
                           <motion.span

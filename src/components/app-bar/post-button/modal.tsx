@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { Modal } from '@zero-tech/zui/components/Modal';
 import { PostInput } from '../../../apps/feed/components/post-input-hook';
 import { primaryZIDSelector } from '../../../store/authentication/selectors';
 
 import styles from './styles.module.scss';
-import { useSelector } from 'react-redux';
 
 export interface PostModalProps {
   open: boolean;
@@ -22,6 +23,7 @@ export const PostModal = ({ open, onOpenChange }: PostModalProps) => {
 
 const Content = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) => {
   const userZid = useSelector(primaryZIDSelector);
+  const history = useHistory();
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -36,9 +38,14 @@ const Content = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) =>
     }
   }, [containerRef]);
 
+  const handleOnSubmit = () => {
+    history.push('/home');
+    onOpenChange(false);
+  };
+
   return (
     <div ref={containerRef}>
-      <PostInput className={styles.PostInput} channelZid={userZid} onSubmit={() => onOpenChange(false)} />
+      <PostInput className={styles.PostInput} channelZid={userZid} onSubmit={handleOnSubmit} />
     </div>
   );
 };

@@ -201,13 +201,17 @@
 
 .Actions {
   display: inherit;
-  gap: inherit;
+  gap: 16px;
   justify-content: space-between;
   padding-top: 8px;
 
   > div {
     display: inherit;
     gap: inherit;
+
+    &:nth-of-type(2) {
+      gap: 8px;
+    }
   }
 
   width: 100%;

@@ -190,6 +190,11 @@ export const Post = ({
                 <div>
                   {!(isPending || isFailed) && (
                     <>
+                      {featureFlags.enableComments && (
+                        <PreventPropagation>
+                          <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
+                        </PreventPropagation>
+                      )}
                       <PreventPropagation>
                         <MeowAction
                           meows={reactions?.MEOW || 0}
@@ -199,11 +204,6 @@ export const Post = ({
                           hasUserVoted={reactions?.VOTED > 0}
                         />
                       </PreventPropagation>
-                      {featureFlags.enableComments && (
-                        <PreventPropagation>
-                          <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
-                        </PreventPropagation>
-                      )}
                     </>
                   )}
                 </div>

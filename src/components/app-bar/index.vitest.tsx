@@ -1,8 +1,6 @@
 import { vi } from 'vitest';
 import { fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { configureStore } from '@reduxjs/toolkit';
-import { reducer as panelsReducer } from '../../store/panels';
 
 import { AppBar, Properties } from '.';
 import { renderWithProviders } from '../../test-utils';

@@ -7,10 +7,11 @@ export interface PostInputProps {
   className?: string;
   channelZid: string;
   replyToId?: string;
+  onSubmit?: (message: string, mediaId?: string) => void;
 }
 
-export const PostInput = ({ className, channelZid, replyToId }: PostInputProps) => {
-  const { handleOnSubmit, userProfileImageUrl } = usePostInput(channelZid, replyToId);
+export const PostInput = ({ className, channelZid, replyToId, onSubmit }: PostInputProps) => {
+  const { handleOnSubmit, userProfileImageUrl } = usePostInput(channelZid, replyToId, onSubmit);
 
   return (
     <PostInputComponent

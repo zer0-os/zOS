@@ -24,26 +24,28 @@ export const CurrentUser = () => {
 
   return (
     <>
-      <div className={styles.Container} onClick={onClick}>
-        <MatrixAvatar imageURL={userAvatarUrl} isActive={hasUnviewedRewards} size={'medium'} statusType={'active'} />
-        <div className={styles.Drawer}>
-          <div className={styles.Details}>
-            <div className={styles.Name}>{userName}</div>
-            {isHandleAWalletAddress ? (
-              <Button
-                className={styles.Verify}
-                isSubmit
-                onPress={onOpenVerifyIdDialog}
-                variant={ButtonVariant.Secondary}
-              >
-                <div>Verify ID</div>
-              </Button>
-            ) : (
-              <div className={styles.Handle}>{userHandle}</div>
-            )}
+      <div className={styles.Wrapper}>
+        <div className={styles.Container} onClick={onClick}>
+          <MatrixAvatar imageURL={userAvatarUrl} isActive={hasUnviewedRewards} size={'medium'} statusType={'active'} />
+          <div className={styles.Drawer}>
+            <div className={styles.Details}>
+              <div className={styles.Name}>{userName}</div>
+              {isHandleAWalletAddress ? (
+                <Button
+                  className={styles.Verify}
+                  isSubmit
+                  onPress={onOpenVerifyIdDialog}
+                  variant={ButtonVariant.Secondary}
+                >
+                  <div>Verify ID</div>
+                </Button>
+              ) : (
+                <div className={styles.Handle}>{userHandle}</div>
+              )}
+            </div>
           </div>
+          {isRewardsTooltipOpen && <RewardsToolTipContainer />}
         </div>
-        {isRewardsTooltipOpen && <RewardsToolTipContainer />}
       </div>
 
       {isVerifyIdDialogOpen && (

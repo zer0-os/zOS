@@ -1,0 +1,14 @@
+@use '../../../variables' as variables;
+
+.Button {
+  background: variables.$panel-background;
+  border: 1px solid variables.$border-color;
+}
+
+.PostInput {
+  margin-top: 0;
+}
+
+.Modal {
+  min-width: 480px;
+}

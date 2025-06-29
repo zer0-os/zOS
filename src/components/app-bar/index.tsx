@@ -19,10 +19,12 @@ import { featureFlags } from '../../lib/feature-flags';
 import { LegacyPanel } from '../layout/panel';
 import { getLastActiveConversation } from '../../lib/last-conversation';
 import { CurrentUser } from './current-user';
+import { PostButton } from './post-button';
 
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
+import styles from './styles.module.scss';
 
 const cn = bemClassName('app-bar');
 
@@ -187,7 +189,10 @@ export class AppBar extends React.Component<Properties, State> {
               <span>Other Apps</span>
             </div>
           </LegacyPanel>
-          <CurrentUser />
+          <div className={styles.Bottom}>
+            <PostButton />
+            <CurrentUser />
+          </div>
         </div>
         {this.state.isModalOpen && <MoreAppsModal onClose={this.closeModal} />}
       </>

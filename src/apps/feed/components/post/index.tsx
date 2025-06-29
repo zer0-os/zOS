@@ -54,6 +54,7 @@ export interface PostProps {
   isFailed?: boolean;
   meowPost: (postId: string, meowAmount: string) => void;
   error?: string;
+  isReply?: boolean;
 }
 
 export const Post = ({
@@ -80,6 +81,7 @@ export const Post = ({
   isZeroProSubscriber,
   isPending,
   isFailed,
+  isReply,
   error,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
@@ -133,6 +135,7 @@ export const Post = ({
         data-variant={variant}
         data-disabled={isPending || isFailed ? '' : null}
       >
+        {isReply && <div className={styles.ReplyIndicator} />}
         {variant === 'default' && (
           <div className={styles.Avatar}>
             <ProfileCardHover userId={authorPrimaryZid ?? authorPublicAddress}>
@@ -190,6 +193,11 @@ export const Post = ({
                 <div>
                   {!(isPending || isFailed) && (
                     <>
+                      {featureFlags.enableComments && (
+                        <PreventPropagation>
+                          <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
+                        </PreventPropagation>
+                      )}
                       <PreventPropagation>
                         <MeowAction
                           meows={reactions?.MEOW || 0}
@@ -199,11 +207,6 @@ export const Post = ({
                           hasUserVoted={reactions?.VOTED > 0}
                         />
                       </PreventPropagation>
-                      {featureFlags.enableComments && (
-                        <PreventPropagation>
-                          <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
-                        </PreventPropagation>
-                      )}
                     </>
                   )}
                 </div>

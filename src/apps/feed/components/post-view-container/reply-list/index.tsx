@@ -49,6 +49,7 @@ const ReplyItem = ({ reply, userId, userMeowBalance, meowPost, meowPostFeed, isF
         isZeroProSubscriber={reply.sender?.isZeroProSubscriber}
         isPending={isPending}
         isFailed={isFailed}
+        isReply={true}
       />
     </li>
   );

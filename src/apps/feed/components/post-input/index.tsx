@@ -264,13 +264,13 @@ export function PostInput(props: Properties) {
 
                   <div {...cn('actions')}>
                     <div {...cn('icon-wrapper')}>
-                      <IconButton onClick={openEmojis} Icon={IconFaceSmile} size={26} />
                       {featureFlags.enablePostMedia && (
                         <>
-                          <IconButton onClick={openGiphy} Icon={IconStickerCircle} size={26} />
                           <PostMediaMenu onSelected={(newMedia) => mediaSelected(newMedia[0])} />
+                          <IconButton onClick={openGiphy} Icon={() => <IconStickerCircle size={18} />} size={36} />
                         </>
                       )}
+                      <IconButton onClick={openEmojis} Icon={() => <IconFaceSmile size={18} />} size={36} />
                       <AnimatePresence>
                         {value.length > SHOW_MAX_LABEL_THRESHOLD && (
                           <motion.span
@@ -290,10 +290,18 @@ export function PostInput(props: Properties) {
 
                     <div {...cn('wrapper')}>
                       <Button {...cn('button')} isDisabled={isDisabled} onPress={onSubmit}>
-                        Create
+                        Post
                       </Button>
                     </div>
                   </div>
+
+                  {isGiphyActive && (
+                    <div {...cn('giphy-picker-container')} onClick={closeGiphy}>
+                      <div {...cn('giphy-picker-content')} onClick={(e) => e.stopPropagation()}>
+                        <Giphy onClickGif={onInsertGiphy} onClose={closeGiphy} />
+                      </div>
+                    </div>
+                  )}
 
                   <div {...cn('emoji-picker-container')}>
                     <EmojiPicker
@@ -306,14 +314,6 @@ export function PostInput(props: Properties) {
                       onSelect={onInsertEmoji}
                     />
                   </div>
-
-                  {isGiphyActive && (
-                    <div {...cn('giphy-picker-container')} onClick={closeGiphy}>
-                      <div {...cn('giphy-picker-content')} onClick={(e) => e.stopPropagation()}>
-                        <Giphy onClickGif={onInsertGiphy} onClose={closeGiphy} />
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>

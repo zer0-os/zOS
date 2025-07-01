@@ -1,9 +1,8 @@
 import { Provider } from '../types/providers';
-import { useEpicGamesLink } from './useEpicGamesLink';
-import { useTelegramLink } from './useTelegramLink';
+import { epicGamesLink } from '../../../../../lib/oauth/epicGamesLink';
+import { useTelegramLink } from '../../../../../lib/oauth/useTelegramLink';
 
 export const useProviderHandler = () => {
-  const epicGamesLink = useEpicGamesLink();
   const telegramLink = useTelegramLink();
 
   const handle = (provider: Provider) => {

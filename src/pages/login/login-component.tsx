@@ -77,6 +77,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     const { isLoggingIn, stage } = this.props;
     const isWeb3LoginStage = stage === LoginStage.Web3Login;
     const selectedOption = isWeb3LoginStage ? 'web3' : 'email';
+    const isLinking = window.location.search.includes('link');
 
     return (
       <>
@@ -88,7 +89,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             </div>
             <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
               <h3 {...cn('header')}>Log In</h3>
-              {this.renderToggleGroup(isLoggingIn, selectedOption, this.props.stage)}
+              {!isLinking && this.renderToggleGroup(isLoggingIn, selectedOption, this.props.stage)}
               <div {...cn('login-option', isWeb3LoginStage && 'wallet-option')}>{this.renderLoginOption()}</div>
             </div>
             {this.renderFooter(stage)}

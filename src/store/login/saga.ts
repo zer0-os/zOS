@@ -1,6 +1,15 @@
 import { call, put, spawn, take, takeLatest } from 'redux-saga/effects';
 
-import { EmailLoginErrors, SagaActionTypes, Web3LoginErrors, reset, setErrors, setLoading, setStage } from '.';
+import {
+  EmailLoginErrors,
+  SagaActionTypes,
+  Web3LoginErrors,
+  reset,
+  setErrors,
+  setLoading,
+  setStage,
+  LoginStage,
+} from '.';
 import { getSignedToken, isWeb3AccountConnected } from '../web3/saga';
 import {
   authenticateByEmail,
@@ -11,6 +20,7 @@ import {
 } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { getHistory } from '../../lib/browser';
+import { epicGamesLink } from '../../lib/oauth/epicGamesLink';
 
 export function* emailLogin(action) {
   const { email, password } = action.payload;
@@ -164,7 +174,26 @@ function* listenForUserLogout() {
   }
 }
 
+/**
+ * Link is set on the url in cases where we want to specifically link a user's Zero account
+ * To an OAuth 2 provider without having to show them the linking page.
+ */
+function* getLink() {
+  const history = yield call(getHistory);
+  const searchParams = new URLSearchParams(history.location.search);
+  return searchParams.get('link');
+}
+
+function* checkInitialLoginStage() {
+  const link = yield call(getLink);
+
+  if (link) {
+    yield put(setStage(LoginStage.EmailLogin));
+  }
+}
+
 export function* saga() {
+  yield call(checkInitialLoginStage);
   yield spawn(listenForUserLogin);
   yield spawn(listenForUserLogout);
   yield takeLatest(SagaActionTypes.EmailLogin, emailLogin);
@@ -174,5 +203,14 @@ export function* saga() {
 }
 
 export function* redirectToRoot() {
+  const link = yield call(getLink);
+
+  if (link) {
+    if (link === 'epic-games') {
+      yield call(epicGamesLink, false);
+      return;
+    }
+  }
+
   yield getHistory().replace({ pathname: '/' });
 }

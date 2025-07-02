@@ -27,3 +27,7 @@ export function userWalletsSelector(state: RootState) {
 export function userFirstNameSelector(state: RootState) {
   return state.authentication.user?.data?.profileSummary?.firstName;
 }
+
+export function userZeroProSubscriptionSelector(state: RootState) {
+  return state.authentication.user?.data?.subscriptions?.zeroPro || false;
+}

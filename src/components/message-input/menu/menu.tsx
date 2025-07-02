@@ -1,11 +1,10 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
-import { bytesToMB, dropzoneToMedia, Media } from '../utils';
+import { dropzoneToMedia, formatFileSize, Media } from '../utils';
 import { IconPlus } from '@zero-tech/zui/icons';
+import { IconButton, ToastNotification } from '@zero-tech/zui/components';
 
 import './styles.scss';
-import { IconButton, ToastNotification } from '@zero-tech/zui/components';
-import { config } from '../../../config';
 
 export interface Properties {
   onSelected: (images: Media[]) => void;
@@ -31,7 +30,7 @@ export default class Menu extends React.Component<Properties, State> {
   };
 
   renderToastNotification = () => {
-    const maxSize = bytesToMB(config.cloudinary.max_file_size);
+    const maxSize = formatFileSize(this.props.maxSize);
 
     return (
       <ToastNotification
@@ -48,7 +47,10 @@ export default class Menu extends React.Component<Properties, State> {
   onDropRejected = (rejectedFiles) => {
     const rejectedFile = rejectedFiles[0]; // Assuming only one file is rejected
     if (rejectedFile?.errors[0]?.code === 'file-too-large') {
-      this.setState({ isDropRejectedNotificationOpen: true });
+      // Reset first, then show again to ensure the toast can be triggered multiple times
+      this.setState({ isDropRejectedNotificationOpen: false }, () => {
+        this.setState({ isDropRejectedNotificationOpen: true });
+      });
     }
   };
 

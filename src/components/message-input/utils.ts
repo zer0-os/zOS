@@ -93,3 +93,22 @@ export function bytesToMB(bytes) {
   const formattedMegabytes = megabytes.toFixed(2).replace(/\.00$/, '');
   return `${formattedMegabytes} MB`;
 }
+
+export function formatFileSize(bytes) {
+  if (typeof bytes !== 'number') {
+    return 'Invalid input';
+  }
+
+  const GB = 1024 * 1024 * 1024;
+  const MB = 1024 * 1024;
+
+  if (bytes >= GB) {
+    const gigabytes = bytes / GB;
+    const formattedGB = gigabytes.toFixed(2).replace(/\.00$/, '');
+    return `${formattedGB} GB`;
+  } else {
+    const megabytes = bytes / MB;
+    const formattedMB = megabytes.toFixed(2).replace(/\.00$/, '');
+    return `${formattedMB} MB`;
+  }
+}

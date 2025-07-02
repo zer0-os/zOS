@@ -1,6 +1,11 @@
 import { config } from '../../../../config';
 
-export function getPostMediaMaxFileSize(mimeType: string): number {
+export function getPostMediaMaxFileSize(mimeType: string, isZeroProSubscriber: boolean = false): number {
+  // ZeroPro users get 1GB for all file types
+  if (isZeroProSubscriber) {
+    return config.postMedia.zeroProUserMaxFileSize;
+  }
+
   if (mimeType === 'image/gif') {
     return config.postMedia.gifMaxFileSize;
   }
@@ -14,14 +19,17 @@ export function getPostMediaMaxFileSize(mimeType: string): number {
   return config.postMedia.imageMaxFileSize;
 }
 
-export function validateMediaFiles(files: File[]): {
+export function validateMediaFiles(
+  files: File[],
+  isZeroProSubscriber: boolean = false
+): {
   validFiles: File[];
   rejectedFiles: { file: File; reason: string }[];
 } {
   const validFiles: File[] = [];
   const rejectedFiles: { file: File; reason: string }[] = [];
   for (const file of files) {
-    const maxSize = getPostMediaMaxFileSize(file.type);
+    const maxSize = getPostMediaMaxFileSize(file.type, isZeroProSubscriber);
     if (file.size > maxSize) {
       rejectedFiles.push({ file, reason: 'file-too-large' });
     } else {

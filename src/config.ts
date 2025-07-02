@@ -29,14 +29,12 @@ export const config = {
   telegramBotUserId: process.env.REACT_APP_TELEGRAM_BOT_USER_ID,
   thirwebClientId: process.env.REACT_APP_THIRDWEB_CLIENT_ID,
   matrixHomeServerName: process.env.REACT_APP_MATRIX_HOME_SERVER_NAME,
-  messageFileSize: {
-    basicUser: parseInt(process.env.REACT_APP_MESSAGE_FILE_SIZE) || 10485760,
-    zeroProUser: 1073741824,
-  },
+  messageFileSize: { basicUser: 10485760, zeroProUser: 1073741824 },
   postMedia: {
     imageMaxFileSize: parseInt(process.env.REACT_APP_POST_IMAGE_MAX_FILE_SIZE) || 10485760,
     gifMaxFileSize: parseInt(process.env.REACT_APP_POST_GIF_MAX_FILE_SIZE) || 15728640,
     videoMaxFileSize: parseInt(process.env.REACT_APP_POST_VIDEO_MAX_FILE_SIZE) || 104857600,
+    zeroProUserMaxFileSize: 1073741824,
   },
   stripePublishableKey: process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY,
 };

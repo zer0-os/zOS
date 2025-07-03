@@ -124,7 +124,7 @@ export const Details: React.FC<Props> = ({ onNext, onBack, initialValues }) => {
           {/* Error/Info/Success messaging */}
           {/* TODO: Clean up the form info/error messaging */}
           {isValid ? (
-            <div className={styles.FormSuccess}>All fields completed ✅</div>
+            <div className={styles.FormSuccess}>All fields completed</div>
           ) : attemptedSubmit ? (
             <div className={styles.FormError}>
               {!emailIsValid

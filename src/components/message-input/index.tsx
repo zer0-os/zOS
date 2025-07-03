@@ -4,7 +4,7 @@ import { config } from '../../config';
 import { Key } from '../../lib/keyboard-search';
 import { MediaType } from '../../store/messages';
 import { userMentionsConfig } from './mentions/mentions-config';
-import { Media, dropzoneToMedia, addImagePreview, windowClipboard, UserForMention } from './utils';
+import { Media, dropzoneToMedia, addImagePreview, windowClipboard, UserForMention, formatFileSize } from './utils';
 import Menu from './menu/menu';
 import { EmojiPicker } from './emoji-picker/emoji-picker';
 import ReplyCard from '../reply-card/reply-card';
@@ -13,13 +13,14 @@ import AudioCards from '../../platform-apps/channels/audio-cards';
 import ImageCards from '../../platform-apps/channels/image-cards';
 import AttachmentCards from '../../platform-apps/channels/attachment-cards';
 import { IconFaceSmile, IconSend3, IconStickerCircle } from '@zero-tech/zui/icons';
-import { IconButton, Tooltip } from '@zero-tech/zui/components';
+import { IconButton, Tooltip, ToastNotification } from '@zero-tech/zui/components';
 import { textToPlainEmojis } from '../content-highlighter/text-to-emojis';
 import { bemClassName } from '../../lib/bem';
 import { Mentions } from './mentions';
 import { ParentMessage } from '../../lib/chat/types';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/reducer';
+import { userZeroProSubscriptionSelector } from '../../store/authentication/selectors';
 import './styles.scss';
 
 const mimeTypes = {
@@ -60,7 +61,12 @@ export const MessageInput = forwardRef<HTMLTextAreaElement, Properties>((props, 
   const [isEmojisActive, setIsEmojisActive] = useState(false);
   const [isGiphyActive, setIsGiphyActive] = useState(false);
   const [isSendTooltipOpen, setIsSendTooltipOpen] = useState(false);
+  const [isDropzoneToastOpen, setIsDropzoneToastOpen] = useState(false);
   const viewMode = useSelector(selectViewMode);
+  const isZeroProSubscriber = useSelector(userZeroProSubscriptionSelector);
+
+  // 1GB for ZeroPro, 10MB for others
+  const maxFileSize = isZeroProSubscriber ? config.messageFileSize.zeroProUser : config.messageFileSize.basicUser;
 
   const clipboard = props.clipboard || windowClipboard();
   const isSendingEnabled = !props.sendDisabledMessage?.trim();
@@ -151,6 +157,29 @@ export const MessageInput = forwardRef<HTMLTextAreaElement, Properties>((props, 
     },
     [mediaSelected, props]
   );
+
+  const onDropRejected = useCallback((rejectedFiles) => {
+    const rejectedFile = rejectedFiles[0];
+    if (rejectedFile?.errors[0]?.code === 'file-too-large') {
+      // Reset first, then show again to ensure the toast can be triggered multiple times
+      setIsDropzoneToastOpen(false);
+      setTimeout(() => setIsDropzoneToastOpen(true), 0);
+    }
+  }, []);
+
+  const renderDropzoneToast = () => {
+    const maxSize = formatFileSize(maxFileSize);
+    return (
+      <ToastNotification
+        viewportClassName='message-input-toast-notification'
+        title=''
+        description={`File exceeds ${maxSize} size limit`}
+        actionAltText=''
+        positionVariant='left'
+        openToast={isDropzoneToastOpen}
+      />
+    );
+  };
 
   const clipboardEvent = useCallback(
     async (event) => {
@@ -260,9 +289,7 @@ export const MessageInput = forwardRef<HTMLTextAreaElement, Properties>((props, 
                 <IconButton {...cn('icon', 'giphy')} onClick={openGiphy} Icon={IconStickerCircle} size={26} />
               )}
 
-              {allowFileAttachment && (
-                <Menu onSelected={mediaSelected} mimeTypes={mimeTypes} maxSize={config.cloudinary.max_file_size} />
-              )}
+              {allowFileAttachment && <Menu onSelected={mediaSelected} mimeTypes={mimeTypes} maxSize={maxFileSize} />}
             </div>
           )}
 
@@ -271,9 +298,10 @@ export const MessageInput = forwardRef<HTMLTextAreaElement, Properties>((props, 
               <div {...cn('text-and-emoji-wrapper')}>
                 <Dropzone
                   onDrop={imagesSelected}
+                  onDropRejected={onDropRejected}
                   noClick
                   accept={mimeTypes}
-                  maxSize={config.cloudinary.max_file_size}
+                  maxSize={maxFileSize}
                   disabled={!allowFileAttachment}
                 >
                   {({ getRootProps }) => (
@@ -337,6 +365,7 @@ export const MessageInput = forwardRef<HTMLTextAreaElement, Properties>((props, 
         </div>
         {props.renderAfterInput && props.renderAfterInput(value, mentionedUserIds)}
       </div>
+      {renderDropzoneToast()}
     </div>
   );
 });

@@ -56,7 +56,7 @@ export function mapPostToMatrixMessage(post) {
     reactions: {
       MEOW: meowCount,
       VOTED: post.meows?.length ?? 0,
-      QUOTE: post.postsMeowsSummary?.totalMeowCount ?? 0,
+      QUOTE: post.postsQuotesSummary?.totalQuoteCount ?? 0,
     },
     rootMessageId: '',
     sendStatus: 0,

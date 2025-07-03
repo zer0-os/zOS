@@ -1,9 +1,9 @@
-import { config } from '../../../../../config';
+import { config } from '../../config';
 import { useDispatch, useSelector } from 'react-redux';
-import { allChannelsSelector } from '../../../../../store/channels/selectors';
-import { isOneOnOne } from '../../../../../store/channels-list/utils';
-import { createConversation } from '../../../../../store/create-conversation';
-import { openConversation } from '../../../../../store/channels';
+import { openConversation } from '../../store/channels';
+import { isOneOnOne } from '../../store/channels-list/utils';
+import { allChannelsSelector } from '../../store/channels/selectors';
+import { createConversation } from '../../store/create-conversation';
 
 export const useTelegramLink = () => {
   const dispatch = useDispatch();

@@ -4,6 +4,8 @@ import styles from './oauth-callback.module.scss';
 import { useEffect } from 'react';
 
 export function OAuthLinkCallback() {
+  const isCreate = window.location.search.includes('create');
+
   useEffect(() => {
     if (window.opener) {
       window.opener.postMessage('oauth-callback-success', window.location.origin);
@@ -19,7 +21,7 @@ export function OAuthLinkCallback() {
       <ThemeEngine theme={Themes.Dark} />
       <div className={styles.container}>
         <ZeroLogo />
-        <p>Account Linked Successfully</p>
+        <p>Account {isCreate ? 'Created' : 'Linked'} Successfully</p>
         <p>You can now close this window</p>
       </div>
     </>

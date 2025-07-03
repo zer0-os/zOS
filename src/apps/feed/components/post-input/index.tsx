@@ -38,6 +38,8 @@ import { useMediaUpload } from './useMediaUpload';
 import ImageCard from '../../../../platform-apps/channels/image-cards/image-card';
 import { QuotedPost } from '../feed/lib/types';
 import { PostMedia } from '../post-media';
+import { useSelector } from 'react-redux';
+import { userZeroProSubscriptionSelector } from '../../../../store/authentication/selectors';
 
 const SHOW_MAX_LABEL_THRESHOLD = 0.8 * POST_MAX_LENGTH;
 

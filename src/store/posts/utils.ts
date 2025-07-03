@@ -56,6 +56,7 @@ export function mapPostToMatrixMessage(post) {
     reactions: {
       MEOW: meowCount,
       VOTED: post.meows?.length ?? 0,
+      QUOTE: post.postsQuotesSummary?.totalQuoteCount ?? 0,
     },
     rootMessageId: '',
     sendStatus: 0,
@@ -72,6 +73,7 @@ export function mapPostToMatrixMessage(post) {
     numberOfReplies: post.replies?.length ?? 0,
     channelZid: post.worldZid,
     arweaveId: post.arweaveId,
+    quotedPost: post.quoteOf,
   };
 }
 
@@ -169,7 +171,11 @@ export async function getPost(postId: string) {
   const endpoint = `/api/v2/posts/${postId}`;
 
   try {
-    const res = await get(endpoint, undefined, { include_replies: true, include_meows: true });
+    const res = await get(endpoint, undefined, {
+      include_replies: true,
+      include_meows: true,
+      include_quotes: featureFlags.enableQuotes,
+    });
     return res.body;
   } catch (e) {
     console.error('Failed to fetch post', e);
@@ -179,6 +185,12 @@ export async function getPost(postId: string) {
 
 export async function getPostReplies(postId: string, { limit, skip }: { limit: number; skip: number }) {
   const endpoint = `/api/v2/posts/${postId}/replies`;
-  const res = await get(endpoint, undefined, { limit, skip, include_replies: true, include_meows: true });
+  const res = await get(endpoint, undefined, {
+    limit,
+    skip,
+    include_replies: true,
+    include_meows: true,
+    include_quotes: featureFlags.enableQuotes,
+  });
   return res.body;
 }

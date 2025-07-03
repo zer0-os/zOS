@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
@@ -10,22 +10,21 @@ import { ReplyAction } from './actions/reply/reply-action';
 import { formatWeiAmount } from '../../../../lib/number';
 import { FeedAction } from './actions/feed';
 import { ArweaveAction } from './actions/arweave';
-import { ShowMoreButton } from '../show-more-button';
-import { analyzePostContent } from '../../lib/analyzePostContent';
 import { usePostRoute } from './lib/usePostRoute';
-import Linkify from 'linkify-react';
-import { PostLinkPreview } from './link-preview';
-import { detectLinkType } from './link-preview/utils';
 import { PostMedia } from '../post-media';
 import { useGetReturnFromProfilePath } from '../../lib/useGetReturnFromProfilePath';
 import { RETURN_POST_ID_KEY, RETURN_PATH_KEY } from '../../lib/useReturnFromProfileNavigation';
 import { ProfileCardHover } from '../../../../components/profile-card/hover';
 import classNames from 'classnames';
-import styles from './styles.module.scss';
 import { IconZeroProVerified } from '@zero-tech/zui/icons';
 import { StatusAction } from './actions/status';
 import { useSelector } from 'react-redux';
 import { isOptimisticPostSelector } from '../../../../store/post-queue/selectors';
+import { Content } from './content';
+import { Container as QuoteContainer, Details as QuoteDetails } from './quote';
+import { QuotedPost } from '../feed/lib/types';
+import styles from './styles.module.scss';
+import { QuoteAction } from './actions/quote';
 
 type Variant = 'default' | 'expanded';
 
@@ -55,6 +54,7 @@ export interface PostProps {
   meowPost: (postId: string, meowAmount: string) => void;
   error?: string;
   isReply?: boolean;
+  quotedPost?: QuotedPost;
 }
 
 export const Post = ({
@@ -83,49 +83,11 @@ export const Post = ({
   isFailed,
   isReply,
   error,
+  quotedPost,
 }: PostProps) => {
   const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
     formatWeiAmount(userMeowBalance) <= '0' || ownerUserId?.toLowerCase() === currentUserId?.toLowerCase();
-
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const { shouldTruncate, truncatedContent } = useMemo(() => analyzePostContent(text), [text]);
-
-  const shouldShowTruncation = !isSinglePostView && shouldTruncate;
-
-  const displayText = useMemo(() => {
-    if (!text || !shouldShowTruncation || isExpanded) return text;
-    return truncatedContent;
-  }, [
-    text,
-    shouldShowTruncation,
-    isExpanded,
-    truncatedContent,
-  ]);
-
-  const multilineText = useMemo(
-    () => (
-      <div className={styles.TextContainer}>
-        {displayText.split('\n').map((line, index) => {
-          const linkType = detectLinkType(line);
-          const hasPreview = linkType !== null;
-
-          return (
-            <div key={index} className={styles.TextLine}>
-              <span className={styles.Text}>{line}</span>
-              {hasPreview && <PostLinkPreview url={line} />}
-            </div>
-          );
-        })}
-      </div>
-    ),
-    [displayText]
-  );
-
-  const handleExpand = useCallback(() => {
-    setIsExpanded(true);
-  }, []);
 
   return (
     <Wrapper postId={messageId} variant={variant} channelZid={channelZid}>
@@ -146,13 +108,28 @@ export const Post = ({
         <ZUIPost
           className={styles.Post}
           body={
-            <div className={classNames(styles.Body, { [styles.Truncated]: shouldShowTruncation && !isExpanded })}>
-              <Linkify options={{ render: renderLink }}>{multilineText}</Linkify>
-              {shouldShowTruncation && !isExpanded && <ShowMoreButton onClick={handleExpand} />}
+            <div className={classNames(styles.Body)}>
+              <Content text={text} isSinglePostView={isSinglePostView} />
+              {featureFlags.enablePostMedia && mediaId && <PostMedia mediaId={mediaId} />}
+              {quotedPost && (
+                <PreventPropagation>
+                  <Wrapper postId={quotedPost.id} variant='default'>
+                    <QuoteContainer className={styles.Quote}>
+                      <QuoteDetails
+                        avatarURL={quotedPost.userProfileView.profileImage}
+                        name={quotedPost.userProfileView.firstName}
+                        timestamp={new Date(quotedPost.createdAt).getTime()}
+                        isZeroProSubscriber={quotedPost.userProfileView.isZeroProSubscriber}
+                      />
+                      <Content text={quotedPost.text} isSinglePostView={false} />
+                      {quotedPost.mediaId && <PostMedia mediaId={quotedPost.mediaId} />}
+                    </QuoteContainer>
+                  </Wrapper>
+                </PreventPropagation>
+              )}
               {variant === 'expanded' && (
                 <span className={styles.Date}>{moment(timestamp).format('h:mm A - D MMM YYYY')}</span>
               )}
-              {featureFlags.enablePostMedia && mediaId && <PostMedia mediaId={mediaId} />}
             </div>
           }
           details={
@@ -196,6 +173,28 @@ export const Post = ({
                       {featureFlags.enableComments && (
                         <PreventPropagation>
                           <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
+                        </PreventPropagation>
+                      )}
+                      {featureFlags.enableQuotes && (
+                        <PreventPropagation>
+                          <QuoteAction
+                            numberOfQuotes={reactions?.QUOTE}
+                            quotingPost={{
+                              id: messageId,
+                              userId: authorPrimaryZid ?? authorPublicAddress,
+                              zid: authorPrimaryZid ?? authorPublicAddress,
+                              createdAt: timestamp.toString(),
+                              text: text,
+                              arweaveId: arweaveId,
+                              userProfileView: {
+                                userId: authorPrimaryZid ?? authorPublicAddress,
+                                firstName: nickname,
+                                profileImage: avatarUrl,
+                                isZeroProSubscriber: isZeroProSubscriber,
+                              },
+                              mediaId,
+                            }}
+                          />
                         </PreventPropagation>
                       )}
                       <PreventPropagation>
@@ -280,24 +279,9 @@ const Wrapper = ({ children, postId, variant, channelZid }: WrapperProps) => {
     </div>
   );
 };
+
 const PreventPropagation = ({ children }: { children: React.ReactNode }) => {
   return <div onClick={(e) => e.stopPropagation()}>{children}</div>;
-};
-
-const renderLink = ({ attributes, content }) => {
-  const { href, ...props } = attributes;
-  return (
-    <a
-      onClick={(e) => e.stopPropagation()}
-      className={styles.Link}
-      href={href}
-      target='_blank'
-      rel='noreferrer'
-      {...props}
-    >
-      {content}
-    </a>
-  );
 };
 
 const ProfileLink = ({

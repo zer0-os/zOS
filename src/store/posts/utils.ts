@@ -98,6 +98,11 @@ export async function uploadPost(formData: FormData, worldZid: string) {
       request = request.field('replyTo', replyTo);
     }
 
+    const quoteOf = formData.get('quoteOf');
+    if (quoteOf) {
+      request = request.field('quoteOf', quoteOf);
+    }
+
     const mediaId = formData.get('mediaId');
     if (featureFlags.enablePostMedia && mediaId) {
       request = request.field('mediaId', mediaId);

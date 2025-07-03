@@ -12,6 +12,7 @@ import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/sel
 import { searchMyNetworksByName } from '../../../../../platform-apps/channels/util/api';
 import { MemberNetworks } from '../../../../../store/users/types';
 import { queuedPostsByFeedSelector } from '../../../../../store/post-queue/selectors';
+import { featureFlags } from '../../../../../lib/feature-flags';
 
 interface UseFeedParams {
   zid?: string;
@@ -71,6 +72,10 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
       }
       if (typeof following === 'boolean') {
         params.append('following', String(following));
+      }
+
+      if (featureFlags.enableQuotes) {
+        params.append('include_quotes', 'true');
       }
 
       const queryString = params.toString();

@@ -86,6 +86,7 @@ const PostItem = ({ reply, currentUserId, userMeowBalance, meowPostFeed }: PostI
         isPending={isPending}
         isFailed={isFailed}
         error={error}
+        quotedPost={reply.quotedPost}
       />
     </li>
   );

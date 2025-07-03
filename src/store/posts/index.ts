@@ -2,6 +2,7 @@ import { Payload, PostPayload } from './saga';
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 import { Message, MessageWithoutSender } from '../messages';
+import { QuotedPost } from '../../apps/feed/components/feed/lib/types';
 
 export interface PostsResponse {
   hasMore: boolean;
@@ -24,6 +25,7 @@ export type PostsState = {
   count?: number;
   loadedPost?: Message;
   isLoadingPost: boolean;
+  qoutingPost?: QuotedPost;
 };
 
 export const initialState: PostsState = {
@@ -32,6 +34,7 @@ export const initialState: PostsState = {
   initialCount: undefined,
   count: undefined,
   isLoadingPost: false,
+  qoutingPost: undefined,
 };
 
 export const sendPost = createAction<PostPayload>(SagaActionTypes.SendPost);
@@ -73,8 +76,12 @@ const slice = createSlice({
     setIsLoadingPost: (state, action) => {
       state.isLoadingPost = action.payload;
     },
+    setQuotingPost: (state, action) => {
+      state.qoutingPost = action.payload;
+    },
   },
 });
 
-export const { setError, setIsSubmitting, setInitialCount, setCount, setPost, setIsLoadingPost } = slice.actions;
+export const { setError, setIsSubmitting, setInitialCount, setCount, setPost, setIsLoadingPost, setQuotingPost } =
+  slice.actions;
 export const { reducer } = slice;

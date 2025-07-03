@@ -12,6 +12,9 @@ import { IconFaceSmile, IconLoading2, IconStickerCircle } from '@zero-tech/zui/i
 import { PostMediaMenu } from './menu';
 import { featureFlags } from '../../../../lib/feature-flags';
 
+import { Container as QuoteContainer, Details as QuoteDetails } from '../post/quote';
+import { Content } from '../post/content';
+
 import { bemClassName } from '../../../../lib/bem';
 import classNames from 'classnames';
 import './styles.scss';
@@ -33,6 +36,8 @@ import { ToastNotification } from '@zero-tech/zui/components';
 import { getPostMediaMaxFileSize, validateMediaFiles } from './utils';
 import { useMediaUpload } from './useMediaUpload';
 import ImageCard from '../../../../platform-apps/channels/image-cards/image-card';
+import { QuotedPost } from '../feed/lib/types';
+import { PostMedia } from '../post-media';
 
 const SHOW_MAX_LABEL_THRESHOLD = 0.8 * POST_MAX_LENGTH;
 
@@ -48,6 +53,7 @@ export interface Properties extends PublicPropertiesContainer {
 
   dropzoneToMedia?: (files: any[]) => Media[];
   onPostInputRendered?: (textareaRef: RefObject<HTMLTextAreaElement>) => void;
+  quotingPost?: QuotedPost;
 }
 
 export function PostInput(props: Properties) {
@@ -242,6 +248,18 @@ export function PostInput(props: Properties) {
                       value={value}
                     />
                   </div>
+
+                  {props.quotingPost && featureFlags.enableQuotes && (
+                    <QuoteContainer {...cn('quote-container')}>
+                      <QuoteDetails
+                        avatarURL={props.quotingPost.userProfileView.profileImage}
+                        name={props.quotingPost.userProfileView.firstName}
+                        timestamp={new Date(props.quotingPost.createdAt).getTime()}
+                      />
+                      <Content text={props.quotingPost.text} isSinglePostView={false} />
+                      {props.quotingPost.mediaId && <PostMedia mediaId={props.quotingPost.mediaId} />}
+                    </QuoteContainer>
+                  )}
 
                   <div {...cn('image')}>
                     {media && (

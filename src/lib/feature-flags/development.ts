@@ -33,4 +33,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableMatrixDebug: { defaultValue: true },
   enableProfileDirectMessage: { defaultValue: true },
   enableZeroPro: { defaultValue: true },
+  enableQuotes: { defaultValue: true },
 };

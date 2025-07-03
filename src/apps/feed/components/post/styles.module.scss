@@ -72,18 +72,6 @@
     margin-bottom: 0;
   }
 
-  &.Truncated {
-    p {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      position: relative;
-    }
-  }
-
   .Date {
     display: block;
     margin-top: 16px;
@@ -143,6 +131,10 @@
   line-height: normal;
 
   @include glass-text-secondary-color;
+}
+
+.Quote {
+  margin-top: 16px;
 }
 
 .Date {
@@ -236,11 +228,6 @@
   &[data-disabled] {
     cursor: unset;
   }
-}
-
-.Link {
-  text-decoration: underline;
-  color: var(--color-secondary-11);
 }
 
 .Error {

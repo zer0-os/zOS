@@ -1,0 +1,50 @@
+@use '../../../../../variables';
+
+.Quote {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid variables.$border-color;
+  border-radius: variables.$border-radius;
+  cursor: pointer;
+  background: none;
+
+  &:hover {
+    background-color: rgba(52, 56, 60, 0.2);
+  }
+}
+
+.Details {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+}
+
+.User {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.Name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  min-width: 0;
+  flex: 1;
+}
+
+.NameText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.Timestamp {
+  flex-shrink: 0;
+}

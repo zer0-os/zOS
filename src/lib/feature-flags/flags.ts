@@ -29,7 +29,8 @@ export type FeatureFlagKey =
   | 'enablePostMedia'
   | 'enableMatrixDebug'
   | 'enableProfileDirectMessage'
-  | 'enableZeroPro';
+  | 'enableZeroPro'
+  | 'enableQuotes';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

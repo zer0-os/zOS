@@ -11,7 +11,7 @@ export interface PostInputProps {
 }
 
 export const PostInput = ({ className, channelZid, replyToId, onSubmit }: PostInputProps) => {
-  const { handleOnSubmit, userProfileImageUrl } = usePostInput(channelZid, replyToId, onSubmit);
+  const { handleOnSubmit, userProfileImageUrl, quotingPost } = usePostInput(channelZid, replyToId, onSubmit);
 
   return (
     <PostInputComponent
@@ -19,6 +19,7 @@ export const PostInput = ({ className, channelZid, replyToId, onSubmit }: PostIn
       className={className}
       onSubmit={handleOnSubmit}
       viewMode={ViewModes.Dark}
+      quotingPost={quotingPost}
     />
   );
 };

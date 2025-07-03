@@ -141,4 +141,11 @@
       color: var(--color-failure-11);
     }
   }
+
+  &__quote-container {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 8px;
+    margin-bottom: 16px;
+  }
 }

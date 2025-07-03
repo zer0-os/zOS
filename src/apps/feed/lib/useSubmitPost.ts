@@ -8,12 +8,15 @@ import { featureFlags } from '../../../lib/feature-flags';
 import { currentUserSelector, primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
 import { v4 as uuidv4 } from 'uuid';
 import { addQueuedPost, removeQueuedPost, updateQueuedPostStatus } from '../../../store/post-queue';
+import { QuotedPost } from '../components/feed/lib/types';
 
 export interface SubmitPostParams {
   channelZid: string;
   mediaId?: string;
   message: string;
   replyToId?: string;
+  quoteOf?: string;
+  quotingPost?: QuotedPost;
 }
 
 export const useSubmitPost = () => {
@@ -37,7 +40,7 @@ export const useSubmitPost = () => {
      * @note this mutation function is an almost exact copy of the saga logic. This will be refactored in the future.
      */
     mutationFn: async (params: SubmitPostParams) => {
-      const { message, replyToId, channelZid, mediaId } = params;
+      const { message, replyToId, channelZid, mediaId, quoteOf } = params;
       const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
 
       const authorAddress = featureFlags.enableZeroWalletSigning ? account?.address : connectedAddress;
@@ -88,6 +91,9 @@ export const useSubmitPost = () => {
       formData.append('signedMessage', signedPost);
       formData.append('zid', formattedUserPrimaryZid);
       formData.append('walletAddress', authorAddress);
+      if (quoteOf) {
+        formData.append('quoteOf', quoteOf);
+      }
       if (replyToId) {
         formData.append('replyTo', replyToId);
       }
@@ -110,7 +116,7 @@ export const useSubmitPost = () => {
       }
     },
     onMutate: async (params: SubmitPostParams) => {
-      const { channelZid, message, replyToId, mediaId } = params;
+      const { channelZid, message, replyToId, mediaId, quotingPost } = params;
       await queryClient.cancelQueries({ queryKey: ['posts', { zid: channelZid }] });
 
       if (replyToId) {
@@ -146,6 +152,8 @@ export const useSubmitPost = () => {
         numberOfReplies: 0,
         channelZid: channelZid?.replace('0://', ''),
         arweaveId: uuidv4(),
+        quoteOf: quotingPost?.id,
+        quotedPost: quotingPost,
       };
 
       dispatch(

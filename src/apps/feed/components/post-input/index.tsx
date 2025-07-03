@@ -24,7 +24,7 @@ import { MediaType } from '../../../../store/messages';
 import {
   Media,
   addImagePreview,
-  bytesToMB,
+  formatFileSize,
   dropzoneToMedia,
   windowClipboard,
 } from '../../../../components/message-input/utils';
@@ -65,6 +65,7 @@ export function PostInput(props: Properties) {
   const [rejectedType, setRejectedType] = useState<string | null>(null);
 
   const { uploadMedia, isPending: isUploadingMedia, removeUploadedMedia, uploadedMediaId } = useMediaUpload();
+  const isZeroProSubscriber = useSelector(userZeroProSubscriptionSelector);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -124,7 +125,7 @@ export function PostInput(props: Properties) {
   const imagesSelected = (acceptedFiles): void => {
     setIsDropRejectedNotificationOpen(false);
     setRejectedType(null);
-    const { validFiles, rejectedFiles } = validateMediaFiles(acceptedFiles);
+    const { validFiles, rejectedFiles } = validateMediaFiles(acceptedFiles, isZeroProSubscriber);
     if (rejectedFiles.length > 0) {
       setRejectedType(rejectedFiles[0].file.type);
       setIsDropRejectedNotificationOpen(true);
@@ -178,23 +179,27 @@ export function PostInput(props: Properties) {
   const onDropRejected = (rejectedFiles) => {
     const rejectedFile = rejectedFiles[0];
     if (rejectedFile?.errors[0]?.code === 'file-too-large') {
-      setRejectedType(rejectedFile.file.type);
-      setIsDropRejectedNotificationOpen(true);
+      setIsDropRejectedNotificationOpen(false);
+      setRejectedType(null);
+      setTimeout(() => {
+        setRejectedType(rejectedFile.file.type);
+        setIsDropRejectedNotificationOpen(true);
+      }, 0);
     }
   };
 
   const renderToastNotification = () => {
     let maxSize = config.postMedia.imageMaxFileSize;
     if (rejectedType) {
-      maxSize = getPostMediaMaxFileSize(rejectedType);
+      maxSize = getPostMediaMaxFileSize(rejectedType, isZeroProSubscriber);
     }
-    const maxSizeMB = bytesToMB(maxSize);
+    const maxSizeFormatted = formatFileSize(maxSize);
 
     return (
       <ToastNotification
         viewportClassName='post-media-toast-notification'
         title=''
-        description={`File exceeds ${maxSizeMB} size limit`}
+        description={`File exceeds ${maxSizeFormatted} size limit`}
         actionAltText=''
         positionVariant='left'
         openToast={isDropRejectedNotificationOpen}
@@ -220,12 +225,10 @@ export function PostInput(props: Properties) {
     const isPostTooLong = value.length > POST_MAX_LENGTH;
     const isDisabled = !value.trim() || isPostTooLong || isUploadingMedia;
 
-    // Set maxSize to the largest allowed, Dropzone will still reject based on this
-    const maxSize = Math.max(
-      config.postMedia.imageMaxFileSize,
-      config.postMedia.gifMaxFileSize,
-      config.postMedia.videoMaxFileSize
-    );
+    // Use 1GB for ZeroPro users, otherwise use the largest allowed size
+    const maxSize = isZeroProSubscriber
+      ? config.postMedia.zeroProUserMaxFileSize
+      : Math.max(config.postMedia.imageMaxFileSize, config.postMedia.gifMaxFileSize, config.postMedia.videoMaxFileSize);
 
     return (
       <div>
@@ -284,7 +287,10 @@ export function PostInput(props: Properties) {
                     <div {...cn('icon-wrapper')}>
                       {featureFlags.enablePostMedia && (
                         <>
-                          <PostMediaMenu onSelected={(newMedia) => mediaSelected(newMedia[0])} />
+                          <PostMediaMenu
+                            onSelected={(newMedia) => mediaSelected(newMedia[0])}
+                            isZeroProSubscriber={isZeroProSubscriber}
+                          />
                           <IconButton onClick={openGiphy} Icon={() => <IconStickerCircle size={18} />} size={36} />
                         </>
                       )}

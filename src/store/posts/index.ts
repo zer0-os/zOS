@@ -25,7 +25,7 @@ export type PostsState = {
   count?: number;
   loadedPost?: Message;
   isLoadingPost: boolean;
-  qoutingPost?: QuotedPost;
+  quotingPost?: QuotedPost;
 };
 
 export const initialState: PostsState = {
@@ -34,7 +34,7 @@ export const initialState: PostsState = {
   initialCount: undefined,
   count: undefined,
   isLoadingPost: false,
-  qoutingPost: undefined,
+  quotingPost: undefined,
 };
 
 export const sendPost = createAction<PostPayload>(SagaActionTypes.SendPost);
@@ -77,7 +77,7 @@ const slice = createSlice({
       state.isLoadingPost = action.payload;
     },
     setQuotingPost: (state, action) => {
-      state.qoutingPost = action.payload;
+      state.quotingPost = action.payload;
     },
   },
 });

@@ -1,5 +1,4 @@
-import React, { useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 
 import { PanelHeader } from '../../list/panel-header';
 import { Main } from './stages/Main';
@@ -9,83 +8,51 @@ import { Payment } from './stages/Payment';
 import { Success } from './stages/Success';
 import { Loading } from './stages/Loading';
 import { Error } from './stages/Error';
-import { usePollZeroProActiveStatus } from './usePollZeroProActiveStatus';
+import { Manage } from './stages/Manage';
 import { BottomSheet } from './bottom-sheet';
-import { refreshCurrentUser } from '../../../../store/authentication';
+import { useZeroPro, ZeroProStage } from './useZeroPro';
 
 import styles from './styles.module.scss';
-
-export enum ZeroProStage {
-  PaymentPlan = 'payment-plan',
-  Details = 'details',
-  Payment = 'payment',
-  Success = 'success',
-  Loading = 'loading',
-  Error = 'error',
-}
-
-export type ZeroProSheet = ZeroProStage | null;
-
-export interface BillingDetails {
-  name: string;
-  email: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
-}
 
 export const ZeroProPanel: React.FC<{ onClose: () => void; isZeroProSubscriber: boolean }> = ({
   onClose,
   isZeroProSubscriber,
 }) => {
-  const [activeSheet, setActiveSheet] = useState<ZeroProSheet>(null);
-  const [billingDetails, setBillingDetails] = useState<BillingDetails | null>(null);
-  const [isPolling, setIsPolling] = useState(false);
-  const [pollError, setPollError] = useState<string | null>(null);
-  const dispatch = useDispatch();
+  const {
+    activeSheet,
+    billingDetails,
+    pollError,
+    openPlan,
+    openDetails,
+    openManage,
+    closeSheet,
+    handleBillingDetails,
+    handlePaymentNext,
+    handleCancelNext,
+    loadingTitle,
+    loadingMessage,
+    successSubtitle,
+    formattedEndDate,
+    isSubscriptionCancelled,
+  } = useZeroPro(isZeroProSubscriber);
 
-  const openPlan = useCallback(() => setActiveSheet(ZeroProStage.PaymentPlan), []);
-  const openDetails = useCallback(() => setActiveSheet(ZeroProStage.Details), []);
-  const openPayment = useCallback(() => setActiveSheet(ZeroProStage.Payment), []);
-  const closeSheet = useCallback(() => setActiveSheet(null), []);
-
-  // Callback to receive details from Details stage and open payment
-  const handleBillingDetails = useCallback(
-    (details: BillingDetails) => {
-      setBillingDetails(details);
-      openPayment();
-    },
-    [openPayment]
-  );
-
-  // After payment, start polling for active status
-  const handlePaymentNext = useCallback(() => {
-    setIsPolling(true);
-    setPollError(null);
-    setActiveSheet(ZeroProStage.Loading);
-  }, []);
-
-  usePollZeroProActiveStatus(
-    isPolling,
-    () => {
-      setIsPolling(false);
-      setActiveSheet(ZeroProStage.Success);
-      dispatch(refreshCurrentUser());
-    },
-    () => {
-      setIsPolling(false);
-      setPollError('Subscription activation timed out. Please contact support or try again.');
-      setActiveSheet(ZeroProStage.Error);
-    }
-  );
+  const handleClose = () => {
+    onClose();
+  };
 
   return (
     <div className={styles.ZeroProPanel}>
-      <PanelHeader title={''} onBack={onClose} />
+      <PanelHeader title={''} onBack={handleClose} />
 
       {/* main stage remains in the background when the bottom sheet is open */}
-      <Main isZeroProSubscriber={isZeroProSubscriber} onNext={openPlan} />
+      <Main
+        isZeroProSubscriber={isZeroProSubscriber}
+        onNext={openPlan}
+        onManage={openManage}
+        formattedEndDate={formattedEndDate}
+        isSubscriptionCancelled={isSubscriptionCancelled}
+        onClose={handleClose}
+      />
 
       {activeSheet && (
         <BottomSheet onClose={closeSheet}>
@@ -96,9 +63,12 @@ export const ZeroProPanel: React.FC<{ onClose: () => void; isZeroProSubscriber: 
           {activeSheet === ZeroProStage.Payment && (
             <Payment billingDetails={billingDetails} onNext={handlePaymentNext} onBack={openDetails} />
           )}
-          {activeSheet === ZeroProStage.Loading && <Loading />}
+          {activeSheet === ZeroProStage.Loading && <Loading title={loadingTitle} message={loadingMessage} />}
           {activeSheet === ZeroProStage.Error && <Error error={pollError} />}
-          {activeSheet === ZeroProStage.Success && <Success onClose={closeSheet} />}
+          {activeSheet === ZeroProStage.Success && <Success onClose={closeSheet} subtitle={successSubtitle} />}
+          {activeSheet === ZeroProStage.Manage && (
+            <Manage onNext={handleCancelNext} onClose={closeSheet} formattedEndDate={formattedEndDate} />
+          )}
         </BottomSheet>
       )}
     </div>

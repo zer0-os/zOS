@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { BillingDetails } from '..';
+import { BillingDetails } from '../useZeroPro';
 import { IconButton } from '@zero-tech/zui/components/IconButton';
 import { IconArrowLeft } from '@zero-tech/zui/icons';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { CardElement } from '@stripe/react-stripe-js';
-import { useZeroProSubscription } from '../useZeroProSubscription';
+import { useActivateZeroProSubscription } from '../useActivateZeroProSubscription';
 
 import styles from './styles.module.scss';
 
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export const Payment: React.FC<Props> = ({ billingDetails, onNext, onBack }) => {
-  const { subscribe, isLoading, error } = useZeroProSubscription(billingDetails);
+  const { subscribe, isLoading, error } = useActivateZeroProSubscription(billingDetails);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -7,16 +7,17 @@ import styles from './styles.module.scss';
 
 interface Props {
   onClose: () => void;
+  subtitle?: string;
 }
 
-export const Success: React.FC<Props> = ({ onClose }) => (
+export const Success: React.FC<Props> = ({ onClose, subtitle = 'Rewards Unlocked' }) => (
   <>
     <div className={styles.SectionContainer}>
       <div className={styles.LogoGlassWrapper}>
         <ZeroProSymbol width={120} height={140} />
       </div>
-      <div className={styles.SuccessTitle}>ZERO Pro</div>
-      <div className={styles.SuccessSubtitle}>Rewards Unlocked</div>
+      <div className={styles.SuccessTitle}>Zero Pro</div>
+      <div className={styles.SuccessSubtitle}>{subtitle}</div>
     </div>
 
     <div className={styles.SubmitButtonContainer}>

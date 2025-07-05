@@ -307,3 +307,31 @@
   text-align: center;
   margin: 16px 0;
 }
+
+.ManageContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.CancelSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  border-radius: 12px;
+}
+
+.CancelTitle {
+  color: theme.$color-failure-11;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.CancelDescription {
+  @include glass-text-secondary-color;
+  font-size: 12px;
+  line-height: 1.4;
+}

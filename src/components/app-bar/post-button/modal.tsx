@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { Modal } from '@zero-tech/zui/components/Modal';
 import { PostInput } from '../../../apps/feed/components/post-input-hook';
 import { primaryZIDSelector } from '../../../store/authentication/selectors';
+import { quotingPostSelector } from '../../../store/posts/selectors';
 
 import styles from './styles.module.scss';
 
@@ -22,8 +23,13 @@ export const PostModal = ({ open, onOpenChange }: PostModalProps) => {
 };
 
 const Content = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) => {
-  const userZid = useSelector(primaryZIDSelector);
+  const primaryZID = useSelector(primaryZIDSelector);
+  const quotingPost = useSelector(quotingPostSelector);
   const history = useHistory();
+  const route = useRouteMatch<{ zid: string }>('/feed/:zid');
+
+  // Use current channel ZID if on a channel feed, otherwise use user's primary ZID
+  const channelZid = route?.params?.zid || primaryZID;
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -39,13 +45,18 @@ const Content = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) =>
   }, [containerRef]);
 
   const handleOnSubmit = () => {
-    history.push('/home');
+    // If posting to a channel, stay on channel feed; otherwise go to home
+    if (quotingPost && route?.params?.zid) {
+      history.push(`/feed/${route.params.zid}`);
+    } else {
+      history.push('/home');
+    }
     onOpenChange(false);
   };
 
   return (
     <div ref={containerRef}>
-      <PostInput className={styles.PostInput} channelZid={userZid} onSubmit={handleOnSubmit} />
+      <PostInput className={styles.PostInput} channelZid={channelZid} onSubmit={handleOnSubmit} />
     </div>
   );
 };

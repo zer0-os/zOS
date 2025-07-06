@@ -5,6 +5,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Modal } from '@zero-tech/zui/components/Modal';
 import { PostInput } from '../../../apps/feed/components/post-input-hook';
 import { primaryZIDSelector } from '../../../store/authentication/selectors';
+import { quotingPostSelector } from '../../../store/posts/selectors';
 
 import styles from './styles.module.scss';
 
@@ -23,6 +24,7 @@ export const PostModal = ({ open, onOpenChange }: PostModalProps) => {
 
 const Content = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) => {
   const primaryZID = useSelector(primaryZIDSelector);
+  const quotingPost = useSelector(quotingPostSelector);
   const history = useHistory();
   const route = useRouteMatch<{ zid: string }>('/feed/:zid');
 
@@ -44,7 +46,7 @@ const Content = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) =>
 
   const handleOnSubmit = () => {
     // If posting to a channel, stay on channel feed; otherwise go to home
-    if (route?.params?.zid) {
+    if (quotingPost && route?.params?.zid) {
       history.push(`/feed/${route.params.zid}`);
     } else {
       history.push('/home');

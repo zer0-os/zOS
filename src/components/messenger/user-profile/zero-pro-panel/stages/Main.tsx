@@ -23,10 +23,20 @@ const benefits = [
 
 interface Props {
   isZeroProSubscriber: boolean;
+  formattedEndDate?: string;
+  isSubscriptionCancelled?: boolean;
+
   onNext: () => void;
+  onClose: () => void;
 }
 
-export const Main: React.FC<Props> = ({ isZeroProSubscriber, onNext }) => {
+export const Main: React.FC<Props> = ({
+  isZeroProSubscriber,
+  formattedEndDate,
+  isSubscriptionCancelled,
+  onNext,
+  onClose,
+}) => {
   return (
     <div className={styles.MainPanelContent}>
       <div className={styles.Hero}>
@@ -52,12 +62,39 @@ export const Main: React.FC<Props> = ({ isZeroProSubscriber, onNext }) => {
               <IconCheck className={styles.PanelItemCheck} size={20} />
             </div>
           ))}
+
+          {isZeroProSubscriber && (
+            <>
+              <div className={styles.PanelItem}>
+                <div className={styles.PanelItemText}>
+                  <div className={styles.PanelItemTitle}>Current Period Ends</div>
+                  <div className={styles.PanelItemSubtitle}>{formattedEndDate}</div>
+                </div>
+              </div>
+
+              {isSubscriptionCancelled && (
+                <div className={styles.CancelSection}>
+                  <div className={styles.CancelTitle}>Subscription Cancelled</div>
+                  <div className={styles.CancelDescription}>
+                    Your subscription has been cancelled but you still have access to ZERO Pro features until{' '}
+                    {formattedEndDate}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
 
       <div className={styles.SubmitButtonContainer}>
         {isZeroProSubscriber ? (
-          <div className={styles.SubscribedText}>Subscribed to ZERO Pro!</div>
+          <Button
+            className={styles.SubmitButton}
+            variant={ButtonVariant.Primary}
+            onPress={isSubscriptionCancelled ? onClose : onNext}
+          >
+            {isSubscriptionCancelled ? 'Close' : 'Manage Subscription'}
+          </Button>
         ) : (
           <Button className={styles.SubmitButton} variant={ButtonVariant.Primary} isSubmit onPress={onNext}>
             Subscribe to ZERO Pro

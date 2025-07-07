@@ -1,9 +1,10 @@
 import React from 'react';
 import { get } from '../../../../lib/api/rest';
 
-export function usePollZeroProActiveStatus(
+export function usePollZeroProStatus(
   shouldPoll: boolean,
   onActive: () => void,
+  onCancelled: () => void,
   onTimeout: () => void,
   timeoutMs = 20000
 ) {
@@ -21,6 +22,12 @@ export function usePollZeroProActiveStatus(
           onActive();
           return;
         }
+
+        if (status === 'cancelled') {
+          onCancelled();
+          return;
+        }
+
         if (Date.now() - start > timeoutMs) {
           onTimeout();
           return;
@@ -36,6 +43,7 @@ export function usePollZeroProActiveStatus(
   }, [
     shouldPoll,
     onActive,
+    onCancelled,
     onTimeout,
     timeoutMs,
   ]);

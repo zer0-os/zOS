@@ -1,9 +1,9 @@
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useMutation } from '@tanstack/react-query';
-import { BillingDetails } from '.';
+import { BillingDetails } from './useZeroPro';
 import { post } from '../../../../lib/api/rest';
 
-export function useZeroProSubscription(billingDetails: BillingDetails | null) {
+export function useActivateZeroProSubscription(billingDetails: BillingDetails | null) {
   const stripe = useStripe();
   const elements = useElements();
 

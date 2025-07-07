@@ -38,5 +38,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   enableMatrixDebug: { defaultValue: false },
   enableProfileDirectMessage: { defaultValue: true },
   enableZeroPro: { defaultValue: true },
-  enableQuotes: { defaultValue: false },
+  enableQuotes: { defaultValue: true },
 };

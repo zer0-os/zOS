@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { refreshCurrentUser } from '../../../../store/authentication';
 import { usePollZeroProStatus } from './usePollZeroProStatus';
 import { useStatusZeroProSubscription } from './useStatusZeroProSubscription';
+import { useQueryClient } from '@tanstack/react-query';
 
 export enum ZeroProStage {
   PaymentPlan = 'payment-plan',
@@ -47,6 +48,7 @@ export interface UseZeroProReturn {
 
 export const useZeroPro = (onClose): UseZeroProReturn => {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const [activeSheet, setActiveSheet] = useState<ZeroProSheet>(null);
   const [billingDetails, setBillingDetails] = useState<BillingDetails | null>(null);
@@ -103,11 +105,13 @@ export const useZeroPro = (onClose): UseZeroProReturn => {
       setIsPolling(false);
       setActiveSheet(ZeroProStage.Success);
       dispatch(refreshCurrentUser());
+      queryClient.invalidateQueries({ queryKey: ['zero-pro-status'] });
     },
     () => {
       setIsPolling(false);
       setActiveSheet(ZeroProStage.Cancelled);
       dispatch(refreshCurrentUser());
+      queryClient.invalidateQueries({ queryKey: ['zero-pro-status'] });
     },
     () => {
       setIsPolling(false);

@@ -41,6 +41,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableProfileDirectMessage: boolean;
   declare enableZeroPro: boolean;
   declare enableQuotes: boolean;
+  declare enableCreateTGCChannel: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

@@ -4,13 +4,15 @@ import { useHistory } from 'react-router-dom';
 import { useSidekick } from './lib/useSidekick';
 import { Input } from '@zero-tech/zui/components/Input/Input';
 import { LoadingIndicator } from '@zero-tech/zui/components/LoadingIndicator';
-import { IconSearchMd, IconBellOff1 } from '@zero-tech/zui/icons';
+import { IconSearchMd, IconBellOff1, IconPlus } from '@zero-tech/zui/icons';
 import {
   ContentPortal as SidekickContentPortal,
   Content as SidekickContent,
   Scroll as SidekickScroll,
 } from '../../../../components/sidekick';
 import { setLastActiveFeed } from '../../../../lib/last-feed';
+import { IconButton } from '@zero-tech/zui/components';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 import styles from './styles.module.scss';
 
@@ -21,15 +23,22 @@ export const Sidekick = () => {
   return (
     <SidekickContentPortal>
       <SidekickContent>
-        <Input
-          className={styles.Search}
-          onChange={setSearch}
-          size={'small'}
-          startEnhancer={<IconSearchMd size={16} color={'var(--color-greyscale-11)'} />}
-          type={'search'}
-          value={search}
-          wrapperClassName={styles.SearchWrapper}
-        />
+        <div className={styles.Actions}>
+          <Input
+            className={styles.Search}
+            onChange={setSearch}
+            size={'small'}
+            startEnhancer={<IconSearchMd size={16} color={'var(--color-greyscale-11)'} />}
+            type={'search'}
+            value={search}
+            wrapperClassName={styles.SearchWrapper}
+          />
+          <div className={styles.CreateChannelButton}>
+            {featureFlags.enableCreateTGCChannel && (
+              <IconButton Icon={IconPlus} onClick={() => {}} aria-label='Create new channel' />
+            )}
+          </div>
+        </div>
         <SidekickScroll>
           <ul className={styles.List}>
             {isLoadingZids && <LoadingIndicator />}

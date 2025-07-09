@@ -39,4 +39,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   enableProfileDirectMessage: { defaultValue: true },
   enableZeroPro: { defaultValue: true },
   enableQuotes: { defaultValue: true },
+  enableCreateTGCChannel: { defaultValue: false },
 };

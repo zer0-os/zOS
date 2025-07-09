@@ -50,7 +50,7 @@ export const AppRouter = () => {
 };
 
 // Paths that should hide the sidekick menu
-export const HIDE_SIDEKICK_PATHS = ['/home', '/profile'];
+export const HIDE_SIDEKICK_PATHS = ['/home', '/profile', '/staking'];
 
 /**
  * Conditionally renders the sidekick based on the user's location and profile stage.

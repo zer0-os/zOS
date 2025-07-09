@@ -30,7 +30,8 @@ export type FeatureFlagKey =
   | 'enableMatrixDebug'
   | 'enableProfileDirectMessage'
   | 'enableZeroPro'
-  | 'enableQuotes';
+  | 'enableQuotes'
+  | 'enableStaking';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

@@ -15,6 +15,7 @@ import { featureFlags } from '../lib/feature-flags';
 import { useSelector } from 'react-redux';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
 import { AuraApp } from './aura';
+import { StakingApp } from './staking';
 import { Container as SidekickContainer } from '../components/sidekick/components/container';
 import { Stage } from '../store/user-profile';
 import { activeZAppFeatureSelector, isZAppActiveSelector } from '../store/active-zapp/selectors';
@@ -39,6 +40,7 @@ export const AppRouter = () => {
         {featureFlags.enableFeedApp && <Route path='/feed' component={FeedApp} />}
         <Route path='/explorer' component={ExplorerApp} />
         {featureFlags.enableNotificationsApp && <Route path='/notifications' component={NotificationsApp} />}
+        {featureFlags.enableStaking && <Route path='/staking' component={StakingApp} />}
         {featureFlags.enableAuraZApp && <Route path='/aura' component={AuraApp} />}
         {featureFlags.enableProfile && <Route path='/profile' component={ProfileApp} />}
         <Route component={redirectToRoot} />

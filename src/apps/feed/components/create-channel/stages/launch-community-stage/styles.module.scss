@@ -1,0 +1,51 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../../glass';
+
+.OptionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.OptionButton {
+  @include glass-text-primary-color;
+
+  background: #151719;
+  border-radius: 16px;
+  padding: 16px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 0;
+
+  &:hover:not(:disabled) {
+    background: #23262a;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.Title {
+  font-size: 20px;
+  font-weight: 600;
+  color: theme.$color-secondary-11;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.Subtitle {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 0;
+  max-width: 270px;
+  line-height: 1.4;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -1,0 +1,77 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../../glass';
+
+.Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+}
+
+.Title {
+  font-size: 20px;
+  font-weight: 600;
+  color: theme.$color-secondary-11;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.Subtitle {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 24px;
+  max-width: 320px;
+  line-height: 1.4;
+}
+
+.Form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.InputContainer {
+  @include glass-text-secondary-color;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.Input {
+  width: 100%;
+}
+
+.SelectMenu {
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  width: 320px;
+}
+
+.ContinueButton {
+  background: theme.$color-secondary-11;
+
+  color: #151719;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.2s;
+
+  &:disabled {
+    background: #23262a;
+    color: theme.$color-greyscale-11;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}

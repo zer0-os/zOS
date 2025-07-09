@@ -1,0 +1,6 @@
+@use '../../variables' as variables;
+
+.Container {
+  padding: variables.$page-padding-vertical 0;
+  width: 100%;
+}

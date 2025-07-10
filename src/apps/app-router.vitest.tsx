@@ -57,7 +57,7 @@ const renderComponent = (route: string | undefined = '/') => {
 
 describe(AppRouter, () => {
   it('should have correct paths in HIDE_SIDEKICK_PATHS', () => {
-    expect(HIDE_SIDEKICK_PATHS).toEqual(['/home', '/profile']);
+    expect(HIDE_SIDEKICK_PATHS).toEqual(['/home', '/profile', '/staking']);
   });
 
   it('should render MessengerMain component when route is /', () => {

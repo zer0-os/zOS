@@ -7,7 +7,7 @@ import { WalletEmptyState } from '../components/empty-state/wallet-empty-state';
 
 import styles from './nfts-list.module.scss';
 
-const skeletons = Array.from({ length: 10 });
+const skeletons = Array.from({ length: 6 });
 
 export const NFTsList = () => {
   const selectedWallet = useSelector(selectedWalletSelector);

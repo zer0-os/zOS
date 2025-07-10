@@ -2,22 +2,31 @@ import { useTransactionHistoryQuery } from '../queries/useTransactionHistoryQuer
 import { Transaction } from './transaction';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
+import { Skeleton } from '@zero-tech/zui/components';
+import { WalletEmptyState } from '../components/empty-state/wallet-empty-state';
 
 import styles from './transactions-list.module.scss';
 
+const skeletons = Array.from({ length: 10 });
+
 export const TransactionsList = () => {
   const selectedWallet = useSelector(selectedWalletSelector);
-  const { data } = useTransactionHistoryQuery(selectedWallet.address);
-
-  if (!data) {
-    return <div>No transactions found</div>;
-  }
+  const { data, isPending } = useTransactionHistoryQuery(selectedWallet.address);
+  const transactions = data?.transactions ?? [];
 
   return (
-    <div className={styles.transactionsList}>
-      {data.transactions.map((transaction) => (
-        <Transaction key={transaction.hash} transaction={transaction} />
-      ))}
+    <div className={styles.transactionsView}>
+      {(data || isPending) && (
+        <div className={styles.transactionsList}>
+          {isPending && skeletons.map((_, index) => <Skeleton key={index} className={styles.transactionSkeleton} />)}
+
+          {transactions.map((transaction) => (
+            <Transaction key={transaction.hash} transaction={transaction} />
+          ))}
+        </div>
+      )}
+
+      {transactions.length === 0 && <WalletEmptyState className={styles.emptyState} title='No Transactions' />}
     </div>
   );
 };

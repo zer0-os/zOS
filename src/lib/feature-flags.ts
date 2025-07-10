@@ -42,6 +42,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableZeroPro: boolean;
   declare enableQuotes: boolean;
   declare enableCreateTGCChannel: boolean;
+  declare enableStaking: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

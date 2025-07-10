@@ -31,7 +31,8 @@ export type FeatureFlagKey =
   | 'enableProfileDirectMessage'
   | 'enableZeroPro'
   | 'enableQuotes'
-  | 'enableCreateTGCChannel';
+  | 'enableCreateTGCChannel'
+  | 'enableStaking';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

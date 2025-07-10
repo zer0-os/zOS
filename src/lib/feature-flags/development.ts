@@ -35,4 +35,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableZeroPro: { defaultValue: true },
   enableQuotes: { defaultValue: true },
   enableCreateTGCChannel: { defaultValue: true },
+  enableStaking: { defaultValue: true },
 };

@@ -1,0 +1,74 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../../glass';
+
+.LoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+  width: 100%;
+}
+
+.Spinner {
+  width: 38px;
+  height: 38px;
+  border: 2px solid rgba(1, 244, 203, 0.2);
+  border-top: 2px solid theme.$color-secondary-11;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.LoadingText {
+  color: theme.$color-secondary-11;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.SuccessContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+  width: 100%;
+}
+
+.LogoGlassWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(1, 244, 203, 0.24);
+  background: rgba(1, 244, 203, 0.06);
+  box-shadow: 0 4px 32px 24px rgba(1, 244, 203, 0.1);
+}
+
+.SuccessTitle {
+  color: theme.$color-secondary-11;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.SubmitButtonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.SubmitButton {
+  width: 100%;
+  max-width: 240px;
+}

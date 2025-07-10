@@ -1,0 +1,29 @@
+.Modal {
+  position: relative;
+  width: 420px;
+  min-height: 420px;
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 20px;
+  box-shadow: 0 4px 32px 0 rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.ModalContent {
+  border-radius: 20px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.BackButton {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 2;
+}

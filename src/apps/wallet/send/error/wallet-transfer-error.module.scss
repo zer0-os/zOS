@@ -8,16 +8,16 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 16px;
-  padding: 0 16px;
+  gap: var(--l-spacing);
+  padding: 0 var(--l-spacing);
 }
 
 .actions {
   margin-top: auto;
-  margin-bottom: 15px;
+  margin-bottom: var(--l-spacing);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--l-spacing);
 }
 
 .errorDetails {
@@ -32,7 +32,7 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-spacing);
   text-align: center;
 
   &.error {
@@ -43,7 +43,7 @@
   }
 
   &.timeout {
-    color: #9199a1;
+    color: var(--text-secondary);
   }
 }
 
@@ -62,5 +62,5 @@
 }
 
 .description {
-  color: #9199a1;
+  color: var(--text-secondary);
 }

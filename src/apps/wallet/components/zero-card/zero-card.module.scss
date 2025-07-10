@@ -2,12 +2,12 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--m-spacing);
   background: linear-gradient(107.27deg, #171a22 0%, #090a0b 100%);
   border: 1px solid;
   border-image-source: linear-gradient(180deg, rgba(104, 110, 125, 0.24) 0%, rgba(104, 110, 125, 0) 100%);
   border-radius: 16px;
-  padding: 16px;
+  padding: var(--l-spacing);
   width: 100%;
   box-sizing: border-box;
   height: 222px;
@@ -37,11 +37,11 @@
   font-size: 14px;
   line-height: 19px;
   letter-spacing: 1.5%;
-  color: #9199a1;
+  color: var(--text-secondary);
 }
 
 .balanceValue {
-  color: #fff;
+  color: var(--text-primary);
   filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.4));
   font-family: IBM Plex Sans;
   font-weight: 400;
@@ -51,7 +51,7 @@
 }
 
 .balanceChange {
-  color: #fff;
+  color: var(--text-primary);
   font-family: IBM Plex Sans;
   font-weight: 400;
   font-size: 14px;
@@ -78,6 +78,6 @@
   font-size: 12px;
   line-height: 16px;
   letter-spacing: 15%;
-  color: #9199a1;
+  color: var(--text-secondary);
   text-transform: uppercase;
 }

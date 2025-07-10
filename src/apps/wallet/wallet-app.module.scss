@@ -1,6 +1,32 @@
 @use '../../variables' as variables;
 
 .walletAppContainer {
+  --zero-green: #01f4cb;
+  --zero-green-300: #01c9a7;
+  --zero-green-900-72: rgba(2, 33, 26, 0.72);
+  --zero-green-200-24: rgba(1, 244, 203, 0.24);
+  --border-accent-strong: rgba(1, 244, 203, 0.36);
+  --bg-accent-dark-blue: #23252a;
+  --bg-hover: #151719;
+  --border-primary: rgba(97, 105, 117, 0.36);
+  --color-error: var(--color-error-11);
+
+  --text-primary: #f7f8f8;
+  --text-secondary: #9199a1;
+  --text-tertiary: #616975;
+  --text-accent: var(--zero-green);
+  --text-black: #000000;
+
+  --l-spacing: 15px;
+  --m-spacing: 12px;
+  --s-spacing: 9px;
+  --xs-spacing: 6px;
+
+  --corner-radius: 12px;
+
+  --icon-active: var(--zero-green);
+  --icon-default: var(--text-secondary);
+
   display: flex;
   justify-content: center;
   width: 100%;

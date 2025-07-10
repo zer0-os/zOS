@@ -1,0 +1,16 @@
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l-spacing);
+}
+
+.icon {
+  color: var(--icon-default);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+}

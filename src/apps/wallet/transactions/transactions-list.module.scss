@@ -2,6 +2,6 @@
   color: white;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--l-spacing);
   padding-top: 8px;
 }

@@ -1,8 +1,21 @@
+.nftsView {
+  overflow-y: auto;
+  height: 100%;
+  padding: var(--l-spacing);
+  box-sizing: border-box;
+}
+
 .nftsList {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 16px;
+  gap: var(--l-spacing);
   max-width: 100%;
-  overflow: hidden;
+}
+
+.nftSkeleton {
+  height: 273px;
+}
+
+.emptyState {
+  height: 100%;
 }

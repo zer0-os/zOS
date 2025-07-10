@@ -1,6 +1,21 @@
+.tokensView {
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .tokensList {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-top: 8px;
+  gap: var(--l-spacing);
+  padding-top: var(--s-spacing);
+}
+
+.tokenSkeleton {
+  height: 64px;
+  width: 100%;
+}
+
+.emptyState {
+  height: 100%;
 }

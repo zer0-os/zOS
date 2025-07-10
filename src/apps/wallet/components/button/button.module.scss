@@ -2,14 +2,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background: var(--transparencies-zero-green-zero-green-90072, #02211ab8);
-  border: 1px solid var(--Border-border-accent, #01f4cb3d);
+  gap: var(--s-spacing);
+  border: 1px solid var(--border-accent-strong);
   border-radius: 8px;
-  padding: 16px;
-  color: #01f4cb;
+  padding: var(--m-spacing);
   font-weight: 700;
   cursor: pointer;
+
+  &.primary {
+    background-color: var(--zero-green);
+    color: var(--text-black);
+
+    &:hover {
+      background: var(--zero-green-300);
+    }
+  }
+
+  &.secondary {
+    background-color: var(--zero-green-900-72);
+    color: var(--zero-green);
+
+    &:hover {
+      background: var(--zero-green-200-24);
+    }
+  }
 
   &:disabled {
     opacity: 0.5;

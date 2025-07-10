@@ -8,17 +8,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: var(--l-spacing);
 }
 
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: #f7f8f8;
+  color: var(--text-primary);
 }
 
 .subtitle {
   font-size: 18px;
   font-weight: 400;
-  color: #9199a1;
+  color: var(--text-secondary);
 }

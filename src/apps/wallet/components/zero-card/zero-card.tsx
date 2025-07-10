@@ -13,7 +13,6 @@ export const ZeroCard = ({ displayName }: ZeroCardProps) => {
       <img src={zeroLogo} alt='Zero Logo' className={styles.zeroCardLogo} />
       <div className={styles.zeroCardHeader}>
         <img src={zeroWordmark} alt='Zero Logo' className={styles.zeroCardWordmark} />
-        {/* <ZeroWordmark /> */}
       </div>
       {/* Removing balance until we get pricing data */}
       {/* <div className={styles.zeroCardBody}>

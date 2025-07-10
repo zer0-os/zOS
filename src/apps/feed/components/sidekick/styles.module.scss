@@ -37,7 +37,7 @@
 .Search {
   width: 100%;
   box-sizing: border-box;
-  padding: 16px 16px 0 16px;
+  padding: 16px 0 0 16px;
 }
 
 .SearchWrapper {
@@ -157,4 +157,15 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.Actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.CreateChannelButton {
+  box-sizing: border-box;
+  padding: 16px 16px 0 0;
 }

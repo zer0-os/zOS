@@ -41,6 +41,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableProfileDirectMessage: boolean;
   declare enableZeroPro: boolean;
   declare enableQuotes: boolean;
+  declare enableCreateTGCChannel: boolean;
   declare enableStaking: boolean;
 
   constructor() {

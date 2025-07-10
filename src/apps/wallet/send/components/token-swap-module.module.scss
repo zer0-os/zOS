@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #6169755c;
+  border-radius: 12px;
+  border-top-right-radius: 14px;
+  border-top-left-radius: 14px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #23252a;
+  padding: 9px 15px;
+  border-radius: 12px;
+}
+
+.headerLabel {
+  display: flex;
+  gap: 4px;
+}
+
+.headerLabelText {
+  font-size: 15px;
+  color: #9199a1;
+}
+
+.headerLabelRecipient {
+  font-size: 15px;
+  color: #f7f8f8;
+}
+
+.headerAddress {
+  font-size: 15px;
+  color: #9199a1;
+}
+
+.tokenSelect {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 15px;
+}
+
+.tokenInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.tokenName {
+  font-size: 15px;
+  font-weight: 400;
+  color: #f7f8f8;
+}
+
+.tokenSymbol {
+  font-size: 14px;
+  font-weight: 400;
+  color: #9199a1;
+  text-transform: uppercase;
+}
+
+.amountRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  gap: 4px;
+}
+
+.totalsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px 15px 15px;
+}
+
+.amountInput {
+  flex-grow: 2;
+  input {
+    width: 100%;
+  }
+}
+
+.amountOutput {
+  font-size: 24px;
+  font-weight: 600;
+  color: #f7f8f8;
+}
+
+.maxButton {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.maxButton button {
+  border-radius: 12px;
+  padding: 3px 12px;
+  background-color: #23252a;
+  color: #f7f8f8;
+  font-size: 15px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.dollarAmount {
+  font-size: 14px;
+  color: #9199a1;
+}
+
+.balance {
+  font-size: 14px;
+  color: #9199a1;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

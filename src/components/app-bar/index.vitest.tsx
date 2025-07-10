@@ -49,6 +49,7 @@ const DEFAULT_PROPS: Properties = {
   hasUnreadHighlights: false,
   lastActiveMessengerConversationId: undefined,
   zAppIsFullscreen: false,
+  hasActiveWallet: false,
 };
 
 const renderComponent = (props: Partial<Properties>) => {

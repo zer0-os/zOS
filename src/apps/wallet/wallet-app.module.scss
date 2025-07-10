@@ -1,0 +1,21 @@
+@use '../../variables' as variables;
+
+.walletAppContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: variables.$page-padding-vertical variables.$default-gap variables.$page-padding-vertical 0;
+
+  pointer-events: all;
+
+  @media (min-width: 2561px) {
+    padding: variables.$page-padding-vertical 0;
+  }
+}
+
+.walletAppPanel {
+  width: 100%;
+  max-width: 480px;
+  flex-shrink: 1;
+  pointer-events: all;
+}

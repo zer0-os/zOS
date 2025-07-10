@@ -21,6 +21,7 @@ import { Stage } from '../store/user-profile';
 import { activeZAppFeatureSelector, isZAppActiveSelector } from '../store/active-zapp/selectors';
 import { isAuthenticatedSelector } from '../store/authentication/selectors';
 import { userProfileStageSelector } from '../store/user-profile/selectors';
+import { WalletApp } from './wallet';
 
 import styles from './app-router.module.css';
 
@@ -43,6 +44,7 @@ export const AppRouter = () => {
         {featureFlags.enableStaking && <Route path='/staking' component={StakingApp} />}
         {featureFlags.enableAuraZApp && <Route path='/aura' component={AuraApp} />}
         {featureFlags.enableProfile && <Route path='/profile' component={ProfileApp} />}
+        {featureFlags.enableWalletApp && <Route path='/wallet' component={WalletApp} />}
         <Route component={redirectToRoot} />
       </Switch>
     </AuthenticationContextProvider>
@@ -50,7 +52,12 @@ export const AppRouter = () => {
 };
 
 // Paths that should hide the sidekick menu
-export const HIDE_SIDEKICK_PATHS = ['/home', '/profile', '/staking'];
+export const HIDE_SIDEKICK_PATHS = [
+  '/home',
+  '/profile',
+  '/staking',
+  '/wallet',
+];
 
 /**
  * Conditionally renders the sidekick based on the user's location and profile stage.

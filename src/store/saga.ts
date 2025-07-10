@@ -29,6 +29,7 @@ import { saga as reportUser } from './report-user/saga';
 import { saga as thirdweb } from './thirdweb/saga';
 import { saga as activeZApp } from './active-zapp/saga';
 import { saga as userFollows } from './user-follows/saga';
+import { saga as wallet } from './wallet/saga';
 
 export function* rootSaga() {
   const allSagas = {
@@ -61,6 +62,7 @@ export function* rootSaga() {
     thirdweb,
     activeZApp,
     userFollows,
+    wallet,
   };
 
   yield all(

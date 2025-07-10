@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { activeZAppFeatureSelector } from '../../store/active-zapp/selectors';
 import { activeConversationIdSelector, rawActiveConversationSelector } from '../../store/chat/selectors';
 import { hasUnreadHighlightsSelector, hasUnreadNotificationsSelector } from '../../store/channels/selectors';
+import { hasActiveWalletSelector } from '../../store/wallet/selectors';
 
 export const AppBar = () => {
   const {
@@ -14,6 +15,7 @@ export const AppBar = () => {
     hasUnreadHighlights,
     lastActiveMessengerConversationId,
     zAppIsFullscreen,
+    hasActiveWallet,
   } = useAppBar();
 
   return (
@@ -23,6 +25,7 @@ export const AppBar = () => {
       hasUnreadHighlights={hasUnreadHighlights}
       lastActiveMessengerConversationId={lastActiveMessengerConversationId}
       zAppIsFullscreen={zAppIsFullscreen}
+      hasActiveWallet={hasActiveWallet}
     />
   );
 };
@@ -32,6 +35,7 @@ const useAppBar = () => {
   const activeConversationId = useSelector(activeConversationIdSelector);
   const rawActiveConversation = useSelector(rawActiveConversationSelector);
   const isActiveConversationSocialChannel = rawActiveConversation?.isSocialChannel;
+  const hasActiveWallet = useSelector(hasActiveWalletSelector);
 
   const hasUnreadNotifications = useSelector(hasUnreadNotificationsSelector);
   const hasUnreadHighlights = useSelector(hasUnreadHighlightsSelector);
@@ -52,5 +56,6 @@ const useAppBar = () => {
     hasUnreadHighlights,
     lastActiveMessengerConversationId,
     zAppIsFullscreen: Boolean(zAppIsFullscreen),
+    hasActiveWallet,
   };
 };

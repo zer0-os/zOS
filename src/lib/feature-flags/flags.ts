@@ -32,7 +32,8 @@ export type FeatureFlagKey =
   | 'enableZeroPro'
   | 'enableQuotes'
   | 'enableCreateTGCChannel'
-  | 'enableStaking';
+  | 'enableStaking'
+  | 'enableWalletApp';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

@@ -12,6 +12,7 @@ import {
   IconAura,
   IconUser,
   IconCoins1,
+  IconWallet,
 } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
@@ -35,6 +36,7 @@ export interface Properties {
   hasUnreadHighlights: boolean;
   lastActiveMessengerConversationId?: string | undefined;
   zAppIsFullscreen: boolean;
+  hasActiveWallet: boolean;
 }
 
 interface State {
@@ -115,7 +117,7 @@ export class AppBar extends React.Component<Properties, State> {
   };
 
   render() {
-    const { activeApp, zAppIsFullscreen } = this.props;
+    const { activeApp, zAppIsFullscreen, hasActiveWallet } = this.props;
     const isActive = checkActive(activeApp);
     const messengerPath = this.props.lastActiveMessengerConversationId
       ? `/conversation/${this.props.lastActiveMessengerConversationId}`
@@ -166,6 +168,15 @@ export class AppBar extends React.Component<Properties, State> {
                 isActive={isActive('staking')}
                 label='Staking'
                 to='/staking'
+                onLinkClick={this.unhoverContainer}
+              />
+            )}
+            {featureFlags.enableWalletApp && hasActiveWallet && (
+              <AppLink
+                Icon={IconWallet}
+                isActive={isActive('wallet')}
+                label='Wallet'
+                to='/wallet'
                 onLinkClick={this.unhoverContainer}
               />
             )}

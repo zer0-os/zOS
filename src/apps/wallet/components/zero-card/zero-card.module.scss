@@ -1,0 +1,83 @@
+.zeroCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(107.27deg, #171a22 0%, #090a0b 100%);
+  border: 1px solid;
+  border-image-source: linear-gradient(180deg, rgba(104, 110, 125, 0.24) 0%, rgba(104, 110, 125, 0) 100%);
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  height: 222px;
+  position: relative;
+}
+
+.zeroCardLogo {
+  position: absolute;
+  top: 16px;
+  right: 12%;
+  height: 85%;
+}
+
+.zeroCardWordmark {
+  width: 54px;
+}
+
+.zeroCardHeader {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.balanceLabel {
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: #9199a1;
+}
+
+.balanceValue {
+  color: #fff;
+  filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.4));
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0%;
+}
+
+.balanceChange {
+  color: #fff;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  text-align: right;
+}
+
+.zeroCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.zeroCardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.displayName {
+  font-family: IBM Plex Mono;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 15%;
+  color: #9199a1;
+  text-transform: uppercase;
+}

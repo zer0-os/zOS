@@ -1,0 +1,74 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+}
+
+.resultsHeaderLabel {
+  padding: 0 16px;
+  margin-bottom: 8px;
+  font-family: IBM Plex Sans;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 15px;
+  padding: 9px 15px;
+  border-radius: 12px;
+  background-color: #23252a;
+  font-family: IBM Plex Sans;
+}
+
+.footerContent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footerLabel {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0%;
+
+  color: #9199a1;
+}
+
+.footerValue {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0%;
+
+  color: #f7f8f8;
+}
+
+.footerAddress {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0%;
+
+  color: #9199a1;
+}

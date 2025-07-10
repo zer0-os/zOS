@@ -1,0 +1,108 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 15px;
+}
+
+.confirmRecipient {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 0;
+}
+
+.confirmRecipientTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #f7f8f8;
+}
+
+.recipientName {
+  font-size: 24px;
+  font-weight: 600;
+  color: #01f4cb;
+}
+
+.recipientAvatar {
+  width: 52px;
+  height: 52px;
+  margin-top: 15px;
+
+  > * {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+.recipientAddress {
+  font-size: 14px;
+  color: #9199a1;
+}
+
+.transferDetails {
+  display: grid;
+  grid-template-columns: 1fr 30px 1fr;
+  padding: 24px 15px;
+  border: 1px solid #6169755c;
+  border-radius: 12px;
+}
+
+.tokenInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.tokenName {
+  font-size: 14px;
+  color: #9199a1;
+}
+
+.tokenAmount {
+  font-size: 18px;
+  color: #f7f8f8;
+  font-weight: 600;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.tokenInfoSeparator {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #6169755c;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  color: #01f4cb;
+}
+
+.confirmButton {
+  padding: 15px;
+  margin-top: auto;
+  width: 100%;
+  box-sizing: border-box;
+
+  > button {
+    margin-top: 16px;
+    width: 100%;
+  }
+}
+
+.confirmButtonText {
+  font-size: 14px;
+  text-align: center;
+  color: #616975;
+}

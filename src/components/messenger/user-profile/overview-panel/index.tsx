@@ -113,7 +113,7 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
           {imageUrl ? (
             <Image {...cn('image')} src={imageUrl} alt='Custom Profile Image' />
           ) : (
-            <div {...cn('image')}>
+            <div {...cn('image-placeholder')}>
               <IconCurrencyEthereum size={50} />
             </div>
           )}

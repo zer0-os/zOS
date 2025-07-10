@@ -1,0 +1,49 @@
+.token {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: #151719;
+    }
+  }
+}
+
+.tokenInfo {
+  overflow: hidden;
+}
+
+.tokenName {
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tokenCount {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: #9199a1;
+}
+
+.tokenAmount {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.tokenSymbol {
+  text-transform: uppercase;
+}

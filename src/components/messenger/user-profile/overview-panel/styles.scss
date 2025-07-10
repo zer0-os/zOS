@@ -70,7 +70,15 @@
     height: 120px;
     border-radius: 9999px;
     overflow: hidden;
+  }
 
+  &__image-placeholder {
+    @include flat-thick;
+
+    width: 120px;
+    height: 120px;
+    border-radius: 9999px;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;

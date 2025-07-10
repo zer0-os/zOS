@@ -1,0 +1,46 @@
+.searchResult {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: IBM Plex Sans;
+  padding: 16px;
+  cursor: pointer;
+
+  &:hover {
+    background: #151719;
+  }
+}
+
+.searchResultImage {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+  }
+}
+
+.searchResultName {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0%;
+}
+
+.searchResultAddress {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: #9199a1;
+}

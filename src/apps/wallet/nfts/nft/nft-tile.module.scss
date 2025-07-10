@@ -1,0 +1,36 @@
+.nftTile {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: 16px;
+  background: #111213;
+  padding: 8px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.nftImage {
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: 1/1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+}
+
+.nftInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nftName {
+  font-size: 14px;
+  font-weight: 600;
+}

@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+}
+
+.resultsHeaderLabel {
+  padding: 0 16px;
+  margin-bottom: 8px;
+  font-family: IBM Plex Sans;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+}

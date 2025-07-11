@@ -75,7 +75,7 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext }) => {
         <label className={styles.InputContainer}>
           <div className={styles.LabelWrapper}>
             ZERO ID
-            <span className={styles.AvailabilityText}>{availabilityText}</span>
+            <span>{availabilityText}</span>
           </div>
           <Input
             label=''

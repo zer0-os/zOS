@@ -4,11 +4,11 @@ import ZeroProSymbol from '../../../../../../zero-pro-symbol.svg?react';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import styles from './styles.module.scss';
 
-interface CreatingStageProps {
+interface CreatingChannelStageProps {
   onComplete: () => void;
 }
 
-export const CreatingStage: React.FC<CreatingStageProps> = ({ onComplete }) => {
+export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({ onComplete }) => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {

@@ -1,72 +1,109 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { SelectInput, Input } from '@zero-tech/zui/components';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { useTokenFinder, TokenData } from '../../hooks/useTokenFinder';
+
 import styles from './styles.module.scss';
 
 interface FindTokenStageProps {
-  onNext: () => void;
+  onTokenFound: (token: TokenData) => void;
 }
 
-export const FindTokenStage: React.FC<FindTokenStageProps> = ({ onNext }) => {
-  const [network, setNetwork] = useState('');
-  const [tokenAddress, setTokenAddress] = useState('');
+const NETWORKS = [
+  { id: 'ethereum', label: 'Ethereum', chainId: 1 },
+  { id: 'polygon', label: 'Polygon', chainId: 137 },
+  { id: 'avalanche', label: 'Avalanche', chainId: 43114 },
+];
 
-  const handleSetTokenAddress = (value: string) => {
-    setTokenAddress(value);
+function isValidAddress(address: string) {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+
+export const FindTokenStage: React.FC<FindTokenStageProps> = ({ onTokenFound }) => {
+  const [network, setNetwork] = useState(NETWORKS[0].id);
+  const [address, setAddress] = useState('');
+  const { token, loading, error, findToken, resetError } = useTokenFinder();
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    const selected = NETWORKS.find((n) => n.id === network);
+    if (selected && address) {
+      await findToken(selected.chainId, address, selected.label);
+    }
   };
 
-  const networkOptions = useMemo(
-    () => [
-      {
-        id: 'ethereum',
-        label: 'ethereum',
-        onSelect: () => setNetwork('ethereum'),
-      },
-      {
-        id: 'polygon',
-        label: 'polygon',
-        onSelect: () => setNetwork('polygon'),
-      },
-      {
-        id: 'avalanche',
-        label: 'avalanche',
-        onSelect: () => setNetwork('avalanche'),
-      },
-    ],
-    []
-  );
+  React.useEffect(() => {
+    if (submitted && token) {
+      onTokenFound(token);
+    }
+  }, [
+    submitted,
+    token,
+    onTokenFound,
+  ]);
 
-  const isValid = network && tokenAddress;
+  // Reset error when user changes network or address
+  const handleNetworkChange = (id: string) => {
+    setNetwork(id);
+    resetError();
+  };
+
+  const handleAddressChange = (val: string) => {
+    setAddress(val);
+    resetError();
+  };
+
+  const networkItems = NETWORKS.map((n) => ({
+    id: n.id,
+    label: n.label,
+    onSelect: () => handleNetworkChange(n.id),
+  }));
+
+  const networkLabel = networkItems.find((n) => n.id === network)?.label;
 
   return (
     <div className={styles.Container}>
       <div className={styles.Title}>Find Your Token</div>
       <div className={styles.Subtitle}>Enter the network and contract address for your token.</div>
-      <div className={styles.Form}>
+      <form className={styles.Form} onSubmit={handleSubmit}>
         <label className={styles.InputContainer}>
           Token Network
           <SelectInput
-            items={networkOptions}
+            items={networkItems}
             label=''
             placeholder='Select a network'
-            value={network}
+            value={networkLabel}
             itemSize='compact'
             menuClassName={styles.SelectMenu}
           />
         </label>
+
         <label className={styles.InputContainer}>
-          Token Address
+          <div className={styles.LabelWrapper}>
+            Token Address
+            {loading && <Spinner className={styles.Spinner} />}
+            {error && <span className={`${styles.SubLabel} ${styles.Error}`}>{error}</span>}
+            {!error && !loading && <span className={styles.SubLabel}>Enter a valid token address</span>}
+          </div>
           <Input
             label=''
-            value={tokenAddress}
-            onChange={handleSetTokenAddress}
+            value={address}
+            onChange={handleAddressChange}
             placeholder='Enter token address'
             className={styles.Input}
           />
         </label>
-        <button className={styles.ContinueButton} onClick={onNext} disabled={!isValid}>
-          Fill in token details to continue
+
+        <button
+          className={styles.ContinueButton}
+          type='submit'
+          disabled={loading || !network || !isValidAddress(address)}
+        >
+          Find Token
         </button>
-      </div>
+      </form>
     </div>
   );
 };

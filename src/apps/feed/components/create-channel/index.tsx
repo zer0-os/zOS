@@ -6,9 +6,10 @@ import { FindTokenStage } from './stages/find-token-stage';
 import { ExtractTokenStage } from './stages/extract-token-stage';
 import { CreateZidStage } from './stages/create-zid-stage';
 import { ReviewStage } from './stages/review-stage';
-import { CreatingStage } from './stages/creating-stage';
+import { CreatingChannelStage } from './stages/creating-channel-stage';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconArrowLeft } from '@zero-tech/zui/icons';
+import { TokenData } from './hooks/useTokenFinder';
 
 import styles from './styles.module.scss';
 
@@ -28,10 +29,12 @@ export enum CreateChannelStage {
 
 export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalProps) => {
   const [stage, setStage] = useState<CreateChannelStage>(CreateChannelStage.LaunchCommunity);
+  const [tokenData, setTokenData] = useState<TokenData | null>(null);
 
   useEffect(() => {
     if (!open) {
       setStage(CreateChannelStage.LaunchCommunity);
+      setTokenData(null);
     }
   }, [open]);
 
@@ -47,16 +50,21 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
     }
   };
 
+  const handleTokenFound = (token: TokenData) => {
+    setTokenData(token);
+    setStage(CreateChannelStage.ExtractToken);
+  };
+
   let content = null;
   switch (stage) {
     case CreateChannelStage.LaunchCommunity:
       content = <LaunchCommunityStage onNext={() => setStage(CreateChannelStage.FindToken)} />;
       break;
     case CreateChannelStage.FindToken:
-      content = <FindTokenStage onNext={() => setStage(CreateChannelStage.ExtractToken)} />;
+      content = <FindTokenStage onTokenFound={handleTokenFound} />;
       break;
     case CreateChannelStage.ExtractToken:
-      content = <ExtractTokenStage onNext={() => setStage(CreateChannelStage.CreateZid)} />;
+      content = <ExtractTokenStage token={tokenData} onNext={() => setStage(CreateChannelStage.CreateZid)} />;
       break;
     case CreateChannelStage.CreateZid:
       content = <CreateZidStage onNext={() => setStage(CreateChannelStage.Review)} />;
@@ -65,7 +73,7 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
       content = <ReviewStage onNext={() => setStage(CreateChannelStage.Creating)} />;
       break;
     case CreateChannelStage.Creating:
-      content = <CreatingStage onComplete={() => onOpenChange(false)} />;
+      content = <CreatingChannelStage onComplete={() => onOpenChange(false)} />;
       break;
     default:
       content = null;

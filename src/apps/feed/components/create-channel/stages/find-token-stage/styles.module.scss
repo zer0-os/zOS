@@ -44,6 +44,14 @@
   margin-bottom: 4px;
 }
 
+.LabelWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
 .Input {
   width: 100%;
 }
@@ -57,6 +65,9 @@
 }
 
 .ContinueButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: theme.$color-secondary-11;
 
   color: #151719;
@@ -65,7 +76,6 @@
   padding: 12px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 12px;
   transition: background 0.2s;
 
   &:disabled {
@@ -74,4 +84,19 @@
     cursor: not-allowed;
     opacity: 0.7;
   }
+}
+
+.SubLabel {
+  color: theme.$color-secondary-11;
+  font-size: 12px;
+  text-align: center;
+
+  &.Error {
+    color: theme.$color-failure-11;
+  }
+}
+
+.Spinner {
+  min-height: 0;
+  height: 0;
 }

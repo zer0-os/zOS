@@ -243,12 +243,12 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
 
   const tabUnreadCount = useMemo(() => {
     return conversations
-      .filter((c) => !c.isSocialChannel)
+      .filter((c) => !c.isSocialChannel && !c.labels?.includes(DefaultRoomLabels.ARCHIVED))
       .reduce<Record<string, number>>(
         (acc, c) => {
           acc[Tab.All] += c.unreadCount.total;
           for (const label of c.labels) {
-            if (Object.values(DefaultRoomLabels).some((l) => l === label) && label !== DefaultRoomLabels.ARCHIVED) {
+            if (Object.values(DefaultRoomLabels).some((l) => l === label)) {
               acc[tabLabelMap[label]] += c.unreadCount.total;
             }
           }
@@ -270,7 +270,7 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
       { id: Tab.Work, label: 'Work', unreadCount: tabUnreadCount[Tab.Work], ariaLabel: 'Work tab' },
       { id: Tab.Family, label: 'Family', unreadCount: tabUnreadCount[Tab.Family], ariaLabel: 'Family tab' },
       { id: Tab.Social, label: 'Social', unreadCount: tabUnreadCount[Tab.Social], ariaLabel: 'Social tab' },
-      { id: Tab.Archived, label: 'Archived', unreadCount: tabUnreadCount[Tab.Archived], ariaLabel: 'Archived tab' },
+      { id: Tab.Archived, label: 'Archived', unreadCount: 0, ariaLabel: 'Archived tab' },
     ];
 
     return (

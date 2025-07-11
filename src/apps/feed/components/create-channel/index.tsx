@@ -6,7 +6,7 @@ import { FindTokenStage } from './stages/find-token-stage';
 import { ExtractTokenStage } from './stages/extract-token-stage';
 import { CreateZidStage } from './stages/create-zid-stage';
 import { ReviewStage } from './stages/review-stage';
-import { CreatingStage } from './stages/creating-stage';
+import { CreatingChannelStage } from './stages/creating-channel-stage';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconArrowLeft } from '@zero-tech/zui/icons';
 import { TokenData } from './hooks/useTokenFinder';
@@ -73,7 +73,7 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
       content = <ReviewStage onNext={() => setStage(CreateChannelStage.Creating)} />;
       break;
     case CreateChannelStage.Creating:
-      content = <CreatingStage onComplete={() => onOpenChange(false)} />;
+      content = <CreatingChannelStage onComplete={() => onOpenChange(false)} />;
       break;
     default:
       content = null;

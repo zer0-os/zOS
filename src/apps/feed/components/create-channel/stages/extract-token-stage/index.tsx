@@ -18,7 +18,7 @@ export const ExtractTokenStage: React.FC<ExtractTokenStageProps> = ({ token, onN
       <div className={styles.Title}>Token Found</div>
       <div className={styles.Subtitle}>Verify if this is the right token.</div>
       <div className={styles.TokenProfile}>
-        <img className={styles.TokenImage} src={token.logo} alt={token.name} />
+        {token.logo && <img className={styles.TokenImage} src={token.logo} alt={token.name} />}
         <div className={styles.TokenName}>{token.name}</div>
         <div className={styles.TokenSymbol}>{token.symbol}</div>
       </div>

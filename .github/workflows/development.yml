@@ -51,6 +51,9 @@ jobs:
       REACT_APP_POST_GIF_MAX_FILE_SIZE: ${{vars.POST_GIF_MAX_FILE_SIZE}}
       REACT_APP_POST_VIDEO_MAX_FILE_SIZE: ${{vars.POST_VIDEO_MAX_FILE_SIZE}}
       REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY}}
+      REACT_APP_ETH_INFURA_URL: ${{secrets.ETH_INFURA_URL}}
+      REACT_APP_POLY_INFURA_URL: ${{secrets.POLY_INFURA_URL}}
+      REACT_APP_AVAX_INFURA_URL: ${{secrets.AVAX_INFURA_URL}}
     steps:
       - uses: actions/checkout@v4
       - name: Common Setup

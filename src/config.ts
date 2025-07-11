@@ -37,4 +37,9 @@ export const config = {
     zeroProUserMaxFileSize: 1073741824,
   },
   stripePublishableKey: process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY,
+  INFURA_URLS: {
+    1: process.env.REACT_APP_ETH_INFURA_URL,
+    137: process.env.REACT_APP_POLY_INFURA_URL,
+    43114: process.env.REACT_APP_AVAX_INFURA_URL,
+  },
 };

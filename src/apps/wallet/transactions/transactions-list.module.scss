@@ -1,7 +1,22 @@
+.transactionsView {
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .transactionsList {
-  color: white;
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-top: 8px;
+  gap: var(--l-spacing);
+  padding-top: var(--s-spacing);
+}
+
+.transactionSkeleton {
+  height: 66px;
+  width: 100%;
+}
+
+.emptyState {
+  height: 100%;
 }

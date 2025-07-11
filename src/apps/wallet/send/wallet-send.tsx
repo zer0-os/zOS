@@ -20,7 +20,7 @@ export const WalletSend = () => {
       {stage === SendStage.Token && <WalletTokenSelect />}
       {stage === SendStage.Amount && <WalletTransferAmount />}
       {stage === SendStage.Confirm && <WalletReviewTransfer />}
-      {stage === SendStage.Processing && <WalletProcessingTransaction />}
+      {(stage === SendStage.Processing || stage === SendStage.Broadcasting) && <WalletProcessingTransaction />}
       {stage === SendStage.Success && <WalletTransferSuccess />}
       {stage === SendStage.Error && <WalletTransferError />}
     </PanelBody>

@@ -1,17 +1,25 @@
 .walletApp {
   height: 100%;
   padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
-  padding: 16px;
+  padding: var(--l-spacing);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--l-spacing);
 }
 
 .actions {
   display: grid;
-  gap: 16px;
+  gap: var(--l-spacing);
   grid-template-columns: 1fr 1fr;
+}
+
+.walletView {
+  flex-grow: 2;
+  overflow: hidden;
 }

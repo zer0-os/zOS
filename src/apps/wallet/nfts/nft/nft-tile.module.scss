@@ -1,7 +1,7 @@
 .nftTile {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--l-spacing);
   border-radius: 16px;
   background: #111213;
   padding: 8px;

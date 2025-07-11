@@ -1,5 +1,4 @@
 import { IconArrowDownLeft, IconArrowUpRight } from '@zero-tech/zui/icons';
-import { Button } from '../components/button/button';
 import { ZeroCard } from '../components/zero-card/zero-card';
 import { TokensList } from '../tokens/tokens-list';
 import { PanelBody } from '../../../components/layout/panel';
@@ -13,6 +12,7 @@ import { getHistory } from '../../../lib/browser';
 import { reset } from '../../../store/wallet';
 
 import styles from './wallet-home.module.scss';
+import { Button } from '../components/button/button';
 const history = getHistory();
 
 export const WalletHome = () => {
@@ -29,10 +29,10 @@ export const WalletHome = () => {
       <div className={styles.header}>
         <ZeroCard displayName={userName} />
         <div className={styles.actions}>
-          <Button onClick={() => {}} icon={<IconArrowDownLeft size={18} />}>
+          <Button onClick={() => {}} icon={<IconArrowDownLeft size={18} />} variant='secondary'>
             Receive
           </Button>
-          <Button onClick={handleSend} icon={<IconArrowUpRight size={18} />}>
+          <Button onClick={handleSend} icon={<IconArrowUpRight size={18} />} variant='secondary'>
             Send
           </Button>
         </div>

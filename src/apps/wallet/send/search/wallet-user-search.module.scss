@@ -7,17 +7,17 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--l-spacing);
 }
 
 .inputContainer {
   display: flex;
   flex-direction: column;
-  padding: 0 16px;
+  padding: 0 var(--l-spacing);
 }
 
 .resultsHeaderLabel {
-  padding: 0 16px;
+  padding: 0 var(--l-spacing);
   margin-bottom: 8px;
   font-family: IBM Plex Sans;
   font-weight: 500;

@@ -1,8 +1,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  border: 1px solid #6169755c;
+  gap: var(--s-spacing);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   border-top-right-radius: 14px;
   border-top-left-radius: 14px;
@@ -12,8 +12,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #23252a;
-  padding: 9px 15px;
+  background-color: var(--bg-accent-dark-blue);
+  padding: var(--s-spacing) 15px;
   border-radius: 12px;
 }
 
@@ -24,24 +24,24 @@
 
 .headerLabelText {
   font-size: 15px;
-  color: #9199a1;
+  color: var(--text-secondary);
 }
 
 .headerLabelRecipient {
   font-size: 15px;
-  color: #f7f8f8;
+  color: var(--text-primary);
 }
 
 .headerAddress {
   font-size: 15px;
-  color: #9199a1;
+  color: var(--text-secondary);
 }
 
 .tokenSelect {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 15px;
+  gap: var(--s-spacing);
+  padding: 12px var(--l-spacing);
 }
 
 .tokenInfo {
@@ -52,13 +52,13 @@
 .tokenName {
   font-size: 15px;
   font-weight: 400;
-  color: #f7f8f8;
+  color: var(--text-primary);
 }
 
 .tokenSymbol {
   font-size: 14px;
   font-weight: 400;
-  color: #9199a1;
+  color: var(--text-secondary);
   text-transform: uppercase;
 }
 
@@ -66,7 +66,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 15px;
+  padding: 0 var(--l-spacing);
   gap: 4px;
 }
 
@@ -74,7 +74,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 15px 15px 15px;
+  padding: 0 var(--l-spacing) var(--l-spacing) var(--l-spacing);
 }
 
 .amountInput {
@@ -87,7 +87,7 @@
 .amountOutput {
   font-size: 24px;
   font-weight: 600;
-  color: #f7f8f8;
+  color: var(--text-primary);
 }
 
 .maxButton {
@@ -99,8 +99,8 @@
 .maxButton button {
   border-radius: 12px;
   padding: 3px 12px;
-  background-color: #23252a;
-  color: #f7f8f8;
+  background-color: var(--bg-accent-dark-blue);
+  color: var(--text-primary);
   font-size: 15px;
   border: none;
   outline: none;
@@ -109,12 +109,12 @@
 
 .dollarAmount {
   font-size: 14px;
-  color: #9199a1;
+  color: var(--text-secondary);
 }
 
 .balance {
   font-size: 14px;
-  color: #9199a1;
+  color: var(--text-secondary);
   text-align: right;
   display: flex;
   align-items: center;

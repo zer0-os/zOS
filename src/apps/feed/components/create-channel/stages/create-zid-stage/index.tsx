@@ -1,72 +1,108 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { Input } from '@zero-tech/zui/components';
 import { IconCheck, IconXClose } from '@zero-tech/zui/icons';
-import { useZidAvailability } from '../../hooks/useZidAvailability';
+import { useDebounce } from '../../../../../../lib/hooks/useDebounce';
+import { useZidAvailability } from '../../lib/hooks/useZidAvailability';
+import { useZidPrice } from '../../lib/hooks/useZidPrice';
+import { ethers } from 'ethers';
+import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../../lib/number';
+import { parsePrice } from '../../lib/utils';
+import { meowInUSDSelector } from '../../../../../../store/rewards/selectors';
+
 import styles from './styles.module.scss';
 
 interface CreateZidStageProps {
   onNext: () => void;
-  onZidChange?: (zid: string) => void;
+  mainnetProvider: ethers.providers.Provider;
 }
 
-export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, onZidChange }) => {
+export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetProvider }) => {
   const [zid, setZid] = useState('');
   const [fee, setFee] = useState('2500');
   const inputRef = useRef<HTMLInputElement>(null);
+  const debouncedZid = useDebounce(zid, 400);
+  const meowPriceUSD = useSelector(meowInUSDSelector);
 
-  const isValid = zid.length > 0 && /^[a-z0-9-]+$/.test(zid);
-  const { data: available, isLoading, error } = useZidAvailability(isValid ? zid : '');
+  const {
+    data: available,
+    isLoading: isAvailabilityLoading,
+    error: availabilityError,
+  } = useZidAvailability(debouncedZid);
 
-  useEffect(() => {
-    if (onZidChange) onZidChange(zid);
-  }, [zid, onZidChange]);
+  const {
+    data: priceData,
+    isLoading: isPriceLoading,
+    error: priceError,
+  } = useZidPrice(debouncedZid, mainnetProvider, available);
 
-  // Keep input focused after availability check or error
-  useEffect(() => {
-    if (!isLoading && inputRef.current) {
-      inputRef.current.focus();
+  const isLoading = isAvailabilityLoading || isPriceLoading;
+  const hasError = !!(availabilityError || priceError);
+
+  const usdText = useMemo(() => {
+    if (!priceData?.total || !meowPriceUSD) return '';
+    const cents = calculateTotalPriceInUSDCents(priceData.total.toString(), meowPriceUSD);
+    return formatUSD(cents);
+  }, [priceData, meowPriceUSD]);
+
+  const buttonConfig = useMemo(() => {
+    if (available && !isLoading) {
+      return { text: usdText ? `Buy ZERO ID for ${usdText}` : 'Buy ZERO ID', disabled: false };
     }
-  }, [available, isLoading, error]);
+    return { text: 'Enter a valid ZERO ID to continue', disabled: true };
+  }, [available, usdText, isLoading]);
 
-  let endEnhancer = undefined;
-  if (isLoading) {
-    endEnhancer = <div className={styles.Spinner} />;
-  } else if (available) {
-    endEnhancer = <IconCheck className={styles.Success} size={20} />;
-  } else if (available === false) {
-    endEnhancer = <IconXClose className={styles.Failure} size={20} />;
-  }
+  const endEnhancer = useMemo(() => {
+    if (isLoading) return <div className={styles.Spinner} />;
+    if (hasError) return undefined;
+    if (available) {
+      return <IconCheck className={styles.Success} size={20} />;
+    }
+    if (available === false) {
+      return <IconXClose className={styles.Failure} size={20} />;
+    }
+    return undefined;
+  }, [
+    isLoading,
+    hasError,
+    available,
+  ]);
 
-  let availabilityText = null;
-  if (isLoading) {
-    availabilityText = 'Checking Availability';
-  } else if (available) {
-    availabilityText = <span className={styles.Success}>Available for 5,000 MEOW</span>;
-  } else if (available === false) {
-    availabilityText = <span className={styles.Failure}>Not available</span>;
-  } else if (error) {
-    availabilityText = <span className={styles.Failure}>{String(error)}</span>;
-  }
+  const availabilityText = useMemo(() => {
+    if (isLoading) return <span>Checking availability…</span>;
+    if (hasError) return <span className={styles.Failure}>{String(availabilityError || priceError)}</span>;
+    if (available) {
+      const displayPrice = parsePrice(priceData?.total);
+      return <span className={styles.Success}>Available for {displayPrice} MEOW</span>;
+    }
+    if (available === false) {
+      return <span className={styles.Failure}>Not available</span>;
+    }
+    return null;
+  }, [
+    isLoading,
+    hasError,
+    availabilityError,
+    priceError,
+    available,
+    priceData,
+  ]);
 
-  let buttonText = 'Enter a valid ZERO ID to continue';
-  let buttonDisabled = !isValid || isLoading || available === false;
-  if (available) {
-    buttonText = 'Buy ZERO ID for $250';
-    buttonDisabled = false;
-  } else if (available === false) {
-    buttonDisabled = true;
-  }
-
-  const handleContinue = () => {
+  const handleContinue = useCallback(() => {
     if (available) {
       onNext();
     }
-  };
+  }, [available, onNext]);
+
+  const handleZidChange = useCallback((value: string) => {
+    setZid(value);
+  }, []);
 
   return (
     <div className={styles.Container}>
       <div className={styles.Title}>Claim Your ZERO ID</div>
       <div className={styles.Subtitle}>Choose your unique ZERO ID and set a joining fee to gate access.</div>
+
       <div className={styles.Form}>
         <label className={styles.InputContainer}>
           <div className={styles.LabelWrapper}>
@@ -77,7 +113,7 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, onZidCha
             ref={inputRef}
             label=''
             value={zid}
-            onChange={setZid}
+            onChange={handleZidChange}
             startEnhancer={<div className={styles.Enhancer}>0://</div>}
             endEnhancer={endEnhancer}
             className={styles.Input}
@@ -99,8 +135,8 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, onZidCha
           <div className={styles.InfoText}>A recommended value is already filled in.</div>
         </label>
 
-        <button className={styles.ContinueButton} onClick={handleContinue} disabled={buttonDisabled}>
-          {buttonText}
+        <button className={styles.ContinueButton} onClick={handleContinue} disabled={buttonConfig.disabled}>
+          {buttonConfig.text}
         </button>
       </div>
     </div>

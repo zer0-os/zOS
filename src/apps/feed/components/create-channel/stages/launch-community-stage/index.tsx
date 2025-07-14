@@ -19,7 +19,7 @@ export const LaunchCommunityStage: React.FC<LaunchCommunityStageProps> = ({ onNe
           </div>
         </button>
         <button className={styles.OptionButton} disabled>
-          <div>Create a new token</div>
+          <div>Launch a new token</div>
           <div className={styles.Subtitle}>
             Launch a new token built right into Z Chain. This is ideal for creating a fresh community.
           </div>

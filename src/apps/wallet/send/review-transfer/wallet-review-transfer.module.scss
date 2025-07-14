@@ -7,8 +7,8 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 0 15px;
+  gap: var(--s-spacing);
+  padding: 0 var(--l-spacing);
 }
 
 .confirmRecipient {
@@ -21,19 +21,19 @@
 .confirmRecipientTitle {
   font-size: 24px;
   font-weight: 600;
-  color: #f7f8f8;
+  color: var(--text-primary);
 }
 
 .recipientName {
   font-size: 24px;
   font-weight: 600;
-  color: #01f4cb;
+  color: var(--zero-green);
 }
 
 .recipientAvatar {
   width: 52px;
   height: 52px;
-  margin-top: 15px;
+  margin-top: var(--l-spacing);
 
   > * {
     width: 100% !important;
@@ -43,14 +43,14 @@
 
 .recipientAddress {
   font-size: 14px;
-  color: #9199a1;
+  color: var(--text-secondary);
 }
 
 .transferDetails {
   display: grid;
   grid-template-columns: 1fr 30px 1fr;
-  padding: 24px 15px;
-  border: 1px solid #6169755c;
+  padding: 24px var(--l-spacing);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
 }
 
@@ -64,12 +64,12 @@
 
 .tokenName {
   font-size: 14px;
-  color: #9199a1;
+  color: var(--text-secondary);
 }
 
 .tokenAmount {
   font-size: 18px;
-  color: #f7f8f8;
+  color: var(--text-primary);
   font-weight: 600;
   overflow: hidden;
   width: 100%;
@@ -81,16 +81,16 @@
 .tokenInfoSeparator {
   width: 30px;
   height: 30px;
-  border: 1px solid #6169755c;
+  border: 1px solid var(--border-primary);
   border-radius: 50%;
   display: grid;
   place-items: center;
   align-self: center;
-  color: #01f4cb;
+  color: var(--icon-active);
 }
 
 .confirmButton {
-  padding: 15px;
+  padding: var(--l-spacing);
   margin-top: auto;
   width: 100%;
   box-sizing: border-box;
@@ -104,5 +104,5 @@
 .confirmButtonText {
   font-size: 14px;
   text-align: center;
-  color: #616975;
+  color: var(--text-secondary);
 }

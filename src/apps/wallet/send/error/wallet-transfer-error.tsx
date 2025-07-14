@@ -54,7 +54,9 @@ export const WalletTransferError = () => {
 
         <div className={styles.actions}>
           <Button onClick={handleClose}>Close</Button>
-          <Button onClick={handleViewOnZScan}>View on ZScan</Button>
+          <Button onClick={handleViewOnZScan} variant='secondary'>
+            View on ZScan
+          </Button>
         </div>
       </div>
     </div>

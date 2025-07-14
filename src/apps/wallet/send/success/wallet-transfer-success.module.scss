@@ -8,8 +8,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 16px;
-  padding: 0 16px;
+  gap: var(--l-spacing);
+  padding: 0 var(--l-spacing);
 }
 
 .tokenHero {
@@ -69,7 +69,7 @@
   align-items: center;
   gap: 4px;
   font-size: 18px;
-  color: #9199a1;
+  color: var(--text-secondary);
   font-weight: 500;
   text-transform: uppercase;
 }
@@ -77,8 +77,8 @@
 .transferDetails {
   display: grid;
   grid-template-columns: 1fr 30px 1fr;
-  padding: 24px 15px;
-  border: 1px solid #6169755c;
+  padding: 24px var(--l-spacing);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
 }
 
@@ -92,12 +92,12 @@
 
 .recipientAddress {
   font-size: 14px;
-  color: #9199a1;
+  color: var(--text-secondary);
 }
 
 .recipientName {
   font-size: 18px;
-  color: #f7f8f8;
+  color: var(--text-primary);
   font-weight: 600;
   overflow: hidden;
   width: 100%;
@@ -109,50 +109,50 @@
 .recipientInfoSeparator {
   width: 30px;
   height: 30px;
-  border: 1px solid #6169755c;
+  border: 1px solid var(--border-primary);
   border-radius: 50%;
   display: grid;
   place-items: center;
   align-self: center;
-  color: #01f4cb;
+  color: var(--icon-active);
 }
 
 .footer {
   margin-top: auto;
-  margin-bottom: 15px;
+  margin-bottom: var(--l-spacing);
 }
 
 .actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--l-spacing);
 }
 
 .status {
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-spacing);
   text-align: center;
   margin-bottom: 32px;
 }
 
 .statusIcon {
   border-radius: 50%;
-  border: 2px solid #01f4cb;
+  border: 2px solid var(--zero-green);
   stroke-width: 2px;
   padding: 4px;
-  color: #01f4cb;
+  color: var(--zero-green);
 }
 
 .statusText {
   font-size: 16px;
   font-weight: 500;
-  color: #01f4cb;
+  color: var(--zero-green);
 }
 
 .statusTimestamp {
   font-size: 14px;
   font-weight: 400;
-  color: #9199a1;
+  color: var(--text-secondary);
 }

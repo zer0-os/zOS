@@ -1,13 +1,13 @@
 .searchResult {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--l-spacing);
   font-family: IBM Plex Sans;
-  padding: 16px;
+  padding: var(--l-spacing);
   cursor: pointer;
 
   &:hover {
-    background: #151719;
+    background: var(--bg-hover);
   }
 }
 
@@ -42,5 +42,5 @@
   font-size: 14px;
   line-height: 19px;
   letter-spacing: 1.5%;
-  color: #9199a1;
+  color: var(--text-secondary);
 }

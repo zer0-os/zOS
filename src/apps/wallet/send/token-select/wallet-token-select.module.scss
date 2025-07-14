@@ -7,18 +7,18 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--l-spacing);
   flex: 1;
 }
 
 .inputContainer {
   display: flex;
   flex-direction: column;
-  padding: 0 16px;
+  padding: 0 var(--l-spacing);
 }
 
 .resultsHeaderLabel {
-  padding: 0 16px;
+  padding: 0 var(--l-spacing);
   margin-bottom: 8px;
   font-family: IBM Plex Sans;
   font-weight: 500;
@@ -32,11 +32,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin: 15px;
-  padding: 9px 15px;
+  gap: var(--s-spacing);
+  margin: var(--l-spacing);
+  padding: var(--s-spacing) var(--l-spacing);
   border-radius: 12px;
-  background-color: #23252a;
+  background-color: var(--bg-accent-dark-blue);
   font-family: IBM Plex Sans;
 }
 
@@ -52,7 +52,7 @@
   line-height: 20px;
   letter-spacing: 0%;
 
-  color: #9199a1;
+  color: var(--text-secondary);
 }
 
 .footerValue {
@@ -61,7 +61,7 @@
   line-height: 20px;
   letter-spacing: 0%;
 
-  color: #f7f8f8;
+  color: var(--text-primary);
 }
 
 .footerAddress {
@@ -70,5 +70,5 @@
   line-height: 20px;
   letter-spacing: 0%;
 
-  color: #9199a1;
+  color: var(--text-secondary);
 }

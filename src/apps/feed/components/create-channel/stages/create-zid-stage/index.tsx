@@ -34,7 +34,7 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     data: priceData,
     isLoading: isPriceLoading,
     error: priceError,
-  } = useZidPrice(debouncedZid, mainnetProvider, available);
+  } = useZidPrice(debouncedZid, mainnetProvider, available === true);
 
   const isLoading = isAvailabilityLoading || isPriceLoading;
   const hasError = !!(availabilityError || priceError);

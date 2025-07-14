@@ -26,7 +26,9 @@ export const TransactionsList = () => {
         </div>
       )}
 
-      {transactions.length === 0 && <WalletEmptyState className={styles.emptyState} title='No Transactions' />}
+      {transactions.length === 0 && !isPending && (
+        <WalletEmptyState className={styles.emptyState} title='No Transactions' />
+      )}
     </div>
   );
 };

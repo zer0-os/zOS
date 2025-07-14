@@ -1,71 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@zero-tech/zui/components';
 import { IconCheck, IconXClose } from '@zero-tech/zui/icons';
+import { useZidAvailability } from '../../hooks/useZidAvailability';
 import styles from './styles.module.scss';
 
 interface CreateZidStageProps {
   onNext: () => void;
+  onZidChange?: (zid: string) => void;
 }
 
-type Availability = 'unknown' | 'available' | 'unavailable';
-
-export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext }) => {
+export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, onZidChange }) => {
   const [zid, setZid] = useState('');
   const [fee, setFee] = useState('2500');
-  const [checking, setChecking] = useState(false);
-  const [availability, setAvailability] = useState<Availability>('unknown');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const isValid = zid.length > 0 && /^[a-z0-9-]+$/.test(zid);
+  const { data: available, isLoading, error } = useZidAvailability(isValid ? zid : '');
 
   useEffect(() => {
-    if (availability !== 'unknown') {
-      setAvailability('unknown');
-      setChecking(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zid]);
+    if (onZidChange) onZidChange(zid);
+  }, [zid, onZidChange]);
 
-  const handleContinue = () => {
-    if (availability === 'available') {
-      onNext();
-      return;
+  // Keep input focused after availability check or error
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
     }
-    setChecking(true);
-    setAvailability('unknown');
-    setTimeout(() => {
-      // Simulate random availability
-      const available = Math.random() > 0.5;
-      setChecking(false);
-      setAvailability(available ? 'available' : 'unavailable');
-    }, 2000);
-  };
+  }, [available, isLoading, error]);
 
   let endEnhancer = undefined;
-  if (checking) {
+  if (isLoading) {
     endEnhancer = <div className={styles.Spinner} />;
-  } else if (availability === 'available') {
+  } else if (available) {
     endEnhancer = <IconCheck className={styles.Success} size={20} />;
-  } else if (availability === 'unavailable') {
+  } else if (available === false) {
     endEnhancer = <IconXClose className={styles.Failure} size={20} />;
   }
 
   let availabilityText = null;
-  if (checking) {
+  if (isLoading) {
     availabilityText = 'Checking Availability';
-  } else if (availability === 'available') {
+  } else if (available) {
     availabilityText = <span className={styles.Success}>Available for 5,000 MEOW</span>;
-  } else if (availability === 'unavailable') {
+  } else if (available === false) {
     availabilityText = <span className={styles.Failure}>Not available</span>;
+  } else if (error) {
+    availabilityText = <span className={styles.Failure}>{String(error)}</span>;
   }
 
   let buttonText = 'Enter a valid ZERO ID to continue';
-  let buttonDisabled = !isValid || checking || availability === 'unavailable';
-  if (availability === 'available') {
+  let buttonDisabled = !isValid || isLoading || available === false;
+  if (available) {
     buttonText = 'Buy ZERO ID for $250';
     buttonDisabled = false;
-  } else if (availability === 'unavailable') {
+  } else if (available === false) {
     buttonDisabled = true;
   }
+
+  const handleContinue = () => {
+    if (available) {
+      onNext();
+    }
+  };
 
   return (
     <div className={styles.Container}>
@@ -78,13 +74,14 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext }) => {
             <span>{availabilityText}</span>
           </div>
           <Input
+            ref={inputRef}
             label=''
             value={zid}
             onChange={setZid}
             startEnhancer={<div className={styles.Enhancer}>0://</div>}
             endEnhancer={endEnhancer}
             className={styles.Input}
-            isDisabled={checking}
+            isDisabled={isLoading}
           />
           <div className={styles.InfoText}>Lowercase (a-z), numbers (0-9), and hyphens (-) only.</div>
         </label>
@@ -96,7 +93,7 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext }) => {
             onChange={setFee}
             className={styles.Input}
             endEnhancer={<div className={styles.Enhancer}>MEOW</div>}
-            isDisabled={checking}
+            isDisabled={isLoading}
             type='number'
           />
           <div className={styles.InfoText}>A recommended value is already filled in.</div>

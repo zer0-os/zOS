@@ -67,6 +67,7 @@
     "react-dropzone": "^14.2.3",
     "react-mentions": "^4.4.7",
     "react-portal": "^4.2.1",
+    "react-qr-code": "^2.0.18",
     "react-redux": "^7.2.8",
     "react-router-dom": "^5.3.4",
     "react-select-country-list": "^2.2.3",

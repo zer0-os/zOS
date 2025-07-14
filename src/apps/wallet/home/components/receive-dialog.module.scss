@@ -1,0 +1,37 @@
+.modal {
+  width: 40vw;
+  max-width: 400px;
+  min-width: 300px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.qrCodeContainer {
+  padding: 15px;
+  border-radius: 12px;
+  background-color: #01f4cb;
+}
+
+.addressContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.address {
+  font-size: 14px;
+}

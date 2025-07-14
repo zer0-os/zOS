@@ -13,11 +13,14 @@ import { reset } from '../../../store/wallet';
 
 import styles from './wallet-home.module.scss';
 import { Button } from '../components/button/button';
+import { useState } from 'react';
+import { ReceiveDialog } from './components/receive-dialog';
 const history = getHistory();
 
 export const WalletHome = () => {
   const userName = useSelector(userFirstNameSelector);
   const dispatch = useDispatch();
+  const [openReceiveModal, setOpenReceiveModal] = useState(false);
 
   const handleSend = () => {
     dispatch(reset());
@@ -29,7 +32,7 @@ export const WalletHome = () => {
       <div className={styles.header}>
         <ZeroCard displayName={userName} />
         <div className={styles.actions}>
-          <Button onClick={() => {}} icon={<IconArrowDownLeft size={18} />} variant='secondary'>
+          <Button onClick={() => setOpenReceiveModal(true)} icon={<IconArrowDownLeft size={18} />} variant='secondary'>
             Receive
           </Button>
           <Button onClick={handleSend} icon={<IconArrowUpRight size={18} />} variant='secondary'>
@@ -56,6 +59,8 @@ export const WalletHome = () => {
           <Redirect to={'/wallet'} />
         </Switch>
       </div>
+
+      <ReceiveDialog open={openReceiveModal} onOpenChange={setOpenReceiveModal} />
     </PanelBody>
   );
 };

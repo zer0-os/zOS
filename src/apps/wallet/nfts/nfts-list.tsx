@@ -26,7 +26,7 @@ export const NFTsList = () => {
         </div>
       )}
 
-      {nfts.length === 0 && <WalletEmptyState className={styles.emptyState} title='No NFTs' />}
+      {nfts.length === 0 && !isPending && <WalletEmptyState className={styles.emptyState} title='No NFTs' />}
     </div>
   );
 };

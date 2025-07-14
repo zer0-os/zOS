@@ -26,7 +26,7 @@ export const TokensList = () => {
         </div>
       )}
 
-      {tokens.length === 0 && <WalletEmptyState className={styles.emptyState} title='No Tokens' />}
+      {tokens.length === 0 && !isPending && <WalletEmptyState className={styles.emptyState} title='No Tokens' />}
     </div>
   );
 };

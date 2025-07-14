@@ -5,6 +5,8 @@ import { IconCheck, IconXClose } from '@zero-tech/zui/icons';
 import { useDebounce } from '../../../../../../lib/hooks/useDebounce';
 import { useZidAvailability } from '../../lib/hooks/useZidAvailability';
 import { useZidPrice } from '../../lib/hooks/useZidPrice';
+import { usePurchaseZid } from '../../lib/usePurchaseZid';
+import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../../lib/number';
 import { parsePrice } from '../../lib/utils';
@@ -23,6 +25,17 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedZid = useDebounce(zid, 400);
   const meowPriceUSD = useSelector(meowInUSDSelector);
+
+  // RainbowKit/Wagmi wallet integration
+  const { address: account } = useAccount();
+  const signer = useMemo(() => {
+    if (typeof window !== 'undefined' && window.ethereum) {
+      const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
+      return ethersProvider.getSigner();
+    }
+    return undefined;
+  }, []);
+  const provider = mainnetProvider;
 
   const {
     data: available,
@@ -88,15 +101,34 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     priceData,
   ]);
 
-  const handleContinue = useCallback(() => {
-    if (available) {
+  // --- Purchase logic ---
+  const purchaseZid = usePurchaseZid();
+
+  const handlePurchase = useCallback(async () => {
+    if (!available || !account || !signer || !provider) return;
+    try {
+      await purchaseZid.mutateAsync({ zna: zid, account, signer, provider });
       onNext();
+    } catch (error) {
+      // TODO: handle error (show toast, etc)
+      // eslint-disable-next-line no-console
+      console.error('Purchase failed:', error);
     }
-  }, [available, onNext]);
+  }, [
+    available,
+    account,
+    signer,
+    provider,
+    zid,
+    purchaseZid,
+    onNext,
+  ]);
 
   const handleZidChange = useCallback((value: string) => {
     setZid(value);
   }, []);
+
+  const isPurchasing = purchaseZid.isPending;
 
   return (
     <div className={styles.Container}>
@@ -117,7 +149,7 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
             startEnhancer={<div className={styles.Enhancer}>0://</div>}
             endEnhancer={endEnhancer}
             className={styles.Input}
-            isDisabled={isLoading}
+            isDisabled={isLoading || isPurchasing}
           />
           <div className={styles.InfoText}>Lowercase (a-z), numbers (0-9), and hyphens (-) only.</div>
         </label>
@@ -129,14 +161,18 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
             onChange={setFee}
             className={styles.Input}
             endEnhancer={<div className={styles.Enhancer}>MEOW</div>}
-            isDisabled={isLoading}
+            isDisabled={isLoading || isPurchasing}
             type='number'
           />
           <div className={styles.InfoText}>A recommended value is already filled in.</div>
         </label>
 
-        <button className={styles.ContinueButton} onClick={handleContinue} disabled={buttonConfig.disabled}>
-          {buttonConfig.text}
+        <button
+          className={styles.ContinueButton}
+          onClick={handlePurchase}
+          disabled={buttonConfig.disabled || isPurchasing || !account || !signer}
+        >
+          {isPurchasing ? 'Purchasing...' : buttonConfig.text}
         </button>
       </div>
     </div>

@@ -1,0 +1,19 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.loginButton {
+  width: 76px;
+  height: 76px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  cursor: pointer;
+  transition: border-color 0.2s ease-in-out;
+
+  &:hover {
+    border-color: theme.$color-secondary-11;
+  }
+
+  img {
+    width: 100%;
+  }
+}

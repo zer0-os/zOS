@@ -39,9 +39,9 @@ export class LoginContainer extends React.Component<LoginContainerProperties> {
     };
   }
 
-  handleSelectionChange = (selectedOption: string) => {
+  handleSelectionChange = (selectedOption: LoginStage) => {
     const { switchLoginStage } = this.props;
-    switchLoginStage(selectedOption === 'web3' ? LoginStage.Web3Login : LoginStage.EmailLogin);
+    switchLoginStage(selectedOption);
   };
 
   render() {

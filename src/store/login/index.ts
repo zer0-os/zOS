@@ -17,6 +17,7 @@ export type LoginState = {
 export enum LoginStage {
   EmailLogin = 'email',
   Web3Login = 'web3',
+  SocialLogin = 'social',
 }
 
 export enum EmailLoginErrors {

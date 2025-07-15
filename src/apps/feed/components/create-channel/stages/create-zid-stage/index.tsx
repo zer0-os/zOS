@@ -1,41 +1,26 @@
 import React, { useRef, useState, useMemo, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import { Input } from '@zero-tech/zui/components';
 import { IconCheck, IconXClose } from '@zero-tech/zui/icons';
 import { useDebounce } from '../../../../../../lib/hooks/useDebounce';
 import { useZidAvailability } from '../../lib/hooks/useZidAvailability';
 import { useZidPrice } from '../../lib/hooks/useZidPrice';
-import { usePurchaseZid } from '../../lib/usePurchaseZid';
-import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
-import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../../lib/number';
 import { parsePrice } from '../../lib/utils';
-import { meowInUSDSelector } from '../../../../../../store/rewards/selectors';
+import { TokenData } from '../../lib/hooks/useTokenFinder';
 
 import styles from './styles.module.scss';
 
 interface CreateZidStageProps {
-  onNext: () => void;
+  onNext: (zid: string, priceData: any, joiningFee: string) => void;
   mainnetProvider: ethers.providers.Provider;
+  tokenData: TokenData | null;
 }
 
-export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetProvider }) => {
+export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetProvider, tokenData }) => {
   const [zid, setZid] = useState('');
   const [fee, setFee] = useState('2500');
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedZid = useDebounce(zid, 400);
-  const meowPriceUSD = useSelector(meowInUSDSelector);
-
-  // RainbowKit/Wagmi wallet integration
-  const { address: account } = useAccount();
-  const signer = useMemo(() => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
-      return ethersProvider.getSigner();
-    }
-    return undefined;
-  }, []);
-  const provider = mainnetProvider;
 
   const {
     data: available,
@@ -52,18 +37,12 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
   const isLoading = isAvailabilityLoading || isPriceLoading;
   const hasError = !!(availabilityError || priceError);
 
-  const usdText = useMemo(() => {
-    if (!priceData?.total || !meowPriceUSD) return '';
-    const cents = calculateTotalPriceInUSDCents(priceData.total.toString(), meowPriceUSD);
-    return formatUSD(cents);
-  }, [priceData, meowPriceUSD]);
-
   const buttonConfig = useMemo(() => {
     if (available && !isLoading) {
-      return { text: usdText ? `Buy ZERO ID for ${usdText}` : 'Buy ZERO ID', disabled: false };
+      return { text: 'Continue', disabled: false };
     }
     return { text: 'Enter a valid ZERO ID to continue', disabled: true };
-  }, [available, usdText, isLoading]);
+  }, [available, isLoading]);
 
   const endEnhancer = useMemo(() => {
     if (isLoading) return <div className={styles.Spinner} />;
@@ -81,12 +60,18 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     available,
   ]);
 
+  const tokenTicker = tokenData?.symbol || '';
+
   const availabilityText = useMemo(() => {
     if (isLoading) return <span>Checking availability…</span>;
     if (hasError) return <span className={styles.Failure}>{String(availabilityError || priceError)}</span>;
     if (available) {
       const displayPrice = parsePrice(priceData?.total);
-      return <span className={styles.Success}>Available for {displayPrice} MEOW</span>;
+      return (
+        <span className={styles.Success}>
+          Available for {displayPrice} {tokenTicker}
+        </span>
+      );
     }
     if (available === false) {
       return <span className={styles.Failure}>Not available</span>;
@@ -99,36 +84,25 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     priceError,
     available,
     priceData,
+    tokenTicker,
   ]);
 
-  // --- Purchase logic ---
-  const purchaseZid = usePurchaseZid();
-
-  const handlePurchase = useCallback(async () => {
-    if (!available || !account || !signer || !provider) return;
-    try {
-      await purchaseZid.mutateAsync({ zna: zid, account, signer, provider });
-      onNext();
-    } catch (error) {
-      // TODO: handle error (show toast, etc)
-      // eslint-disable-next-line no-console
-      console.error('Purchase failed:', error);
+  const handleContinue = useCallback(() => {
+    if (available && !isLoading) {
+      onNext(zid, priceData, fee);
     }
   }, [
     available,
-    account,
-    signer,
-    provider,
-    zid,
-    purchaseZid,
+    isLoading,
     onNext,
+    zid,
+    priceData,
+    fee,
   ]);
 
   const handleZidChange = useCallback((value: string) => {
     setZid(value);
   }, []);
-
-  const isPurchasing = purchaseZid.isPending;
 
   return (
     <div className={styles.Container}>
@@ -149,7 +123,7 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
             startEnhancer={<div className={styles.Enhancer}>0://</div>}
             endEnhancer={endEnhancer}
             className={styles.Input}
-            isDisabled={isLoading || isPurchasing}
+            isDisabled={isLoading}
           />
           <div className={styles.InfoText}>Lowercase (a-z), numbers (0-9), and hyphens (-) only.</div>
         </label>
@@ -160,19 +134,15 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
             value={fee}
             onChange={setFee}
             className={styles.Input}
-            endEnhancer={<div className={styles.Enhancer}>MEOW</div>}
-            isDisabled={isLoading || isPurchasing}
+            endEnhancer={<div className={styles.Enhancer}>{tokenTicker}</div>}
+            isDisabled={isLoading}
             type='number'
           />
           <div className={styles.InfoText}>A recommended value is already filled in.</div>
         </label>
 
-        <button
-          className={styles.ContinueButton}
-          onClick={handlePurchase}
-          disabled={buttonConfig.disabled || isPurchasing || !account || !signer}
-        >
-          {isPurchasing ? 'Purchasing...' : buttonConfig.text}
+        <button className={styles.ContinueButton} onClick={handleContinue} disabled={buttonConfig.disabled}>
+          {buttonConfig.text}
         </button>
       </div>
     </div>

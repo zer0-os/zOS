@@ -7,7 +7,7 @@ import {
   PaymentType,
   DistributionConfig,
   PaymentConfig,
-} from '../abis/contracts';
+} from '../../../abis/contracts';
 
 // Purchase a root (world) ZID
 export async function purchaseWorldZid(

@@ -1,12 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { ethers } from 'ethers';
-import { generateMetadata } from './metadata';
-import { checkAndApproveToken } from './tokenApproval';
-import { purchaseWorldZid, purchaseSubdomainZid } from './purchaseZid';
-import { getParentDomainHash } from './getParentDomainHash';
-import { CONTRACT_ADDRESSES } from '../abis/contracts';
+import { generateMetadata } from './useGenerateMetadata';
+import { checkAndApproveToken } from './useTokenApproval';
+import { purchaseWorldZid, purchaseSubdomainZid } from './useSetDomainDefaults';
+import { getParentDomainHash } from './useGetParentDomainHash';
+import { CONTRACT_ADDRESSES } from '../../../abis/contracts';
 
-// Define CURVE_PRICER_ABI here if not exported from contracts
 const CURVE_PRICER_ABI = [
   'function getPriceAndFee(bytes32 parentHash, string label, bool isSubdomain) view returns (tuple(uint256 price, uint256 fee))',
   'function getFeeForPrice(bytes32 parentHash, uint256 price) view returns (uint256)',
@@ -27,7 +26,7 @@ export function usePurchaseZid() {
       // 1. Generate metadata
       const metadataId = await generateMetadata(zna, isWorld);
 
-      // 2. Get price (direct contract call, not via React Query)
+      // 2. Get price
       let price;
       if (isWorld) {
         const curvePricer = new ethers.Contract(CONTRACT_ADDRESSES.CURVE_PRICER, CURVE_PRICER_ABI, provider);

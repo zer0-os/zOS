@@ -32,6 +32,9 @@ export enum CreateChannelStage {
 export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalProps) => {
   const [stage, setStage] = useState<CreateChannelStage>(CreateChannelStage.LaunchCommunity);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
+  const [selectedZid, setSelectedZid] = useState<string>('');
+  const [priceData, setPriceData] = useState<any>(null);
+  const [joiningFee, setJoiningFee] = useState<string>('');
 
   const mainnetProvider = useMemo(() => new ethers.providers.JsonRpcProvider(config.INFURA_URLS[1]), []);
 
@@ -39,6 +42,9 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
     if (!open) {
       setStage(CreateChannelStage.LaunchCommunity);
       setTokenData(null);
+      setSelectedZid('');
+      setPriceData(null);
+      setJoiningFee('');
     }
   }, [open]);
 
@@ -59,6 +65,13 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
     setStage(CreateChannelStage.ExtractToken);
   };
 
+  const handleZidSelected = (zid: string, price: any, fee: string) => {
+    setSelectedZid(zid);
+    setPriceData(price);
+    setJoiningFee(fee);
+    setStage(CreateChannelStage.Review);
+  };
+
   let content = null;
   switch (stage) {
     case CreateChannelStage.LaunchCommunity:
@@ -71,10 +84,19 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
       content = <ExtractTokenStage token={tokenData} onNext={() => setStage(CreateChannelStage.CreateZid)} />;
       break;
     case CreateChannelStage.CreateZid:
-      content = <CreateZidStage onNext={() => setStage(CreateChannelStage.Review)} mainnetProvider={mainnetProvider} />;
+      content = <CreateZidStage onNext={handleZidSelected} mainnetProvider={mainnetProvider} tokenData={tokenData} />;
       break;
     case CreateChannelStage.Review:
-      content = <ReviewStage onNext={() => setStage(CreateChannelStage.Creating)} />;
+      content = (
+        <ReviewStage
+          onNext={() => setStage(CreateChannelStage.Creating)}
+          selectedZid={selectedZid}
+          priceData={priceData}
+          joiningFee={joiningFee}
+          tokenData={tokenData}
+          mainnetProvider={mainnetProvider}
+        />
+      );
       break;
     case CreateChannelStage.Creating:
       content = <CreatingChannelStage onComplete={() => onOpenChange(false)} />;

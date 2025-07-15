@@ -42,4 +42,5 @@ export const config = {
     137: process.env.REACT_APP_POLY_INFURA_URL,
     43114: process.env.REACT_APP_AVAX_INFURA_URL,
   },
+  znsMetadataApiUrl: process.env.REACT_APP_ZNS_METADATA_API_URL,
 };

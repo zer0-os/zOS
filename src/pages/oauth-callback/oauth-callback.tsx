@@ -1,12 +1,12 @@
 import ZeroLogo from '../../zero-logo.svg?react';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { Link } from 'react-router-dom';
-import styles from './oauth-callback.module.scss';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginByOAuth } from '../../store/login';
 import { Button } from '@zero-tech/zui/components/Button';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import styles from './oauth-callback.module.scss';
 
 export function OAuthCallback() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -32,10 +32,16 @@ export function OAuthCallback() {
           <>
             <ZeroLogo />
             {userNotFound ? (
-              <p>
-                We couldn't find an account associated with this email address. Please{' '}
-                <Link to='/get-access'>create an account</Link> or choose a different login method.
-              </p>
+              <>
+                <p>We couldn't find an account associated with this provider.</p>
+                <p>
+                  Please{' '}
+                  <Link className={styles.link} to='/get-access'>
+                    create an account
+                  </Link>{' '}
+                  or choose a different login method.
+                </p>
+              </>
             ) : (
               <p>Error: {errorDescription}</p>
             )}

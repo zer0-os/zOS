@@ -127,7 +127,6 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
           />
           <div className={styles.InfoText}>Lowercase (a-z), numbers (0-9), and hyphens (-) only.</div>
         </label>
-
         <label className={styles.InputContainer}>
           Set Joining Fees
           <Input

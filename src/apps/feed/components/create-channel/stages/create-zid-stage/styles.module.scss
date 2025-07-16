@@ -102,10 +102,14 @@
 
 .Success {
   color: theme.$color-secondary-11;
+  font-size: 12px;
+  text-align: center;
 }
 
 .Failure {
   color: theme.$color-failure-11;
+  font-size: 12px;
+  text-align: center;
 }
 
 @keyframes spin {

@@ -37,10 +37,18 @@
   color: theme.$color-secondary-11;
   text-align: center;
   margin-bottom: 0;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ArrowIcon {
   color: theme.$color-secondary-11;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .DetailsBox {
@@ -63,6 +71,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 15px;
+  position: relative;
 }
 
 .InfoRowLabel {
@@ -75,6 +84,10 @@
   @include glass-text-primary-color;
 
   font-size: 12px;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .InfoText {
@@ -102,4 +115,23 @@
     cursor: not-allowed;
     opacity: 0.7;
   }
+}
+
+.Success {
+  color: theme.$color-secondary-11;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.Failure {
+  color: theme.$color-failure-11;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.InfoContainer {
+  height: 16px;
+  margin-top: 8px;
 }

@@ -1,28 +1,26 @@
 import React, { useRef, useState, useMemo, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import { Input } from '@zero-tech/zui/components';
 import { IconCheck, IconXClose } from '@zero-tech/zui/icons';
 import { useDebounce } from '../../../../../../lib/hooks/useDebounce';
 import { useZidAvailability } from '../../lib/hooks/useZidAvailability';
 import { useZidPrice } from '../../lib/hooks/useZidPrice';
 import { ethers } from 'ethers';
-import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../../lib/number';
 import { parsePrice } from '../../lib/utils';
-import { meowInUSDSelector } from '../../../../../../store/rewards/selectors';
+import { TokenData } from '../../lib/hooks/useTokenFinder';
 
 import styles from './styles.module.scss';
 
 interface CreateZidStageProps {
-  onNext: () => void;
+  onNext: (zid: string, priceData: any, joiningFee: string) => void;
   mainnetProvider: ethers.providers.Provider;
+  tokenData: TokenData | null;
 }
 
-export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetProvider }) => {
+export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetProvider, tokenData }) => {
   const [zid, setZid] = useState('');
   const [fee, setFee] = useState('2500');
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedZid = useDebounce(zid, 400);
-  const meowPriceUSD = useSelector(meowInUSDSelector);
 
   const {
     data: available,
@@ -39,18 +37,12 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
   const isLoading = isAvailabilityLoading || isPriceLoading;
   const hasError = !!(availabilityError || priceError);
 
-  const usdText = useMemo(() => {
-    if (!priceData?.total || !meowPriceUSD) return '';
-    const cents = calculateTotalPriceInUSDCents(priceData.total.toString(), meowPriceUSD);
-    return formatUSD(cents);
-  }, [priceData, meowPriceUSD]);
-
   const buttonConfig = useMemo(() => {
     if (available && !isLoading) {
-      return { text: usdText ? `Buy ZERO ID for ${usdText}` : 'Buy ZERO ID', disabled: false };
+      return { text: 'Continue', disabled: false };
     }
     return { text: 'Enter a valid ZERO ID to continue', disabled: true };
-  }, [available, usdText, isLoading]);
+  }, [available, isLoading]);
 
   const endEnhancer = useMemo(() => {
     if (isLoading) return <div className={styles.Spinner} />;
@@ -68,12 +60,18 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     available,
   ]);
 
+  const tokenTicker = tokenData?.symbol || '';
+
   const availabilityText = useMemo(() => {
     if (isLoading) return <span>Checking availability…</span>;
     if (hasError) return <span className={styles.Failure}>{String(availabilityError || priceError)}</span>;
     if (available) {
       const displayPrice = parsePrice(priceData?.total);
-      return <span className={styles.Success}>Available for {displayPrice} MEOW</span>;
+      return (
+        <span className={styles.Success}>
+          Available for {displayPrice} {tokenTicker}
+        </span>
+      );
     }
     if (available === false) {
       return <span className={styles.Failure}>Not available</span>;
@@ -86,13 +84,21 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     priceError,
     available,
     priceData,
+    tokenTicker,
   ]);
 
   const handleContinue = useCallback(() => {
-    if (available) {
-      onNext();
+    if (available && !isLoading) {
+      onNext(zid, priceData, fee);
     }
-  }, [available, onNext]);
+  }, [
+    available,
+    isLoading,
+    onNext,
+    zid,
+    priceData,
+    fee,
+  ]);
 
   const handleZidChange = useCallback((value: string) => {
     setZid(value);
@@ -121,14 +127,13 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
           />
           <div className={styles.InfoText}>Lowercase (a-z), numbers (0-9), and hyphens (-) only.</div>
         </label>
-
         <label className={styles.InputContainer}>
           Set Joining Fees
           <Input
             value={fee}
             onChange={setFee}
             className={styles.Input}
-            endEnhancer={<div className={styles.Enhancer}>MEOW</div>}
+            endEnhancer={<div className={styles.Enhancer}>{tokenTicker}</div>}
             isDisabled={isLoading}
             type='number'
           />

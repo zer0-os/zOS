@@ -1,5 +1,5 @@
 import React from 'react';
-import { TokenData } from '../../hooks/useTokenFinder';
+import { TokenData } from '../../lib/hooks/useTokenFinder';
 
 import styles from './styles.module.scss';
 

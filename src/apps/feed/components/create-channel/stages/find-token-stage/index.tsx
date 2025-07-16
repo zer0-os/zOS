@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SelectInput, Input } from '@zero-tech/zui/components';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
-import { useTokenFinder, TokenData } from '../../hooks/useTokenFinder';
+import { useTokenFinder, TokenData } from '../../lib/hooks/useTokenFinder';
 
 import styles from './styles.module.scss';
 

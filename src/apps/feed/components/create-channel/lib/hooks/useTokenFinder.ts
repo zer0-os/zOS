@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { createPublicClient, http, parseAbi } from 'viem';
 import { mainnet, polygon, avalanche, arbitrum, optimism } from 'wagmi/chains';
-import { config } from '../../../../../config';
+import { config } from '../../../../../../config';
 
 const ERC20_ABI = parseAbi([
   'function name() view returns (string)',

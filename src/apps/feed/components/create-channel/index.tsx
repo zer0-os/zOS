@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import { Modal } from '@zero-tech/zui/components/Modal';
 import { LaunchCommunityStage } from './stages/launch-community-stage';
@@ -9,7 +9,9 @@ import { ReviewStage } from './stages/review-stage';
 import { CreatingChannelStage } from './stages/creating-channel-stage';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconArrowLeft } from '@zero-tech/zui/icons';
-import { TokenData } from './hooks/useTokenFinder';
+import { TokenData } from './lib/hooks/useTokenFinder';
+import { ethers } from 'ethers';
+import { config } from '../../../../config';
 
 import styles from './styles.module.scss';
 
@@ -30,6 +32,8 @@ export enum CreateChannelStage {
 export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalProps) => {
   const [stage, setStage] = useState<CreateChannelStage>(CreateChannelStage.LaunchCommunity);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
+
+  const mainnetProvider = useMemo(() => new ethers.providers.JsonRpcProvider(config.INFURA_URLS[1]), []);
 
   useEffect(() => {
     if (!open) {
@@ -67,7 +71,7 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
       content = <ExtractTokenStage token={tokenData} onNext={() => setStage(CreateChannelStage.CreateZid)} />;
       break;
     case CreateChannelStage.CreateZid:
-      content = <CreateZidStage onNext={() => setStage(CreateChannelStage.Review)} />;
+      content = <CreateZidStage onNext={() => setStage(CreateChannelStage.Review)} mainnetProvider={mainnetProvider} />;
       break;
     case CreateChannelStage.Review:
       content = <ReviewStage onNext={() => setStage(CreateChannelStage.Creating)} />;

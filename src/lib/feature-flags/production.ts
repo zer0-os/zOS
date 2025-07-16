@@ -42,4 +42,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   enableCreateTGCChannel: { defaultValue: false },
   enableStaking: { defaultValue: false },
   enableWalletApp: { defaultValue: false },
+  enableSocialLogin: { defaultValue: false },
 };

@@ -1,4 +1,4 @@
-import ZeroLogo from '../zero-logo.svg?react';
+import ZeroLogo from '../../zero-logo.svg?react';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import styles from './oauth-callback.module.scss';
 import { useEffect } from 'react';
@@ -12,7 +12,7 @@ export function OAuthLinkCallback() {
 
       setTimeout(() => {
         window.close();
-      }, 3000);
+      }, 2000);
     }
   }, []);
 

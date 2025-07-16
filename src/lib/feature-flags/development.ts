@@ -37,4 +37,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableCreateTGCChannel: { defaultValue: true },
   enableStaking: { defaultValue: true },
   enableWalletApp: { defaultValue: true },
+  enableSocialLogin: { defaultValue: true },
 };

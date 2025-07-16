@@ -8,6 +8,12 @@ const anonymousPaths = [
   '/get-access',
   '/login',
   '/reset-password',
+  '/oauth/callback',
+  '/oauth/link/callback',
+];
+
+const popupPaths = [
+  '/oauth/link/callback',
 ];
 
 export function* saga() {
@@ -37,7 +43,11 @@ export function* saga() {
 function handleAuthenticatedUser(history) {
   // if you have a current user but they still hit login/sign-up,
   // we should redirect to index page in that case
-  if (anonymousPaths.includes(history.location.pathname)) {
+  const pathname = history.location.pathname;
+  if (anonymousPaths.includes(pathname)) {
+    // Because it's a popup and we don't want to redirect to the home page, the window will be closed
+    if (popupPaths.includes(pathname)) return;
+
     history.replace({
       pathname: '/',
     });

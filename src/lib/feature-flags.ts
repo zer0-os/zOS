@@ -44,6 +44,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableCreateTGCChannel: boolean;
   declare enableStaking: boolean;
   declare enableWalletApp: boolean;
+  declare enableSocialLogin: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

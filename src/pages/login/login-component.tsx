@@ -8,18 +8,19 @@ import { EmailLoginContainer } from '../../authentication/email-login/container'
 import ZeroLogo from '../../zero-logo.svg?react';
 import { ToggleGroup } from '@zero-tech/zui/components';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
+import { SocialLogin } from '../../authentication/social-login/social-login';
+import { assertAllValuesConsumed } from '../../lib/enum';
+import { featureFlags } from '../../lib/feature-flags';
 
 import { bemClassName } from '../../lib/bem';
 import './login.scss';
-
-import { assertAllValuesConsumed } from '../../lib/enum';
 
 const cn = bemClassName('login-main');
 
 interface LoginComponentProperties {
   isLoggingIn: boolean;
   stage: LoginStage;
-  handleSelectionChange: (selectedOption: string) => void;
+  handleSelectionChange: (selectedOption: LoginStage) => void;
 }
 
 export class LoginComponent extends React.Component<LoginComponentProperties> {
@@ -29,16 +30,21 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
         return <Web3LoginContainer />;
       case LoginStage.EmailLogin:
         return <EmailLoginContainer />;
+      case LoginStage.SocialLogin:
+        return <SocialLogin />;
       default:
         assertAllValuesConsumed(this.props.stage);
     }
   }
 
-  renderToggleGroup(isLoggingIn, selectedOption, stage) {
-    const options = [
-      { key: 'web3', label: 'Web3' },
-      { key: 'email', label: 'Email' },
+  renderToggleGroup(isLoggingIn: boolean, stage: LoginStage) {
+    const options: { key: LoginStage; label: string }[] = [
+      { key: LoginStage.Web3Login, label: 'Web3' },
+      { key: LoginStage.EmailLogin, label: 'Email' },
     ];
+    if (featureFlags.enableSocialLogin) {
+      options.push({ key: LoginStage.SocialLogin, label: 'Social' });
+    }
 
     const shouldRenderToggleGroup = stage !== LoginStage.Web3Login || !isLoggingIn;
 
@@ -48,8 +54,8 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
           {...cn('toggle-group')}
           options={options}
           variant='default'
-          onSelectionChange={this.props.handleSelectionChange}
-          selection={selectedOption}
+          onSelectionChange={(selection) => this.props.handleSelectionChange(selection as LoginStage)}
+          selection={stage}
           selectionType='single'
           isRequired
           isDisabled={isLoggingIn}
@@ -58,7 +64,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
     );
   }
 
-  renderFooter(stage) {
+  renderFooter(stage: LoginStage) {
     return (
       <div {...cn('other')}>
         <span>
@@ -76,7 +82,6 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
   render() {
     const { isLoggingIn, stage } = this.props;
     const isWeb3LoginStage = stage === LoginStage.Web3Login;
-    const selectedOption = isWeb3LoginStage ? 'web3' : 'email';
 
     return (
       <>
@@ -88,7 +93,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
             </div>
             <div {...cn('inner-content-wrapper', isLoggingIn && isWeb3LoginStage && 'is-logging-in')}>
               <h3 {...cn('header')}>Log In</h3>
-              {this.renderToggleGroup(isLoggingIn, selectedOption, this.props.stage)}
+              {this.renderToggleGroup(isLoggingIn, stage)}
               <div {...cn('login-option', isWeb3LoginStage && 'wallet-option')}>{this.renderLoginOption()}</div>
             </div>
             {this.renderFooter(stage)}

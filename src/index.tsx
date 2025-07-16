@@ -13,7 +13,7 @@ import { ErrorBoundary } from './components/error-boundary/';
 import './index.scss';
 import { Invite } from './invite';
 import { ResetPassword } from './reset-password';
-import { LoginPage, ErrorPage } from './pages';
+import { LoginPage, ErrorPage, OAuthCallback, OAuthLinkCallback } from './pages';
 import { getHistory } from './lib/browser';
 import { ElectronTitlebar } from './components/electron-titlebar';
 import { desktopInit } from './lib/desktop';
@@ -21,8 +21,6 @@ import { Restricted } from './restricted';
 import { RainbowKitConnect } from './lib/web3/rainbowkit/connect';
 import { RainbowKitProvider } from './lib/web3/rainbowkit/provider';
 import { App } from './App';
-import { OAuthCallback } from './oauth-callback/oauth-callback';
-import { OAuthLinkCallback } from './oauth-callback/oauth-link-callback';
 
 desktopInit();
 runSagas();

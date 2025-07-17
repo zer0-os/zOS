@@ -5,7 +5,9 @@ import { RootState } from '../../../../../store/reducer';
 import { RewardsItem } from '.';
 import { calculateTotalPriceInUSDCents, formatUSD, formatWeiAmount } from '../../../../../lib/number';
 
-export interface PublicProperties {}
+export interface PublicProperties {
+  onClaimEarnings?: () => void;
+}
 
 export interface Properties extends PublicProperties {
   totalUSD: string;
@@ -13,6 +15,8 @@ export interface Properties extends PublicProperties {
 }
 
 export class Container extends React.Component<Properties> {
+  state = { isLoading: false, error: '' };
+
   static mapState(state: RootState): Partial<Properties> {
     const { rewards } = state;
     return {
@@ -29,8 +33,31 @@ export class Container extends React.Component<Properties> {
     return formatUSD(calculateTotalPriceInUSDCents(meow, meowInUSD ?? 0));
   }
 
+  onClaimEarnings = async () => {
+    // TODO: Implement claim earnings functionality
+    console.log('Claim earnings clicked');
+
+    this.setState({ isLoading: true, error: '' });
+
+    // Mock timeout to simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    this.setState({ isLoading: false, error: '' });
+
+    if (this.props.onClaimEarnings) {
+      this.props.onClaimEarnings();
+    }
+  };
+
   render() {
-    return <RewardsItem totalUSD={this.props.totalUSD} totalMeow={this.props.totalMeow} />;
+    return (
+      <RewardsItem
+        totalUSD={this.props.totalUSD}
+        totalMeow={this.props.totalMeow}
+        onClaimEarnings={this.onClaimEarnings}
+        isLoading={this.state.isLoading}
+        error={this.state.error}
+      />
+    );
   }
 }
 export const RewardsItemContainer = connectContainer<PublicProperties>(Container);

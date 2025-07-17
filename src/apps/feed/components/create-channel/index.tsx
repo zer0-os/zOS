@@ -99,7 +99,14 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
       );
       break;
     case CreateChannelStage.Creating:
-      content = <CreatingChannelStage onComplete={() => onOpenChange(false)} selectedZid={selectedZid} />;
+      content = (
+        <CreatingChannelStage
+          onComplete={() => onOpenChange(false)}
+          selectedZid={selectedZid}
+          tokenData={tokenData}
+          joiningFee={joiningFee}
+        />
+      );
       break;
     default:
       content = null;

@@ -64,6 +64,7 @@ export const WalletTransferAmount = () => {
           token={token}
           amount={amount}
           onAmountChange={handleAmountChange}
+          autoFocus
         />
         <TokenSwapModule
           state='output'

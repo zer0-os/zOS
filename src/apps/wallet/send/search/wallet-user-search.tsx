@@ -49,12 +49,13 @@ export const WalletUserSearch = () => {
             onChange={setRecipientQuery}
             startEnhancer={<span>To:</span>}
             endEnhancer={<IconSearchMd size={16} />}
+            autoFocus
           />
         </div>
 
         <div className={styles.resultsContainer}>
           <div className={styles.resultsHeader}>
-            <div className={styles.resultsHeaderLabel}>Results</div>
+            {(recipients?.length > 0 || isAddressValid) && <div className={styles.resultsHeaderLabel}>Results</div>}
             <div>
               {isAddressValid && recipients?.length === 0 && (
                 <SearchResult

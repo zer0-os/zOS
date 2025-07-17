@@ -6,9 +6,10 @@ interface TokenNumberInputProps {
   value: string;
   decimals: number;
   onChange: (value: string) => void;
+  autoFocus?: boolean;
 }
 
-export const TokenNumberInput = ({ value, decimals, onChange }: TokenNumberInputProps) => {
+export const TokenNumberInput = ({ value, decimals, onChange, autoFocus }: TokenNumberInputProps) => {
   const inputRef = useNumberFormat({
     locales: 'en',
     maximumFractionDigits: decimals,
@@ -26,5 +27,7 @@ export const TokenNumberInput = ({ value, decimals, onChange }: TokenNumberInput
     }
   }, [inputRef, value]);
 
-  return <input ref={inputRef} placeholder='0' onChange={handleChange} className={styles.input} />;
+  return (
+    <input ref={inputRef} placeholder='0' onChange={handleChange} className={styles.input} autoFocus={autoFocus} />
+  );
 };

@@ -41,7 +41,7 @@ export const WalletTransferAmount = () => {
   }, [amount, token]);
 
   const handleAmountChange = (amount: string) => {
-    dispatch(setAmount(amount));
+    dispatch(setAmount(parseLocaleNumber(amount)));
   };
 
   const handleBack = () => {

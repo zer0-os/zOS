@@ -12,6 +12,7 @@ export interface PublicProperties {
 export interface Properties extends PublicProperties {
   totalUSD: string;
   totalMeow: string;
+  claimableRewardsUSD: string;
 }
 
 export class Container extends React.Component<Properties> {
@@ -22,10 +23,15 @@ export class Container extends React.Component<Properties> {
       BigInt(rewards.totalDailyRewards) + BigInt(rewards.totalReferralFees) + BigInt(rewards.legacyRewards);
     const totalUSD = formatUSD(calculateTotalPriceInUSDCents(totalRewards.toString(), rewards.meowInUSD ?? 0));
     const totalMeow = `${formatWeiAmount(totalRewards.toString())} MEOW`;
+    const claimableRewards = BigInt(rewards.totalDailyRewards) + BigInt(rewards.totalReferralFees);
+    const claimableRewardsUSD = formatUSD(
+      calculateTotalPriceInUSDCents(claimableRewards.toString(), rewards.meowInUSD ?? 0)
+    );
 
     return {
       totalUSD,
       totalMeow,
+      claimableRewardsUSD,
     };
   }
 
@@ -35,7 +41,12 @@ export class Container extends React.Component<Properties> {
 
   render() {
     return (
-      <RewardsModal totalUSD={this.props.totalUSD} totalMeow={this.props.totalMeow} onClose={this.props.onClose} />
+      <RewardsModal
+        totalUSD={this.props.totalUSD}
+        totalMeow={this.props.totalMeow}
+        claimableRewardsUSD={this.props.claimableRewardsUSD}
+        onClose={this.props.onClose}
+      />
     );
   }
 }

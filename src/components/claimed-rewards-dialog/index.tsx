@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { IconButton, Modal, Button, Variant as ButtonVariant } from '@zero-tech/zui/components';
-import { IconXClose } from '@zero-tech/zui/icons';
+import { IconArrowNarrowUpRight, IconXClose } from '@zero-tech/zui/icons';
 
 import styles from './styles.module.scss';
 
@@ -90,6 +90,16 @@ export const ClaimedRewardsDialog: React.FC<Properties> = ({
               <div className={styles.Amounts}>
                 <div className={styles.MeowAmount}>{meowAmount}</div>
                 <div className={styles.UsdAmount}>{usdAmount}</div>
+                <a
+                  // add hash and correct url here
+                  href={'https://etherscan.io/tx/'}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className={styles.ViewTransaction}
+                >
+                  View Transaction
+                  <IconArrowNarrowUpRight size={16} className={styles.ViewTransactionIcon} />
+                </a>
               </div>
             </>
           )}

@@ -154,6 +154,20 @@
   margin: 0 auto;
 }
 
+.ViewTransaction {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  align-self: center;
+  justify-content: center;
+  color: theme.$color-secondary-11;
+  font-size: 12px;
+}
+
+.ViewTransactionIcon {
+  color: theme.$color-secondary-11;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

@@ -33,8 +33,8 @@ export const initialState: RewardsState = {
   transferLoading: false,
   transferError: null,
   legacyRewards: '0',
-  totalDailyRewards: '5000000000000000000000',
-  totalReferralFees: '23587631589499729921618',
+  totalDailyRewards: '0',
+  totalReferralFees: '0',
   unclaimedRewards: '0',
 };
 

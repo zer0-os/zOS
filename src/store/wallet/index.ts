@@ -29,6 +29,7 @@ export type WalletState = {
   token: TokenBalance | null;
   amount: string | null;
   txReceipt: TxReceiptResponse | null;
+  error: boolean;
 };
 
 const initialState: WalletState = {
@@ -41,6 +42,7 @@ const initialState: WalletState = {
   token: null,
   amount: null,
   txReceipt: null,
+  error: false,
 };
 
 const slice = createSlice({
@@ -65,12 +67,16 @@ const slice = createSlice({
     setTxReceipt: (state, action: PayloadAction<TxReceiptResponse>) => {
       state.txReceipt = action.payload;
     },
+    setError: (state, action: PayloadAction<boolean>) => {
+      state.error = action.payload;
+    },
     reset: (state) => {
       state.recipient = initialState.recipient;
       state.sendStage = initialState.sendStage;
       state.token = initialState.token;
       state.amount = initialState.amount;
       state.txReceipt = initialState.txReceipt;
+      state.error = initialState.error;
     },
   },
 });
@@ -79,6 +85,6 @@ export const nextStage = createAction(SagaActionTypes.NextStage);
 export const previousStage = createAction(SagaActionTypes.PreviousStage);
 export const transferToken = createAction(SagaActionTypes.TransferToken);
 
-export const { setSelectedWallet, setRecipient, setToken, setAmount, setSendStage, setTxReceipt, reset } =
+export const { setSelectedWallet, setRecipient, setToken, setAmount, setSendStage, setTxReceipt, setError, reset } =
   slice.actions;
 export const { reducer } = slice;

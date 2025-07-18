@@ -10,6 +10,7 @@ import {
   setTxReceipt,
   transferToken,
   setSelectedWallet,
+  setError,
 } from '.';
 import {
   recipientSelector,
@@ -49,33 +50,38 @@ function* initializeWalletSaga() {
 function* handleTransferToken() {
   const stage: SendStage = yield select(sendStageSelector);
 
-  if (stage === SendStage.Confirm) {
-    const recipient: Recipient = yield select(recipientSelector);
-    const selectedWallet: string | undefined = yield select(selectedWalletAddressSelector);
-    const token: TokenBalance = yield select(tokenSelector);
-    const amount: string = yield select(amountSelector);
+  try {
+    if (stage === SendStage.Confirm) {
+      const recipient: Recipient = yield select(recipientSelector);
+      const selectedWallet: string | undefined = yield select(selectedWalletAddressSelector);
+      const token: TokenBalance = yield select(tokenSelector);
+      const amount: string = yield select(amountSelector);
 
-    if (recipient && token && amount && selectedWallet) {
-      yield put(setSendStage(SendStage.Processing));
-      const result: TransferTokenResponse = yield call(() =>
-        transferTokenRequest(selectedWallet, recipient.publicAddress, amount, token.tokenAddress)
-      );
-
-      if (result.transactionHash) {
-        yield put(setSendStage(SendStage.Broadcasting));
-        const receipt: TxReceiptResponse = yield call(() =>
-          queryClient.fetchQuery(txReceiptQueryOptions(result.transactionHash))
+      if (recipient && token && amount && selectedWallet) {
+        yield put(setSendStage(SendStage.Processing));
+        const result: TransferTokenResponse = yield call(() =>
+          transferTokenRequest(selectedWallet, recipient.publicAddress, amount, token.tokenAddress)
         );
-        yield put(setTxReceipt(receipt));
-        if (receipt.status === 'confirmed') {
-          yield put(setSendStage(SendStage.Success));
+
+        if (result.transactionHash) {
+          yield put(setSendStage(SendStage.Broadcasting));
+          const receipt: TxReceiptResponse = yield call(() =>
+            queryClient.fetchQuery(txReceiptQueryOptions(result.transactionHash))
+          );
+          yield put(setTxReceipt(receipt));
+          if (receipt.status === 'confirmed') {
+            yield put(setSendStage(SendStage.Success));
+          } else {
+            yield put(setSendStage(SendStage.Error));
+          }
         } else {
           yield put(setSendStage(SendStage.Error));
         }
-      } else {
-        yield put(setSendStage(SendStage.Error));
       }
     }
+  } catch (e) {
+    console.error(e);
+    yield put(setError(true));
   }
 }
 

@@ -1,0 +1,50 @@
+.walletErrorView {
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--l-spacing);
+  padding: 0 var(--l-spacing);
+}
+
+.errorDetails {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--l-spacing);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: var(--s-spacing);
+  text-align: center;
+  color: #ff0000;
+}
+
+.statusIcon {
+  border-radius: 50%;
+  stroke-width: 2px;
+  padding: 4px;
+  color: currentColor;
+}
+
+.statusText {
+  font-size: 16px;
+  font-weight: 500;
+  color: currentColor;
+}
+
+.description {
+  color: var(--text-secondary);
+}

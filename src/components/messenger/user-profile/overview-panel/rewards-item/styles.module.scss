@@ -49,3 +49,15 @@
 .ClaimButtonContainer {
   width: 100%;
 }
+
+.RewardsTotalContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ClaimableRewards {
+  @include glass-text-secondary-color;
+
+  font-size: 8px;
+}

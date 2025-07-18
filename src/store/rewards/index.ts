@@ -16,6 +16,10 @@ export type RewardsState = {
   showNewRewardsIndicator: boolean;
   transferLoading: boolean;
   transferError?: string;
+  legacyRewards: string;
+  totalDailyRewards: string;
+  totalReferralFees: string;
+  unclaimedRewards: string;
 };
 
 export const initialState: RewardsState = {
@@ -28,6 +32,10 @@ export const initialState: RewardsState = {
   showNewRewardsIndicator: false,
   transferLoading: false,
   transferError: null,
+  legacyRewards: '0',
+  totalDailyRewards: '5000000000000000000000',
+  totalReferralFees: '23587631589499729921618',
+  unclaimedRewards: '0',
 };
 
 export const totalRewardsViewed = createAction(SagaActionTypes.TotalRewardsViewed);

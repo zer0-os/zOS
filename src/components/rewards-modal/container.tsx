@@ -17,9 +17,15 @@ export interface Properties extends PublicProperties {
 export class Container extends React.Component<Properties> {
   static mapState(state: RootState): Partial<Properties> {
     const { rewards } = state;
+
+    const totalRewards =
+      BigInt(rewards.totalDailyRewards) + BigInt(rewards.totalReferralFees) + BigInt(rewards.legacyRewards);
+    const totalUSD = formatUSD(calculateTotalPriceInUSDCents(totalRewards.toString(), rewards.meowInUSD ?? 0));
+    const totalMeow = `${formatWeiAmount(totalRewards.toString())} MEOW`;
+
     return {
-      totalUSD: formatUSD(calculateTotalPriceInUSDCents(rewards.meow, rewards.meowInUSD ?? 0)),
-      totalMeow: `${formatWeiAmount(rewards.meow)} MEOW`,
+      totalUSD,
+      totalMeow,
     };
   }
 

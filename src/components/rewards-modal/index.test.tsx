@@ -11,6 +11,7 @@ describe(RewardsModal, () => {
     const allProps: Properties = {
       totalUSD: '0',
       totalMeow: '0',
+      claimableRewardsUSD: '0',
       onClose: () => null,
       ...props,
     };

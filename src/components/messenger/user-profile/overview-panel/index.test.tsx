@@ -31,8 +31,8 @@ const queryClient = new QueryClient();
 jest.mock('../../../../lib/feature-flags', () => ({
   featureFlags: featureFlags,
 }));
-jest.mock('./rewards-item/container', () => ({
-  RewardsItemContainer: () => null, // Mock implementation returns null
+jest.mock('./rewards-item', () => ({
+  RewardsItem: () => null, // Mock implementation returns null
 }));
 jest.mock('../../../../lib/hooks/useMatrixImage', () => ({
   useMatrixImage: (image: string) => ({ data: image }), // Mock hook returns the input directly

@@ -1,55 +1,36 @@
-import * as React from 'react';
+import React from 'react';
 
-import { bemClassName } from '../../../../../lib/bem';
-import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
-import { IconCoinsStacked2, IconChevronRight } from '@zero-tech/zui/icons';
+import { IconChevronRight } from '@zero-tech/zui/icons';
+import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../lib/number';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../../store/reducer';
+import { ClaimRewardsButton } from '../../../../claim-rewards-button';
 
-import './styles.scss';
+import styles from './styles.module.scss';
 
-const cn = bemClassName('rewards-item');
+export interface Properties {}
 
-export interface Properties {
-  totalUSD: string;
-  totalMeow: string;
-  isLoading?: boolean;
-  error?: string;
+const selectRewards = (state: RootState) => state.rewards;
 
-  onClaimEarnings?: () => void;
-}
+export const RewardsItem: React.FC<Properties> = () => {
+  const rewards = useSelector(selectRewards);
 
-export class RewardsItem extends React.Component<Properties> {
-  handleClaimClick = () => {
-    if (this.props.onClaimEarnings) {
-      this.props.onClaimEarnings();
-    }
-  };
+  const totalUSD = formatUSD(calculateTotalPriceInUSDCents(rewards.meow, rewards.meowInUSD ?? 0));
 
-  render() {
-    return (
-      <div {...cn()}>
-        <div {...cn('header')}>
-          <div {...cn('title')}>Earnings</div>
-          <IconChevronRight {...cn('chevron')} size={18} isFilled />
-        </div>
+  return (
+    <div className={styles.RewardsItem}>
+      <div className={styles.Header}>
+        <div className={styles.Title}>Earnings</div>
+        <IconChevronRight size={18} isFilled />
+      </div>
 
-        <div {...cn('info-container')}>
-          <div {...cn('usd')}>{this.props.totalUSD}</div>
+      <div className={styles.InfoContainer}>
+        <div className={styles.Usd}>{totalUSD}</div>
 
-          <div {...cn('claim-button-container')}>
-            <Button
-              {...cn('claim-button')}
-              variant={ButtonVariant.Secondary}
-              onPress={this.handleClaimClick}
-              isLoading={this.props.isLoading}
-              startEnhancer={<IconCoinsStacked2 {...cn('claim-button-icon')} size={16} />}
-            >
-              Claim Earnings
-            </Button>
-
-            {this.props.error && <div {...cn('error-message')}>{this.props.error}</div>}
-          </div>
+        <div className={styles.ClaimButtonContainer}>
+          <ClaimRewardsButton rewardsTotal={rewards.meow} rewardsTotalInUSD={totalUSD} className={styles.ClaimButton} />
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};

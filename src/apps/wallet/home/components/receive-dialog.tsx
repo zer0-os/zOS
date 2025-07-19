@@ -24,7 +24,8 @@ export const ReceiveDialog = ({ open, onOpenChange }: ReceiveDialogProps) => {
         </div>
 
         <Alert variant='info' isFilled>
-          Only send Z Chain assets to this address
+          This address can only receive assets native to Z Chain. Other EVM assets sent to this address will be
+          inaccessible.
         </Alert>
 
         <div className={styles.qrCodeContainer}>

@@ -6,10 +6,11 @@ import { errorsSelector, loadingSelector } from '../../store/login/selectors';
 import { EmailLoginErrors, verifyOTPCode, loginByOTP } from '../../store/login';
 import { OTPCode } from './otp-code/otp-code';
 import classNames from 'classnames';
+const RESEND_TIMEOUT_SECONDS = 45;
 
 export const OTPVerify = ({ email }: { email: string }) => {
   const [code, setCode] = useState('');
-  const [resendTime, setResendTime] = useState(45);
+  const [resendTime, setResendTime] = useState(RESEND_TIMEOUT_SECONDS);
   const isLoading = useSelector(loadingSelector);
   const errors = useSelector(errorsSelector);
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ export const OTPVerify = ({ email }: { email: string }) => {
     if (resendTime > 0) return;
 
     dispatch(loginByOTP({ email }));
-    setResendTime(45);
+    setResendTime(RESEND_TIMEOUT_SECONDS);
   };
 
   return (

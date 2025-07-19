@@ -376,6 +376,9 @@ export const Message: React.FC<Properties> = memo(
     };
 
     const renderBody = () => {
+      const hasContent = media?.body || message || reactions || showTimestamp;
+      if (!hasContent) return null;
+
       return (
         <div {...cn('block-body')}>
           {media?.body && (

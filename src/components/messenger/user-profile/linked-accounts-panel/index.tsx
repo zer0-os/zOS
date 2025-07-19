@@ -173,13 +173,7 @@ export function LinkedAccountsPanel({ onBack }: Properties) {
       )}
 
       {isAddEmailModalOpen && (
-        <Modal
-          open={isAddEmailModalOpen}
-          onOpenChange={(isOpen) => {
-            isOpen ? openEmailModal(true) : openEmailModal(false);
-          }}
-          {...cn('add-email-modal')}
-        >
+        <Modal open={isAddEmailModalOpen} onOpenChange={openEmailModal} {...cn('add-email-modal')}>
           <div {...cn('add-email-body')}>
             <div {...cn('add-email-title-bar')}>
               <h3 {...cn('add-email-title')}>Add Email</h3>

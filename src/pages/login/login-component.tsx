@@ -11,6 +11,7 @@ import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { SocialLogin } from '../../authentication/social-login/social-login';
 import { assertAllValuesConsumed } from '../../lib/enum';
 import { featureFlags } from '../../lib/feature-flags';
+import { OTPLogin } from '../../authentication/otp-login/otp-login';
 
 import { bemClassName } from '../../lib/bem';
 import './login.scss';
@@ -30,6 +31,8 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
         return <Web3LoginContainer />;
       case LoginStage.EmailLogin:
         return <EmailLoginContainer />;
+      case LoginStage.OTPLogin:
+        return <OTPLogin />;
       case LoginStage.SocialLogin:
         return <SocialLogin />;
       default:
@@ -38,9 +41,11 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
   }
 
   renderToggleGroup(isLoggingIn: boolean, stage: LoginStage) {
+    const isOTPLoginEnabled = featureFlags.enableOTPLogin;
+    const activeStage = isOTPLoginEnabled && stage === LoginStage.EmailLogin ? LoginStage.OTPLogin : stage;
     const options: { key: LoginStage; label: string }[] = [
       { key: LoginStage.Web3Login, label: 'Web3' },
-      { key: LoginStage.EmailLogin, label: 'Email' },
+      { key: isOTPLoginEnabled ? LoginStage.OTPLogin : LoginStage.EmailLogin, label: 'Email' },
     ];
     if (featureFlags.enableSocialLogin) {
       options.push({ key: LoginStage.SocialLogin, label: 'Social' });
@@ -55,7 +60,7 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
           options={options}
           variant='default'
           onSelectionChange={(selection) => this.props.handleSelectionChange(selection as LoginStage)}
-          selection={stage}
+          selection={activeStage}
           selectionType='single'
           isRequired
           isDisabled={isLoggingIn}

@@ -1,0 +1,27 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+
+.otpCode {
+  display: flex;
+  gap: 8px;
+}
+
+.otpCodeInput {
+  width: 40px;
+  height: 40px;
+  color: #fff;
+  text-align: center;
+  background: rgba(167, 163, 163, 0.05);
+  box-shadow: -2px -2px 4px 0px rgba(246, 244, 246, 0.05) inset, 2px 2px 4px -1px rgba(10, 10, 10, 0.4) inset;
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: text;
+  outline: none;
+  border: none;
+
+  &:focus {
+    box-shadow: -2px -2px 4px 0px theme.$color-secondary-11 inset, 2px 2px 4px -1px rgba(10, 10, 10, 0.4) inset;
+  }
+}

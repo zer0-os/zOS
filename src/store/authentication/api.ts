@@ -83,3 +83,34 @@ export async function oauthLogin({ sessionToken }: { sessionToken: string }) {
     throw error;
   }
 }
+
+export async function requestOTP({ email }: { email: string }) {
+  try {
+    const response = await post('/api/otp/request').send({ email });
+    return {
+      success: true,
+      response: response.body,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      response: error.response.body.code,
+    };
+  }
+}
+
+export async function verifyOTP({ email, code }: { email: string; code: string }) {
+  try {
+    const response = await post('/api/otp/verify').send({ email, code });
+    addVercelPreviewAuthHeader(response.body.accessToken);
+    return {
+      success: true,
+      response: response.body,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      response: error.response.body.code,
+    };
+  }
+}

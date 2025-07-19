@@ -13,6 +13,7 @@ describe('Container', () => {
       isLoading: false,
       errors: {},
       loginByEmail: () => null,
+      switchLoginStage: () => null,
       ...props,
     };
 

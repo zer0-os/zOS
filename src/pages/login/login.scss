@@ -7,7 +7,7 @@
 
 // Constants for login dimensions and spacing
 $login-gap: 32px;
-$login-width: 256px;
+$login-width: 312px;
 $login-padding-vertical: 24px;
 
 // Mixin for flexbox layout
@@ -75,6 +75,10 @@ body {
   }
 
   &__inner-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
     &--is-logging-in {
       margin: auto 0;
     }
@@ -100,8 +104,8 @@ body {
   }
 
   &__login-option {
-    min-width: 128px;
-    max-width: 256px;
+    max-width: $login-width;
+    width: 100%;
 
     &--wallet-option {
       @include glass-shadow-and-blur;

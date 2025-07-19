@@ -38,4 +38,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableStaking: { defaultValue: true },
   enableWalletApp: { defaultValue: true },
   enableSocialLogin: { defaultValue: true },
+  enableOTPLogin: { defaultValue: true },
 };

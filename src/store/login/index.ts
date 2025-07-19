@@ -3,19 +3,28 @@ import { Connector } from 'wagmi';
 
 export enum SagaActionTypes {
   EmailLogin = 'login/emailLogin',
+  OTPLogin = 'login/otpLogin',
+  OTPVerify = 'login/otpVerify',
   Web3Login = 'login/web3Login',
   OAuthLogin = 'login/oauthLogin',
   SwitchLoginStage = 'login/switchLoginStage',
 }
 
+export enum OTPStage {
+  Login = 'login',
+  Verify = 'verify',
+}
+
 export type LoginState = {
   stage: LoginStage;
+  otpStage: OTPStage;
   loading: boolean;
   errors: string[];
 };
 
 export enum LoginStage {
   EmailLogin = 'email',
+  OTPLogin = 'otp',
   Web3Login = 'web3',
   SocialLogin = 'social',
 }
@@ -33,13 +42,30 @@ export enum Web3LoginErrors {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
+export type LoginByEmailPayload = {
+  email: string;
+  password: string;
+};
+
+export type LoginByOTPPayload = {
+  email: string;
+};
+
+export type VerifyOTPPayload = {
+  email: string;
+  code: string;
+};
+
 export const initialState: LoginState = {
   stage: LoginStage.Web3Login,
+  otpStage: OTPStage.Login,
   loading: false,
   errors: [],
 };
 
-export const loginByEmail = createAction<{ email: string; password: string }>(SagaActionTypes.EmailLogin);
+export const loginByEmail = createAction<LoginByEmailPayload>(SagaActionTypes.EmailLogin);
+export const loginByOTP = createAction<LoginByOTPPayload>(SagaActionTypes.OTPLogin);
+export const verifyOTPCode = createAction<VerifyOTPPayload>(SagaActionTypes.OTPVerify);
 export const loginByWeb3 = createAction<Connector['id']>(SagaActionTypes.Web3Login);
 export const loginByOAuth = createAction<string>(SagaActionTypes.OAuthLogin);
 export const switchLoginStage = createAction<LoginStage>(SagaActionTypes.SwitchLoginStage);
@@ -51,6 +77,9 @@ const slice = createSlice({
     setStage: (state, action: PayloadAction<LoginState['stage']>) => {
       state.stage = action.payload;
     },
+    setOTPStage: (state, action: PayloadAction<OTPStage>) => {
+      state.otpStage = action.payload;
+    },
     setLoading: (state, action: PayloadAction<LoginState['loading']>) => {
       state.loading = action.payload;
     },
@@ -61,5 +90,5 @@ const slice = createSlice({
   },
 });
 
-export const { setLoading, setErrors, setStage, reset } = slice.actions;
+export const { setLoading, setErrors, setStage, setOTPStage, reset } = slice.actions;
 export const { reducer } = slice;

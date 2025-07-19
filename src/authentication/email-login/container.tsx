@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { RootState } from '../../store/reducer';
 import { connectContainer } from '../../store/redux-container';
-import { EmailLoginErrors, loginByEmail } from '../../store/login';
+import { EmailLoginErrors, loginByEmail, LoginStage, switchLoginStage } from '../../store/login';
 
 import { EmailLogin } from '.';
 
@@ -16,6 +16,7 @@ export interface Properties extends PublicProperties {
     general?: string;
   };
   loginByEmail: (data: { email: string; password: string }) => void;
+  switchLoginStage: (stage: LoginStage) => void;
 }
 
 export class Container extends React.Component<Properties> {
@@ -53,12 +54,17 @@ export class Container extends React.Component<Properties> {
   }
 
   static mapActions() {
-    return { loginByEmail };
+    return { loginByEmail, switchLoginStage };
   }
 
   render() {
     return (
-      <EmailLogin isLoading={this.props.isLoading} onSubmit={this.props.loginByEmail} errors={this.props.errors} />
+      <EmailLogin
+        isLoading={this.props.isLoading}
+        onSubmit={this.props.loginByEmail}
+        errors={this.props.errors}
+        switchLoginStage={this.props.switchLoginStage}
+      />
     );
   }
 }

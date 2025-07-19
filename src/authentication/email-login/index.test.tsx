@@ -11,6 +11,7 @@ describe('EmailLogin', () => {
       isLoading: false,
       errors: {},
       onSubmit: () => null,
+      switchLoginStage: () => null,
       ...props,
     };
 

@@ -9,11 +9,17 @@ import {
   setLoading,
   setStage,
   LoginStage,
+  setOTPStage,
+  OTPStage,
+  LoginByOTPPayload,
+  VerifyOTPPayload,
+  LoginByEmailPayload,
 } from '.';
 import { getSignedToken, isWeb3AccountConnected } from '../web3/saga';
 import {
   authenticateByEmail,
   authenticateByOAuth,
+  authenticateByOTP,
   forceLogout,
   nonceOrAuthorize,
   terminate,
@@ -21,8 +27,50 @@ import {
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { getHistory } from '../../lib/browser';
 import { epicGamesLink } from '../../lib/oauth/epicGamesLink';
+import { requestOTP } from '../authentication/api';
+import { PayloadAction } from '@reduxjs/toolkit';
 
-export function* emailLogin(action) {
+export function* otpLogin(action: PayloadAction<LoginByOTPPayload>) {
+  const { email } = action.payload;
+
+  yield put(setLoading(true));
+  yield put(setErrors([]));
+  try {
+    const result = yield call(requestOTP, { email });
+    if (result.success) {
+      yield put(setErrors([]));
+      yield put(setOTPStage(OTPStage.Verify));
+    } else {
+      yield put(setErrors([result.response]));
+    }
+  } catch (e) {
+    yield put(setErrors([EmailLoginErrors.UNKNOWN_ERROR]));
+  } finally {
+    yield put(setLoading(false));
+  }
+}
+
+export function* otpVerify(action: PayloadAction<VerifyOTPPayload>) {
+  const { email, code } = action.payload;
+
+  yield put(setLoading(true));
+  yield put(setErrors([]));
+  try {
+    const result = yield call(authenticateByOTP, email, code);
+    if (result.success) {
+      yield put(setErrors([]));
+      yield call(redirectToRoot);
+    } else {
+      yield put(setErrors([result.response]));
+    }
+  } catch (e) {
+    yield put(setErrors([EmailLoginErrors.UNKNOWN_ERROR]));
+  } finally {
+    yield put(setLoading(false));
+  }
+}
+
+export function* emailLogin(action: PayloadAction<LoginByEmailPayload>) {
   const { email, password } = action.payload;
 
   yield put(setLoading(true));
@@ -87,7 +135,7 @@ export function* web3Login() {
   }
 }
 
-export function* oauthLogin(action) {
+export function* oauthLogin(action: PayloadAction<string>) {
   const sessionToken = action.payload;
 
   const result = yield call(authenticateByOAuth, sessionToken);
@@ -98,8 +146,9 @@ export function* oauthLogin(action) {
   }
 }
 
-export function* switchLoginStage(action) {
+export function* switchLoginStage(action: PayloadAction<LoginStage>) {
   yield put(setErrors([]));
+  yield put(setOTPStage(OTPStage.Login));
   yield put(setStage(action.payload));
 }
 
@@ -199,6 +248,8 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.EmailLogin, emailLogin);
   yield takeLatest(SagaActionTypes.Web3Login, web3Login);
   yield takeLatest(SagaActionTypes.OAuthLogin, oauthLogin);
+  yield takeLatest(SagaActionTypes.OTPLogin, otpLogin);
+  yield takeLatest(SagaActionTypes.OTPVerify, otpVerify);
   yield takeLatest(SagaActionTypes.SwitchLoginStage, switchLoginStage);
 }
 

@@ -1,0 +1,69 @@
+.otpLogin {
+  min-width: 300px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  button {
+    width: 100%;
+  }
+}
+
+.otpVerify {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  button {
+    width: 100%;
+  }
+}
+
+.input {
+  gap: 4px;
+}
+
+.otpVerifyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.email {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.otpVerifyResend {
+  cursor: not-allowed;
+  color: var(--color-greyscale-9);
+  font-variant: tabular-nums;
+  font-size: 12px;
+
+  span {
+    border-bottom: dotted 2px var(--color-greyscale-9);
+  }
+
+  &.enabled {
+    cursor: pointer;
+    color: var(--color-greyscale-12);
+
+    span {
+      border-bottom: dotted 2px var(--color-greyscale-12);
+    }
+  }
+}
+
+.usePassword {
+  color: var(--color-greyscale-11);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-greyscale-12);
+  }
+}

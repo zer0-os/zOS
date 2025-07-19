@@ -43,4 +43,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   enableStaking: { defaultValue: false },
   enableWalletApp: { defaultValue: true },
   enableSocialLogin: { defaultValue: false },
+  enableOTPLogin: { defaultValue: false },
 };

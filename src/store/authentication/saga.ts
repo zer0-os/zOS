@@ -6,6 +6,7 @@ import {
   clearSession as clearSessionApi,
   emailLogin as apiEmailLogin,
   oauthLogin as apiOAuthLogin,
+  verifyOTP as apiVerifyOTP,
 } from './api';
 import { clearChannelsAndConversations } from '../channels-list/saga';
 import { clearUsers } from '../users/saga';
@@ -79,7 +80,7 @@ export function* getCurrentUser() {
   }
 }
 
-export function* authenticateByEmail(email, password) {
+export function* authenticateByEmail(email: string, password: string) {
   const result = yield call(apiEmailLogin, { email, password });
   if (!result.success) {
     return result;
@@ -90,6 +91,15 @@ export function* authenticateByEmail(email, password) {
 
 export function* authenticateByOAuth(sessionToken: string) {
   const result = yield call(apiOAuthLogin, { sessionToken });
+  if (!result.success) {
+    return result;
+  }
+  yield call(completeUserLogin);
+  return result;
+}
+
+export function* authenticateByOTP(email: string, code: string) {
+  const result = yield call(apiVerifyOTP, { email, code });
   if (!result.success) {
     return result;
   }

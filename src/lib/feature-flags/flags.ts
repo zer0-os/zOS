@@ -34,7 +34,8 @@ export type FeatureFlagKey =
   | 'enableCreateTGCChannel'
   | 'enableStaking'
   | 'enableWalletApp'
-  | 'enableSocialLogin';
+  | 'enableSocialLogin'
+  | 'enableOTPLogin';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

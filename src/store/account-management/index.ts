@@ -1,5 +1,4 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-//import { Connectors } from '../../lib/web3';
 
 export enum SagaActionTypes {
   AddNewWallet = 'Wallets/addNewWallet',

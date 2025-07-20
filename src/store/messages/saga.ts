@@ -517,6 +517,10 @@ export function* receiveOptimisticMessage(action: ReceiveOptimisticMessageAction
 }
 
 export function* replaceOptimisticMessage(currentMessages: string[], message: Message) {
+  if (!message.optimisticId) {
+    return null;
+  }
+
   const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
 
   if (messageIndex < 0) {

@@ -2,7 +2,7 @@ import { Button, Input } from '@zero-tech/zui/components';
 import { AlertProps } from '@zero-tech/zui/components/Alert';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { EmailLoginErrors, loginByOTP, LoginStage, OTPStage, switchLoginStage } from '../../store/login';
+import { loginByOTP, LoginStage, OTPStage, switchLoginStage } from '../../store/login';
 import { errorsSelector, loadingSelector, otpStageSelector } from '../../store/login/selectors';
 import styles from './otp-login.module.scss';
 import { OTPVerify } from './otp-verify';
@@ -14,12 +14,12 @@ export const OTPLogin = () => {
   const isLoading = useSelector(loadingSelector);
   const errors = useSelector(errorsSelector);
   const hasEmailError = errors.find((error) => error === 'INVALID_EMAIL');
-  const unknownError = errors.find((error) => error === EmailLoginErrors.UNKNOWN_ERROR);
+  const rateLimitError = errors.find((error) => error === 'RATE_LIMIT');
   const emailError = hasEmailError
     ? { variant: 'error' as AlertProps['variant'], text: 'Invalid email address' }
-    : unknownError
-    ? { variant: 'error' as AlertProps['variant'], text: 'An unknown error occurred' }
-    : null;
+    : rateLimitError
+    ? { variant: 'error' as AlertProps['variant'], text: 'Too many requests. Try again later.' }
+    : { variant: 'error' as AlertProps['variant'], text: 'An unknown error occurred' };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

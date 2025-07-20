@@ -92,9 +92,15 @@ export async function requestOTP({ email }: { email: string }) {
       response: response.body,
     };
   } catch (error: any) {
+    if (error?.response?.status === 429) {
+      return {
+        success: false,
+        response: 'RATE_LIMIT',
+      };
+    }
     return {
       success: false,
-      response: error.response.body.code,
+      response: error?.response?.body?.code,
     };
   }
 }
@@ -108,9 +114,15 @@ export async function verifyOTP({ email, code }: { email: string; code: string }
       response: response.body,
     };
   } catch (error: any) {
+    if (error?.response?.status === 429) {
+      return {
+        success: false,
+        response: 'RATE_LIMIT',
+      };
+    }
     return {
       success: false,
-      response: error.response.body.code,
+      response: error?.response?.body?.code,
     };
   }
 }

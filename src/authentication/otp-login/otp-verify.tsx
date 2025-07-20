@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styles from './otp-login.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { errorsSelector, loadingSelector } from '../../store/login/selectors';
-import { EmailLoginErrors, verifyOTPCode, loginByOTP } from '../../store/login';
+import { verifyOTPCode, loginByOTP } from '../../store/login';
 import { OTPCode } from './otp-code/otp-code';
 import classNames from 'classnames';
 const RESEND_TIMEOUT_SECONDS = 45;
@@ -16,14 +16,14 @@ export const OTPVerify = ({ email }: { email: string }) => {
   const dispatch = useDispatch();
   const hasOTPError = errors.some((error) => error === 'INVALID_OTP');
   const noUserError = errors.some((error) => error === 'USER_NOT_FOUND');
-  const unknownError = errors.some((error) => error === EmailLoginErrors.UNKNOWN_ERROR);
+  const rateLimitError = errors.some((error) => error === 'RATE_LIMIT');
   const error = hasOTPError
     ? 'Invalid code'
     : noUserError
-    ? 'User not found'
-    : unknownError
-    ? 'An unknown error occurred'
-    : null;
+    ? 'Create an account to continue'
+    : rateLimitError
+    ? 'Too many requests. Try again later.'
+    : 'An unknown error occurred';
 
   useEffect(() => {
     if (resendTime > 0) {

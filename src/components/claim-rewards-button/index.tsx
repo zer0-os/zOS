@@ -20,7 +20,7 @@ export const ClaimRewardsButton: React.FC<Properties> = ({
   rewardsTotal,
   rewardsTotalInUSD,
 }) => {
-  const { claimRewards, isLoading, showModal, closeModal, error } = useClaim();
+  const { claimRewards, isLoading, showModal, closeModal, error, transactionHash } = useClaim();
 
   return (
     <>
@@ -30,12 +30,14 @@ export const ClaimRewardsButton: React.FC<Properties> = ({
         onPress={claimRewards}
         isLoading={isLoading}
         startEnhancer={<IconCoinsStacked2 className={styles.ClaimButtonIcon} size={16} />}
+        isDisabled={rewardsTotal === '0 MEOW'}
       >
         {children}
       </Button>
 
       {showModal && (
         <ClaimedRewardsDialog
+          transactionHash={transactionHash}
           onClose={closeModal}
           meowAmount={rewardsTotal}
           usdAmount={rewardsTotalInUSD}

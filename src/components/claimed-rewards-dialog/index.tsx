@@ -10,16 +10,21 @@ export interface Properties {
   usdAmount?: string;
   error?: string;
   isLoading?: boolean;
+  transactionHash?: string;
 
   onClose: () => void;
   onRetry?: () => void;
 }
+
+const explorerUrl =
+  process.env.NODE_ENV === 'production' ? 'https://zscan.live' : 'https://zephyr-blockscout.eu-north-2.gateway.fm';
 
 export const ClaimedRewardsDialog: React.FC<Properties> = ({
   meowAmount,
   usdAmount,
   error,
   isLoading = false,
+  transactionHash,
   onClose,
   onRetry,
 }) => {
@@ -92,7 +97,7 @@ export const ClaimedRewardsDialog: React.FC<Properties> = ({
                 <div className={styles.UsdAmount}>{usdAmount}</div>
                 <a
                   // add hash and correct url here
-                  href={'https://etherscan.io/tx/'}
+                  href={`${explorerUrl}/tx/${transactionHash}`}
                   target='_blank'
                   rel='noopener noreferrer'
                   className={styles.ViewTransaction}

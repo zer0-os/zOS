@@ -33,7 +33,18 @@ describe('fetch', () => {
       .provide([
         [
           call(fetchRewards, {}),
-          { success: true, response: { meow: '517', meowPreviousDay: '599' } },
+          {
+            success: true,
+            response: {
+              meow: '517',
+              meowPreviousDay: '599',
+              decimals: 18,
+              legacyRewards: '100',
+              totalDailyRewards: '200',
+              totalReferralFees: '50',
+              unclaimedRewards: '75',
+            },
+          },
         ],
       ])
       .withReducer(rootReducer, initialState({}))

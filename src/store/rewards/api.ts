@@ -7,6 +7,10 @@ export interface RewardsResp {
     meow: string;
     meowPreviousDay: string;
     decimals: number;
+    legacyRewards: string;
+    totalDailyRewards: string;
+    totalReferralFees: string;
+    unclaimedRewards: string;
   };
 }
 

@@ -12,6 +12,7 @@ describe(RewardsModal, () => {
       totalUSD: '0',
       totalMeow: '0',
       claimableRewardsUSD: '0',
+      claimableRewardsMeow: '0 MEOW',
       onClose: () => null,
       ...props,
     };

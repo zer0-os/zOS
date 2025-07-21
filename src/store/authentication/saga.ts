@@ -24,6 +24,7 @@ import { clearCache, performCacheMaintenance } from '../../lib/storage/media-cac
 import { setSentryUser } from '../../utils';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
+import { clearWallet } from '../wallet/saga';
 
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
@@ -157,6 +158,7 @@ export function* forceLogout() {
   yield call(clearLastActiveFeed);
   yield call(clearLastFeedFilter);
   yield call(clearRewards);
+  yield call(clearWallet);
   yield call(terminate);
 }
 

@@ -11,6 +11,7 @@ import {
   transferToken,
   setSelectedWallet,
   setError,
+  reset,
 } from '.';
 import {
   recipientSelector,
@@ -133,6 +134,11 @@ function* handlePrevious() {
       // Can't go back from search
       break;
   }
+}
+
+export function* clearWallet() {
+  yield put(setSelectedWallet({ address: '', label: null }));
+  yield put(reset());
 }
 
 export function* saga() {

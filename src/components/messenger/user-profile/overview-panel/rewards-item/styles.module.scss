@@ -47,6 +47,9 @@
 }
 
 .ClaimButtonContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   width: 100%;
 }
 
@@ -60,4 +63,8 @@
   @include glass-text-secondary-color;
 
   font-size: 8px;
+}
+
+.InfoIcon {
+  color: theme.$color-secondary-11;
 }

@@ -1,10 +1,11 @@
 import React from 'react';
 
-import { IconChevronRight } from '@zero-tech/zui/icons';
+import { IconChevronRight, IconInfoCircle } from '@zero-tech/zui/icons';
 import { calculateTotalPriceInUSDCents, formatUSD, formatWeiAmount } from '../../../../../lib/number';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/reducer';
 import { ClaimRewardsButton } from '../../../../claim-rewards-button';
+import { HoverCard } from '../../../../hover-card';
 
 import styles from './styles.module.scss';
 
@@ -22,6 +23,7 @@ export const RewardsItem: React.FC<Properties> = () => {
     calculateTotalPriceInUSDCents(rewards.unclaimedRewards.toString(), rewards.meowInUSD ?? 0)
   );
   const claimableMeow = `${formatWeiAmount(rewards.unclaimedRewards.toString())} MEOW`;
+  const hoverCardContent = `You can now claim ${claimableRewardsUSD} or ${claimableMeow}`;
 
   return (
     <div className={styles.RewardsItem}>
@@ -29,15 +31,9 @@ export const RewardsItem: React.FC<Properties> = () => {
         <div className={styles.Title}>Earnings</div>
         <IconChevronRight size={18} isFilled />
       </div>
-
       <div className={styles.InfoContainer}>
         <div className={styles.RewardsTotalContainer}>
           <div className={styles.Usd}>{totalUSD}</div>
-          {BigInt(rewards.unclaimedRewards) > 0n && (
-            <div className={styles.ClaimableRewards}>
-              You can now claim {claimableRewardsUSD} or {claimableMeow}
-            </div>
-          )}
         </div>
 
         <div className={styles.ClaimButtonContainer}>
@@ -46,6 +42,15 @@ export const RewardsItem: React.FC<Properties> = () => {
             rewardsTotalInUSD={claimableRewardsUSD}
             className={styles.ClaimButton}
           />
+
+          {BigInt(rewards.unclaimedRewards) === 0n && (
+            <div className={styles.ClaimableRewards}>
+              <HoverCard
+                iconTrigger={<IconInfoCircle className={styles.InfoIcon} size={18} />}
+                content={<div>{hoverCardContent}</div>}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

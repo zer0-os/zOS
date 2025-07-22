@@ -39,4 +39,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableWalletApp: { defaultValue: true },
   enableSocialLogin: { defaultValue: true },
   enableOTPLogin: { defaultValue: true },
+  enableClaimRewards: { defaultValue: true },
 };

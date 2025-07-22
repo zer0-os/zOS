@@ -46,6 +46,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableWalletApp: boolean;
   declare enableSocialLogin: boolean;
   declare enableOTPLogin: boolean;
+  declare enableClaimRewards: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

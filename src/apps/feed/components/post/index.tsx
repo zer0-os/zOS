@@ -16,7 +16,8 @@ import { useGetReturnFromProfilePath } from '../../lib/useGetReturnFromProfilePa
 import { RETURN_POST_ID_KEY, RETURN_PATH_KEY } from '../../lib/useReturnFromProfileNavigation';
 import { ProfileCardHover } from '../../../../components/profile-card/hover';
 import classNames from 'classnames';
-import { IconZeroProVerified } from '@zero-tech/zui/icons';
+import { ZeroProBadge } from '../../../../components/zero-pro-badge';
+
 import { StatusAction } from './actions/status';
 import { useSelector } from 'react-redux';
 import { isOptimisticPostSelector } from '../../../../store/post-queue/selectors';
@@ -149,7 +150,7 @@ export const Post = ({
                   <ProfileLink primaryZid={authorPrimaryZid} publicAddress={authorPublicAddress} postId={messageId}>
                     {nickname}
                   </ProfileLink>
-                  {isZeroProSubscriber && <IconZeroProVerified size={18} />}
+                  {isZeroProSubscriber && <ZeroProBadge size={18} />}
                   <span>⋅</span>
                   {variant === 'default' && <Timestamp className={styles.Date} timestamp={timestamp} />}
                 </Name>

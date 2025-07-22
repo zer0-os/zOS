@@ -5,8 +5,9 @@ import { DefaultRoomLabels, NormalizedChannel } from '../../../../store/channels
 
 import { MoreMenu } from './more-menu';
 import { MatrixAvatar } from '../../../matrix-avatar';
+import { ZeroProBadge } from '../../../zero-pro-badge';
 
-import { IconBellOff1, IconZeroProVerified } from '@zero-tech/zui/icons';
+import { IconBellOff1 } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-item.scss';
@@ -161,7 +162,7 @@ export const ConversationItem = memo(
                 <div {...cn('name')} is-unread={isUnread.toString()}>
                   {highlightedName}
                 </div>
-                {user?.subscriptions?.zeroPro && <IconZeroProVerified {...cn('badge-icon')} size={16} />}
+                {user?.subscriptions?.zeroPro && <ZeroProBadge {...cn('badge-icon')} size={16} />}
               </div>
               {conversation.labels?.includes(DefaultRoomLabels.MUTE) && (
                 <IconBellOff1 {...cn('muted-icon')} size={16} />

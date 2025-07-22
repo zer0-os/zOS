@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { IconButton, Input } from '@zero-tech/zui/components';
-import { IconSearchMd, IconZeroProVerified } from '@zero-tech/zui/icons';
+import { IconSearchMd } from '@zero-tech/zui/icons';
 import { MatrixAvatar } from '../../../../../components/matrix-avatar';
+import { ZeroProBadge } from '../../../../../components/zero-pro-badge';
 import { ProfileLinkNavigation } from '../../../../../components/profile-link-navigation';
 import styles from './styles.module.scss';
 
@@ -74,7 +75,7 @@ export const SearchDrawer = ({ searchResults, isSearching, searchValue, onSearch
                   <div className={styles.UserInfo}>
                     <div className={styles.UserNameContainer}>
                       <span className={styles.UserName}>{user.name}</span>
-                      {user?.subscriptions?.zeroPro && <IconZeroProVerified size={14} />}
+                      {user?.subscriptions?.zeroPro && <ZeroProBadge size={14} />}
                     </div>
                     {user?.primaryZID && <span className={styles.UserHandle}>{user.primaryZID}</span>}
                   </div>

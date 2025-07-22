@@ -5,8 +5,8 @@ import { Input } from '@zero-tech/zui/components';
 import { highlightFilter, itemToOption } from '../lib/utils';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { Waypoint } from '../../waypoint';
+import { ZeroProBadge } from '../../zero-pro-badge';
 import classNames from 'classnames';
-import { IconZeroProVerified } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 import '../list/styles.scss';
@@ -141,7 +141,7 @@ export class AutocompleteMembers extends React.Component<Properties, State> {
                       <div className='autocomplete-members__label'>
                         {highlightFilter(r.label, this.state.searchString)}
                       </div>
-                      {r.isZeroProSubscriber && <IconZeroProVerified size={16} />}
+                      {r.isZeroProSubscriber && <ZeroProBadge size={16} />}
                     </div>
                     {r?.subLabel && <div className='autocomplete-members__sub-label'>{r.subLabel}</div>}
                   </div>

@@ -23,7 +23,10 @@ export const RewardsItem: React.FC<Properties> = () => {
     calculateTotalPriceInUSDCents(rewards.unclaimedRewards.toString(), rewards.meowInUSD ?? 0)
   );
   const claimableMeow = `${formatWeiAmount(rewards.unclaimedRewards.toString())} MEOW`;
-  const hoverCardContent = `You can now claim ${claimableRewardsUSD} or ${claimableMeow}`;
+  const hoverCardContent =
+    BigInt(rewards.unclaimedRewards) > 0n
+      ? `You can now claim ${claimableRewardsUSD} or ${claimableMeow}`
+      : 'No earnings available to claim';
 
   return (
     <div className={styles.RewardsItem}>
@@ -43,14 +46,12 @@ export const RewardsItem: React.FC<Properties> = () => {
             className={styles.ClaimButton}
           />
 
-          {BigInt(rewards.unclaimedRewards) > 0n && (
-            <div className={styles.ClaimableRewards}>
-              <HoverCard
-                iconTrigger={<IconInfoCircle className={styles.InfoIcon} size={18} />}
-                content={<div>{hoverCardContent}</div>}
-              />
-            </div>
-          )}
+          <div className={styles.ClaimableRewards}>
+            <HoverCard
+              iconTrigger={<IconInfoCircle className={styles.InfoIcon} size={18} />}
+              content={<div>{hoverCardContent}</div>}
+            />
+          </div>
         </div>
       </div>
     </div>

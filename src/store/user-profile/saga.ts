@@ -1,8 +1,11 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
-import { SagaActionTypes, Stage, setStage, setPublicReadReceipts } from '.';
+import { call, put, takeLatest, select, delay } from 'redux-saga/effects';
+import { SagaActionTypes, Stage, setStage, setPublicReadReceipts, setShowZeroProNotification } from '.';
 import { getReadReceiptPreference, setReadReceiptPreference } from '../../lib/chat';
 import { reset as resetAccountManagementState } from '../account-management/saga';
 import { resetHash } from '../utils';
+import { userZeroProSubscriptionSelector } from '../authentication/selectors';
+import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
+import { takeEveryFromBus } from '../../lib/saga';
 
 export function* openUserProfile() {
   yield put(setStage(Stage.Overview));
@@ -35,6 +38,21 @@ export function* openLinkedAccounts() {
 
 export function* openZeroPro() {
   yield put(setStage(Stage.ZeroPro));
+}
+
+export function* closeZeroProNotification() {
+  yield put(setShowZeroProNotification(false));
+}
+
+export function* checkZeroProNotification() {
+  const isZeroProSubscriber = yield select(userZeroProSubscriptionSelector);
+
+  if (isZeroProSubscriber) {
+    return;
+  }
+
+  yield delay(10000);
+  yield put(setShowZeroProNotification(true));
 }
 
 export function* onPrivateReadReceipts() {
@@ -83,6 +101,9 @@ export function* saga() {
   yield takeLatest(SagaActionTypes.OpenAccountManagement, openAccountManagement);
   yield takeLatest(SagaActionTypes.OpenLinkedAccounts, openLinkedAccounts);
   yield takeLatest(SagaActionTypes.OpenZeroPro, openZeroPro);
+  yield takeLatest(SagaActionTypes.CloseZeroProNotification, closeZeroProNotification);
   yield takeLatest(SagaActionTypes.PrivateReadReceipts, onPrivateReadReceipts);
   yield takeLatest(SagaActionTypes.PublicReadReceipts, onPublicReadReceipts);
+
+  yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogin, checkZeroProNotification);
 }

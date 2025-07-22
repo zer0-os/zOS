@@ -1,9 +1,11 @@
 import { useCurrentUserDetails } from './lib/useCurrentUserDetails';
+import { useZeroProNotification } from './lib/useZeroProNotification';
 
-import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { Modal } from '@zero-tech/zui/components/Modal';
 import { RewardsToolTipContainer } from '../../messenger/list/rewards-tooltip/container';
 import { VerifyIdDialog } from '../../verify-id-dialog';
+import { ZeroProNotification } from './zero-pro-notification';
+import { UserDetails } from './user-details';
 
 import styles from './styles.module.scss';
 import { MatrixAvatar } from '../../matrix-avatar';
@@ -22,25 +24,27 @@ export const CurrentUser = () => {
     userName,
   } = useCurrentUserDetails();
 
+  const { showZeroProNotification, onUpgradeClick, onCloseZeroProNotification } = useZeroProNotification();
+
   return (
     <>
       <div className={styles.Wrapper}>
-        <div className={styles.Container} onClick={onClick}>
+        <div
+          className={`${styles.Container} ${showZeroProNotification ? styles.ShowNotification : ''}`}
+          onClick={onClick}
+        >
           <MatrixAvatar imageURL={userAvatarUrl} isActive={hasUnviewedRewards} size={'medium'} statusType={'active'} />
           <div className={styles.Drawer}>
             <div className={styles.Details}>
-              <div className={styles.Name}>{userName}</div>
-              {isHandleAWalletAddress ? (
-                <Button
-                  className={styles.Verify}
-                  isSubmit
-                  onPress={onOpenVerifyIdDialog}
-                  variant={ButtonVariant.Secondary}
-                >
-                  <div>Verify ID</div>
-                </Button>
+              {showZeroProNotification ? (
+                <ZeroProNotification onUpgradeClick={onUpgradeClick} onClose={onCloseZeroProNotification} />
               ) : (
-                <div className={styles.Handle}>{userHandle}</div>
+                <UserDetails
+                  userName={userName}
+                  userHandle={userHandle}
+                  isHandleAWalletAddress={isHandleAWalletAddress}
+                  onOpenVerifyIdDialog={onOpenVerifyIdDialog}
+                />
               )}
             </div>
           </div>

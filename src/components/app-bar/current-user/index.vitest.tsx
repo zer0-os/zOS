@@ -70,11 +70,41 @@ vi.mock('../../verify-id-dialog', () => ({
   ),
 }));
 
+vi.mock('./zero-pro-notification', () => ({
+  ZeroProNotification: ({ onUpgradeClick, onClose }) => (
+    <div data-testid='mock-zero-pro-notification'>
+      <button data-testid='upgrade-button' onClick={onUpgradeClick}>
+        Unlock Premium Features With Zero Pro
+      </button>
+      <button data-testid='close-notification-button' onClick={onClose}>
+        Close
+      </button>
+    </div>
+  ),
+}));
+
+vi.mock('./user-details', () => ({
+  UserDetails: ({ userName, userHandle, isHandleAWalletAddress, onOpenVerifyIdDialog }) => (
+    <div data-testid='mock-user-details'>
+      <div className='Name'>{userName}</div>
+      {isHandleAWalletAddress ? (
+        <button data-testid='verify-id-button' onClick={onOpenVerifyIdDialog}>
+          Verify ID
+        </button>
+      ) : (
+        <div className='Handle'>{userHandle}</div>
+      )}
+    </div>
+  ),
+}));
+
 const mockTotalRewardsViewed = vi.fn();
 const mockOpenUserProfile = vi.fn();
 const mockCloseUserProfile = vi.fn();
 const mockCloseVerifyIdDialog = vi.fn();
 const mockOpenVerifyIdDialog = vi.fn();
+const mockOnUpgradeClick = vi.fn();
+const mockOnCloseZeroProNotification = vi.fn();
 
 const DEFAULT_HOOK_RETURN: CurrentUserDetailsReturn = {
   hasUnviewedRewards: false,
@@ -93,8 +123,18 @@ const DEFAULT_HOOK_RETURN: CurrentUserDetailsReturn = {
 };
 
 let currentMockHook = { ...DEFAULT_HOOK_RETURN };
+let currentZeroProMock = {
+  showZeroProNotification: false,
+  onUpgradeClick: mockOnUpgradeClick,
+  onCloseZeroProNotification: mockOnCloseZeroProNotification,
+};
+
 vi.mock('./lib/useCurrentUserDetails', () => ({
   useCurrentUserDetails: () => currentMockHook,
+}));
+
+vi.mock('./lib/useZeroProNotification', () => ({
+  useZeroProNotification: () => currentZeroProMock,
 }));
 
 const queryClient = new QueryClient();
@@ -107,6 +147,11 @@ describe('CurrentUser Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     currentMockHook = { ...DEFAULT_HOOK_RETURN };
+    currentZeroProMock = {
+      showZeroProNotification: false,
+      onUpgradeClick: mockOnUpgradeClick,
+      onCloseZeroProNotification: mockOnCloseZeroProNotification,
+    };
   });
 
   it('should render user profile with avatar, name and handle', () => {
@@ -117,6 +162,8 @@ describe('CurrentUser Component', () => {
     expect(avatar).toHaveAttribute('data-image-url', 'https://example.com/avatar.jpg');
     expect(avatar).toHaveAttribute('data-is-active', 'false');
 
+    const userDetails = screen.getByTestId('mock-user-details');
+    expect(userDetails).toBeInTheDocument();
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('@username')).toBeInTheDocument();
 
@@ -132,7 +179,7 @@ describe('CurrentUser Component', () => {
 
     renderWithQueryClient(<CurrentUser />);
 
-    const verifyButton = screen.getByTestId('mock-button');
+    const verifyButton = screen.getByTestId('verify-id-button');
     expect(verifyButton).toBeInTheDocument();
     expect(screen.getByText('Verify ID')).toBeInTheDocument();
 
@@ -194,7 +241,7 @@ describe('CurrentUser Component', () => {
 
     renderWithQueryClient(<CurrentUser />);
 
-    const verifyButton = screen.getByTestId('mock-button');
+    const verifyButton = screen.getByTestId('verify-id-button');
     expect(verifyButton).toBeInTheDocument();
 
     fireEvent.click(verifyButton);
@@ -231,5 +278,27 @@ describe('CurrentUser Component', () => {
     fireEvent.click(modalCloseButton);
 
     expect(mockCloseVerifyIdDialog).toHaveBeenCalled();
+  });
+
+  it('should render Zero Pro notification when showZeroProNotification is true', () => {
+    currentZeroProMock = {
+      showZeroProNotification: true,
+      onUpgradeClick: mockOnUpgradeClick,
+      onCloseZeroProNotification: mockOnCloseZeroProNotification,
+    };
+
+    renderWithQueryClient(<CurrentUser />);
+
+    const notification = screen.getByTestId('mock-zero-pro-notification');
+    expect(notification).toBeInTheDocument();
+    expect(screen.getByText('Unlock Premium Features With Zero Pro')).toBeInTheDocument();
+
+    const upgradeButton = screen.getByTestId('upgrade-button');
+    fireEvent.click(upgradeButton);
+    expect(mockOnUpgradeClick).toHaveBeenCalled();
+
+    const closeButton = screen.getByTestId('close-notification-button');
+    fireEvent.click(closeButton);
+    expect(mockOnCloseZeroProNotification).toHaveBeenCalled();
   });
 });

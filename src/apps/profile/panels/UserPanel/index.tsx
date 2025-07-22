@@ -3,8 +3,9 @@ import { useUserPanel } from './useUserPanel';
 
 import { Panel, PanelBody } from '../../../../components/layout/panel';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
-import { IconLogoZero, IconMessage01, IconZeroProVerified } from '@zero-tech/zui/icons';
+import { IconLogoZero, IconMessage01 } from '@zero-tech/zui/icons';
 import MatrixMask from './matrix-mask.svg?react';
+import { ZeroProBadge } from '../../../../components/zero-pro-badge';
 import { FollowButton } from '../../../../components/follow-button';
 import { FollowCounts } from '../../../../components/follow-counts';
 import { Skeleton } from '@zero-tech/zui/components/Skeleton';
@@ -52,7 +53,7 @@ export const UserPanel = () => {
           <div className={styles.Name}>
             <div className={styles.NameAndBadgeWrapper}>
               <h1>{isLoading ? <Skeleton /> : handle}</h1>
-              {isZeroProSubscriber && <IconZeroProVerified size={18} />}
+              {isZeroProSubscriber && <ZeroProBadge size={18} />}
             </div>
             <h2>{isLoading ? <Skeleton /> : zid ? '0://' + zid : null}</h2>
           </div>

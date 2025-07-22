@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { MatrixAvatar } from '../../../../../components/matrix-avatar';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
-import { IconZeroProVerified } from '@zero-tech/zui/icons';
+import { ZeroProBadge } from '../../../../../components/zero-pro-badge';
 
 import classNames from 'classnames';
 import styles from './style.module.scss';
@@ -35,7 +35,7 @@ export const Details = forwardRef<HTMLDivElement, DetailsProps>(
           <MatrixAvatar size='small' imageURL={avatarURL} />
           <div className={styles.Name}>
             <span className={styles.NameText}>{name}</span>
-            {isZeroProSubscriber && <IconZeroProVerified size={18} />}
+            {isZeroProSubscriber && <ZeroProBadge size={18} />}
           </div>
         </div>
         {'⋅'}

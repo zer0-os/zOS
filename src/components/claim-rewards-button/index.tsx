@@ -22,7 +22,6 @@ export const ClaimRewardsButton: React.FC<Properties> = ({
   rewardsTotalInUSD,
 }) => {
   const { claimRewards, isLoading, showModal, closeModal, error, transactionHash } = useClaim();
-  console.log('xxxx rewardsTotal', rewardsTotal);
 
   return (
     <>

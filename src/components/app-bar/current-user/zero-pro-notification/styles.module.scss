@@ -1,0 +1,37 @@
+@use '../../../../variables' as variables;
+
+.NotificationContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+}
+
+.Notification {
+  height: fit-content;
+  padding: 0;
+
+  * {
+    margin: 0 2px;
+  }
+
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 13px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

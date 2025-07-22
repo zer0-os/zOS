@@ -11,6 +11,7 @@ export type RewardsState = {
   loading: boolean;
   meow: string;
   meowInUSD: number;
+  meowPercentChange: number;
   meowPreviousDay: string;
   showRewardsInTooltip: boolean;
   showRewardsInPopup: boolean;
@@ -27,6 +28,7 @@ export const initialState: RewardsState = {
   loading: false,
   meow: '0',
   meowInUSD: 0.0,
+  meowPercentChange: 0.0,
   meowPreviousDay: '0',
   showRewardsInTooltip: false,
   showRewardsInPopup: false,
@@ -62,6 +64,9 @@ const slice = createSlice({
     },
     setMeowInUSD: (state, action: PayloadAction<RewardsState['meowInUSD']>) => {
       state.meowInUSD = action.payload;
+    },
+    setMeowPercentChange: (state, action: PayloadAction<RewardsState['meowPercentChange']>) => {
+      state.meowPercentChange = action.payload;
     },
     setMeowPreviousDay: (state, action: PayloadAction<RewardsState['meowPreviousDay']>) => {
       state.meowPreviousDay = action.payload;
@@ -107,6 +112,7 @@ export const {
   openRewardsDialog,
   setLoading,
   setMeow,
+  setMeowPercentChange,
   setMeowPreviousDay,
   setMeowInUSD,
   setShowRewardsInTooltip,

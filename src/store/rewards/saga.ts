@@ -17,6 +17,7 @@ import {
   setTotalReferralFees,
   setTotalDailyRewards,
   setLegacyRewards,
+  setMeowPercentChange,
 } from '.';
 import {
   RewardsResp,
@@ -41,6 +42,7 @@ export function* fetchCurrentMeowPriceInUSD() {
     const result = yield call(fetchCurrentMeowPriceInUSDAPI);
     if (result.success) {
       yield put(setMeowInUSD(result.response.price));
+      yield put(setMeowPercentChange(result.response.diff));
     }
   } catch (e) {}
 }

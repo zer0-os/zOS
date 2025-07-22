@@ -4,6 +4,8 @@ import { FormattedNumber } from '../components/formatted-number/formatted-number
 import classNames from 'classnames';
 
 import styles from './token.module.scss';
+import { PercentChange } from '../components/percent-change/percent-change';
+import { formatDollars } from '../utils/format-numbers';
 
 interface TokenProps {
   token: TokenBalance;
@@ -25,11 +27,12 @@ export const Token = ({ token, onClick }: TokenProps) => {
         </div>
       </div>
 
-      {/* Removing balance until we get pricing data */}
-      {/* <div className={styles.tokenAmount}>
-        <div>{formatDollars(amount * price)}</div>
-        <PercentChange percent={percentChange} />
-      </div> */}
+      {!!token.price && (
+        <div className={styles.tokenAmount}>
+          <div>{formatDollars(token.price * Number(token.amount))}</div>
+          <PercentChange percent={token.percentChange} />
+        </div>
+      )}
     </div>
   );
 };

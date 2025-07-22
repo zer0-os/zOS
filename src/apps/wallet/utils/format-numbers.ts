@@ -1,4 +1,8 @@
 export const formatDollars = (number: number) => {
+  if (number === 0) {
+    return '0.00';
+  }
+
   if (number < 0.01) {
     return '<0.01';
   }

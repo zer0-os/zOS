@@ -16,7 +16,6 @@
   &__content {
     display: flex;
     flex-direction: column;
-    gap: 40px;
     overflow: hidden;
     padding: 32px;
   }
@@ -119,5 +118,12 @@
     flex-grow: 0;
     flex-shrink: 0;
     width: 390px;
+  }
+
+  &__claimable-rewards {
+    @include glass-text-secondary-color;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 16px;
   }
 }

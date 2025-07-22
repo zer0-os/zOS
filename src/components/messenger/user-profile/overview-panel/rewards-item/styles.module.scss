@@ -1,0 +1,63 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../glass';
+
+.RewardsItem {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+
+  border: 1px solid $glass-separator-primary-color;
+  border-radius: 16px;
+  padding: 16px;
+
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+  letter-spacing: 0em;
+  text-align: left;
+
+  @include glass-text-secondary-color;
+}
+
+.InfoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.Title {
+  @include glass-text-secondary-color;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.Usd {
+  @include glass-text-primary-color;
+  font-size: 18px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.ClaimButtonContainer {
+  width: 100%;
+}
+
+.RewardsTotalContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ClaimableRewards {
+  @include glass-text-secondary-color;
+
+  font-size: 8px;
+}

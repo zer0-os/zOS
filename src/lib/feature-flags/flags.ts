@@ -5,6 +5,7 @@ export type FeatureFlagKey =
   | 'enableDevPanel'
   | 'resetPasswordPage'
   | 'enableRewards'
+  | 'enableClaimRewards'
   | 'enableMatrix'
   | 'allowEmailRegistration'
   | 'verboseLogging'

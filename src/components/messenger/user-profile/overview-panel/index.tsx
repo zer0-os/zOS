@@ -18,7 +18,7 @@ import {
   IconTag1,
 } from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
-import { RewardsItemContainer } from './rewards-item/container';
+import { RewardsItem } from './rewards-item';
 import { featureFlags } from '../../../../lib/feature-flags';
 import { ZeroProBadge } from '../../../zero-pro-badge';
 import { ScrollbarContainer } from '../../../scrollbar-container';
@@ -237,7 +237,7 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
   const renderRewards = () => {
     return (
       <div {...cn('rewards')} onClick={openRewards}>
-        <RewardsItemContainer />
+        <RewardsItem />
       </div>
     );
   };

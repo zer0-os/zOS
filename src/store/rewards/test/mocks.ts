@@ -10,4 +10,8 @@ export const mockRewardsState: RewardsState = {
   showNewRewardsIndicator: false,
   transferLoading: false,
   transferError: null,
+  legacyRewards: '0',
+  totalDailyRewards: '0',
+  totalReferralFees: '0',
+  unclaimedRewards: '0',
 };

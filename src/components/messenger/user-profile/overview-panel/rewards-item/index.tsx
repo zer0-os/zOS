@@ -43,10 +43,10 @@ export const RewardsItem: React.FC<Properties> = () => {
             className={styles.ClaimButton}
           />
 
-          {BigInt(rewards.unclaimedRewards) === 0n && (
+          {BigInt(rewards.unclaimedRewards) > 0n && (
             <div className={styles.ClaimableRewards}>
               <HoverCard
-                iconTrigger={<IconInfoCircle className={styles.InfoIcon} size={18} />}
+                iconTrigger={<IconInfoCircle className={styles.InfoIcon} size={22} />}
                 content={<div>{hoverCardContent}</div>}
               />
             </div>

@@ -4,6 +4,7 @@ export const mockRewardsState: RewardsState = {
   loading: false,
   meow: '123',
   meowInUSD: 0.00456,
+  meowPercentChange: 0.0,
   meowPreviousDay: '123',
   showRewardsInTooltip: false,
   showRewardsInPopup: false,

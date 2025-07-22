@@ -6,6 +6,7 @@ export interface TokenBalance {
   logo?: string;
   decimals: number;
   price?: number;
+  percentChange?: number;
 }
 
 export interface NFT {

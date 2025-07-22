@@ -1,5 +1,6 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
 @use '../../_variables.scss' as variables;
+@import '../../glass';
 
 .Trigger {
   display: inline-flex;
@@ -45,7 +46,8 @@
 }
 
 .TooltipText {
-  color: theme.$color-secondary-11;
+  @include glass-text-secondary-color;
+
   font-size: 12px;
   font-weight: 500;
   line-height: 1.4;

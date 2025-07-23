@@ -15,7 +15,9 @@ export const useBalancesQuery = (address: string) => {
     queryKey: WalletQueryKeys.balances(address),
     queryFn: async (): Promise<GetTokenBalancesResponse> => {
       const response = await get(`/api/wallet/${address}/tokens`);
-      return response.body;
+      const body = response.body;
+      await preloadImages(body?.tokens ?? []);
+      return body;
     },
   });
 
@@ -38,3 +40,18 @@ export const useBalancesQuery = (address: string) => {
     },
   };
 };
+
+async function preloadImages(tokens: TokenBalance[]) {
+  const promises = tokens
+    .filter((token) => token.logo)
+    .map((token) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = token.logo!;
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    });
+
+  await Promise.allSettled(promises);
+}

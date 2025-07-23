@@ -2,12 +2,12 @@ import { useBalancesQuery } from '../queries/useBalancesQuery';
 import { Token } from './token';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
-import { Skeleton } from '@zero-tech/zui/components';
+import { TokenSkeleton } from './token-skeleton';
 import { WalletEmptyState } from '../components/empty-state/wallet-empty-state';
 
 import styles from './tokens-list.module.scss';
 
-const skeletons = Array.from({ length: 10 });
+const skeletons = Array.from({ length: 13 });
 
 export const TokensList = () => {
   const selectedWallet = useSelector(selectedWalletSelector);
@@ -18,7 +18,7 @@ export const TokensList = () => {
     <div className={styles.tokensView}>
       {(data || isPending) && (
         <div className={styles.tokensList}>
-          {isPending && skeletons.map((_, index) => <Skeleton key={index} className={styles.tokenSkeleton} />)}
+          {isPending && skeletons.map((_, index) => <TokenSkeleton key={index} />)}
 
           {tokens.map((token) => (
             <Token key={token.tokenAddress} token={token} />

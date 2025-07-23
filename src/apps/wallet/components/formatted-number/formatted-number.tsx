@@ -1,4 +1,5 @@
 import styles from './formatted-number.module.scss';
+import { decimalSeparator } from '../../utils/format-numbers';
 
 interface FormattedNumberProps {
   value: string;
@@ -16,7 +17,7 @@ export const FormattedNumber = ({ value }: FormattedNumberProps) => {
     const restOfNumber = smallNumberMatch[2];
     return (
       <span className={styles.formattedNumber}>
-        {'0.0'}
+        {`0${decimalSeparator}0`}
         <sub>{zerosCount}</sub>
         {restOfNumber}
       </span>
@@ -34,7 +35,7 @@ export const FormattedNumber = ({ value }: FormattedNumberProps) => {
   // Use try/catch for BigInt in case of an invalid number string
   try {
     const formattedWhole = BigInt(whole).toLocaleString();
-    return <span>{frac ? `${formattedWhole}.${frac}` : formattedWhole}</span>;
+    return <span>{frac ? `${formattedWhole}${decimalSeparator}${frac}` : formattedWhole}</span>;
   } catch (e) {
     return <span>{value}</span>;
   }

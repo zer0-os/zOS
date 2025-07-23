@@ -2,12 +2,12 @@ import { useTransactionHistoryQuery } from '../queries/useTransactionHistoryQuer
 import { Transaction } from './transaction';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
-import { Skeleton } from '@zero-tech/zui/components';
 import { WalletEmptyState } from '../components/empty-state/wallet-empty-state';
+import { TransactionSkeleton } from './transaction-skeleton';
 
 import styles from './transactions-list.module.scss';
 
-const skeletons = Array.from({ length: 10 });
+const skeletons = Array.from({ length: 11 });
 
 export const TransactionsList = () => {
   const selectedWallet = useSelector(selectedWalletSelector);
@@ -18,7 +18,7 @@ export const TransactionsList = () => {
     <div className={styles.transactionsView}>
       {(data || isPending) && (
         <div className={styles.transactionsList}>
-          {isPending && skeletons.map((_, index) => <Skeleton key={index} className={styles.transactionSkeleton} />)}
+          {isPending && skeletons.map((_, index) => <TransactionSkeleton key={index} />)}
 
           {transactions.map((transaction) => (
             <Transaction key={transaction.hash} transaction={transaction} />

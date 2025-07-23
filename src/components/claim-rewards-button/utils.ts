@@ -5,7 +5,7 @@ export interface ClaimRewardsError {
 
 export const translateClaimError = (error: ClaimRewardsError | string): string => {
   if (typeof error === 'string') {
-    return error;
+    return 'Claim failed. Please try again or contact support if the issue persists.';
   }
 
   switch (error.code) {
@@ -13,7 +13,7 @@ export const translateClaimError = (error: ClaimRewardsError | string): string =
       return 'No rewards available to claim at this time.';
 
     case 'CLAIM_REWARDS_FAILED':
-      return `Claim failed: ${error.message}`;
+      return 'Claim failed. Please try again or contact support if the issue persists.';
 
     case 'INVALID_WALLET':
       return 'Invalid wallet address. Please reconnect your wallet.';
@@ -28,6 +28,6 @@ export const translateClaimError = (error: ClaimRewardsError | string): string =
       return 'No thirdweb wallet found. Please connect your wallet.';
 
     default:
-      return error.message || 'An unexpected error occurred. Please try again.';
+      return 'Claim failed. Please try again or contact support if the issue persists.';
   }
 };

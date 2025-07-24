@@ -10,9 +10,9 @@ interface FindTokenStageProps {
 }
 
 const NETWORKS = [
-  { id: 'ethereum', label: 'Ethereum', chainId: 1 },
-  { id: 'polygon', label: 'Polygon', chainId: 137 },
-  { id: 'avalanche', label: 'Avalanche', chainId: 43114 },
+  { id: 'ethereum', label: 'Ethereum', chainId: 1, disabled: false },
+  { id: 'polygon', label: 'Polygon', chainId: 137, disabled: true, className: styles.DisabledOption },
+  { id: 'avalanche', label: 'Avalanche', chainId: 43114, disabled: true, className: styles.DisabledOption },
 ];
 
 function isValidAddress(address: string) {
@@ -58,7 +58,9 @@ export const FindTokenStage: React.FC<FindTokenStageProps> = ({ onTokenFound }) 
   const networkItems = NETWORKS.map((n) => ({
     id: n.id,
     label: n.label,
-    onSelect: () => handleNetworkChange(n.id),
+    disabled: n.disabled,
+    onSelect: () => !n.disabled && handleNetworkChange(n.id),
+    className: n.className,
   }));
 
   const networkLabel = networkItems.find((n) => n.id === network)?.label;

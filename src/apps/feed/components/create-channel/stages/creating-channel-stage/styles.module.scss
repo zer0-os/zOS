@@ -55,6 +55,14 @@
   box-shadow: 0 4px 32px 24px rgba(1, 244, 203, 0.1);
 }
 
+.ZidTitle {
+  @include glass-text-secondary-color;
+
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
 .SuccessTitle {
   color: theme.$color-secondary-11;
   text-align: center;

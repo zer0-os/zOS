@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import ZeroProSymbol from '../../../../../../zero-pro-symbol.svg?react';
@@ -23,35 +23,32 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
 }) => {
   const [success, setSuccess] = useState(false);
   const history = useHistory();
-  const { createChannel, isCreating, error } = useCreateChannel();
+  const { createChannel, isCreating, error, reset } = useCreateChannel();
 
-  useEffect(() => {
-    const handleCreateChannel = async () => {
-      if (!tokenData) {
-        return;
-      }
+  const handleCreateChannel = useCallback(async () => {
+    if (!tokenData) {
+      return;
+    }
 
-      const result = await createChannel({
-        zid: selectedZid,
-        network: tokenData.network,
-        tokenAddress: tokenData.address,
-        tokenAmount: joiningFee,
-        tokenSymbol: tokenData.symbol,
-      });
+    // Reset any previous error state when retrying
+    reset();
 
-      if (result.success) {
-        setSuccess(true);
-        // Navigate to the new channel after a brief delay
-        setTimeout(() => {
-          setLastActiveFeed(selectedZid);
-          history.push(`/feed/${selectedZid}`);
-          onComplete();
-        }, 1500);
-      }
-    };
+    const result = await createChannel({
+      zid: selectedZid,
+      network: tokenData.network,
+      tokenAddress: tokenData.address,
+      tokenAmount: joiningFee,
+      tokenSymbol: tokenData.symbol,
+    });
 
-    if (tokenData) {
-      handleCreateChannel();
+    if (result.success) {
+      setSuccess(true);
+      // Navigate to the new channel after a brief delay
+      setTimeout(() => {
+        setLastActiveFeed(selectedZid);
+        history.push(`/feed/${selectedZid}`);
+        onComplete();
+      }, 1500);
     }
   }, [
     selectedZid,
@@ -60,7 +57,14 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
     history,
     onComplete,
     createChannel,
+    reset,
   ]);
+
+  useEffect(() => {
+    if (tokenData) {
+      handleCreateChannel();
+    }
+  }, [handleCreateChannel, tokenData]);
 
   if (isCreating) {
     return (
@@ -71,14 +75,26 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
     );
   }
 
-  if (error) {
+  if (!error) {
     return (
       <div className={styles.ErrorContainer}>
+        <div className={styles.ZidTitle}>0://{selectedZid}</div>
+
         <div className={styles.ErrorTitle}>Failed to Create Channel</div>
-        <div className={styles.ErrorText}>{error}</div>
+        <div className={styles.ErrorText}>
+          Channel creation failed. Your ZID has been purchased, but we encountered an issue creating the channel. Please
+          try again.
+        </div>
         <div className={styles.SubmitButtonContainer}>
-          <Button className={styles.SubmitButton} variant={ButtonVariant.Primary} isSubmit onPress={onComplete}>
-            Close
+          <Button
+            className={styles.SubmitButton}
+            variant={ButtonVariant.Primary}
+            isSubmit
+            onPress={handleCreateChannel}
+            isDisabled={isCreating}
+            isLoading={isCreating}
+          >
+            Retry
           </Button>
         </div>
       </div>
@@ -94,7 +110,7 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
         <div className={styles.SuccessTitle}>Successfully Created 0://{selectedZid} community</div>
         <div className={styles.SubmitButtonContainer}>
           <Button className={styles.SubmitButton} variant={ButtonVariant.Primary} isSubmit onPress={onComplete}>
-            Close
+            View Channel
           </Button>
         </div>
       </div>

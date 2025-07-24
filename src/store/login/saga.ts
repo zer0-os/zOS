@@ -26,9 +26,9 @@ import {
 } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
 import { getHistory } from '../../lib/browser';
-import { epicGamesLink } from '../../lib/oauth/epicGamesLink';
 import { requestOTP } from '../authentication/api';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { oauth2Link } from '../../lib/oauth/oauth2Link';
 
 export function* otpLogin(action: PayloadAction<LoginByOTPPayload>) {
   const { email } = action.payload;
@@ -258,7 +258,7 @@ export function* redirectToRoot() {
 
   if (link) {
     if (link === 'epic-games') {
-      yield call(epicGamesLink, false);
+      yield call(oauth2Link, 'epic-games', false);
       return;
     }
   }

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { post } from '../../../../../../../lib/api/rest';
 
 interface CreateChannelParams {
   zid: string;
@@ -26,15 +27,8 @@ export const useCreateChannel = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/channels/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      });
-
-      const data = await response.json();
+      const response = await post('/token-gated-channels/create').send(params);
+      const data = response.body;
 
       if (response.ok && data.success) {
         setIsCreating(false);

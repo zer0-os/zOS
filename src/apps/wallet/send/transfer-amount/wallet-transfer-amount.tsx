@@ -41,7 +41,7 @@ export const WalletTransferAmount = () => {
   }, [amount, token]);
 
   const handleAmountChange = (amount: string) => {
-    dispatch(setAmount(amount));
+    dispatch(setAmount(parseLocaleNumber(amount)));
   };
 
   const handleBack = () => {
@@ -64,6 +64,7 @@ export const WalletTransferAmount = () => {
           token={token}
           amount={amount}
           onAmountChange={handleAmountChange}
+          autoFocus
         />
         <TokenSwapModule
           state='output'

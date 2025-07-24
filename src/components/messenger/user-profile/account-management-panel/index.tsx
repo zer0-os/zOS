@@ -3,34 +3,29 @@ import * as React from 'react';
 import { bemClassName } from '../../../../lib/bem';
 import { PanelHeader } from '../../list/panel-header';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
-import { Alert, Modal as ZuiModal, IconButton } from '@zero-tech/zui/components';
+import { Alert } from '@zero-tech/zui/components';
 
-import { IconPlus, IconXClose } from '@zero-tech/zui/icons';
+import { IconPlus } from '@zero-tech/zui/icons';
 import './styles.scss';
 import { WalletListItem } from '../../../wallet-list-item';
-import { CitizenListItem } from '../../../citizen-list-item';
-import { CreateEmailAccountContainer } from '../../../../authentication/create-email-account/container';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Color, Modal, Variant } from '../../../modal';
 import { State as AddWalletState } from '../../../../store/account-management';
 import { getChain } from '../../../../lib/web3/thirdweb/client';
+import { Wallet } from '../../../../store/authentication/types';
 
 const cn = bemClassName('account-management-panel');
 
 export interface Properties {
-  isAddEmailModalOpen: boolean;
   error: string;
   successMessage: string;
-  currentUser: any;
-  canAddEmail: boolean;
+  wallets: Wallet[];
   connectedWalletAddr: string;
   addWalletState: AddWalletState;
 
   onBack: () => void;
   reset: () => void; // reset saga state
-  onOpenAddEmailModal: () => void;
-  onCloseAddEmailModal: () => void;
   onAddNewWallet: () => void;
 }
 
@@ -52,8 +47,7 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
   };
 
   getSelfCustodyWallets = () => {
-    const { currentUser } = this.props;
-    const wallets = currentUser?.wallets || [];
+    const { wallets } = this.props;
     return wallets.filter((w) => !w.isThirdWeb);
   };
 
@@ -113,8 +107,7 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
   };
 
   getThirdWebWallets = () => {
-    const { currentUser } = this.props;
-    const wallets = currentUser?.wallets || [];
+    const { wallets } = this.props;
     return wallets.filter((w) => w.isThirdWeb === true);
   };
 
@@ -137,66 +130,6 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
           </a>
         ))}
       </div>
-    );
-  };
-
-  renderEmailSection = () => {
-    const { currentUser } = this.props;
-
-    return (
-      <div {...cn('email-container')}>
-        <div {...cn('email-header')}>
-          <span>Email</span>
-        </div>
-
-        {currentUser?.primaryEmail ? (
-          <CitizenListItem user={{ ...currentUser, firstName: currentUser.primaryEmail }} tag={''} />
-        ) : (
-          <div {...cn('alert-small')}>
-            <Alert variant='info'>
-              <div {...cn('alert-info-text')}>No email account found</div>
-            </Alert>
-          </div>
-        )}
-
-        {this.props.canAddEmail && (
-          <div>
-            <Button
-              variant={ButtonVariant.Secondary}
-              onPress={this.props.onOpenAddEmailModal}
-              startEnhancer={<IconPlus size={20} isFilled />}
-            >
-              Add email
-            </Button>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  renderAddEmailAccountModal = () => {
-    return (
-      <ZuiModal
-        open={this.props.isAddEmailModalOpen}
-        onOpenChange={(isOpen) => {
-          isOpen ? this.props.onOpenAddEmailModal() : this.props.onCloseAddEmailModal();
-        }}
-        {...cn('add-email-modal')}
-      >
-        <div {...cn('add-email-body')}>
-          <div {...cn('add-email-title-bar')}>
-            <h3 {...cn('add-email-title')}>Add Email</h3>
-            <IconButton
-              {...cn('add-email-close')}
-              size='large'
-              Icon={IconXClose}
-              onClick={this.props.onCloseAddEmailModal}
-            />
-          </div>
-
-          <CreateEmailAccountContainer addAccount />
-        </div>
-      </ZuiModal>
     );
   };
 
@@ -249,14 +182,13 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
     return (
       <div {...cn()}>
         <div {...cn('header-container')}>
-          <PanelHeader title={'Accounts'} onBack={this.back} />
+          <PanelHeader title={'Wallets'} onBack={this.back} />
         </div>
 
         <ScrollbarContainer variant='on-hover'>
           <div {...cn('panel-content-wrapper')}>
             <div {...cn('content')}>
               {this.renderSelfCustodyWalletsSection()}
-              {this.renderEmailSection()}
               {this.renderThirdWebWalletsSection()}
 
               {this.props.error && (
@@ -272,7 +204,6 @@ export class AccountManagementPanel extends React.Component<Properties, State> {
               )}
             </div>
 
-            {this.renderAddEmailAccountModal()}
             {this.isLinkNewWalletModalOpen && this.renderLinkNewWalletModal()}
           </div>
         </ScrollbarContainer>

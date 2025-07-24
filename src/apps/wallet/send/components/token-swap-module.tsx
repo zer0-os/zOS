@@ -13,6 +13,7 @@ interface TokenSwapModuleProps {
   token: TokenBalance;
   amount: string;
   onAmountChange?: (amount: string) => void;
+  autoFocus?: boolean;
 }
 
 export const TokenSwapModule = ({
@@ -22,6 +23,7 @@ export const TokenSwapModule = ({
   token,
   amount,
   onAmountChange,
+  autoFocus,
 }: TokenSwapModuleProps) => {
   const handleMax = () => {
     onAmountChange?.(token.amount);
@@ -49,7 +51,12 @@ export const TokenSwapModule = ({
       <div className={styles.amountRow}>
         {state === 'input' ? (
           <div className={styles.amountInput}>
-            <TokenNumberInput value={amount} onChange={onAmountChange} decimals={token.decimals} />
+            <TokenNumberInput
+              value={amount}
+              onChange={onAmountChange}
+              decimals={token.decimals}
+              autoFocus={autoFocus}
+            />
           </div>
         ) : (
           <div className={styles.amountOutput}>{amount || 0}</div>

@@ -5,3 +5,5 @@ export const userRewardsMeowBalanceSelector = (state: RootState): string => stat
 export const isRewardsDialogOpenSelector = (state: RootState): boolean => state.rewards.showRewardsInPopup;
 
 export const meowInUSDSelector = (state: RootState): number => state.rewards.meowInUSD;
+
+export const meowPercentChangeSelector = (state: RootState): number => state.rewards.meowPercentChange;

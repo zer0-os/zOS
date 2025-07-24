@@ -1,7 +1,8 @@
-import { IconMessage01, IconZeroProVerified } from '@zero-tech/zui/icons';
+import { IconMessage01 } from '@zero-tech/zui/icons';
 import { Button, SkeletonText, Variant, IconButton } from '@zero-tech/zui/components';
 
 import { MatrixAvatar } from '../matrix-avatar';
+import { ZeroProBadge } from '../zero-pro-badge';
 import { useProfileCard } from './lib/useProfileCard';
 
 import styles from './styles.module.scss';
@@ -59,7 +60,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
       <div className={styles.Name}>
         <div className={styles.NameAndBadgeWrapper}>
           <SkeletonText className={styles.Handle} asyncText={{ text: handle, isLoading }} />
-          {isZeroProSubscriber && !isLoading && <IconZeroProVerified size={18} />}
+          {isZeroProSubscriber && !isLoading && <ZeroProBadge size={18} />}
         </div>
         <SkeletonText className={styles.Subhandle} asyncText={{ text: subhandle, isLoading }} />
       </div>

@@ -49,7 +49,7 @@ export const WalletTransferSuccess = () => {
             <div className={styles.tokenIconHighlight} />
             <TokenIcon className={styles.tokenIcon} url={token.logo} name={token.name} />
           </div>
-          <div className={styles.dollarAmount}>$0.00</div>
+          <div className={styles.dollarAmount}>--</div>
           <div className={styles.amount}>
             <FormattedNumber value={amount} /> <span className={styles.tokenSymbol}>{token.symbol}</span>
           </div>

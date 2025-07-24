@@ -5,6 +5,7 @@ import { highlightFilter } from '../../lib/utils';
 import { Waypoint } from '../../../waypoint';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { MatrixAvatar } from '../../../matrix-avatar';
+
 import { IconZeroProVerified } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';

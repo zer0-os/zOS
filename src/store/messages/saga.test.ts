@@ -353,7 +353,7 @@ describe(replaceOptimisticMessage, () => {
     expect(returnValue).toEqual(null);
   });
 
-  it('returns null if there is no message identified by the optimisticId', async () => {
+  it('appends the message and sets send status to success if there is no message identified by the optimisticId', async () => {
     const currentMessages = ['message-1', 'message-2'];
     const newMessage = {
       id: 'new-message',
@@ -378,7 +378,7 @@ describe(replaceOptimisticMessage, () => {
 
     const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage).run();
 
-    expect(returnValue).toEqual(null);
+    expect(returnValue).toEqual([...currentMessages, { ...newMessage, sendStatus: MessageSendStatus.SUCCESS }]);
   });
 
   it('returns message list with replaced message and success status', async () => {

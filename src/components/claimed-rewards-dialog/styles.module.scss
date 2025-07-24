@@ -1,0 +1,180 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../glass';
+
+.Content {
+  max-width: 320px;
+  min-width: 320px;
+  min-height: 270px;
+}
+
+.Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.Title {
+  @include glass-text-primary-color;
+
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.Close {
+  @include glass-text-primary-color;
+}
+
+.Body {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.Message {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+
+.IconContainer {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.IconWrapper {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  border-radius: 50%;
+  border: 1px solid theme.$color-secondary-11;
+}
+
+.Amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.MeowAmount {
+  color: theme.$color-secondary-11;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.UsdAmount {
+  @include glass-text-secondary-color;
+
+  line-height: 19px;
+}
+
+.Footer {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.Button {
+  flex: 1;
+  color: black;
+  border: none;
+  font-weight: 600;
+}
+
+.ErrorIconContainer {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.ErrorIconWrapper {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 107, 107, 0.3);
+}
+
+.ErrorTitle {
+  color: theme.$color-failure-11;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.ErrorMessage {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  text-align: center;
+  max-width: 280px;
+  margin: 0 auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.LoadingIconContainer {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.LoadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid theme.$color-secondary-11;
+  border-top: 3px solid theme.$color-secondary-11;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.LoadingTitle {
+  color: theme.$color-secondary-11;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.LoadingMessage {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  text-align: center;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.ViewTransaction {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  align-self: center;
+  justify-content: center;
+  color: theme.$color-secondary-11;
+  font-size: 12px;
+}
+
+.ViewTransactionIcon {
+  color: theme.$color-secondary-11;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

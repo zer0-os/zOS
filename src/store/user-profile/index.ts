@@ -11,6 +11,7 @@ export enum SagaActionTypes {
   PrivateReadReceipts = 'user-profile/privateReadReceipts',
   PublicReadReceipts = 'user-profile/publicReadReceipts',
   OpenZeroPro = 'user-profile/openZeroPro',
+  CloseZeroProNotification = 'user-profile/closeZeroProNotification',
 }
 
 export enum Stage {
@@ -27,11 +28,13 @@ export enum Stage {
 export type UserProfileState = {
   stage: Stage;
   isPublicReadReceipts: boolean;
+  showZeroProNotification: boolean;
 };
 
 export const initialState: UserProfileState = {
   stage: Stage.None,
   isPublicReadReceipts: null,
+  showZeroProNotification: false,
 };
 
 export const openUserProfile = createAction(SagaActionTypes.OpenUserProfile);
@@ -44,6 +47,7 @@ export const openLinkedAccounts = createAction(SagaActionTypes.OpenLinkedAccount
 export const privateReadReceipts = createAction(SagaActionTypes.PrivateReadReceipts);
 export const publicReadReceipts = createAction(SagaActionTypes.PublicReadReceipts);
 export const openZeroPro = createAction(SagaActionTypes.OpenZeroPro);
+export const closeZeroProNotification = createAction(SagaActionTypes.CloseZeroProNotification);
 
 const slice = createSlice({
   name: 'user-profile',
@@ -55,8 +59,11 @@ const slice = createSlice({
     setPublicReadReceipts: (state, action: PayloadAction<boolean>) => {
       state.isPublicReadReceipts = action.payload;
     },
+    setShowZeroProNotification: (state, action: PayloadAction<boolean>) => {
+      state.showZeroProNotification = action.payload;
+    },
   },
 });
 
-export const { setStage, setPublicReadReceipts } = slice.actions;
+export const { setStage, setPublicReadReceipts, setShowZeroProNotification } = slice.actions;
 export const { reducer } = slice;

@@ -7,7 +7,10 @@
 .tokensList {
   display: flex;
   flex-direction: column;
-  gap: var(--l-spacing);
+
+  & > div:first-child {
+    margin-top: var(--s-spacing);
+  }
 }
 
 .tokenSkeleton {

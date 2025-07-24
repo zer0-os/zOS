@@ -3,6 +3,7 @@
   align-items: center;
   gap: var(--l-spacing);
   padding: var(--s-spacing) var(--l-spacing);
+  cursor: pointer;
 
   &:hover {
     background: var(--bg-hover);

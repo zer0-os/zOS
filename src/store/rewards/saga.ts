@@ -13,6 +13,11 @@ import {
   setShowNewRewardsIndicator,
   setTransferError,
   setTransferLoading,
+  setUnclaimedRewards,
+  setTotalReferralFees,
+  setTotalDailyRewards,
+  setLegacyRewards,
+  setMeowPercentChange,
 } from '.';
 import {
   RewardsResp,
@@ -37,6 +42,7 @@ export function* fetchCurrentMeowPriceInUSD() {
     const result = yield call(fetchCurrentMeowPriceInUSDAPI);
     if (result.success) {
       yield put(setMeowInUSD(result.response.price));
+      yield put(setMeowPercentChange(result.response.diff));
     }
   } catch (e) {}
 }
@@ -47,7 +53,11 @@ export function* fetch(_action) {
     const result: RewardsResp = yield call(fetchRewards, {});
     if (result.success) {
       yield put(setMeow(result.response.meow.toString()));
+      yield put(setLegacyRewards(result.response.legacyRewards.toString()));
       yield put(setMeowPreviousDay(result.response.meowPreviousDay.toString()));
+      yield put(setTotalDailyRewards(result.response.totalDailyRewards.toString()));
+      yield put(setTotalReferralFees(result.response.totalReferralFees.toString()));
+      yield put(setUnclaimedRewards(result.response.unclaimedRewards.toString()));
     } else {
     }
   } catch (e) {
@@ -188,6 +198,7 @@ export function* saga() {
   yield takeEvery(SagaActionTypes.TotalRewardsViewed, totalRewardsViewed);
   yield takeEvery(SagaActionTypes.CloseRewardsTooltip, closeRewardsTooltip);
   yield takeEvery(SagaActionTypes.TransferMeow, transferMeow);
+  yield takeEvery(SagaActionTypes.RefreshRewards, fetch);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogin, syncRewardsAndTokenPrice);
   yield takeEveryFromBus(yield call(getAuthChannel), AuthEvents.UserLogout, clearOnLogout);
 }

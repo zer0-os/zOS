@@ -6,11 +6,11 @@ import { highlightFilter, itemToOption } from '../lib/utils';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { Waypoint } from '../../waypoint';
 import classNames from 'classnames';
-import { IconZeroProVerified } from '@zero-tech/zui/icons';
 
 import './styles.scss';
 import '../list/styles.scss';
 import { MatrixAvatar } from '../../matrix-avatar';
+import { IconZeroProVerified } from '@zero-tech/zui/icons';
 
 const PAGE_SIZE = 20;
 export interface Properties {

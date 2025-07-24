@@ -1,0 +1,39 @@
+.tokenSkeleton {
+  display: flex;
+  align-items: center;
+  gap: var(--l-spacing);
+  padding: var(--s-spacing) var(--l-spacing);
+}
+
+.tokenIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.tokenNameContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.tokenName {
+  width: 100px;
+}
+
+.tokenAmount {
+  width: 100px;
+}
+
+.tokenPriceContainer {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tokenPrice {
+  width: 45px;
+}
+
+.tokenChange {
+  width: 45px;
+}

@@ -30,6 +30,8 @@ import { rawChannel } from '../channels/selectors';
 import { getUsersByMatrixIds } from '../users/saga';
 import { ReceiveNewMessageAction, ReceiveOptimisticMessageAction, SyncMessagesAction } from './types';
 
+const handledOptimisticIds = new Set<string>();
+
 const BATCH_INTERVAL = 500; // Debounce/batch interval in milliseconds
 
 export interface Payload {
@@ -244,6 +246,12 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
   const currentUser = yield select(currentUserSelector);
 
   const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
+
+  // Check if already handled (real message arrived first)
+  if (handledOptimisticIds.has(temporaryMessage.optimisticId)) {
+    handledOptimisticIds.delete(temporaryMessage.optimisticId);
+    return { optimisticMessage: temporaryMessage }; // Skip adding to state
+  }
 
   yield call(receiveChannel, { id: channelId, messages: [...existingMessages, temporaryMessage] });
 
@@ -509,10 +517,23 @@ export function* receiveOptimisticMessage(action: ReceiveOptimisticMessageAction
 }
 
 export function* replaceOptimisticMessage(currentMessages: string[], message: Message) {
+  if (!message.optimisticId) {
+    return null;
+  }
+
   const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
 
   if (messageIndex < 0) {
-    return null;
+    // No match: Real event arrived first. Append the real message.
+    handledOptimisticIds.add(message.optimisticId);
+    const messages = [
+      ...currentMessages,
+      {
+        ...message,
+        sendStatus: MessageSendStatus.SUCCESS,
+      },
+    ];
+    return messages;
   }
 
   const optimisticMessage = yield select(messageSelector(message.optimisticId));

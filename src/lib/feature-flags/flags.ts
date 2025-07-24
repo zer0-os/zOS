@@ -5,6 +5,7 @@ export type FeatureFlagKey =
   | 'enableDevPanel'
   | 'resetPasswordPage'
   | 'enableRewards'
+  | 'enableClaimRewards'
   | 'enableMatrix'
   | 'allowEmailRegistration'
   | 'verboseLogging'
@@ -34,7 +35,8 @@ export type FeatureFlagKey =
   | 'enableCreateTGCChannel'
   | 'enableStaking'
   | 'enableWalletApp'
-  | 'enableSocialLogin';
+  | 'enableSocialLogin'
+  | 'enableOTPLogin';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

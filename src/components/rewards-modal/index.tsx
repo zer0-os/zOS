@@ -13,6 +13,8 @@ const cn = bemClassName('rewards-modal');
 export interface Properties {
   totalUSD: string;
   totalMeow: string;
+  claimableRewardsUSD: string;
+  claimableRewardsMeow: string;
 
   onClose: () => void;
 }
@@ -69,6 +71,11 @@ export class RewardsModal extends React.Component<Properties, State> {
             <div {...cn('rewards')}>
               <div {...cn('usd')}>{this.props.totalUSD}</div>
               <div {...cn('meow')}>{this.props.totalMeow}</div>
+              {this.props.claimableRewardsMeow !== '0 MEOW' && (
+                <div {...cn('claimable-rewards')}>
+                  You can now claim {this.props.claimableRewardsUSD} or {this.props.claimableRewardsMeow}
+                </div>
+              )}
             </div>
           </div>
 

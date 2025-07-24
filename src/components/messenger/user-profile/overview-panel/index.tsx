@@ -16,11 +16,11 @@ import {
   IconUser1,
   IconWallet3,
   IconTag1,
-  IconZeroProVerified,
 } from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
-import { RewardsItemContainer } from './rewards-item/container';
+import { RewardsItem } from './rewards-item';
 import { featureFlags } from '../../../../lib/feature-flags';
+import { ZeroProBadge } from '../../../zero-pro-badge';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { useMatrixImage } from '../../../../lib/hooks/useMatrixImage';
 
@@ -122,7 +122,7 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
         <div {...cn('name-container')}>
           <div {...cn('name-container-inner')}>
             <div {...cn('name')}>{props.name}</div>
-            {props.isZeroProSubscriber && <IconZeroProVerified size={18} />}
+            {props.isZeroProSubscriber && <ZeroProBadge size={18} />}
           </div>
           {props.subHandle && <div {...cn('sub-handle')}>{props.subHandle}</div>}
         </div>
@@ -237,7 +237,7 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
   const renderRewards = () => {
     return (
       <div {...cn('rewards')} onClick={openRewards}>
-        <RewardsItemContainer />
+        <RewardsItem />
       </div>
     );
   };

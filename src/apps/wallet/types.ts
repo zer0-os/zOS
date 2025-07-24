@@ -5,6 +5,8 @@ export interface TokenBalance {
   amount: string;
   logo?: string;
   decimals: number;
+  price?: number;
+  percentChange?: number;
 }
 
 export interface NFT {
@@ -35,6 +37,7 @@ export interface Transaction {
   amount: string | null;
   timestamp: string;
   tokenId: string | null;
+  explorerUrl: string;
   type: 'token_transfer' | 'token_minting';
 }
 

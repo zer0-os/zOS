@@ -35,18 +35,20 @@ export const ZeroProBadge: React.FC<ZeroProBadgeProps> = ({ size = 16, className
     </div>
   );
 
+  if (isZeroProSubscriber) {
+    return badge;
+  }
+
   return (
     <HoverCard.Root openDelay={0} closeDelay={100} open={isOpen} onOpenChange={setIsOpen}>
       <HoverCard.Trigger asChild={true}>{badge}</HoverCard.Trigger>
       <HoverCard.Portal>
-        {!isZeroProSubscriber && (
-          <HoverCard.Content className={styles.HoverContent} sideOffset={5}>
-            <div className={styles.TooltipText} onClick={handleClick} onMouseDown={(e) => e.preventDefault()}>
-              Zero Pro Subscriber
-            </div>
-            <HoverCard.Arrow className={styles.Arrow} />
-          </HoverCard.Content>
-        )}
+        <HoverCard.Content className={styles.HoverContent} sideOffset={5}>
+          <div className={styles.TooltipText} onClick={handleClick} onMouseDown={(e) => e.preventDefault()}>
+            Zero Pro Subscriber
+          </div>
+          <HoverCard.Arrow className={styles.Arrow} />
+        </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>
   );

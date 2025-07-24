@@ -5,7 +5,8 @@ import { highlightFilter } from '../../lib/utils';
 import { Waypoint } from '../../../waypoint';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { MatrixAvatar } from '../../../matrix-avatar';
-import { ZeroProBadge } from '../../../zero-pro-badge';
+
+import { IconZeroProVerified } from '@zero-tech/zui/icons';
 
 import { bemClassName } from '../../../../lib/bem';
 import './user-search-results.scss';
@@ -89,7 +90,7 @@ export class UserSearchResults extends React.Component<Properties, State> {
             <div {...cn('user-details')}>
               <div {...cn('label-container')}>
                 <div {...cn('label')}>{highlightFilter(userResult.label, filter)}</div>
-                {userResult.isZeroProSubscriber && <ZeroProBadge size={16} />}
+                {userResult.isZeroProSubscriber && <IconZeroProVerified size={16} />}
               </div>
               {userResult?.subLabel && <div {...cn('sub-label')}>{userResult.subLabel}</div>}
             </div>

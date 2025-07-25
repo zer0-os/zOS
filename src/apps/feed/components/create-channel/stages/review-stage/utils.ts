@@ -44,6 +44,14 @@ export const parsePurchaseError = (error: any): string => {
     return 'Transaction failed - please check your wallet and try again';
   }
 
+  if (
+    lowerMessage.includes('call revert exception') ||
+    lowerMessage.includes('contract not found') ||
+    lowerMessage.includes('deployment does not exist')
+  ) {
+    return 'Network mismatch - please switch to the correct network';
+  }
+
   if (lowerMessage.includes('wallet') || lowerMessage.includes('provider') || lowerMessage.includes('metamask')) {
     return 'Wallet connection issue - please reconnect your wallet and try again';
   }

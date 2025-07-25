@@ -38,6 +38,16 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
 
   const mainnetProvider = useMemo(() => new ethers.providers.JsonRpcProvider(config.INFURA_URLS[1]), []);
 
+  const isCriticalStage = stage === CreateChannelStage.Review || stage === CreateChannelStage.Creating;
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && isCriticalStage) {
+      // Don't allow closing during critical stages
+      return;
+    }
+    onOpenChange(newOpen);
+  };
+
   useEffect(() => {
     if (!open) {
       setStage(CreateChannelStage.LaunchCommunity);
@@ -99,14 +109,21 @@ export const CreateChannelModal = ({ open, onOpenChange }: CreateChannelModalPro
       );
       break;
     case CreateChannelStage.Creating:
-      content = <CreatingChannelStage onComplete={() => onOpenChange(false)} selectedZid={selectedZid} />;
+      content = (
+        <CreatingChannelStage
+          onComplete={() => onOpenChange(false)}
+          selectedZid={selectedZid}
+          tokenData={tokenData}
+          joiningFee={joiningFee}
+        />
+      );
       break;
     default:
       content = null;
   }
 
   return (
-    <Modal className={styles.Modal} open={open} onOpenChange={onOpenChange}>
+    <Modal className={styles.Modal} open={open} onOpenChange={handleOpenChange}>
       <div className={styles.ModalContent}>
         {stage !== CreateChannelStage.LaunchCommunity && stage !== CreateChannelStage.Creating && (
           <IconButton className={styles.BackButton} onClick={handleBack} Icon={IconArrowLeft} aria-label='Back' />

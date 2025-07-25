@@ -55,6 +55,14 @@
   box-shadow: 0 4px 32px 24px rgba(1, 244, 203, 0.1);
 }
 
+.ZidTitle {
+  @include glass-text-secondary-color;
+
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
 .SuccessTitle {
   color: theme.$color-secondary-11;
   text-align: center;
@@ -71,4 +79,27 @@
 .SubmitButton {
   width: 100%;
   max-width: 240px;
+}
+
+.ErrorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+  width: 100%;
+}
+
+.ErrorTitle {
+  color: theme.$color-failure-11;
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.ErrorText {
+  color: theme.$color-failure-11;
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 14px;
 }

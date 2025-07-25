@@ -1,0 +1,19 @@
+.Details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--l-spacing);
+}
+
+.APY {
+  color: var(--color-text-primary);
+}
+
+.Stake {
+  color: var(--color-greyscale-10);
+
+  &.IsStaked {
+    color: var(--color-text-primary);
+  }
+}

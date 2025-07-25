@@ -15,6 +15,9 @@ import styles from './wallet-home.module.scss';
 import { Button } from '../components/button/button';
 import { useState } from 'react';
 import { ReceiveDialog } from './components/receive-dialog';
+import { StakingList } from '../staking/staking-list';
+import { featureFlags } from '../../../lib/feature-flags';
+
 const history = getHistory();
 
 export const WalletHome = () => {
@@ -57,6 +60,11 @@ export const WalletHome = () => {
           <Route path={'/wallet/nfts'} exact>
             <NFTsList />
           </Route>
+          {featureFlags.enableStaking && (
+            <Route path={'/wallet/staking'} exact>
+              <StakingList />
+            </Route>
+          )}
           <Redirect to={'/wallet'} />
         </Switch>
       </div>

@@ -10,7 +10,6 @@ import { watchAccount } from '@wagmi/core';
 import { getWagmiConfig } from '../wagmi-config';
 import { Chains, ConnectionStatus } from '..';
 import { setChain, setConnectionStatus, setAddress } from '../../../store/web3';
-import { config } from '../../../config';
 import { RootState } from '../../../store';
 
 export interface PublicProperties {
@@ -47,6 +46,15 @@ export class Container extends React.Component<Properties> {
   }
 
   /**
+   * Check if the given chain ID is supported by the application.
+   */
+  isSupportedChain(chainId: number | undefined): boolean {
+    if (!chainId) return false;
+    const supportedChains = [1, 11155111, 43113]; // mainnet, sepolia, avalanche fuji
+    return supportedChains.includes(chainId);
+  }
+
+  /**
    * Watch for changes in the user's web3 account.
    */
   watchConnection() {
@@ -58,7 +66,7 @@ export class Container extends React.Component<Properties> {
 
         if (!account.isConnected) {
           this.props.setConnectionStatus(ConnectionStatus.Disconnected);
-        } else if (account.chainId?.toString() !== config.supportedChainId) {
+        } else if (!this.isSupportedChain(account.chainId)) {
           this.props.setConnectionStatus(ConnectionStatus.NetworkNotSupported);
         } else {
           this.props.setConnectionStatus(ConnectionStatus.Connected);

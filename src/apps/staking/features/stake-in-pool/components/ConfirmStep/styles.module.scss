@@ -1,0 +1,35 @@
+@mixin label {
+  font-size: 12px;
+  line-height: 12px;
+  padding: 0;
+  color: var(--color-greyscale-10);
+}
+
+.Card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    @include label;
+  }
+}
+
+.Details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: inherit;
+}
+
+.Amount {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-primary-12);
+}
+
+.Actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}

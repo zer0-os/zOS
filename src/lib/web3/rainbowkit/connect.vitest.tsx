@@ -7,7 +7,6 @@ import { watchAccount } from '@wagmi/core';
 
 import { Container, Properties } from './connect';
 import { ConnectionStatus } from '..';
-import { config } from '../../../config';
 
 vi.mock('@wagmi/core', () => ({
   watchAccount: vi.fn(),
@@ -21,7 +20,7 @@ const defaultProps: Properties = {
   setConnectionStatus: vi.fn(),
 };
 
-const chainId = config.supportedChainId;
+const chainId = 1;
 
 const render = (props: Partial<Properties>) => {
   return renderWithProviders(<Container {...defaultProps} {...props} />, {});

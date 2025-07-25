@@ -21,7 +21,7 @@ const defaultProps: Properties = {
   setConnectionStatus: vi.fn(),
 };
 
-const chainId = config.supportedChainId;
+const chainId = 1;
 
 const render = (props: Partial<Properties>) => {
   return renderWithProviders(<Container {...defaultProps} {...props} />, {});

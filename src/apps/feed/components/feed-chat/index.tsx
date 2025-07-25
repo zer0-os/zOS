@@ -40,6 +40,7 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   chatViewContainerRef = null;
+  hasValidated = false;
 
   constructor(props: Properties) {
     super(props);
@@ -73,17 +74,20 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount(): void {
-    if (this.props.zid) {
+    if (this.props.zid && !this.hasValidated) {
       const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
       this.props.validateFeedChat(roomAlias);
+      this.hasValidated = true;
     }
   }
 
   componentDidUpdate(prevProps: Properties): void {
     if (this.props.zid !== prevProps.zid) {
-      if (this.props.zid) {
+      this.hasValidated = false; // Reset flag when zid changes
+      if (this.props.zid && !this.hasValidated) {
         const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
         this.props.validateFeedChat(roomAlias);
+        this.hasValidated = true;
       }
     }
   }

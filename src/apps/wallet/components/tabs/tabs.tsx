@@ -1,13 +1,20 @@
 import { MouseEvent, useCallback, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import cn from 'classnames';
+import { featureFlags } from '../../../../lib/feature-flags';
 import styles from './tabs.module.scss';
 
-const steps = [
+const baseSteps = [
   { id: '0', title: 'Tokens', path: '/wallet' },
   { id: '1', title: 'NFTs', path: '/wallet/nfts' },
-  { id: '2', title: 'Transactions', path: '/wallet/transactions' },
+  { id: '4', title: 'Transactions', path: '/wallet/transactions' },
 ];
+
+const stakingStep = { id: '3', title: 'Staking', path: '/wallet/staking' };
+
+// Using ID to sort here, as Staking is conditional but needs to be third in the list
+const unsortedSteps = featureFlags.enableStaking ? [...baseSteps, stakingStep] : baseSteps;
+const steps = unsortedSteps.sort((a, b) => a.id.localeCompare(b.id));
 
 export const WalletTabs = () => {
   const location = useLocation();

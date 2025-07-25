@@ -40,7 +40,8 @@ export const config = {
   INFURA_URLS: {
     1: process.env.REACT_APP_ETH_INFURA_URL,
     137: process.env.REACT_APP_POLY_INFURA_URL,
-    43114: process.env.REACT_APP_AVAX_INFURA_URL,
+    43114: process.env.REACT_APP_AVAX_INFURA_URL, // Avalanche mainnet
+    43113: process.env.REACT_APP_AVAX_FUJI_INFURA_URL, // Avalanche Fuji testnet
   },
   znsMetadataApiUrl: process.env.REACT_APP_ZNS_METADATA_API_URL,
 };

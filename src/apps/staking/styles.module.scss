@@ -3,4 +3,11 @@
 .Container {
   padding: variables.$page-padding-vertical 0;
   width: 100%;
+
+  pointer-events: all;
+}
+
+.Panel {
+  margin: 0 auto;
+  max-width: 560px;
 }

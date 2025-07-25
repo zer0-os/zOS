@@ -1,0 +1,363 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_contractOwner", "type": "address" },
+      { "internalType": "address", "name": "_stakingToken", "type": "address" },
+      { "internalType": "address", "name": "_rewardsToken", "type": "address" },
+      { "internalType": "address", "name": "_stakeRepToken", "type": "address" },
+      {
+        "components": [
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          { "internalType": "uint256", "name": "rewardsPerPeriod", "type": "uint256" },
+          { "internalType": "uint256", "name": "periodLength", "type": "uint256" },
+          { "internalType": "uint256", "name": "minimumLockTime", "type": "uint256" },
+          { "internalType": "uint256", "name": "minimumRewardsMultiplier", "type": "uint256" },
+          { "internalType": "uint256", "name": "maximumRewardsMultiplier", "type": "uint256" },
+          { "internalType": "bool", "name": "canExit", "type": "bool" }
+        ],
+        "internalType": "struct IStakingBase.RewardConfig",
+        "name": "_config",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "target", "type": "address" }],
+    "name": "AddressEmptyCode",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
+    "name": "AddressInsufficientBalance",
+    "type": "error"
+  },
+  { "inputs": [], "name": "CanNotAcceptNativeToken", "type": "error" },
+  { "inputs": [], "name": "CannotExit", "type": "error" },
+  { "inputs": [], "name": "FailedInnerCall", "type": "error" },
+  { "inputs": [], "name": "GasTokenTransferFailed", "type": "error" },
+  { "inputs": [], "name": "InitializedWithZero", "type": "error" },
+  { "inputs": [], "name": "InsufficientContractBalance", "type": "error" },
+  { "inputs": [], "name": "InsufficientValue", "type": "error" },
+  { "inputs": [], "name": "InvalidAddress", "type": "error" },
+  { "inputs": [], "name": "InvalidMultiplierPassed", "type": "error" },
+  { "inputs": [], "name": "LastConfigTooSoon", "type": "error" },
+  { "inputs": [], "name": "LockTimeTooShort", "type": "error" },
+  { "inputs": [], "name": "NonZeroMsgValue", "type": "error" },
+  {
+    "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  { "inputs": [], "name": "ReentrancyGuardReentrantCall", "type": "error" },
+  {
+    "inputs": [{ "internalType": "address", "name": "token", "type": "address" }],
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
+  },
+  { "inputs": [], "name": "TimeLockNotPassed", "type": "error" },
+  { "inputs": [], "name": "UnstakeMoreThanStake", "type": "error" },
+  { "inputs": [], "name": "ZeroRewards", "type": "error" },
+  { "inputs": [], "name": "ZeroValue", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "claimer", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "rewards", "type": "uint256" }
+    ],
+    "name": "Claimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "staker", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": true, "internalType": "bool", "name": "locked", "type": "bool" }
+    ],
+    "name": "Exited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "LeftoverRewardsWithdrawn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          { "internalType": "uint256", "name": "rewardsPerPeriod", "type": "uint256" },
+          { "internalType": "uint256", "name": "periodLength", "type": "uint256" },
+          { "internalType": "uint256", "name": "minimumLockTime", "type": "uint256" },
+          { "internalType": "uint256", "name": "minimumRewardsMultiplier", "type": "uint256" },
+          { "internalType": "uint256", "name": "maximumRewardsMultiplier", "type": "uint256" },
+          { "internalType": "bool", "name": "canExit", "type": "bool" }
+        ],
+        "indexed": true,
+        "internalType": "struct IStakingBase.RewardConfig",
+        "name": "rewardConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "RewardConfigSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "staker", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": true, "internalType": "uint256", "name": "lockDuration", "type": "uint256" }
+    ],
+    "name": "Staked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "staker", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "Unstaked",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "LOCKED_PRECISION_DIVISOR",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PRECISION_DIVISOR",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  { "inputs": [], "name": "claim", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  {
+    "inputs": [{ "internalType": "bool", "name": "locked", "type": "bool" }],
+    "name": "exit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getContractRewardsBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getLatestConfig",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          { "internalType": "uint256", "name": "rewardsPerPeriod", "type": "uint256" },
+          { "internalType": "uint256", "name": "periodLength", "type": "uint256" },
+          { "internalType": "uint256", "name": "minimumLockTime", "type": "uint256" },
+          { "internalType": "uint256", "name": "minimumRewardsMultiplier", "type": "uint256" },
+          { "internalType": "uint256", "name": "maximumRewardsMultiplier", "type": "uint256" },
+          { "internalType": "bool", "name": "canExit", "type": "bool" }
+        ],
+        "internalType": "struct IStakingBase.RewardConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPendingRewards",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRemainingLockTime",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "timeOrDuration", "type": "uint256" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "bool", "name": "locked", "type": "bool" }
+    ],
+    "name": "getStakeRewards",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "rewardConfigTimestamps",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "timestamp", "type": "uint256" }],
+    "name": "rewardConfigs",
+    "outputs": [
+      { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+      { "internalType": "uint256", "name": "rewardsPerPeriod", "type": "uint256" },
+      { "internalType": "uint256", "name": "periodLength", "type": "uint256" },
+      { "internalType": "uint256", "name": "minimumLockTime", "type": "uint256" },
+      { "internalType": "uint256", "name": "minimumRewardsMultiplier", "type": "uint256" },
+      { "internalType": "uint256", "name": "maximumRewardsMultiplier", "type": "uint256" },
+      { "internalType": "bool", "name": "canExit", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "rewardsToken",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          { "internalType": "uint256", "name": "rewardsPerPeriod", "type": "uint256" },
+          { "internalType": "uint256", "name": "periodLength", "type": "uint256" },
+          { "internalType": "uint256", "name": "minimumLockTime", "type": "uint256" },
+          { "internalType": "uint256", "name": "minimumRewardsMultiplier", "type": "uint256" },
+          { "internalType": "uint256", "name": "maximumRewardsMultiplier", "type": "uint256" },
+          { "internalType": "bool", "name": "canExit", "type": "bool" }
+        ],
+        "internalType": "struct IStakingBase.RewardConfig",
+        "name": "_config",
+        "type": "tuple"
+      }
+    ],
+    "name": "setRewardConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakeRepToken",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "lockDuration", "type": "uint256" }
+    ],
+    "name": "stakeWithLock",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }],
+    "name": "stakeWithoutLock",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
+    "name": "stakers",
+    "outputs": [
+      { "internalType": "uint256", "name": "unlockedTimestamp", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountStaked", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountStakedLocked", "type": "uint256" },
+      { "internalType": "uint256", "name": "owedRewards", "type": "uint256" },
+      { "internalType": "uint256", "name": "owedRewardsLocked", "type": "uint256" },
+      { "internalType": "uint256", "name": "lastTimestamp", "type": "uint256" },
+      { "internalType": "uint256", "name": "lastTimestampLocked", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingToken",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalStaked",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }],
+    "name": "unstakeLocked",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }],
+    "name": "unstakeUnlocked",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawLeftoverRewards",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  { "stateMutability": "payable", "type": "receive" }
+]

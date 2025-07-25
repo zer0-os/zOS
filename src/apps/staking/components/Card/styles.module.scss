@@ -1,0 +1,7 @@
+@use '../../../../variables' as variables;
+
+.Card {
+  border: 1px solid variables.$border-color;
+  border-radius: variables.$border-radius;
+  padding: 16px;
+}

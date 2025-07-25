@@ -7,7 +7,6 @@ import { watchAccount } from '@wagmi/core';
 
 import { Container, Properties } from './connect';
 import { ConnectionStatus } from '..';
-import { config } from '../../../config';
 
 vi.mock('@wagmi/core', () => ({
   watchAccount: vi.fn(),

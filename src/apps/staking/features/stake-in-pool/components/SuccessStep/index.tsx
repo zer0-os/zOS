@@ -1,5 +1,7 @@
 import { Button } from '@zero-tech/zui/components/Button';
 
+import styles from './styles.module.scss';
+
 export interface SuccessStepProps {
   formattedAmount: string;
   duration: string;
@@ -21,7 +23,9 @@ export const SuccessStep = ({ formattedAmount, duration, tokenSymbol, onClose }:
       <div>
         You have successfully staked {formattedAmount} {ticker} {getDurationText()}.
       </div>
-      <Button onPress={onClose || (() => window.location.reload())}>Done</Button>
+      <div className={styles.Actions}>
+        <Button onPress={onClose || (() => window.location.reload())}>Done</Button>
+      </div>
     </>
   );
 };

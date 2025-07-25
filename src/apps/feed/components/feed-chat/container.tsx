@@ -1,20 +1,30 @@
-import { useOwnedZids } from '../../../../lib/hooks/useOwnedZids';
-import { parseWorldZid } from '../../../../lib/zid';
 import { FeedChatContainer } from './index';
+import { JoinChannel } from '../join-channel';
 import { useRouteMatch } from 'react-router-dom';
+import { useJoinChannelInfo } from '../join-channel/hooks/useJoinChannelInfo';
 
 export const FeedChat = () => {
   const route = useRouteMatch<{ zid: string }>('/feed/:zid');
   const zid = route?.params?.zid;
-  const { zids } = useOwnedZids();
+  const { channelInfo, isLoading } = useJoinChannelInfo(zid);
 
-  // Check if the current ZID is owned by the user
-  const isOwnedZid = zid && zids?.some((userZid) => parseWorldZid(userZid) === zid);
-
-  // Only render if the user owns this ZID
-  if (!isOwnedZid) {
+  if (!zid) {
     return null;
   }
 
-  return <FeedChatContainer zid={zid} />;
+  if (channelInfo?.isMember) {
+    return <FeedChatContainer zid={zid} />;
+  }
+
+  if (!channelInfo?.isMember && !isLoading) {
+    return (
+      <JoinChannel
+        zid={zid}
+        isLegacyChannel={!channelInfo?.isTokenGated}
+        tokenRequirements={channelInfo?.tokenRequirements}
+      />
+    );
+  }
+
+  return null;
 };

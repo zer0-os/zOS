@@ -74,13 +74,10 @@ export async function oauthLogin({ sessionToken }: { sessionToken: string }) {
       response: response.body,
     };
   } catch (error: any) {
-    if (error?.response?.status === 400) {
-      return {
-        success: false,
-        response: error.response.body.code,
-      };
-    }
-    throw error;
+    return {
+      success: false,
+      response: error?.response?.body?.code,
+    };
   }
 }
 

@@ -1,2 +1,2 @@
 import { Provider } from './types/providers';
-export const AVAILABLE_ACCOUNTS = [Provider.EpicGames];
+export const AVAILABLE_ACCOUNTS = [Provider.EpicGames, Provider.X];

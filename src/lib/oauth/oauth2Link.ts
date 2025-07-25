@@ -1,6 +1,6 @@
 import { apiUrl, post } from '../api/rest';
 
-export const epicGamesLink = async (popup: boolean = true) => {
+export const oauth2Link = async (provider: string, popup: boolean = true) => {
   try {
     const response = await post<any>('/api/oauth/generate-link-token');
     const returnUrl = window.location.origin + '/oauth/link/callback';
@@ -9,7 +9,7 @@ export const epicGamesLink = async (popup: boolean = true) => {
     const { linkToken } = data;
 
     if (linkToken) {
-      const url = new URL(apiUrl('/api/oauth/link/epic-games/initiate'));
+      const url = new URL(apiUrl(`/api/oauth/link/${provider}/initiate`));
       url.searchParams.append('linkToken', linkToken);
       url.searchParams.append('returnUrl', returnUrl);
       if (popup) {
@@ -21,6 +21,7 @@ export const epicGamesLink = async (popup: boolean = true) => {
       console.error('authorizationURL not found in response');
     }
   } catch (error: any) {
-    throw new Error(`Error initiating Epic Games link: ${error.response?.body || 'No additional details available'}`);
+    console.error(error);
+    throw new Error(`Error initiating ${provider} link: ${error.response?.body || 'No additional details available'}`);
   }
 };

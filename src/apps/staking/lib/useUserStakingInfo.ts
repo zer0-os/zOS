@@ -4,6 +4,7 @@ import { StakingERC20ABI } from './abi/StakingERC20';
 import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
+import { get } from '../../../lib/api/rest';
 
 export interface UserStakingInfo {
   unlockedTimestamp: bigint;
@@ -79,14 +80,13 @@ export const useUserStakingInfo = (poolAddress: string, chainId?: number) => {
     queryFn: async () => {
       if (!poolAddress || !userAddress) return null;
 
-      const result = await readContract(getWagmiConfig(), {
-        address: poolAddress as `0x${string}`,
-        abi: StakingERC20ABI,
-        functionName: 'getPendingRewards',
-        chainId: chainId || 43113,
-      });
+      const res = await get(`/api/staking/${userAddress}/rewards/${poolAddress}`);
 
-      return result as bigint;
+      if (!res.ok || !res.body.pendingRewards) {
+        throw new Error('Failed to fetch pending rewards');
+      }
+
+      return BigInt(res.body.pendingRewards);
     },
     enabled: !!poolAddress && !!userAddress,
   });

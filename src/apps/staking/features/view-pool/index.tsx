@@ -5,7 +5,7 @@ import { usePool } from '../../lib/usePool';
 import { ethers } from 'ethers';
 import millify from 'millify';
 
-// import blur from './assets/blur.svg';
+import blur from './assets/blur.svg';
 
 import styles from './styles.module.scss';
 import { PoolIcon } from '../../components/PoolIcon';
@@ -26,7 +26,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
   const {
     stakingTokenInfo,
     rewardsTokenInfo,
-    // userPendingRewards,
+    userPendingRewards,
     userStakedAmount,
     // userStakedAmountLocked,
     // userUnlockedTimestamp,
@@ -44,7 +44,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
   // const lockedBalanceFormatted = userStakedAmountLocked
   //   ? parseFloat(ethers.utils.formatUnits(userStakedAmountLocked || 0, 18))
   //   : 0;
-  // const pendingRewardsFormatted = userPendingRewards ? parseFloat(ethers.utils.formatUnits(userPendingRewards, 18)) : 0;
+  const pendingRewardsFormatted = userPendingRewards ? parseFloat(ethers.utils.formatUnits(userPendingRewards, 18)) : 0;
   const totalStakedFormatted = totalStaked ? parseFloat(ethers.utils.formatUnits(totalStaked, 18)) : 0;
 
   // const getUnlockDate = () => {
@@ -72,8 +72,8 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
         Stake your {stakingTokenInfo?.symbol} to earn {rewardsTokenInfo?.symbol} rewards.
       </p>
 
-      {/* <div className={styles.Card}>
-        <h3>Rewards</h3>
+      <div className={styles.Card}>
+        <h3>Rewards {rewardsTokenInfo?.symbol}</h3>
         <span>
           {loading ? (
             <Skeleton width='150px' />
@@ -86,18 +86,18 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
           )}
         </span>
         <img src={blur} alt='blur' />
-      </div> */}
+      </div>
 
       <div className={styles.BalanceCards}>
         <div className={styles.Card}>
-          <h3>Total Tokens Staked</h3>
+          <h3>Total Tokens Staked {stakingTokenInfo?.symbol}</h3>
           <span>
             {loading ? <Skeleton width='100px' /> : error ? 'Error' : millify(totalStakedFormatted, { precision: 2 })}
           </span>
         </div>
 
         <div className={styles.Card}>
-          <h3>Your Stake</h3>
+          <h3>Your Stake {stakingTokenInfo?.symbol}</h3>
           <span>
             {loading ? (
               <Skeleton width='100px' />

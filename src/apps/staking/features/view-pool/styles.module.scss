@@ -130,3 +130,50 @@
     flex: 1;
   }
 }
+
+.Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+
+    color: var(--color-secondary-11);
+    font-weight: 500;
+  }
+}
+
+.Rewards {
+  position: relative;
+
+  background: none;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.Claiming {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  z-index: 5;
+
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.IsClaiming {
+  pointer-events: none;
+}

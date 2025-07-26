@@ -1,14 +1,20 @@
 import { Button } from '@zero-tech/zui/components/Button';
 import { Skeleton } from '@zero-tech/zui/components';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
+import { PoolIcon } from '../../components/PoolIcon';
+import { IconCoinsStacked1 } from '@zero-tech/zui/icons';
+
 import { usePoolStats } from '../../lib/usePoolStats';
 import { usePool } from '../../lib/usePool';
+import { useClaimRewards } from '../../lib/useClaimRewards';
+
 import { ethers } from 'ethers';
 import millify from 'millify';
 
 import blur from './assets/blur.svg';
 
 import styles from './styles.module.scss';
-import { PoolIcon } from '../../components/PoolIcon';
+import classNames from 'classnames';
 
 interface ViewPoolProps {
   poolName: string;
@@ -47,6 +53,8 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
   const pendingRewardsFormatted = userPendingRewards ? parseFloat(ethers.utils.formatUnits(userPendingRewards, 18)) : 0;
   const totalStakedFormatted = totalStaked ? parseFloat(ethers.utils.formatUnits(totalStaked, 18)) : 0;
 
+  const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress);
+
   // const getUnlockDate = () => {
   //   if (!userUnlockedTimestamp) return null;
   //   const timestamp = Number(userUnlockedTimestamp) * 1000; // Convert to milliseconds
@@ -64,6 +72,10 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
   //   });
   // };
 
+  const handleOnClickClaimRewards = () => {
+    claimRewards();
+  };
+
   return (
     <div className={styles.Container}>
       <PoolIcon poolName={poolName} chainId={chainId} />
@@ -72,8 +84,24 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
         Stake your {stakingTokenInfo?.symbol} to earn {rewardsTokenInfo?.symbol} rewards.
       </p>
 
-      <div className={styles.Card}>
-        <h3>Rewards {rewardsTokenInfo?.symbol}</h3>
+      <button
+        disabled={isClaimingRewards}
+        aria-disabled={isClaimingRewards}
+        className={classNames(styles.Card, styles.Rewards, { [styles.IsClaiming]: isClaimingRewards })}
+        onClick={handleOnClickClaimRewards}
+      >
+        {isClaimingRewards && (
+          <div className={styles.Claiming}>
+            <Spinner />
+          </div>
+        )}
+        <div className={styles.Header}>
+          <h3>Rewards {rewardsTokenInfo?.symbol}</h3>
+          <div>
+            <IconCoinsStacked1 size={16} />
+            Claim Rewards
+          </div>
+        </div>
         <span>
           {loading ? (
             <Skeleton width='150px' />
@@ -86,7 +114,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
           )}
         </span>
         <img src={blur} alt='blur' />
-      </div>
+      </button>
 
       <div className={styles.BalanceCards}>
         <div className={styles.Card}>
@@ -128,7 +156,9 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
       </ul> */}
 
       <div className={styles.Actions}>
-        <Button onPress={onStake}>Stake in Pool</Button>
+        <Button onPress={onStake} isDisabled={isClaimingRewards}>
+          Stake in Pool
+        </Button>
       </div>
     </div>
   );

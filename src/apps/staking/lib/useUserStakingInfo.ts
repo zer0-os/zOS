@@ -75,7 +75,6 @@ export const useUserStakingInfo = (poolAddress: string, chainId?: number) => {
       'userPendingRewards',
       poolAddress,
       userAddress,
-      chainId,
     ],
     queryFn: async () => {
       if (!poolAddress || !userAddress) return null;

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { post, get } from '../../../../../lib/api/rest';
+import { get } from '../../../../../lib/api/rest';
 
 interface TokenRequirements {
   symbol: string;
@@ -32,7 +32,7 @@ export const useJoinChannelInfo = (zid: string | undefined) => {
       // TODO: we should only check access if the zid is not in the users list of zids in channels app
       // But we still need to figure out how to display those zids in the list
       // as these can't just be domains they own
-      const accessResponse = await post('/token-gated-channels/check-access').send({ zid: zna });
+      const accessResponse = await get(`/token-gated-channels/check-access/${zna}`);
       const hasAccess = accessResponse.ok ? accessResponse.body.hasAccess : false;
 
       // If user has access, return immediately - no need to fetch settings

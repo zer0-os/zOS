@@ -28,9 +28,9 @@ export class Container extends React.Component {
             <ZeroLogo />
           </div>
           <div {...cn('text-container')}>
-            <p>Please accept your ZERO invite on a desktop browser, such as Chrome or Brave.</p>
+            <p>Please download the ZERO app to get started with your invite.</p>
             <p>
-              Once you have registered you can use ZERO on your phone, by downloading from the
+              You can download ZERO from the
               <a {...cn('link')} href={config.appleAppStorePath} target='_blank' rel='noopener noreferrer'>
                 {' Apple App Store '}
               </a>
@@ -38,7 +38,7 @@ export class Container extends React.Component {
               <a {...cn('link')} href={config.googlePlayStorePath} target='_blank' rel='noopener noreferrer'>
                 {' Google Play Store'}
               </a>
-              .
+              . Once downloaded, simply enter your invite code to get started.
             </p>
           </div>
         </div>

@@ -1,0 +1,116 @@
+@use '../../../../../../variables' as variables;
+
+@mixin label {
+  font-size: 12px;
+  line-height: 12px;
+  padding: 0;
+  color: var(--color-greyscale-10);
+}
+
+.Card,
+.Input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    @include label;
+  }
+}
+
+.Wrapper {
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+
+  input {
+    font-size: 30px !important;
+    font-weight: 600 !important;
+  }
+}
+
+.Details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: inherit;
+}
+
+.Lock {
+  fieldset {
+    all: unset;
+    width: 100%;
+  }
+
+  legend {
+    @include label;
+  }
+}
+
+.Option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 12px 16px 12px;
+  box-sizing: border-box;
+  margin-top: 12px;
+
+  border-radius: variables.$border-radius;
+
+  background: var(--color-greyscale-2);
+
+  input {
+    margin: 0;
+  }
+
+  cursor: pointer;
+  width: 100%;
+
+  .Details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      display: block;
+
+      &:first-child {
+        font-size: 16px;
+        color: var(--color-text-primary-12) !important;
+      }
+
+      &:last-child {
+        font-size: 12px;
+        color: var(--color-greyscale-10);
+      }
+    }
+  }
+}
+
+.InputEnhancer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.Actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.AmountHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  z-index: 2;
+}
+
+.Balance {
+  font-size: 12px;
+  line-height: 12px;
+  color: var(--color-greyscale-10);
+}

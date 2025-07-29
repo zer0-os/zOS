@@ -60,7 +60,6 @@ describe(AppRouter, () => {
     expect(HIDE_SIDEKICK_PATHS).toEqual([
       '/home',
       '/profile',
-      '/staking',
       '/wallet',
     ]);
   });

@@ -7,18 +7,12 @@ import { DefaultRoomLabels } from '../../../../../store/channels';
 export const selectSocialChannelsUnreadCounts = createSelector(
   [(state: RootState) => allChannelsSelector(state)],
   (conversations) => {
-    console.log('xxxAll conversations:', conversations);
-    const socialChannels = conversations.filter((c) => c.isSocialChannel && c.zid);
-    console.log('xxxSocial channels:', socialChannels);
-    console.log(
-      'xxxUnread counts:',
-      socialChannels.map((c) => ({ zid: c.zid, unreadCount: c.unreadCount }))
-    );
-
-    return socialChannels.reduce((acc, channel) => {
-      acc[channel.zid!] = { total: channel.unreadCount?.total || 0, highlight: channel.unreadCount?.highlight || 0 };
-      return acc;
-    }, {} as { [zid: string]: UnreadCount });
+    return conversations
+      .filter((c) => c.isSocialChannel && c.zid)
+      .reduce((acc, channel) => {
+        acc[channel.zid!] = { total: channel.unreadCount?.total || 0, highlight: channel.unreadCount?.highlight || 0 };
+        return acc;
+      }, {} as { [zid: string]: UnreadCount });
   }
 );
 

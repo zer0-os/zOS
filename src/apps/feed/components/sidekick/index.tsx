@@ -14,7 +14,6 @@ import { featureFlags } from '../../../../lib/feature-flags';
 import { CreateChannelModal } from '../create-channel';
 import { TabList, Tab, TabData } from './components/tab-list';
 import { getLastActiveChannelsTab, setLastActiveChannelsTab } from '../../../../lib/last-channels-tab';
-import { calculateChannelsTabUnreadCount } from './lib/utils';
 import { FeedItem } from './components/feed-item';
 
 import styles from './styles.module.scss';
@@ -47,26 +46,20 @@ export const Sidekick = () => {
     setLastActiveChannelsTab(tab);
   };
 
-  // Calculate total unread count for Channels tab
-  const channelsUnreadCount = calculateChannelsTabUnreadCount(unreadCounts, zids);
-
   const tabsData: TabData[] = [
     {
       id: Tab.Channels,
       label: 'Channels',
-      unreadCount: channelsUnreadCount,
       ariaLabel: 'Channels tab',
     },
     {
       id: Tab.Explore,
       label: 'Explore',
-      unreadCount: 0,
       ariaLabel: 'Explore tab',
     },
     {
       id: Tab.Airdrops,
       label: 'Airdrops',
-      unreadCount: 0,
       ariaLabel: 'Airdrops tab',
     },
   ];

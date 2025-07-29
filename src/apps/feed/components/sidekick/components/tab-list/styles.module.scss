@@ -9,8 +9,7 @@
   @include horizontal-scrollbar();
 
   display: flex;
-  justify-content: flex-start;
-  gap: 10px;
+  justify-content: space-between;
   overflow-x: auto;
   white-space: nowrap;
   padding: 8px 0;

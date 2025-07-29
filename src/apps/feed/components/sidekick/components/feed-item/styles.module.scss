@@ -1,0 +1,136 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../../variables';
+@import '../../../../../../glass';
+
+.FeedItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  height: 44px;
+  margin-bottom: 8px;
+  padding: 0 8px;
+  border-radius: 8px;
+
+  &:hover,
+  &:focus,
+  &.FeedItemActive {
+    @include glass-state-hover-color;
+    outline: none;
+  }
+
+  & > * {
+    flex-shrink: 0;
+  }
+}
+
+.AvatarContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Content {
+  flex-shrink: 1;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.Header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.NameContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-grow: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.UnreadContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.IconsContainer {
+  display: flex;
+  align-items: center;
+}
+
+.MutedIcon {
+  @include glass-text-tertiary-color;
+  align-self: center;
+}
+
+.UnreadCount {
+  @include glass-state-default-color;
+  @include glass-glow-highlight-small;
+  @include glass-materials-raised;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+  color: theme.$color-secondary-transparency-11;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 11px;
+  letter-spacing: 0.32px;
+}
+
+.UnreadHighlight {
+  @include glass-state-default-color;
+  @include glass-glow-highlight-small;
+  @include glass-materials-raised;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+  color: #9054f1;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 11px;
+  letter-spacing: 0.32px;
+}
+
+.MemberCountContainer {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: -2px;
+}
+
+.MemberCountIcon {
+  @include glass-text-tertiary-color;
+}
+
+.MemberCount {
+  @include glass-text-tertiary-color;
+
+  font-size: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-top: 1.5px;
+}

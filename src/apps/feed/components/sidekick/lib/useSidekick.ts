@@ -3,7 +3,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { useOwnedZids } from '../../../../../lib/hooks/useOwnedZids';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
-import { selectMutedChannels, selectSocialChannelsUnreadCounts } from './selectors';
+import { selectMutedChannels, selectSocialChannelsUnreadCounts, selectSocialChannelsMemberCounts } from './selectors';
 
 export interface UnreadCount {
   total: number;
@@ -18,6 +18,7 @@ interface UseSidekickReturn {
   search: string;
   unreadCounts: { [zid: string]: UnreadCount };
   mutedChannels: { [zid: string]: boolean };
+  memberCounts: { [zid: string]: number };
   setSearch: (search: string) => void;
 }
 
@@ -36,6 +37,7 @@ export const useSidekick = (): UseSidekickReturn => {
 
   const unreadCounts = useSelector(selectSocialChannelsUnreadCounts);
   const mutedChannels = useSelector(selectMutedChannels);
+  const memberCounts = useSelector(selectSocialChannelsMemberCounts);
 
   return {
     isErrorZids: isError,
@@ -46,5 +48,6 @@ export const useSidekick = (): UseSidekickReturn => {
     setSearch,
     unreadCounts,
     mutedChannels,
+    memberCounts,
   };
 };

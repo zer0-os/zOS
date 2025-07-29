@@ -4,7 +4,6 @@ import { useOwnedZids } from '../../../../../lib/hooks/useOwnedZids';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { selectMutedChannels, selectSocialChannelsUnreadCounts, selectSocialChannelsMemberCounts } from './selectors';
-import { normalizeZid } from './utils';
 
 export interface UnreadCount {
   total: number;
@@ -31,9 +30,8 @@ export const useSidekick = (): UseSidekickReturn => {
 
   const { zids, isLoading, isError } = useOwnedZids();
 
-  // Normalize ZIDs to match Matrix channel format
-  const normalizedZids = zids?.map(normalizeZid);
-  const uniqueWorldZids = normalizedZids ? ([...new Set(normalizedZids)] as string[]) : undefined;
+  const worldZids = zids?.map((zid) => zid.split('.')[0]);
+  const uniqueWorldZids = worldZids ? ([...new Set(worldZids)] as string[]) : undefined;
 
   const filteredZids = uniqueWorldZids?.filter((zid) => zid.toLowerCase().includes(search.toLowerCase()));
 

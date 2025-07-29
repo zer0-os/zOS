@@ -48,7 +48,7 @@
   list-style: none;
 
   width: 100%;
-  padding: 16px;
+  padding: 0 16px 16px 16px;
   margin: 0;
 
   display: flex;
@@ -168,4 +168,18 @@
 .CreateChannelButton {
   box-sizing: border-box;
   padding: 16px 16px 0 0;
+}
+
+.EmptyState {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+  color: var(--color-greyscale-11);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
 }

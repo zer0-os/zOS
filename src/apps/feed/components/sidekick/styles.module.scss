@@ -59,7 +59,7 @@
     padding: 6px 8px;
     width: 100%;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px;
     color: #fdfdffed;
     box-sizing: border-box;
 
@@ -93,12 +93,6 @@
   overflow-x: hidden;
 }
 
-.FeedItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .FeedName {
   display: flex;
   max-width: calc(100% - 24px);
@@ -109,54 +103,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-}
-
-.UnreadCount {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 0;
-  flex-shrink: 0;
-  color: var(--color-secondary-transparency-11);
-  background-color: rgba(52, 56, 60, 0.75);
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  text-align: center;
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 11px;
-  letter-spacing: 0.32px;
-}
-
-.UnreadHighlight {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 0;
-  flex-shrink: 0;
-  color: #9054f1;
-  background-color: rgba(52, 56, 60, 0.75);
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  text-align: center;
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 11px;
-  letter-spacing: 0.32px;
-}
-
-.MutedIcon {
-  @include glass-text-tertiary-color;
-
-  align-self: center;
-}
-
-.ItemIcons {
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 .Actions {

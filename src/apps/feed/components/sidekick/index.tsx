@@ -1,22 +1,21 @@
-import { useState, ReactNode } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 import { useSidekick } from './lib/useSidekick';
 import { Input } from '@zero-tech/zui/components/Input/Input';
 import { LoadingIndicator } from '@zero-tech/zui/components/LoadingIndicator';
-import { IconSearchMd, IconBellOff1, IconPlus } from '@zero-tech/zui/icons';
+import { IconSearchMd, IconPlus } from '@zero-tech/zui/icons';
 import {
   ContentPortal as SidekickContentPortal,
   Content as SidekickContent,
   Scroll as SidekickScroll,
 } from '../../../../components/sidekick';
-import { setLastActiveFeed } from '../../../../lib/last-feed';
 import { IconButton } from '@zero-tech/zui/components';
 import { featureFlags } from '../../../../lib/feature-flags';
 import { CreateChannelModal } from '../create-channel';
 import { TabList, Tab, TabData } from './components/tab-list';
 import { getLastActiveChannelsTab, setLastActiveChannelsTab } from '../../../../lib/last-channels-tab';
 import { calculateChannelsTabUnreadCount } from './lib/utils';
+import { FeedItem } from './components/feed-item';
 
 import styles from './styles.module.scss';
 
@@ -27,8 +26,17 @@ export const Sidekick = () => {
     return lastTab ? (lastTab as Tab) : Tab.Channels;
   });
 
-  const { isErrorZids, isLoadingZids, selectedZId, zids, search, setSearch, unreadCounts, mutedChannels } =
-    useSidekick();
+  const {
+    isErrorZids,
+    isLoadingZids,
+    selectedZId,
+    zids,
+    search,
+    setSearch,
+    unreadCounts,
+    mutedChannels,
+    memberCounts,
+  } = useSidekick();
 
   const handleCreateChannel = () => {
     setIsCreateModalOpen(true);
@@ -75,20 +83,21 @@ export const Sidekick = () => {
               const hasUnreadTotal = unreadCounts[zid]?.total > 0;
               const isMuted = mutedChannels[zid];
               return (
-                <FeedItem key={zid} route={`/feed/${zid}`} isSelected={selectedZId === zid} zid={zid}>
+                <FeedItem
+                  key={zid}
+                  route={`/feed/${zid}`}
+                  isSelected={selectedZId === zid}
+                  zid={zid}
+                  memberCount={memberCounts[zid]}
+                  isMuted={isMuted}
+                  hasUnreadHighlights={hasUnreadHighlights}
+                  hasUnreadTotal={hasUnreadTotal}
+                  unreadCount={unreadCounts[zid]?.total}
+                  unreadHighlight={unreadCounts[zid]?.highlight}
+                >
                   <div className={styles.FeedName}>
                     <span>0://</span>
                     <div>{zid}</div>
-                  </div>
-
-                  <div className={styles.ItemIcons}>
-                    {isMuted && <IconBellOff1 className={styles.MutedIcon} size={16} />}
-                    {!hasUnreadHighlights && hasUnreadTotal && (
-                      <div className={styles.UnreadCount}>{unreadCounts[zid]?.total}</div>
-                    )}
-                    {hasUnreadHighlights && (
-                      <div className={styles.UnreadHighlight}>{unreadCounts[zid]?.highlight}</div>
-                    )}
                   </div>
                 </FeedItem>
               );
@@ -142,30 +151,5 @@ export const Sidekick = () => {
         </SidekickContent>
       </SidekickContentPortal>
     </>
-  );
-};
-
-const FeedItem = ({
-  route,
-  children,
-  isSelected,
-  zid,
-}: {
-  route: string;
-  children: ReactNode;
-  isSelected?: boolean;
-  zid: string;
-}) => {
-  const history = useHistory();
-
-  const handleOnClick = () => {
-    setLastActiveFeed(zid);
-    history.push(route);
-  };
-
-  return (
-    <li className={styles.FeedItem} tabIndex={0} onClick={handleOnClick} data-is-selected={isSelected ? '' : undefined}>
-      {children}
-    </li>
   );
 };

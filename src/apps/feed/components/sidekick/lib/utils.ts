@@ -30,3 +30,15 @@ export const calculateChannelsTabUnreadCount = (
 
   return totalUnread;
 };
+
+/**
+ * Normalizes ZID format to match between owned ZIDs and Matrix channels
+ * @param zid - The ZID to normalize
+ * @returns Normalized ZID without 0:// prefix and without subdomain
+ */
+export const normalizeZid = (zid: string): string => {
+  // Remove 0:// prefix if present
+  const withoutPrefix = zid.replace('0://', '');
+  // Remove subdomain (everything after first dot)
+  return withoutPrefix.split('.')[0];
+};

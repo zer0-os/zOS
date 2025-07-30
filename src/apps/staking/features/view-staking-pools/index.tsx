@@ -12,11 +12,17 @@ import classNames from 'classnames';
 import styles from './styles.module.scss';
 
 const POOL_CONFIGS = [
-  {
-    name: 'MEOW',
-    address: '0xa5086d0575E8573d7f56B485079126EdD65c8291',
-    chainId: 1417429182,
-  },
+  process.env.NODE_ENV === 'development'
+    ? {
+        name: 'MEOW Pool (Zephyr)',
+        address: '0xa5086d0575E8573d7f56B485079126EdD65c8291',
+        chainId: 1417429182,
+      }
+    : {
+        name: 'MEOW Pool',
+        address: '0xfbDC0647F0652dB9eC56c7f09B7dD3192324AD6a',
+        chainId: 9369,
+      },
 ];
 
 const PoolRowWithData = ({

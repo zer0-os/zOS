@@ -1,7 +1,4 @@
-import { readContract } from '@wagmi/core';
 import { useQuery } from '@tanstack/react-query';
-import { StakingERC20ABI } from './abi/StakingERC20';
-import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
 import { get } from '../../../lib/api/rest';
 
 interface RewardConfig {
@@ -41,15 +38,22 @@ export const usePoolStats = (poolAddress: string, chainId: number = 43113) => {
     error: poolConfigError,
   } = useQuery({
     queryKey: ['poolConfig', poolAddress, chainId],
-    queryFn: async () => {
-      const result = await readContract(getWagmiConfig(), {
-        address: poolAddress as `0x${string}`,
-        abi: StakingERC20ABI,
-        functionName: 'getLatestConfig',
-        chainId,
-      });
+    queryFn: async (): Promise<RewardConfig> => {
+      const res = await get(`/api/staking/${poolAddress}/config`).send();
 
-      return result as RewardConfig;
+      if (!res.ok) {
+        throw new Error('Failed to fetch pool config');
+      }
+
+      return {
+        timestamp: BigInt(res.body.timestamp),
+        rewardsPerPeriod: BigInt(res.body.rewardsPerPeriod),
+        periodLength: BigInt(res.body.periodLength),
+        minimumLockTime: BigInt(res.body.minimumLockTime),
+        minimumRewardsMultiplier: BigInt(res.body.minimumRewardsMultiplier),
+        maximumRewardsMultiplier: BigInt(res.body.maximumRewardsMultiplier),
+        canExit: res.body.canExit,
+      };
     },
     enabled: !!poolAddress,
   });

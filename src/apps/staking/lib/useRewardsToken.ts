@@ -1,15 +1,5 @@
-import { parseAbi } from 'viem';
-import { readContract } from '@wagmi/core';
 import { useQuery } from '@tanstack/react-query';
-import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
 import { get } from '../../../lib/api/rest';
-
-const ERC20_ABI = parseAbi([
-  'function name() view returns (string)',
-  'function symbol() view returns (string)',
-  'function decimals() view returns (uint8)',
-  'function balanceOf(address) view returns (uint256)',
-]);
 
 export interface TokenInfo {
   name: string;
@@ -48,31 +38,16 @@ export const useRewardsToken = (poolAddress: string, chainId?: number) => {
     queryFn: async () => {
       if (!rewardsTokenAddress) return null;
 
-      const [name, symbol, decimals] = await Promise.all([
-        readContract(getWagmiConfig(), {
-          address: rewardsTokenAddress as `0x${string}`,
-          abi: ERC20_ABI,
-          functionName: 'name',
-          chainId: chainId || 43113,
-        }),
-        readContract(getWagmiConfig(), {
-          address: rewardsTokenAddress as `0x${string}`,
-          abi: ERC20_ABI,
-          functionName: 'symbol',
-          chainId: chainId || 43113,
-        }),
-        readContract(getWagmiConfig(), {
-          address: rewardsTokenAddress as `0x${string}`,
-          abi: ERC20_ABI,
-          functionName: 'decimals',
-          chainId: chainId || 43113,
-        }),
-      ]);
+      const res = await get(`/api/tokens/${rewardsTokenAddress}/info`).send();
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch rewards token info');
+      }
 
       return {
-        name: name as string,
-        symbol: symbol as string,
-        decimals: decimals as number,
+        name: res.body.name,
+        symbol: res.body.symbol,
+        decimals: res.body.decimals,
         address: rewardsTokenAddress,
       };
     },

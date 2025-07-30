@@ -1,8 +1,8 @@
 import { parseAbi } from 'viem';
 import { readContract } from '@wagmi/core';
 import { useQuery } from '@tanstack/react-query';
-import { StakingERC20ABI } from './abi/StakingERC20';
 import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
+import { get } from '../../../lib/api/rest';
 
 const ERC20_ABI = parseAbi([
   'function name() view returns (string)',
@@ -27,13 +27,13 @@ export const useStakingToken = (poolAddress: string, chainId?: number) => {
   } = useQuery({
     queryKey: ['stakingTokenAddress', poolAddress, chainId],
     queryFn: async () => {
-      const result = await readContract(getWagmiConfig(), {
-        address: poolAddress as `0x${string}`,
-        abi: StakingERC20ABI,
-        functionName: 'stakingToken',
-        chainId: chainId || 43113,
-      });
-      return result as string;
+      const res = await get(`/api/staking/${poolAddress}/staking-token`).send();
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch staking token address');
+      }
+
+      return res.body.stakingTokenAddress;
     },
     enabled: !!poolAddress,
   });

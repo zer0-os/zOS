@@ -2,6 +2,7 @@ import { readContract } from '@wagmi/core';
 import { useQuery } from '@tanstack/react-query';
 import { StakingERC20ABI } from './abi/StakingERC20';
 import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
+import { get } from '../../../lib/api/rest';
 
 interface RewardConfig {
   timestamp: bigint;
@@ -22,14 +23,13 @@ export const usePoolStats = (poolAddress: string, chainId: number = 43113) => {
   } = useQuery({
     queryKey: ['totalStaked', poolAddress, chainId],
     queryFn: async () => {
-      const result = await readContract(getWagmiConfig(), {
-        address: poolAddress as `0x${string}`,
-        abi: StakingERC20ABI,
-        functionName: 'totalStaked',
-        chainId,
-      });
+      const res = await get(`/api/staking/${poolAddress}/total-staked`);
 
-      return result as bigint;
+      if (!res.ok) {
+        throw new Error('Failed to fetch total staked');
+      }
+
+      return res.body;
     },
     enabled: !!poolAddress,
   });

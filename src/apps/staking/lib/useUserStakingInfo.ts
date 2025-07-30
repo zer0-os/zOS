@@ -1,7 +1,4 @@
-import { readContract } from '@wagmi/core';
 import { useQuery } from '@tanstack/react-query';
-import { StakingERC20ABI } from './abi/StakingERC20';
-import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
 import { get } from '../../../lib/api/rest';
@@ -34,15 +31,13 @@ export const useUserStakingInfo = (poolAddress: string, chainId?: number) => {
     queryFn: async () => {
       if (!poolAddress || !userAddress) return null;
 
-      const result = await readContract(getWagmiConfig(), {
-        address: poolAddress as `0x${string}`,
-        abi: StakingERC20ABI,
-        functionName: 'stakers',
-        args: [userAddress],
-        chainId: chainId || 43113,
-      });
+      const res = await get(`/api/staking/${userAddress}/stakers/${poolAddress}`).send();
 
-      const [
+      if (!res.ok) {
+        throw new Error('Failed to fetch user staking info');
+      }
+
+      const {
         unlockedTimestamp,
         amountStaked,
         amountStakedLocked,
@@ -50,7 +45,7 @@ export const useUserStakingInfo = (poolAddress: string, chainId?: number) => {
         owedRewardsLocked,
         lastTimestamp,
         lastTimestampLocked,
-      ] = result as [bigint, bigint, bigint, bigint, bigint, bigint, bigint];
+      } = res.body;
 
       return {
         unlockedTimestamp,

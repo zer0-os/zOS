@@ -28,7 +28,6 @@ import {
 import { takeEveryFromBus } from '../../lib/saga';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
 import { currentUserSelector } from '../authentication/selectors';
-import { featureFlags } from '../../lib/feature-flags';
 import { sendMeowReactionEvent } from '../../lib/chat';
 
 const FETCH_REWARDS_INTERVAL = 60 * 60 * 1000; // 1 hour

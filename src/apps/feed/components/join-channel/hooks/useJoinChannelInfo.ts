@@ -46,7 +46,7 @@ export const useJoinChannelInfo = (zid: string | undefined) => {
       // If user doesn't have access, we need to determine if this is a token-gated channel
       // or a legacy channel to show the appropriate UI
       try {
-        const settingsResponse = await get(`/token-gated-channels/settings/${zna}`);
+        const settingsResponse = await get(`/token-gated-channels/${zid}`);
 
         if (settingsResponse.ok) {
           const data = settingsResponse.body;

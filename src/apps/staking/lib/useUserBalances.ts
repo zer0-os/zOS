@@ -1,13 +1,7 @@
-import { parseAbi } from 'viem';
-import { readContract } from '@wagmi/core';
 import { useQuery } from '@tanstack/react-query';
-import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
 import { useSelector } from 'react-redux';
-
-const ERC20_ABI = parseAbi([
-  'function balanceOf(address) view returns (uint256)',
-]);
+import { get } from '../../../lib/api/rest';
 
 export const useUserBalances = (
   stakingTokenAddress: string | null,
@@ -31,15 +25,13 @@ export const useUserBalances = (
     queryFn: async () => {
       if (!stakingTokenAddress || !userAddress) return null;
 
-      const balance = await readContract(getWagmiConfig(), {
-        address: stakingTokenAddress as `0x${string}`,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [userAddress],
-        chainId: chainId || 43113,
-      });
+      const res = await get(`/api/wallet/${userAddress}/token/${stakingTokenAddress}/balance`).send();
 
-      return balance as bigint;
+      if (!res.ok) {
+        throw new Error('Failed to fetch staking token balance');
+      }
+
+      return res.body.balance;
     },
     enabled: !!stakingTokenAddress && !!userAddress,
   });
@@ -59,15 +51,13 @@ export const useUserBalances = (
     queryFn: async () => {
       if (!rewardsTokenAddress || !userAddress) return null;
 
-      const balance = await readContract(getWagmiConfig(), {
-        address: rewardsTokenAddress as `0x${string}`,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [userAddress],
-        chainId: chainId || 43113,
-      });
+      const res = await get(`/api/wallet/${userAddress}/token/${rewardsTokenAddress}/balance`).send();
 
-      return balance as bigint;
+      if (!res.ok) {
+        throw new Error('Failed to fetch rewards token balance');
+      }
+
+      return res.body.balance;
     },
     enabled: !!rewardsTokenAddress && !!userAddress,
   });

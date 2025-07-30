@@ -20,7 +20,7 @@ export const usePoolStats = (poolAddress: string, chainId: number = 43113) => {
   } = useQuery({
     queryKey: ['totalStaked', poolAddress, chainId],
     queryFn: async () => {
-      const res = await get(`/api/staking/${poolAddress}/total-staked`);
+      const res = await get(`/api/staking/${poolAddress}/total-staked`).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch total staked');

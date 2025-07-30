@@ -5,7 +5,6 @@ import { Name, Post as ZUIPost } from '@zero-tech/zui/components/Post';
 import { Timestamp } from '@zero-tech/zui/components/Post/components/Timestamp';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { MeowAction } from './actions/meow';
-import { featureFlags } from '../../../../lib/feature-flags';
 import { ReplyAction } from './actions/reply/reply-action';
 import { formatWeiAmount } from '../../../../lib/number';
 import { FeedAction } from './actions/feed';
@@ -86,7 +85,6 @@ export const Post = ({
   error,
   quotedPost,
 }: PostProps) => {
-  const isMeowsEnabled = featureFlags.enableMeows;
   const isDisabled =
     formatWeiAmount(userMeowBalance) <= '0' || ownerUserId?.toLowerCase() === currentUserId?.toLowerCase();
 
@@ -111,7 +109,7 @@ export const Post = ({
           body={
             <div className={classNames(styles.Body)}>
               <Content text={text} isSinglePostView={isSinglePostView} />
-              {featureFlags.enablePostMedia && mediaId && <PostMedia mediaId={mediaId} />}
+              {mediaId && <PostMedia mediaId={mediaId} />}
               {quotedPost && (
                 <PreventPropagation>
                   <Wrapper postId={quotedPost.id} variant='default'>
@@ -166,70 +164,64 @@ export const Post = ({
             </div>
           }
           actions={
-            isMeowsEnabled && (
-              <Actions variant={variant}>
-                <div>
-                  {!(isPending || isFailed) && (
-                    <>
-                      {featureFlags.enableComments && (
-                        <PreventPropagation>
-                          <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
-                        </PreventPropagation>
-                      )}
-                      {featureFlags.enableQuotes && (
-                        <PreventPropagation>
-                          <QuoteAction
-                            numberOfQuotes={reactions?.QUOTE}
-                            quotingPost={{
-                              id: messageId,
-                              userId: authorPrimaryZid ?? authorPublicAddress,
-                              zid: authorPrimaryZid ?? authorPublicAddress,
-                              createdAt: timestamp.toString(),
-                              text: text,
-                              arweaveId: arweaveId,
-                              userProfileView: {
-                                userId: authorPrimaryZid ?? authorPublicAddress,
-                                firstName: nickname,
-                                profileImage: avatarUrl,
-                                isZeroProSubscriber: isZeroProSubscriber,
-                              },
-                              mediaId,
-                            }}
-                          />
-                        </PreventPropagation>
-                      )}
-                      <PreventPropagation>
-                        <MeowAction
-                          meows={reactions?.MEOW || 0}
-                          isDisabled={isDisabled}
-                          messageId={messageId}
-                          meowPost={meowPost}
-                          hasUserVoted={reactions?.VOTED > 0}
-                        />
-                      </PreventPropagation>
-                    </>
-                  )}
-                </div>
-                <div>
-                  {error && <div className={styles.Error}>{error}</div>}
-                  {(isPending || isFailed) && (
+            <Actions variant={variant}>
+              <div>
+                {!(isPending || isFailed) && (
+                  <>
                     <PreventPropagation>
-                      <StatusAction status={isPending ? 'pending' : 'failed'} optimisticId={messageId} />
+                      <ReplyAction postId={messageId} numberOfReplies={numberOfReplies} />
                     </PreventPropagation>
-                  )}
-                  {channelZid && !isPending && !isFailed && (
                     <PreventPropagation>
-                      <FeedAction channelZid={channelZid} />
+                      <QuoteAction
+                        numberOfQuotes={reactions?.QUOTE}
+                        quotingPost={{
+                          id: messageId,
+                          userId: authorPrimaryZid ?? authorPublicAddress,
+                          zid: authorPrimaryZid ?? authorPublicAddress,
+                          createdAt: timestamp.toString(),
+                          text: text,
+                          arweaveId: arweaveId,
+                          userProfileView: {
+                            userId: authorPrimaryZid ?? authorPublicAddress,
+                            firstName: nickname,
+                            profileImage: avatarUrl,
+                            isZeroProSubscriber: isZeroProSubscriber,
+                          },
+                          mediaId,
+                        }}
+                      />
                     </PreventPropagation>
-                  )}
-                  {!isPending && !isFailed && (
                     <PreventPropagation>
-                      <ArweaveAction arweaveId={arweaveId} />
+                      <MeowAction
+                        meows={reactions?.MEOW || 0}
+                        isDisabled={isDisabled}
+                        messageId={messageId}
+                        meowPost={meowPost}
+                        hasUserVoted={reactions?.VOTED > 0}
+                      />
                     </PreventPropagation>
-                  )}
-                </div>
-              </Actions>
-            )
+                  </>
+                )}
+              </div>
+              <div>
+                {error && <div className={styles.Error}>{error}</div>}
+                {(isPending || isFailed) && (
+                  <PreventPropagation>
+                    <StatusAction status={isPending ? 'pending' : 'failed'} optimisticId={messageId} />
+                  </PreventPropagation>
+                )}
+                {channelZid && !isPending && !isFailed && (
+                  <PreventPropagation>
+                    <FeedAction channelZid={channelZid} />
+                  </PreventPropagation>
+                )}
+                {!isPending && !isFailed && (
+                  <PreventPropagation>
+                    <ArweaveAction arweaveId={arweaveId} />
+                  </PreventPropagation>
+                )}
+              </div>
+            </Actions>
           }
         />
       </div>

@@ -85,9 +85,6 @@ export function* syncMEOWPrice() {
 }
 
 export function* syncRewardsAndTokenPrice() {
-  if (!featureFlags.enableRewards) {
-    return;
-  }
   yield spawn(syncMEOWPrice);
   yield spawn(syncFetchRewards);
 }

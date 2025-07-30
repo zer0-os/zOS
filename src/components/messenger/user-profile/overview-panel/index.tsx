@@ -19,7 +19,6 @@ import {
 } from '@zero-tech/zui/icons';
 import { InviteDialogContainer } from '../../../invite-dialog/container';
 import { RewardsItem } from './rewards-item';
-import { featureFlags } from '../../../../lib/feature-flags';
 import { ZeroProBadge } from '../../../zero-pro-badge';
 import { ScrollbarContainer } from '../../../scrollbar-container';
 import { useMatrixImage } from '../../../../lib/hooks/useMatrixImage';
@@ -133,16 +132,14 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
   const renderActions = () => {
     return (
       <div {...cn('action-button-container')}>
-        {featureFlags.enableZeroPro && (
-          <Button
-            {...cn('action-button')}
-            variant={ButtonVariant.Secondary}
-            onPress={openZeroPro}
-            startEnhancer={<IconTag1 size={20} />}
-          >
-            {props.isZeroProSubscriber ? 'Manage ZERO Pro' : 'Join ZERO Pro'}
-          </Button>
-        )}
+        <Button
+          {...cn('action-button')}
+          variant={ButtonVariant.Secondary}
+          onPress={openZeroPro}
+          startEnhancer={<IconTag1 size={20} />}
+        >
+          {props.isZeroProSubscriber ? 'Manage ZERO Pro' : 'Join ZERO Pro'}
+        </Button>
 
         <Button
           {...cn('action-button')}
@@ -193,17 +190,15 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
           Account Backup
         </Button>
 
-        {featureFlags.enableUserSettings && (
-          <Button
-            {...cn('action-button')}
-            variant={ButtonVariant.Secondary}
-            onPress={openSettings}
-            startEnhancer={<IconSettings2 size={20} />}
-            color={ButtonColor.Greyscale}
-          >
-            Settings
-          </Button>
-        )}
+        <Button
+          {...cn('action-button')}
+          variant={ButtonVariant.Secondary}
+          onPress={openSettings}
+          startEnhancer={<IconSettings2 size={20} />}
+          color={ButtonColor.Greyscale}
+        >
+          Settings
+        </Button>
 
         <Button
           {...cn('action-button')}
@@ -253,7 +248,7 @@ export const OverviewPanel: React.FC<Properties> = (props) => {
           <div {...cn('body')}>
             <div {...cn('section')}>
               {renderDetails()}
-              {featureFlags.enableRewards && renderRewards()}
+              {renderRewards()}
             </div>
 
             {renderActions()}

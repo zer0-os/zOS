@@ -4,7 +4,6 @@ import { Alert, Input, Tooltip, SelectInput, LoadingIndicator, AlertProps } from
 import { ImageUpload } from '../../components/image-upload';
 import { IconUpload2, IconHelpCircle, IconCheck } from '@zero-tech/zui/icons';
 import { State as EditProfileState } from '../../store/edit-profile';
-import { featureFlags } from '../../lib/feature-flags';
 import { PanelHeader } from '../messenger/list/panel-header';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { ScrollbarContainer } from '../scrollbar-container';
@@ -205,19 +204,17 @@ export const EditProfile: React.FC<Properties> = ({
               alert={nameError}
               className={c('body-input')}
             />
-            {featureFlags.allowEditPrimaryZID && (
-              <div className={c('select-input')}>
-                {renderZeroIDLabel()}
-                <SelectInput
-                  items={menuItems}
-                  label=''
-                  placeholder={currentPrimaryZID || 'None (wallet address)'}
-                  value={primaryZID || ''}
-                  itemSize='spacious'
-                  menuClassName={c('zid-select-menu')}
-                />
-              </div>
-            )}
+            <div className={c('select-input')}>
+              {renderZeroIDLabel()}
+              <SelectInput
+                items={menuItems}
+                label=''
+                placeholder={currentPrimaryZID || 'None (wallet address)'}
+                value={primaryZID || ''}
+                itemSize='spacious'
+                menuClassName={c('zid-select-menu')}
+              />
+            </div>
           </div>
           {imageError && (
             <Alert className={c('alert-small')} variant='error'>

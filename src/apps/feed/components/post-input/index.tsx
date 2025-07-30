@@ -10,7 +10,6 @@ import { PublicProperties as PublicPropertiesContainer } from './container';
 import { ViewModes } from '../../../../shared-components/theme-engine';
 import { IconFaceSmile, IconLoading2, IconStickerCircle } from '@zero-tech/zui/icons';
 import { PostMediaMenu } from './menu';
-import { featureFlags } from '../../../../lib/feature-flags';
 
 import { Container as QuoteContainer, Details as QuoteDetails } from '../post/quote';
 import { Content } from '../post/content';
@@ -254,7 +253,7 @@ export function PostInput(props: Properties) {
                     />
                   </div>
 
-                  {props.quotingPost && featureFlags.enableQuotes && (
+                  {props.quotingPost && (
                     <QuoteContainer {...cn('quote-container')}>
                       <QuoteDetails
                         avatarURL={props.quotingPost.userProfileView.profileImage}
@@ -287,15 +286,11 @@ export function PostInput(props: Properties) {
 
                   <div {...cn('actions')}>
                     <div {...cn('icon-wrapper')}>
-                      {featureFlags.enablePostMedia && (
-                        <>
-                          <PostMediaMenu
-                            onSelected={(newMedia) => mediaSelected(newMedia[0])}
-                            isZeroProSubscriber={isZeroProSubscriber}
-                          />
-                          <IconButton onClick={openGiphy} Icon={() => <IconStickerCircle size={18} />} size={36} />
-                        </>
-                      )}
+                      <PostMediaMenu
+                        onSelected={(newMedia) => mediaSelected(newMedia[0])}
+                        isZeroProSubscriber={isZeroProSubscriber}
+                      />
+                      <IconButton onClick={openGiphy} Icon={() => <IconStickerCircle size={18} />} size={36} />
                       <IconButton onClick={openEmojis} Icon={() => <IconFaceSmile size={18} />} size={36} />
                       <AnimatePresence>
                         {value.length > SHOW_MAX_LABEL_THRESHOLD && (

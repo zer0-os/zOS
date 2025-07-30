@@ -3,7 +3,6 @@ import { get, post } from '../../lib/api/rest';
 import { getWagmiConfig } from '../../lib/web3/wagmi-config';
 import { getWalletClient } from '@wagmi/core';
 import { ethers } from 'ethers';
-import { featureFlags } from '../../lib/feature-flags';
 
 export interface SignedMessagePayload {
   created_at: string;
@@ -104,7 +103,7 @@ export async function uploadPost(formData: FormData, worldZid: string) {
     }
 
     const mediaId = formData.get('mediaId');
-    if (featureFlags.enablePostMedia && mediaId) {
+    if (mediaId) {
       request = request.field('mediaId', mediaId);
     }
 
@@ -179,7 +178,7 @@ export async function getPost(postId: string) {
     const res = await get(endpoint, undefined, {
       include_replies: true,
       include_meows: true,
-      include_quotes: featureFlags.enableQuotes,
+      include_quotes: true,
     });
     return res.body;
   } catch (e) {
@@ -195,7 +194,7 @@ export async function getPostReplies(postId: string, { limit, skip }: { limit: n
     skip,
     include_replies: true,
     include_meows: true,
-    include_quotes: featureFlags.enableQuotes,
+    include_quotes: true,
   });
   return res.body;
 }

@@ -136,15 +136,13 @@ export class AppBar extends React.Component<Properties, State> {
               to='/home'
               onLinkClick={this.unhoverContainer}
             />
-            {featureFlags.enableFeedApp && (
-              <AppLink
-                Icon={IconSlantLines}
-                isActive={isActive('feed')}
-                label='Channels'
-                to='/feed'
-                onLinkClick={this.unhoverContainer}
-              />
-            )}
+            <AppLink
+              Icon={IconSlantLines}
+              isActive={isActive('feed')}
+              label='Channels'
+              to='/feed'
+              onLinkClick={this.unhoverContainer}
+            />
             <AppLink
               Icon={IconMessage01}
               isActive={isActive('conversation')}
@@ -152,16 +150,14 @@ export class AppBar extends React.Component<Properties, State> {
               to={messengerPath}
               onLinkClick={this.unhoverContainer}
             />
-            {featureFlags.enableNotificationsApp && (
-              <AppLink
-                Icon={this.renderNotificationIcon}
-                isActive={isActive('notifications')}
-                label='Notifications'
-                to='/notifications'
-                onLinkClick={this.unhoverContainer}
-              />
-            )}
-            {featureFlags.enableWalletApp && hasActiveWallet && (
+            <AppLink
+              Icon={this.renderNotificationIcon}
+              isActive={isActive('notifications')}
+              label='Notifications'
+              to='/notifications'
+              onLinkClick={this.unhoverContainer}
+            />
+            {hasActiveWallet && (
               <AppLink
                 Icon={IconWallet}
                 isActive={isActive('wallet')}
@@ -170,15 +166,13 @@ export class AppBar extends React.Component<Properties, State> {
                 onLinkClick={this.unhoverContainer}
               />
             )}
-            {featureFlags.enableProfile && (
-              <AppLink
-                Icon={IconUser}
-                isActive={isActive('profile')}
-                label='Profile'
-                to='/profile'
-                onLinkClick={this.unhoverContainer}
-              />
-            )}
+            <AppLink
+              Icon={IconUser}
+              isActive={isActive('profile')}
+              label='Profile'
+              to='/profile'
+              onLinkClick={this.unhoverContainer}
+            />
             <AppLink
               Icon={IconWorld}
               isActive={isActive('explorer')}

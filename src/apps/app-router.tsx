@@ -37,12 +37,12 @@ export const AppRouter = () => {
         <Route path='/conversation/:conversationId' component={MessengerApp} />
         <Route path='/' exact component={MessengerApp} />
         <Route path='/home' component={HomeApp} />
-        {featureFlags.enableFeedApp && <Route path='/feed' component={FeedApp} />}
+        <Route path='/feed' component={FeedApp} />
         <Route path='/explorer' component={ExplorerApp} />
-        {featureFlags.enableNotificationsApp && <Route path='/notifications' component={NotificationsApp} />}
+        <Route path='/notifications' component={NotificationsApp} />
         {featureFlags.enableAuraZApp && <Route path='/aura' component={AuraApp} />}
-        {featureFlags.enableProfile && <Route path='/profile' component={ProfileApp} />}
-        {featureFlags.enableWalletApp && <Route path='/wallet' component={WalletApp} />}
+        <Route path='/profile' component={ProfileApp} />
+        <Route path='/wallet' component={WalletApp} />
         <Route component={redirectToRoot} />
       </Switch>
     </AuthenticationContextProvider>

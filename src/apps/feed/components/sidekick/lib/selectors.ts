@@ -27,3 +27,15 @@ export const selectMutedChannels = createSelector(
       }, {} as { [zid: string]: boolean });
   }
 );
+
+export const selectSocialChannelsMemberCounts = createSelector(
+  [(state: RootState) => allChannelsSelector(state)],
+  (conversations) => {
+    return conversations
+      .filter((c) => c.isSocialChannel && c.zid)
+      .reduce((acc, channel) => {
+        acc[channel.zid!] = channel.totalMembers || 0;
+        return acc;
+      }, {} as { [zid: string]: number });
+  }
+);

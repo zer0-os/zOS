@@ -2,6 +2,11 @@ import { FeedChatContainer } from './index';
 import { JoinChannel } from '../join-channel';
 import { useRouteMatch } from 'react-router-dom';
 import { useJoinChannelInfo } from '../join-channel/hooks/useJoinChannelInfo';
+import { Panel, PanelHeader, PanelBody, PanelTitle } from '../../../../components/layout/panel';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
+import { ConversationActionsContainer } from '../../../../components/messenger/conversation-actions/container';
+
+import styles from './styles.module.scss';
 
 export const FeedChat = () => {
   const route = useRouteMatch<{ zid: string }>('/feed/:zid');
@@ -12,11 +17,19 @@ export const FeedChat = () => {
     return null;
   }
 
-  if (channelInfo?.isMember) {
-    return <FeedChatContainer zid={zid} />;
-  }
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className={styles.Loading}>
+          <Spinner />
+        </div>
+      );
+    }
 
-  if (!channelInfo?.isMember && !isLoading) {
+    if (channelInfo?.isMember) {
+      return <FeedChatContainer zid={zid} />;
+    }
+
     return (
       <JoinChannel
         zid={zid}
@@ -24,7 +37,15 @@ export const FeedChat = () => {
         tokenRequirements={channelInfo?.tokenRequirements}
       />
     );
-  }
+  };
 
-  return null;
+  return (
+    <Panel className={styles.Container}>
+      <PanelHeader className={styles.PanelHeader}>
+        <PanelTitle className={styles.PanelTitle}>0://{zid}</PanelTitle>
+        {!isLoading && channelInfo?.isMember && <ConversationActionsContainer />}
+      </PanelHeader>
+      <PanelBody className={styles.Panel}>{renderContent()}</PanelBody>
+    </Panel>
+  );
 };

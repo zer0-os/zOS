@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconLock } from '@zero-tech/zui/icons';
-import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 import { SagaActionTypes } from '../../../../store/chat';
 import { config } from '../../../../config';
 import { RootState } from '../../../../store';
@@ -159,12 +158,5 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
     );
   };
 
-  return (
-    <Panel className={styles.Container}>
-      <PanelHeader className={styles.PanelHeader}>
-        <PanelTitle className={styles.PanelTitle}>0://{zid}</PanelTitle>
-      </PanelHeader>
-      <PanelBody className={styles.Panel}>{renderContent()}</PanelBody>
-    </Panel>
-  );
+  return renderContent();
 };

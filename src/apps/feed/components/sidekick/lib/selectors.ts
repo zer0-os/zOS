@@ -34,7 +34,7 @@ export const selectSocialChannelsMemberCounts = createSelector(
     return conversations
       .filter((c) => c.isSocialChannel && c.zid)
       .reduce((acc, channel) => {
-        acc[channel.zid!] = channel.totalMembers || 0;
+        acc[channel.zid!] = (channel.otherMembers?.length || 0) + 1;
         return acc;
       }, {} as { [zid: string]: number });
   }

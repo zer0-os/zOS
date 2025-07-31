@@ -20,14 +20,14 @@
   - Dependencies: Architecture Overview
 
 ### Priority 3: Onboarding
-- [ ] Contribution Guide for Kai (contribution-guide-agent)
+- [ ] Contribution Guide for New Developers (contribution-guide-agent)
   - Status: Not started
-  - Output: `./opusdocs/forkai/contribution-guide.md`
+  - Output: `./opusdocs/new-recruits/contribution-guide.md`
   - Dependencies: Architecture Overview
 
 - [ ] Development Workflow (development-workflow-agent)
   - Status: Not started
-  - Output: `./opusdocs/forkai/development-workflow.md`
+  - Output: `./opusdocs/new-recruits/development-workflow.md`
   - Dependencies: None
 
 ### Priority 4: Integrations

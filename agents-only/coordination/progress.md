@@ -18,12 +18,12 @@
 - Hooks Documented: useMatrixMedia, useMatrixImage, useDebounce, useLinkPreview, useScrollPosition, usePrevious, useUserWallets, useOwnedZids
 
 ### ✅ Contribution Guide
-- Location: `./opusdocs/forkai/contribution-guide.md`
+- Location: `./opusdocs/new-recruits/contribution-guide.md`
 - Status: Complete
 - Features: Progressive learning path, real examples, encouraging tone
 
 ### ✅ Development Workflow
-- Location: `./opusdocs/forkai/development-workflow.md`
+- Location: `./opusdocs/new-recruits/development-workflow.md`
 - Status: Complete
 - Features: Daily workflows, debugging strategies, productivity tips
 

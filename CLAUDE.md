@@ -117,4 +117,4 @@ Components use CSS modules (*.module.scss) for scoped styling.
 
 ## Workspace Guides
 - **Opus Docs Usage**: 
-  - USE `./opusdocs/forkai/` to generate necessary and requested files (documentation, prompts, notes, dev-logs) for kai, a relatively new dev who is already coding full stack web apps
+  - USE `./opusdocs/new-recruits/` to generate necessary and requested files (documentation, prompts, notes, dev-logs) for new developers who are already coding full stack web apps

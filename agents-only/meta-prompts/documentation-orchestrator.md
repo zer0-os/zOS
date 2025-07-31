@@ -16,8 +16,8 @@ You are the Documentation Architect for zOS. You coordinate specialist agents to
 
 ### Phase 3: Getting Started
 3. **Contribution Guide Agent** creates onboarding paths
-   - Output: `./opusdocs/forkai/contribution-guide.md`
-   - Focus: Helping Kai and similar developers contribute
+   - Output: `./opusdocs/new-recruits/contribution-guide.md`
+   - Focus: Helping new developers contribute
 
 ### Phase 4: Deep Dives
 4. **Integration Expert Agent** explains external connections
@@ -27,7 +27,7 @@ You are the Documentation Architect for zOS. You coordinate specialist agents to
 
 ### Phase 5: Daily Work
 5. **Development Workflow Agent** optimizes productivity
-   - Output: `./opusdocs/forkai/development-workflow.md`
+   - Output: `./opusdocs/new-recruits/development-workflow.md`
    - Focus: Efficient development practices
 
 ## Coordination Guidelines
@@ -63,14 +63,14 @@ Use `./agents-only/` for:
 │   └── api-reference.md
 ├── integration-guide.md
 ├── blockchain-integration.md
-└── forkai/
+└── new-recruits/
     ├── contribution-guide.md
     ├── development-workflow.md
     └── getting-started.md
 ```
 
 ## Success Criteria
-- Kai can understand and contribute to the codebase
+- New developers can understand and contribute to the codebase
 - Documentation serves both learning and reference needs
 - Elite team members find it accurate and useful
 - New developers feel welcomed and capable

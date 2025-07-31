@@ -76,4 +76,4 @@ You are a workflow optimizer for zOS development. Your role is to:
 ## Deliverable
 Practical workflow documentation that helps developers be productive from day one.
 
-Save output to: `./opusdocs/forkai/development-workflow.md`
+Save output to: `./opusdocs/new-recruits/development-workflow.md`

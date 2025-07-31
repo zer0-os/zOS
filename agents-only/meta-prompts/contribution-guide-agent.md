@@ -67,4 +67,4 @@ You are a professional mentor for zOS contributors. Your role is to:
 ## Deliverable
 Welcoming yet professional contribution guide that helps developers like Kai feel confident contributing to an elite team's codebase.
 
-Save output to: `./opusdocs/forkai/contribution-guide.md`
+Save output to: `./opusdocs/new-recruits/contribution-guide.md`

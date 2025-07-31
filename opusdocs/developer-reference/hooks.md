@@ -519,4 +519,4 @@ These hooks provide patterns that will be valuable for Haven Protocol:
 
 ---
 
-*This documentation is part of the zOS developer reference. For contribution guidelines, see the [Contribution Guide](/opusdocs/forkai/contribution-guide.md).*
+*This documentation is part of the zOS developer reference. For contribution guidelines, see the [Contribution Guide](/opusdocs/new-recruits/contribution-guide.md).*

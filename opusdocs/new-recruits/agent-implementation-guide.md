@@ -11,7 +11,7 @@ This guide helps you use the agent team to generate comprehensive documentation 
 
 ### Step 1: Generate Architecture Overview
 ```bash
-/agent general-purpose "Using the meta-prompt from ./agents-only/meta-prompts/architecture-guide-agent.md, analyze the zOS codebase and create a comprehensive architecture overview. Focus on helping developers like Kai understand the mental model of how zOS works."
+/agent general-purpose "Using the meta-prompt from ./agents-only/meta-prompts/architecture-guide-agent.md, analyze the zOS codebase and create a comprehensive architecture overview. Focus on helping new developers understand the mental model of how zOS works."
 ```
 
 **Expected Output**: `./opusdocs/architecture-overview.md`
@@ -32,17 +32,17 @@ This guide helps you use the agent team to generate comprehensive documentation 
 
 ### Step 4: Create Contribution Guide
 ```bash
-/agent general-purpose "Using the meta-prompt from ./agents-only/meta-prompts/contribution-guide-agent.md, create a welcoming contribution guide specifically for Kai's skill level. Include step-by-step instructions for making first contributions to zOS."
+/agent general-purpose "Using the meta-prompt from ./agents-only/meta-prompts/contribution-guide-agent.md, create a welcoming contribution guide specifically for new developers' skill level. Include step-by-step instructions for making first contributions to zOS."
 ```
 
-**Expected Output**: `./opusdocs/forkai/contribution-guide.md`
+**Expected Output**: `./opusdocs/new-recruits/contribution-guide.md`
 
 ### Step 5: Document Development Workflow
 ```bash
 /agent general-purpose "Using the meta-prompt from ./agents-only/meta-prompts/development-workflow-agent.md, create a practical development workflow guide. Include daily tasks, debugging strategies, and productivity tips for working with the zOS codebase."
 ```
 
-**Expected Output**: `./opusdocs/forkai/development-workflow.md`
+**Expected Output**: `./opusdocs/new-recruits/development-workflow.md`
 
 ### Step 6: Create Integration Guides
 ```bash
@@ -88,12 +88,12 @@ This guide helps you use the agent team to generate comprehensive documentation 
 
 ### Creating Cheatsheets
 ```bash
-/agent general-purpose "Create a quick-reference cheatsheet for common Redux-Saga patterns used in zOS. Save to ./opusdocs/forkai/redux-saga-cheatsheet.md"
+/agent general-purpose "Create a quick-reference cheatsheet for common Redux-Saga patterns used in zOS. Save to ./opusdocs/new-recruits/redux-saga-cheatsheet.md"
 ```
 
 ### Documenting Specific Features
 ```bash
-/agent general-purpose "Document how to add a new app module to zOS, including all necessary files, Redux setup, and routing configuration. Save to ./opusdocs/forkai/creating-new-app-module.md"
+/agent general-purpose "Document how to add a new app module to zOS, including all necessary files, Redux setup, and routing configuration. Save to ./opusdocs/new-recruits/creating-new-app-module.md"
 ```
 
 ## Troubleshooting

@@ -17,6 +17,8 @@ High-level views of how zOS components fit together.
 ### 🔄 Redux and State Management
 Visual representations of state management patterns.
 
+- **[Redux Galaxy Visuals](./redux-galaxy-visuals.md)** - Complete Redux-Saga flow, normalization patterns, and state architecture from Chapter 2
+- **[Normalization Patterns](./normalization-patterns.md)** - Detailed ASCII art visualizations of normalization engine and merge-first strategies
 - **[Redux Store Structure](./redux/store-structure.md)** - State tree organization
 - **[Normalized Entities](./redux/normalized-entities.md)** - Entity relationship diagrams
 - **[Action Flow](./redux/action-flow.md)** - How actions flow through the system
@@ -25,6 +27,7 @@ Visual representations of state management patterns.
 ### ⚡ Redux-Saga Flows
 Async operation orchestration and side effect management.
 
+- **[Redux-Saga Flows](./redux-saga-flows.md)** - Detailed Mermaid diagrams for authentication, messaging, real-time events, and error handling flows
 - **[Basic Saga Flow](./saga/basic-flow.md)** - Simple async operations
 - **[Complex Orchestration](./saga/complex-orchestration.md)** - Multi-step workflows
 - **[Error Handling](./saga/error-handling.md)** - Robust error management

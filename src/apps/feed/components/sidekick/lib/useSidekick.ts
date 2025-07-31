@@ -1,20 +1,29 @@
 import { useRouteMatch } from 'react-router-dom';
-
 import { useOwnedZids } from '../../../../../lib/hooks/useOwnedZids';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { selectMutedChannels, selectSocialChannelsUnreadCounts, selectSocialChannelsMemberCounts } from './selectors';
+import { useTokenGatedChannels } from '../../../hooks/useTokenGatedChannels';
 
 export interface UnreadCount {
   total: number;
   highlight: number;
 }
 
+interface ChannelItem {
+  zid: string;
+  isLegacy: boolean;
+  memberCount?: number;
+  tokenSymbol?: string;
+  tokenAmount?: string;
+}
+
 interface UseSidekickReturn {
   isErrorZids: boolean;
   isLoadingZids: boolean;
   selectedZId?: string;
-  zids?: string[];
+  usersChannels?: ChannelItem[];
+  allChannels?: ChannelItem[];
   search: string;
   unreadCounts: { [zid: string]: UnreadCount };
   mutedChannels: { [zid: string]: boolean };
@@ -28,22 +37,78 @@ export const useSidekick = (): UseSidekickReturn => {
   const route = useRouteMatch('/feed/:zid');
   const selectedZId = route?.params?.zid;
 
-  const { zids, isLoading, isError } = useOwnedZids();
+  // Fetch legacy owned ZIDs
+  const { zids: ownedZids, isLoading: isLoadingOwned, isError: isErrorOwned } = useOwnedZids();
 
-  const worldZids = zids?.map((zid) => zid.split('.')[0]);
-  const uniqueWorldZids = worldZids ? ([...new Set(worldZids)] as string[]) : undefined;
+  // Fetch token-gated channels (user's channels) - always fetch for Channels tab
+  const {
+    data: tokenGatedChannelsData,
+    isLoading: isLoadingTokenGated,
+    error: tokenGatedError,
+  } = useTokenGatedChannels('mine');
 
-  const filteredZids = uniqueWorldZids?.filter((zid) => zid.toLowerCase().includes(search.toLowerCase()));
+  // Fetch all token-gated channels - always fetch for Explore tab (cached by React Query)
+  const { data: allTokenGatedChannelsData } = useTokenGatedChannels('all');
+
+  // Process legacy ZIDs
+  const legacyZids = ownedZids?.map((zid) => zid.split('.')[0]);
+  const uniqueLegacyZids = legacyZids ? ([...new Set(legacyZids)] as string[]) : [];
+
+  // Process token-gated channels (user's channels)
+  const tokenGatedChannels = tokenGatedChannelsData?.channels || [];
+
+  // Process all token-gated channels
+  const allTokenGatedChannels = allTokenGatedChannelsData?.channels || [];
+
+  // Combine legacy and user's token-gated channels for Channels tab
+  const userChannels: ChannelItem[] = [
+    // Legacy channels (owned ZIDs)
+    ...uniqueLegacyZids.map((zid) => ({
+      zid,
+      isLegacy: true,
+    })),
+    // Token-gated channels (user's channels)
+    ...tokenGatedChannels.map((channel) => ({
+      zid: channel.zid,
+      isLegacy: false,
+      memberCount: channel.memberCount,
+      tokenSymbol: channel.tokenSymbol,
+      tokenAmount: channel.tokenAmount,
+    })),
+  ];
+
+  // Remove duplicates (token-gated channels take precedence)
+  const uniqueUserChannels = userChannels.filter(
+    (channel, index, self) => index === self.findIndex((c) => c.zid === channel.zid)
+  );
+
+  // Process all channels for Explore tab
+  const allChannels: ChannelItem[] = allTokenGatedChannels.map((channel) => ({
+    zid: channel.zid,
+    isLegacy: false,
+    memberCount: channel.memberCount,
+    tokenSymbol: channel.tokenSymbol,
+    tokenAmount: channel.tokenAmount,
+  }));
+
+  // Apply search filter to user channels
+  const filteredUserChannels = uniqueUserChannels.filter((channel) =>
+    channel.zid.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Apply search filter to all channels
+  const filteredAllChannels = allChannels.filter((channel) => channel.zid.toLowerCase().includes(search.toLowerCase()));
 
   const unreadCounts = useSelector(selectSocialChannelsUnreadCounts);
   const mutedChannels = useSelector(selectMutedChannels);
   const memberCounts = useSelector(selectSocialChannelsMemberCounts);
 
   return {
-    isErrorZids: isError,
-    isLoadingZids: isLoading,
+    isErrorZids: isErrorOwned || !!tokenGatedError,
+    isLoadingZids: isLoadingOwned || isLoadingTokenGated,
     selectedZId,
-    zids: filteredZids,
+    usersChannels: filteredUserChannels,
+    allChannels: filteredAllChannels,
     search,
     setSearch,
     unreadCounts,

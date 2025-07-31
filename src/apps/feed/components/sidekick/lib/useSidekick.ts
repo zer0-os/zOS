@@ -3,6 +3,7 @@ import { useOwnedZids } from '../../../../../lib/hooks/useOwnedZids';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { selectMutedChannels, selectSocialChannelsUnreadCounts, selectSocialChannelsMemberCounts } from './selectors';
+import { socialChannelsSelector } from '../../../../../store/channels/selectors';
 import { useTokenGatedChannels } from '../../../hooks/useTokenGatedChannels';
 
 export interface UnreadCount {
@@ -22,6 +23,8 @@ interface ChannelItem {
 interface UseSidekickReturn {
   isErrorZids: boolean;
   isLoadingZids: boolean;
+  isErrorMine: boolean;
+  isErrorAll: boolean;
   selectedZId?: string;
   usersChannels?: ChannelItem[];
   allChannels?: ChannelItem[];
@@ -38,6 +41,9 @@ export const useSidekick = (): UseSidekickReturn => {
   const route = useRouteMatch('/feed/:zid');
   const selectedZId = route?.params?.zid;
 
+  // Get social channels from Redux store (channels user has actually joined)
+  const socialChannels = useSelector(socialChannelsSelector);
+
   // Fetch legacy owned ZIDs
   const { zids: ownedZids, isLoading: isLoadingOwned, isError: isErrorOwned } = useOwnedZids();
 
@@ -49,11 +55,17 @@ export const useSidekick = (): UseSidekickReturn => {
   } = useTokenGatedChannels('mine');
 
   // Fetch all token-gated channels - always fetch for Explore tab (cached by React Query)
-  const { data: allTokenGatedChannelsData } = useTokenGatedChannels('all');
+  const { data: allTokenGatedChannelsData, error: allTokenGatedError } = useTokenGatedChannels('all');
 
-  // Process legacy ZIDs
+  // Process legacy ZIDs - only include those that user has actually joined
   const legacyZids = ownedZids?.map((zid) => zid.split('.')[0]);
   const uniqueLegacyZids = legacyZids ? ([...new Set(legacyZids)] as string[]) : [];
+
+  // Get ZIDs of social channels user has joined
+  const joinedSocialChannelZids = new Set(socialChannels.map((channel) => channel.zid).filter(Boolean));
+
+  // Only include legacy ZIDs that user has actually joined
+  const joinedLegacyZids = uniqueLegacyZids.filter((zid) => joinedSocialChannelZids.has(zid));
 
   // Process token-gated channels (user's channels)
   const tokenGatedChannels = tokenGatedChannelsData?.channels || [];
@@ -61,10 +73,10 @@ export const useSidekick = (): UseSidekickReturn => {
   // Process all token-gated channels
   const allTokenGatedChannels = allTokenGatedChannelsData?.channels || [];
 
-  // Combine legacy and user's token-gated channels for Channels tab
+  // Combine joined legacy channels and user's token-gated channels for Channels tab
   const userChannels: ChannelItem[] = [
-    // Legacy channels (owned ZIDs)
-    ...uniqueLegacyZids.map((zid) => ({
+    // Legacy channels (owned ZIDs that user has joined)
+    ...joinedLegacyZids.map((zid) => ({
       zid,
       isLegacy: true,
     })),
@@ -94,10 +106,20 @@ export const useSidekick = (): UseSidekickReturn => {
     tokenAddress: channel.tokenAddress,
   }));
 
-  // Filter out channels that the user is already a member of
-  const userChannelZids = new Set([...uniqueLegacyZids, ...tokenGatedChannels.map((channel) => channel.zid)]);
+  // Add legacy channels that user owns but hasn't joined to Explore tab
+  const unjoinedLegacyZids = uniqueLegacyZids.filter((zid) => !joinedSocialChannelZids.has(zid));
+  const legacyChannelsForExplore: ChannelItem[] = unjoinedLegacyZids.map((zid) => ({
+    zid,
+    isLegacy: true,
+  }));
 
-  const filteredAllChannels = allChannels.filter((channel) => !userChannelZids.has(channel.zid));
+  // Combine new token-gated channels and unjoined legacy channels for Explore tab
+  const allChannelsForExplore = [...allChannels, ...legacyChannelsForExplore];
+
+  // Filter out channels that the user is already a member of
+  const userChannelZids = new Set([...joinedLegacyZids, ...tokenGatedChannels.map((channel) => channel.zid)]);
+
+  const filteredAllChannels = allChannelsForExplore.filter((channel) => !userChannelZids.has(channel.zid));
 
   // Apply search filter to user channels
   const filteredUserChannels = uniqueUserChannels.filter((channel) =>
@@ -116,6 +138,8 @@ export const useSidekick = (): UseSidekickReturn => {
   return {
     isErrorZids: isErrorOwned || !!tokenGatedError,
     isLoadingZids: isLoadingOwned || isLoadingTokenGated,
+    isErrorMine: !!tokenGatedError,
+    isErrorAll: !!allTokenGatedError,
     selectedZId,
     usersChannels: filteredUserChannels,
     allChannels: filteredAllChannelsWithSearch,

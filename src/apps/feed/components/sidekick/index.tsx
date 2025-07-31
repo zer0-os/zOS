@@ -26,8 +26,9 @@ export const Sidekick = () => {
   });
 
   const {
-    isErrorZids,
     isLoadingZids,
+    isErrorMine,
+    isErrorAll,
     selectedZId,
     usersChannels,
     allChannels,
@@ -98,7 +99,7 @@ export const Sidekick = () => {
         return (
           <ul className={styles.List}>
             {isLoadingZids && <LoadingIndicator />}
-            {isErrorZids && !usersChannels?.length && <li>Error loading channels</li>}
+            {isErrorMine && <div className={styles.Error}>Error loading all channels</div>}
             {renderFeedItems(usersChannels)}
           </ul>
         );
@@ -106,7 +107,7 @@ export const Sidekick = () => {
         return (
           <ul className={styles.List}>
             {isLoadingZids && <LoadingIndicator />}
-            {isErrorZids && !allChannels?.length && <li>Error loading all channels</li>}
+            {isErrorAll && <div className={styles.Error}>Error loading all channels</div>}
             {renderFeedItems(allChannels)}
           </ul>
         );

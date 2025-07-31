@@ -16,6 +16,7 @@ interface ChannelItem {
   memberCount?: number;
   tokenSymbol?: string;
   tokenAmount?: string;
+  tokenAddress?: string;
 }
 
 interface UseSidekickReturn {
@@ -74,6 +75,7 @@ export const useSidekick = (): UseSidekickReturn => {
       memberCount: channel.memberCount,
       tokenSymbol: channel.tokenSymbol,
       tokenAmount: channel.tokenAmount,
+      tokenAddress: channel.tokenAddress,
     })),
   ];
 
@@ -89,15 +91,23 @@ export const useSidekick = (): UseSidekickReturn => {
     memberCount: channel.memberCount,
     tokenSymbol: channel.tokenSymbol,
     tokenAmount: channel.tokenAmount,
+    tokenAddress: channel.tokenAddress,
   }));
+
+  // Filter out channels that the user is already a member of
+  const userChannelZids = new Set([...uniqueLegacyZids, ...tokenGatedChannels.map((channel) => channel.zid)]);
+
+  const filteredAllChannels = allChannels.filter((channel) => !userChannelZids.has(channel.zid));
 
   // Apply search filter to user channels
   const filteredUserChannels = uniqueUserChannels.filter((channel) =>
     channel.zid.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Apply search filter to all channels
-  const filteredAllChannels = allChannels.filter((channel) => channel.zid.toLowerCase().includes(search.toLowerCase()));
+  // Apply search filter to all channels (excluding user's channels)
+  const filteredAllChannelsWithSearch = filteredAllChannels.filter((channel) =>
+    channel.zid.toLowerCase().includes(search.toLowerCase())
+  );
 
   const unreadCounts = useSelector(selectSocialChannelsUnreadCounts);
   const mutedChannels = useSelector(selectMutedChannels);
@@ -108,7 +118,7 @@ export const useSidekick = (): UseSidekickReturn => {
     isLoadingZids: isLoadingOwned || isLoadingTokenGated,
     selectedZId,
     usersChannels: filteredUserChannels,
-    allChannels: filteredAllChannels,
+    allChannels: filteredAllChannelsWithSearch,
     search,
     setSearch,
     unreadCounts,

@@ -1,13 +1,7 @@
-import { parseAbi } from 'viem';
-import { readContract } from '@wagmi/core';
 import { useQuery } from '@tanstack/react-query';
-import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
-
-const ERC20_ABI = parseAbi([
-  'function allowance(address owner, address spender) view returns (uint256)',
-]);
+import { get } from '../../../lib/api/rest';
 
 export const useTokenAllowance = (tokenAddress: string | null, spenderAddress: string | null, chainId?: number) => {
   const { address: userAddress } = useSelector(selectedWalletSelector);
@@ -26,17 +20,13 @@ export const useTokenAllowance = (tokenAddress: string | null, spenderAddress: s
       chainId,
     ],
     queryFn: async () => {
-      if (!tokenAddress || !spenderAddress || !userAddress) return null;
+      const res = await get(`/api/wallet/${userAddress}/token/${tokenAddress}/approval/${spenderAddress}`).send();
 
-      const result = await readContract(getWagmiConfig(), {
-        address: tokenAddress as `0x${string}`,
-        abi: ERC20_ABI,
-        functionName: 'allowance',
-        args: [userAddress, spenderAddress as `0x${string}`],
-        chainId: chainId || 43113,
-      });
+      if (!res.ok) {
+        throw new Error('Failed to fetch token allowance');
+      }
 
-      return result as bigint;
+      return res.body;
     },
     enabled: !!tokenAddress && !!spenderAddress && !!userAddress,
   });

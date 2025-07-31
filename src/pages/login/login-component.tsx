@@ -10,7 +10,6 @@ import { ToggleGroup } from '@zero-tech/zui/components';
 import { ThemeEngine, Themes } from '@zero-tech/zui/components/ThemeEngine';
 import { SocialLogin } from '../../authentication/social-login/social-login';
 import { assertAllValuesConsumed } from '../../lib/enum';
-import { featureFlags } from '../../lib/feature-flags';
 import { OTPLogin } from '../../authentication/otp-login/otp-login';
 
 import { bemClassName } from '../../lib/bem';
@@ -41,15 +40,12 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
   }
 
   renderToggleGroup(isLoggingIn: boolean, stage: LoginStage) {
-    const isOTPLoginEnabled = featureFlags.enableOTPLogin;
-    const activeStage = isOTPLoginEnabled && stage === LoginStage.EmailLogin ? LoginStage.OTPLogin : stage;
+    const activeStage = stage === LoginStage.EmailLogin ? LoginStage.OTPLogin : stage;
     const options: { key: LoginStage; label: string }[] = [
       { key: LoginStage.Web3Login, label: 'Web3' },
-      { key: isOTPLoginEnabled ? LoginStage.OTPLogin : LoginStage.EmailLogin, label: 'Email' },
+      { key: LoginStage.OTPLogin, label: 'Email' },
+      { key: LoginStage.SocialLogin, label: 'Social' },
     ];
-    if (featureFlags.enableSocialLogin) {
-      options.push({ key: LoginStage.SocialLogin, label: 'Social' });
-    }
 
     const shouldRenderToggleGroup = stage !== LoginStage.Web3Login || !isLoggingIn;
 

@@ -179,7 +179,7 @@ describe(OverviewPanel, () => {
     const wrapper = subject({});
 
     act(() => {
-      wrapper.find(Button).at(0).prop('onPress')();
+      wrapper.find(Button).at(1).prop('onPress')();
     });
     wrapper.update();
 

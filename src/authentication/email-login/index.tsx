@@ -4,7 +4,6 @@ import { Alert, Button, Input, PasswordInput } from '@zero-tech/zui/components';
 
 import { bem, bemClassName } from '../../lib/bem';
 import { LoginStage } from '../../store/login';
-import { featureFlags } from '../../lib/feature-flags';
 
 import './styles.scss';
 
@@ -58,7 +57,6 @@ export class EmailLogin extends React.Component<Properties, State> {
   }
 
   render() {
-    const isOTPLoginEnabled = featureFlags.enableOTPLogin;
     return (
       <div {...cn('')}>
         <form {...cn('form')} onSubmit={this.publishOnSubmit}>
@@ -96,11 +94,9 @@ export class EmailLogin extends React.Component<Properties, State> {
           <Button {...cn('submit-button')} isLoading={this.props.isLoading} isSubmit>
             Log in
           </Button>
-          {isOTPLoginEnabled && (
-            <div onClick={() => this.props.switchLoginStage(LoginStage.OTPLogin)} {...cn('use-otp')}>
-              Use one-time password instead?
-            </div>
-          )}
+          <div onClick={() => this.props.switchLoginStage(LoginStage.OTPLogin)} {...cn('use-otp')}>
+            Use one-time password instead?
+          </div>
         </form>
       </div>
     );

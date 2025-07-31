@@ -1,10 +1,8 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { useAccount, useSignMessage } from 'wagmi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
 import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
-import { featureFlags } from '../../../lib/feature-flags';
 import { currentUserSelector, primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
 import { v4 as uuidv4 } from 'uuid';
 import { addQueuedPost, removeQueuedPost, updateQueuedPostStatus } from '../../../store/post-queue';
@@ -27,8 +25,6 @@ export const useSubmitPost = () => {
   const userWallets = useSelector(userWalletsSelector);
   const currentUser = useSelector(currentUserSelector);
 
-  const { address: connectedAddress } = useAccount();
-  const { signMessageAsync } = useSignMessage();
   const account = useThirdwebAccount();
 
   const {
@@ -43,7 +39,7 @@ export const useSubmitPost = () => {
       const { message, replyToId, channelZid, mediaId, quoteOf } = params;
       const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
 
-      const authorAddress = featureFlags.enableZeroWalletSigning ? account?.address : connectedAddress;
+      const authorAddress = account?.address;
 
       if (!formattedUserPrimaryZid) {
         throw new Error('Please set a primary ZID in your profile');
@@ -74,11 +70,7 @@ export const useSubmitPost = () => {
       let signedPost;
 
       try {
-        if (featureFlags.enableZeroWalletSigning) {
-          signedPost = await account?.signMessage({ message: unsignedPost });
-        } else {
-          signedPost = await signMessageAsync({ account: authorAddress, message: unsignedPost });
-        }
+        signedPost = await account?.signMessage({ message: unsignedPost });
       } catch (e) {
         console.error(e);
         throw new Error('Failed to sign post');

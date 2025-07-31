@@ -1,15 +1,5 @@
-import { parseAbi } from 'viem';
-import { readContract } from '@wagmi/core';
 import { useQuery } from '@tanstack/react-query';
-import { StakingERC20ABI } from './abi/StakingERC20';
-import { getWagmiConfig } from '../../../lib/web3/wagmi-config';
-
-const ERC20_ABI = parseAbi([
-  'function name() view returns (string)',
-  'function symbol() view returns (string)',
-  'function decimals() view returns (uint8)',
-  'function balanceOf(address) view returns (uint256)',
-]);
+import { get } from '../../../lib/api/rest';
 
 export interface TokenInfo {
   name: string;
@@ -27,13 +17,13 @@ export const useStakingToken = (poolAddress: string, chainId?: number) => {
   } = useQuery({
     queryKey: ['stakingTokenAddress', poolAddress, chainId],
     queryFn: async () => {
-      const result = await readContract(getWagmiConfig(), {
-        address: poolAddress as `0x${string}`,
-        abi: StakingERC20ABI,
-        functionName: 'stakingToken',
-        chainId: chainId || 43113,
-      });
-      return result as string;
+      const res = await get(`/api/staking/${poolAddress}/staking-token`).send();
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch staking token address');
+      }
+
+      return res.body.stakingTokenAddress;
     },
     enabled: !!poolAddress,
   });
@@ -48,31 +38,16 @@ export const useStakingToken = (poolAddress: string, chainId?: number) => {
     queryFn: async () => {
       if (!stakingTokenAddress) return null;
 
-      const [name, symbol, decimals] = await Promise.all([
-        readContract(getWagmiConfig(), {
-          address: stakingTokenAddress as `0x${string}`,
-          abi: ERC20_ABI,
-          functionName: 'name',
-          chainId: chainId || 43113,
-        }),
-        readContract(getWagmiConfig(), {
-          address: stakingTokenAddress as `0x${string}`,
-          abi: ERC20_ABI,
-          functionName: 'symbol',
-          chainId: chainId || 43113,
-        }),
-        readContract(getWagmiConfig(), {
-          address: stakingTokenAddress as `0x${string}`,
-          abi: ERC20_ABI,
-          functionName: 'decimals',
-          chainId: chainId || 43113,
-        }),
-      ]);
+      const res = await get(`/api/tokens/${stakingTokenAddress}/info`).send();
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch staking token info');
+      }
 
       return {
-        name: name as string,
-        symbol: symbol as string,
-        decimals: decimals as number,
+        name: res.body.name,
+        symbol: res.body.symbol,
+        decimals: res.body.decimals,
         address: stakingTokenAddress,
       };
     },

@@ -4,7 +4,6 @@ import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Butt
 import { IconCoinsStacked2 } from '@zero-tech/zui/icons';
 import { useClaim } from './useClaim';
 import { ClaimedRewardsDialog } from '../claimed-rewards-dialog';
-import { featureFlags } from '../../lib/feature-flags';
 
 import styles from './styles.module.scss';
 
@@ -31,7 +30,7 @@ export const ClaimRewardsButton: React.FC<Properties> = ({
         onPress={claimRewards}
         isLoading={isLoading}
         startEnhancer={<IconCoinsStacked2 className={styles.ClaimButtonIcon} size={16} />}
-        isDisabled={rewardsTotal === '0 MEOW' || !featureFlags.enableClaimRewards}
+        isDisabled={rewardsTotal === '0 MEOW'}
       >
         {children}
       </Button>

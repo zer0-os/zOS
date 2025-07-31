@@ -1,12 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { useQueryClient } from '@tanstack/react-query';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconLock } from '@zero-tech/zui/icons';
-import { SagaActionTypes } from '../../../../store/chat';
-import { config } from '../../../../config';
-import { RootState } from '../../../../store';
+import { useJoinTokenGatedChannel } from './hooks/useJoinTokenGatedChannel';
 
 import styles from './styles.module.scss';
 
@@ -22,20 +17,9 @@ interface JoinChannelProps {
   isLegacyChannel?: boolean;
 }
 
-const selectChatState = (state: RootState) => ({
-  joinRoomErrorContent: state.chat.joinRoomErrorContent,
-  isJoiningConversation: state.chat.isJoiningConversation,
-});
-
 export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements, isLegacyChannel }) => {
   const [joinError, setJoinError] = useState<string | null>(null);
-  const [isJoining, setIsJoining] = useState(false);
-  const [hasAttemptedJoin, setHasAttemptedJoin] = useState(false);
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const queryClient = useQueryClient();
-
-  const { joinRoomErrorContent, isJoiningConversation } = useSelector(selectChatState);
+  const joinChannelMutation = useJoinTokenGatedChannel();
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -43,49 +27,27 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
 
   const handleJoin = useCallback(async () => {
     setJoinError(null);
-    setIsJoining(true);
-    setHasAttemptedJoin(true);
+    joinChannelMutation.mutate(zid);
+  }, [joinChannelMutation, zid]);
 
-    const zna = zid.replace('0://', '');
-    const roomAlias = `${zna}:${config.matrixHomeServerName}`;
-
-    // Dispatch validateFeedChat to attempt joining and validate requirements
-    dispatch({
-      type: SagaActionTypes.ValidateFeedChat,
-      payload: { id: roomAlias },
-    });
-  }, [
-    dispatch,
-    zid,
-  ]);
-
-  // Watch for Redux state changes to handle success/error
+  // Handle mutation state changes
   useEffect(() => {
-    if (!hasAttemptedJoin) {
-      return; // Don't process anything until user actually attempts to join
-    }
-
-    if (joinRoomErrorContent) {
+    if (joinChannelMutation.isError) {
       setJoinError(
         isLegacyChannel
           ? `Failed to join channel. You must own a subdomain of 0://${zid} to join.`
           : `Failed to join channel. You must hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} to join.`
       );
-      setIsJoining(false);
-    } else if (!isJoiningConversation && !joinRoomErrorContent && hasAttemptedJoin) {
-      setIsJoining(false);
-      // Invalidate cache to trigger refetch and show chat interface
-      queryClient.invalidateQueries({ queryKey: ['channel-info', zid] });
+    } else if (joinChannelMutation.isSuccess) {
+      // Success - the mutation will automatically invalidate queries and refresh the UI
+      // The user will now see the FeedChatContainer instead of JoinChannel
     }
   }, [
-    joinRoomErrorContent,
-    isJoiningConversation,
-    hasAttemptedJoin,
-    history,
+    joinChannelMutation.isError,
+    joinChannelMutation.isSuccess,
     zid,
     isLegacyChannel,
     tokenRequirements,
-    queryClient,
   ]);
 
   const renderContent = () => {
@@ -143,8 +105,8 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
           className={styles.JoinButton}
           variant={ButtonVariant.Primary}
           onPress={handleJoin}
-          isDisabled={isJoining}
-          isLoading={isJoining}
+          isDisabled={joinChannelMutation.isPending}
+          isLoading={joinChannelMutation.isPending}
         >
           Join Channel
         </Button>

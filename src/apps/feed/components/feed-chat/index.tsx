@@ -11,12 +11,10 @@ import { searchMentionableUsersForChannel } from '../../../../platform-apps/chan
 import { Media } from '../../../../components/message-input/utils';
 import { config } from '../../../../config';
 import { ErrorDialogContent } from '../../../../store/chat/types';
-import { Panel, PanelBody, PanelHeader, PanelTitle } from '../../../../components/layout/panel';
 import { getOtherMembersTypingDisplayJSX } from '../../../../components/messenger/lib/utils';
 import { channelSelector } from '../../../../store/channels/selectors';
 import { toggleSecondarySidekick } from '../../../../store/group-management';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
-import { ConversationActionsContainer } from '../../../../components/messenger/conversation-actions/container';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
@@ -40,6 +38,7 @@ export interface Properties extends PublicProperties {
 
 export class Container extends React.Component<Properties> {
   chatViewContainerRef = null;
+  hasValidated = false;
 
   constructor(props: Properties) {
     super(props);
@@ -73,17 +72,20 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount(): void {
-    if (this.props.zid) {
+    if (this.props.zid && !this.hasValidated) {
       const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
       this.props.validateFeedChat(roomAlias);
+      this.hasValidated = true;
     }
   }
 
   componentDidUpdate(prevProps: Properties): void {
     if (this.props.zid !== prevProps.zid) {
-      if (this.props.zid) {
+      this.hasValidated = false; // Reset flag when zid changes
+      if (this.props.zid && !this.hasValidated) {
         const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
         this.props.validateFeedChat(roomAlias);
+        this.hasValidated = true;
       }
     }
   }
@@ -129,18 +131,9 @@ export class Container extends React.Component<Properties> {
     this.props.toggleSecondarySidekick();
   };
 
-  renderHeader = () => {
-    return (
-      <PanelHeader className={styles.PanelHeader}>
-        <PanelTitle className={styles.PanelTitle}>0://{this.props.zid}</PanelTitle>
-        <ConversationActionsContainer />
-      </PanelHeader>
-    );
-  };
-
   renderBody = (isLoading: boolean) => {
     return (
-      <PanelBody className={styles.Panel}>
+      <>
         {isLoading && (
           <div className={styles.Loading}>
             <Spinner />
@@ -177,7 +170,7 @@ export class Container extends React.Component<Properties> {
             </div>
           </div>
         </div>
-      </PanelBody>
+      </>
     );
   };
 
@@ -189,18 +182,11 @@ export class Container extends React.Component<Properties> {
       !this.props.joinRoomErrorContent
     );
 
-    return (
-      <>
-        {shouldRender && (
-          <>
-            <Panel className={styles.Container}>
-              {this.renderHeader()}{' '}
-              {this.renderBody(this.props.isJoiningConversation || !this.props.isConversationsLoaded)}
-            </Panel>
-          </>
-        )}
-      </>
-    );
+    if (!shouldRender) {
+      return null;
+    }
+
+    return this.renderBody(this.props.isJoiningConversation || !this.props.isConversationsLoaded);
   }
 }
 

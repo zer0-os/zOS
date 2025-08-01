@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { IconChevronRightDouble } from '@zero-tech/zui/icons';
-import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
+import { useAccount } from 'wagmi';
 import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../../lib/number';
 import { parsePrice } from '../../lib/utils';
 import { meowInUSDSelector } from '../../../../../../store/rewards/selectors';
@@ -33,6 +33,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
   // RainbowKit/Wagmi wallet integration
   const { address: account } = useAccount();
+
   const signer = useCallback(() => {
     if (typeof window !== 'undefined' && window.ethereum) {
       const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
@@ -118,7 +119,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       <div className={styles.InfoText}>By paying, you accept the Terms and Conditions</div>
 
       <button className={styles.ContinueButton} onClick={handlePurchase} disabled={isPurchasing || !account || !signer}>
-        {isPurchasing ? 'Purchasing...' : `Pay ${meowAmount} MEOW`}
+        {isPurchasing ? 'Purchasing...' : !account ? 'Connect wallet to purchase' : `Pay ${meowAmount} MEOW`}
       </button>
 
       <div className={styles.InfoContainer}>

@@ -1,9 +1,9 @@
 import { useRouteMatch } from 'react-router-dom';
-
-import { useOwnedZids } from '../../../../../lib/hooks/useOwnedZids';
-import { useSelector } from 'react-redux';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { selectMutedChannels, selectSocialChannelsUnreadCounts, selectSocialChannelsMemberCounts } from './selectors';
+import { useLegacyChannels } from './hooks/useLegacyChannels';
+import { useChannelLists, type ChannelItem } from './hooks/useChannelLists';
 
 export interface UnreadCount {
   total: number;
@@ -13,8 +13,11 @@ export interface UnreadCount {
 interface UseSidekickReturn {
   isErrorZids: boolean;
   isLoadingZids: boolean;
+  isErrorMine: boolean;
+  isErrorAll: boolean;
   selectedZId?: string;
-  zids?: string[];
+  usersChannels?: ChannelItem[];
+  allChannels?: ChannelItem[];
   search: string;
   unreadCounts: { [zid: string]: UnreadCount };
   mutedChannels: { [zid: string]: boolean };
@@ -28,22 +31,45 @@ export const useSidekick = (): UseSidekickReturn => {
   const route = useRouteMatch('/feed/:zid');
   const selectedZId = route?.params?.zid;
 
-  const { zids, isLoading, isError } = useOwnedZids();
+  // Get legacy channel data
+  const {
+    joinedLegacyZids,
+    unjoinedLegacyZids,
+    isLoading: isLoadingLegacy,
+    isError: isErrorLegacy,
+  } = useLegacyChannels();
 
-  const worldZids = zids?.map((zid) => zid.split('.')[0]);
-  const uniqueWorldZids = worldZids ? ([...new Set(worldZids)] as string[]) : undefined;
+  // Get channel lists data
+  const {
+    usersChannels,
+    allChannels,
+    isLoading: isLoadingChannels,
+    isErrorMine,
+    isErrorAll,
+  } = useChannelLists(joinedLegacyZids, unjoinedLegacyZids);
 
-  const filteredZids = uniqueWorldZids?.filter((zid) => zid.toLowerCase().includes(search.toLowerCase()));
+  // Apply search filter to user channels
+  const filteredUserChannels = usersChannels?.filter((channel) =>
+    channel.zid.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Apply search filter to all channels
+  const filteredAllChannelsWithSearch = allChannels?.filter((channel) =>
+    channel.zid.toLowerCase().includes(search.toLowerCase())
+  );
 
   const unreadCounts = useSelector(selectSocialChannelsUnreadCounts);
   const mutedChannels = useSelector(selectMutedChannels);
   const memberCounts = useSelector(selectSocialChannelsMemberCounts);
 
   return {
-    isErrorZids: isError,
-    isLoadingZids: isLoading,
+    isErrorZids: isErrorLegacy,
+    isLoadingZids: isLoadingLegacy || isLoadingChannels,
+    isErrorMine,
+    isErrorAll,
     selectedZId,
-    zids: filteredZids,
+    usersChannels: filteredUserChannels,
+    allChannels: filteredAllChannelsWithSearch,
     search,
     setSearch,
     unreadCounts,

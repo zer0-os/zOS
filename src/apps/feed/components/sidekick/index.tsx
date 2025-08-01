@@ -26,10 +26,12 @@ export const Sidekick = () => {
   });
 
   const {
-    isErrorZids,
     isLoadingZids,
+    isErrorMine,
+    isErrorAll,
     selectedZId,
-    zids,
+    usersChannels,
+    allChannels,
     search,
     setSearch,
     unreadCounts,
@@ -44,6 +46,33 @@ export const Sidekick = () => {
   const handleTabSelect = (tab: Tab) => {
     setSelectedTab(tab);
     setLastActiveChannelsTab(tab);
+  };
+
+  const renderFeedItems = (channels: any[]) => {
+    return channels?.map((channel) => {
+      const hasUnreadHighlights = unreadCounts[channel.zid]?.highlight > 0;
+      const hasUnreadTotal = unreadCounts[channel.zid]?.total > 0;
+      const isMuted = mutedChannels[channel.zid];
+      return (
+        <FeedItem
+          key={channel.zid}
+          route={`/feed/${channel.zid}`}
+          isSelected={selectedZId === channel.zid}
+          zid={channel.zid}
+          memberCount={channel.memberCount || memberCounts[channel.zid]}
+          isMuted={isMuted}
+          hasUnreadHighlights={hasUnreadHighlights}
+          hasUnreadTotal={hasUnreadTotal}
+          unreadCount={unreadCounts[channel.zid]?.total}
+          unreadHighlight={unreadCounts[channel.zid]?.highlight}
+        >
+          <div className={styles.FeedName}>
+            <span>0://</span>
+            <div>{channel.zid}</div>
+          </div>
+        </FeedItem>
+      );
+    });
   };
 
   const tabsData: TabData[] = [
@@ -69,39 +98,24 @@ export const Sidekick = () => {
       case Tab.Channels:
         return (
           <ul className={styles.List}>
-            {isLoadingZids && <LoadingIndicator />}
-            {isErrorZids && <li>Error loading channels</li>}
-            {zids?.map((zid) => {
-              const hasUnreadHighlights = unreadCounts[zid]?.highlight > 0;
-              const hasUnreadTotal = unreadCounts[zid]?.total > 0;
-              const isMuted = mutedChannels[zid];
-              return (
-                <FeedItem
-                  key={zid}
-                  route={`/feed/${zid}`}
-                  isSelected={selectedZId === zid}
-                  zid={zid}
-                  memberCount={memberCounts[zid]}
-                  isMuted={isMuted}
-                  hasUnreadHighlights={hasUnreadHighlights}
-                  hasUnreadTotal={hasUnreadTotal}
-                  unreadCount={unreadCounts[zid]?.total}
-                  unreadHighlight={unreadCounts[zid]?.highlight}
-                >
-                  <div className={styles.FeedName}>
-                    <span>0://</span>
-                    <div>{zid}</div>
-                  </div>
-                </FeedItem>
-              );
-            })}
+            {isLoadingZids && <LoadingIndicator className={styles.LoadingIndicator} />}
+            {isErrorMine && <div className={styles.Error}>Error loading all channels</div>}
+            {!isLoadingZids && !isErrorMine && usersChannels?.length === 0 && (
+              <div className={styles.EmptyState}>No channels found</div>
+            )}
+            {renderFeedItems(usersChannels)}
           </ul>
         );
       case Tab.Explore:
         return (
-          <div className={styles.EmptyState}>
-            <span>Explore channels coming soon</span>
-          </div>
+          <ul className={styles.List}>
+            {isLoadingZids && <LoadingIndicator className={styles.LoadingIndicator} />}
+            {isErrorAll && <div className={styles.Error}>Error loading all channels</div>}
+            {!isLoadingZids && !isErrorAll && allChannels?.length === 0 && (
+              <div className={styles.EmptyState}>No channels found</div>
+            )}
+            {renderFeedItems(allChannels)}
+          </ul>
         );
       case Tab.Airdrops:
         return (

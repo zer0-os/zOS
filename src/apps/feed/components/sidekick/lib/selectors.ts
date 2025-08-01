@@ -34,7 +34,9 @@ export const selectSocialChannelsMemberCounts = createSelector(
     return conversations
       .filter((c) => c.isSocialChannel && c.zid)
       .reduce((acc, channel) => {
-        acc[channel.zid!] = channel.totalMembers || 0;
+        // we don't include current user in member count as the ZERO admin user is not considered a member
+        // so the total balances out
+        acc[channel.zid!] = channel.otherMembers?.length || 0;
         return acc;
       }, {} as { [zid: string]: number });
   }

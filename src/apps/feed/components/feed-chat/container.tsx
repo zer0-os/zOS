@@ -1,20 +1,57 @@
-import { useOwnedZids } from '../../../../lib/hooks/useOwnedZids';
-import { parseWorldZid } from '../../../../lib/zid';
 import { FeedChatContainer } from './index';
+import { JoinChannel } from '../join-channel';
 import { useRouteMatch } from 'react-router-dom';
+import { useChannelMembership } from '../../hooks/useChannelMembership';
+import { Panel, PanelHeader, PanelBody, PanelTitle } from '../../../../components/layout/panel';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
+import { ConversationActionsContainer } from '../../../../components/messenger/conversation-actions/container';
+
+import styles from './styles.module.scss';
 
 export const FeedChat = () => {
   const route = useRouteMatch<{ zid: string }>('/feed/:zid');
   const zid = route?.params?.zid;
-  const { zids } = useOwnedZids();
+  const { isMember, isLoading, channelData } = useChannelMembership(zid);
 
-  // Check if the current ZID is owned by the user
-  const isOwnedZid = zid && zids?.some((userZid) => parseWorldZid(userZid) === zid);
-
-  // Only render if the user owns this ZID
-  if (!isOwnedZid) {
+  if (!zid) {
     return null;
   }
 
-  return <FeedChatContainer zid={zid} />;
+  const tokenRequirements = channelData?.tokenSymbol
+    ? {
+        symbol: channelData.tokenSymbol,
+        amount: channelData.tokenAmount,
+        address: channelData.tokenAddress,
+        network: channelData.network,
+      }
+    : undefined;
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className={styles.Loading}>
+          <Spinner />
+        </div>
+      );
+    }
+
+    if (isMember) {
+      return <FeedChatContainer zid={zid} />;
+    }
+
+    // If user is not a member, show join channel component
+    return (
+      <JoinChannel zid={zid} isLegacyChannel={tokenRequirements === undefined} tokenRequirements={tokenRequirements} />
+    );
+  };
+
+  return (
+    <Panel className={styles.Container}>
+      <PanelHeader className={styles.PanelHeader}>
+        <PanelTitle className={styles.PanelTitle}>0://{zid}</PanelTitle>
+        {isMember && <ConversationActionsContainer />}
+      </PanelHeader>
+      <PanelBody className={styles.Panel}>{renderContent()}</PanelBody>
+    </Panel>
+  );
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 import ZeroProSymbol from '../../../../../../zero-pro-symbol.svg?react';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
@@ -23,6 +24,7 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
 }) => {
   const [success, setSuccess] = useState(false);
   const history = useHistory();
+  const queryClient = useQueryClient();
   const { createChannel, isCreating, error, reset } = useCreateChannel();
 
   const handleCreateChannel = useCallback(async () => {
@@ -42,7 +44,12 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
     });
 
     if (result.success) {
+      // Invalidate queries to refresh channel lists immediately
+      queryClient.invalidateQueries({ queryKey: ['token-gated-channels', 'mine'] });
+      queryClient.invalidateQueries({ queryKey: ['token-gated-channels', 'all'] });
+
       setSuccess(true);
+
       // Navigate to the new channel after a brief delay
       setTimeout(() => {
         setLastActiveFeed(selectedZid);
@@ -58,6 +65,7 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
     onComplete,
     createChannel,
     reset,
+    queryClient,
   ]);
 
   useEffect(() => {

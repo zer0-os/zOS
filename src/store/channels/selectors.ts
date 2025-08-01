@@ -79,3 +79,7 @@ export const makeGetChannelById = () => {
     }
   );
 };
+
+export const socialChannelsSelector = createSelector([allDenormalizedChannelsSelector], (channels) =>
+  channels.filter((channel) => channel.isSocialChannel && channel.zid)
+);

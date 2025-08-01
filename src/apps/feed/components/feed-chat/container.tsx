@@ -48,7 +48,7 @@ export const FeedChat = () => {
     }
 
     // If user is not a member, show join channel component
-    return <JoinChannel zid={zid} isLegacyChannel={!channelData?.isLegacy} tokenRequirements={tokenRequirements} />;
+    return <JoinChannel zid={zid} isLegacyChannel={channelData?.isLegacy} tokenRequirements={tokenRequirements} />;
   };
 
   return (

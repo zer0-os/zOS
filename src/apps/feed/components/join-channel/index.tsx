@@ -36,11 +36,20 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
   // Handle mutation state changes
   useEffect(() => {
     if (joinChannelMutation.isError) {
-      setJoinError(
-        isLegacyChannel
-          ? `Failed to join channel. You must own a subdomain of 0://${zid} to join.`
-          : `Failed to join channel. You must hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} to join.`
-      );
+      const errorMessage = joinChannelMutation.error?.message || '';
+
+      // Check for specific error types
+      if (errorMessage.includes('Too Many Requests') || errorMessage.includes('rate limit')) {
+        setJoinError(
+          'Too many requests. Please wait a moment and try again. This usually happens when the network is busy.'
+        );
+      } else {
+        setJoinError(
+          isLegacyChannel
+            ? `Failed to join channel. You must own a subdomain of 0://${zid} to join.`
+            : `Failed to join channel. You must hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} to join.`
+        );
+      }
     } else if (joinChannelMutation.isSuccess) {
       // Success - the mutation will automatically invalidate queries and refresh the UI
       // The user will now see the FeedChatContainer instead of JoinChannel
@@ -48,6 +57,7 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
   }, [
     joinChannelMutation.isError,
     joinChannelMutation.isSuccess,
+    joinChannelMutation.error,
     zid,
     isLegacyChannel,
     tokenRequirements,

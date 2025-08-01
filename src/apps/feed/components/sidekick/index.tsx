@@ -101,7 +101,7 @@ export const Sidekick = () => {
             {isLoadingZids && <LoadingIndicator />}
             {isErrorMine && <div className={styles.Error}>Error loading all channels</div>}
             {!isLoadingZids && !isErrorMine && usersChannels?.length === 0 && (
-              <div className={styles.EmptyState}>Channel not found</div>
+              <div className={styles.EmptyState}>No channels found</div>
             )}
             {renderFeedItems(usersChannels)}
           </ul>
@@ -112,7 +112,7 @@ export const Sidekick = () => {
             {isLoadingZids && <LoadingIndicator />}
             {isErrorAll && <div className={styles.Error}>Error loading all channels</div>}
             {!isLoadingZids && !isErrorAll && allChannels?.length === 0 && (
-              <div className={styles.EmptyState}>Channel not found</div>
+              <div className={styles.EmptyState}>No channels found</div>
             )}
             {renderFeedItems(allChannels)}
           </ul>

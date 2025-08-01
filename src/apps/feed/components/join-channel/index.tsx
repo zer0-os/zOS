@@ -75,7 +75,7 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
         <div className={styles.JoinText}>
           {isLegacyChannel
             ? `This channel requires you to own a subdomain of 0://${zid} to join.`
-            : `This channel requires you to hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} to join.`}
+            : `This channel requires you to hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} in a connected self custody wallet to join.`}
         </div>
 
         <div className={styles.TokenInfoBox}>

@@ -38,6 +38,15 @@ export const FeedChat = () => {
       return <FeedChatContainer zid={zid} />;
     }
 
+    if (channelData?.isLegacy && tokenRequirements === undefined) {
+      return (
+        <div className={styles.Loading}>
+          <Spinner />
+          <div className={styles.SyncingMessage}>Syncing channel... please wait</div>
+        </div>
+      );
+    }
+
     // If user is not a member, show join channel component
     return <JoinChannel zid={zid} isLegacyChannel={!channelData?.isLegacy} tokenRequirements={tokenRequirements} />;
   };

@@ -118,7 +118,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       <div className={styles.InfoText}>By paying, you accept the Terms and Conditions</div>
 
       <button className={styles.ContinueButton} onClick={handlePurchase} disabled={isPurchasing || !account || !signer}>
-        {isPurchasing ? 'Purchasing...' : `Pay ${meowAmount} MEOW`}
+        {isPurchasing ? 'Purchasing...' : !account ? 'Connect wallet to purchase' : `Pay ${meowAmount} MEOW`}
       </button>
 
       <div className={styles.InfoContainer}>

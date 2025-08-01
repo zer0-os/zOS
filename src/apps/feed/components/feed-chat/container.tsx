@@ -22,6 +22,7 @@ export const FeedChat = () => {
         symbol: channelData.tokenSymbol,
         amount: channelData.tokenAmount,
         address: channelData.tokenAddress,
+        network: channelData.network,
       }
     : undefined;
 
@@ -36,15 +37,6 @@ export const FeedChat = () => {
 
     if (isMember) {
       return <FeedChatContainer zid={zid} />;
-    }
-
-    if (channelData?.isLegacy && tokenRequirements === undefined) {
-      return (
-        <div className={styles.Loading}>
-          <Spinner />
-          <div className={styles.SyncingMessage}>Syncing channel... please wait</div>
-        </div>
-      );
     }
 
     // If user is not a member, show join channel component

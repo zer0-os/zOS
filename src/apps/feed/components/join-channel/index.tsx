@@ -9,6 +9,7 @@ interface TokenRequirements {
   symbol: string;
   amount: string;
   address: string;
+  network: string;
 }
 
 interface JoinChannelProps {
@@ -96,6 +97,10 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
               <div className={styles.InfoRow}>
                 <span className={styles.InfoRowLabel}>Token Address</span>
                 <span className={styles.InfoRowValue}>{formatAddress(tokenRequirements?.address || '')}</span>
+              </div>
+              <div className={styles.InfoRow}>
+                <span className={styles.InfoRowLabel}>Network</span>
+                <span className={styles.InfoRowValue}>{tokenRequirements?.network}</span>
               </div>
             </>
           )}

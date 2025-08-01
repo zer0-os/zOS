@@ -9,6 +9,7 @@ interface TokenGatedChannel {
   tokenSymbol: string;
   tokenAmount: string;
   tokenAddress: string;
+  network: string;
   memberCount: number;
   createdAt: string;
   updatedAt: string;

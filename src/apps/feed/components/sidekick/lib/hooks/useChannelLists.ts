@@ -7,6 +7,7 @@ export interface ChannelItem {
   tokenSymbol?: string;
   tokenAmount?: string;
   tokenAddress?: string;
+  network?: string;
 }
 
 interface ChannelListsData {
@@ -49,6 +50,7 @@ export const useChannelLists = (joinedLegacyZids: string[], unjoinedLegacyZids: 
       tokenSymbol: channel.tokenSymbol,
       tokenAmount: channel.tokenAmount,
       tokenAddress: channel.tokenAddress,
+      network: channel.network,
     })),
   ];
 
@@ -65,6 +67,7 @@ export const useChannelLists = (joinedLegacyZids: string[], unjoinedLegacyZids: 
     tokenSymbol: channel.tokenSymbol,
     tokenAmount: channel.tokenAmount,
     tokenAddress: channel.tokenAddress,
+    network: channel.network,
   }));
 
   // Add legacy channels that user owns but hasn't joined to Explore tab

@@ -20,7 +20,6 @@
 .env.test.local
 
 # Private agent infrastructure
-agents-only/
 .env.production.local
 
 npm-debug.log*

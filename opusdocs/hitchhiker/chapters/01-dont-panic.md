@@ -412,15 +412,52 @@ Don't panic. You've got this.
 
 ---
 
+## Integration Checkpoint: Ready for the Deep Dive
+
+Congratulations! You've completed the foundational chapter of your zOS journey. Before continuing to Chapter 2, take a moment to validate your understanding:
+
+### Self-Assessment Checklist
+- [ ] I understand what zOS is and why it's architecturally complex
+- [ ] I can explain the Redux-Saga-Normalizr trinity and its benefits
+- [ ] I can trace a simple data flow from user action to UI update
+- [ ] I have zOS running locally and can navigate the codebase
+- [ ] I recognize the mental models that will guide my exploration
+
+### Your Learning Arsenal
+You now have access to:
+- **[Chapter 1 Workshops](../workshops/chapter-1-dont-panic.md)** - 5 hands-on exercises to solidify concepts
+- **[Visual Reference Guide](../diagrams/chapter-1-dont-panic-visuals.md)** - Diagrams and quick reference materials
+- **[Pattern Library](../patterns/)** - Growing collection of implementation patterns
+- **[Glossary](../reference/glossary.md)** - Technical terms and zOS-specific concepts
+
+### Integration Summary
+This chapter established three critical foundations:
+
+1. **Mental Model**: The "city" analogy for understanding zOS architecture
+2. **Technology Stack**: Why Redux, Saga, and Normalizr work together
+3. **Data Flow Pattern**: How information travels through the system
+
+These concepts will be referenced and built upon throughout your journey. If any concept feels unclear, revisit the relevant section or try the workshop exercises.
+
+---
+
 **Next Chapter**: [The Redux Galaxy - Understanding State Management at Scale](./02-redux-galaxy.md)
 
-**Quick Reference**: 
-- [Architecture Overview](/opusdocs/architecture-overview.md) - Technical details
-- [Pattern Library](../patterns/) - Specific implementation patterns
-- [Visual Diagrams](../diagrams/) - Architecture visualizations
+**Recommended Path**:
+1. Complete [Workshop Exercise 1](../workshops/chapter-1-dont-panic.md#exercise-1-environment-setup-and-first-exploration) (Essential)
+2. Review [Visual Architecture Overview](../diagrams/chapter-1-dont-panic-visuals.md#the-big-picture-zos-system-architecture)
+3. Proceed to Chapter 2 when ready
+
+**Quick Reference Links**: 
+- [Architecture Overview](../diagrams/chapter-1-dont-panic-visuals.md) - Visual system overview
+- [zOS Cheat Sheet](../diagrams/chapter-1-dont-panic-visuals.md#quick-reference-zos-cheat-sheet) - Essential patterns and commands
+- [Glossary](../reference/glossary.md) - Technical terminology
+- [Troubleshooting](../workshops/chapter-1-dont-panic.md#troubleshooting-common-issues) - Common setup issues
 
 ---
 
 *"Space is big. Really big. You just won't believe how vastly, hugely, mind-bogglingly big it is." - Douglas Adams*
 
 *"Modern web applications are complex. Really complex. But with the right mental model, they're just organized solutions to real problems." - The zOS Guide*
+
+*"Don't panic. You've got the foundation. Now let's build the galaxy." - Your Integration Synthesizer*

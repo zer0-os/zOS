@@ -83,7 +83,7 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
     );
   }
 
-  if (!error) {
+  if (error) {
     return (
       <div className={styles.ErrorContainer}>
         <div className={styles.ZidTitle}>0://{selectedZid}</div>

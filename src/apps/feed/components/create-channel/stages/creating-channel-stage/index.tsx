@@ -82,9 +82,13 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
         <div className={styles.ErrorTitle}>Failed to Create Channel</div>
         <div className={styles.ErrorText}>
           Channel creation failed. Your ZID has been purchased, but we encountered an issue creating the channel. Please
-          try again.
+          try again. If this issue persists, please contact support.
         </div>
         <div className={styles.SubmitButtonContainer}>
+          <Button className={styles.SubmitButton} variant={ButtonVariant.Primary} onPress={onComplete}>
+            Close
+          </Button>
+
           <Button
             className={styles.SubmitButton}
             variant={ButtonVariant.Primary}
@@ -94,10 +98,6 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
             isLoading={isCreating}
           >
             Retry
-          </Button>
-
-          <Button className={styles.SubmitButton} variant={ButtonVariant.Primary} onPress={onComplete}>
-            Close
           </Button>
         </div>
       </div>

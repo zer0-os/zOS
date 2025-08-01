@@ -106,15 +106,17 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
           )}
         </div>
 
-        <Button
-          className={styles.JoinButton}
-          variant={ButtonVariant.Primary}
-          onPress={handleJoin}
-          isDisabled={joinChannelMutation.isPending}
-          isLoading={joinChannelMutation.isPending}
-        >
-          Join Channel
-        </Button>
+        {!isLegacyChannel && (
+          <Button
+            className={styles.JoinButton}
+            variant={ButtonVariant.Primary}
+            onPress={handleJoin}
+            isDisabled={joinChannelMutation.isPending}
+            isLoading={joinChannelMutation.isPending}
+          >
+            Join Channel
+          </Button>
+        )}
 
         <div className={styles.ErrorContainer}>
           <div className={`${styles.ErrorMessage} ${joinError ? styles.ErrorVisible : styles.ErrorHidden}`}>

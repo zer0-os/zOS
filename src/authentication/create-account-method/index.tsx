@@ -8,7 +8,6 @@ import { ToggleGroup } from '@zero-tech/zui/components';
 import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
-import { FeatureFlag } from '../../components/feature-flag';
 
 const cn = bemClassName('create-account-method');
 
@@ -32,20 +31,18 @@ export const CreateAccountMethod: React.FC<CreateAccountMethodProps> = ({ stage,
     <div {...cn('', isConnecting && isWalletAccountCreationStage && 'is-connecting')}>
       <h3 {...cn('heading')}>Create Account</h3>
 
-      <FeatureFlag featureFlag='allowEmailRegistration'>
-        {!isConnectingWithWallet && (
-          <ToggleGroup
-            {...cn('toggle-group')}
-            options={options}
-            variant='default'
-            onSelectionChange={onSelectionChange}
-            selection={selectedOption}
-            selectionType='single'
-            isRequired
-            isDisabled={isConnecting}
-          />
-        )}
-      </FeatureFlag>
+      {!isConnectingWithWallet && (
+        <ToggleGroup
+          {...cn('toggle-group')}
+          options={options}
+          variant='default'
+          onSelectionChange={onSelectionChange}
+          selection={selectedOption}
+          selectionType='single'
+          isRequired
+          isDisabled={isConnecting}
+        />
+      )}
       {isWalletAccountCreationStage ? <CreateWalletAccountContainer /> : <CreateEmailAccountContainer />}
     </div>
   );

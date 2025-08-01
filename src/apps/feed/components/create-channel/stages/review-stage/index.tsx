@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { IconChevronRightDouble } from '@zero-tech/zui/icons';
-import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../../lib/number';
 import { parsePrice } from '../../lib/utils';
@@ -9,8 +8,11 @@ import { meowInUSDSelector } from '../../../../../../store/rewards/selectors';
 import { usePurchaseZid } from './hooks/usePurchaseZid';
 import { parsePurchaseError } from './utils';
 import { TokenData } from '../../lib/hooks/useTokenFinder';
+import { RootState } from '../../../../../../store/reducer';
 
 import styles from './styles.module.scss';
+
+const selectWeb3State = (state: RootState) => state.web3;
 
 interface ReviewStageProps {
   onNext: () => void;
@@ -31,8 +33,10 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 }) => {
   const meowPriceUSD = useSelector(meowInUSDSelector);
 
-  // RainbowKit/Wagmi wallet integration
-  const { address: account } = useAccount();
+  // Use app's wallet connection status
+  const web3State = useSelector(selectWeb3State);
+  const account = web3State?.value?.address;
+
   const signer = useCallback(() => {
     if (typeof window !== 'undefined' && window.ethereum) {
       const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);

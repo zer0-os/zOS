@@ -28,6 +28,8 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
 
   const handleJoin = useCallback(async () => {
     setJoinError(null);
+    // Reset the mutation state to clear previous error
+    joinChannelMutation.reset();
     joinChannelMutation.mutate(zid);
   }, [joinChannelMutation, zid]);
 

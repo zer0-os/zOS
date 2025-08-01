@@ -87,6 +87,10 @@
 .InfoRowValue {
   @include glass-text-primary-color;
   font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
 }
 
 .ErrorContainer {

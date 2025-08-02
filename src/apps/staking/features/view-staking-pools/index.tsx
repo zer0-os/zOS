@@ -6,6 +6,7 @@ import { PoolModal } from '../pool-modal';
 import { PoolIcon } from '../../components/PoolIcon';
 
 import { usePoolStats } from '../../lib/usePoolStats';
+import { useUserStakingInfo } from '../../lib/useUserStakingInfo';
 import millify from 'millify';
 
 import classNames from 'classnames';
@@ -35,11 +36,23 @@ const PoolRowWithData = ({
   const {
     totalStaked,
     // apyRange,
-    loading,
-    error,
+    loading: statsLoading,
+    error: statsError,
   } = usePoolStats(poolConfig.address, poolConfig.chainId);
 
+  const {
+    userStakingInfo,
+    loading: userLoading,
+    error: userError,
+  } = useUserStakingInfo(poolConfig.address, poolConfig.chainId);
+
+  const loading = statsLoading || userLoading;
+  const error = statsError || userError;
+
   const totalStakedFormatted = totalStaked ? parseFloat(ethers.utils.formatUnits(totalStaked, 18)) : 0;
+  const userStakedFormatted = userStakingInfo?.amountStaked
+    ? parseFloat(ethers.utils.formatUnits(userStakingInfo.amountStaked, 18))
+    : 0;
 
   return (
     <tr key={poolConfig.address} onClick={() => onPoolSelect(poolConfig.address)}>
@@ -59,6 +72,9 @@ const PoolRowWithData = ({
       </TableData> */}
       <TableData alignment='right' className={classNames(styles.Stake, totalStakedFormatted > 0 && styles.IsStaked)}>
         {loading ? <Skeleton width='30px' /> : error ? 'Error' : millify(totalStakedFormatted)}
+      </TableData>
+      <TableData alignment='right' className={classNames(styles.Stake, userStakedFormatted > 0 && styles.IsStaked)}>
+        {loading ? <Skeleton width='30px' /> : error ? 'Error' : millify(userStakedFormatted)}
       </TableData>
     </tr>
   );
@@ -80,6 +96,7 @@ export const StakingPoolTable = () => {
           <TableHeader alignment='left'>Pool Name</TableHeader>
           {/* <TableHeader alignment='right'>APY</TableHeader> */}
           <TableHeader alignment='right'>Total Staked</TableHeader>
+          <TableHeader alignment='right'>Your Stake</TableHeader>
         </HeaderGroup>
         <Body>
           {POOL_CONFIGS.map((poolConfig) => (

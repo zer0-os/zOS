@@ -125,7 +125,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
         </div>
 
         <div className={styles.Card}>
-          <h3>Your Stake {stakingTokenInfo?.symbol}</h3>
+          <h3>Your Staked {stakingTokenInfo?.symbol}</h3>
           <span>
             {loading ? (
               <Skeleton width='100px' />

@@ -88,7 +88,7 @@ export class PostMediaMenu extends React.Component<Properties, State> {
             <div className='post-media-menu'>
               <div {...getRootProps({ className: 'post-media-menu__dropzone' })}>
                 <input {...getInputProps()} />
-                <IconButton onClick={open} Icon={() => <IconImage1 size={18} />} size={36} />
+                <IconButton onClick={open} Icon={IconImage1} size={26} />
               </div>
             </div>
           )}

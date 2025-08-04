@@ -79,10 +79,10 @@ export const CreatingChannelStage: React.FC<CreatingChannelStageProps> = ({
       <div className={styles.ErrorContainer}>
         <div className={styles.ZidTitle}>0://{selectedZid}</div>
 
-        <div className={styles.ErrorTitle}>Failed to Create Channel</div>
+        <div className={styles.ErrorTitle}>Failed to Apply Token-Gated Settings</div>
         <div className={styles.ErrorText}>
-          Channel creation failed. Your ZID has been purchased, but we encountered an issue creating the channel. Please
-          try again. If this issue persists, please contact support.
+          Token-gated settings failed to be applied. Your ZID has been purchased, but we encountered an issue setting up
+          the token-gated requirements. Please try again. If this issue persists, please contact support.
         </div>
         <div className={styles.SubmitButtonContainer}>
           <Button className={styles.SubmitButton} variant={ButtonVariant.Primary} onPress={onComplete}>

@@ -6,6 +6,7 @@ import { useAccount } from 'wagmi';
 import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../../lib/number';
 import { parsePrice } from '../../lib/utils';
 import { meowInUSDSelector } from '../../../../../../store/rewards/selectors';
+import { userWalletsSelector } from '../../../../../../store/authentication/selectors';
 import { usePurchaseZid } from './hooks/usePurchaseZid';
 import { parsePurchaseError } from './utils';
 import { TokenData } from '../../lib/hooks/useTokenFinder';
@@ -31,6 +32,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   mainnetProvider,
 }) => {
   const meowPriceUSD = useSelector(meowInUSDSelector);
+  const userWallets = useSelector(userWalletsSelector);
 
   // RainbowKit/Wagmi wallet integration
   const { address: account } = useAccount();
@@ -47,6 +49,13 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const isPurchasing = purchaseZid.isPending;
   const purchaseError = purchaseZid.error;
 
+  // Get user's self-custody wallet
+  const selfCustodyWallet = userWallets?.find((wallet) => !wallet.isThirdWeb);
+
+  // Check if connected wallet matches user's self-custody wallet
+  const isUsingCorrectWallet =
+    account && selfCustodyWallet && selfCustodyWallet.publicAddress?.toLowerCase() === account.toLowerCase();
+
   // Calculate USD value
   const usdText =
     priceData?.total && meowPriceUSD
@@ -58,7 +67,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const tokenSymbol = tokenData?.symbol || '';
 
   const handlePurchase = useCallback(async () => {
-    if (!account || !signer || !mainnetProvider) return;
+    if (!account || !signer || !mainnetProvider || !isUsingCorrectWallet) return;
 
     await purchaseZid.mutateAsync({ zna: selectedZid, account, signer, provider: mainnetProvider });
     onNext();
@@ -69,7 +78,18 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     selectedZid,
     purchaseZid,
     onNext,
+    isUsingCorrectWallet,
   ]);
+
+  // Helper function to get button text based on current state
+  const getButtonText = () => {
+    if (!account) return 'Connect wallet to purchase';
+    if (!isUsingCorrectWallet) return 'Use your zero associated self-custody wallet to purchase';
+    return `Pay ${meowAmount} MEOW`;
+  };
+
+  // Helper function to check if button should be disabled
+  const isButtonDisabled = !account || !signer || !isUsingCorrectWallet;
 
   return (
     <div className={styles.Container}>
@@ -124,8 +144,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           <Spinner />
         </div>
       ) : (
-        <button className={styles.ContinueButton} onClick={handlePurchase} disabled={!account || !signer}>
-          {!account ? 'Connect wallet to purchase' : `Pay ${meowAmount} MEOW`}
+        <button className={styles.ContinueButton} onClick={handlePurchase} disabled={isButtonDisabled}>
+          {getButtonText()}
         </button>
       )}
 

@@ -13,7 +13,7 @@ import { ErrorBoundary } from './components/error-boundary/';
 import './index.scss';
 import { Invite } from './invite';
 import { ResetPassword } from './reset-password';
-import { LoginPage, ErrorPage, OAuthCallback, OAuthLinkCallback } from './pages';
+import { LoginPage, ErrorPage, OAuthCallback, OAuthLinkCallback, OAuthConsent } from './pages';
 import { getHistory } from './lib/browser';
 import { ElectronTitlebar } from './components/electron-titlebar';
 import { desktopInit } from './lib/desktop';
@@ -51,6 +51,7 @@ root.render(
                   <Route path='/reset-password' exact component={ResetPassword} />
                   <Route path='/oauth/link/callback' exact component={OAuthLinkCallback} />
                   <Route path='/oauth/callback' exact component={OAuthCallback} />
+                  <Route path='/oauth/consent' exact component={OAuthConsent} />
                   <Route path='/error' exact component={ErrorPage} />
                   <Route component={App} />
                 </Switch>

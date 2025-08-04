@@ -1,4 +1,4 @@
-import { call, put, spawn, take, takeLatest } from 'redux-saga/effects';
+import { call, put, select, spawn, take, takeLatest } from 'redux-saga/effects';
 
 import {
   EmailLoginErrors,
@@ -14,6 +14,8 @@ import {
   LoginByOTPPayload,
   VerifyOTPPayload,
   LoginByEmailPayload,
+  setLink,
+  setNext,
 } from '.';
 import { getSignedToken, isWeb3AccountConnected } from '../web3/saga';
 import {
@@ -29,6 +31,7 @@ import { getHistory } from '../../lib/browser';
 import { requestOTP } from '../authentication/api';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { oauth2Link } from '../../lib/oauth/oauth2Link';
+import { linkSelector, nextSelector } from './selectors';
 
 export function* otpLogin(action: PayloadAction<LoginByOTPPayload>) {
   const { email } = action.payload;
@@ -223,25 +226,33 @@ function* listenForUserLogout() {
   }
 }
 
-/**
- * Link is set on the url in cases where we want to specifically link a user's Zero account
- * To an OAuth 2 provider without having to show them the linking page.
- */
-function* getLink() {
-  const history = yield call(getHistory);
-  const searchParams = new URLSearchParams(history.location.search);
-  return searchParams.get('link');
-}
-
 function* checkInitialLoginStage() {
-  const link = yield call(getLink);
+  const link = yield select(linkSelector);
 
   if (link) {
     yield put(setStage(LoginStage.EmailLogin));
   }
 }
 
+function* storeParams() {
+  const history = yield call(getHistory);
+  if (!history.location.pathname.includes('/login')) return;
+
+  const searchParams = new URLSearchParams(history.location.search);
+  const link = searchParams.get('link');
+  const next = searchParams.get('next');
+
+  if (link) {
+    yield put(setLink(link));
+  }
+
+  if (next) {
+    yield put(setNext(next));
+  }
+}
+
 export function* saga() {
+  yield call(storeParams);
   yield call(checkInitialLoginStage);
   yield spawn(listenForUserLogin);
   yield spawn(listenForUserLogout);
@@ -254,7 +265,8 @@ export function* saga() {
 }
 
 export function* redirectToRoot() {
-  const link = yield call(getLink);
+  const link = yield select(linkSelector);
+  const next = yield select(nextSelector);
 
   if (link) {
     if (link === 'epic-games') {
@@ -263,5 +275,9 @@ export function* redirectToRoot() {
     }
   }
 
-  yield getHistory().replace({ pathname: '/' });
+  if (next) {
+    window.location.href = next;
+  } else {
+    yield getHistory().replace({ pathname: '/' });
+  }
 }

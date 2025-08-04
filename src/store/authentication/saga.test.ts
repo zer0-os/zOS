@@ -1,6 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { call } from 'redux-saga/effects';
+import { call, select } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { nextSelector } from '../login/selectors';
 
 import { setUser, reducer } from '.';
 import {
@@ -88,6 +89,7 @@ describe(completeUserLogin, () => {
     const { storeState } = await expectSaga(completeUserLogin)
       .provide([
         stubResponse(call(fetchCurrentUser), { fake: 'user-response' }),
+        [select(nextSelector), null],
         ...successResponses(),
       ])
       .withReducer(rootReducer)
@@ -113,6 +115,7 @@ describe(completeUserLogin, () => {
     await expectSaga(completeUserLogin)
       .provide([
         stubResponse(call(fetchCurrentUser), { fake: 'user-response' }),
+        [select(nextSelector), null],
         ...successResponses(),
       ])
       .call(publishUserLogin, { fake: 'user-response' })
@@ -190,6 +193,7 @@ describe(getCurrentUser, () => {
     const { storeState, returnValue } = await expectSaga(getCurrentUser)
       .provide([
         stubResponse(call(fetchCurrentUser), { stub: 'user-data' }),
+        [select(nextSelector), null],
         ...successResponses(),
       ])
       .withReducer(reducer)
@@ -311,6 +315,7 @@ describe(authenticateByEmail, () => {
     const { returnValue } = await expectSaga(authenticateByEmail, email, password)
       .provide([
         stubResponse(call(emailLogin, { email, password }), { success: true, response: {} }),
+        [select(nextSelector), null],
         ...successResponses(),
       ])
       .call(completeUserLogin)

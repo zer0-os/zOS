@@ -11,6 +11,7 @@ import { parsePurchaseError } from './utils';
 import { TokenData } from '../../lib/hooks/useTokenFinder';
 
 import styles from './styles.module.scss';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 
 interface ReviewStageProps {
   onNext: () => void;
@@ -118,9 +119,15 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
       <div className={styles.InfoText}>By paying, you accept the Terms and Conditions</div>
 
-      <button className={styles.ContinueButton} onClick={handlePurchase} disabled={isPurchasing || !account || !signer}>
-        {isPurchasing ? 'Purchasing...' : !account ? 'Connect wallet to purchase' : `Pay ${meowAmount} MEOW`}
-      </button>
+      {isPurchasing ? (
+        <div className={styles.SpinnerContainer}>
+          <Spinner />
+        </div>
+      ) : (
+        <button className={styles.ContinueButton} onClick={handlePurchase} disabled={!account || !signer}>
+          {!account ? 'Connect wallet to purchase' : `Pay ${meowAmount} MEOW`}
+        </button>
+      )}
 
       <div className={styles.InfoContainer}>
         {isPurchasing && <div className={styles.Success}>Please confirm the transactions in your wallet</div>}

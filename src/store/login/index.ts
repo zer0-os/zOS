@@ -20,6 +20,8 @@ export type LoginState = {
   otpStage: OTPStage;
   loading: boolean;
   errors: string[];
+  link: string | null; // OAuth link provider to redirect to
+  next: string | null; // Next page to redirect to after login
 };
 
 export enum LoginStage {
@@ -60,6 +62,8 @@ export const initialState: LoginState = {
   stage: LoginStage.Web3Login,
   otpStage: OTPStage.Login,
   loading: false,
+  link: null,
+  next: null,
   errors: [],
 };
 
@@ -86,9 +90,15 @@ const slice = createSlice({
     setErrors: (state, action: PayloadAction<LoginState['errors']>) => {
       state.errors = action.payload;
     },
+    setLink: (state, action: PayloadAction<LoginState['link']>) => {
+      state.link = action.payload;
+    },
+    setNext: (state, action: PayloadAction<LoginState['next']>) => {
+      state.next = action.payload;
+    },
     reset: () => initialState,
   },
 });
 
-export const { setLoading, setErrors, setStage, setOTPStage, reset } = slice.actions;
+export const { setLoading, setErrors, setStage, setOTPStage, setLink, setNext, reset } = slice.actions;
 export const { reducer } = slice;

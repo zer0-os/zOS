@@ -1,4 +1,4 @@
-import { takeLatest, put, call, all, delay, spawn } from 'redux-saga/effects';
+import { takeLatest, put, call, all, delay, spawn, select } from 'redux-saga/effects';
 import { SagaActionTypes, setDisplayLogoutModal, setUser, refreshCurrentUser } from '.';
 import {
   nonceOrAuthorize as nonceOrAuthorizeApi,
@@ -25,6 +25,7 @@ import { setSentryUser } from '../../utils';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { clearWallet } from '../wallet/saga';
+import { nextSelector } from '../login/selectors';
 
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
@@ -41,6 +42,13 @@ export function* nonceOrAuthorize(action) {
 export function* completeUserLogin(user = null) {
   if (!user) {
     user = yield call(fetchCurrentUser);
+  }
+
+  // If the user is logging in from an OAuth provider, we need to redirect to the next URL
+  const nextUrl = yield select(nextSelector);
+  if (nextUrl) {
+    window.location.href = nextUrl;
+    return;
   }
 
   if (user.isPending) {

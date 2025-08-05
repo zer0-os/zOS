@@ -39,8 +39,9 @@ export const useTokenGatedChannels = (type: 'mine' | 'all', limit: number = 100,
 
       return response.body;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnMount: false,
+    staleTime: type === 'mine' ? 1000 * 60 * 10 : 1000 * 60 * 2, // 10 min for mine, 2 min for all
+    gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   });
 };

@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { IconLock } from '@zero-tech/zui/icons';
 import { useJoinTokenGatedChannel } from './hooks/useJoinTokenGatedChannel';
+import { openAccountManagement } from '../../../../store/user-profile';
 
 import styles from './styles.module.scss';
 
@@ -21,6 +23,7 @@ interface JoinChannelProps {
 export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements, isLegacyChannel }) => {
   const [joinError, setJoinError] = useState<string | null>(null);
   const joinChannelMutation = useJoinTokenGatedChannel();
+  const dispatch = useDispatch();
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -32,6 +35,10 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
     joinChannelMutation.reset();
     joinChannelMutation.mutate(zid);
   }, [joinChannelMutation, zid]);
+
+  const onManageAccounts = useCallback(() => {
+    dispatch(openAccountManagement());
+  }, [dispatch]);
 
   // Handle mutation state changes
   useEffect(() => {
@@ -74,8 +81,16 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
 
         <div className={styles.JoinText}>
           {isLegacyChannel
-            ? `This channel requires you to own a subdomain of 0://${zid} to join.`
-            : `This channel requires you to hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} in a connected self custody wallet to join.`}
+            ? `This channel requires you to own a subdomain of 0://${zid} in a connected self-custody wallet to join.`
+            : `This channel requires you to hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} in a connected self-custody wallet to join.`}
+        </div>
+
+        <div className={styles.JoinText}>
+          You can check and add associated wallets in the
+          <Button className={styles.ManageWalletsButton} variant={ButtonVariant.Secondary} onPress={onManageAccounts}>
+            Manage Wallets
+          </Button>
+          section of your profile.
         </div>
 
         <div className={styles.TokenInfoBox}>

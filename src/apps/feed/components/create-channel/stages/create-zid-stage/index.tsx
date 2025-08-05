@@ -38,11 +38,11 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
   const hasError = !!(availabilityError || priceError);
 
   const buttonConfig = useMemo(() => {
-    if (available && !isLoading) {
+    if (available && !isLoading && Number(fee) > 0) {
       return { text: 'Continue', disabled: false };
     }
     return { text: 'Enter a valid ZERO ID to continue', disabled: true };
-  }, [available, isLoading]);
+  }, [available, isLoading, fee]);
 
   const endEnhancer = useMemo(() => {
     if (isLoading) return <div className={styles.Spinner} />;

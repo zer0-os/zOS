@@ -18,6 +18,6 @@ export const productionFlags: FeatureFlagDefinitions = {
     ],
   },
   enableMatrixDebug: { defaultValue: false },
-  enableCreateTGCChannel: { defaultValue: false },
+  enableCreateTGCChannel: { defaultValue: true },
   enableStaking: { defaultValue: true },
 };

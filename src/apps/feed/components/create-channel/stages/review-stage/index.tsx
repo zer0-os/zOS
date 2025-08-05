@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import { IconChevronRightDouble } from '@zero-tech/zui/icons';
 import { ethers } from 'ethers';
 import { useAccount } from 'wagmi';
+import { getWalletClient } from 'wagmi/actions';
+import { getWagmiConfig } from '../../../../../../lib/web3/wagmi-config';
 import { calculateTotalPriceInUSDCents, formatUSD } from '../../../../../../lib/number';
 import { parsePrice } from '../../lib/utils';
 import { meowInUSDSelector } from '../../../../../../store/rewards/selectors';
@@ -37,13 +39,36 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   // RainbowKit/Wagmi wallet integration
   const { address: account } = useAccount();
 
-  const signer = useCallback(() => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
-      return ethersProvider.getSigner();
+  // State for signer creation errors
+  const [signerError, setSignerError] = React.useState<string | null>(null);
+
+  const getSigner = useCallback(async () => {
+    if (!account) return undefined;
+
+    try {
+      setSignerError(null); // Clear previous errors
+      const wagmiConfig = getWagmiConfig();
+      const walletClient = await getWalletClient(wagmiConfig);
+
+      if (!walletClient) {
+        setSignerError('No wallet client found. Please ensure your wallet is properly connected.');
+        return undefined;
+      }
+
+      // For now, fall back to window.ethereum if available, otherwise use a different approach
+      if (typeof window !== 'undefined' && window.ethereum) {
+        const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
+        return ethersProvider.getSigner();
+      }
+
+      // If no window.ethereum, we need to handle this differently
+      setSignerError('Your wallet type is not yet supported for purchases');
+      return undefined;
+    } catch (error) {
+      setSignerError('Wallet connection error: Failed to create wallet signer');
+      return undefined;
     }
-    return undefined;
-  }, [])();
+  }, [account]);
 
   const purchaseZid = usePurchaseZid();
   const isPurchasing = purchaseZid.isPending;
@@ -67,13 +92,19 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const tokenSymbol = tokenData?.symbol || '';
 
   const handlePurchase = useCallback(async () => {
-    if (!account || !signer || !mainnetProvider || !isUsingCorrectWallet) return;
+    if (!account || !mainnetProvider || !isUsingCorrectWallet) return;
+
+    const signer = await getSigner();
+    if (!signer) {
+      // Error is already set in getSigner function
+      return;
+    }
 
     await purchaseZid.mutateAsync({ zna: selectedZid, account, signer, provider: mainnetProvider });
     onNext();
   }, [
     account,
-    signer,
+    getSigner,
     mainnetProvider,
     selectedZid,
     purchaseZid,
@@ -89,7 +120,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   };
 
   // Helper function to check if button should be disabled
-  const isButtonDisabled = !account || !signer || !isUsingCorrectWallet;
+  const isButtonDisabled = !account || !isUsingCorrectWallet;
 
   return (
     <div className={styles.Container}>
@@ -153,6 +184,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         {isPurchasing && <div className={styles.Success}>Please confirm the transactions in your wallet</div>}
 
         {purchaseError && <div className={styles.Failure}>Purchase failed: {parsePurchaseError(purchaseError)}</div>}
+
+        {signerError && <div className={styles.Failure}>{signerError}</div>}
       </div>
     </div>
   );

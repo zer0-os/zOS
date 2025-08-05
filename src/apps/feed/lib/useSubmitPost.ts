@@ -37,7 +37,7 @@ export const useSubmitPost = () => {
      */
     mutationFn: async (params: SubmitPostParams) => {
       const { message, replyToId, channelZid, mediaId, quoteOf } = params;
-      const formattedUserPrimaryZid = userPrimaryZid.replace('0://', '');
+      const formattedUserPrimaryZid = userPrimaryZid?.replace('0://', '');
 
       const authorAddress = account?.address;
 

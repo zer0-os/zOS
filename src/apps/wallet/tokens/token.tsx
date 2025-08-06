@@ -23,7 +23,7 @@ export const Token = ({ token, onClick }: TokenProps) => {
         <div className={styles.tokenName}>{token.name}</div>
         <div className={styles.tokenCount}>
           <FormattedNumber value={token.amount} />
-          <span className={styles.tokenSymbol}>{token.symbol}</span>
+          <span>{token.symbol}</span>
         </div>
       </div>
 

@@ -17,6 +17,7 @@ export const ZeroCard = ({ displayName }: ZeroCardProps) => {
   const { data } = useBalancesQuery(selectedWallet.address);
   const meowToken = data?.tokens?.find((token) => token.tokenAddress === MEOW_TOKEN_ADDRESS);
   const vmeowToken = data?.tokens?.find((token) => token.tokenAddress === VMEOW_TOKEN_ADDRESS);
+  const price = meowToken?.price ?? vmeowToken?.price;
   const totalAmount = Number(meowToken?.amount ?? 0) + Number(vmeowToken?.amount ?? 0);
 
   return (
@@ -25,10 +26,10 @@ export const ZeroCard = ({ displayName }: ZeroCardProps) => {
       <div className={styles.zeroCardHeader}>
         <img src={zeroWordmark} alt='Zero Logo' className={styles.zeroCardWordmark} />
       </div>
-      {meowToken && !!meowToken.price && (
+      {price && totalAmount > 0 && (
         <div className={styles.zeroCardBody}>
           <div className={styles.balanceLabel}>Balance</div>
-          <div className={styles.balanceValue}>{formatDollars(meowToken.price * totalAmount)}</div>
+          <div className={styles.balanceValue}>{formatDollars(price * totalAmount)}</div>
           {/* <PercentChange percent={null} /> */}
         </div>
       )}

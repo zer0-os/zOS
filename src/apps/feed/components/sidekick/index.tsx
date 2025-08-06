@@ -67,7 +67,6 @@ export const Sidekick = () => {
           unreadHighlight={unreadCounts[channel.zid]?.highlight}
         >
           <div className={styles.FeedName}>
-            <span>0://</span>
             <div>{channel.zid}</div>
           </div>
         </FeedItem>

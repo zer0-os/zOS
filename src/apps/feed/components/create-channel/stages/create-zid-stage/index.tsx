@@ -67,11 +67,7 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     if (hasError) return <span className={styles.Failure}>{String(availabilityError || priceError)}</span>;
     if (available) {
       const displayPrice = parsePrice(priceData?.total);
-      return (
-        <span className={styles.Success}>
-          Available for {displayPrice} {tokenTicker}
-        </span>
-      );
+      return <span className={styles.Success}>Available for {displayPrice} MEOW</span>;
     }
     if (available === false) {
       return <span className={styles.Failure}>Not available</span>;
@@ -84,7 +80,6 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     priceError,
     available,
     priceData,
-    tokenTicker,
   ]);
 
   const handleContinue = useCallback(() => {

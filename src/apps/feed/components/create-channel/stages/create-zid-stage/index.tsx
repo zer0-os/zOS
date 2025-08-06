@@ -80,7 +80,6 @@ export const CreateZidStage: React.FC<CreateZidStageProps> = ({ onNext, mainnetP
     priceError,
     available,
     priceData,
-    tokenTicker,
   ]);
 
   const handleContinue = useCallback(() => {

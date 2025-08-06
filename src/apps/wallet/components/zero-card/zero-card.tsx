@@ -6,7 +6,7 @@ import zeroWordmark from './zero-wordmark.png';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../../store/wallet/selectors';
 import { useBalancesQuery } from '../../queries/useBalancesQuery';
-import { MEOW_TOKEN_ADDRESS } from '../../constants';
+import { MEOW_TOKEN_ADDRESS, VMEOW_TOKEN_ADDRESS } from '../../constants';
 
 interface ZeroCardProps {
   displayName: string;
@@ -16,6 +16,8 @@ export const ZeroCard = ({ displayName }: ZeroCardProps) => {
   const selectedWallet = useSelector(selectedWalletSelector);
   const { data } = useBalancesQuery(selectedWallet.address);
   const meowToken = data?.tokens?.find((token) => token.tokenAddress === MEOW_TOKEN_ADDRESS);
+  const vmeowToken = data?.tokens?.find((token) => token.tokenAddress === VMEOW_TOKEN_ADDRESS);
+  const totalAmount = Number(meowToken?.amount ?? 0) + Number(vmeowToken?.amount ?? 0);
 
   return (
     <div className={styles.zeroCard}>
@@ -26,7 +28,7 @@ export const ZeroCard = ({ displayName }: ZeroCardProps) => {
       {meowToken && !!meowToken.price && (
         <div className={styles.zeroCardBody}>
           <div className={styles.balanceLabel}>Balance</div>
-          <div className={styles.balanceValue}>{formatDollars(meowToken?.price * Number(meowToken?.amount))}</div>
+          <div className={styles.balanceValue}>{formatDollars(meowToken.price * totalAmount)}</div>
           {/* <PercentChange percent={null} /> */}
         </div>
       )}

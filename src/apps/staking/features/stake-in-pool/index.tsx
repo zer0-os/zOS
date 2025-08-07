@@ -17,10 +17,17 @@ interface StakeInPoolContentProps {
   poolAddress: string;
   poolName?: string;
   chainId?: number;
+  poolIconImageUrl?: string;
   onClose?: () => void;
 }
 
-const StakeInPoolContent = ({ poolAddress, poolName, chainId: poolChainId, onClose }: StakeInPoolContentProps) => {
+const StakeInPoolContent = ({
+  poolAddress,
+  poolName,
+  chainId: poolChainId,
+  poolIconImageUrl,
+  onClose,
+}: StakeInPoolContentProps) => {
   const { address: walletAddress } = useSelector(selectedWalletSelector);
   const targetChainId = poolChainId || 43113;
 
@@ -120,7 +127,7 @@ const StakeInPoolContent = ({ poolAddress, poolName, chainId: poolChainId, onClo
 
   return (
     <div className={styles.Container}>
-      <PoolIcon poolName={poolName || 'Staking Pool'} chainId={targetChainId} />
+      <PoolIcon poolName={poolName || 'Staking Pool'} chainId={targetChainId} imageUrl={poolIconImageUrl} />
       {flow.error && <Alert variant='error'>{flow.error}</Alert>}
       {renderStep()}
     </div>
@@ -131,9 +138,18 @@ interface StakeInPoolProps {
   poolAddress: string;
   poolName?: string;
   chainId?: number;
+  poolIconImageUrl?: string;
   onClose?: () => void;
 }
 
-export const StakeInPool = ({ poolAddress, poolName, chainId, onClose }: StakeInPoolProps) => {
-  return <StakeInPoolContent poolAddress={poolAddress} poolName={poolName} chainId={chainId} onClose={onClose} />;
+export const StakeInPool = ({ poolAddress, poolName, chainId, poolIconImageUrl, onClose }: StakeInPoolProps) => {
+  return (
+    <StakeInPoolContent
+      poolAddress={poolAddress}
+      poolName={poolName}
+      chainId={chainId}
+      poolIconImageUrl={poolIconImageUrl}
+      onClose={onClose}
+    />
+  );
 };

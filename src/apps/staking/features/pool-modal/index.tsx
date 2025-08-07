@@ -9,10 +9,11 @@ export interface PoolModalProps {
   poolName: string;
   poolAddress?: string;
   chainId?: number;
+  poolIconImageUrl?: string;
   onOpenChange: (open: boolean) => void;
 }
 
-export const PoolModal = ({ poolName, poolAddress, chainId, onOpenChange }: PoolModalProps) => {
+export const PoolModal = ({ poolName, poolAddress, chainId, poolIconImageUrl, onOpenChange }: PoolModalProps) => {
   const [mode, setMode] = useState<'view' | 'stake'>('view');
 
   const handleClose = () => {
@@ -27,9 +28,21 @@ export const PoolModal = ({ poolName, poolAddress, chainId, onOpenChange }: Pool
   return (
     <Modal open={!!poolAddress} defaultOpen={false} onOpenChange={handleClose} className={styles.Modal}>
       {mode === 'view' ? (
-        <ViewPool poolName={poolName} poolAddress={poolAddress!} chainId={chainId!} onStake={handleStake} />
+        <ViewPool
+          poolName={poolName}
+          poolAddress={poolAddress!}
+          chainId={chainId!}
+          poolIconImageUrl={poolIconImageUrl}
+          onStake={handleStake}
+        />
       ) : (
-        <StakeInPool poolAddress={poolAddress!} poolName={poolName} chainId={chainId} onClose={handleClose} />
+        <StakeInPool
+          poolAddress={poolAddress!}
+          poolName={poolName}
+          chainId={chainId}
+          poolIconImageUrl={poolIconImageUrl}
+          onClose={handleClose}
+        />
       )}
     </Modal>
   );

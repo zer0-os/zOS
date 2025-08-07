@@ -20,10 +20,11 @@ interface ViewPoolProps {
   poolName: string;
   poolAddress: string;
   chainId: number;
+  poolIconImageUrl?: string;
   onStake: () => void;
 }
 
-export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolProps) => {
+export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onStake }: ViewPoolProps) => {
   const {
     // apyRange,
     loading: statsLoading,
@@ -78,7 +79,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, onStake }: ViewPoolPr
 
   return (
     <div className={styles.Container}>
-      <PoolIcon poolName={poolName} chainId={chainId} />
+      <PoolIcon poolName={poolName} chainId={chainId} imageUrl={poolIconImageUrl} />
 
       <p>
         Stake your {stakingTokenInfo?.symbol} to earn {rewardsTokenInfo?.symbol} rewards.

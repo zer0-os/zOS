@@ -18,11 +18,13 @@ const POOL_CONFIGS = [
         name: 'MEOW Pool (Zephyr)',
         address: '0xa5086d0575E8573d7f56B485079126EdD65c8291',
         chainId: 1417429182,
+        poolIconImageUrl: '/tokens/meow.png',
       }
     : {
         name: 'MEOW Pool',
         address: '0xfbDC0647F0652dB9eC56c7f09B7dD3192324AD6a',
         chainId: 9369,
+        poolIconImageUrl: '/tokens/meow.png',
       },
 ];
 
@@ -57,7 +59,7 @@ const PoolRowWithData = ({
   return (
     <tr key={poolConfig.address} onClick={() => onPoolSelect(poolConfig.address)}>
       <TableData alignment='left' className={styles.Details}>
-        <PoolIcon poolName={poolConfig.name} chainId={poolConfig.chainId} />
+        <PoolIcon poolName={poolConfig.name} chainId={poolConfig.chainId} imageUrl={poolConfig.poolIconImageUrl} />
       </TableData>
       {/* <TableData alignment='right' className={styles.APY}>
         {loading ? (
@@ -81,7 +83,12 @@ const PoolRowWithData = ({
 };
 
 export const StakingPoolTable = () => {
-  const [selectedPool, setSelectedPool] = useState<{ address: string; chainId: number; name: string } | null>(null);
+  const [selectedPool, setSelectedPool] = useState<{
+    address: string;
+    chainId: number;
+    name: string;
+    poolIconImageUrl?: string;
+  } | null>(null);
 
   return (
     <>
@@ -89,6 +96,7 @@ export const StakingPoolTable = () => {
         poolName={selectedPool?.name || ''}
         poolAddress={selectedPool?.address || undefined}
         chainId={selectedPool?.chainId}
+        poolIconImageUrl={selectedPool?.poolIconImageUrl}
         onOpenChange={() => setSelectedPool(null)}
       />
       <Table>
@@ -104,7 +112,12 @@ export const StakingPoolTable = () => {
               key={poolConfig.address}
               poolConfig={poolConfig}
               onPoolSelect={(address) =>
-                setSelectedPool({ address, chainId: poolConfig.chainId, name: poolConfig.name })
+                setSelectedPool({
+                  address,
+                  chainId: poolConfig.chainId,
+                  name: poolConfig.name,
+                  poolIconImageUrl: poolConfig.poolIconImageUrl,
+                })
               }
             />
           ))}

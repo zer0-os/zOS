@@ -56,6 +56,8 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
 
   const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress);
 
+  const hasClaimableRewards = userPendingRewards && userPendingRewards > 0;
+
   // const getUnlockDate = () => {
   //   if (!userUnlockedTimestamp) return null;
   //   const timestamp = Number(userUnlockedTimestamp) * 1000; // Convert to milliseconds
@@ -106,9 +108,9 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
       </p>
 
       <button
-        disabled={isClaimingRewards}
-        aria-disabled={isClaimingRewards}
-        className={classNames(styles.Card, styles.Rewards, { [styles.IsClaiming]: isClaimingRewards })}
+        disabled={isClaimingRewards || !hasClaimableRewards}
+        aria-disabled={isClaimingRewards || !hasClaimableRewards}
+        className={classNames(styles.Card, styles.Rewards)}
         onClick={handleOnClickClaimRewards}
       >
         {isClaimingRewards && (
@@ -117,8 +119,8 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
           </div>
         )}
         <div className={styles.Header}>
-          <h3>Rewards {rewardsTokenInfo?.symbol}</h3>
-          <div>
+          <h3>Claimable Rewards {rewardsTokenInfo?.symbol}</h3>
+          <div className={styles.ClaimRewards}>
             <IconCoinsStacked1 size={16} />
             Claim Rewards
           </div>

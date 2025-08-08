@@ -17,3 +17,11 @@
     color: var(--color-text-primary);
   }
 }
+
+.PoolRow {
+  cursor: pointer;
+
+  &:hover {
+    background: #151719;
+  }
+}

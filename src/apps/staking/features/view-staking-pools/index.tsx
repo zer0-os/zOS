@@ -57,7 +57,7 @@ const PoolRowWithData = ({
     : 0;
 
   return (
-    <tr key={poolConfig.address} onClick={() => onPoolSelect(poolConfig.address)}>
+    <tr key={poolConfig.address} className={styles.PoolRow} onClick={() => onPoolSelect(poolConfig.address)}>
       <TableData alignment='left' className={styles.Details}>
         <PoolIcon poolName={poolConfig.name} chainId={poolConfig.chainId} imageUrl={poolConfig.poolIconImageUrl} />
       </TableData>

@@ -56,6 +56,8 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
 
   const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress);
 
+  const hasClaimableRewards = userPendingRewards && userPendingRewards > 0;
+
   // const getUnlockDate = () => {
   //   if (!userUnlockedTimestamp) return null;
   //   const timestamp = Number(userUnlockedTimestamp) * 1000; // Convert to milliseconds
@@ -77,6 +79,26 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
     claimRewards();
   };
 
+  const renderRewardsAmount = () => {
+    if (loading) {
+      return <Skeleton width='150px' />;
+    }
+
+    if (error || userPendingRewards === null || userPendingRewards === undefined) {
+      return 'Error';
+    }
+
+    if (pendingRewardsFormatted >= 1000) {
+      return millify(pendingRewardsFormatted, { precision: 6 });
+    }
+
+    if (pendingRewardsFormatted === 0) {
+      return '0';
+    }
+
+    return ethers.utils.formatUnits(userPendingRewards, 18);
+  };
+
   return (
     <div className={styles.Container}>
       <PoolIcon poolName={poolName} chainId={chainId} imageUrl={poolIconImageUrl} />
@@ -86,9 +108,9 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
       </p>
 
       <button
-        disabled={isClaimingRewards}
-        aria-disabled={isClaimingRewards}
-        className={classNames(styles.Card, styles.Rewards, { [styles.IsClaiming]: isClaimingRewards })}
+        disabled={isClaimingRewards || !hasClaimableRewards}
+        aria-disabled={isClaimingRewards || !hasClaimableRewards}
+        className={classNames(styles.Card, styles.Rewards)}
         onClick={handleOnClickClaimRewards}
       >
         {isClaimingRewards && (
@@ -97,23 +119,13 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
           </div>
         )}
         <div className={styles.Header}>
-          <h3>Rewards {rewardsTokenInfo?.symbol}</h3>
-          <div>
+          <h3>Claimable Rewards {rewardsTokenInfo?.symbol}</h3>
+          <div className={styles.ClaimRewards}>
             <IconCoinsStacked1 size={16} />
             Claim Rewards
           </div>
         </div>
-        <span>
-          {loading ? (
-            <Skeleton width='150px' />
-          ) : error ? (
-            'Error'
-          ) : userPendingRewards === null || userPendingRewards === undefined ? (
-            '0'
-          ) : (
-            millify(pendingRewardsFormatted, { precision: 2 })
-          )}
-        </span>
+        <span>{renderRewardsAmount()}</span>
         <img src={blur} alt='blur' />
       </button>
 

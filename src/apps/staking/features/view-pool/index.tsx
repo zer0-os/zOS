@@ -77,6 +77,26 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
     claimRewards();
   };
 
+  const renderRewardsAmount = () => {
+    if (loading) {
+      return <Skeleton width='150px' />;
+    }
+
+    if (error || userPendingRewards === null || userPendingRewards === undefined) {
+      return 'Error';
+    }
+
+    if (pendingRewardsFormatted >= 1000) {
+      return millify(pendingRewardsFormatted, { precision: 6 });
+    }
+
+    if (pendingRewardsFormatted === 0) {
+      return '0';
+    }
+
+    return ethers.utils.formatUnits(userPendingRewards, 18);
+  };
+
   return (
     <div className={styles.Container}>
       <PoolIcon poolName={poolName} chainId={chainId} imageUrl={poolIconImageUrl} />
@@ -103,17 +123,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
             Claim Rewards
           </div>
         </div>
-        <span>
-          {loading ? (
-            <Skeleton width='150px' />
-          ) : error ? (
-            'Error'
-          ) : userPendingRewards === null || userPendingRewards === undefined ? (
-            '0'
-          ) : (
-            millify(pendingRewardsFormatted, { precision: 2 })
-          )}
-        </span>
+        <span>{renderRewardsAmount()}</span>
         <img src={blur} alt='blur' />
       </button>
 

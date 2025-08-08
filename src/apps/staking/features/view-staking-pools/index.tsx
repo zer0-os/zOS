@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 
 import { Table, TableData, Body, Skeleton, HeaderGroup, TableHeader } from '@zero-tech/zui/components';
 import { PoolModal } from '../pool-modal';
 import { PoolIcon } from '../../components/PoolIcon';
+import { meowInUSDSelector } from '../../../../store/rewards/selectors';
 
 import { usePoolStats } from '../../lib/usePoolStats';
 import { useUserStakingInfo } from '../../lib/useUserStakingInfo';
@@ -35,6 +37,8 @@ const PoolRowWithData = ({
   poolConfig: typeof POOL_CONFIGS[0];
   onPoolSelect: (address: string) => void;
 }) => {
+  const meowPrice = useSelector(meowInUSDSelector);
+
   const {
     totalStaked,
     // apyRange,
@@ -73,10 +77,22 @@ const PoolRowWithData = ({
         )}
       </TableData> */}
       <TableData alignment='right' className={classNames(styles.Stake, totalStakedFormatted > 0 && styles.IsStaked)}>
-        {loading ? <Skeleton width='30px' /> : error ? 'Error' : millify(totalStakedFormatted)}
+        {loading ? (
+          <Skeleton width='30px' />
+        ) : error ? (
+          'Error'
+        ) : (
+          `$${millify(totalStakedFormatted * meowPrice, { precision: 2 })}`
+        )}
       </TableData>
       <TableData alignment='right' className={classNames(styles.Stake, userStakedFormatted > 0 && styles.IsStaked)}>
-        {loading ? <Skeleton width='30px' /> : error ? 'Error' : millify(userStakedFormatted)}
+        {loading ? (
+          <Skeleton width='30px' />
+        ) : error ? (
+          'Error'
+        ) : (
+          `$${millify(userStakedFormatted * meowPrice, { precision: 2 })}`
+        )}
       </TableData>
     </tr>
   );
@@ -103,7 +119,7 @@ export const StakingPoolTable = () => {
         <HeaderGroup>
           <TableHeader alignment='left'>Pool Name</TableHeader>
           {/* <TableHeader alignment='right'>APY</TableHeader> */}
-          <TableHeader alignment='right'>Total Staked</TableHeader>
+          <TableHeader alignment='right'>TVL</TableHeader>
           <TableHeader alignment='right'>Your Stake</TableHeader>
         </HeaderGroup>
         <Body>

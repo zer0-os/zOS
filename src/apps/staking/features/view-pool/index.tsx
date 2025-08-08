@@ -1,3 +1,5 @@
+import { useSelector } from 'react-redux';
+
 import { Button } from '@zero-tech/zui/components/Button';
 import { Skeleton } from '@zero-tech/zui/components';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
@@ -7,6 +9,7 @@ import { IconCoinsStacked1 } from '@zero-tech/zui/icons';
 import { usePoolStats } from '../../lib/usePoolStats';
 import { usePool } from '../../lib/usePool';
 import { useClaimRewards } from '../../lib/useClaimRewards';
+import { meowInUSDSelector } from '../../../../store/rewards/selectors';
 
 import { ethers } from 'ethers';
 import millify from 'millify';
@@ -25,6 +28,8 @@ interface ViewPoolProps {
 }
 
 export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onStake }: ViewPoolProps) => {
+  const meowPrice = useSelector(meowInUSDSelector);
+
   const {
     // apyRange,
     loading: statsLoading,
@@ -131,9 +136,15 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
 
       <div className={styles.BalanceCards}>
         <div className={styles.Card}>
-          <h3>Total Tokens Staked {stakingTokenInfo?.symbol}</h3>
+          <h3>TVL</h3>
           <span>
-            {loading ? <Skeleton width='100px' /> : error ? 'Error' : millify(totalStakedFormatted, { precision: 2 })}
+            {loading ? (
+              <Skeleton width='100px' />
+            ) : error ? (
+              'Error'
+            ) : (
+              `$${millify(totalStakedFormatted * meowPrice, { precision: 2 })}`
+            )}
           </span>
         </div>
 

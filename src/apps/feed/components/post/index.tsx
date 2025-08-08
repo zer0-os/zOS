@@ -8,7 +8,7 @@ import { MeowAction } from './actions/meow';
 import { ReplyAction } from './actions/reply/reply-action';
 import { formatWeiAmount } from '../../../../lib/number';
 import { FeedAction } from './actions/feed';
-import { ArweaveAction } from './actions/arweave';
+// import { ArweaveAction } from './actions/arweave';
 import { usePostRoute } from './lib/usePostRoute';
 import { PostMedia } from '../post-media';
 import { useGetReturnFromProfilePath } from '../../lib/useGetReturnFromProfilePath';
@@ -215,11 +215,11 @@ export const Post = ({
                     <FeedAction channelZid={channelZid} />
                   </PreventPropagation>
                 )}
-                {!isPending && !isFailed && (
+                {/* {!isPending && !isFailed && (
                   <PreventPropagation>
                     <ArweaveAction arweaveId={arweaveId} />
                   </PreventPropagation>
-                )}
+                )} */}
               </div>
             </Actions>
           }

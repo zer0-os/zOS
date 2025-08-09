@@ -63,7 +63,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
 
   const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress);
 
-  const hasClaimableRewards = userPendingRewards && pendingRewardsFormatted > 0.01;
+  const hasClaimableRewards = userPendingRewards && pendingRewardsFormatted >= 0.01;
 
   // const getUnlockDate = () => {
   //   if (!userUnlockedTimestamp) return null;

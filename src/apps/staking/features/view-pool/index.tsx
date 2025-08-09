@@ -175,7 +175,10 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
 
       <div className={styles.Actions}>
         {featureFlags.enableUnstaking && (
-          <Button onPress={onUnstake} isDisabled={isClaimingRewards}>
+          <Button
+            onPress={onUnstake}
+            isDisabled={isClaimingRewards || !userStakedAmount || unlockedBalanceFormatted === 0}
+          >
             Unstake
           </Button>
         )}

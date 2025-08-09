@@ -36,7 +36,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
     // apyRange,
     loading: statsLoading,
     error: statsError,
-  } = usePoolStats(poolAddress, chainId);
+  } = usePoolStats(poolAddress);
   const {
     stakingTokenInfo,
     rewardsTokenInfo,
@@ -47,7 +47,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
     totalStaked,
     loading: poolLoading,
     error: poolError,
-  } = usePool(poolAddress, chainId);
+  } = usePool(poolAddress);
 
   const loading = statsLoading || poolLoading;
   const error = statsError || poolError;

@@ -24,8 +24,8 @@ const LOCK_DURATION_DAYS = [
   365,
 ];
 
-export const useStakingOptions = (poolAddress: string, chainId?: number): UseStakingOptionsReturn => {
-  const { calculateMultiplier, calculateApy, loading, error } = usePoolStats(poolAddress, chainId);
+export const useStakingOptions = (poolAddress: string): UseStakingOptionsReturn => {
+  const { calculateMultiplier, calculateApy, loading, error } = usePoolStats(poolAddress);
 
   const options = useMemo(() => {
     if (!calculateMultiplier || !calculateApy) {

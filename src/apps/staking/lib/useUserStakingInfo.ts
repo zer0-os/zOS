@@ -13,7 +13,7 @@ export interface UserStakingInfo {
   lastTimestampLocked: bigint;
 }
 
-export const useUserStakingInfo = (poolAddress: string, chainId?: number) => {
+export const useUserStakingInfo = (poolAddress: string) => {
   const { address: userAddress } = useSelector(selectedWalletSelector);
 
   // Fetch user staking info
@@ -26,7 +26,6 @@ export const useUserStakingInfo = (poolAddress: string, chainId?: number) => {
       'userStakingInfo',
       poolAddress,
       userAddress,
-      chainId,
     ],
     queryFn: async () => {
       if (!poolAddress || !userAddress) return null;

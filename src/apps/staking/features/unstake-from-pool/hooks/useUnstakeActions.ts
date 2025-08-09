@@ -4,10 +4,9 @@ import type { TokenAmountFlowActions } from '../../../hooks/useTokenAmountFlow';
 
 interface UseUnstakeActionsParams {
   flowActions: TokenAmountFlowActions;
-  chainId: number;
 }
 
-export const useUnstakeActions = ({ flowActions, chainId: _chainId }: UseUnstakeActionsParams) => {
+export const useUnstakeActions = ({ flowActions }: UseUnstakeActionsParams) => {
   const { mutateAsync: unstake, isPending: isUnstaking } = useUnstake();
 
   const executeUnstake = useCallback(

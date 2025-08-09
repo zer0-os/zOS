@@ -3,11 +3,7 @@ import { selectedWalletSelector } from '../../../store/wallet/selectors';
 import { useSelector } from 'react-redux';
 import { get } from '../../../lib/api/rest';
 
-export const useUserBalances = (
-  stakingTokenAddress: string | null,
-  rewardsTokenAddress: string | null,
-  chainId?: number
-) => {
+export const useUserBalances = (stakingTokenAddress: string | null, rewardsTokenAddress: string | null) => {
   const { address: userAddress } = useSelector(selectedWalletSelector);
 
   // Fetch user staking token balance
@@ -20,7 +16,6 @@ export const useUserBalances = (
       'userStakingBalance',
       stakingTokenAddress,
       userAddress,
-      chainId,
     ],
     queryFn: async () => {
       if (!stakingTokenAddress || !userAddress) return null;
@@ -46,7 +41,6 @@ export const useUserBalances = (
       'userRewardsBalance',
       rewardsTokenAddress,
       userAddress,
-      chainId,
     ],
     queryFn: async () => {
       if (!rewardsTokenAddress || !userAddress) return null;

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
 import { get } from '../../../lib/api/rest';
 
-export const useTokenAllowance = (tokenAddress: string | null, spenderAddress: string | null, chainId?: number) => {
+export const useTokenAllowance = (tokenAddress: string | null, spenderAddress: string | null) => {
   const { address: userAddress } = useSelector(selectedWalletSelector);
 
   const {
@@ -17,7 +17,6 @@ export const useTokenAllowance = (tokenAddress: string | null, spenderAddress: s
       tokenAddress,
       spenderAddress,
       userAddress,
-      chainId,
     ],
     queryFn: async () => {
       const res = await get(`/api/wallet/${userAddress}/token/${tokenAddress}/approval/${spenderAddress}`).send();

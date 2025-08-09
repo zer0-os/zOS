@@ -8,7 +8,6 @@ export interface ConfirmStepProps {
   amount: string;
   duration: string;
   poolAddress: string;
-  chainId?: number;
   tokenSymbol?: string;
   hasSufficientAllowance: boolean;
   isLoading: boolean;
@@ -21,7 +20,6 @@ export const ConfirmStep = ({
   amount,
   duration,
   poolAddress,
-  chainId,
   tokenSymbol,
   hasSufficientAllowance,
   isLoading,
@@ -29,7 +27,7 @@ export const ConfirmStep = ({
   onConfirm,
   actionType = 'stake',
 }: ConfirmStepProps) => {
-  const { options: stakingOptions } = useStakingOptions(poolAddress, chainId);
+  const { options: stakingOptions } = useStakingOptions(poolAddress);
   const selectedOption = stakingOptions.find((option) => option.key === duration);
 
   return (

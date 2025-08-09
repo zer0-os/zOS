@@ -28,13 +28,11 @@ const UnstakeFromPoolContent = ({
   onClose,
 }: UnstakeFromPoolProps) => {
   const { address: walletAddress } = useSelector(selectedWalletSelector);
-  const targetChainId = chainId || 43113;
 
   const flow = useTokenAmountFlow('unstake');
-  const data = useTokenAmountData({ poolAddress, chainId: targetChainId, flowType: 'unstake' });
+  const data = useTokenAmountData({ poolAddress, flowType: 'unstake' });
   const actions = useUnstakeActions({
     flowActions: flow,
-    chainId: targetChainId,
   });
 
   if (!walletAddress) {
@@ -72,7 +70,6 @@ const UnstakeFromPoolContent = ({
             amount={data.amount}
             duration={data.duration}
             poolAddress={poolAddress}
-            chainId={targetChainId}
             tokenSymbol={data.stakingTokenInfo?.symbol}
             userBalance={data.userBalance}
             onAmountChange={data.setAmount}
@@ -90,7 +87,6 @@ const UnstakeFromPoolContent = ({
             amount={data.amount}
             duration={data.duration}
             poolAddress={poolAddress}
-            chainId={targetChainId}
             tokenSymbol={data.stakingTokenInfo?.symbol}
             hasSufficientAllowance={true} // Unstake doesn't need allowance
             isLoading={actions.isLoading}
@@ -124,7 +120,7 @@ const UnstakeFromPoolContent = ({
 
   return (
     <div className={styles.Container}>
-      <PoolIcon poolName={poolName || 'Staking Pool'} chainId={targetChainId} imageUrl={poolIconImageUrl} />
+      <PoolIcon poolName={poolName || 'Staking Pool'} chainId={chainId} imageUrl={poolIconImageUrl} />
       {flow.error && <Alert variant='error'>{flow.error}</Alert>}
       {renderStep()}
     </div>

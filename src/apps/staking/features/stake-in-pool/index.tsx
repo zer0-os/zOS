@@ -29,15 +29,13 @@ const StakeInPoolContent = ({
   onClose,
 }: StakeInPoolContentProps) => {
   const { address: walletAddress } = useSelector(selectedWalletSelector);
-  const targetChainId = poolChainId || 43113;
 
   const flow = useStakeFlow();
-  const data = useStakeData({ poolAddress, chainId: targetChainId });
+  const data = useStakeData({ poolAddress });
   const actions = useStakeActions({
     flowActions: flow,
     hasSufficientAllowance: data.hasSufficientAllowance,
     refetchAllowance: data.refetchAllowance,
-    chainId: targetChainId,
   });
 
   if (!walletAddress) {
@@ -82,7 +80,6 @@ const StakeInPoolContent = ({
             amount={data.amount}
             duration={data.duration}
             poolAddress={poolAddress}
-            chainId={targetChainId}
             tokenSymbol={data.stakingTokenInfo?.symbol}
             userBalance={data.userStakingBalance}
             onAmountChange={data.setAmount}
@@ -99,7 +96,6 @@ const StakeInPoolContent = ({
             amount={data.amount}
             duration={data.duration}
             poolAddress={poolAddress}
-            chainId={targetChainId}
             tokenSymbol={data.stakingTokenInfo?.symbol}
             hasSufficientAllowance={data.hasSufficientAllowance()}
             isLoading={actions.isLoading}
@@ -127,7 +123,7 @@ const StakeInPoolContent = ({
 
   return (
     <div className={styles.Container}>
-      <PoolIcon poolName={poolName || 'Staking Pool'} chainId={targetChainId} imageUrl={poolIconImageUrl} />
+      <PoolIcon poolName={poolName || 'Staking Pool'} chainId={poolChainId} imageUrl={poolIconImageUrl} />
       {flow.error && <Alert variant='error'>{flow.error}</Alert>}
       {renderStep()}
     </div>

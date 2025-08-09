@@ -11,14 +11,14 @@ interface RewardConfig {
   canExit: boolean;
 }
 
-export const usePoolStats = (poolAddress: string, chainId: number = 43113) => {
+export const usePoolStats = (poolAddress: string) => {
   // Fetch total staked
   const {
     data: totalStaked,
     isLoading: totalStakedLoading,
     error: totalStakedError,
   } = useQuery({
-    queryKey: ['totalStaked', poolAddress, chainId],
+    queryKey: ['totalStaked', poolAddress],
     queryFn: async () => {
       const res = await get(`/api/staking/${poolAddress}/total-staked`).send();
 
@@ -37,7 +37,7 @@ export const usePoolStats = (poolAddress: string, chainId: number = 43113) => {
     isLoading: poolConfigLoading,
     error: poolConfigError,
   } = useQuery({
-    queryKey: ['poolConfig', poolAddress, chainId],
+    queryKey: ['poolConfig', poolAddress],
     queryFn: async (): Promise<RewardConfig> => {
       const res = await get(`/api/staking/${poolAddress}/config`).send();
 

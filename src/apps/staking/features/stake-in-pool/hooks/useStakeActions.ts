@@ -16,7 +16,6 @@ export interface UseStakeActionsParams {
   flowActions: StakeFlowActions;
   hasSufficientAllowance: () => boolean;
   refetchAllowance: () => Promise<any>;
-  chainId?: number;
 }
 
 export interface UseStakeActionsReturn {

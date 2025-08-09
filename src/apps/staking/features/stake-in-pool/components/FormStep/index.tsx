@@ -14,8 +14,6 @@ export interface FormStepProps {
   duration: string;
   // eslint-disable-next-line react-redux/no-unused-prop-types
   poolAddress: string;
-  // eslint-disable-next-line react-redux/no-unused-prop-types
-  chainId?: number;
   tokenSymbol?: string;
   userBalance?: bigint | null;
   onAmountChange: (amount: string) => void;

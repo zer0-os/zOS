@@ -22,6 +22,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableMatrixDebug: boolean;
   declare enableCreateTGCChannel: boolean;
   declare enableStaking: boolean;
+  declare enableUnstaking: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

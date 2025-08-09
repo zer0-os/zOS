@@ -5,15 +5,17 @@ import styles from './styles.module.scss';
 export interface StakingStepProps {
   formattedAmount: string;
   tokenSymbol?: string;
+  actionType?: 'stake' | 'unstake';
 }
 
-export const StakingStep = ({ formattedAmount, tokenSymbol }: StakingStepProps) => {
+export const StakingStep = ({ formattedAmount, tokenSymbol, actionType = 'stake' }: StakingStepProps) => {
   const ticker = tokenSymbol || 'TOKENS';
+  const actionText = actionType === 'stake' ? 'Staking' : 'Unstaking';
   return (
     <LoadingIndicator
       className={styles.Loading}
       spinnerPosition='left'
-      text={`Staking ${formattedAmount} ${ticker}...`}
+      text={`${actionText} ${formattedAmount} ${ticker}...`}
     />
   );
 };

@@ -8,14 +8,14 @@ export interface TokenInfo {
   address: string;
 }
 
-export const useRewardsToken = (poolAddress: string, chainId?: number) => {
+export const useRewardsToken = (poolAddress: string) => {
   // Fetch rewards token address
   const {
     data: rewardsTokenAddress,
     isLoading: rewardsTokenLoading,
     error: rewardsTokenError,
   } = useQuery({
-    queryKey: ['rewardsTokenAddress', poolAddress, chainId],
+    queryKey: ['rewardsTokenAddress', poolAddress],
     queryFn: async () => {
       const res = await get(`/api/staking/${poolAddress}/rewards-token`).send();
 
@@ -34,7 +34,7 @@ export const useRewardsToken = (poolAddress: string, chainId?: number) => {
     isLoading: rewardsTokenInfoLoading,
     error: rewardsTokenInfoError,
   } = useQuery({
-    queryKey: ['rewardsTokenInfo', rewardsTokenAddress, chainId],
+    queryKey: ['rewardsTokenInfo', rewardsTokenAddress],
     queryFn: async () => {
       if (!rewardsTokenAddress) return null;
 

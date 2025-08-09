@@ -44,13 +44,9 @@ const PoolRowWithData = ({
     // apyRange,
     loading: statsLoading,
     error: statsError,
-  } = usePoolStats(poolConfig.address, poolConfig.chainId);
+  } = usePoolStats(poolConfig.address);
 
-  const {
-    userStakingInfo,
-    loading: userLoading,
-    error: userError,
-  } = useUserStakingInfo(poolConfig.address, poolConfig.chainId);
+  const { userStakingInfo, loading: userLoading, error: userError } = useUserStakingInfo(poolConfig.address);
 
   const loading = statsLoading || userLoading;
   const error = statsError || userError;

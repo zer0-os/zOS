@@ -8,14 +8,14 @@ export interface TokenInfo {
   address: string;
 }
 
-export const useStakingToken = (poolAddress: string, chainId?: number) => {
+export const useStakingToken = (poolAddress: string) => {
   // Fetch staking token address
   const {
     data: stakingTokenAddress,
     isLoading: stakingTokenLoading,
     error: stakingTokenError,
   } = useQuery({
-    queryKey: ['stakingTokenAddress', poolAddress, chainId],
+    queryKey: ['stakingTokenAddress', poolAddress],
     queryFn: async () => {
       const res = await get(`/api/staking/${poolAddress}/staking-token`).send();
 
@@ -34,7 +34,7 @@ export const useStakingToken = (poolAddress: string, chainId?: number) => {
     isLoading: stakingTokenInfoLoading,
     error: stakingTokenInfoError,
   } = useQuery({
-    queryKey: ['stakingTokenInfo', stakingTokenAddress, chainId],
+    queryKey: ['stakingTokenInfo', stakingTokenAddress],
     queryFn: async () => {
       if (!stakingTokenAddress) return null;
 

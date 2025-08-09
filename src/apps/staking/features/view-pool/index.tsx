@@ -61,7 +61,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
 
   const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress);
 
-  const hasClaimableRewards = userPendingRewards && userPendingRewards > 0;
+  const hasClaimableRewards = userPendingRewards && pendingRewardsFormatted > 0.01;
 
   // const getUnlockDate = () => {
   //   if (!userUnlockedTimestamp) return null;
@@ -93,15 +93,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
       return 'Error';
     }
 
-    if (pendingRewardsFormatted >= 1000) {
-      return millify(pendingRewardsFormatted, { precision: 6 });
-    }
-
-    if (pendingRewardsFormatted === 0) {
-      return '0';
-    }
-
-    return ethers.utils.formatUnits(userPendingRewards, 18);
+    return millify(pendingRewardsFormatted, { precision: 2 });
   };
 
   return (

@@ -53,7 +53,7 @@ export const ConfirmStep = ({
           {isLoading
             ? 'Processing...'
             : actionType === 'unstake'
-            ? 'Unstake Now'
+            ? 'Unstake & Claim Rewards'
             : hasSufficientAllowance
             ? 'Stake Now'
             : 'Confirm Stake'}

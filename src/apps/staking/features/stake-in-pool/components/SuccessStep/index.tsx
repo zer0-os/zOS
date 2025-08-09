@@ -30,7 +30,7 @@ export const SuccessStep = ({
       <div>
         {actionType === 'stake'
           ? `You have successfully staked ${formattedAmount} ${ticker} ${getDurationText()}.`
-          : `You have successfully unstaked ${formattedAmount} ${ticker}.`}
+          : `You have successfully unstaked ${formattedAmount} ${ticker}, and claimed your pool rewards.`}
       </div>
       <div className={styles.Actions}>
         <Button onPress={onClose || (() => window.location.reload())}>Done</Button>

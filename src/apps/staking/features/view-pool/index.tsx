@@ -10,6 +10,7 @@ import { usePoolStats } from '../../lib/usePoolStats';
 import { usePool } from '../../lib/usePool';
 import { useClaimRewards } from '../../lib/useClaimRewards';
 import { meowInUSDSelector } from '../../../../store/rewards/selectors';
+import { featureFlags } from '../../../../lib/feature-flags';
 
 import { ethers } from 'ethers';
 import millify from 'millify';
@@ -25,9 +26,10 @@ interface ViewPoolProps {
   chainId: number;
   poolIconImageUrl?: string;
   onStake: () => void;
+  onUnstake: () => void;
 }
 
-export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onStake }: ViewPoolProps) => {
+export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onStake, onUnstake }: ViewPoolProps) => {
   const meowPrice = useSelector(meowInUSDSelector);
 
   const {
@@ -172,6 +174,11 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
       </ul> */}
 
       <div className={styles.Actions}>
+        {featureFlags.enableUnstaking && (
+          <Button onPress={onUnstake} isDisabled={isClaimingRewards}>
+            Unstake
+          </Button>
+        )}
         <Button onPress={onStake} isDisabled={isClaimingRewards}>
           Stake in Pool
         </Button>

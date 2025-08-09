@@ -11,7 +11,8 @@ export type FeatureFlagKey =
   | 'enableAuraZApp'
   | 'enableMatrixDebug'
   | 'enableCreateTGCChannel'
-  | 'enableStaking';
+  | 'enableStaking'
+  | 'enableUnstaking';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

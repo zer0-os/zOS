@@ -26,16 +26,5 @@ export const useChannelMembership = (zid: string | undefined) => {
     usersChannels?.find((channel) => channel.zid === zid) ||
     null;
 
-  console.log('useChannelMembership debug:', {
-    zid,
-    usersChannels: usersChannels?.map((c) => c.zid),
-    allChannels: allChannels?.map((c) => c.zid),
-    socialChannels: socialChannels?.map((c) => c.zid),
-    isMemberInUsersChannels,
-    isMemberInSocialChannels,
-    isMember,
-    channelData,
-  });
-
   return { isMember, isLoading: false, channelData };
 };

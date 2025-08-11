@@ -31,11 +31,7 @@ export const LeaveTokenGatedChannelDialog: React.FC<Properties> = ({ zid, isOpen
       primaryText='Leave Channel'
       primaryVariant={Variant.Primary}
       primaryColor={Color.Red}
-      secondaryText='Cancel'
-      secondaryVariant={Variant.Secondary}
-      secondaryColor={Color.Greyscale}
       onPrimary={handleLeave}
-      onSecondary={onClose}
       onClose={onClose}
       isProcessing={leaveTokenGatedChannel.isPending}
     >

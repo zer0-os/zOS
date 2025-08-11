@@ -20,8 +20,22 @@ export const useChannelMembership = (zid: string | undefined) => {
   const isMemberInSocialChannels = socialChannels.some((channel) => channel.zid === zid);
   const isMember = isMemberInUsersChannels || isMemberInSocialChannels;
 
-  // Get channel data from allChannels for token requirements
-  const channelData = allChannels?.find((channel) => channel.zid === zid) || null;
+  // Get channel data from allChannels OR usersChannels for token requirements
+  const channelData =
+    allChannels?.find((channel) => channel.zid === zid) ||
+    usersChannels?.find((channel) => channel.zid === zid) ||
+    null;
+
+  console.log('useChannelMembership debug:', {
+    zid,
+    usersChannels: usersChannels?.map((c) => c.zid),
+    allChannels: allChannels?.map((c) => c.zid),
+    socialChannels: socialChannels?.map((c) => c.zid),
+    isMemberInUsersChannels,
+    isMemberInSocialChannels,
+    isMember,
+    channelData,
+  });
 
   return { isMember, isLoading: false, channelData };
 };

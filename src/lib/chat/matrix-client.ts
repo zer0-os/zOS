@@ -1615,6 +1615,9 @@ export class MatrixClient {
     const previousMembership = event.unsigned?.prev_content?.membership;
     const roomId = event.room_id;
 
+    const room = this.matrix.getRoom(roomId);
+    const isTokenGatedChannel = room ? this.getRoomGroupType(room) === 'social' : false;
+
     if (event.state_key !== this.userId) {
       if (membership === MembershipStateType.Leave && previousMembership !== MembershipStateType.Leave) {
         this.events.onOtherUserLeftChannel(roomId, userId);
@@ -1623,7 +1626,10 @@ export class MatrixClient {
       }
     } else {
       if (membership === MembershipStateType.Leave && previousMembership !== MembershipStateType.Leave) {
-        this.events.onUserLeft(roomId, userId);
+        // Don't trigger navigation for token-gated channels - backend handles this
+        if (!isTokenGatedChannel) {
+          this.events.onUserLeft(roomId, userId);
+        }
       } else if (membership === MembershipStateType.Join && previousMembership !== MembershipStateType.Join) {
         const room = this.matrix.getRoom(roomId);
         if (room) {

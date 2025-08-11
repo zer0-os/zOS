@@ -18,6 +18,7 @@ import { isOneOnOneSelector } from '../../../store/channels/selectors';
 
 export interface PublicProperties {
   className?: string;
+  isLegacySocialChannel?: boolean;
 }
 
 export interface Properties extends PublicProperties {
@@ -29,6 +30,7 @@ export interface Properties extends PublicProperties {
   canAddMembers: boolean;
   canViewDetails: boolean;
   canReportUser: boolean;
+  isCurrentUserRoomAdmin: boolean;
 
   startAddGroupMember: () => void;
   startEditConversation: () => void;
@@ -69,6 +71,7 @@ export class Container extends React.Component<Properties> {
       canAddMembers,
       canViewDetails,
       canReportUser,
+      isCurrentUserRoomAdmin,
     };
   }
 
@@ -105,6 +108,10 @@ export class Container extends React.Component<Properties> {
     return this.props.directMessage.labels?.includes(DefaultRoomLabels.MUTE);
   }
 
+  get canLeaveRoom() {
+    return this.props.canLeaveRoom || (!this.props.isLegacySocialChannel && !this.props.isCurrentUserRoomAdmin);
+  }
+
   render() {
     if (
       ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) ||
@@ -117,7 +124,7 @@ export class Container extends React.Component<Properties> {
       <ConversationActions
         className={this.props.className}
         canAddMembers={this.props.canAddMembers}
-        canLeaveRoom={this.props.canLeaveRoom}
+        canLeaveRoom={this.canLeaveRoom}
         canEdit={this.props.canEdit}
         canViewDetails={this.props.canViewDetails}
         canReportUser={this.props.canReportUser}

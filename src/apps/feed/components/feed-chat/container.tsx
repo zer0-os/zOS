@@ -49,7 +49,7 @@ export const FeedChat = () => {
     <Panel className={styles.Container}>
       <PanelHeader className={styles.PanelHeader}>
         <PanelTitle className={styles.PanelTitle}>0://{zid}</PanelTitle>
-        {isMember && <ConversationActionsContainer />}
+        {isMember && <ConversationActionsContainer isLegacySocialChannel={tokenRequirements === undefined} />}
       </PanelHeader>
       <PanelBody className={styles.Panel}>{renderContent()}</PanelBody>
     </Panel>

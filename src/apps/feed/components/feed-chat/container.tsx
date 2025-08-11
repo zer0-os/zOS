@@ -26,6 +26,14 @@ export const FeedChat = () => {
       }
     : undefined;
 
+  console.log('FeedChat debug:', {
+    zid,
+    channelData,
+    tokenSymbol: channelData?.tokenSymbol,
+    tokenRequirements,
+    isLegacySocialChannel: tokenRequirements === undefined,
+  });
+
   const renderContent = () => {
     if (isLoading) {
       return (

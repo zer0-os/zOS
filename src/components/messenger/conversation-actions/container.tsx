@@ -108,10 +108,6 @@ export class Container extends React.Component<Properties> {
     return this.props.directMessage.labels?.includes(DefaultRoomLabels.MUTE);
   }
 
-  get canLeaveRoom() {
-    return this.props.canLeaveRoom || (!this.props.isLegacySocialChannel && !this.props.isCurrentUserRoomAdmin);
-  }
-
   render() {
     if (
       ((!this.props.activeConversationId || !this.props.directMessage) && !this.props.isJoiningConversation) ||
@@ -124,7 +120,9 @@ export class Container extends React.Component<Properties> {
       <ConversationActions
         className={this.props.className}
         canAddMembers={this.props.canAddMembers}
-        canLeaveRoom={this.canLeaveRoom}
+        canLeaveRoom={
+          this.props.canLeaveRoom || (!this.props.isLegacySocialChannel && !this.props.isCurrentUserRoomAdmin)
+        }
         canEdit={this.props.canEdit}
         canViewDetails={this.props.canViewDetails}
         canReportUser={this.props.canReportUser}

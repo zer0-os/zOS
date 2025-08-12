@@ -18,6 +18,24 @@ import { FeedItem } from './components/feed-item';
 
 import styles from './styles.module.scss';
 
+const tabsData: TabData[] = [
+  {
+    id: Tab.Channels,
+    label: 'Channels',
+    ariaLabel: 'Channels tab',
+  },
+  {
+    id: Tab.Explore,
+    label: 'Explore',
+    ariaLabel: 'Explore tab',
+  },
+  {
+    id: Tab.Airdrops,
+    label: 'Airdrops',
+    ariaLabel: 'Airdrops tab',
+  },
+];
+
 export const Sidekick = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<Tab>(() => {
@@ -34,9 +52,8 @@ export const Sidekick = () => {
     allChannels,
     search,
     setSearch,
-    unreadCounts,
-    mutedChannels,
     memberCounts,
+    tokenInfoMap,
   } = useSidekick();
 
   const handleCreateChannel = () => {
@@ -50,9 +67,8 @@ export const Sidekick = () => {
 
   const renderFeedItems = (channels: any[]) => {
     return channels?.map((channel) => {
-      const hasUnreadHighlights = unreadCounts[channel.zid]?.highlight > 0;
-      const hasUnreadTotal = unreadCounts[channel.zid]?.total > 0;
-      const isMuted = mutedChannels[channel.zid];
+      const tokenInfo = tokenInfoMap.get(channel.zid);
+
       return (
         <FeedItem
           key={channel.zid}
@@ -60,37 +76,14 @@ export const Sidekick = () => {
           isSelected={selectedZId === channel.zid}
           zid={channel.zid}
           memberCount={channel.memberCount || memberCounts[channel.zid]}
-          isMuted={isMuted}
-          hasUnreadHighlights={hasUnreadHighlights}
-          hasUnreadTotal={hasUnreadTotal}
-          unreadCount={unreadCounts[channel.zid]?.total}
-          unreadHighlight={unreadCounts[channel.zid]?.highlight}
-        >
-          <div className={styles.FeedName}>
-            <div>{channel.zid}</div>
-          </div>
-        </FeedItem>
+          tokenSymbol={tokenInfo?.tokenSymbol}
+          tokenPriceUsd={tokenInfo?.priceData.usd}
+          tokenPriceChange={tokenInfo?.priceData.change24h}
+          tokenMarketCap={tokenInfo?.priceData.marketCap}
+        />
       );
     });
   };
-
-  const tabsData: TabData[] = [
-    {
-      id: Tab.Channels,
-      label: 'Channels',
-      ariaLabel: 'Channels tab',
-    },
-    {
-      id: Tab.Explore,
-      label: 'Explore',
-      ariaLabel: 'Explore tab',
-    },
-    {
-      id: Tab.Airdrops,
-      label: 'Airdrops',
-      ariaLabel: 'Airdrops tab',
-    },
-  ];
 
   const renderContent = () => {
     switch (selectedTab) {

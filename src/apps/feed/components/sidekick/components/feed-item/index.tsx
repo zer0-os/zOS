@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IconArrowDown, IconArrowUp, IconUser } from '@zero-tech/zui/icons';
+import { IconArrowDown, IconArrowUp, IconUser, IconBarChart } from '@zero-tech/zui/icons';
 import { setLastActiveFeed } from '../../../../../../lib/last-feed';
 import { formatMarketCap, formatPriceChange, formatTokenPrice } from '../../lib/utils';
 
@@ -65,7 +65,8 @@ export const FeedItem = ({
 
             {tokenMarketCap && (
               <div className={styles.TotalCountContainer}>
-                <IconUser className={styles.TotalCountIcon} size={14} />
+                <IconBarChart className={styles.TotalCountIcon} size={14} />
+
                 <div className={styles.TotalCount}>{formatMarketCap(tokenMarketCap)}</div>
               </div>
             )}

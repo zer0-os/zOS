@@ -16,5 +16,6 @@ export const formatMarketCap = (marketCap: number): string => {
 };
 
 export const formatPriceChange = (change: number): string => {
-  return `${change.toFixed(2)}%`;
+  const sign = change >= 0 ? '' : '-';
+  return `${sign}${change.toFixed(2)}%`;
 };

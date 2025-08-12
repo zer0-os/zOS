@@ -56,12 +56,14 @@
   flex-grow: 1;
   min-width: 0;
   width: 100%;
+  gap: 4px;
 }
 
 .FeedName {
   display: flex;
   overflow: hidden;
   font-size: 14px;
+  max-width: calc(100% - 24px);
 
   > div {
     overflow: hidden;
@@ -104,6 +106,8 @@
 
 .TokenSymbol {
   @include glass-text-tertiary-color;
+
+  margin-right: 15px;
 }
 
 .TokenPriceContainer {
@@ -128,18 +132,8 @@
   }
 
   &.Down {
-    color: theme.$color-failure-11;
+    color: rgba(238, 236, 255, 0.42);
   }
 
   font-size: 12px;
-}
-
-.TokenPriceChangeIcon {
-  &.Up {
-    color: theme.$color-secondary-11;
-  }
-
-  &.Down {
-    color: theme.$color-failure-11;
-  }
 }

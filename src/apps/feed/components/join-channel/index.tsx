@@ -53,8 +53,8 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
       } else {
         setJoinError(
           isLegacyChannel
-            ? `Failed to join channel. You must own a subdomain of 0://${zid} to join.`
-            : `Failed to join channel. You must hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} in a connected self custody wallet to join.`
+            ? `Failed to join channel. You must hold a subdomain of 0://${zid} in a connected wallet to join.`
+            : `Failed to join channel. You must hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} in a connected wallet to join.`
         );
       }
     } else if (joinChannelMutation.isSuccess) {
@@ -81,8 +81,8 @@ export const JoinChannel: React.FC<JoinChannelProps> = ({ zid, tokenRequirements
 
         <div className={styles.JoinText}>
           {isLegacyChannel
-            ? `This channel requires you to own a subdomain of 0://${zid} in a connected self-custody wallet to join.`
-            : `This channel requires you to hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} in a connected self-custody wallet to join.`}
+            ? `This channel requires you to own a subdomain of 0://${zid} in a connected wallet to join.`
+            : `This channel requires you to hold ${tokenRequirements?.amount} ${tokenRequirements?.symbol} in a connected wallet to join.`}
         </div>
 
         <div className={styles.JoinText}>

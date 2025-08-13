@@ -24,6 +24,24 @@ const COINGECKO_CHAIN_SLUGS: Record<number, string> = {
   43114: 'avalanche',
 };
 
+// zChain token data (hardcoded as requested)
+const ZCHAIN_TOKENS = {
+  MEOW: {
+    name: 'MEOW',
+    symbol: 'MEOW',
+    decimals: 18,
+    address: '0x6ce4a22AA99F9ae41D27E1eC3f40c32b8D0C3113',
+    logo: '/tokens/meow.png',
+  },
+  CATNIP: {
+    name: 'CATNIP',
+    symbol: 'CATNIP',
+    decimals: 18,
+    address: '0xc106C2851cAFf4f7c361948719085eeC8171DF04',
+    logo: null,
+  },
+};
+
 export interface TokenData {
   name: string;
   symbol: string;
@@ -41,6 +59,31 @@ export function useTokenFinder() {
 
   const resetError = useCallback(() => {
     setError(null);
+  }, []);
+
+  const findZChainToken = useCallback(async (tokenSymbol: 'MEOW' | 'CATNIP', network: string) => {
+    setLoading(true);
+    setError(null);
+    setToken(null);
+
+    try {
+      const tokenData = ZCHAIN_TOKENS[tokenSymbol];
+      if (!tokenData) {
+        throw new Error('Token not found');
+      }
+
+      const tokenResult: TokenData = {
+        ...tokenData,
+        chainId: 9369, // zChain chain ID (production)
+        network,
+      };
+
+      setToken(tokenResult);
+    } catch (err: any) {
+      setError('Token not found');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const findToken = useCallback(async (chainId: number, address: string, network: string) => {
@@ -104,6 +147,7 @@ export function useTokenFinder() {
     loading,
     error,
     findToken,
+    findZChainToken,
     resetError,
   };
 }

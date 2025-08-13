@@ -1,5 +1,6 @@
 import React from 'react';
 import { TokenData } from '../../lib/hooks/useTokenFinder';
+import { TokenIcon } from '../../../../../wallet/components/token-icon/token-icon';
 
 import styles from './styles.module.scss';
 
@@ -18,7 +19,7 @@ export const ExtractTokenStage: React.FC<ExtractTokenStageProps> = ({ token, onN
       <div className={styles.Title}>Token Found</div>
       <div className={styles.Subtitle}>Verify if this is the right token.</div>
       <div className={styles.TokenProfile}>
-        {token.logo && <img className={styles.TokenImage} src={token.logo} alt={token.name} />}
+        <TokenIcon url={token.logo} name={token.name} chainId={token.chainId} />
         <div className={styles.TokenName}>{token.name}</div>
         <div className={styles.TokenSymbol}>{token.symbol}</div>
       </div>

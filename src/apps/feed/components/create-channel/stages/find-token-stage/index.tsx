@@ -12,8 +12,8 @@ interface FindTokenStageProps {
 const NETWORKS = [
   { id: 'zchain', label: 'zChain', chainId: 9369, disabled: false },
   { id: 'ethereum', label: 'Ethereum', chainId: 1, disabled: false },
-  { id: 'polygon', label: 'Polygon', chainId: 137, disabled: true, className: styles.DisabledOption },
-  { id: 'avalanche', label: 'Avalanche', chainId: 43114, disabled: true, className: styles.DisabledOption },
+  { id: 'polygon', label: 'Polygon', chainId: 137, disabled: false },
+  { id: 'avalanche', label: 'Avalanche', chainId: 43114, disabled: false },
 ];
 
 const ZCHAIN_TOKENS = [
@@ -79,7 +79,6 @@ export const FindTokenStage: React.FC<FindTokenStageProps> = ({ onTokenFound }) 
     label: n.label,
     disabled: n.disabled,
     onSelect: () => !n.disabled && handleNetworkChange(n.id),
-    className: n.className,
   }));
 
   const zChainTokenItems = ZCHAIN_TOKENS.map((t) => ({

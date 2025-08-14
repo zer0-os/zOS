@@ -90,18 +90,24 @@ function* listenForUserLogin() {
 }
 
 export function* userLeftChannel(channelId: string, matrixId: string) {
+  console.log('XXX userLeftChannel saga triggered:', { channelId, matrixId });
   const currentUser = yield select(currentUserSelector);
 
   if (matrixId === currentUser.matrixId) {
+    console.log('XXX Current user left channel, calling currentUserLeftChannel');
     yield call(currentUserLeftChannel, channelId);
+  } else {
+    console.log('XXX Other user left channel, not current user');
   }
 }
 
 function* currentUserLeftChannel(channelId: string) {
+  console.log('XXX currentUserLeftChannel saga triggered:', { channelId });
   yield put(removeChannel(channelId));
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   if (activeConversationId === channelId) {
+    console.log('XXX Active conversation left, handling navigation');
     yield call(clearLastActiveConversation);
     yield call(openFirstConversation);
   }

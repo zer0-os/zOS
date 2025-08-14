@@ -90,10 +90,16 @@ function* listenForUserLogin() {
 }
 
 export function* userLeftChannel(channelId: string, matrixId: string) {
+  console.log('XXX userLeftChannel called with channelId:', channelId, 'matrixId:', matrixId);
+
   const currentUser = yield select(currentUserSelector);
+  console.log('XXX userLeftChannel - currentUser.matrixId:', currentUser.matrixId);
 
   if (matrixId === currentUser.matrixId) {
+    console.log('XXX userLeftChannel - calling currentUserLeftChannel');
     yield call(currentUserLeftChannel, channelId);
+  } else {
+    console.log('XXX userLeftChannel - NOT calling currentUserLeftChannel (different user)');
   }
 }
 

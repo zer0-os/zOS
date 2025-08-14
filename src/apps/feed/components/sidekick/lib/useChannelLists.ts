@@ -67,6 +67,11 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
     return false;
   });
 
+  // Final deduplication to ensure no duplicates remain
+  const finalUniqueUserChannels = uniqueUserChannels.filter(
+    (channel, index, self) => self.findIndex((c) => c.zid === channel.zid) === index
+  );
+
   // Process all channels for Explore tab
   const allChannels: ChannelItem[] = allTokenGatedChannels.map((channel) => ({
     zid: channel.zid,
@@ -83,7 +88,7 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
   const filteredAllChannels = allChannels.filter((channel) => !userChannelZids.has(channel.zid));
 
   return {
-    usersChannels: uniqueUserChannels,
+    usersChannels: finalUniqueUserChannels,
     allChannels: filteredAllChannels,
     isLoading: isLoadingTokenGated,
     isErrorMine: !!tokenGatedError,

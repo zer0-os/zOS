@@ -23,8 +23,16 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
   // Process token-gated channels (user's channels)
   const tokenGatedChannels = tokenGatedChannelsData?.channels || [];
 
+  console.log('XXX tokenGatedChannelsData:', tokenGatedChannelsData);
+  console.log('XXX tokenGatedChannels:', tokenGatedChannels);
+  console.log('XXX Sample token-gated channel:', tokenGatedChannels[0]);
+
   // Process all token-gated channels
   const allTokenGatedChannels = allTokenGatedChannelsData?.channels || [];
+
+  console.log('XXX allTokenGatedChannelsData:', allTokenGatedChannelsData);
+  console.log('XXX allTokenGatedChannels:', allTokenGatedChannels);
+  console.log('XXX Sample all token-gated channel:', allTokenGatedChannels[0]);
 
   // Combine legacy channels and user's token-gated channels for Channels tab
   const userChannels: ChannelItem[] = [

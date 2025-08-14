@@ -1,5 +1,5 @@
 import { useRouteMatch } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectSocialChannelsMemberCounts } from './selectors';
 import { useLegacyChannels } from './useLegacyChannels';
@@ -39,14 +39,16 @@ export const useSidekick = (): UseSidekickReturn => {
     isErrorAll,
   } = useChannelLists(uniqueLegacyZids);
 
-  // Apply search filter to user channels
-  const filteredUserChannels = usersChannels?.filter((channel) =>
-    channel.zid.toLowerCase().includes(search.toLowerCase())
+  // Apply search filter to user channels with memoization
+  const filteredUserChannels = useMemo(
+    () => usersChannels?.filter((channel) => channel.zid.toLowerCase().includes(search.toLowerCase())),
+    [usersChannels, search]
   );
 
-  // Apply search filter to all channels
-  const filteredAllChannelsWithSearch = allChannels?.filter((channel) =>
-    channel.zid.toLowerCase().includes(search.toLowerCase())
+  // Apply search filter to all channels with memoization
+  const filteredAllChannelsWithSearch = useMemo(
+    () => allChannels?.filter((channel) => channel.zid.toLowerCase().includes(search.toLowerCase())),
+    [allChannels, search]
   );
 
   const memberCounts = useSelector(selectSocialChannelsMemberCounts);

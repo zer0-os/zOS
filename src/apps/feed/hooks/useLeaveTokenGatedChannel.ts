@@ -27,6 +27,10 @@ export const useLeaveTokenGatedChannel = () => {
 
       return response.body;
     },
+    onMutate: () => {
+      // Clear any previous errors when starting a new leave attempt
+      // This ensures the user doesn't see stale error messages
+    },
     onSuccess: () => {
       // Invalidate relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['token-gated-channels', 'mine'] });

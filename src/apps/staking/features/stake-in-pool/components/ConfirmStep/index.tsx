@@ -8,47 +8,55 @@ export interface ConfirmStepProps {
   amount: string;
   duration: string;
   poolAddress: string;
-  chainId?: number;
   tokenSymbol?: string;
   hasSufficientAllowance: boolean;
   isLoading: boolean;
   onBack: () => void;
   onConfirm: () => void;
+  actionType?: 'stake' | 'unstake';
 }
 
 export const ConfirmStep = ({
   amount,
   duration,
   poolAddress,
-  chainId,
   tokenSymbol,
   hasSufficientAllowance,
   isLoading,
   onBack,
   onConfirm,
+  actionType = 'stake',
 }: ConfirmStepProps) => {
-  const { options: stakingOptions } = useStakingOptions(poolAddress, chainId);
+  const { options: stakingOptions } = useStakingOptions(poolAddress);
   const selectedOption = stakingOptions.find((option) => option.key === duration);
 
   return (
     <>
       <Card className={styles.Card}>
-        <label>Stake Amount</label>
+        <label>{actionType === 'stake' ? 'Stake Amount' : 'Unstake Amount'}</label>
         <div className={styles.Amount}>
           {amount} {tokenSymbol || 'TOKENS'}
         </div>
       </Card>
-      <Card className={styles.Card}>
-        <label>Lock Duration</label>
-        <div className={styles.Details}>
-          <span>{selectedOption?.title}</span>
-          {selectedOption?.label && <span>{selectedOption?.label}</span>}
-        </div>
-      </Card>
+      {actionType === 'stake' && (
+        <Card className={styles.Card}>
+          <label>Lock Duration</label>
+          <div className={styles.Details}>
+            <span>{selectedOption?.title}</span>
+            {selectedOption?.label && <span>{selectedOption?.label}</span>}
+          </div>
+        </Card>
+      )}
       <div className={styles.Actions}>
         <Button onPress={onBack}>Back</Button>
         <Button onPress={onConfirm} isDisabled={isLoading}>
-          {isLoading ? 'Processing...' : hasSufficientAllowance ? 'Stake Now' : 'Confirm Stake'}
+          {isLoading
+            ? 'Processing...'
+            : actionType === 'unstake'
+            ? 'Unstake & Claim Rewards'
+            : hasSufficientAllowance
+            ? 'Stake Now'
+            : 'Confirm Stake'}
         </Button>
       </div>
     </>

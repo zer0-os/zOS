@@ -14,8 +14,6 @@ export interface FormStepProps {
   duration: string;
   // eslint-disable-next-line react-redux/no-unused-prop-types
   poolAddress: string;
-  // eslint-disable-next-line react-redux/no-unused-prop-types
-  chainId?: number;
   tokenSymbol?: string;
   userBalance?: bigint | null;
   onAmountChange: (amount: string) => void;
@@ -25,6 +23,7 @@ export interface FormStepProps {
   onNext: () => void;
   onCancel?: () => void;
   isNextDisabled: boolean;
+  actionType?: 'stake' | 'unstake';
 }
 
 export const FormStep = ({
@@ -40,6 +39,7 @@ export const FormStep = ({
   onNext,
   onCancel,
   isNextDisabled,
+  actionType = 'stake',
 }: FormStepProps) => {
   // const { options: stakingOptions } = useStakingOptions(poolAddress, chainId);
   const formattedBalance = userBalance
@@ -49,7 +49,7 @@ export const FormStep = ({
   return (
     <>
       <Card className={styles.Input}>
-        <label>Stake Amount</label>
+        <label>{actionType === 'stake' ? 'Stake Amount' : 'Unstake Amount'}</label>
         <NumberInput
           value={amount.toString()}
           wrapperClassName={styles.Wrapper}
@@ -66,7 +66,7 @@ export const FormStep = ({
         <div className={styles.AmountHeader}>
           <div />
           <span className={styles.Balance}>
-            Available: {formattedBalance} {tokenSymbol}
+            {actionType === 'stake' ? 'Available' : 'Staked'}: {formattedBalance} {tokenSymbol}
           </span>
         </div>
       </Card>

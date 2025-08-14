@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 
 import { Table, TableData, Body, Skeleton, HeaderGroup, TableHeader } from '@zero-tech/zui/components';
 import { PoolModal } from '../pool-modal';
 import { PoolIcon } from '../../components/PoolIcon';
+import { meowInUSDSelector } from '../../../../store/rewards/selectors';
 
 import { usePoolStats } from '../../lib/usePoolStats';
 import { useUserStakingInfo } from '../../lib/useUserStakingInfo';
@@ -18,11 +20,13 @@ const POOL_CONFIGS = [
         name: 'MEOW Pool (Zephyr)',
         address: '0xa5086d0575E8573d7f56B485079126EdD65c8291',
         chainId: 1417429182,
+        poolIconImageUrl: '/tokens/meow.png',
       }
     : {
         name: 'MEOW Pool',
         address: '0xfbDC0647F0652dB9eC56c7f09B7dD3192324AD6a',
         chainId: 9369,
+        poolIconImageUrl: '/tokens/meow.png',
       },
 ];
 
@@ -33,18 +37,16 @@ const PoolRowWithData = ({
   poolConfig: typeof POOL_CONFIGS[0];
   onPoolSelect: (address: string) => void;
 }) => {
+  const meowPrice = useSelector(meowInUSDSelector);
+
   const {
     totalStaked,
     // apyRange,
     loading: statsLoading,
     error: statsError,
-  } = usePoolStats(poolConfig.address, poolConfig.chainId);
+  } = usePoolStats(poolConfig.address);
 
-  const {
-    userStakingInfo,
-    loading: userLoading,
-    error: userError,
-  } = useUserStakingInfo(poolConfig.address, poolConfig.chainId);
+  const { userStakingInfo, loading: userLoading, error: userError } = useUserStakingInfo(poolConfig.address);
 
   const loading = statsLoading || userLoading;
   const error = statsError || userError;
@@ -55,9 +57,9 @@ const PoolRowWithData = ({
     : 0;
 
   return (
-    <tr key={poolConfig.address} onClick={() => onPoolSelect(poolConfig.address)}>
+    <tr key={poolConfig.address} className={styles.PoolRow} onClick={() => onPoolSelect(poolConfig.address)}>
       <TableData alignment='left' className={styles.Details}>
-        <PoolIcon poolName={poolConfig.name} chainId={poolConfig.chainId} />
+        <PoolIcon poolName={poolConfig.name} chainId={poolConfig.chainId} imageUrl={poolConfig.poolIconImageUrl} />
       </TableData>
       {/* <TableData alignment='right' className={styles.APY}>
         {loading ? (
@@ -71,17 +73,34 @@ const PoolRowWithData = ({
         )}
       </TableData> */}
       <TableData alignment='right' className={classNames(styles.Stake, totalStakedFormatted > 0 && styles.IsStaked)}>
-        {loading ? <Skeleton width='30px' /> : error ? 'Error' : millify(totalStakedFormatted)}
+        {loading ? (
+          <Skeleton width='30px' />
+        ) : error ? (
+          'Error'
+        ) : (
+          `$${millify(totalStakedFormatted * meowPrice, { precision: 2 })}`
+        )}
       </TableData>
       <TableData alignment='right' className={classNames(styles.Stake, userStakedFormatted > 0 && styles.IsStaked)}>
-        {loading ? <Skeleton width='30px' /> : error ? 'Error' : millify(userStakedFormatted)}
+        {loading ? (
+          <Skeleton width='30px' />
+        ) : error ? (
+          'Error'
+        ) : (
+          `$${millify(userStakedFormatted * meowPrice, { precision: 2 })}`
+        )}
       </TableData>
     </tr>
   );
 };
 
 export const StakingPoolTable = () => {
-  const [selectedPool, setSelectedPool] = useState<{ address: string; chainId: number; name: string } | null>(null);
+  const [selectedPool, setSelectedPool] = useState<{
+    address: string;
+    chainId: number;
+    name: string;
+    poolIconImageUrl?: string;
+  } | null>(null);
 
   return (
     <>
@@ -89,13 +108,14 @@ export const StakingPoolTable = () => {
         poolName={selectedPool?.name || ''}
         poolAddress={selectedPool?.address || undefined}
         chainId={selectedPool?.chainId}
+        poolIconImageUrl={selectedPool?.poolIconImageUrl}
         onOpenChange={() => setSelectedPool(null)}
       />
       <Table>
         <HeaderGroup>
           <TableHeader alignment='left'>Pool Name</TableHeader>
           {/* <TableHeader alignment='right'>APY</TableHeader> */}
-          <TableHeader alignment='right'>Total Staked</TableHeader>
+          <TableHeader alignment='right'>TVL</TableHeader>
           <TableHeader alignment='right'>Your Stake</TableHeader>
         </HeaderGroup>
         <Body>
@@ -104,7 +124,12 @@ export const StakingPoolTable = () => {
               key={poolConfig.address}
               poolConfig={poolConfig}
               onPoolSelect={(address) =>
-                setSelectedPool({ address, chainId: poolConfig.chainId, name: poolConfig.name })
+                setSelectedPool({
+                  address,
+                  chainId: poolConfig.chainId,
+                  name: poolConfig.name,
+                  poolIconImageUrl: poolConfig.poolIconImageUrl,
+                })
               }
             />
           ))}

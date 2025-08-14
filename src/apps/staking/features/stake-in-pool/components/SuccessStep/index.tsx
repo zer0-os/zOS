@@ -7,9 +7,16 @@ export interface SuccessStepProps {
   duration: string;
   tokenSymbol?: string;
   onClose?: () => void;
+  actionType?: 'stake' | 'unstake';
 }
 
-export const SuccessStep = ({ formattedAmount, duration, tokenSymbol, onClose }: SuccessStepProps) => {
+export const SuccessStep = ({
+  formattedAmount,
+  duration,
+  tokenSymbol,
+  onClose,
+  actionType = 'stake',
+}: SuccessStepProps) => {
   const ticker = tokenSymbol || 'TOKENS';
   const getDurationText = () => {
     const days = parseInt(duration);
@@ -21,7 +28,9 @@ export const SuccessStep = ({ formattedAmount, duration, tokenSymbol, onClose }:
   return (
     <>
       <div>
-        You have successfully staked {formattedAmount} {ticker} {getDurationText()}.
+        {actionType === 'stake'
+          ? `You have successfully staked ${formattedAmount} ${ticker} ${getDurationText()}.`
+          : `You have successfully unstaked ${formattedAmount} ${ticker}, and claimed your pool rewards.`}
       </div>
       <div className={styles.Actions}>
         <Button onPress={onClose || (() => window.location.reload())}>Done</Button>

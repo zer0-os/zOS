@@ -123,11 +123,15 @@
 
 .Actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 16px;
 
   .Action {
     flex: 1;
+  }
+
+  > *:last-child {
+    margin-left: auto;
   }
 }
 
@@ -154,6 +158,14 @@
   text-align: left;
 
   cursor: pointer;
+
+  &:disabled {
+    pointer-events: none;
+
+    .ClaimRewards {
+      display: none;
+    }
+  }
 }
 
 .Claiming {
@@ -172,8 +184,4 @@
   border-radius: inherit;
 
   background-color: rgba(0, 0, 0, 0.9);
-}
-
-.IsClaiming {
-  pointer-events: none;
 }

@@ -10,7 +10,6 @@ export interface StakeFormData {
 
 export interface UseStakeDataParams {
   poolAddress: string;
-  chainId?: number;
 }
 
 export interface UseStakeDataReturn {
@@ -40,16 +39,12 @@ export interface UseStakeDataReturn {
   validateAmount: (amount: string) => string | null;
 }
 
-export const useStakeData = ({ poolAddress, chainId }: UseStakeDataParams): UseStakeDataReturn => {
+export const useStakeData = ({ poolAddress }: UseStakeDataParams): UseStakeDataReturn => {
   const [amount, setAmount] = useState('');
   const [duration, setDuration] = useState('0');
 
-  const { userStakingBalance, stakingTokenInfo } = usePool(poolAddress, chainId);
-  const { allowance, refetch: refetchAllowance } = useTokenAllowance(
-    stakingTokenInfo?.address || null,
-    poolAddress,
-    chainId
-  );
+  const { userStakingBalance, stakingTokenInfo } = usePool(poolAddress);
+  const { allowance, refetch: refetchAllowance } = useTokenAllowance(stakingTokenInfo?.address || null, poolAddress);
 
   const amountWei = useMemo(() => {
     if (!amount || amount === '') return '0';

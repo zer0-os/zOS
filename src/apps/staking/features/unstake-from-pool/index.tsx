@@ -1,41 +1,38 @@
-import { FormStep } from './components/FormStep';
-import { ConfirmStep } from './components/ConfirmStep';
-import { ApprovingStep } from './components/ApprovingStep';
-import { StakingStep } from './components/StakingStep';
-import { SuccessStep } from './components/SuccessStep';
-import { useStakeFlow } from './hooks/useStakeFlow';
-import { useStakeData } from './hooks/useStakeData';
-import { useStakeActions } from './hooks/useStakeActions';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../../store/wallet/selectors';
 import { Alert } from '@zero-tech/zui/components';
+import { FormStep } from '../stake-in-pool/components/FormStep';
+import { ConfirmStep } from '../stake-in-pool/components/ConfirmStep';
+import { SuccessStep } from '../stake-in-pool/components/SuccessStep';
+import { StakingStep } from '../stake-in-pool/components/StakingStep';
 import { PoolIcon } from '../../components/PoolIcon';
+import { useTokenAmountFlow } from '../../hooks/useTokenAmountFlow';
+import { useTokenAmountData } from '../../hooks/useTokenAmountData';
+import { useUnstakeActions } from './hooks/useUnstakeActions';
 
 import styles from './styles.module.scss';
 
-interface StakeInPoolContentProps {
+export interface UnstakeFromPoolProps {
   poolAddress: string;
-  poolName?: string;
-  chainId?: number;
-  poolIconImageUrl?: string;
+  poolName: string;
+  chainId: number;
+  poolIconImageUrl: string;
   onClose?: () => void;
 }
 
-const StakeInPoolContent = ({
+const UnstakeFromPoolContent = ({
   poolAddress,
   poolName,
-  chainId: poolChainId,
+  chainId,
   poolIconImageUrl,
   onClose,
-}: StakeInPoolContentProps) => {
+}: UnstakeFromPoolProps) => {
   const { address: walletAddress } = useSelector(selectedWalletSelector);
 
-  const flow = useStakeFlow();
-  const data = useStakeData({ poolAddress });
-  const actions = useStakeActions({
+  const flow = useTokenAmountFlow('unstake');
+  const data = useTokenAmountData({ poolAddress, flowType: 'unstake' });
+  const actions = useUnstakeActions({
     flowActions: flow,
-    hasSufficientAllowance: data.hasSufficientAllowance,
-    refetchAllowance: data.refetchAllowance,
   });
 
   if (!walletAddress) {
@@ -59,16 +56,9 @@ const StakeInPoolContent = ({
   };
 
   const handleConfirm = () => {
-    if (!data.stakingTokenAddress) {
-      flow.setError('Staking token not found');
-      return;
-    }
-
-    actions.executeStake({
+    actions.executeUnstake({
       amount: data.amountWei,
-      duration: data.duration,
       poolAddress,
-      stakingTokenAddress: data.stakingTokenAddress,
     });
   };
 
@@ -81,13 +71,14 @@ const StakeInPoolContent = ({
             duration={data.duration}
             poolAddress={poolAddress}
             tokenSymbol={data.stakingTokenInfo?.symbol}
-            userBalance={data.userStakingBalance}
+            userBalance={data.userBalance}
             onAmountChange={data.setAmount}
             onDurationChange={data.setDuration}
             onMax={data.handleMax}
             onNext={handleFormNext}
             onCancel={onClose}
             isNextDisabled={!data.isValidAmount}
+            actionType='unstake'
           />
         );
       case 'confirm':
@@ -97,16 +88,21 @@ const StakeInPoolContent = ({
             duration={data.duration}
             poolAddress={poolAddress}
             tokenSymbol={data.stakingTokenInfo?.symbol}
-            hasSufficientAllowance={data.hasSufficientAllowance()}
+            hasSufficientAllowance={true} // Unstake doesn't need allowance
             isLoading={actions.isLoading}
             onBack={flow.goBack}
             onConfirm={handleConfirm}
+            actionType='unstake'
           />
         );
-      case 'approving':
-        return <ApprovingStep formattedAmount={data.formattedAmount} tokenSymbol={data.stakingTokenInfo?.symbol} />;
       case 'processing':
-        return <StakingStep formattedAmount={data.formattedAmount} tokenSymbol={data.stakingTokenInfo?.symbol} />;
+        return (
+          <StakingStep
+            actionType='unstake'
+            formattedAmount={data.formattedAmount}
+            tokenSymbol={data.stakingTokenInfo?.symbol}
+          />
+        );
       case 'success':
         return (
           <SuccessStep
@@ -114,6 +110,7 @@ const StakeInPoolContent = ({
             duration={data.duration}
             tokenSymbol={data.stakingTokenInfo?.symbol}
             onClose={onClose}
+            actionType='unstake'
           />
         );
       default:
@@ -123,24 +120,22 @@ const StakeInPoolContent = ({
 
   return (
     <div className={styles.Container}>
-      <PoolIcon poolName={poolName || 'Staking Pool'} chainId={poolChainId} imageUrl={poolIconImageUrl} />
+      <PoolIcon poolName={poolName || 'Staking Pool'} chainId={chainId} imageUrl={poolIconImageUrl} />
       {flow.error && <Alert variant='error'>{flow.error}</Alert>}
       {renderStep()}
     </div>
   );
 };
 
-interface StakeInPoolProps {
-  poolAddress: string;
-  poolName?: string;
-  chainId?: number;
-  poolIconImageUrl?: string;
-  onClose?: () => void;
-}
-
-export const StakeInPool = ({ poolAddress, poolName, chainId, poolIconImageUrl, onClose }: StakeInPoolProps) => {
+export const UnstakeFromPool = ({
+  poolAddress,
+  poolName,
+  chainId,
+  poolIconImageUrl,
+  onClose,
+}: UnstakeFromPoolProps) => {
   return (
-    <StakeInPoolContent
+    <UnstakeFromPoolContent
       poolAddress={poolAddress}
       poolName={poolName}
       chainId={chainId}

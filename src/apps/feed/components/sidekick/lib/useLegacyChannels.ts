@@ -1,8 +1,7 @@
-import { useOwnedZids } from '../../../../../../lib/hooks/useOwnedZids';
+import { useOwnedZids } from '../../../../../lib/hooks/useOwnedZids';
 
 interface LegacyChannelData {
-  joinedLegacyZids: string[];
-  unjoinedLegacyZids: string[];
+  uniqueLegacyZids: string[];
   isLoading: boolean;
   isError: boolean;
 }
@@ -15,15 +14,8 @@ export const useLegacyChannels = (): LegacyChannelData => {
   const legacyZids = ownedZids?.map((zid) => zid.split('.')[0]);
   const uniqueLegacyZids = legacyZids ? ([...new Set(legacyZids)] as string[]) : [];
 
-  // All owned legacy ZIDs go to Channels tab
-  const joinedLegacyZids = uniqueLegacyZids;
-
-  // No legacy channels in Explore tab (all owned channels are in Channels tab)
-  const unjoinedLegacyZids: string[] = [];
-
   return {
-    joinedLegacyZids,
-    unjoinedLegacyZids,
+    uniqueLegacyZids,
     isLoading: isLoadingOwned,
     isError: isErrorOwned,
   };

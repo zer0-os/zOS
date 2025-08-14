@@ -1,0 +1,23 @@
+.Container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+.ConnectWallet {
+  text-align: center;
+  padding: 2rem;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-secondary-text);
+  }
+}

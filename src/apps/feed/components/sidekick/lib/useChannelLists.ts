@@ -1,14 +1,5 @@
-import { useTokenGatedChannels } from '../../../../hooks/useTokenGatedChannels';
-
-export interface ChannelItem {
-  zid: string;
-  isLegacy: boolean;
-  memberCount?: number;
-  tokenSymbol?: string;
-  tokenAmount?: string;
-  tokenAddress?: string;
-  network?: string;
-}
+import { useTokenGatedChannels } from '../../../hooks/useTokenGatedChannels';
+import { ChannelItem } from './types';
 
 interface ChannelListsData {
   usersChannels: ChannelItem[];
@@ -18,7 +9,7 @@ interface ChannelListsData {
   isErrorAll: boolean;
 }
 
-export const useChannelLists = (joinedLegacyZids: string[], unjoinedLegacyZids: string[]): ChannelListsData => {
+export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData => {
   // Fetch token-gated channels (user's channels) - always fetch for Channels tab
   const {
     data: tokenGatedChannelsData,
@@ -35,17 +26,13 @@ export const useChannelLists = (joinedLegacyZids: string[], unjoinedLegacyZids: 
   // Process all token-gated channels
   const allTokenGatedChannels = allTokenGatedChannelsData?.channels || [];
 
-  // Combine joined legacy channels and user's token-gated channels for Channels tab
+  // Combine legacy channels and user's token-gated channels for Channels tab
   const userChannels: ChannelItem[] = [
-    // Legacy channels (owned ZIDs that user has joined)
-    ...joinedLegacyZids.map((zid) => ({
-      zid,
-      isLegacy: true,
-    })),
+    // Legacy channels (owned ZIDs)
+    ...uniqueLegacyZids.map((zid) => ({ zid })),
     // Token-gated channels (user's channels)
     ...tokenGatedChannels.map((channel) => ({
       zid: channel.zid,
-      isLegacy: false,
       memberCount: channel.memberCount,
       tokenSymbol: channel.tokenSymbol,
       tokenAmount: channel.tokenAmount,
@@ -62,7 +49,6 @@ export const useChannelLists = (joinedLegacyZids: string[], unjoinedLegacyZids: 
   // Process all channels for Explore tab
   const allChannels: ChannelItem[] = allTokenGatedChannels.map((channel) => ({
     zid: channel.zid,
-    isLegacy: false,
     memberCount: channel.memberCount,
     tokenSymbol: channel.tokenSymbol,
     tokenAmount: channel.tokenAmount,
@@ -70,19 +56,10 @@ export const useChannelLists = (joinedLegacyZids: string[], unjoinedLegacyZids: 
     network: channel.network,
   }));
 
-  // Add legacy channels that user owns but hasn't joined to Explore tab
-  const legacyChannelsForExplore: ChannelItem[] = unjoinedLegacyZids.map((zid) => ({
-    zid,
-    isLegacy: true,
-  }));
-
-  // Combine new token-gated channels and unjoined legacy channels for Explore tab
-  const allChannelsForExplore = [...allChannels, ...legacyChannelsForExplore];
-
   // Filter out channels that the user is already a member of
-  const userChannelZids = new Set([...joinedLegacyZids, ...tokenGatedChannels.map((channel) => channel.zid)]);
+  const userChannelZids = new Set([...uniqueLegacyZids, ...tokenGatedChannels.map((channel) => channel.zid)]);
 
-  const filteredAllChannels = allChannelsForExplore.filter((channel) => !userChannelZids.has(channel.zid));
+  const filteredAllChannels = allChannels.filter((channel) => !userChannelZids.has(channel.zid));
 
   return {
     usersChannels: uniqueUserChannels,

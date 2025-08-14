@@ -235,7 +235,6 @@ export function* performValidateActiveConversation(activeConversationId: string)
   }
 
   const conversation = yield select(channelSelector(conversationId));
-
   if (conversation?.isSocialChannel && isMessengerApp) {
     // If it's a social channel and accessed from messenger app, open the last active conversation instead
     yield call(openFirstConversation);

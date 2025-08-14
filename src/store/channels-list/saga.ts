@@ -102,8 +102,13 @@ function* currentUserLeftChannel(channelId: string) {
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   if (activeConversationId === channelId) {
-    yield call(clearLastActiveConversation);
-    yield call(openFirstConversation);
+    const channel = yield select(channelSelector(channelId));
+    const isSocialChannel = channel?.isSocialChannel && channel?.zid;
+
+    if (!isSocialChannel) {
+      yield call(clearLastActiveConversation);
+      yield call(openFirstConversation);
+    }
   }
 }
 

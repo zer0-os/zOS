@@ -1615,16 +1615,6 @@ export class MatrixClient {
     const previousMembership = event.unsigned?.prev_content?.membership;
     const roomId = event.room_id;
 
-    // Debug logging for membership changes
-    console.log('XXX Matrix membership change event:', {
-      userId,
-      membership,
-      previousMembership,
-      roomId,
-      isCurrentUser: userId === this.userId,
-      eventType: event.type,
-    });
-
     if (event.state_key !== this.userId) {
       if (membership === MembershipStateType.Leave && previousMembership !== MembershipStateType.Leave) {
         this.events.onOtherUserLeftChannel(roomId, userId);
@@ -1633,7 +1623,6 @@ export class MatrixClient {
       }
     } else {
       if (membership === MembershipStateType.Leave && previousMembership !== MembershipStateType.Leave) {
-        console.log('XXX Current user left room:', roomId);
         this.events.onUserLeft(roomId, userId);
       } else if (membership === MembershipStateType.Join && previousMembership !== MembershipStateType.Join) {
         const room = this.matrix.getRoom(roomId);

@@ -2,7 +2,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectSocialChannelsMemberCounts } from './selectors';
-import { useLegacyChannels } from './useLegacyChannels';
+import { useProcessedOwnedZids } from './useProcessedOwnedZids';
 import { useChannelLists } from './useChannelLists';
 import { useTokenInfoBatch } from './useTokenInfoBatch';
 import { ChannelItem, TokenInfoResponse } from './types';
@@ -27,8 +27,8 @@ export const useSidekick = (): UseSidekickReturn => {
   const route = useRouteMatch('/feed/:zid');
   const selectedZId = route?.params?.zid;
 
-  // Get legacy channel data
-  const { uniqueLegacyZids, isLoading: isLoadingLegacy, isError: isErrorLegacy } = useLegacyChannels();
+  // Get processed owned ZID data
+  const { uniqueOwnedZids, isLoading: isLoadingOwned, isError: isErrorOwned } = useProcessedOwnedZids();
 
   // Get channel lists data
   const {
@@ -37,7 +37,7 @@ export const useSidekick = (): UseSidekickReturn => {
     isLoading: isLoadingChannels,
     isErrorMine,
     isErrorAll,
-  } = useChannelLists(uniqueLegacyZids);
+  } = useChannelLists(uniqueOwnedZids);
 
   // Apply search filter to user channels with memoization
   const filteredUserChannels = useMemo(
@@ -60,8 +60,8 @@ export const useSidekick = (): UseSidekickReturn => {
   ]);
 
   return {
-    isErrorZids: isErrorLegacy,
-    isLoadingZids: isLoadingLegacy || isLoadingChannels,
+    isErrorZids: isErrorOwned,
+    isLoadingZids: isLoadingOwned || isLoadingChannels,
     isErrorMine,
     isErrorAll,
     selectedZId,

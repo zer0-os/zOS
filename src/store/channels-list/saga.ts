@@ -100,17 +100,19 @@ export function* userLeftChannel(channelId: string, matrixId: string) {
 function* currentUserLeftChannel(channelId: string) {
   console.log('XXX currentUserLeftChannel called with channelId:', channelId);
 
-  yield put(removeChannel(channelId));
-
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   console.log('XXX currentUserLeftChannel - activeConversationId:', activeConversationId);
 
   if (activeConversationId === channelId) {
+    // Check if this is a social channel BEFORE removing it from Redux state
     const channel = yield select(channelSelector(channelId));
     const isSocialChannel = channel?.isSocialChannel && channel?.zid;
 
     console.log('XXX currentUserLeftChannel - channel:', channel);
     console.log('XXX currentUserLeftChannel - isSocialChannel:', isSocialChannel);
+
+    // Remove the channel from Redux state
+    yield put(removeChannel(channelId));
 
     if (!isSocialChannel) {
       console.log('XXX currentUserLeftChannel - calling openFirstConversation for non-social channel');
@@ -121,6 +123,8 @@ function* currentUserLeftChannel(channelId: string) {
     }
   } else {
     console.log('XXX currentUserLeftChannel - activeConversationId !== channelId, not handling navigation');
+    // Still remove the channel from Redux state
+    yield put(removeChannel(channelId));
   }
 }
 

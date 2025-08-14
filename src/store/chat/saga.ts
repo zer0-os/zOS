@@ -141,23 +141,8 @@ function* addAdminUser() {
 
 // The selected conversation is managed via the URL
 export function* setActiveConversation(id: string) {
-  console.log('XXX setActiveConversation called with id:', id);
-
-  const conversation = yield select(channelSelector(id));
-  const isSocialChannel = conversation?.isSocialChannel && conversation?.zid;
-
-  console.log('XXX setActiveConversation - conversation:', conversation);
-  console.log('XXX setActiveConversation - isSocialChannel:', isSocialChannel);
-
-  if (!isSocialChannel) {
-    // Only change URL for non-social channels
-    console.log('XXX setActiveConversation - changing URL to /conversation/${id}');
-    const history = yield call(getHistory);
-    history.push({ pathname: `/conversation/${id}` });
-  } else {
-    console.log('XXX setActiveConversation - NOT changing URL for social channel');
-  }
-  // For social channels, don't change the URL - let the user stay on the feed route
+  const history = yield call(getHistory);
+  history.push({ pathname: `/conversation/${id}` });
 }
 
 export function* validateActiveConversation(conversationId: string) {

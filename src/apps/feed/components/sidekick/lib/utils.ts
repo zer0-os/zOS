@@ -1,5 +1,5 @@
 export const formatTokenPrice = (price: number): string => {
-  return `$${price >= 1 ? price.toFixed(2) : price.toFixed(6)}`;
+  return `$${price >= 1 ? price.toFixed(2) : price.toFixed(4)}`;
 };
 
 export const formatMarketCap = (marketCap: number): string => {
@@ -16,6 +16,5 @@ export const formatMarketCap = (marketCap: number): string => {
 };
 
 export const formatPriceChange = (change: number): string => {
-  const sign = change >= 0 ? '' : '-';
-  return `${sign}${change.toFixed(2)}%`;
+  return `${change.toFixed(2)}%`;
 };

@@ -15,15 +15,26 @@ export const useChannelMembership = (zid: string | undefined) => {
     return { isMember: false, isLoading: true, channelData: null };
   }
 
-  // Check if user is a member of the channel (either in usersChannels or in Redux social channels)
+  // Get channel data from allChannels OR usersChannels for token requirements
+  const channelData =
+    allChannels?.find((channel) => channel.zid === zid) ||
+    usersChannels?.find((channel) => channel.zid === zid) ||
+    null;
+
+  // Check if this is a token-gated channel (has token requirements)
+  const isTokenGatedChannel = channelData?.tokenSymbol || channelData?.tokenAmount;
+
+  // For token-gated channels, only check usersChannels (React Query cache)
+  // For legacy social channels, also check socialChannels (Redux state)
   const isMemberInUsersChannels = usersChannels.some((channel) => channel.zid === zid);
-  const isMemberInSocialChannels = socialChannels.some((channel) => channel.zid === zid);
+  const isMemberInSocialChannels = !isTokenGatedChannel && socialChannels.some((channel) => channel.zid === zid);
   const isMember = isMemberInUsersChannels || isMemberInSocialChannels;
 
   // Debug logging to see which source is causing the issue
   if (isMember) {
     console.log('XXX useChannelMembership - isMember is true:', {
       zid,
+      isTokenGatedChannel,
       isMemberInUsersChannels,
       isMemberInSocialChannels,
       usersChannelsCount: usersChannels.length,
@@ -31,12 +42,6 @@ export const useChannelMembership = (zid: string | undefined) => {
       socialChannelsZids: socialChannels.map((c) => c.zid),
     });
   }
-
-  // Get channel data from allChannels OR usersChannels for token requirements
-  const channelData =
-    allChannels?.find((channel) => channel.zid === zid) ||
-    usersChannels?.find((channel) => channel.zid === zid) ||
-    null;
 
   return { isMember, isLoading: false, channelData };
 };

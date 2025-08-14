@@ -12,7 +12,7 @@ export const useTokenInfoBatch = (channels: ChannelItem[]) => {
     queries: zids.map((zid) => ({
       queryKey: ['token-info', zid],
       queryFn: async (): Promise<TokenInfoResponse> => {
-        const response = await get(`/${zid}/token/info`);
+        const response = await get(`/token-gated-channels/${zid}/token/info`);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch token info for ${zid}`);

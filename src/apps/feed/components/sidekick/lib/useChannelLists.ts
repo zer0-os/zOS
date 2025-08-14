@@ -45,15 +45,26 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
   const uniqueUserChannels = userChannels.filter((channel, index, self) => {
     const firstIndex = self.findIndex((c) => c.zid === channel.zid);
     if (firstIndex === index) {
-      return true;
+      return true; // Keep the first occurrence
     }
-    // If this is a duplicate, check if the current channel has token properties and the first doesn't
+
+    // If this is a duplicate, we need to decide which one to keep
     const firstChannel = self[firstIndex];
     const currentHasTokenProps = channel.tokenAddress && channel.network;
     const firstHasTokenProps = firstChannel.tokenAddress && firstChannel.network;
 
-    // Keep current channel if it has token properties and first doesn't
-    return currentHasTokenProps && !firstHasTokenProps;
+    // If current channel has token properties and first doesn't, keep current
+    if (currentHasTokenProps && !firstHasTokenProps) {
+      return true;
+    }
+
+    // If first channel has token properties and current doesn't, keep first (reject current)
+    if (firstHasTokenProps && !currentHasTokenProps) {
+      return false;
+    }
+
+    // If both have token properties or both don't, keep the first one (reject current)
+    return false;
   });
 
   // Process all channels for Explore tab

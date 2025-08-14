@@ -90,47 +90,20 @@ function* listenForUserLogin() {
 }
 
 export function* userLeftChannel(channelId: string, matrixId: string) {
-  console.log('XXX userLeftChannel called with channelId:', channelId, 'matrixId:', matrixId);
-
   const currentUser = yield select(currentUserSelector);
-  console.log('XXX userLeftChannel - currentUser.matrixId:', currentUser.matrixId);
 
   if (matrixId === currentUser.matrixId) {
-    console.log('XXX userLeftChannel - calling currentUserLeftChannel');
     yield call(currentUserLeftChannel, channelId);
-  } else {
-    console.log('XXX userLeftChannel - NOT calling currentUserLeftChannel (different user)');
   }
 }
 
 function* currentUserLeftChannel(channelId: string) {
-  console.log('XXX currentUserLeftChannel called with channelId:', channelId);
+  yield put(removeChannel(channelId));
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
-  console.log('XXX currentUserLeftChannel - activeConversationId:', activeConversationId);
-
   if (activeConversationId === channelId) {
-    // Check if this is a social channel BEFORE removing it from Redux state
-    const channel = yield select(channelSelector(channelId));
-    const isSocialChannel = channel?.isSocialChannel && channel?.zid;
-
-    console.log('XXX currentUserLeftChannel - channel:', channel);
-    console.log('XXX currentUserLeftChannel - isSocialChannel:', isSocialChannel);
-
-    // Remove the channel from Redux state
-    yield put(removeChannel(channelId));
-
-    if (!isSocialChannel) {
-      console.log('XXX currentUserLeftChannel - calling openFirstConversation for non-social channel');
-      yield call(clearLastActiveConversation);
-      yield call(openFirstConversation);
-    } else {
-      console.log('XXX currentUserLeftChannel - NOT calling openFirstConversation for social channel');
-    }
-  } else {
-    console.log('XXX currentUserLeftChannel - activeConversationId !== channelId, not handling navigation');
-    // Still remove the channel from Redux state
-    yield put(removeChannel(channelId));
+    yield call(clearLastActiveConversation);
+    yield call(openFirstConversation);
   }
 }
 

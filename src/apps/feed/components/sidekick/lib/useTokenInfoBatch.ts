@@ -5,6 +5,18 @@ import { ChannelItem, TokenInfoResponse } from './types';
 export const useTokenInfoBatch = (channels: ChannelItem[]) => {
   console.log('XXX useTokenInfoBatch called with channels:', channels.length, 'channels');
 
+  // Log a few sample channels to see their properties
+  console.log(
+    'XXX Sample channels:',
+    channels.slice(0, 3).map((channel) => ({
+      zid: channel.zid,
+      tokenAddress: channel.tokenAddress,
+      network: channel.network,
+      tokenSymbol: channel.tokenSymbol,
+      tokenAmount: channel.tokenAmount,
+    }))
+  );
+
   // Filter to only channels that have token requirements (token-gated channels)
   const tokenGatedChannels = channels.filter((channel) => channel.tokenAddress && channel.network);
   console.log('XXX tokenGatedChannels found:', tokenGatedChannels.length);

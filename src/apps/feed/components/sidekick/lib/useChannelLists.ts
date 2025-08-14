@@ -28,9 +28,7 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
 
   // Combine legacy channels and user's token-gated channels for Channels tab
   const userChannels: ChannelItem[] = [
-    // Legacy channels (owned ZIDs)
-    ...uniqueLegacyZids.map((zid) => ({ zid })),
-    // Token-gated channels (user's channels)
+    // Token-gated channels (user's channels) - put first so they become "first occurrence"
     ...tokenGatedChannels.map((channel) => ({
       zid: channel.zid,
       memberCount: channel.memberCount,
@@ -39,11 +37,13 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
       tokenAddress: channel.tokenAddress,
       network: channel.network,
     })),
+    // Legacy channels (owned ZIDs) - put second so they get filtered out if duplicate
+    ...uniqueLegacyZids.map((zid) => ({ zid })),
   ];
 
-  // Remove duplicates (token-gated channels take precedence)
-  const uniqueUserChannels = userChannels.filter(
-    (channel, index, self) => index === self.findIndex((c) => c.zid === channel.zid)
+  // Remove duplicates (keep first occurrence - token-gated channels will win)
+  const finalUniqueUserChannels = userChannels.filter(
+    (channel, index, self) => self.findIndex((c) => c.zid === channel.zid) === index
   );
 
   // Process all channels for Explore tab
@@ -62,7 +62,7 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
   const filteredAllChannels = allChannels.filter((channel) => !userChannelZids.has(channel.zid));
 
   return {
-    usersChannels: uniqueUserChannels,
+    usersChannels: finalUniqueUserChannels,
     allChannels: filteredAllChannels,
     isLoading: isLoadingTokenGated,
     isErrorMine: !!tokenGatedError,

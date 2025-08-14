@@ -1,4 +1,5 @@
 import { useQueries } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { get } from '../../../../../lib/api/rest';
 import { ChannelItem, TokenInfoResponse } from './types';
 
@@ -18,37 +19,60 @@ export const useTokenInfoBatch = (channels: ChannelItem[]) => {
   );
 
   // Filter to only channels that have token requirements (token-gated channels)
-  const tokenGatedChannels = channels.filter((channel) => channel.tokenAddress && channel.network);
+  const tokenGatedChannels = useMemo(() => {
+    return channels.filter((channel) => {
+      const hasTokenAddress = !!channel.tokenAddress;
+      const hasNetwork = !!channel.network;
+      const isTokenGated = hasTokenAddress && hasNetwork;
+
+      if (!isTokenGated) {
+        console.log('XXX Channel NOT token-gated:', {
+          zid: channel.zid,
+          hasTokenAddress,
+          hasNetwork,
+          tokenAddress: channel.tokenAddress,
+          network: channel.network,
+        });
+      }
+
+      return isTokenGated;
+    });
+  }, [channels]);
+
   console.log('XXX tokenGatedChannels found:', tokenGatedChannels.length);
 
   // Group channels by token address to avoid duplicate API calls for the same token
-  const tokenAddressMap = new Map<string, string[]>();
+  const tokenAddressMap = useMemo(() => {
+    const map = new Map<string, string[]>();
+    tokenGatedChannels.forEach((channel) => {
+      const key = `${channel.tokenAddress}-${channel.network}`;
+      if (!map.has(key)) {
+        map.set(key, []);
+      }
+      map.get(key)!.push(channel.zid);
+    });
+    return map;
+  }, [tokenGatedChannels]);
 
-  tokenGatedChannels.forEach((channel) => {
-    const key = `${channel.tokenAddress}-${channel.network}`;
-    if (!tokenAddressMap.has(key)) {
-      tokenAddressMap.set(key, []);
-    }
-    tokenAddressMap.get(key)!.push(channel.zid);
-  });
+  const uniqueTokenQueries = useMemo(() => {
+    return Array.from(tokenAddressMap.entries()).map(([tokenKey, zids]) => {
+      const [tokenAddress, network] = tokenKey.split('-');
+      const representativeZid = zids[0];
 
-  const uniqueTokenQueries = Array.from(tokenAddressMap.entries()).map(([tokenKey, zids]) => {
-    const [tokenAddress, network] = tokenKey.split('-');
-    const representativeZid = zids[0];
-
-    return {
-      tokenKey,
-      tokenAddress,
-      network,
-      zids,
-      representativeZid,
-    };
-  });
+      return {
+        tokenKey,
+        tokenAddress,
+        network,
+        zids,
+        representativeZid,
+      };
+    });
+  }, [tokenAddressMap]);
 
   console.log('XXX uniqueTokenQueries:', uniqueTokenQueries.length, 'queries');
 
-  const results = useQueries({
-    queries: uniqueTokenQueries.map(({ tokenKey, representativeZid }) => ({
+  const queries = useMemo(() => {
+    return uniqueTokenQueries.map(({ tokenKey, representativeZid }) => ({
       queryKey: ['token-info', tokenKey],
       queryFn: async (): Promise<TokenInfoResponse> => {
         console.log('XXX Making API call for:', representativeZid);
@@ -68,8 +92,10 @@ export const useTokenInfoBatch = (channels: ChannelItem[]) => {
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
       retry: 2, // Limit retries to avoid excessive requests
-    })),
-  });
+    }));
+  }, [uniqueTokenQueries]);
+
+  const results = useQueries({ queries });
 
   console.log(
     'XXX useQueries results:',

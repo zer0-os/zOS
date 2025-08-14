@@ -20,6 +20,18 @@ export const useChannelMembership = (zid: string | undefined) => {
   const isMemberInSocialChannels = socialChannels.some((channel) => channel.zid === zid);
   const isMember = isMemberInUsersChannels || isMemberInSocialChannels;
 
+  // Debug logging to see which source is causing the issue
+  if (isMember) {
+    console.log('XXX useChannelMembership - isMember is true:', {
+      zid,
+      isMemberInUsersChannels,
+      isMemberInSocialChannels,
+      usersChannelsCount: usersChannels.length,
+      socialChannelsCount: socialChannels.length,
+      socialChannelsZids: socialChannels.map((c) => c.zid),
+    });
+  }
+
   // Get channel data from allChannels OR usersChannels for token requirements
   const channelData =
     allChannels?.find((channel) => channel.zid === zid) ||

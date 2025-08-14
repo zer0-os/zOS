@@ -3,8 +3,11 @@ import { get } from '../../../../../lib/api/rest';
 import { ChannelItem, TokenInfoResponse } from './types';
 
 export const useTokenInfoBatch = (channels: ChannelItem[]) => {
+  console.log('XXX useTokenInfoBatch called with channels:', channels.length, 'channels');
+
   // Filter to only channels that have token requirements (token-gated channels)
   const tokenGatedChannels = channels.filter((channel) => channel.tokenAddress && channel.network);
+  console.log('XXX tokenGatedChannels found:', tokenGatedChannels.length);
 
   // Group channels by token address to avoid duplicate API calls for the same token
   const tokenAddressMap = new Map<string, string[]>();
@@ -30,16 +33,21 @@ export const useTokenInfoBatch = (channels: ChannelItem[]) => {
     };
   });
 
+  console.log('XXX uniqueTokenQueries:', uniqueTokenQueries.length, 'queries');
+
   const results = useQueries({
     queries: uniqueTokenQueries.map(({ tokenKey, representativeZid }) => ({
       queryKey: ['token-info', tokenKey],
       queryFn: async (): Promise<TokenInfoResponse> => {
+        console.log('XXX Making API call for:', representativeZid);
         const response = await get(`/token-gated-channels/${representativeZid}/token/info`);
 
         if (!response.ok) {
+          console.log('XXX API call failed for:', representativeZid, response.status);
           throw new Error(`Failed to fetch token info for ${representativeZid}`);
         }
 
+        console.log('XXX API call successful for:', representativeZid, 'data:', response.body);
         return response.body;
       },
       enabled: !!representativeZid,
@@ -51,6 +59,17 @@ export const useTokenInfoBatch = (channels: ChannelItem[]) => {
     })),
   });
 
+  console.log(
+    'XXX useQueries results:',
+    results.map((r, i) => ({
+      index: i,
+      isLoading: r.isLoading,
+      isError: r.isError,
+      hasData: !!r.data,
+      error: r.error,
+    }))
+  );
+
   const tokenInfoMap = new Map<string, TokenInfoResponse>();
   const isLoading = results.some((result) => result.isLoading);
   const isError = results.some((result) => result.isError);
@@ -60,9 +79,13 @@ export const useTokenInfoBatch = (channels: ChannelItem[]) => {
       const { zids } = uniqueTokenQueries[index];
       zids.forEach((zid) => {
         tokenInfoMap.set(zid, result.data);
+        console.log('XXX Setting tokenInfo for zid:', zid, 'data:', result.data);
       });
     }
   });
+
+  console.log('XXX Final tokenInfoMap size:', tokenInfoMap.size);
+  console.log('XXX tokenInfoMap entries:', Array.from(tokenInfoMap.entries()));
 
   return {
     tokenInfoMap,

@@ -22,6 +22,8 @@ interface UseSidekickReturn {
 }
 
 export const useSidekick = (): UseSidekickReturn => {
+  console.log('XXX useSidekick called');
+
   const [search, setSearch] = useState('');
 
   const route = useRouteMatch('/feed/:zid');
@@ -39,6 +41,8 @@ export const useSidekick = (): UseSidekickReturn => {
     isErrorAll,
   } = useChannelLists(uniqueLegacyZids);
 
+  console.log('XXX useSidekick - usersChannels:', usersChannels?.length, 'allChannels:', allChannels?.length);
+
   // Apply search filter to user channels with memoization
   const filteredUserChannels = useMemo(
     () => usersChannels?.filter((channel) => channel.zid.toLowerCase().includes(search.toLowerCase())),
@@ -51,8 +55,16 @@ export const useSidekick = (): UseSidekickReturn => {
     [allChannels, search]
   );
 
+  console.log(
+    'XXX useSidekick - filteredUserChannels:',
+    filteredUserChannels?.length,
+    'filteredAllChannelsWithSearch:',
+    filteredAllChannelsWithSearch?.length
+  );
+
   const memberCounts = useSelector(selectSocialChannelsMemberCounts);
 
+  // Fetch token info for all channels - use stable dependencies
   const allChannelsForTokenInfo = useMemo(
     () => [
       ...(filteredUserChannels || []),
@@ -61,7 +73,11 @@ export const useSidekick = (): UseSidekickReturn => {
     [filteredUserChannels, filteredAllChannelsWithSearch]
   );
 
+  console.log('XXX useSidekick - allChannelsForTokenInfo:', allChannelsForTokenInfo.length, 'channels');
+
   const { tokenInfoMap } = useTokenInfoBatch(allChannelsForTokenInfo);
+
+  console.log('XXX useSidekick - tokenInfoMap size:', tokenInfoMap.size);
 
   return {
     isErrorZids: isErrorLegacy,

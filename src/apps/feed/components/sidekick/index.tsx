@@ -37,6 +37,8 @@ const tabsData: TabData[] = [
 ];
 
 export const Sidekick = () => {
+  console.log('XXX Sidekick component re-render');
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<Tab>(() => {
     const lastTab = getLastActiveChannelsTab();
@@ -56,6 +58,15 @@ export const Sidekick = () => {
     tokenInfoMap,
   } = useSidekick();
 
+  console.log(
+    'XXX Sidekick - tokenInfoMap size:',
+    tokenInfoMap.size,
+    'usersChannels:',
+    usersChannels?.length,
+    'allChannels:',
+    allChannels?.length
+  );
+
   const handleCreateChannel = () => {
     setIsCreateModalOpen(true);
   };
@@ -66,8 +77,12 @@ export const Sidekick = () => {
   };
 
   const renderFeedItems = (channels: any[]) => {
+    console.log('XXX renderFeedItems called with:', channels?.length, 'channels');
+
     return channels?.map((channel) => {
       const tokenInfo = tokenInfoMap.get(channel.zid);
+
+      console.log('XXX FeedItem for zid:', channel.zid, 'tokenInfo:', tokenInfo);
 
       return (
         <FeedItem
@@ -77,9 +92,9 @@ export const Sidekick = () => {
           zid={channel.zid}
           memberCount={channel.memberCount || memberCounts[channel.zid]}
           tokenSymbol={tokenInfo?.tokenSymbol}
-          tokenPriceUsd={tokenInfo?.priceData.usd}
-          tokenPriceChange={tokenInfo?.priceData.change24h}
-          tokenMarketCap={tokenInfo?.priceData.marketCap}
+          tokenPriceUsd={tokenInfo?.priceData?.usd}
+          tokenPriceChange={tokenInfo?.priceData?.change24h}
+          tokenMarketCap={tokenInfo?.priceData?.marketCap}
         />
       );
     });

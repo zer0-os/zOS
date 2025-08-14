@@ -10,6 +10,7 @@ interface ChannelListsData {
 }
 
 export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData => {
+  console.log('XXX uniqueLegacyZids:', uniqueLegacyZids);
   // Fetch token-gated channels (user's channels) - always fetch for Channels tab
   const {
     data: tokenGatedChannelsData,
@@ -70,8 +71,8 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
 
     // If this is a duplicate, prioritize token-gated channels
     const firstChannel = self[firstIndex];
-    const currentHasTokenProps = channel.tokenAddress && channel.network;
-    const firstHasTokenProps = firstChannel.tokenAddress && firstChannel.network;
+    const currentHasTokenProps = !!(channel.tokenAddress && channel.network);
+    const firstHasTokenProps = !!(firstChannel.tokenAddress && firstChannel.network);
 
     console.log('XXX Deduplication check:', {
       zid: channel.zid,

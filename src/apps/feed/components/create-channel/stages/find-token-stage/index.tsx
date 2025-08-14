@@ -40,7 +40,7 @@ export const FindTokenStage: React.FC<FindTokenStageProps> = ({ onTokenFound }) 
     const selected = NETWORKS.find((n) => n.id === network);
 
     if (isZChain && selectedZChainToken) {
-      await findZChainToken(selectedZChainToken as 'MEOW' | 'CATNIP', selected?.label || 'zChain');
+      await findZChainToken(selectedZChainToken as 'MEOW' | 'CATNIP', selected?.id || 'zchain');
     } else if (selected && address) {
       await findToken(selected.chainId, address, selected.label);
     }

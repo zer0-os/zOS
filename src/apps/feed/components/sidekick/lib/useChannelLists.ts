@@ -41,10 +41,20 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
     })),
   ];
 
-  // Remove duplicates (token-gated channels take precedence)
-  const uniqueUserChannels = userChannels.filter(
-    (channel, index, self) => index === self.findIndex((c) => c.zid === channel.zid)
-  );
+  // Remove duplicates (token-gated channels take precedence over legacy channels)
+  const uniqueUserChannels = userChannels.filter((channel, index, self) => {
+    const firstIndex = self.findIndex((c) => c.zid === channel.zid);
+    if (firstIndex === index) {
+      return true;
+    }
+    // If this is a duplicate, check if the current channel has token properties and the first doesn't
+    const firstChannel = self[firstIndex];
+    const currentHasTokenProps = channel.tokenAddress && channel.network;
+    const firstHasTokenProps = firstChannel.tokenAddress && firstChannel.network;
+
+    // Keep current channel if it has token properties and first doesn't
+    return currentHasTokenProps && !firstHasTokenProps;
+  });
 
   // Process all channels for Explore tab
   const allChannels: ChannelItem[] = allTokenGatedChannels.map((channel) => ({

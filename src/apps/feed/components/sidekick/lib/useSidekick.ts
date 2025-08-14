@@ -53,11 +53,15 @@ export const useSidekick = (): UseSidekickReturn => {
 
   const memberCounts = useSelector(selectSocialChannelsMemberCounts);
 
-  // Fetch token info for all channels
-  const { tokenInfoMap } = useTokenInfoBatch([
-    ...(filteredUserChannels || []),
-    ...(filteredAllChannelsWithSearch || []),
-  ]);
+  const allChannelsForTokenInfo = useMemo(
+    () => [
+      ...(filteredUserChannels || []),
+      ...(filteredAllChannelsWithSearch || []),
+    ],
+    [filteredUserChannels, filteredAllChannelsWithSearch]
+  );
+
+  const { tokenInfoMap } = useTokenInfoBatch(allChannelsForTokenInfo);
 
   return {
     isErrorZids: isErrorLegacy,

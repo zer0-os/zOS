@@ -56,21 +56,29 @@ export function* markConversationAsRead(conversationId) {
 }
 
 export function* openFirstConversation() {
+  console.log('XXX openFirstConversation called');
+
   const lastConversationId = yield call(getLastActiveConversation);
+  console.log('XXX openFirstConversation - lastConversationId:', lastConversationId);
 
   if (lastConversationId) {
     const conversation = yield select(channelSelector(lastConversationId));
+    console.log('XXX openFirstConversation - conversation:', conversation);
     if (conversation) {
+      console.log('XXX openFirstConversation - calling openConversation with lastConversationId');
       yield call(openConversation, lastConversationId);
       return;
     }
   }
 
   const conversation = yield select(mostRecentConversation);
+  console.log('XXX openFirstConversation - mostRecentConversation:', conversation);
   if (conversation) {
+    console.log('XXX openFirstConversation - calling openConversation with mostRecentConversation.id');
     yield call(openConversation, conversation.id);
   } else {
     // Not sure this is the right choice. Maybe there's a redirectToRoot at some point.
+    console.log('XXX openFirstConversation - no conversation found, setting activeConversationId to null');
     yield call(rawSetActiveConversationId, null);
   }
 }
@@ -80,12 +88,15 @@ export function* addRoomToSync(conversationId: string) {
 }
 
 export function* openConversation(conversationId: string) {
+  console.log('XXX openConversation called with conversationId:', conversationId);
+
   if (!conversationId) {
     return;
   }
 
   yield call(addRoomToSync, conversationId);
   yield call(setLastActiveConversation, conversationId);
+  console.log('XXX openConversation - about to call setActiveConversation');
   yield call(setActiveConversation, conversationId);
   yield spawn(markConversationAsRead, conversationId);
   yield call(resetConversationManagement);

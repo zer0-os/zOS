@@ -141,8 +141,23 @@ function* addAdminUser() {
 
 // The selected conversation is managed via the URL
 export function* setActiveConversation(id: string) {
-  const history = yield call(getHistory);
-  history.push({ pathname: `/conversation/${id}` });
+  console.log('XXX setActiveConversation called with id:', id);
+
+  const conversation = yield select(channelSelector(id));
+  const isSocialChannel = conversation?.isSocialChannel && conversation?.zid;
+
+  console.log('XXX setActiveConversation - conversation:', conversation);
+  console.log('XXX setActiveConversation - isSocialChannel:', isSocialChannel);
+
+  if (!isSocialChannel) {
+    // Only change URL for non-social channels
+    console.log('XXX setActiveConversation - changing URL to /conversation/${id}');
+    const history = yield call(getHistory);
+    history.push({ pathname: `/conversation/${id}` });
+  } else {
+    console.log('XXX setActiveConversation - NOT changing URL for social channel');
+  }
+  // For social channels, don't change the URL - let the user stay on the feed route
 }
 
 export function* validateActiveConversation(conversationId: string) {
@@ -215,14 +230,20 @@ export function* setWhenUserJoinedRoom(conversationId: string) {
 }
 
 export function* performValidateActiveConversation(activeConversationId: string) {
+  console.log('XXX performValidateActiveConversation called with activeConversationId:', activeConversationId);
+
   const history = yield call(getHistory);
   const currentPath = history.location.pathname;
   const isMessengerApp = currentPath.startsWith('/conversation');
+
+  console.log('XXX performValidateActiveConversation - currentPath:', currentPath);
+  console.log('XXX performValidateActiveConversation - isMessengerApp:', isMessengerApp);
 
   // Store the original path when validation starts
   const originalPath = currentPath;
 
   if (!activeConversationId) {
+    console.log('XXX performValidateActiveConversation - no activeConversationId, calling openFirstConversation');
     yield put(clearJoinRoomErrorContent());
     yield call(openFirstConversation);
     return;
@@ -232,16 +253,23 @@ export function* performValidateActiveConversation(activeConversationId: string)
   if (isAlias(activeConversationId)) {
     activeConversationId = parseAlias(activeConversationId);
     conversationId = yield call(getRoomIdForAlias, activeConversationId);
+    console.log('XXX performValidateActiveConversation - resolved alias, conversationId:', conversationId);
   }
 
   const conversation = yield select(channelSelector(conversationId));
+  console.log('XXX performValidateActiveConversation - conversation:', conversation);
+
   if (conversation?.isSocialChannel && isMessengerApp) {
     // If it's a social channel and accessed from messenger app, open the last active conversation instead
+    console.log(
+      'XXX performValidateActiveConversation - social channel accessed from messenger, calling openFirstConversation'
+    );
     yield call(openFirstConversation);
     return;
   }
 
   if (!conversationId || !(yield call(isMemberOfActiveConversation, conversationId))) {
+    console.log('XXX performValidateActiveConversation - not a member, calling joinRoom');
     yield call(joinRoom, activeConversationId);
     return;
   }
@@ -249,13 +277,19 @@ export function* performValidateActiveConversation(activeConversationId: string)
   const currentHistory = yield call(getHistory);
   const currentPathNow = currentHistory.location.pathname;
 
+  console.log('XXX performValidateActiveConversation - currentPathNow:', currentPathNow);
+  console.log('XXX performValidateActiveConversation - originalPath:', originalPath);
+
   // check if path has changed before setting active conversation
   if (currentPathNow === originalPath) {
+    console.log('XXX performValidateActiveConversation - path unchanged, setting rawSetActiveConversationId');
     yield put(rawSetActiveConversationId(conversationId));
 
     // Set up the conversation with necessary initialization steps
     yield call(addRoomToSync, conversationId);
     yield call(startPollingPosts, conversationId);
+  } else {
+    console.log('XXX performValidateActiveConversation - path changed, NOT setting rawSetActiveConversationId');
   }
 
   // Mark conversation as read, now that it has been set as active
@@ -270,11 +304,15 @@ export function* closeErrorDialog() {
 export function* saga() {
   yield spawn(connectOnLogin);
 
-  yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
-    validateActiveConversation(payload.id)
-  );
+  yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) => {
+    console.log('XXX setActiveConversationId saga triggered with payload:', payload);
+    return validateActiveConversation(payload.id);
+  });
 
-  yield takeLatest(SagaActionTypes.ValidateFeedChat, ({ payload }: any) => validateActiveConversation(payload.id));
+  yield takeLatest(SagaActionTypes.ValidateFeedChat, ({ payload }: any) => {
+    console.log('XXX ValidateFeedChat saga triggered with payload:', payload);
+    return validateActiveConversation(payload.id);
+  });
 
   const authBus = yield call(getAuthChannel);
   yield takeEveryFromBus(authBus, AuthEvents.UserLogout, clearOnLogout);

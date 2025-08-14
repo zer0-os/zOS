@@ -98,17 +98,29 @@ export function* userLeftChannel(channelId: string, matrixId: string) {
 }
 
 function* currentUserLeftChannel(channelId: string) {
+  console.log('XXX currentUserLeftChannel called with channelId:', channelId);
+
   yield put(removeChannel(channelId));
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
+  console.log('XXX currentUserLeftChannel - activeConversationId:', activeConversationId);
+
   if (activeConversationId === channelId) {
     const channel = yield select(channelSelector(channelId));
     const isSocialChannel = channel?.isSocialChannel && channel?.zid;
 
+    console.log('XXX currentUserLeftChannel - channel:', channel);
+    console.log('XXX currentUserLeftChannel - isSocialChannel:', isSocialChannel);
+
     if (!isSocialChannel) {
+      console.log('XXX currentUserLeftChannel - calling openFirstConversation for non-social channel');
       yield call(clearLastActiveConversation);
       yield call(openFirstConversation);
+    } else {
+      console.log('XXX currentUserLeftChannel - NOT calling openFirstConversation for social channel');
     }
+  } else {
+    console.log('XXX currentUserLeftChannel - activeConversationId !== channelId, not handling navigation');
   }
 }
 

@@ -93,18 +93,6 @@
   overflow-x: hidden;
 }
 
-.FeedName {
-  display: flex;
-  max-width: calc(100% - 24px);
-  overflow: hidden;
-
-  > div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
 .Actions {
   display: flex;
   align-items: center;

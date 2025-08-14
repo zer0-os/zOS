@@ -1,14 +1,11 @@
 import { useRouteMatch } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { selectMutedChannels, selectSocialChannelsUnreadCounts, selectSocialChannelsMemberCounts } from './selectors';
-import { useLegacyChannels } from './hooks/useLegacyChannels';
-import { useChannelLists, type ChannelItem } from './hooks/useChannelLists';
-
-export interface UnreadCount {
-  total: number;
-  highlight: number;
-}
+import { selectSocialChannelsMemberCounts } from './selectors';
+import { useLegacyChannels } from './useLegacyChannels';
+import { useChannelLists } from './useChannelLists';
+import { useTokenInfoBatch } from './useTokenInfoBatch';
+import { ChannelItem, TokenInfoResponse } from './types';
 
 interface UseSidekickReturn {
   isErrorZids: boolean;
@@ -19,10 +16,9 @@ interface UseSidekickReturn {
   usersChannels?: ChannelItem[];
   allChannels?: ChannelItem[];
   search: string;
-  unreadCounts: { [zid: string]: UnreadCount };
-  mutedChannels: { [zid: string]: boolean };
   memberCounts: { [zid: string]: number };
   setSearch: (search: string) => void;
+  tokenInfoMap: Map<string, TokenInfoResponse>;
 }
 
 export const useSidekick = (): UseSidekickReturn => {
@@ -32,12 +28,7 @@ export const useSidekick = (): UseSidekickReturn => {
   const selectedZId = route?.params?.zid;
 
   // Get legacy channel data
-  const {
-    joinedLegacyZids,
-    unjoinedLegacyZids,
-    isLoading: isLoadingLegacy,
-    isError: isErrorLegacy,
-  } = useLegacyChannels();
+  const { uniqueLegacyZids, isLoading: isLoadingLegacy, isError: isErrorLegacy } = useLegacyChannels();
 
   // Get channel lists data
   const {
@@ -46,21 +37,27 @@ export const useSidekick = (): UseSidekickReturn => {
     isLoading: isLoadingChannels,
     isErrorMine,
     isErrorAll,
-  } = useChannelLists(joinedLegacyZids, unjoinedLegacyZids);
+  } = useChannelLists(uniqueLegacyZids);
 
-  // Apply search filter to user channels
-  const filteredUserChannels = usersChannels?.filter((channel) =>
-    channel.zid.toLowerCase().includes(search.toLowerCase())
+  // Apply search filter to user channels with memoization
+  const filteredUserChannels = useMemo(
+    () => usersChannels?.filter((channel) => channel.zid.toLowerCase().includes(search.toLowerCase())),
+    [usersChannels, search]
   );
 
-  // Apply search filter to all channels
-  const filteredAllChannelsWithSearch = allChannels?.filter((channel) =>
-    channel.zid.toLowerCase().includes(search.toLowerCase())
+  // Apply search filter to all channels with memoization
+  const filteredAllChannelsWithSearch = useMemo(
+    () => allChannels?.filter((channel) => channel.zid.toLowerCase().includes(search.toLowerCase())),
+    [allChannels, search]
   );
 
-  const unreadCounts = useSelector(selectSocialChannelsUnreadCounts);
-  const mutedChannels = useSelector(selectMutedChannels);
   const memberCounts = useSelector(selectSocialChannelsMemberCounts);
+
+  // Fetch token info for all channels
+  const { tokenInfoMap } = useTokenInfoBatch([
+    ...(filteredUserChannels || []),
+    ...(filteredAllChannelsWithSearch || []),
+  ]);
 
   return {
     isErrorZids: isErrorLegacy,
@@ -72,8 +69,7 @@ export const useSidekick = (): UseSidekickReturn => {
     allChannels: filteredAllChannelsWithSearch,
     search,
     setSearch,
-    unreadCounts,
-    mutedChannels,
     memberCounts,
+    tokenInfoMap,
   };
 };

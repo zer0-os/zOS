@@ -7,7 +7,7 @@
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  height: 44px;
+  height: 48px;
   margin-bottom: 8px;
   padding: 0 8px;
   border-radius: 8px;
@@ -35,6 +35,9 @@
   flex-shrink: 1;
   flex-grow: 1;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .Header {
@@ -44,93 +47,93 @@
   margin-bottom: 2px;
   overflow: hidden;
   min-width: 0;
+  gap: 4px;
 }
 
 .NameContainer {
   display: flex;
   align-items: center;
-  gap: 4px;
   flex-grow: 1;
   min-width: 0;
   width: 100%;
+  gap: 4px;
 }
 
-.UnreadContainer {
+.FeedName {
+  display: flex;
+  overflow: hidden;
+  font-size: 14px;
+  max-width: calc(100% - 24px);
+
+  > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.InfoContainer {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  justify-content: space-between;
 }
 
-.IconsContainer {
+.InfoIconContainer {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
-.MutedIcon {
-  @include glass-text-tertiary-color;
-  align-self: center;
-}
-
-.UnreadCount {
-  @include glass-state-default-color;
-  @include glass-glow-highlight-small;
-  @include glass-materials-raised;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 0;
-  flex-shrink: 0;
-  color: theme.$color-secondary-transparency-11;
-  border-radius: 50%;
-  width: 14px;
-  height: 14px;
-  text-align: center;
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 11px;
-  letter-spacing: 0.32px;
-}
-
-.UnreadHighlight {
-  @include glass-state-default-color;
-  @include glass-glow-highlight-small;
-  @include glass-materials-raised;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 0;
-  flex-shrink: 0;
-  color: #9054f1;
-  border-radius: 50%;
-  width: 14px;
-  height: 14px;
-  text-align: center;
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 11px;
-  letter-spacing: 0.32px;
-}
-
-.MemberCountContainer {
+.TotalCountContainer {
   display: flex;
   align-items: center;
   gap: 2px;
   margin-left: -2px;
 }
 
-.MemberCountIcon {
+.TotalCountIcon {
   @include glass-text-tertiary-color;
 }
 
-.MemberCount {
+.TotalCount {
   @include glass-text-tertiary-color;
 
-  font-size: 10px;
+  font-size: 12px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  margin-top: 1.5px;
+}
+
+.TokenSymbol {
+  @include glass-text-tertiary-color;
+
+  margin-right: 8px;
+}
+
+.TokenPriceContainer {
+  display: flex;
+  align-items: center;
+}
+
+.TokenPriceUsd {
+  @include glass-text-primary-color;
+}
+
+.TokenPriceChangeContainer {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  justify-content: flex-end;
+}
+
+.TokenPriceChange {
+  &.Up {
+    color: theme.$color-secondary-11;
+  }
+
+  &.Down {
+    color: rgba(238, 236, 255, 0.42);
+  }
+
+  font-size: 12px;
 }

@@ -10,7 +10,7 @@ interface FindTokenStageProps {
 }
 
 const NETWORKS = [
-  { id: 'zchain', label: 'zChain', chainId: 9369, disabled: false },
+  { id: 'zchain', label: 'Z Chain', chainId: 9369, disabled: false },
   { id: 'ethereum', label: 'Ethereum', chainId: 1, disabled: false },
   { id: 'polygon', label: 'Polygon', chainId: 137, disabled: false },
   { id: 'avalanche', label: 'Avalanche', chainId: 43114, disabled: false },
@@ -96,7 +96,7 @@ export const FindTokenStage: React.FC<FindTokenStageProps> = ({ onTokenFound }) 
     <div className={styles.Container}>
       <div className={styles.Title}>Find Your Token</div>
       <div className={styles.Subtitle}>
-        {isZChain ? 'Select a token from zChain.' : 'Enter the network and contract address for your token.'}
+        {isZChain ? 'Select a token from Z Chain.' : 'Enter the network and contract address for your token.'}
       </div>
       <form className={styles.Form} onSubmit={handleSubmit}>
         <label className={styles.InputContainer}>
@@ -117,7 +117,7 @@ export const FindTokenStage: React.FC<FindTokenStageProps> = ({ onTokenFound }) 
               Token
               {loading && <Spinner className={styles.Spinner} />}
               {error && <span className={`${styles.SubLabel} ${styles.Error}`}>{error}</span>}
-              {!error && !loading && <span className={styles.SubLabel}>Select a token from zChain</span>}
+              {!error && !loading && <span className={styles.SubLabel}>Select a token from Z Chain</span>}
             </div>
             <SelectInput
               items={zChainTokenItems}

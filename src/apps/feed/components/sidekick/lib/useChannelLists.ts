@@ -23,6 +23,11 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
   // Process token-gated channels (user's channels)
   const tokenGatedChannels = tokenGatedChannelsData?.channels || [];
 
+  // Remove duplicates from token-gated channels (keep first occurrence of each zid)
+  const uniqueTokenGatedChannels = tokenGatedChannels.filter(
+    (channel, index, self) => self.findIndex((c) => c.zid === channel.zid) === index
+  );
+
   // Process all token-gated channels
   const allTokenGatedChannels = allTokenGatedChannelsData?.channels || [];
 
@@ -31,7 +36,7 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
     // Legacy channels (owned ZIDs)
     ...uniqueLegacyZids.map((zid) => ({ zid })),
     // Token-gated channels (user's channels)
-    ...tokenGatedChannels.map((channel) => ({
+    ...uniqueTokenGatedChannels.map((channel) => ({
       zid: channel.zid,
       memberCount: channel.memberCount,
       tokenSymbol: channel.tokenSymbol,
@@ -41,19 +46,19 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
     })),
   ];
 
-  // Remove duplicates (token-gated channels take precedence over legacy channels)
-  const uniqueUserChannels = userChannels.filter((channel, index, self) => {
+  // Remove duplicates and prioritize token-gated channels over legacy channels
+  const finalUniqueUserChannels = userChannels.filter((channel, index, self) => {
     const firstIndex = self.findIndex((c) => c.zid === channel.zid);
     if (firstIndex === index) {
       return true; // Keep the first occurrence
     }
 
-    // If this is a duplicate, we need to decide which one to keep
+    // If this is a duplicate, prioritize token-gated channels
     const firstChannel = self[firstIndex];
     const currentHasTokenProps = channel.tokenAddress && channel.network;
     const firstHasTokenProps = firstChannel.tokenAddress && firstChannel.network;
 
-    // If current channel has token properties and first doesn't, keep current
+    // Keep current channel if it has token properties and first doesn't
     if (currentHasTokenProps && !firstHasTokenProps) {
       return true;
     }
@@ -66,11 +71,6 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
     // If both have token properties or both don't, keep the first one (reject current)
     return false;
   });
-
-  // Final deduplication to ensure no duplicates remain
-  const finalUniqueUserChannels = uniqueUserChannels.filter(
-    (channel, index, self) => self.findIndex((c) => c.zid === channel.zid) === index
-  );
 
   // Process all channels for Explore tab
   const allChannels: ChannelItem[] = allTokenGatedChannels.map((channel) => ({

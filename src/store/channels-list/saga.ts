@@ -98,23 +98,24 @@ export function* userLeftChannel(channelId: string, matrixId: string) {
 }
 
 function* currentUserLeftChannel(channelId: string) {
+  // Get channel data BEFORE removing it from state
+  const channel = yield select(channelSelector(channelId));
+  console.log('XXX channel:', channel);
+  const isSocialChannel = channel?.isSocialChannel;
+  console.log('XXX isSocialChannel:', isSocialChannel);
+
   yield put(removeChannel(channelId));
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   console.log('XXX activeConversationId:', activeConversationId);
   if (activeConversationId === channelId) {
-    yield call(clearLastActiveConversation);
-    console.log('XXX clearLastActiveConversation');
+    console.log('XXX ifStatement');
 
-    // Check if this is a token-gated channel (has tokenSymbol or tokenAmount)
-    const channel = yield select(channelSelector(channelId));
-    console.log('XXX channel:', channel);
-    const isSocialChannel = channel?.isSocialChannel;
-    console.log('XXX isSocialChannel:', isSocialChannel);
-
-    // Only open first conversation for non-token-gated channels
-    // For token-gated channels, we want to stay on the same page and show the join screen
+    // Only open first conversation for non-social channels
+    // For social channels, we want to stay on the same page and show the join screen
     if (!isSocialChannel) {
+      yield call(clearLastActiveConversation);
+
       console.log('XXX openFirstConversation');
       yield call(openFirstConversation);
     }

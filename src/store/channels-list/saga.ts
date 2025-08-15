@@ -101,6 +101,13 @@ function* currentUserLeftChannel(channelId: string) {
   // Get channel data BEFORE removing it from state
   const channel = yield select(channelSelector(channelId));
   console.log('XXX channel:', channel);
+
+  // If channel is already undefined, it was already processed - skip
+  if (!channel) {
+    console.log('XXX channel already removed, skipping');
+    return;
+  }
+
   const isSocialChannel = channel?.isSocialChannel;
   console.log('XXX isSocialChannel:', isSocialChannel);
 
@@ -112,12 +119,14 @@ function* currentUserLeftChannel(channelId: string) {
     console.log('XXX ifStatement');
 
     // Only open first conversation for non-social channels
-    // For social channels, we want to stay on the same page and show the join screen
+    // For social channels (including token-gated), we want to stay on the same page and show the join screen
     if (!isSocialChannel) {
       yield call(clearLastActiveConversation);
 
       console.log('XXX openFirstConversation');
       yield call(openFirstConversation);
+    } else {
+      console.log('XXX skipping openFirstConversation for social channel');
     }
   }
 }

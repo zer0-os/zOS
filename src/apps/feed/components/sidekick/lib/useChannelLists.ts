@@ -9,7 +9,7 @@ interface ChannelListsData {
   isErrorAll: boolean;
 }
 
-export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData => {
+export const useChannelLists = (uniqueOwnedZids: string[]): ChannelListsData => {
   // Fetch token-gated channels (user's channels) - always fetch for Channels tab
   const {
     data: tokenGatedChannelsData,
@@ -26,7 +26,7 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
   // Process all token-gated channels
   const allTokenGatedChannels = allTokenGatedChannelsData?.channels || [];
 
-  // Combine legacy channels and user's token-gated channels for Channels tab
+  // Combine owned ZIDs and user's token-gated channels for Channels tab
   const userChannels: ChannelItem[] = [
     // Token-gated channels (user's channels) - put first so they become "first occurrence"
     ...tokenGatedChannels.map((channel) => ({
@@ -37,8 +37,8 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
       tokenAddress: channel.tokenAddress,
       network: channel.network,
     })),
-    // Legacy channels (owned ZIDs) - put second so they get filtered out if duplicate
-    ...uniqueLegacyZids.map((zid) => ({ zid })),
+    // Owned ZIDs - put second so they get filtered out if duplicate
+    ...uniqueOwnedZids.map((zid) => ({ zid })),
   ];
 
   // Remove duplicates (keep first occurrence - token-gated channels will win)
@@ -57,7 +57,7 @@ export const useChannelLists = (uniqueLegacyZids: string[]): ChannelListsData =>
   }));
 
   // Filter out channels that the user is already a member of
-  const userChannelZids = new Set([...uniqueLegacyZids, ...tokenGatedChannels.map((channel) => channel.zid)]);
+  const userChannelZids = new Set([...uniqueOwnedZids, ...tokenGatedChannels.map((channel) => channel.zid)]);
 
   const filteredAllChannels = allChannels.filter((channel) => !userChannelZids.has(channel.zid));
 

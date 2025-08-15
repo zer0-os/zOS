@@ -10,18 +10,20 @@ export const useChannelMembership = (zid: string | undefined) => {
     return { isMember: false, isLoading: false, channelData: null };
   }
 
-  // If still loading, we can't determine membership yet
   if (isLoadingZids || !usersChannels) {
     return { isMember: false, isLoading: true, channelData: null };
   }
 
-  // Check if user is a member of the channel (either in usersChannels or in Redux social channels)
-  const isMemberInUsersChannels = usersChannels.some((channel) => channel.zid === zid);
-  const isMemberInSocialChannels = socialChannels.some((channel) => channel.zid === zid);
-  const isMember = isMemberInUsersChannels || isMemberInSocialChannels;
+  const channelData =
+    allChannels?.find((channel) => channel.zid === zid) ||
+    usersChannels?.find((channel) => channel.zid === zid) ||
+    null;
 
-  // Get channel data from allChannels for token requirements
-  const channelData = allChannels?.find((channel) => channel.zid === zid) || null;
+  const isTokenGatedChannel = channelData?.tokenSymbol || channelData?.tokenAmount;
+
+  const isMemberInUsersChannels = usersChannels.some((channel) => channel.zid === zid);
+  const isMemberInSocialChannels = !isTokenGatedChannel && socialChannels.some((channel) => channel.zid === zid);
+  const isMember = isMemberInUsersChannels || isMemberInSocialChannels;
 
   return { isMember, isLoading: false, channelData };
 };

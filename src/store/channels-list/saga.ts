@@ -98,12 +98,25 @@ export function* userLeftChannel(channelId: string, matrixId: string) {
 }
 
 function* currentUserLeftChannel(channelId: string) {
+  const channel = yield select(channelSelector(channelId));
+
+  // If channel is already undefined, it was already processed - skip
+  if (!channel) {
+    return;
+  }
+
+  const isSocialChannel = channel?.isSocialChannel;
+
   yield put(removeChannel(channelId));
 
   const activeConversationId = yield select((state) => getDeepProperty(state, 'chat.activeConversationId', ''));
   if (activeConversationId === channelId) {
-    yield call(clearLastActiveConversation);
-    yield call(openFirstConversation);
+    // Only open first conversation for non-social channels
+    // For social channels (including token-gated), we want to stay on the same page and show the join screen
+    if (!isSocialChannel) {
+      yield call(clearLastActiveConversation);
+      yield call(openFirstConversation);
+    }
   }
 }
 

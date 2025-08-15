@@ -10,6 +10,7 @@ interface LeaveTokenGatedChannelResponse {
 
 interface LeaveTokenGatedChannelError {
   message: string;
+  code?: string;
 }
 
 export const useLeaveTokenGatedChannel = () => {
@@ -22,7 +23,9 @@ export const useLeaveTokenGatedChannel = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to leave channel');
+        const error = new Error(errorData.message || 'Failed to leave channel') as Error & { code?: string };
+        error.code = errorData.code;
+        throw error;
       }
 
       return response.body;
@@ -30,6 +33,7 @@ export const useLeaveTokenGatedChannel = () => {
     onMutate: () => {
       // Clear any previous errors when starting a new leave attempt
       // This ensures the user doesn't see stale error messages
+      queryClient.setQueryData(['leave-token-gated-channel-error'], null);
     },
     onSuccess: () => {
       // Invalidate relevant queries to refresh the UI

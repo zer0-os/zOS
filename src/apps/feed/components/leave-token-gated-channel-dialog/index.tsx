@@ -41,7 +41,11 @@ export const LeaveTokenGatedChannelDialog: React.FC<Properties> = ({ zid, isOpen
     >
       <div className={styles.LeaveDialogContainer}>
         {leaveTokenGatedChannel.isError ? (
-          <div className={styles.ErrorMessage}>Failed to leave channel. Please try again.</div>
+          <div className={styles.ErrorMessage}>
+            {(leaveTokenGatedChannel.error as any)?.code === 'CREATOR_CANNOT_LEAVE'
+              ? 'Channel creator cannot leave the channel'
+              : 'Failed to leave channel. Please try again.'}
+          </div>
         ) : (
           <div>Are you sure you want to leave this channel?</div>
         )}

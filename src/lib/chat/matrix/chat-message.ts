@@ -173,16 +173,16 @@ function getRoomReactionAdminData(content, sender) {
 }
 
 function getRoomMemberAdminData(content, targetUserId, previousContent?) {
-  if (previousContent?.avatar_url && previousContent?.avatar_url !== content.avatar_url) {
-    return { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: targetUserId };
-  }
-
   switch (content.membership) {
     case MembershipStateType.Leave:
       return { type: AdminMessageType.MEMBER_LEFT_CONVERSATION, userId: targetUserId };
     case MembershipStateType.Invite:
       return { type: AdminMessageType.MEMBER_ADDED_TO_CONVERSATION, userId: targetUserId };
     default:
+      // Only check for avatar changes if membership hasn't changed
+      if (previousContent?.avatar_url && previousContent?.avatar_url !== content.avatar_url) {
+        return { type: AdminMessageType.MEMBER_AVATAR_CHANGED, userId: targetUserId };
+      }
       return null;
   }
 }

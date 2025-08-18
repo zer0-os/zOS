@@ -25,7 +25,8 @@ import { setSentryUser } from '../../utils';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { takeEveryFromBus } from '../../lib/saga';
 import { clearWallet } from '../wallet/saga';
-import { nextSelector } from '../login/selectors';
+import { linkSelector, nextSelector } from '../login/selectors';
+import { oauth2Link } from '../../lib/oauth/oauth2Link';
 
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
@@ -49,6 +50,15 @@ export function* completeUserLogin(user = null) {
   if (nextUrl) {
     window.location.href = nextUrl;
     return;
+  }
+
+  // redirect user to link if it exists
+  const link = yield select(linkSelector);
+  if (link) {
+    if (link === 'epic-games') {
+      yield call(oauth2Link, 'epic-games', false);
+      return;
+    }
   }
 
   if (user.isPending) {

@@ -22,7 +22,7 @@ export const WalletTokenSelect = () => {
 
   const { data } = useBalancesQuery(selectedWallet.address);
   // TODO: Add search functionality to token balances endpoint
-  const assets = data?.tokens.filter((asset) => asset.name.toLowerCase().includes(assetQuery.toLowerCase()));
+  const assets = data?.tokens?.filter((asset) => asset.name.toLowerCase().includes(assetQuery.toLowerCase()));
 
   const handleTokenClick = (token: TokenBalance) => {
     dispatch(setToken(token));

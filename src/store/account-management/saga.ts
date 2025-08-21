@@ -23,7 +23,7 @@ import {
   removeWallet as apiRemoveWallet,
   getWallets as apiGetWallets,
 } from './api';
-import { getUserSubHandle } from '../../lib/user';
+import { fetchCurrentUser } from '../authentication/api';
 
 export function* reset() {
   yield put(setState(State.NONE));
@@ -56,6 +56,7 @@ export function* linkNewWalletToZEROAccount() {
       }
 
       yield call(fetchWallets);
+      yield call(refreshCurrentUser);
       yield put(setSuccessMessage('Wallet added successfully'));
     } else {
       if (apiResult.response === 'WALLET_IN_USE_AND_REQUIRED') {
@@ -101,6 +102,7 @@ export function* confirmAddNewWallet() {
     });
     if (apiResult.success) {
       yield call(fetchWallets);
+      yield call(refreshCurrentUser);
       yield put(setSuccessMessage('Wallet added successfully'));
       yield put(setAddWalletRequiresTransferConfirmation(false));
     } else {
@@ -153,6 +155,7 @@ export function* confirmRemoveWallet(action) {
 
       // Success path: refresh wallets and show success message
       yield call(fetchWallets);
+      yield call(refreshCurrentUser);
       yield put(setSuccessMessage('Wallet removed successfully'));
       // Close modal and clear
       yield put({ type: SagaActionTypes.SetRemoveWalletModalStatus, payload: false });
@@ -182,30 +185,6 @@ export function* closeRemoveWalletModal() {
   yield put({ type: SagaActionTypes.SetWalletIdPendingRemoval, payload: undefined });
   yield put({ type: SagaActionTypes.SetRemoveRequiresTransferConfirmation, payload: false });
   yield put({ type: SagaActionTypes.SetIsRemovingWallet, payload: false });
-}
-
-export function* updateCurrentUserWallets({ publicAddress, ...walletRest }, primaryZID) {
-  if (!publicAddress) {
-    return; // Ensure wallet has a valid publicAddress
-  }
-
-  const currentUser = yield select(currentUserSelector);
-
-  // Update wallets immutably
-  const updatedWallets = [...(currentUser.wallets || []), { publicAddress, ...walletRest }];
-
-  // Update primaryZID, either from the argument or derive from the wallet's publicAddress
-  const updatedPrimaryZID = primaryZID || getUserSubHandle(undefined, publicAddress);
-
-  yield put(
-    setUser({
-      data: {
-        ...currentUser,
-        wallets: updatedWallets,
-        primaryZID: updatedPrimaryZID,
-      },
-    })
-  );
 }
 
 export function* updateCurrentUserPrimaryEmail(email) {
@@ -275,5 +254,12 @@ export function* fetchWallets() {
   } catch (e: any) {
     const message = e?.response?.body?.message || Errors.UNKNOWN_ERROR;
     yield put(setErrors([message]));
+  }
+}
+
+export function* refreshCurrentUser() {
+  const result = yield call(fetchCurrentUser);
+  if (result) {
+    yield put(setUser({ data: result }));
   }
 }

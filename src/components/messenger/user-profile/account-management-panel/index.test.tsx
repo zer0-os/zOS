@@ -31,6 +31,7 @@ describe(AccountManagementPanel, () => {
       connectedWalletAddr: '',
       addWalletState: State.NONE,
       wallets: [],
+      zeroWalletAddress: '0x123',
       onBack: () => {},
       reset: () => {},
       onAddNewWallet: () => {},
@@ -90,7 +91,7 @@ describe(AccountManagementPanel, () => {
         ],
       });
 
-      expect(wrapper.find(c('wallets-header')).text()).toEqual('2 self-custody wallets');
+      expect(wrapper.find(c('wallets-header')).at(0).text()).toEqual('2 self-custody wallets');
     });
 
     it('renders wallet list items', () => {
@@ -101,7 +102,7 @@ describe(AccountManagementPanel, () => {
         ],
       });
 
-      expect(wrapper.find('WalletListItem')).toHaveLength(2);
+      expect(wrapper.find('WalletListItem')).toHaveLength(3);
       expect(wrapper.find('WalletListItem').at(0).prop('wallet')).toEqual({
         id: 'wallet-id-1',
         publicAddress: 'address-1',
@@ -111,6 +112,11 @@ describe(AccountManagementPanel, () => {
         id: 'wallet-id-2',
         publicAddress: 'address-2',
         isThirdWeb: false,
+      });
+      expect(wrapper.find('WalletListItem').at(2).prop('wallet')).toEqual({
+        id: 'zero-wallet',
+        isThirdWeb: true,
+        publicAddress: '0x123',
       });
     });
 
@@ -129,11 +135,6 @@ describe(AccountManagementPanel, () => {
       expect(wrapper.find(ConnectButton.Custom).exists()).toEqual(true);
     });
 
-    it('should not render Add Wallet button if user has a wallet linked to his ZERO account', () => {
-      const wrapper = subject({ wallets: [{ id: 'wallet-id-1', publicAddress: '0x123', isThirdWeb: false }] });
-      expect(wrapper.find(ConnectButton.Custom).exists()).toEqual(false);
-    });
-
     it('should open Link Wallet modal when user clicks on Add Wallet, and metamask is connected', () => {
       const wrapper = subject({
         wallets: [],
@@ -146,7 +147,7 @@ describe(AccountManagementPanel, () => {
       expect(linkWalletModal.exists()).toEqual(true);
       expect(linkWalletModal.prop('title')).toEqual('Link Wallet');
       expect(linkWalletModal.find(c('link-new-wallet-modal')).text()).toEqual(
-        'You have a wallet connected by the address 0xA100C16E67884Da7d515211Bb065592079bEcde6Do you want to link this wallet with your ZERO account?'
+        'Your currently connected wallet has the address:0xA100C16E67884Da7d515211Bb065592079bEcde6Do you want to link this wallet with your ZERO account?<IconCheck />Enable logging into your ZERO account with this wallet'
       );
     });
 
@@ -222,23 +223,7 @@ describe(AccountManagementPanel, () => {
       });
 
       const thirdWebWallet = wrapper.find(c('wallets-header')).at(1);
-      expect(thirdWebWallet.length).toEqual(0);
-    });
-
-    it('renders thirdweb wallets', () => {
-      const wrapper = subject({
-        wallets: [{ id: 'wallet-id-1', isThirdWeb: true, publicAddress: '0x123' }],
-      });
-
-      const thirdWebWallet = wrapper.find(c('wallets-header')).at(1);
       expect(thirdWebWallet.length).toEqual(1);
-      expect(thirdWebWallet.text()).toEqual('ZERO Wallet');
-      expect(wrapper.find('WalletListItem')).toHaveLength(1);
-      expect(wrapper.find('WalletListItem').at(0).prop('wallet')).toEqual({
-        id: 'wallet-id-1',
-        publicAddress: '0x123',
-        isThirdWeb: true,
-      });
     });
 
     it('renders both self-custody and thirdweb wallets', () => {
@@ -267,20 +252,20 @@ describe(AccountManagementPanel, () => {
       expect(thirdWebWallet.length).toEqual(1);
       expect(thirdWebWallet.text()).toEqual('ZERO Wallet');
       expect(wrapper.find('WalletListItem').at(1).prop('wallet')).toEqual({
-        id: 'thirdweb-wallet-id-1',
+        id: 'zero-wallet',
         publicAddress: '0x123',
         isThirdWeb: true,
       });
     });
 
-    it('renders wallet with correct etherscan link', () => {
+    it('renders wallet with correct zscan link', () => {
       const wallet = { id: 'wallet-id-1', isThirdWeb: true, publicAddress: '0x123' };
       const wrapper = subject({
         wallets: [wallet],
       });
 
       const walletLink = wrapper.find('a');
-      expect(walletLink.prop('href')).toEqual(`https://etherscan.io/address/${wallet.publicAddress}`);
+      expect(walletLink.prop('href')).toEqual(`https://zscan.live/address/${wallet.publicAddress}`);
       expect(walletLink.prop('target')).toEqual('_blank');
       expect(walletLink.prop('rel')).toEqual('noopener noreferrer');
     });

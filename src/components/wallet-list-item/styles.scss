@@ -3,18 +3,24 @@
 
 .wallet-list-item {
   box-sizing: border-box;
-  height: 48px;
   padding: 8px;
   display: flex;
+  flex-direction: column;
   width: 100%;
-  justify-content: space-between;
-  align-items: center;
   border-radius: 8px;
   overflow: hidden;
   outline: none;
 
   &:hover {
     @include glass-state-hover-color;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
 
   &__details {
@@ -43,8 +49,16 @@
   &__tag {
     @include glass-text-secondary-color;
 
-    font-size: 12px;
-    line-height: 15px;
-    padding-left: 4px;
+    padding-left: 40px;
+    align-self: flex-start;
+  }
+
+  &__remove {
+    display: none;
+  }
+
+  &:hover &__remove {
+    cursor: pointer;
+    display: block;
   }
 }

@@ -7,6 +7,8 @@ export interface Wallet {
   id: string;
   publicAddress: string;
   isThirdWeb: boolean;
+  isDefault?: boolean;
+  canAuthenticate?: boolean;
 }
 
 interface ProfileSummary {
@@ -39,6 +41,7 @@ export interface User {
   matrixAccessToken?: string;
   primaryZID?: string;
   primaryWalletAddress?: string;
+  zeroWalletAddress?: string;
   totalRewards?: string;
   subscriptions?: {
     zeroPro?: boolean;

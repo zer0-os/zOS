@@ -73,6 +73,10 @@
     line-height: 20px;
   }
 
+  &__alert-info-text-warning {
+    color: theme.$color-error-transparency-11;
+  }
+
   &__alert-text {
     font-size: 14px;
     line-height: 17px;
@@ -83,6 +87,53 @@
   }
 
   &__link-new-wallet-modal {
-    width: 420px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__checkbox-label-wrapper {
+    @include glass-input-inset-default;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 9px 8px 17px;
+    position: relative;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+    line-height: 24px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__checkbox {
+    position: relative;
+    background-color: rgba(163, 162, 163, 0.1);
+    border: 1px solid rgba(163, 162, 163, 0.1);
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+
+    appearance: none;
+
+    &:checked {
+      border: 1px solid theme.$color-secondary-11;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__checkbox-icon {
+    position: absolute;
+    top: 10px;
+    left: 22px;
+    color: theme.$color-secondary-11;
   }
 }

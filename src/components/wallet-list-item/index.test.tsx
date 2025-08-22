@@ -26,7 +26,7 @@ describe(WalletListItem, () => {
   it('renders a tag if provided', function () {
     const wrapper = subject({ tag: 'default' });
 
-    expect(wrapper.find(c('tag')).text()).toEqual('default');
+    expect(wrapper.find(c('tag')).text()).toEqual('<Badge />');
   });
 
   it('does NOT render tag if NOT provided', function () {

@@ -6,6 +6,8 @@ import {
   updateCurrentUserPrimaryEmail,
   linkNewWalletToZEROAccount,
   reset,
+  fetchWallets,
+  refreshCurrentUser,
 } from './saga';
 import { call } from 'redux-saga/effects';
 
@@ -15,6 +17,7 @@ import { addEmailAccount } from '../registration/saga';
 import { StoreBuilder } from '../test/store';
 import { getSignedToken } from '../web3/saga';
 import { linkNewWalletToZEROAccount as apiLinkNewWalletToZEROAccount } from './api';
+import { fetchCurrentUser } from '../authentication/api';
 import { throwError } from 'redux-saga-test-plan/providers';
 
 describe('addEmailAccountModal', () => {
@@ -146,10 +149,15 @@ describe(linkNewWalletToZEROAccount, () => {
     await expectSaga(linkNewWalletToZEROAccount)
       .provide([
         [call(getSignedToken), { success: true, token: 'some_token' }],
-        [call(apiLinkNewWalletToZEROAccount, 'some_token'), { success: true, response: { wallet: 'some_wallet' } }],
+        [
+          call(apiLinkNewWalletToZEROAccount, 'some_token', { canAuthenticate: true }),
+          { success: true, response: { wallet: 'some_wallet' } },
+        ],
+        [call(fetchWallets), {}],
+        [call(refreshCurrentUser), {}],
       ])
       .withReducer(rootReducer, initialState)
-      .call(apiLinkNewWalletToZEROAccount, 'some_token')
+      .call(apiLinkNewWalletToZEROAccount, 'some_token', { canAuthenticate: true })
       .run();
   });
 
@@ -163,7 +171,10 @@ describe(linkNewWalletToZEROAccount, () => {
     } = await expectSaga(linkNewWalletToZEROAccount)
       .provide([
         [call(getSignedToken), { success: true, token: 'some_token' }],
-        [call(apiLinkNewWalletToZEROAccount, 'some_token'), { success: false, error: 'failed to link wallet' }],
+        [
+          call(apiLinkNewWalletToZEROAccount, 'some_token', { canAuthenticate: true }),
+          { success: false, error: 'failed to link wallet' },
+        ],
       ])
       .withReducer(rootReducer, initialState)
       .run();
@@ -180,7 +191,10 @@ describe(linkNewWalletToZEROAccount, () => {
     } = await expectSaga(linkNewWalletToZEROAccount)
       .provide([
         [call(getSignedToken), { success: true, token: 'some_token' }],
-        [call(apiLinkNewWalletToZEROAccount, 'some_token'), throwError(new Error('some error'))],
+        [
+          call(apiLinkNewWalletToZEROAccount, 'some_token', { canAuthenticate: true }),
+          throwError(new Error('some error')),
+        ],
       ])
       .withReducer(rootReducer, initialState)
       .run();
@@ -206,79 +220,26 @@ describe(linkNewWalletToZEROAccount, () => {
       .provide([
         [call(getSignedToken), { success: true, token: 'some_token' }],
         [
-          call(apiLinkNewWalletToZEROAccount, 'some_token'),
+          call(apiLinkNewWalletToZEROAccount, 'some_token', { canAuthenticate: true }),
           { success: true, response: { wallet: { id: 'wallet_id', publicAddress: 'some_wallet_address' } } },
         ],
+        [
+          call(fetchCurrentUser),
+          {
+            id: 'user-id',
+            wallets: [{ id: 'wallet_id', publicAddress: 'some_wallet_address', isThirdWeb: false }],
+            profileSummary: { primaryEmail: 'test@zero.tech' },
+          } as any,
+        ],
+        [call(fetchWallets), {}],
       ])
       .withReducer(rootReducer, initialState)
       .run();
 
     expect(accountManagement.errors).toEqual([]);
     expect(accountManagement.successMessage).toEqual('Wallet added successfully');
-    expect(user.data.wallets).toStrictEqual([{ id: 'wallet_id', publicAddress: 'some_wallet_address' }]);
-  });
-
-  it('updates primaryZID if provided in response', async () => {
-    const initialState = new StoreBuilder()
-      .withCurrentUser({
-        id: 'user-id',
-        profileSummary: { primaryEmail: 'test@zero.tech', wallets: [] },
-      } as any)
-      .build();
-
-    const {
-      storeState: {
-        authentication: { user },
-      },
-    } = await expectSaga(linkNewWalletToZEROAccount)
-      .provide([
-        [call(getSignedToken), { success: true, token: 'some_token' }],
-        [
-          call(apiLinkNewWalletToZEROAccount, 'some_token'),
-          {
-            success: true,
-            response: {
-              wallet: { id: 'wallet_id', publicAddress: 'some_wallet_address' },
-              primaryZID: '0://developer',
-            },
-          },
-        ],
-      ])
-      .withReducer(rootReducer, initialState)
-      .run();
-
-    expect(user.data.primaryZID).toEqual('0://developer');
-  });
-
-  it('derives primaryZID from publicAddress if not provided in response', async () => {
-    const initialState = new StoreBuilder()
-      .withCurrentUser({
-        id: 'user-id',
-        profileSummary: { primaryEmail: 'test@zero.tech', wallets: [] },
-      } as any)
-      .build();
-
-    const {
-      storeState: {
-        authentication: { user },
-      },
-    } = await expectSaga(linkNewWalletToZEROAccount)
-      .provide([
-        [call(getSignedToken), { success: true, token: 'some_token' }],
-        [
-          call(apiLinkNewWalletToZEROAccount, 'some_token'),
-          {
-            success: true,
-            response: {
-              wallet: { id: 'wallet_id', publicAddress: '0x64afb118ee48b732179be1c471537e2a6d4a63fe' },
-              primaryZID: null,
-            },
-          },
-        ],
-      ])
-      .withReducer(rootReducer, initialState)
-      .run();
-
-    expect(user.data.primaryZID).toEqual('0x64af...63fe');
+    expect(user.data.wallets).toStrictEqual([
+      { id: 'wallet_id', publicAddress: 'some_wallet_address', isThirdWeb: false },
+    ]);
   });
 });

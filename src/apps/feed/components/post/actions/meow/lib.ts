@@ -1,5 +1,5 @@
 const INCREMENTS = 1;
-const MS_BETWEEN_INCREMENTS = 75;
+const MS_BETWEEN_INCREMENTS = 110;
 const OPTIONS = 100;
 const MAX_SCALE = 1.25;
 

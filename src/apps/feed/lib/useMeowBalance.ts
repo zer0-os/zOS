@@ -22,9 +22,6 @@ export const useMeowBalance = () => {
       if (!userAddress) return '0';
 
       const response = await get(`/api/wallet/${userAddress}/token/${MEOW_TOKEN_ADDRESS}/balance`).send();
-
-      console.log('response : ', response);
-
       if (!response.ok) {
         throw new Error('Failed to fetch MEOW token balance');
       }

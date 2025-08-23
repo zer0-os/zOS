@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import { getPost, mapPostToMatrixMessage } from '../../../../store/posts/utils';
 import { useMeowPost } from '../../lib/useMeowPost';
 import { userIdSelector } from '../../../../store/authentication/selectors';
-import { userRewardsMeowBalanceSelector } from '../../../../store/rewards/selectors';
+import { useMeowBalance } from '../../lib/useMeowBalance';
 
 export const usePostView = (postId: string) => {
   const userId = useSelector(userIdSelector);
-  const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
+  const { meowBalance: userMeowBalance } = useMeowBalance();
   const { meowPost, meowPostFeed } = useMeowPost();
 
   const { data, isLoading: isLoadingPost } = useQuery({

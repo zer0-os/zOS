@@ -6,12 +6,12 @@ import { PAGE_SIZE } from '../../../lib/constants';
 import { getPostReplies, mapPostToMatrixMessage } from '../../../../../store/posts/utils';
 import { useMeowPost } from '../../../lib/useMeowPost';
 import { userIdSelector } from '../../../../../store/authentication/selectors';
-import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/selectors';
+import { useMeowBalance } from '../../../lib/useMeowBalance';
 import { queuedCommentsByPostSelector } from '../../../../../store/post-queue/selectors';
 
 export const useReplyList = (postId: string) => {
   const userId = useSelector(userIdSelector);
-  const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
+  const { meowBalance: userMeowBalance } = useMeowBalance();
   const { meowPost, meowPostFeed } = useMeowPost();
 
   const queuedComments = useSelector(queuedCommentsByPostSelector(postId));

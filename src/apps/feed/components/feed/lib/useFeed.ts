@@ -8,7 +8,7 @@ import { PAGE_SIZE } from '../../../lib/constants';
 import { mapPostToMatrixMessage } from '../../../../../store/posts/utils';
 import { useMeowPost } from '../../../lib/useMeowPost';
 import { primaryZIDSelector, userIdSelector } from '../../../../../store/authentication/selectors';
-import { userRewardsMeowBalanceSelector } from '../../../../../store/rewards/selectors';
+import { useMeowBalance } from '../../../lib/useMeowBalance';
 import { searchMyNetworksByName } from '../../../../../platform-apps/channels/util/api';
 import { MemberNetworks } from '../../../../../store/users/types';
 import { queuedPostsByFeedSelector } from '../../../../../store/post-queue/selectors';
@@ -22,7 +22,7 @@ interface UseFeedParams {
 
 export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: UseFeedParams) => {
   const currentUserId = useSelector(userIdSelector);
-  const userMeowBalance = useSelector(userRewardsMeowBalanceSelector);
+  const { meowBalance: userMeowBalance } = useMeowBalance();
   const primaryZID = useSelector(primaryZIDSelector);
   const [searchResults, setSearchResults] = useState<MemberNetworks[]>([]);
   const [isSearching, setIsSearching] = useState(false);

@@ -30,9 +30,11 @@ export const MeowAction = ({ meows = 0, isDisabled, messageId, meowPost, hasUser
       style={{
         scale,
       }}
-      onTapStart={start}
-      onTap={handleStop}
-      onTapCancel={cancel}
+      onMouseDown={start}
+      onMouseUp={handleStop}
+      onMouseLeave={cancel}
+      onTouchStart={start}
+      onTouchEnd={handleStop}
       className={`${styles.Container} ${isDisabled && styles.Disabled} ${hasUserVoted && styles.Voted}`}
     >
       <Action>

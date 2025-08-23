@@ -50,6 +50,7 @@ export const useMeowPost = () => {
       const userBalance = Number(ethers.utils.formatEther(meowBalance));
       const requestedAmount = Number(meowAmount);
       const cappedAmount = Math.min(requestedAmount, userBalance);
+
       const meowAmountWei = ethers.utils.parseEther(cappedAmount.toString());
       const res = await meowPostApi(postId, meowAmountWei.toString());
       if (!res.ok) {

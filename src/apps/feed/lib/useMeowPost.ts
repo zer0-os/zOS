@@ -4,7 +4,6 @@ import { useCallback, useRef } from 'react';
 import { SagaActionTypes } from '../../../store/posts';
 import { ethers } from 'ethers';
 import { meowPost as meowPostApi } from '../../../store/posts/utils';
-import { formatWeiAmount } from '../../../lib/number';
 import { useMeowBalance } from './useMeowBalance';
 
 export const useMeowPost = () => {
@@ -48,20 +47,16 @@ export const useMeowPost = () => {
   const { mutate } = useMutation({
     mutationFn: async ({ postId, meowAmount }: { postId: string; meowAmount: string }) => {
       // Validate against user's balance - cap at available balance
-      const userBalance = Number(formatWeiAmount(meowBalance));
+      const userBalance = Number(ethers.utils.formatEther(meowBalance));
       const requestedAmount = Number(meowAmount);
       const cappedAmount = Math.min(requestedAmount, userBalance);
-
       const meowAmountWei = ethers.utils.parseEther(cappedAmount.toString());
       const res = await meowPostApi(postId, meowAmountWei.toString());
-
       if (!res.ok) {
         throw new Error('Failed to meow post');
       }
       return { postId, meowAmount: cappedAmount.toString() };
     },
-
-    // No onMutate needed - we save state in updatePostCachesOptimistically
 
     onError: (_error, _variables, _context) => {
       if (previousPost.current) {

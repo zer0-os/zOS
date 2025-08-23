@@ -5,9 +5,6 @@ import { get } from '../../../lib/api/rest';
 import { selectedWalletAddressSelector } from '../../../store/wallet/selectors';
 import { MEOW_TOKEN_ADDRESS } from '../../wallet/constants';
 
-const meowTokenAddress =
-  process.env.NODE_ENV === 'production' ? MEOW_TOKEN_ADDRESS : '0x6a80b630F455b8fd0CD63D0FdE7C01028bABc058';
-
 /**
  * Hook to fetch user's MEOW token balance from their Z-chain wallet
  */
@@ -20,11 +17,11 @@ export const useMeowBalance = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['meowBalance', userAddress, meowTokenAddress],
+    queryKey: ['meowBalance', userAddress, MEOW_TOKEN_ADDRESS],
     queryFn: async (): Promise<string> => {
       if (!userAddress) return '0';
 
-      const response = await get(`/api/wallet/${userAddress}/token/${meowTokenAddress}/balance`).send();
+      const response = await get(`/api/wallet/${userAddress}/token/${MEOW_TOKEN_ADDRESS}/balance`).send();
       if (!response.ok) {
         throw new Error('Failed to fetch MEOW token balance');
       }

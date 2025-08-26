@@ -76,7 +76,7 @@ export const useStakeData = ({ poolAddress }: UseStakeDataParams): UseStakeDataR
   const handleMax = () => {
     if (userStakingBalance) {
       const maxAmount = ethers.utils.formatUnits(userStakingBalance, 18);
-      const formatted = parseFloat(maxAmount).toString().replace(/\.0+$/, '');
+      const formatted = maxAmount.replace(/\.0+$/, '');
       setAmount(formatted);
     }
   };

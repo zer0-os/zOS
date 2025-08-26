@@ -64,19 +64,20 @@ export const useStakeData = ({ poolAddress }: UseStakeDataParams): UseStakeDataR
       return false;
     }
 
-    const numAmount = parseFloat(amount);
-    const maxAmount = parseFloat(ethers.utils.formatUnits(userStakingBalance, 18));
-    if (numAmount > maxAmount) {
+    try {
+      const wei = ethers.utils.parseUnits(amount, 18);
+      const requiredAmount = BigInt(wei.toString());
+      if (requiredAmount <= 0n) return false;
+      return requiredAmount <= userStakingBalance;
+    } catch {
       return false;
     }
-
-    return true;
   }, [amount, userStakingBalance]);
 
   const handleMax = () => {
     if (userStakingBalance) {
       const maxAmount = ethers.utils.formatUnits(userStakingBalance, 18);
-      const formatted = parseFloat(maxAmount).toString().replace(/\.0+$/, '');
+      const formatted = maxAmount.replace(/\.0+$/, '');
       setAmount(formatted);
     }
   };
@@ -100,11 +101,18 @@ export const useStakeData = ({ poolAddress }: UseStakeDataParams): UseStakeDataR
       return 'Please enter a valid amount';
     }
 
-    if (userStakingBalance) {
-      const maxAmount = ethers.utils.formatUnits(userStakingBalance, 18);
-      if (numAmount > parseFloat(maxAmount)) {
+    try {
+      const wei = ethers.utils.parseUnits(amount, 18);
+      const requiredAmount = BigInt(wei.toString());
+      if (requiredAmount <= 0n) {
+        return 'Please enter a valid amount';
+      }
+
+      if (userStakingBalance && requiredAmount > userStakingBalance) {
         return 'Amount exceeds available balance';
       }
+    } catch {
+      return 'Please enter a valid amount';
     }
 
     return null;

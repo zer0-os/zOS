@@ -1,7 +1,8 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IconUser, IconBarChart } from '@zero-tech/zui/icons';
+import { IconUser, IconBarChart, IconLock } from '@zero-tech/zui/icons';
+import { IconButton } from '@zero-tech/zui/components';
 import { setLastActiveFeed } from '../../../../../../lib/last-feed';
 import { formatMarketCap, formatPriceChange, formatTokenPrice } from '../../lib/utils';
 
@@ -16,6 +17,8 @@ interface FeedItemProps {
   tokenSymbol?: string;
   tokenPriceUsd?: number;
   tokenPriceChange?: number;
+  onUpdateChannel?: (zid: string) => void;
+  isOwner?: boolean;
 }
 
 export const FeedItem = ({
@@ -27,12 +30,19 @@ export const FeedItem = ({
   tokenSymbol,
   tokenPriceUsd,
   tokenPriceChange,
+  onUpdateChannel,
+  isOwner,
 }: FeedItemProps) => {
   const history = useHistory();
 
   const handleOnClick = () => {
     setLastActiveFeed(zid);
     history.push(route);
+  };
+
+  const handleUpdateClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onUpdateChannel?.(zid);
   };
 
   return (
@@ -80,6 +90,18 @@ export const FeedItem = ({
           )}
         </div>
       </div>
+
+      {!tokenSymbol && isOwner && onUpdateChannel && (
+        <div className={styles.UpdateButtonContainer}>
+          <IconButton
+            size={24}
+            Icon={IconLock}
+            onClick={handleUpdateClick}
+            aria-label='Update channel token gating'
+            className={styles.UpdateButton}
+          />
+        </div>
+      )}
     </li>
   );
 };

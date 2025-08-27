@@ -1,0 +1,125 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../../glass';
+
+.Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 350px;
+  width: 100%;
+}
+
+.Title {
+  font-size: 20px;
+  font-weight: 600;
+  color: theme.$color-secondary-11;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.Subtitle {
+  @include glass-text-secondary-color;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 8px;
+  max-width: 320px;
+}
+
+.Content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 32px 0;
+  gap: 16px;
+}
+
+.ZeroId {
+  color: theme.$color-secondary-11;
+  text-align: center;
+  margin-bottom: 0;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ArrowIcon {
+  color: theme.$color-secondary-11;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.DetailsBox {
+  background: rgba(21, 23, 25, 0.85);
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  max-width: 340px;
+  box-sizing: border-box;
+  border: 1px solid #23262a;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.InfoRow {
+  @include glass-text-primary-color;
+
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  position: relative;
+}
+
+.InfoRowLabel {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+}
+
+.InfoRowValue {
+  @include glass-text-primary-color;
+
+  font-size: 12px;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.InfoText {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  text-align: center;
+  margin: 16px 0 8px 0;
+}
+
+.Button {
+  background: theme.$color-secondary-11;
+  color: #151719;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 150px;
+
+  &:disabled {
+    background: #23262a;
+    color: theme.$color-greyscale-11;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.InfoContainer {
+  height: 16px;
+  margin-top: 8px;
+  max-width: 270px;
+}

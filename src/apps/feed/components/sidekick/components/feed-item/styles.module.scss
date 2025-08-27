@@ -137,3 +137,15 @@
 
   font-size: 12px;
 }
+
+.UpdateButtonContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding-left: 8px;
+}
+
+.UpdateButton {
+  color: theme.$color-secondary-11;
+}

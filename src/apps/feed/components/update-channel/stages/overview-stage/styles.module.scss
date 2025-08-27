@@ -1,0 +1,90 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../../glass';
+
+.Stage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.Header {
+  text-align: center;
+}
+
+.IconContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+  color: theme.$color-secondary-11;
+}
+
+.Title {
+  color: theme.$color-secondary-11;
+
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.Description {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  margin: 0;
+  max-width: 400px;
+  text-align: left;
+}
+
+.Content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.Steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.Step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.StepNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: theme.$color-greyscale-11;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.StepContent {
+  flex: 1;
+}
+
+.StepContent h3 {
+  font-size: 14px;
+  margin: 0;
+  color: theme.$color-greyscale-12;
+}
+
+.StepContent p {
+  font-size: 12px;
+  margin: 0;
+  color: theme.$color-greyscale-11;
+}
+
+.Actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}

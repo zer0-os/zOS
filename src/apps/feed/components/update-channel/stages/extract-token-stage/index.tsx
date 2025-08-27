@@ -1,5 +1,5 @@
 import React from 'react';
-import { TokenData } from '../../lib/hooks/useTokenFinder';
+import { TokenData } from '../../../create-channel/lib/hooks/useTokenFinder';
 import { TokenIcon } from '../../../../../wallet/components/token-icon/token-icon';
 
 import styles from './styles.module.scss';

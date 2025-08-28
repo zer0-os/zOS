@@ -1,0 +1,122 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../../glass';
+
+.Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+  width: 100%;
+}
+
+.Title {
+  font-size: 20px;
+  font-weight: 600;
+  color: theme.$color-secondary-11;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.Subtitle {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 24px;
+  max-width: 320px;
+}
+
+.Form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.InputContainer {
+  @include glass-text-secondary-color;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.LabelWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.Input {
+  width: 100%;
+}
+
+.InfoText {
+  @include glass-text-secondary-color;
+
+  font-size: 10px;
+  text-align: left;
+}
+
+.ContinueButton {
+  background: theme.$color-secondary-11;
+  color: #151719;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+  width: 100%;
+
+  &:disabled {
+    background: #23262a;
+    color: theme.$color-greyscale-11;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.Enhancer {
+  @include glass-text-secondary-color;
+
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+.Spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid theme.$color-secondary-11;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.Success {
+  color: theme.$color-secondary-11;
+  font-size: 12px;
+  text-align: center;
+}
+
+.Failure {
+  color: theme.$color-failure-11;
+  font-size: 12px;
+  text-align: center;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

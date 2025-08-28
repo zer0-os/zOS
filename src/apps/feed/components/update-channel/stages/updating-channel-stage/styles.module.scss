@@ -1,0 +1,83 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../../../glass';
+
+.Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 350px;
+  width: 100%;
+  gap: 32px;
+}
+
+.Title {
+  color: theme.$color-secondary-11;
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.LoadingSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  width: 100%;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.LoadingIndicator {
+  width: 38px;
+  height: 38px;
+  border: 2px solid rgba(1, 244, 203, 0.2);
+  border-top: 2px solid theme.$color-secondary-11;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.StepText {
+  @include glass-text-secondary-color;
+
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.ErrorMessage {
+  color: theme.$color-failure-11;
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.Actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  gap: 16px;
+}
+
+.RetryButton {
+  background: theme.$color-secondary-11;
+  color: #151719;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 150px;
+}

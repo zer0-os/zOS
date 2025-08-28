@@ -99,6 +99,7 @@ export const Sidekick = () => {
           zid={channel.zid}
           memberCount={channel.memberCount || memberCounts[channel.zid]}
           tokenMarketCap={tokenInfo?.priceData.marketCap}
+          tokenSymbol={tokenInfo?.tokenSymbol}
           onUpdateChannel={handleUpdateChannel}
           isOwner={isOwner}
         />

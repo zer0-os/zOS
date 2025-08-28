@@ -103,37 +103,3 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
-.TokenSymbol {
-  @include glass-text-tertiary-color;
-
-  margin-right: 8px;
-}
-
-.TokenPriceContainer {
-  display: flex;
-  align-items: center;
-}
-
-.TokenPriceUsd {
-  @include glass-text-primary-color;
-}
-
-.TokenPriceChangeContainer {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  justify-content: flex-end;
-}
-
-.TokenPriceChange {
-  &.Up {
-    color: theme.$color-secondary-11;
-  }
-
-  &.Down {
-    color: rgba(238, 236, 255, 0.42);
-  }
-
-  font-size: 12px;
-}

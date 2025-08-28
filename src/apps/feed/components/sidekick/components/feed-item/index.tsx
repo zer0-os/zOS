@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import { IconUser, IconBarChart } from '@zero-tech/zui/icons';
 import { setLastActiveFeed } from '../../../../../../lib/last-feed';
-import { formatMarketCap, formatPriceChange, formatTokenPrice } from '../../lib/utils';
+import { formatMarketCap } from '../../lib/utils';
 
 import styles from './styles.module.scss';
 
@@ -13,21 +13,9 @@ interface FeedItemProps {
   isSelected?: boolean;
   memberCount?: number;
   tokenMarketCap?: number;
-  tokenSymbol?: string;
-  tokenPriceUsd?: number;
-  tokenPriceChange?: number;
 }
 
-export const FeedItem = ({
-  route,
-  zid,
-  isSelected,
-  memberCount,
-  tokenMarketCap,
-  tokenSymbol,
-  tokenPriceUsd,
-  tokenPriceChange,
-}: FeedItemProps) => {
+export const FeedItem = ({ route, zid, isSelected, memberCount, tokenMarketCap }: FeedItemProps) => {
   const history = useHistory();
 
   const handleOnClick = () => {
@@ -47,10 +35,7 @@ export const FeedItem = ({
             <div className={styles.FeedName}>
               <div>{zid}</div>
             </div>
-            {tokenSymbol && <div className={styles.TokenSymbol}>{tokenSymbol}</div>}
           </div>
-
-          {tokenPriceUsd && <div className={styles.TokenPriceUsd}>{formatTokenPrice(tokenPriceUsd)}</div>}
         </div>
 
         <div className={styles.InfoContainer}>
@@ -70,14 +55,6 @@ export const FeedItem = ({
               </div>
             )}
           </div>
-
-          {tokenPriceChange && (
-            <div className={styles.TokenPriceChangeContainer}>
-              <div className={`${styles.TokenPriceChange} ${tokenPriceChange >= 0 ? styles.Up : styles.Down}`}>
-                {formatPriceChange(tokenPriceChange)}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </li>

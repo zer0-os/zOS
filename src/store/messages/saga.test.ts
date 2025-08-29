@@ -16,7 +16,6 @@ import { rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
 import { StoreBuilder } from '../test/store';
-import { MessageSendStatus } from '.';
 import { chat, getMessageEmojiReactions, sendEmojiReactionEvent } from '../../lib/chat';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { DefaultRoomLabels } from '../channels';

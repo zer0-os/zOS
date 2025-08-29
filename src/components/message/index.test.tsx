@@ -195,8 +195,8 @@ describe('message', () => {
 
   it('calculates and applies correct dimensions for the placeholder', () => {
     const media = { id: '1', url: null, width: 1200, height: 1200, type: MediaType.Image };
-    const maxWidthConstraint = 520;
-    const aspectRatioAdjustedHeight = 520;
+    const maxWidthConstraint = 488;
+    const aspectRatioAdjustedHeight = 488;
 
     const wrapper = subject({ media });
 

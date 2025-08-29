@@ -30,8 +30,6 @@ import { rawChannel } from '../channels/selectors';
 import { getUsersByMatrixIds } from '../users/saga';
 import { ReceiveNewMessageAction, ReceiveOptimisticMessageAction, SyncMessagesAction } from './types';
 
-const handledOptimisticIds = new Set<string>();
-
 const BATCH_INTERVAL = 500; // Debounce/batch interval in milliseconds
 
 export interface Payload {
@@ -246,12 +244,6 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
   const currentUser = yield select(currentUserSelector);
 
   const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
-
-  // Check if already handled (real message arrived first)
-  if (handledOptimisticIds.has(temporaryMessage.optimisticId)) {
-    handledOptimisticIds.delete(temporaryMessage.optimisticId);
-    return { optimisticMessage: temporaryMessage }; // Skip adding to state
-  }
 
   yield call(receiveChannel, { id: channelId, messages: [...existingMessages, temporaryMessage] });
 
@@ -488,72 +480,8 @@ export function* receiveActiveChannelMessage(channelId: string) {
 }
 
 export function* receiveOptimisticMessage(action: ReceiveOptimisticMessageAction) {
-  const { message, roomId } = action.payload;
-  // hydrate message with redux data
-  const newMessage: Message[] = yield call(mapMessagesAndPreview, [message], roomId);
-  const channel = yield select((state) => rawChannel(state, roomId));
-  const existingMessages = channel.messages;
-  // replace the optimistic message with the real message
-  const newMessages: (string | Message)[] | null = yield call(
-    replaceOptimisticMessage,
-    existingMessages,
-    newMessage[0]
-  );
-  if (!newMessages || !newMessage[0]) {
-    return;
-  }
-  const fullMessage = newMessages.find((message) => typeof message !== 'string' && message.id === newMessage[0].id) as
-    | Message
-    | undefined;
-  if (!fullMessage) {
-    return;
-  }
-  // update the last message if the new message is more recent
-  let lastMessage = channel.lastMessage;
-  if (fullMessage.createdAt > channel.lastMessage?.createdAt) {
-    lastMessage = fullMessage;
-  }
-  yield call(receiveChannel, { id: roomId, messages: newMessages, lastMessage });
-}
-
-export function* replaceOptimisticMessage(currentMessages: string[], message: Message) {
-  if (!message.optimisticId) {
-    return null;
-  }
-
-  const messageIndex = currentMessages.findIndex((id) => id === message.optimisticId);
-
-  if (messageIndex < 0) {
-    // No match: Real event arrived first. Append the real message.
-    handledOptimisticIds.add(message.optimisticId);
-    const messages = [
-      ...currentMessages,
-      {
-        ...message,
-        sendStatus: MessageSendStatus.SUCCESS,
-      },
-    ];
-    return messages;
-  }
-
-  const optimisticMessage = yield select(messageSelector(message.optimisticId));
-  if (!optimisticMessage) {
-    return null; // This shouldn't happen because we'd have bailed above, but just in case.
-  }
-
-  if (optimisticMessage.parentMessage) {
-    message.parentMessageMedia = optimisticMessage.parentMessage.media;
-  }
-
-  const messages = [...currentMessages];
-  messages[messageIndex] = {
-    ...optimisticMessage,
-    ...message,
-    createdAt: optimisticMessage.createdAt,
-    media: optimisticMessage.media,
-    sendStatus: MessageSendStatus.SUCCESS,
-  };
-  return messages;
+  const { roomId } = action.payload;
+  yield call(syncMessages, roomId);
 }
 
 export function* receiveUpdateMessage(action) {

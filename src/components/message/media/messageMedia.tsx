@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import AttachmentCards from '../../../platform-apps/channels/attachment-cards';
 import { Media, MediaType, MessageAttachment } from '../../../store/messages';
-import { getPlaceholderDimensions } from '../utils';
+import { usePlaceholderDimensions } from '../utils';
 import { IconAlertCircle } from '@zero-tech/zui/icons';
 import { Blurhash } from 'react-blurhash';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
@@ -28,7 +28,7 @@ export const MessageMedia = ({
 }: MessageMediaProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const blurhash = media['xyz.amorgan.blurhash'];
-  const { width, height } = getPlaceholderDimensions(media.width, media.height);
+  const { width, height } = usePlaceholderDimensions(media.width, media.height);
 
   const handleImageLoad = () => {
     setIsImageLoaded(true);

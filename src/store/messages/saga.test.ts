@@ -7,7 +7,6 @@ import {
   clearMessages,
   sendBrowserNotification,
   receiveUpdateMessage,
-  replaceOptimisticMessage,
   onMessageEmojiReactionChange,
   updateMessageEmojiReaction,
   sendEmojiReaction,
@@ -17,7 +16,6 @@ import { rootReducer } from '../reducer';
 import { mapMessage, send as sendBrowserMessage } from '../../lib/browser';
 import { call } from 'redux-saga/effects';
 import { StoreBuilder } from '../test/store';
-import { MessageSendStatus } from '.';
 import { chat, getMessageEmojiReactions, sendEmojiReactionEvent } from '../../lib/chat';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { DefaultRoomLabels } from '../channels';
@@ -324,98 +322,6 @@ describe(receiveUpdateMessage, () => {
       .run();
 
     expect(storeState.normalized.messages[message.id]).toEqual({ ...editedMessage, reactions: expectedReactions });
-  });
-});
-
-describe(replaceOptimisticMessage, () => {
-  it('returns null if there is no optimisticId on the new message', async () => {
-    const newMessage = {
-      id: 'new-message',
-      isAdmin: false,
-      createdAt: 0,
-      updatedAt: 0,
-      sender: {
-        userId: 'test',
-        matrixId: 'test',
-        firstName: 'test',
-        lastName: 'test',
-        profileImage: '',
-        profileId: '',
-        primaryZID: '',
-      },
-      mentionedUsers: [],
-      hidePreview: false,
-      sendStatus: MessageSendStatus.SUCCESS,
-      isPost: false,
-    };
-    const { returnValue } = await expectSaga(replaceOptimisticMessage, [], newMessage).run();
-
-    expect(returnValue).toEqual(null);
-  });
-
-  it('appends the message and sets send status to success if there is no message identified by the optimisticId', async () => {
-    const currentMessages = ['message-1', 'message-2'];
-    const newMessage = {
-      id: 'new-message',
-      optimisticId: 'optimistic-id',
-      isAdmin: false,
-      createdAt: 0,
-      updatedAt: 0,
-      sender: {
-        userId: 'test',
-        matrixId: 'test',
-        firstName: 'test',
-        lastName: 'test',
-        profileImage: '',
-        profileId: '',
-        primaryZID: '',
-      },
-      mentionedUsers: [],
-      hidePreview: false,
-      sendStatus: MessageSendStatus.SUCCESS,
-      isPost: false,
-    };
-
-    const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage).run();
-
-    expect(returnValue).toEqual([...currentMessages, { ...newMessage, sendStatus: MessageSendStatus.SUCCESS }]);
-  });
-
-  it('returns message list with replaced message and success status', async () => {
-    const currentMessages = ['message-1', 'optimistic-id', 'message-2'];
-    const oldMessages = [
-      { id: 'message-1' },
-      { id: 'optimistic-id', optimisticId: 'optimistic-id', createdAt: 1234567890 },
-      { id: 'message-2' },
-    ] as any;
-    const newMessage = {
-      id: 'new-message',
-      optimisticId: 'optimistic-id',
-      isAdmin: false,
-      createdAt: 0,
-      updatedAt: 0,
-      sender: {
-        userId: 'test',
-        matrixId: 'test',
-        firstName: 'test',
-        lastName: 'test',
-        profileImage: '',
-        profileId: '',
-        primaryZID: '',
-      },
-      mentionedUsers: [],
-      hidePreview: false,
-      sendStatus: MessageSendStatus.SUCCESS,
-      isPost: false,
-    };
-    const initialState = new StoreBuilder().withConversationList({ id: 'channel-id', messages: oldMessages });
-
-    const { returnValue } = await expectSaga(replaceOptimisticMessage, currentMessages, newMessage)
-      .withReducer(rootReducer, initialState.build())
-      .run();
-
-    const expectedNewMessage = { ...newMessage, createdAt: 1234567890, sendStatus: MessageSendStatus.SUCCESS };
-    expect(returnValue).toEqual(['message-1', expectedNewMessage, 'message-2']);
   });
 });
 

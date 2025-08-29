@@ -10,6 +10,7 @@ export enum MainBackground {
   AnimatedGreenParticles = 'animated-green-particles',
   AnimatedBlackParticles = 'animated-black-particles',
   DotGrid = 'dot-grid',
+  None = 'none',
 }
 
 export const setMainBackground = createAction<{ selectedBackground: MainBackground }>(
@@ -22,7 +23,7 @@ export interface BackgroundState {
 
 const initialState: BackgroundState = {
   selectedMainBackground:
-    (localStorage.getItem('mainBackground:selectedMainBackground') as MainBackground) || MainBackground.DotGrid,
+    (localStorage.getItem('mainBackground:selectedMainBackground') as MainBackground) || MainBackground.None,
 };
 
 const slice = createSlice({

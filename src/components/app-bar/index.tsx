@@ -26,6 +26,7 @@ import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
 import styles from './styles.module.scss';
+import ExtraIconButton from './extra-icon-button/extraIconButton';
 
 const cn = bemClassName('app-bar');
 
@@ -173,7 +174,12 @@ export class AppBar extends React.Component<Properties, State> {
               to='/profile'
               onLinkClick={this.unhoverContainer}
             />
-            <AppLink
+            <div {...cn('link')} title='Other Apps'>
+              <span>Other Apps</span>
+            </div>
+          </LegacyPanel>
+          <div className={styles.Bottom}>
+            <ExtraIconButton
               Icon={IconWorld}
               isActive={isActive('explorer')}
               label='World Explorer'
@@ -181,7 +187,7 @@ export class AppBar extends React.Component<Properties, State> {
               onLinkClick={this.unhoverContainer}
             />
             {featureFlags.enableAuraZApp && (
-              <AppLink
+              <ExtraIconButton
                 Icon={IconAura}
                 isActive={isActive('aura')}
                 label='Aura'
@@ -189,12 +195,13 @@ export class AppBar extends React.Component<Properties, State> {
                 onLinkClick={this.unhoverContainer}
               />
             )}
-            <div {...cn('link')} title='Other Apps'>
-              <WorldPanelItem Icon={IconFourDots} label='Other Apps' isActive={false} onClick={this.openModal} />
-              <span>Other Apps</span>
-            </div>
-          </LegacyPanel>
-          <div className={styles.Bottom}>
+            <ExtraIconButton
+              Icon={IconFourDots}
+              isActive={false}
+              label='Other Apps'
+              to='#'
+              onLinkClick={this.openModal}
+            />
             <PostButton />
             <CurrentUser />
           </div>

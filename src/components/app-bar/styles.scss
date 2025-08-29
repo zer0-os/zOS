@@ -24,6 +24,7 @@ $width: 36px;
   z-index: 10;
 
   &__logo-wrapper {
+    margin-top: 13px;
     padding: 6px;
     background: variables.$panel-background;
     border: 1px solid variables.$border-color;

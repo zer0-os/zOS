@@ -5,7 +5,7 @@
 
 @mixin root-background {
   background-image: url(cloudAsset('RootBG.jpg'));
-  background-color: #0a0a0a;
+  background-color: #121212;
   background-image: transparent;
   background-size: cover;
   background-repeat: no-repeat;
@@ -20,7 +20,7 @@
 }
 
 @mixin main-background {
-  background-color: #0a0a0a;
+  background-color: #121212;
   background-image: transparent;
   background-size: cover;
   background-repeat: no-repeat;

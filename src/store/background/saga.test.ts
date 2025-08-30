@@ -3,6 +3,7 @@ import { expectSaga } from 'redux-saga-test-plan';
 import { setMainBackground } from './saga';
 
 import { MainBackground, reducer } from '.';
+import { keyStorageMainBackground } from './constants';
 
 describe('setMainBackground', () => {
   beforeAll(() => {
@@ -24,6 +25,6 @@ describe('setMainBackground', () => {
 
   it('should handle dot-grid background', async () => {
     expectSaga(setMainBackground, { payload: MainBackground.DotGrid }).withReducer(reducer).run();
-    expect(localStorage.setItem).toHaveBeenCalledWith('mainBackground:selectedMainBackground', MainBackground.DotGrid);
+    expect(localStorage.setItem).toHaveBeenCalledWith(keyStorageMainBackground, MainBackground.DotGrid);
   });
 });

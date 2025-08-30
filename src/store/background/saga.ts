@@ -1,7 +1,6 @@
 import { takeLatest, put } from 'redux-saga/effects';
 import { SagaActionTypes, setSelectedMainBackground } from '.';
-
-export const keyStorageMainBackground = 'mainBackground:selectedMainBackground';
+import { keyStorageMainBackground } from './constants';
 
 export function* setMainBackground(action) {
   const selectedMainBackground = action.payload;

@@ -1,4 +1,5 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { keyStorageMainBackground } from './constants';
 
 export enum SagaActionTypes {
   SetMainBackground = 'background/setMainBackground',
@@ -22,8 +23,7 @@ export interface BackgroundState {
 }
 
 const initialState: BackgroundState = {
-  selectedMainBackground:
-    (localStorage.getItem('mainBackground:selectedMainBackground') as MainBackground) || MainBackground.None,
+  selectedMainBackground: (localStorage.getItem(keyStorageMainBackground) as MainBackground) || MainBackground.None,
 };
 
 const slice = createSlice({

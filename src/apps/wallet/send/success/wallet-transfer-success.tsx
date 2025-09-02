@@ -47,7 +47,7 @@ export const WalletTransferSuccess = () => {
           <div className={styles.tokenIconContainer}>
             <div className={styles.tokenIconBackground} />
             <div className={styles.tokenIconHighlight} />
-            <TokenIcon className={styles.tokenIcon} url={token.logo} name={token.name} />
+            <TokenIcon className={styles.tokenIcon} url={token.logo} name={token.name} chainId={token.chainId} />
           </div>
           <div className={styles.dollarAmount}>--</div>
           <div className={styles.amount}>

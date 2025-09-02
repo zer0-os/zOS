@@ -16,7 +16,7 @@ export const Token = ({ token, onClick }: TokenProps) => {
   return (
     <div className={classNames(styles.token, onClick && styles.clickable)} onClick={onClick}>
       <div>
-        <TokenIcon url={token.logo} name={token.name} chainId={1417429182} />
+        <TokenIcon url={token.logo} name={token.name} chainId={token.chainId} />
       </div>
 
       <div className={styles.tokenInfo}>

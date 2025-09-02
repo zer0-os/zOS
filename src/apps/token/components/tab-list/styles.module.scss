@@ -1,9 +1,9 @@
 @use '~@zero-tech/zui/styles/theme' as theme;
-@import '../../../../../variables';
-@import '../../../../../layout';
-@import '../../../../../glass';
-@import '../../../../../functions';
-@import '../../../../../scrollbar';
+@import '../../../../variables';
+@import '../../../../layout';
+@import '../../../../glass';
+@import '../../../../functions';
+@import '../../../../scrollbar';
 
 .TabList {
   @include horizontal-scrollbar();

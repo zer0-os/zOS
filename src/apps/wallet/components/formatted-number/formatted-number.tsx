@@ -30,12 +30,34 @@ export const FormattedNumber = ({ value }: FormattedNumberProps) => {
     return <span>{BigInt(intPart).toLocaleString()}</span>;
   }
 
-  // For all other numbers, display the full value with a formatted integer part.
   const [whole, frac] = value.split('.');
-  // Use try/catch for BigInt in case of an invalid number string
+
+  if (whole === '0') {
+    // For numbers starting with 0, reduce frac to 4 significant digits
+    if (frac) {
+      let significantDigits = '';
+      let count = 0;
+      for (const digit of frac) {
+        significantDigits += digit;
+        if (digit !== '0' || count > 0) {
+          count++;
+        }
+        if (count === 4) {
+          break;
+        }
+      }
+      return <span>{`0${decimalSeparator}${significantDigits}`}</span>;
+    }
+  }
+
   try {
-    const formattedWhole = BigInt(whole).toLocaleString();
-    return <span>{frac ? `${formattedWhole}${decimalSeparator}${frac}` : formattedWhole}</span>;
+    const bigWhole = BigInt(whole);
+    const formattedWhole = bigWhole.toLocaleString();
+    const validFrac = frac.split('').some((digit) => digit !== '0') ? frac : '';
+    const formattedFraction = validFrac && bigWhole > 0n ? validFrac.slice(0, 2) : validFrac;
+    return (
+      <span>{formattedFraction ? `${formattedWhole}${decimalSeparator}${formattedFraction}` : formattedWhole}</span>
+    );
   } catch (e) {
     return <span>{value}</span>;
   }

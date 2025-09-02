@@ -10,3 +10,4 @@ export const txReceiptSelector = (state: RootState) => state.wallet.txReceipt;
 export const selectedWalletAddressSelector = (state: RootState) => state.wallet.selectedWallet?.address;
 export const hasActiveWalletSelector = (state: RootState) => !!selectedWalletAddressSelector(state);
 export const errorSelector = (state: RootState) => state.wallet.error;
+export const errorCodeSelector = (state: RootState) => state.wallet.errorCode;

@@ -40,6 +40,12 @@
   color: var(--text-secondary);
 }
 
+.tokenId {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
 .positive {
   color: var(--color-secondary-11);
 }

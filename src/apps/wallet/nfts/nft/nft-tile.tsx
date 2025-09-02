@@ -1,3 +1,4 @@
+import { IconPackageMinus } from '@zero-tech/zui/icons';
 import { NFT } from '../../types';
 import styles from './nft-tile.module.scss';
 
@@ -9,13 +10,13 @@ export const NFTTile = ({ nft }: NFTTileProps) => {
   return (
     <div className={styles.nftTile}>
       <div className={styles.nftImage}>
-        <img
-          src={
-            nft.imageUrl ??
-            'https://fastly.picsum.photos/id/431/200/300.jpg?hmac=aUpIWBq8svIaK2ruTnNG-BZuvcDsK9Mr9PuJuYAYEQ0'
-          }
-          alt={nft.metadata?.name ?? ''}
-        />
+        {nft.imageUrl ? (
+          <img src={nft.imageUrl} alt={nft.metadata?.name ?? ''} />
+        ) : (
+          <div className={styles.nftImageFallback}>
+            <IconPackageMinus className={styles.icon} size={48} />
+          </div>
+        )}
       </div>
       <div className={styles.nftInfo}>
         <div className={styles.nftName}>{nft.metadata?.name ?? 'Unamed Token'}</div>

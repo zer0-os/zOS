@@ -12,6 +12,7 @@ import {
   setSelectedWallet,
   setError,
   reset,
+  setErrorCode,
 } from '.';
 import {
   recipientSelector,
@@ -25,6 +26,23 @@ import { transferTokenRequest, TransferTokenResponse } from '../../apps/wallet/q
 import { txReceiptQueryOptions, TxReceiptResponse } from '../../apps/wallet/queries/txReceiptQueryOptions';
 import { setUser } from '../authentication';
 import { Recipient, TokenBalance } from '../../apps/wallet/types';
+import {
+  transferNativeAssetRequest,
+  TransferNativeAssetResponse,
+} from '../../apps/wallet/queries/transferNativeAssetRequest';
+
+interface WalletAPIError {
+  response: {
+    body: {
+      message: string;
+      code: string;
+    };
+  };
+}
+
+const isWalletAPIError = (error: any): error is WalletAPIError => {
+  return error?.response?.body?.code;
+};
 
 /**
  * Loads the user's ThirdWeb wallet address into the store once the user has been fetched from the API
@@ -60,14 +78,21 @@ function* handleTransferToken() {
 
       if (recipient && token && amount && selectedWallet) {
         yield put(setSendStage(SendStage.Processing));
-        const result: TransferTokenResponse = yield call(() =>
-          transferTokenRequest(selectedWallet, recipient.publicAddress, amount, token.tokenAddress)
-        );
+        let result: TransferTokenResponse | TransferNativeAssetResponse;
+        if (token.tokenAddress === 'native') {
+          result = yield call(() =>
+            transferNativeAssetRequest(selectedWallet, recipient.publicAddress, amount, token.chainId)
+          );
+        } else {
+          result = yield call(() =>
+            transferTokenRequest(selectedWallet, recipient.publicAddress, amount, token.tokenAddress, token.chainId)
+          );
+        }
 
         if (result.transactionHash) {
           yield put(setSendStage(SendStage.Broadcasting));
           const receipt: TxReceiptResponse = yield call(() =>
-            queryClient.fetchQuery(txReceiptQueryOptions(result.transactionHash))
+            queryClient.fetchQuery(txReceiptQueryOptions(result.transactionHash, token.chainId))
           );
           yield put(setTxReceipt(receipt));
           if (receipt.status === 'confirmed') {
@@ -81,7 +106,9 @@ function* handleTransferToken() {
       }
     }
   } catch (e) {
-    console.error(e);
+    if (isWalletAPIError(e)) {
+      yield put(setErrorCode(e.response.body.code));
+    }
     yield put(setError(true));
   }
 }

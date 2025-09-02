@@ -1,0 +1,107 @@
+@use '../../../../variables' as variables;
+@use '../../../../shared-components/theme-engine/theme' as theme;
+
+.Container {
+  display: flex;
+  position: relative;
+  width: 270px;
+  overflow: hidden;
+  margin-top: variables.$default-gap;
+}
+
+.Body {
+  width: 100%;
+  padding: 16px;
+}
+
+.Title {
+  color: #9199a1;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 3%;
+  margin: 0 0 12px 0;
+}
+
+.BadgesContainer {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.Badge {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+  }
+}
+
+.DefaultBadge {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+}
+
+.TooltipContent {
+  padding: variables.$default-padding;
+  max-width: 280px;
+  text-align: left;
+
+  border-radius: variables.$border-radius;
+
+  background: rgba(24, 24, 28, 0.98);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.TooltipHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.TooltipTitle {
+  font-weight: 500;
+  font-size: 14px;
+  color: #ffffff;
+  line-height: 1.2;
+  flex: 1;
+}
+
+.TooltipDescription {
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.TooltipEffect {
+  font-size: 12px;
+  color: #01f4cb;
+  font-weight: 600;
+  background: rgba(1, 244, 203, 0.4);
+  border-radius: 4px;
+  padding: 2px 6px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}

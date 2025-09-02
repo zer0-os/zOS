@@ -1,29 +1,20 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 
 import { IconCoinsStacked2 } from '@zero-tech/zui/icons';
 
 import styles from './styles.module.scss';
 
 interface ChainItemProps {
-  route: string;
   chainId: string;
   chainName: string;
   chainIcon: string;
   isSelected?: boolean;
+  onSelect: (chainId: string) => void;
 }
 
-export const ChainItem = ({
-  route,
-  chainId: _chainId,
-  chainName,
-  chainIcon: _chainIcon,
-  isSelected,
-}: ChainItemProps) => {
-  const history = useHistory();
-
+export const ChainItem = ({ chainId, chainName, chainIcon: _chainIcon, isSelected, onSelect }: ChainItemProps) => {
   const handleOnClick = () => {
-    history.push(route);
+    onSelect(chainId);
   };
 
   return (

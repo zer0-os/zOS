@@ -1,0 +1,105 @@
+@import '../../../../variables';
+@import '../../../../glass';
+
+.TokenRow {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    @include glass-state-hover-color;
+  }
+}
+
+.TokenColumn {
+  width: 40%;
+}
+
+.PriceColumn {
+  width: 20%;
+}
+
+.VolumeColumn {
+  width: 20%;
+}
+
+.ChangeColumn {
+  width: 20%;
+}
+
+.TokenInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.TokenRank {
+  font-size: 12px;
+  color: var(--color-greyscale-10);
+  min-width: 30px;
+}
+
+.TokenIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.TokenIconPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--color-greyscale-8);
+  border-radius: 6px;
+}
+
+.TokenDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.TokenName {
+  font-size: 14px;
+  @include glass-text-primary-color;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.TokenDescription {
+  @include glass-text-tertiary-color;
+
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Price {
+  font-size: 14px;
+
+  @include glass-text-primary-color;
+}
+
+.Volume {
+  font-size: 14px;
+
+  @include glass-text-primary-color;
+}
+
+.Change {
+  font-size: 14px;
+
+  &.Positive {
+    color: var(--color-secondary-11);
+  }
+
+  &.Negative {
+    color: var(--color-failure-11);
+  }
+}

@@ -1,0 +1,22 @@
+@import '../../../../variables';
+@import '../../../../glass';
+
+.EmptyRow {
+  height: 200px;
+}
+
+.EmptyState {
+  text-align: center;
+  @include glass-text-secondary-color;
+}
+
+.EmptyState > div:first-child {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.EmptySubtext {
+  font-size: 14px;
+  @include glass-text-tertiary-color;
+}

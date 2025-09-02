@@ -1,6 +1,9 @@
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { Panel } from '../../components/layout/panel';
-import { Route, Switch } from 'react-router-dom';
 import { Sidekick } from './components/sidekick';
+import { DexTable } from './components/dex-table';
+import { mockTokensByChain, defaultTokens } from './mock-tokens';
+import { getLastActiveTokenChain } from '../../lib/last-token-chain';
 
 import styles from './token-app.module.scss';
 
@@ -8,14 +11,33 @@ export const TokenApp = () => {
   return (
     <div className={styles.TokenAppContainer}>
       <Sidekick />
-
-      <Panel className={styles.TokenAppPanel}>
+      <div className={styles.Wrapper}>
         <Switch>
-          <Route path={'/token'}>
-            <div>Token App - Coming Soon</div>
-          </Route>
+          <Route
+            path='/token/:chainId'
+            component={({ match }: any) => (
+              <Panel className={styles.TokenAppPanel}>
+                <DexTable tokens={mockTokensByChain[match.params.chainId] || defaultTokens} />
+              </Panel>
+            )}
+          />
+          <Route path='/token' component={Loading} />
         </Switch>
-      </Panel>
+      </div>
     </div>
+  );
+};
+
+const Loading = () => {
+  const lastActiveChain = getLastActiveTokenChain();
+
+  if (lastActiveChain && mockTokensByChain[lastActiveChain]) {
+    return <Redirect to={`/token/${lastActiveChain}`} />;
+  }
+
+  return (
+    <Panel className={styles.TokenAppPanel}>
+      <DexTable tokens={defaultTokens} />
+    </Panel>
   );
 };

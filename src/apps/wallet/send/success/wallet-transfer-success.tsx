@@ -18,6 +18,8 @@ import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { truncateAddress } from '../../utils/address';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { Button } from '../../components/button/button';
+import { useMemo } from 'react';
+import { formatDollars } from '../../utils/format-numbers';
 
 const history = getHistory();
 
@@ -35,9 +37,14 @@ export const WalletTransferSuccess = () => {
     history.push('/wallet');
   };
 
-  const handleViewOnZScan = () => {
+  const handleViewTransaction = () => {
     window.open(txReceipt?.blockExplorerUrl, '_blank');
   };
+
+  const dollarAmount = useMemo(() => {
+    if (!token.price) return '--';
+    return formatDollars(Number(amount) * Number(token.price));
+  }, [token.price, amount]);
 
   return (
     <div className={styles.container}>
@@ -49,7 +56,7 @@ export const WalletTransferSuccess = () => {
             <div className={styles.tokenIconHighlight} />
             <TokenIcon className={styles.tokenIcon} url={token.logo} name={token.name} chainId={token.chainId} />
           </div>
-          <div className={styles.dollarAmount}>--</div>
+          <div className={styles.dollarAmount}>{dollarAmount}</div>
           <div className={styles.amount}>
             <FormattedNumber value={amount} /> <span className={styles.tokenSymbol}>{token.symbol}</span>
           </div>
@@ -86,8 +93,8 @@ export const WalletTransferSuccess = () => {
 
           <div className={styles.actions}>
             <Button onClick={handleClose}>Close</Button>
-            <Button onClick={handleViewOnZScan} variant='secondary'>
-              View on ZScan
+            <Button onClick={handleViewTransaction} variant='secondary'>
+              View Transaction
             </Button>
           </div>
         </div>

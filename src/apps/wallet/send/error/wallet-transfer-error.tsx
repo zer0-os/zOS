@@ -22,7 +22,7 @@ export const WalletTransferError = () => {
     history.push('/wallet');
   };
 
-  const handleViewOnZScan = () => {
+  const handleViewTransaction = () => {
     window.open(txReceipt?.blockExplorerUrl, '_blank');
   };
 
@@ -54,8 +54,8 @@ export const WalletTransferError = () => {
 
         <div className={styles.actions}>
           <Button onClick={handleClose}>Close</Button>
-          <Button onClick={handleViewOnZScan} variant='secondary'>
-            View on ZScan
+          <Button onClick={handleViewTransaction} variant='secondary'>
+            View Transaction
           </Button>
         </div>
       </div>

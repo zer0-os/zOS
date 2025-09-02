@@ -19,6 +19,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableTimerLogs: boolean;
   declare enableNotificationsReadStatus: boolean;
   declare enableAuraZApp: boolean;
+  declare enableTokenZApp: boolean;
   declare enableMatrixDebug: boolean;
   declare enableCreateTGCChannel: boolean;
   declare enableStaking: boolean;

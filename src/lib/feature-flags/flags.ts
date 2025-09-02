@@ -9,6 +9,7 @@ export type FeatureFlagKey =
   | 'enableTimerLogs'
   | 'enableNotificationsReadStatus'
   | 'enableAuraZApp'
+  | 'enableTokenZApp'
   | 'enableMatrixDebug'
   | 'enableCreateTGCChannel'
   | 'enableStaking'

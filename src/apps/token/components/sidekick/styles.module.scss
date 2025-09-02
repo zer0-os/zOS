@@ -1,0 +1,21 @@
+.Actions {
+  display: flex;
+  gap: 8px;
+  padding: 16px 16px 0;
+}
+
+.Search {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.SearchWrapper {
+  border-radius: 64px !important;
+}
+
+.EmptyState {
+  color: var(--color-greyscale-11);
+  text-align: center;
+  font-size: 10px;
+  padding-bottom: 12px;
+}

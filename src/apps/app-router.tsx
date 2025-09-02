@@ -56,7 +56,6 @@ export const HIDE_SIDEKICK_PATHS = [
   '/home',
   '/profile',
   '/wallet',
-  '/token',
 ];
 
 /**

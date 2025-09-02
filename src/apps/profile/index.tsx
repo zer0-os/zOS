@@ -1,6 +1,7 @@
 import { useLocation, useRouteMatch } from 'react-router-dom';
 import { UserPanel } from './panels/UserPanel';
 import { Switcher } from './panels/Switcher';
+import { AchievementsPanel } from './panels/AchievementsPanel';
 import { PostView } from '../feed/components/post-view-container';
 import { useEffect } from 'react';
 import {
@@ -34,8 +35,9 @@ export const ProfileApp = () => {
       ) : (
         <>
           <Switcher />
-          <div>
+          <div className={styles.RightColumn}>
             <UserPanel />
+            <AchievementsPanel />
           </div>
         </>
       )}

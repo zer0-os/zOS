@@ -23,6 +23,10 @@ vi.mock('./panels/Switcher', () => ({
   Switcher: () => <div data-testid='switcher' />,
 }));
 
+vi.mock('./panels/AchievementsPanel', () => ({
+  AchievementsPanel: () => <div data-testid='achievements-panel' />,
+}));
+
 vi.mock('../feed/components/post-view-container', () => ({
   PostView: ({ postId }: { postId: string }) => <div data-testid='post-view'>{postId}</div>,
 }));
@@ -41,7 +45,7 @@ describe('ProfileApp', () => {
     });
   });
 
-  it('should render Switcher and UserPanel when not viewing a post', () => {
+  it('should render Switcher, UserPanel, and AchievementsPanel when not viewing a post', () => {
     mockUseRouteMatch.mockReturnValue({
       params: { zid: 'user123' },
       path: '/profile/user123',
@@ -51,6 +55,7 @@ describe('ProfileApp', () => {
 
     expect(screen.getByTestId('switcher')).toBeInTheDocument();
     expect(screen.getByTestId('user-panel')).toBeInTheDocument();
+    expect(screen.getByTestId('achievements-panel')).toBeInTheDocument();
     expect(screen.queryByTestId('post-view')).not.toBeInTheDocument();
   });
 
@@ -66,6 +71,7 @@ describe('ProfileApp', () => {
     expect(screen.getByTestId('post-view')).toHaveTextContent('post123');
     expect(screen.queryByTestId('switcher')).not.toBeInTheDocument();
     expect(screen.queryByTestId('user-panel')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('achievements-panel')).not.toBeInTheDocument();
   });
 
   it('should store return data when returnPostId and returnPath are present', () => {

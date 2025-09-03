@@ -30,7 +30,7 @@ const UnstakeFromPoolContent = ({
   const { address: walletAddress } = useSelector(selectedWalletSelector);
 
   const flow = useTokenAmountFlow('unstake');
-  const data = useTokenAmountData({ poolAddress, flowType: 'unstake' });
+  const data = useTokenAmountData({ poolAddress, flowType: 'unstake', chainId });
   const actions = useUnstakeActions({
     flowActions: flow,
   });
@@ -87,6 +87,7 @@ const UnstakeFromPoolContent = ({
             amount={data.amount}
             duration={data.duration}
             poolAddress={poolAddress}
+            chainId={chainId}
             tokenSymbol={data.stakingTokenInfo?.symbol}
             hasSufficientAllowance={true} // Unstake doesn't need allowance
             isLoading={actions.isLoading}

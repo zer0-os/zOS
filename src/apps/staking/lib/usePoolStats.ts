@@ -11,16 +11,16 @@ interface RewardConfig {
   canExit: boolean;
 }
 
-export const usePoolStats = (poolAddress: string) => {
+export const usePoolStats = (poolAddress: string, chainId: number) => {
   // Fetch total staked
   const {
     data: totalStaked,
     isLoading: totalStakedLoading,
     error: totalStakedError,
   } = useQuery({
-    queryKey: ['totalStaked', poolAddress],
+    queryKey: ['totalStaked', poolAddress, chainId],
     queryFn: async () => {
-      const res = await get(`/api/staking/${poolAddress}/total-staked`).send();
+      const res = await get(`/api/staking/${poolAddress}/total-staked?chainId=${chainId}`).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch total staked');
@@ -37,9 +37,9 @@ export const usePoolStats = (poolAddress: string) => {
     isLoading: poolConfigLoading,
     error: poolConfigError,
   } = useQuery({
-    queryKey: ['poolConfig', poolAddress],
+    queryKey: ['poolConfig', poolAddress, chainId],
     queryFn: async (): Promise<RewardConfig> => {
-      const res = await get(`/api/staking/${poolAddress}/config`).send();
+      const res = await get(`/api/staking/${poolAddress}/config?chainId=${chainId}`).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch pool config');

@@ -10,21 +10,22 @@ import type { FlowType } from './useTokenAmountFlow';
 interface UseTokenAmountDataParams {
   poolAddress: string;
   flowType: FlowType;
+  chainId: number;
 }
 
-export const useTokenAmountData = ({ poolAddress, flowType }: UseTokenAmountDataParams) => {
+export const useTokenAmountData = ({ poolAddress, flowType, chainId }: UseTokenAmountDataParams) => {
   const { address: _walletAddress } = useSelector(selectedWalletSelector);
   const [amount, setAmount] = useState('');
   const [duration, setDuration] = useState('0');
 
   // Get staking token info
-  const { stakingTokenAddress, stakingTokenInfo } = useStakingToken(poolAddress);
+  const { stakingTokenAddress, stakingTokenInfo } = useStakingToken(poolAddress, chainId);
 
   // Get user's staking info (for unstaking)
-  const { userStakingInfo } = useUserStakingInfo(poolAddress);
+  const { userStakingInfo } = useUserStakingInfo(poolAddress, chainId);
 
   // Get user's wallet balance (for staking)
-  const { userStakingBalance: walletBalance } = useUserBalances(stakingTokenAddress, null);
+  const { userStakingBalance: walletBalance } = useUserBalances(stakingTokenAddress, null, chainId);
 
   // Determine which balance to use based on flow type
   const userBalance = useMemo(() => {

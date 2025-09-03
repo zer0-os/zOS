@@ -36,7 +36,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
     // apyRange,
     loading: statsLoading,
     error: statsError,
-  } = usePoolStats(poolAddress);
+  } = usePoolStats(poolAddress, chainId);
   const {
     stakingTokenInfo,
     rewardsTokenInfo,
@@ -47,7 +47,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
     totalStaked,
     loading: poolLoading,
     error: poolError,
-  } = usePool(poolAddress);
+  } = usePool(poolAddress, chainId);
 
   const loading = statsLoading || poolLoading;
   const error = statsError || poolError;
@@ -61,7 +61,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
   const pendingRewardsFormatted = userPendingRewards ? parseFloat(ethers.utils.formatUnits(userPendingRewards, 18)) : 0;
   const totalStakedFormatted = totalStaked ? parseFloat(ethers.utils.formatUnits(totalStaked, 18)) : 0;
 
-  const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress);
+  const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress, chainId);
 
   const hasClaimableRewards = userPendingRewards && pendingRewardsFormatted >= 0.01;
 

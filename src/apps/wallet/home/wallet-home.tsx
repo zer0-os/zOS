@@ -1,4 +1,4 @@
-import { IconArrowUpRight } from '@zero-tech/zui/icons';
+import { IconArrowDownLeft, IconArrowUpRight } from '@zero-tech/zui/icons';
 import { ZeroCard } from '../components/zero-card/zero-card';
 import { TokensList } from '../tokens/tokens-list';
 import { PanelBody } from '../../../components/layout/panel';
@@ -35,10 +35,9 @@ export const WalletHome = () => {
       <div className={styles.header}>
         <ZeroCard displayName={userName} />
         <div className={styles.actions}>
-          {/* Removing until we have a use case for it */}
-          {/* <Button onClick={() => setOpenReceiveModal(true)} icon={<IconArrowDownLeft size={18} />} variant='secondary'>
+          <Button onClick={() => setOpenReceiveModal(true)} icon={<IconArrowDownLeft size={18} />} variant='secondary'>
             Receive
-          </Button> */}
+          </Button>
           <Button onClick={handleSend} icon={<IconArrowUpRight size={18} />} variant='secondary'>
             Send
           </Button>

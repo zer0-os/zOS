@@ -8,13 +8,13 @@ import { usePoolStats } from './usePoolStats';
 export type { TokenInfo } from './useStakingToken';
 export type { UserStakingInfo } from './useUserStakingInfo';
 
-export const usePool = (poolAddress: string) => {
+export const usePool = (poolAddress: string, chainId: number) => {
   // Use individual hooks
-  const stakingToken = useStakingToken(poolAddress);
-  const rewardsToken = useRewardsToken(poolAddress);
-  const userBalances = useUserBalances(stakingToken.stakingTokenAddress, rewardsToken.rewardsTokenAddress);
-  const userStakingInfo = useUserStakingInfo(poolAddress);
-  const poolStats = usePoolStats(poolAddress);
+  const stakingToken = useStakingToken(poolAddress, chainId);
+  const rewardsToken = useRewardsToken(poolAddress, chainId);
+  const userBalances = useUserBalances(stakingToken.stakingTokenAddress, rewardsToken.rewardsTokenAddress, chainId);
+  const userStakingInfo = useUserStakingInfo(poolAddress, chainId);
+  const poolStats = usePoolStats(poolAddress, chainId);
 
   // Aggregate loading and error states
   const loading =

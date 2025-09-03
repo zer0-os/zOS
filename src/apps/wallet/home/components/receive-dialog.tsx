@@ -1,4 +1,4 @@
-import { Alert, IconButton, Modal } from '@zero-tech/zui/components';
+import { IconButton, Modal } from '@zero-tech/zui/components';
 import styles from './receive-dialog.module.scss';
 import { IconCopy2, IconXClose } from '@zero-tech/zui/icons';
 import QRCode from 'react-qr-code';
@@ -19,14 +19,9 @@ export const ReceiveDialog = ({ open, onOpenChange }: ReceiveDialogProps) => {
     <Modal className={styles.modal} open={open} onOpenChange={onOpenChange}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <div className={styles.title}>Receive - Z Chain</div>
+          <div className={styles.title}>Receive</div>
           <IconButton onClick={() => onOpenChange(false)} Icon={IconXClose} aria-label='Close' />
         </div>
-
-        <Alert variant='info' isFilled>
-          This address can only receive assets native to Z Chain. Other EVM assets sent to this address will be
-          inaccessible.
-        </Alert>
 
         <div className={styles.qrCodeContainer}>
           <QRCode value={address} bgColor='#01f4cb' />

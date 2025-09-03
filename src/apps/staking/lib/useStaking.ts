@@ -2,11 +2,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
 import { get, post } from '../../../lib/api/rest';
+import { isWalletAPIError } from '../../../store/wallet/utils';
 
 interface StakingParams {
   poolAddress: string;
   amount: string;
   lockDuration?: string;
+  chainId: number;
 }
 
 export const useStaking = () => {
@@ -14,7 +16,7 @@ export const useStaking = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async ({ poolAddress, amount, lockDuration }: StakingParams) => {
+    mutationFn: async ({ poolAddress, amount, lockDuration, chainId }: StakingParams) => {
       if (!userAddress) {
         throw new Error('User not connected');
       }
@@ -26,8 +28,12 @@ export const useStaking = () => {
           poolAddress,
           amount,
           lockDuration,
+          chainId,
         });
       } catch (e) {
+        if (isWalletAPIError(e) && e.response.body.code === 'INSUFFICIENT_BALANCE') {
+          throw new Error('Gas balance is not enough for this transaction');
+        }
         console.error(e);
         throw new Error('Failed to stake tokens, please try again.');
       }
@@ -65,9 +71,9 @@ export const useStaking = () => {
     },
   });
 
-  const executeStake = async (poolAddress: string, amount: string, lockDuration?: string) => {
+  const executeStake = async (poolAddress: string, amount: string, chainId: number, lockDuration?: string) => {
     try {
-      const result = await mutation.mutateAsync({ poolAddress, amount, lockDuration });
+      const result = await mutation.mutateAsync({ poolAddress, amount, lockDuration, chainId });
       return result;
     } catch (err: any) {
       const errorMessage = err.message || 'Staking failed';
@@ -75,12 +81,12 @@ export const useStaking = () => {
     }
   };
 
-  const stakeWithLock = async (poolAddress: string, amount: string, lockDuration: string) => {
-    return executeStake(poolAddress, amount, lockDuration);
+  const stakeWithLock = async (poolAddress: string, amount: string, chainId: number, lockDuration: string) => {
+    return executeStake(poolAddress, amount, chainId, lockDuration);
   };
 
-  const stakeWithoutLock = async (poolAddress: string, amount: string) => {
-    return executeStake(poolAddress, amount);
+  const stakeWithoutLock = async (poolAddress: string, amount: string, chainId: number) => {
+    return executeStake(poolAddress, amount, chainId);
   };
 
   return {

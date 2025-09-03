@@ -10,6 +10,7 @@ export interface StakeParams {
   duration: string;
   poolAddress: string;
   stakingTokenAddress: string;
+  chainId: number;
 }
 
 export interface UseStakeActionsParams {
@@ -36,7 +37,7 @@ export const useStakeActions = ({
 
   const executeStake = useCallback(
     async (params: StakeParams) => {
-      const { amount, duration, poolAddress, stakingTokenAddress } = params;
+      const { amount, duration, poolAddress, stakingTokenAddress, chainId } = params;
 
       if (!amount || !stakingTokenAddress) {
         flowActions.setError('Invalid staking parameters');
@@ -50,7 +51,7 @@ export const useStakeActions = ({
         if (!hasSufficientAllowance()) {
           flowActions.goToApproving();
 
-          const approvalResult = await approve(userAddress, stakingTokenAddress, poolAddress, amount);
+          const approvalResult = await approve(userAddress, stakingTokenAddress, poolAddress, amount, chainId);
 
           if (!approvalResult.success) {
             flowActions.setError((approvalResult as any).error || 'Approval failed');
@@ -70,9 +71,9 @@ export const useStakeActions = ({
         let stakingResult: { success: boolean; error?: string };
 
         if (lockDurationDays > 0) {
-          stakingResult = await stakeWithLock(poolAddress, amount, lockDurationSeconds.toString());
+          stakingResult = await stakeWithLock(poolAddress, amount, chainId, lockDurationSeconds.toString());
         } else {
-          stakingResult = await stakeWithoutLock(poolAddress, amount);
+          stakingResult = await stakeWithoutLock(poolAddress, amount, chainId);
         }
 
         if (stakingResult.success) {

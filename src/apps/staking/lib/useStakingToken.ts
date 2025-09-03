@@ -8,16 +8,16 @@ export interface TokenInfo {
   address: string;
 }
 
-export const useStakingToken = (poolAddress: string) => {
+export const useStakingToken = (poolAddress: string, chainId: number | null) => {
   // Fetch staking token address
   const {
     data: stakingTokenAddress,
     isLoading: stakingTokenLoading,
     error: stakingTokenError,
   } = useQuery({
-    queryKey: ['stakingTokenAddress', poolAddress],
+    queryKey: ['stakingTokenAddress', poolAddress, chainId],
     queryFn: async () => {
-      const res = await get(`/api/staking/${poolAddress}/staking-token`).send();
+      const res = await get(`/api/staking/${poolAddress}/staking-token?chainId=${chainId}`).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch staking token address');
@@ -25,7 +25,7 @@ export const useStakingToken = (poolAddress: string) => {
 
       return res.body.stakingTokenAddress;
     },
-    enabled: !!poolAddress,
+    enabled: !!poolAddress && !!chainId,
   });
 
   // Fetch staking token info
@@ -34,11 +34,11 @@ export const useStakingToken = (poolAddress: string) => {
     isLoading: stakingTokenInfoLoading,
     error: stakingTokenInfoError,
   } = useQuery({
-    queryKey: ['stakingTokenInfo', stakingTokenAddress],
+    queryKey: ['stakingTokenInfo', stakingTokenAddress, chainId],
     queryFn: async () => {
       if (!stakingTokenAddress) return null;
 
-      const res = await get(`/api/tokens/${stakingTokenAddress}/info`).send();
+      const res = await get(`/api/tokens/${stakingTokenAddress}/info?chainId=${chainId}`).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch staking token info');
@@ -51,7 +51,7 @@ export const useStakingToken = (poolAddress: string) => {
         address: stakingTokenAddress,
       };
     },
-    enabled: !!stakingTokenAddress,
+    enabled: !!stakingTokenAddress && !!chainId,
   });
 
   const loading = stakingTokenLoading || stakingTokenInfoLoading;

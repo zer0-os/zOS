@@ -3,7 +3,11 @@ import { selectedWalletSelector } from '../../../store/wallet/selectors';
 import { useSelector } from 'react-redux';
 import { get } from '../../../lib/api/rest';
 
-export const useUserBalances = (stakingTokenAddress: string | null, rewardsTokenAddress: string | null) => {
+export const useUserBalances = (
+  stakingTokenAddress: string | null,
+  rewardsTokenAddress: string | null,
+  chainId: number
+) => {
   const { address: userAddress } = useSelector(selectedWalletSelector);
 
   // Fetch user staking token balance
@@ -16,11 +20,14 @@ export const useUserBalances = (stakingTokenAddress: string | null, rewardsToken
       'userStakingBalance',
       stakingTokenAddress,
       userAddress,
+      chainId,
     ],
     queryFn: async () => {
       if (!stakingTokenAddress || !userAddress) return null;
 
-      const res = await get(`/api/wallet/${userAddress}/token/${stakingTokenAddress}/balance`).send();
+      const res = await get(
+        `/api/wallet/${userAddress}/token/${stakingTokenAddress}/balance?chainId=${chainId}`
+      ).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch staking token balance');
@@ -28,7 +35,7 @@ export const useUserBalances = (stakingTokenAddress: string | null, rewardsToken
 
       return res.body.balance;
     },
-    enabled: !!stakingTokenAddress && !!userAddress,
+    enabled: !!stakingTokenAddress && !!userAddress && !!chainId,
   });
 
   // Fetch user rewards token balance
@@ -41,11 +48,14 @@ export const useUserBalances = (stakingTokenAddress: string | null, rewardsToken
       'userRewardsBalance',
       rewardsTokenAddress,
       userAddress,
+      chainId,
     ],
     queryFn: async () => {
       if (!rewardsTokenAddress || !userAddress) return null;
 
-      const res = await get(`/api/wallet/${userAddress}/token/${rewardsTokenAddress}/balance`).send();
+      const res = await get(
+        `/api/wallet/${userAddress}/token/${rewardsTokenAddress}/balance?chainId=${chainId}`
+      ).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch rewards token balance');
@@ -53,7 +63,7 @@ export const useUserBalances = (stakingTokenAddress: string | null, rewardsToken
 
       return res.body.balance;
     },
-    enabled: !!rewardsTokenAddress && !!userAddress,
+    enabled: !!rewardsTokenAddress && !!userAddress && !!chainId,
   });
 
   const loading = userStakingBalanceLoading || userRewardsBalanceLoading;

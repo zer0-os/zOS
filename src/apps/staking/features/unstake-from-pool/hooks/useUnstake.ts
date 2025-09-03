@@ -8,18 +8,48 @@ export const useUnstake = () => {
   const { address: userAddress } = useSelector(selectedWalletSelector);
 
   return useMutation({
-    mutationFn: async ({ amountWei, poolAddress }: { amountWei: BigInt; poolAddress: string }) => {
+    mutationFn: async ({
+      amountWei,
+      poolAddress,
+      chainId,
+    }: {
+      amountWei: BigInt;
+      poolAddress: string;
+      chainId: number;
+    }) => {
       const response = await post(`/api/wallet/${userAddress}/transactions/unstake`).send({
         amount: amountWei.toString(),
         poolAddress,
+        chainId,
       });
 
       return response.body;
     },
-    onSuccess: (_, { poolAddress }) => {
-      queryClient.invalidateQueries({ queryKey: ['userPendingRewards', poolAddress, userAddress] });
-      queryClient.invalidateQueries({ queryKey: ['userStakedAmount', poolAddress, userAddress] });
-      queryClient.invalidateQueries({ queryKey: ['userStakedAmount', poolAddress, userAddress] });
+    onSuccess: (_, { poolAddress, chainId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          'userPendingRewards',
+          poolAddress,
+          userAddress,
+          chainId,
+        ],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          'userStakedAmount',
+          poolAddress,
+          userAddress,
+          chainId,
+        ],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          'userStakedAmount',
+          poolAddress,
+          userAddress,
+          chainId,
+        ],
+      });
     },
   });
 };

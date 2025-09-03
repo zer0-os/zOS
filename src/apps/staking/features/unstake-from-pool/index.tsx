@@ -59,6 +59,7 @@ const UnstakeFromPoolContent = ({
     actions.executeUnstake({
       amount: data.amountWei,
       poolAddress,
+      chainId,
     });
   };
 

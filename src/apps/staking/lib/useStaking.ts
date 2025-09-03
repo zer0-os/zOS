@@ -39,7 +39,9 @@ export const useStaking = () => {
       }
 
       if (response.body?.transactionHash) {
-        const receiptResponse = await get(`/api/wallet/transaction/${response.body.transactionHash}/receipt`).send();
+        const receiptResponse = await get(
+          `/api/wallet/transaction/${response.body.transactionHash}/receipt?chainId=${chainId}`
+        ).send();
 
         if (receiptResponse.body.status === 'confirmed') {
           return { success: true, hash: response.body.transactionHash, receipt: receiptResponse.body };

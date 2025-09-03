@@ -8,11 +8,11 @@ export interface TxReceiptResponse {
   transactionHash: string;
 }
 
-export const txReceiptQueryOptions = (txHash: string) => {
+export const txReceiptQueryOptions = (txHash: string, chainId: number) => {
   return queryOptions({
-    queryKey: WalletQueryKeys.txReceipt(txHash),
+    queryKey: WalletQueryKeys.txReceipt(txHash, chainId),
     queryFn: async (): Promise<TxReceiptResponse> => {
-      const response = await get(`/api/wallet/transaction/${txHash}/receipt`);
+      const response = await get(`/api/wallet/transaction/${txHash}/receipt?chainId=${chainId}`);
 
       return response.body as TxReceiptResponse;
     },

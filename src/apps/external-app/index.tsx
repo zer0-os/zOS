@@ -12,8 +12,7 @@ import { Dispatch, AnyAction } from 'redux';
 import { IFrame } from '../iframe';
 import { IncomingMessage, ZOSMessageType } from './types/types';
 import { routeChangedHandler } from './message-handlers/routeChangeHandler';
-import { isAuthenticateEvent, isRouteChangeEvent, isChannelHandshakeEvent } from './types/messageTypeGuard';
-import { authenticateHandler } from './message-handlers/authenticateHandler';
+import { isRouteChangeEvent, isChannelHandshakeEvent } from './types/messageTypeGuard';
 import { clearActiveZAppManifest, setActiveZAppManifest } from '../../store/active-zapp';
 import { ZAppManifest } from './types/manifest';
 import { WHITELISTED_APPS } from './constants/whitelistedApps';
@@ -75,8 +74,6 @@ class ExternalAppComponent extends Component<Properties, State> {
       if (isRouteChangeEvent(e)) {
         const handler = routeChangedHandler(this.props.history, this.props.manifest.route, this.props.manifest.url);
         handler(e);
-      } else if (isAuthenticateEvent(e)) {
-        authenticateHandler(this.state.messagePort);
       }
     };
 

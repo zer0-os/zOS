@@ -53,7 +53,7 @@ export const WalletTokenSelect = () => {
             <div className={styles.resultsHeaderLabel}>Results</div>
             <div>
               {assets?.map((asset) => (
-                <Token key={asset.tokenAddress} token={asset} onClick={() => handleTokenClick(asset)} />
+                <Token key={asset.tokenAddress + asset.chainId} token={asset} onClick={() => handleTokenClick(asset)} />
               ))}
             </div>
           </div>

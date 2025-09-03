@@ -9,10 +9,9 @@ export const useClaimRewards = (poolAddress: string, chainId: number) => {
 
   return useMutation({
     mutationFn: async () => {
-      const response = await post(
-        `/api/wallet/${userAddress}/transactions/claim-staking-rewards?chainId=${chainId}`
-      ).send({
+      const response = await post(`/api/wallet/${userAddress}/transactions/claim-staking-rewards`).send({
         poolAddress,
+        chainId,
       });
 
       return response.body;

@@ -1,0 +1,58 @@
+@import '../../../../variables';
+@import '../../../../glass';
+
+.DexTableContainer {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.DexTable {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--color-greyscale-11);
+}
+
+.DexTable thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(17, 18, 19, 1);
+  backdrop-filter: blur(32px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.DexTable th {
+  text-align: left;
+  padding: 16px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #686e7d3d;
+  border-right: 1px solid #686e7d3d;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  @include glass-text-secondary-color;
+
+  &:hover {
+    @include glass-state-hover-color;
+  }
+
+  &.ActiveSort {
+    @include glass-state-hover-color;
+  }
+}
+
+.DexTable td {
+  padding: 16px 12px;
+
+  &:last-child {
+    border-right: none;
+  }
+}

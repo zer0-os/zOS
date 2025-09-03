@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { Input } from '@zero-tech/zui/components/Input/Input';
 import { IconSearchMd } from '@zero-tech/zui/icons';
@@ -9,20 +10,17 @@ import {
 } from '../../../../components/sidekick';
 import { TabList, Tab, TabData } from '../tab-list';
 import { ChainItem } from '../chain-item';
+import { setLastActiveTokenChain } from '../../../../lib/last-token-chain';
 
 import styles from './styles.module.scss';
 
-// Mock chain data
+// Mock chain data - matching the chains we have mock token data for
 const mockChains = [
-  { id: 'moonit', name: 'Moonit', icon: 'moonit', route: '/token/moonit' },
-  { id: 'solana', name: 'Solana', icon: 'solana', route: '/token/solana' },
-  { id: 'ethereum', name: 'Ethereum', icon: 'ethereum', route: '/token/ethereum' },
-  { id: 'base', name: 'Base', icon: 'base', route: '/token/base' },
-  { id: 'bsc', name: 'BSC', icon: 'bsc', route: '/token/bsc' },
-  { id: 'pulsechain', name: 'PulseChain', icon: 'pulsechain', route: '/token/pulsechain' },
-  { id: 'polygon', name: 'Polygon', icon: 'polygon', route: '/token/polygon' },
-  { id: 'abstract', name: 'Abstract', icon: 'abstract', route: '/token/abstract' },
-  { id: 'ton', name: 'TON', icon: 'ton', route: '/token/ton' },
+  { id: 'ethereum', name: 'Ethereum', icon: 'ethereum' },
+  { id: 'polygon', name: 'Polygon', icon: 'polygon' },
+  { id: 'solana', name: 'Solana', icon: 'solana' },
+  { id: 'arbitrum', name: 'Arbitrum', icon: 'arbitrum' },
+  { id: 'optimism', name: 'Optimism', icon: 'optimism' },
 ];
 
 const tabsData: TabData[] = [
@@ -34,24 +32,41 @@ const tabsData: TabData[] = [
 ];
 
 export const Sidekick = () => {
+  const history = useHistory();
+  const location = useLocation();
   const [selectedTab, setSelectedTab] = useState<Tab>(Tab.Chains);
   const [search, setSearch] = useState('');
+
+  // Extract current chain from URL
+  const getCurrentChain = (): string | null => {
+    const pathParts = location.pathname.split('/');
+    if (pathParts.length >= 3 && pathParts[1] === 'token' && pathParts[2]) {
+      return pathParts[2];
+    }
+    return null;
+  };
 
   const handleTabSelect = (tab: Tab) => {
     setSelectedTab(tab);
   };
 
+  const handleChainSelect = (chainId: string) => {
+    setLastActiveTokenChain(chainId);
+    history.push(`/token/${chainId}`);
+  };
+
   const renderChainItems = () => {
     const filteredChains = mockChains.filter((chain) => chain.name.toLowerCase().includes(search.toLowerCase()));
+    const currentChain = getCurrentChain();
 
     return filteredChains.map((chain) => (
       <ChainItem
         key={chain.id}
-        route={chain.route}
         chainId={chain.id}
         chainName={chain.name}
         chainIcon={chain.icon}
-        isSelected={false}
+        isSelected={currentChain === chain.id}
+        onSelect={handleChainSelect}
       />
     ));
   };

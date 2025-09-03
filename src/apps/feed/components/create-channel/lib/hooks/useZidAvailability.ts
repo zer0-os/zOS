@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-const GRAPH_ENDPOINT = 'https://zchain-subgraph.zero.tech/zapp-zns/subgraph/zchain';
+const GRAPH_ENDPOINT = 'https://zchain-subgraph.zero.tech/subgraphs/name/zns';
 
 const EXACT_ZID_QUERY = `
   query DomainByZna($zna: String!) {

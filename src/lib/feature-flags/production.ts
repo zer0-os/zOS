@@ -12,6 +12,7 @@ export const productionFlags: FeatureFlagDefinitions = {
     defaultValue: false,
     locked: true,
   },
+  enableTokenZApp: { defaultValue: false },
   enableMatrixDebug: { defaultValue: false },
   enableCreateTGCChannel: { defaultValue: false },
   enableStaking: { defaultValue: true },

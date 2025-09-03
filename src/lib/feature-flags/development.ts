@@ -8,6 +8,7 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableReadReceiptPreferences: { defaultValue: false },
   enableTimerLogs: { defaultValue: false },
   enableNotificationsReadStatus: { defaultValue: false },
+  enableTokenZApp: { defaultValue: true },
   enableAuraZApp: { defaultValue: false },
   enableMatrixDebug: { defaultValue: true },
   enableCreateTGCChannel: { defaultValue: true },

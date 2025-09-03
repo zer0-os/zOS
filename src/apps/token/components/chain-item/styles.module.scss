@@ -1,0 +1,84 @@
+@use '~@zero-tech/zui/styles/theme' as theme;
+@import '../../../../variables';
+@import '../../../../glass';
+
+.ChainItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  height: 48px;
+  margin-bottom: 8px;
+  padding: 0 8px;
+  border-radius: 8px;
+
+  &:hover,
+  &:focus,
+  &.ChainItemActive {
+    @include glass-state-hover-color;
+    outline: none;
+  }
+
+  & > * {
+    flex-shrink: 0;
+  }
+}
+
+.Content {
+  flex-shrink: 1;
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.Header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2px;
+  overflow: hidden;
+  min-width: 0;
+  gap: 12px;
+}
+
+.IconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ChainIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-greyscale-8);
+  color: var(--color-greyscale-11);
+}
+
+.NameContainer {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  min-width: 0;
+  width: 100%;
+  gap: 4px;
+}
+
+.ChainName {
+  display: flex;
+  overflow: hidden;
+  font-size: 14px;
+  max-width: calc(100% - 24px);
+
+  > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

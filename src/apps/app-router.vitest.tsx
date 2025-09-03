@@ -13,7 +13,7 @@ beforeEach(() => {
     Container: () => <div data-testid='sidekick-container' />,
   }));
   vi.mock('../lib/feature-flags', () => ({
-    featureFlags: { enableNotificationsApp: true, enableFeedApp: true },
+    featureFlags: { enableNotificationsApp: true, enableFeedApp: true, enableTokenZApp: true },
   }));
 });
 
@@ -44,6 +44,12 @@ vi.mock('./profile', () => ({
 vi.mock('./home', () => ({
   HomeApp: () => {
     return <div data-testid='home-app' />;
+  },
+}));
+
+vi.mock('./token', () => ({
+  TokenApp: () => {
+    return <div data-testid='token-app' />;
   },
 }));
 
@@ -87,5 +93,10 @@ describe(AppRouter, () => {
   it('should render FeedApp component when route is /feed', () => {
     renderComponent('/feed');
     expect(screen.getByTestId('feed-app')).toBeTruthy();
+  });
+
+  it('should render TokenApp component when route is /token', () => {
+    renderComponent('/token');
+    expect(screen.getByTestId('token-app')).toBeTruthy();
   });
 });

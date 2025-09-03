@@ -13,7 +13,7 @@ export interface UserStakingInfo {
   lastTimestampLocked: bigint;
 }
 
-export const useUserStakingInfo = (poolAddress: string) => {
+export const useUserStakingInfo = (poolAddress: string, chainId: number) => {
   const { address: userAddress } = useSelector(selectedWalletSelector);
 
   // Fetch user staking info
@@ -26,11 +26,12 @@ export const useUserStakingInfo = (poolAddress: string) => {
       'userStakingInfo',
       poolAddress,
       userAddress,
+      chainId,
     ],
     queryFn: async () => {
       if (!poolAddress || !userAddress) return null;
 
-      const res = await get(`/api/staking/${userAddress}/stakers/${poolAddress}`).send();
+      const res = await get(`/api/staking/${userAddress}/stakers/${poolAddress}?chainId=${chainId}`).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch user staking info');
@@ -69,11 +70,12 @@ export const useUserStakingInfo = (poolAddress: string) => {
       'userPendingRewards',
       poolAddress,
       userAddress,
+      chainId,
     ],
     queryFn: async () => {
       if (!poolAddress || !userAddress) return null;
 
-      const res = await get(`/api/staking/${userAddress}/rewards/${poolAddress}`);
+      const res = await get(`/api/staking/${userAddress}/rewards/${poolAddress}?chainId=${chainId}`);
 
       if (!res.ok || !res.body.pendingRewards) {
         throw new Error('Failed to fetch pending rewards');
@@ -81,7 +83,7 @@ export const useUserStakingInfo = (poolAddress: string) => {
 
       return BigInt(res.body.pendingRewards);
     },
-    enabled: !!poolAddress && !!userAddress,
+    enabled: !!poolAddress && !!userAddress && !!chainId,
   });
 
   const loading = userStakingInfoLoading || userPendingRewardsLoading;

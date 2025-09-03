@@ -30,19 +30,7 @@ import {
   transferNativeAssetRequest,
   TransferNativeAssetResponse,
 } from '../../apps/wallet/queries/transferNativeAssetRequest';
-
-interface WalletAPIError {
-  response: {
-    body: {
-      message: string;
-      code: string;
-    };
-  };
-}
-
-const isWalletAPIError = (error: any): error is WalletAPIError => {
-  return error?.response?.body?.code;
-};
+import { isWalletAPIError } from './utils';
 
 /**
  * Loads the user's ThirdWeb wallet address into the store once the user has been fetched from the API

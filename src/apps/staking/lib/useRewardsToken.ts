@@ -8,16 +8,16 @@ export interface TokenInfo {
   address: string;
 }
 
-export const useRewardsToken = (poolAddress: string) => {
+export const useRewardsToken = (poolAddress: string, chainId: number) => {
   // Fetch rewards token address
   const {
     data: rewardsTokenAddress,
     isLoading: rewardsTokenLoading,
     error: rewardsTokenError,
   } = useQuery({
-    queryKey: ['rewardsTokenAddress', poolAddress],
+    queryKey: ['rewardsTokenAddress', poolAddress, chainId],
     queryFn: async () => {
-      const res = await get(`/api/staking/${poolAddress}/rewards-token`).send();
+      const res = await get(`/api/staking/${poolAddress}/rewards-token?chainId=${chainId}`).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch rewards token address');
@@ -25,7 +25,7 @@ export const useRewardsToken = (poolAddress: string) => {
 
       return res.body.rewardsTokenAddress;
     },
-    enabled: !!poolAddress,
+    enabled: !!poolAddress && !!chainId,
   });
 
   // Fetch rewards token info
@@ -34,11 +34,11 @@ export const useRewardsToken = (poolAddress: string) => {
     isLoading: rewardsTokenInfoLoading,
     error: rewardsTokenInfoError,
   } = useQuery({
-    queryKey: ['rewardsTokenInfo', rewardsTokenAddress],
+    queryKey: ['rewardsTokenInfo', rewardsTokenAddress, chainId],
     queryFn: async () => {
       if (!rewardsTokenAddress) return null;
 
-      const res = await get(`/api/tokens/${rewardsTokenAddress}/info`).send();
+      const res = await get(`/api/tokens/${rewardsTokenAddress}/info?chainId=${chainId}`).send();
 
       if (!res.ok) {
         throw new Error('Failed to fetch rewards token info');
@@ -51,7 +51,7 @@ export const useRewardsToken = (poolAddress: string) => {
         address: rewardsTokenAddress,
       };
     },
-    enabled: !!rewardsTokenAddress,
+    enabled: !!rewardsTokenAddress && !!chainId,
   });
 
   const loading = rewardsTokenLoading || rewardsTokenInfoLoading;

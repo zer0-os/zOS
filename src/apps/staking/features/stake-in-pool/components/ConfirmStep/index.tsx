@@ -14,6 +14,7 @@ export interface ConfirmStepProps {
   onBack: () => void;
   onConfirm: () => void;
   actionType?: 'stake' | 'unstake';
+  chainId: number;
 }
 
 export const ConfirmStep = ({
@@ -26,8 +27,9 @@ export const ConfirmStep = ({
   onBack,
   onConfirm,
   actionType = 'stake',
+  chainId,
 }: ConfirmStepProps) => {
-  const { options: stakingOptions } = useStakingOptions(poolAddress);
+  const { options: stakingOptions } = useStakingOptions(poolAddress, chainId);
   const selectedOption = stakingOptions.find((option) => option.key === duration);
 
   return (

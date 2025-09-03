@@ -17,4 +17,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   enableCreateTGCChannel: { defaultValue: false },
   enableStaking: { defaultValue: true },
   enableUnstaking: { defaultValue: true },
+  enableAvaxStaking: { defaultValue: false },
 };

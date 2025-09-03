@@ -31,7 +31,7 @@ const StakeInPoolContent = ({
   const { address: walletAddress } = useSelector(selectedWalletSelector);
 
   const flow = useStakeFlow();
-  const data = useStakeData({ poolAddress });
+  const data = useStakeData({ poolAddress, chainId: poolChainId });
   const actions = useStakeActions({
     flowActions: flow,
     hasSufficientAllowance: data.hasSufficientAllowance,
@@ -69,6 +69,7 @@ const StakeInPoolContent = ({
       duration: data.duration,
       poolAddress,
       stakingTokenAddress: data.stakingTokenAddress,
+      chainId: poolChainId,
     });
   };
 
@@ -96,6 +97,7 @@ const StakeInPoolContent = ({
             amount={data.amount}
             duration={data.duration}
             poolAddress={poolAddress}
+            chainId={poolChainId}
             tokenSymbol={data.stakingTokenInfo?.symbol}
             hasSufficientAllowance={data.hasSufficientAllowance()}
             isLoading={actions.isLoading}

@@ -11,7 +11,6 @@ import millify from 'millify';
 
 import classNames from 'classnames';
 import styles from './styles.module.scss';
-import { featureFlags } from '../../../../lib/feature-flags';
 import { useStakingTVL } from '../../hooks/useStakingTVL';
 
 const POOL_CONFIGS = [
@@ -28,15 +27,13 @@ const POOL_CONFIGS = [
         chainId: 9369,
         poolIconImageUrl: '/tokens/meow.png',
       },
-];
-if (featureFlags.enableAvaxStaking) {
-  POOL_CONFIGS.push({
-    name: 'MEOW Pool (Avalanche)',
+  {
+    name: 'MEOW Pool',
     address: '0xD7A1583286cEB8ce8F3C1a6d50C5eBDB1Cd83358',
     chainId: 43114,
     poolIconImageUrl: '/tokens/meow-avax.png',
-  });
-}
+  },
+];
 
 const PoolRowWithData = ({
   poolConfig,

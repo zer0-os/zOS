@@ -24,7 +24,6 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableCreateTGCChannel: boolean;
   declare enableStaking: boolean;
   declare enableUnstaking: boolean;
-  declare enableAvaxStaking: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

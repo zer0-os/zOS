@@ -1,4 +1,4 @@
-const GRAPH_ENDPOINT = 'https://zchain-subgraph.zero.tech/zapp-zns/subgraph/zchain';
+const GRAPH_ENDPOINT = 'https://zchain-subgraph.zero.tech/subgraphs/name/zns';
 
 export async function getParentDomainHash(parentZna: string): Promise<string> {
   const query = `

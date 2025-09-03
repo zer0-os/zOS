@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 
 import { Table, TableData, Body, Skeleton, HeaderGroup, TableHeader } from '@zero-tech/zui/components';
 import { PoolModal } from '../pool-modal';
 import { PoolIcon } from '../../components/PoolIcon';
-import { meowInUSDSelector } from '../../../../store/rewards/selectors';
 
 import { usePoolStats } from '../../lib/usePoolStats';
 import { useUserStakingInfo } from '../../lib/useUserStakingInfo';
@@ -14,6 +12,7 @@ import millify from 'millify';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 import { featureFlags } from '../../../../lib/feature-flags';
+import { useStakingTVL } from '../../hooks/useStakingTVL';
 
 const POOL_CONFIGS = [
   process.env.NODE_ENV === 'development'
@@ -46,14 +45,13 @@ const PoolRowWithData = ({
   poolConfig: typeof POOL_CONFIGS[0];
   onPoolSelect: (address: string) => void;
 }) => {
-  const meowPrice = useSelector(meowInUSDSelector);
-
   const {
     totalStaked,
     // apyRange,
     loading: statsLoading,
     error: statsError,
   } = usePoolStats(poolConfig.address, poolConfig.chainId);
+  const { tvl, stakingTokenPrice, loading: tvlLoading } = useStakingTVL(poolConfig.address, poolConfig.chainId);
 
   const {
     userStakingInfo,
@@ -61,7 +59,7 @@ const PoolRowWithData = ({
     error: userError,
   } = useUserStakingInfo(poolConfig.address, poolConfig.chainId);
 
-  const loading = statsLoading || userLoading;
+  const loading = statsLoading || userLoading || tvlLoading;
   const error = statsError || userError;
 
   const totalStakedFormatted = totalStaked ? parseFloat(ethers.utils.formatUnits(totalStaked, 18)) : 0;
@@ -86,13 +84,7 @@ const PoolRowWithData = ({
         )}
       </TableData> */}
       <TableData alignment='right' className={classNames(styles.Stake, totalStakedFormatted > 0 && styles.IsStaked)}>
-        {loading ? (
-          <Skeleton width='30px' />
-        ) : error ? (
-          'Error'
-        ) : (
-          `$${millify(totalStakedFormatted * meowPrice, { precision: 2 })}`
-        )}
+        {loading ? <Skeleton width='30px' /> : error ? 'Error' : `$${millify(tvl, { precision: 2 })}`}
       </TableData>
       <TableData alignment='right' className={classNames(styles.Stake, userStakedFormatted > 0 && styles.IsStaked)}>
         {loading ? (
@@ -100,7 +92,7 @@ const PoolRowWithData = ({
         ) : error ? (
           'Error'
         ) : (
-          `$${millify(userStakedFormatted * meowPrice, { precision: 2 })}`
+          `$${millify(userStakedFormatted * stakingTokenPrice, { precision: 2 })}`
         )}
       </TableData>
     </tr>

@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux';
-
 import { Button } from '@zero-tech/zui/components/Button';
 import { Skeleton } from '@zero-tech/zui/components';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
@@ -9,7 +7,6 @@ import { IconCoinsStacked1 } from '@zero-tech/zui/icons';
 import { usePoolStats } from '../../lib/usePoolStats';
 import { usePool } from '../../lib/usePool';
 import { useClaimRewards } from '../../lib/useClaimRewards';
-import { meowInUSDSelector } from '../../../../store/rewards/selectors';
 import { featureFlags } from '../../../../lib/feature-flags';
 
 import { ethers } from 'ethers';
@@ -19,6 +16,7 @@ import blur from './assets/blur.svg';
 
 import styles from './styles.module.scss';
 import classNames from 'classnames';
+import { useStakingTVL } from '../../hooks/useStakingTVL';
 
 interface ViewPoolProps {
   poolName: string;
@@ -30,8 +28,6 @@ interface ViewPoolProps {
 }
 
 export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onStake, onUnstake }: ViewPoolProps) => {
-  const meowPrice = useSelector(meowInUSDSelector);
-
   const {
     // apyRange,
     loading: statsLoading,
@@ -44,12 +40,12 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
     userStakedAmount,
     // userStakedAmountLocked,
     // userUnlockedTimestamp,
-    totalStaked,
     loading: poolLoading,
     error: poolError,
   } = usePool(poolAddress, chainId);
+  const { tvl, loading: tvlLoading } = useStakingTVL(poolAddress, chainId);
 
-  const loading = statsLoading || poolLoading;
+  const loading = statsLoading || poolLoading || tvlLoading;
   const error = statsError || poolError;
 
   const unlockedBalanceFormatted = userStakedAmount
@@ -59,7 +55,6 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
   //   ? parseFloat(ethers.utils.formatUnits(userStakedAmountLocked || 0, 18))
   //   : 0;
   const pendingRewardsFormatted = userPendingRewards ? parseFloat(ethers.utils.formatUnits(userPendingRewards, 18)) : 0;
-  const totalStakedFormatted = totalStaked ? parseFloat(ethers.utils.formatUnits(totalStaked, 18)) : 0;
 
   const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress, chainId);
 
@@ -131,15 +126,7 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
       <div className={styles.BalanceCards}>
         <div className={styles.Card}>
           <h3>TVL</h3>
-          <span>
-            {loading ? (
-              <Skeleton width='100px' />
-            ) : error ? (
-              'Error'
-            ) : (
-              `$${millify(totalStakedFormatted * meowPrice, { precision: 2 })}`
-            )}
-          </span>
+          <span>{loading ? <Skeleton width='100px' /> : error ? 'Error' : `$${millify(tvl, { precision: 2 })}`}</span>
         </div>
 
         <div className={styles.Card}>

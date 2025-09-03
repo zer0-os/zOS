@@ -16,15 +16,11 @@ type RouteChangeMessage = {
   };
 };
 
-type AuthenticateMessage = {
-  type: ZAppMessageType.Authenticate;
-};
-
 type ChannelHandshakeMessage = {
   type: ZAppMessageType.ChannelHandshake;
 };
 
-type IncomingMessage = RouteChangeMessage | AuthenticateMessage | ChannelHandshakeMessage;
+type IncomingMessage = RouteChangeMessage | ChannelHandshakeMessage;
 
 type AuthenticateResponseMessage = {
   type: ZOSMessageType.Authenticate;
@@ -43,7 +39,6 @@ export type {
   IncomingMessage,
   OutgoingMessage,
   RouteChangeMessage,
-  AuthenticateMessage,
   AuthenticateResponseMessage,
   ChannelHandshakeMessage,
   ChannelHandshakeResponseMessage,

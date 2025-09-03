@@ -21,7 +21,7 @@ export const TokensList = () => {
           {isPending && skeletons.map((_, index) => <TokenSkeleton key={index} />)}
 
           {tokens.map((token) => (
-            <Token key={token.tokenAddress} token={token} />
+            <Token key={token.tokenAddress + token.chainId} token={token} />
           ))}
         </div>
       )}

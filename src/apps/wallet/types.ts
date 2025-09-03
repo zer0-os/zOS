@@ -7,6 +7,7 @@ export interface TokenBalance {
   decimals: number;
   price?: number;
   percentChange?: number;
+  chainId?: number;
 }
 
 export interface NFT {

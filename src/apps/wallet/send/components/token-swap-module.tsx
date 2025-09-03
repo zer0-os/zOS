@@ -41,7 +41,7 @@ export const TokenSwapModule = ({
       </div>
 
       <div className={styles.tokenSelect}>
-        <TokenIcon url={token?.logo} name={token?.name} />
+        <TokenIcon url={token?.logo} name={token?.name} chainId={token?.chainId} />
         <div className={styles.tokenInfo}>
           <span className={styles.tokenName}>{token?.name}</span>
           <span className={styles.tokenSymbol}>{token?.symbol}</span>

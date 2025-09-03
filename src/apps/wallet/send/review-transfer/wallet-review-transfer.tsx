@@ -37,7 +37,7 @@ export const WalletReviewTransfer = () => {
 
         <div className={styles.transferDetails}>
           <div className={styles.tokenInfo}>
-            <TokenIcon url={token.logo} name={token.name} />
+            <TokenIcon url={token.logo} name={token.name} chainId={token.chainId} />
             <div className={styles.tokenName}>{token.name}</div>
             <div className={styles.tokenAmount}>
               <FormattedNumber value={amount} />
@@ -49,7 +49,7 @@ export const WalletReviewTransfer = () => {
           </div>
 
           <div className={styles.tokenInfo}>
-            <TokenIcon url={token.logo} name={token.name} />
+            <TokenIcon url={token.logo} name={token.name} chainId={token.chainId} />
             <div className={styles.tokenName}>{token.name}</div>
             <div className={styles.tokenAmount}>
               <FormattedNumber value={amount} />

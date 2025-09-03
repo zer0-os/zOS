@@ -24,7 +24,11 @@ export const Transaction = ({ transaction }: TransactionProps) => {
   return (
     <div className={styles.transaction} onClick={handleClick}>
       <div>
-        <TokenIcon url={transaction.token.logo} name={transaction.token.name ?? ''} chainId={1417429182} />
+        <TokenIcon
+          url={transaction.token.logo}
+          name={transaction.token.name ?? ''}
+          chainId={transaction.token.chainId}
+        />
       </div>
 
       <div className={styles.transactionInfo}>

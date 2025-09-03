@@ -71,6 +71,7 @@
     z-index: 1;
 
     border-radius: var(--border-radius); // set in message__message-row
+    border: 1px solid rgba(104, 110, 125, 0.24);
     background: #111213;
 
     &--edit {

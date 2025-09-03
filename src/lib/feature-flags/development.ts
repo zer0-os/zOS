@@ -8,10 +8,7 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableReadReceiptPreferences: { defaultValue: false },
   enableTimerLogs: { defaultValue: false },
   enableNotificationsReadStatus: { defaultValue: false },
-  enableAuraZApp: {
-    defaultValue: false,
-    allowedUserIds: ['50c6e12e-1fe2-43f9-8991-ab269696588f', '020705c6-0740-4d4d-8185-0ba7542b9725'],
-  },
+  enableAuraZApp: { defaultValue: false },
   enableMatrixDebug: { defaultValue: true },
   enableCreateTGCChannel: { defaultValue: true },
   enableStaking: { defaultValue: true },

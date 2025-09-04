@@ -9,7 +9,7 @@ export interface LeaderboardEntry {
     name: string;
     primaryZID: string | null;
     isProUser: boolean;
-  };
+  } | null;
   badges: Badge[];
   referrals: string;
   proSubs: string;

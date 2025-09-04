@@ -2,7 +2,7 @@ import { useBalancesQuery } from '../queries/useBalancesQuery';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../store/wallet/selectors';
 
-export const useUserZeroBalance = () => {
+export const useWalletBalance = () => {
   const selectedWallet = useSelector(selectedWalletSelector);
   const { data, isPending } = useBalancesQuery(selectedWallet.address);
   if (!data || !data.tokens) {

@@ -3,14 +3,14 @@ import { Barcode } from './barcode';
 import styles from './zero-card.module.scss';
 import zeroLogo from './zero-logo.png';
 import zeroWordmark from './zero-wordmark.png';
-import { useUserZeroBalance } from '../../hooks/userZeroBalance';
+import { useWalletBalance } from '../../hooks/useWalletBalance';
 
 interface ZeroCardProps {
   displayName: string;
 }
 
 export const ZeroCard = ({ displayName }: ZeroCardProps) => {
-  const { balance } = useUserZeroBalance();
+  const { balance } = useWalletBalance();
 
   return (
     <div className={styles.zeroCard}>

@@ -3,6 +3,7 @@ import { TableHeader } from '../table-header';
 import { TableRow } from '../table-row';
 import { EmptyState } from '../empty-state';
 import { Waypoint } from '../waypoint';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
 
 import styles from './styles.module.scss';
 
@@ -10,7 +11,11 @@ export const LeaderboardTable = () => {
   const { data: entries, isLoading, error, hasNextPage, isFetchingNextPage, fetchNextPage } = useLeaderboard();
 
   if (isLoading) {
-    return <div className={styles.loading}>Loading...</div>;
+    return (
+      <div className={styles.loading}>
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {

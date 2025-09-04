@@ -1,0 +1,97 @@
+.tableRow {
+  width: 100%;
+  min-height: 60px;
+
+  td {
+    padding: 12px;
+    border: none;
+    vertical-align: middle;
+  }
+}
+
+.rankColumn {
+  width: 8%;
+}
+
+.memberColumn {
+  width: 20%;
+}
+
+.invitedByColumn {
+  width: 20%;
+}
+
+.badgesColumn {
+  width: 12%;
+  text-align: left;
+}
+
+.referralsColumn,
+.proSubsColumn,
+.joinedColumn,
+.meowColumn,
+.codeColumn {
+  text-align: right;
+}
+
+.referralsColumn {
+  width: 10%;
+}
+
+.proSubsColumn {
+  width: 10%;
+}
+
+.joinedColumn {
+  width: 12%;
+}
+
+.meowColumn {
+  width: 12%;
+}
+
+.codeColumn {
+  width: 8%;
+}
+
+// Text styles based on your specifications
+.rankText {
+  font-family: 'IBM Plex Sans';
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: var(--text-primary);
+}
+
+.topRankText {
+  font-family: 'IBM Plex Sans';
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: #01f4cb; // Green text with glow
+  text-shadow: 0px 0px 12px #01f4cb3d;
+}
+
+.numberText {
+  font-family: 'IBM Plex Sans';
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  text-align: right;
+  color: var(--text-primary);
+}
+
+.memberText,
+.invitedByText,
+.badgesText,
+.codeText {
+  font-family: 'IBM Plex Sans';
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: var(--text-primary);
+}

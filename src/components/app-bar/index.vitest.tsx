@@ -29,6 +29,9 @@ vi.mock('@zero-tech/zui/icons', () => ({
   IconUser: () => <div data-testid='icon-user' />,
   IconCoins1: () => <div data-testid='icon-coins' />,
   IconCoinsStacked2: () => <div data-testid='icon-coins-stacked' />,
+  IconWallet: () => <div data-testid='icon-wallet' />,
+  IconTrophy1: () => <div data-testid='icon-trophy' />,
+  IconAura: () => <div data-testid='icon-aura' />,
 }));
 
 vi.mock('./more-apps-modal', () => ({
@@ -36,11 +39,24 @@ vi.mock('./more-apps-modal', () => ({
 }));
 
 const mockWorldPanelItem = vi.fn();
+const mockExtraIconButton = vi.fn();
 
 vi.mock('./world-panel-item', () => ({
   WorldPanelItem: (props: any) => {
     mockWorldPanelItem(props);
     return <div data-testid='world-panel-item' />;
+  },
+}));
+
+vi.mock('./extra-icon-button/extraIconButton', () => ({
+  __esModule: true,
+  default: (props: any) => {
+    mockExtraIconButton(props);
+    return (
+      <a data-testid={`extra-icon-${props.label.toLowerCase().replace(/\s+/g, '-')}`} href={props.to}>
+        {props.label}
+      </a>
+    );
   },
 }));
 
@@ -64,6 +80,8 @@ const renderComponent = (props: Partial<Properties>) => {
 describe(AppBar, () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockWorldPanelItem.mockClear();
+    mockExtraIconButton.mockClear();
   });
 
   describe('Active App State', () => {
@@ -85,6 +103,22 @@ describe(AppBar, () => {
     it('should not set the Profile icon as active when activeApp is something else', () => {
       renderComponent({ activeApp: 'foo' });
       expect(mockWorldPanelItem).toHaveBeenCalledWith(expect.objectContaining({ label: 'Profile', isActive: false }));
+    });
+
+    it('should set the Leaderboard icon as active when activeApp is "leaderboard"', () => {
+      renderComponent({ activeApp: 'leaderboard' });
+
+      const leaderboardCall = mockExtraIconButton.mock.calls.find((call) => call[0].label === 'Leaderboard');
+      expect(leaderboardCall).toBeDefined();
+      expect(leaderboardCall[0]).toEqual(expect.objectContaining({ label: 'Leaderboard', isActive: true }));
+    });
+
+    it('should not set the Leaderboard icon as active when activeApp is something else', () => {
+      renderComponent({ activeApp: 'foo' });
+
+      const leaderboardCall = mockExtraIconButton.mock.calls.find((call) => call[0].label === 'Leaderboard');
+      expect(leaderboardCall).toBeDefined();
+      expect(leaderboardCall[0]).toEqual(expect.objectContaining({ label: 'Leaderboard', isActive: false }));
     });
   });
 
@@ -154,6 +188,22 @@ describe(AppBar, () => {
       const logoLink = getByTestId('icon-logo-zero').closest('a');
 
       expect(logoLink).toHaveAttribute('to', '/home');
+    });
+  });
+
+  describe('Leaderboard Navigation', () => {
+    it('should render the leaderboard icon', () => {
+      const { getByTestId } = renderComponent({});
+      const leaderboardElement = getByTestId('extra-icon-leaderboard');
+
+      expect(leaderboardElement).toBeInTheDocument();
+    });
+
+    it('should navigate to leaderboard when clicking the leaderboard icon', () => {
+      const { getByTestId } = renderComponent({});
+      const leaderboardElement = getByTestId('extra-icon-leaderboard');
+
+      expect(leaderboardElement).toHaveAttribute('href', '/leaderboard');
     });
   });
 });

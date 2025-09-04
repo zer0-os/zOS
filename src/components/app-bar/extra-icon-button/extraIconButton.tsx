@@ -20,7 +20,12 @@ const ExtraIconButton = ({ Icon, isActive, to, label, onLinkClick }: AppLinkProp
 
   return (
     <Tooltip placement='right' overlay={label}>
-      <Link title={label} className={styles.ExtraIconButton} to={!isActive ? to : '#'} onClick={handleClick}>
+      <Link
+        title={label}
+        className={`${styles.ExtraIconButton} ${isActive ? styles.active : ''}`}
+        to={!isActive ? to : '#'}
+        onClick={handleClick}
+      >
         <Icon size={22} />
       </Link>
     </Tooltip>

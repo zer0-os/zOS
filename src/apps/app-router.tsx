@@ -22,6 +22,7 @@ import { activeZAppFeatureSelector, isZAppActiveSelector } from '../store/active
 import { isAuthenticatedSelector } from '../store/authentication/selectors';
 import { userProfileStageSelector } from '../store/user-profile/selectors';
 import { WalletApp } from './wallet';
+import { LeaderboardApp } from './leaderboard';
 
 import styles from './app-router.module.css';
 
@@ -45,6 +46,7 @@ export const AppRouter = () => {
         {featureFlags.enableTokenZApp && <Route path='/token' component={TokenApp} />}
         <Route path='/profile' component={ProfileApp} />
         <Route path='/wallet' component={WalletApp} />
+        <Route path='/leaderboard' component={LeaderboardApp} />
         <Route component={redirectToRoot} />
       </Switch>
     </AuthenticationContextProvider>
@@ -56,6 +58,7 @@ export const HIDE_SIDEKICK_PATHS = [
   '/home',
   '/profile',
   '/wallet',
+  '/leaderboard',
 ];
 
 /**

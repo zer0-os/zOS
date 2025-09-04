@@ -13,6 +13,7 @@ import {
   IconUser,
   IconWallet,
   IconCoinsStacked2,
+  IconTrophy1,
 } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
@@ -194,6 +195,13 @@ export class AppBar extends React.Component<Properties, State> {
               isActive={isActive('explorer')}
               label='World Explorer'
               to='/explorer'
+              onLinkClick={this.unhoverContainer}
+            />
+            <ExtraIconButton
+              Icon={IconTrophy1}
+              isActive={isActive('leaderboard')}
+              label='Leaderboard'
+              to='/leaderboard'
               onLinkClick={this.unhoverContainer}
             />
             {featureFlags.enableAuraZApp && (

@@ -1,0 +1,27 @@
+.codeContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.copyButton {
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: all 0.3s ease;
+  transform: scale(1);
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &.copied {
+    color: #01f4cb; // Green color when copied
+    transform: scale(1.1);
+  }
+}

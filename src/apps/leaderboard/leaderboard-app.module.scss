@@ -1,0 +1,21 @@
+@use '../../variables' as variables;
+
+.leaderboardContainer {
+  pointer-events: all;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 24px 180px 54px 0px;
+
+  --text-primary: #e2e2e2;
+  --text-tertiary: #8a8a8a;
+}
+
+.leaderboardPanel {
+  width: 1200px;
+  height: calc(100vh - 48px); // Full height minus top/bottom margins (24px each)
+  padding: 15px 18px;
+  border-radius: variables.$border-radius;
+  border: 0.5px solid #8a8a8a4d;
+  backdrop-filter: blur(32px);
+}

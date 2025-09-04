@@ -3,4 +3,16 @@
   height: 22px;
   width: 22px;
   color: var(--color-greyscale-11);
+  border-radius: 4px;
+  padding: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--color-secondary-11);
+  }
+
+  &.active {
+    color: #01f4cb;
+    filter: drop-shadow(0 0 12px rgba(1, 244, 203, 0.4));
+  }
 }

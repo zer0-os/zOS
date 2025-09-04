@@ -21,11 +21,15 @@ export const TableRow = ({ entry }: TableRowProps) => {
         <UserDisplay name={entry.member.name} primaryZid={entry.member.primaryZid} isProUser={entry.member.isProUser} />
       </td>
       <td className={styles.invitedByColumn}>
-        <UserDisplay
-          name={entry.invitedBy.name}
-          primaryZid={entry.invitedBy.primaryZID}
-          isProUser={entry.invitedBy.isProUser}
-        />
+        {entry.invitedBy ? (
+          <UserDisplay
+            name={entry.invitedBy.name}
+            primaryZid={entry.invitedBy.primaryZID}
+            isProUser={entry.invitedBy.isProUser}
+          />
+        ) : (
+          <span className={styles.invitedByText}>—</span>
+        )}
       </td>
       <td className={styles.badgesColumn}>
         <BadgesDisplay badges={entry.badges} />

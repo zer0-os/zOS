@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-const GRAPH_ENDPOINT =
-  'https://gateway-arbitrum.network.thegraph.com/api/8dc80943117f7ee08a9a28ad5036cbab/subgraphs/id/78WsHdZFtkPrZjT3nYvd2KvFZ6w8mbZXsJexsBEXM2uV';
+const GRAPH_ENDPOINT = 'https://zchain-subgraph.zero.tech/subgraphs/name/zns';
 
 const EXACT_ZID_QUERY = `
   query DomainByZna($zna: String!) {

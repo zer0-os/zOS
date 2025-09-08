@@ -112,18 +112,13 @@ export const TokenLauncher = ({ onBack }: TokenLauncherProps) => {
         <div className={styles.Form}>
           <div className={styles.InputGroup}>
             <label className={styles.Label}>Token Name</label>
-            <Input
-              value={formData.name}
-              onChange={handleInputChange('name')}
-              placeholder='e.g., My Awesome Token'
-              isRequired
-            />
+            <Input value={formData.name} onChange={handleInputChange('name')} placeholder='e.g., My Awesome Token' />
             <div className={styles.HelperText}>The full name of your token (e.g., "Bitcoin", "Ethereum")</div>
           </div>
 
           <div className={styles.InputGroup}>
             <label className={styles.Label}>Token Symbol</label>
-            <Input value={formData.symbol} onChange={handleInputChange('symbol')} placeholder='e.g., MAT' isRequired />
+            <Input value={formData.symbol} onChange={handleInputChange('symbol')} placeholder='e.g., MAT' />
             <div className={styles.HelperText}>
               Short symbol for your token (max {MAX_SYMBOL_LENGTH} characters, e.g., "BTC", "ETH")
             </div>
@@ -136,7 +131,6 @@ export const TokenLauncher = ({ onBack }: TokenLauncherProps) => {
               onChange={handleInputChange('initialBuyAmount')}
               placeholder='e.g., 1000'
               type='number'
-              isRequired
             />
             <div className={styles.HelperText}>Amount of mMEOW to provide as initial liquidity</div>
           </div>

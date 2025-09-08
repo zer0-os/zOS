@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { Input } from '@zero-tech/zui/components/Input/Input';
-import { IconSearchMd } from '@zero-tech/zui/icons';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
+import { IconButton } from '@zero-tech/zui/components';
+import { IconSearchMd, IconCoinsStacked2, IconPlus } from '@zero-tech/zui/icons';
 import {
   ContentPortal as SidekickContentPortal,
   Content as SidekickContent,
@@ -36,6 +38,10 @@ export const Sidekick = () => {
   const location = useLocation();
   const [selectedTab, setSelectedTab] = useState<Tab>(Tab.Chains);
   const [search, setSearch] = useState('');
+
+  const handleLaunchToken = () => {
+    console.log('Launch Token clicked');
+  };
 
   // Extract current chain from URL
   const getCurrentChain = (): string | null => {
@@ -94,11 +100,23 @@ export const Sidekick = () => {
             wrapperClassName={styles.SearchWrapper}
             placeholder='Search chains...'
           />
+          <IconButton Icon={IconPlus} onClick={handleLaunchToken} aria-label='Launch new token' />
         </div>
 
         <TabList selectedTab={selectedTab} onTabSelect={handleTabSelect} tabsData={tabsData} />
 
         <SidekickScroll>{renderContent()}</SidekickScroll>
+
+        <div className={styles.LaunchButtonContainer}>
+          <Button
+            variant={ButtonVariant.Primary}
+            onPress={handleLaunchToken}
+            startEnhancer={<IconCoinsStacked2 size={16} />}
+            className={styles.LaunchButton}
+          >
+            <div className={styles.LaunchButtonText}>Launch Token</div>
+          </Button>
+        </div>
       </SidekickContent>
     </SidekickContentPortal>
   );

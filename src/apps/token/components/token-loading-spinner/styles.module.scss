@@ -1,0 +1,44 @@
+.Container {
+  height: 72px;
+  width: 72px;
+}
+
+.PulseCircle {
+  opacity: 0;
+  animation: pulse-radius 1.75s ease-out infinite;
+}
+
+.Spinner {
+  transform: rotate(-90deg);
+  transform-origin: 36px 36px;
+  animation: spinner-draw 3.5s ease-out infinite;
+}
+
+@keyframes pulse-radius {
+  0% {
+    r: 0;
+    opacity: 1;
+  }
+  75% {
+    r: 35;
+  }
+  100% {
+    r: 35;
+    opacity: 0;
+  }
+}
+
+@keyframes spinner-draw {
+  0% {
+    stroke-dasharray: 1, 220;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 220, 220;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 220, 220;
+    stroke-dashoffset: -219;
+  }
+}

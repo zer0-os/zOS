@@ -1,0 +1,213 @@
+@use '../../../../variables' as variables;
+
+.TokenLauncher {
+  --zero-green: #01f4cb;
+  --zero-green-300: #01c9a7;
+  --zero-green-900-72: rgba(2, 33, 26, 0.72);
+  --zero-green-200-24: rgba(1, 244, 203, 0.24);
+  --border-accent-strong: rgba(1, 244, 203, 0.36);
+  --bg-accent-dark-blue: #23252a;
+  --bg-hover: #151719;
+  --border-primary: rgba(97, 105, 117, 0.36);
+  --color-error: var(--color-error-11);
+
+  --text-primary: #f7f8f8;
+  --text-secondary: #9199a1;
+  --text-tertiary: #616975;
+  --text-accent: var(--zero-green);
+  --text-black: #000000;
+
+  --l-spacing: 15px;
+  --m-spacing: 12px;
+  --s-spacing: 9px;
+  --xs-spacing: 6px;
+
+  --corner-radius: 12px;
+
+  --icon-active: var(--zero-green);
+  --icon-default: var(--text-secondary);
+
+  width: 100%;
+  max-width: 750px;
+  flex-shrink: 1;
+  pointer-events: all;
+}
+
+.Container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.BackButton {
+  margin-bottom: 8px;
+}
+
+.Header {
+  text-align: center;
+}
+
+.Title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.RocketIcon {
+  color: var(--zero-green);
+}
+
+.Subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.InfoBox {
+  background: rgba(1, 244, 203, 0.1);
+  border: 1px solid rgba(1, 244, 203, 0.2);
+  border-radius: var(--corner-radius);
+  padding: 12px;
+}
+
+.InfoTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: 'ℹ️';
+    font-size: 14px;
+  }
+}
+
+.InfoList {
+  margin: 0;
+  padding-left: 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.3;
+
+  li {
+    margin-bottom: 4px;
+  }
+}
+
+.Form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.InputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.Label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.HelperText {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.2;
+}
+
+.ErrorMessage {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  border-radius: var(--corner-radius);
+  padding: 8px;
+  color: var(--color-error);
+  font-size: 12px;
+}
+
+.TokenPreview {
+  background: var(--bg-accent-dark-blue);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--corner-radius);
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.PreviewTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.PreviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.PreviewRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.PreviewLabel {
+  color: var(--text-secondary);
+}
+
+.PreviewValue {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.SubmitButton {
+  margin-top: 4px;
+  align-self: center;
+}
+
+.FeeStructure {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.FeeSection {
+  background: var(--bg-accent-dark-blue);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--corner-radius);
+  padding: 12px;
+}
+
+.FeeTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.FeeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

@@ -26,7 +26,7 @@ export const TableHeader = () => {
           <span>Joined</span>
         </th>
         <th className={styles.meowColumn}>
-          <span>MEOW</span>
+          <span>MEOW Earned</span>
         </th>
         <th className={styles.codeColumn}>
           <span>Code</span>

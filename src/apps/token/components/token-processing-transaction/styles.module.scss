@@ -1,0 +1,24 @@
+.Container {
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+
+.Content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--l-spacing);
+}
+
+.Title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.Subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}

@@ -33,14 +33,18 @@ const tabsData: TabData[] = [
   },
 ];
 
-export const Sidekick = () => {
+interface SidekickProps {
+  onLaunchToken: () => void;
+}
+
+export const Sidekick = ({ onLaunchToken }: SidekickProps) => {
   const history = useHistory();
   const location = useLocation();
   const [selectedTab, setSelectedTab] = useState<Tab>(Tab.Chains);
   const [search, setSearch] = useState('');
 
   const handleLaunchToken = () => {
-    console.log('Launch Token clicked');
+    onLaunchToken();
   };
 
   // Extract current chain from URL

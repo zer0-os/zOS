@@ -2,7 +2,7 @@ import { Badge } from '../../utils';
 import Tooltip from '../../../../../components/tooltip';
 
 // Import badge SVGs as React components
-import WorldOwnerBadge from './icons/world-owner.svg?react';
+import WorldBuilderBadge from './icons/world-builder.svg?react';
 import Blockchain101Badge from './icons/blockchain101.svg?react';
 import DefaultBadge from './icons/default.svg?react';
 
@@ -14,7 +14,7 @@ interface BadgesDisplayProps {
 
 // Map badge names to their corresponding SVG components
 const badgeComponents: Record<string, React.ComponentType> = {
-  'Mr. Worldwide': WorldOwnerBadge,
+  'World Builder': WorldBuilderBadge,
   'Blockchain 101': Blockchain101Badge,
 };
 

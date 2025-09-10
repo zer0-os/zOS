@@ -5,7 +5,7 @@ import { useProfileApp } from '../../lib/useProfileApp';
 import Tooltip from '../../../../components/tooltip';
 
 // Import badge SVGs as React components
-import MrWorldwideBadge from './badges/mr-worldwide.svg?react';
+import WorldBuilderBadge from './badges/world-builder.svg?react';
 import Blockchain101Badge from './badges/blockchain-101.svg?react';
 import DefaultBadge from './badges/default.svg?react';
 
@@ -13,7 +13,7 @@ import styles from './styles.module.scss';
 
 // Map badge names to their corresponding SVG components
 const badgeComponents: Record<string, React.ComponentType> = {
-  'Mr. Worldwide': MrWorldwideBadge,
+  'World Builder': WorldBuilderBadge,
   'Blockchain 101': Blockchain101Badge,
 };
 

@@ -75,6 +75,11 @@ export const TableHeader = ({ sortConfig, onSort }: TableHeaderProps) => {
             {renderSortIcon('marketCap')}
           </div>
         </th>
+        <th className={styles.TradeColumn}>
+          <div className={styles.HeaderContent}>
+            <span>Trade</span>
+          </div>
+        </th>
       </tr>
     </thead>
   );

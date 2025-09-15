@@ -15,19 +15,23 @@
 }
 
 .NameColumn {
-  width: 40%;
+  width: 38%;
 }
 
 .PriceColumn {
-  width: 15%;
+  width: 13%;
 }
 
 .ChangeColumn {
-  width: 15%;
+  width: 13%;
 }
 
 .MarketCapColumn {
-  width: 22%;
+  width: 18%;
+}
+
+.TradeColumn {
+  width: 10%;
 }
 
 .TokenInfo {
@@ -106,4 +110,13 @@
   &.Negative {
     color: var(--color-failure-11);
   }
+}
+
+.TradeButton {
+  width: fit-content;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 16px;
+  background: rgba(2, 33, 26, 0.72);
 }

@@ -2,18 +2,22 @@
 @import '../../../../glass';
 
 .TokenColumn {
-  width: 40%;
+  width: 30%;
 }
 
 .PriceColumn {
-  width: 20%;
+  width: 15%;
 }
 
-.VolumeColumn {
+.TotalSupplyColumn {
   width: 20%;
 }
 
 .ChangeColumn {
+  width: 15%;
+}
+
+.StatusColumn {
   width: 20%;
 }
 

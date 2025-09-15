@@ -2,10 +2,11 @@ import React from 'react';
 import {
   IconCoinsStacked1,
   IconCurrencyDollarCircle,
-  IconBarChart,
+  IconDatabase1,
   IconActivity,
   IconChevronUp,
   IconChevronDown,
+  IconFlag01,
 } from '@zero-tech/zui/icons';
 import { SortConfig, SortKey } from '../utils';
 
@@ -55,20 +56,7 @@ export const TableHeader = ({ sortConfig, onSort }: TableHeaderProps) => {
             {renderSortIcon('price')}
           </div>
         </th>
-        <th
-          className={`${styles.VolumeColumn} ${sortConfig.key === 'volume' ? styles.ActiveSort : ''}`}
-          onClick={() => onSort('volume')}
-          role='button'
-          tabIndex={0}
-        >
-          <div className={styles.HeaderContent}>
-            <div className={styles.HeaderLeft}>
-              <span>Volume</span>
-              <IconBarChart size={14} />
-            </div>
-            {renderSortIcon('volume')}
-          </div>
-        </th>
+
         <th
           className={`${styles.ChangeColumn} ${sortConfig.key === 'change24h' ? styles.ActiveSort : ''}`}
           onClick={() => onSort('change24h')}
@@ -81,6 +69,34 @@ export const TableHeader = ({ sortConfig, onSort }: TableHeaderProps) => {
               <IconActivity size={16} />
             </div>
             {renderSortIcon('change24h')}
+          </div>
+        </th>
+        <th
+          className={`${styles.TotalSupplyColumn} ${sortConfig.key === 'totalSupply' ? styles.ActiveSort : ''}`}
+          onClick={() => onSort('totalSupply')}
+          role='button'
+          tabIndex={0}
+        >
+          <div className={styles.HeaderContent}>
+            <div className={styles.HeaderLeft}>
+              <span>Total Supply</span>
+              <IconDatabase1 size={14} />
+            </div>
+            {renderSortIcon('totalSupply')}
+          </div>
+        </th>
+        <th
+          className={`${styles.StatusColumn} ${sortConfig.key === 'status' ? styles.ActiveSort : ''}`}
+          onClick={() => onSort('status')}
+          role='button'
+          tabIndex={0}
+        >
+          <div className={styles.HeaderContent}>
+            <div className={styles.HeaderLeft}>
+              <span>Status</span>
+              <IconFlag01 size={16} />
+            </div>
+            {renderSortIcon('status')}
           </div>
         </th>
       </tr>

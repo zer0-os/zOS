@@ -16,13 +16,9 @@ import { setLastActiveTokenChain } from '../../../../lib/last-token-chain';
 
 import styles from './styles.module.scss';
 
-// Mock chain data - matching the chains we have mock token data for
-const mockChains = [
-  { id: 'ethereum', name: 'Ethereum', icon: 'ethereum' },
-  { id: 'polygon', name: 'Polygon', icon: 'polygon' },
-  { id: 'solana', name: 'Solana', icon: 'solana' },
-  { id: 'arbitrum', name: 'Arbitrum', icon: 'arbitrum' },
-  { id: 'optimism', name: 'Optimism', icon: 'optimism' },
+// Z Chain only - for ZBanc tokens
+const zChain = [
+  { id: 'zchain', name: 'Z Chain', icon: 'zchain' },
 ];
 
 const tabsData: TabData[] = [
@@ -66,7 +62,7 @@ export const Sidekick = ({ onLaunchToken }: SidekickProps) => {
   };
 
   const renderChainItems = () => {
-    const filteredChains = mockChains.filter((chain) => chain.name.toLowerCase().includes(search.toLowerCase()));
+    const filteredChains = zChain.filter((chain) => chain.name.toLowerCase().includes(search.toLowerCase()));
     const currentChain = getCurrentChain();
 
     return filteredChains.map((chain) => (
@@ -102,7 +98,7 @@ export const Sidekick = ({ onLaunchToken }: SidekickProps) => {
             type={'search'}
             value={search}
             wrapperClassName={styles.SearchWrapper}
-            placeholder='Search chains...'
+            placeholder='Search Z Chain...'
           />
           <IconButton Icon={IconPlus} onClick={handleLaunchToken} aria-label='Launch new token' />
         </div>

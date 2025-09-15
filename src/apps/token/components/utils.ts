@@ -1,3 +1,30 @@
+// ZBanc API Response Types
+export interface ZBancToken {
+  address: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  totalSupply: string;
+  graduated: boolean;
+  isActive: boolean;
+  asset: {
+    symbol: string;
+    address: string;
+  };
+  fees: {
+    vaultEntryFee: number;
+    vaultExitFee: number;
+    protocolEntryFee: number;
+    protocolExitFee: number;
+    protocolFeeRecipient: string;
+  };
+  iconUrl?: string;
+  description?: string;
+  creatorAddress: string;
+  creatorUserId: string;
+}
+
+// Display format for DexTable
 export interface TokenData {
   id: string;
   rank: number;
@@ -6,11 +33,11 @@ export interface TokenData {
   pair: string;
   description?: string;
   price: number;
-  volume: number;
+  totalSupply: string;
   change24h: number;
-  age: string;
-  txns: number;
-  makers: number;
+  status: 'Active' | 'Graduated' | 'Inactive';
+  address: string;
+  iconUrl?: string;
 }
 
 export interface SortConfig {
@@ -18,23 +45,37 @@ export interface SortConfig {
   direction: 'asc' | 'desc' | null;
 }
 
-export type SortKey = 'rank' | 'price' | 'volume' | 'change24h';
+export type SortKey = 'rank' | 'price' | 'totalSupply' | 'change24h' | 'status';
 
 // Formatting
 export const formatPrice = (price: number): string => {
   return `$${price.toFixed(6)}`;
 };
 
-export const formatVolume = (volume: number): string => {
-  if (volume >= 1000000) {
-    return `$${(volume / 1000000).toFixed(1)}M`;
+export const formatTotalSupply = (totalSupply: string, decimals: number = 18): string => {
+  const num = parseFloat(totalSupply) / Math.pow(10, decimals);
+  if (num >= 1000000000) {
+    return `${(num / 1000000000).toFixed(1)}B`;
   }
-  return `$${(volume / 1000).toFixed(0)}K`;
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(1)}M`;
+  }
+  if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K`;
+  }
+  return num.toFixed(0);
 };
 
 export const formatChange = (change: number): string => {
   const sign = change >= 0 ? '+' : '';
   return `${sign}${change.toFixed(2)}%`;
+};
+
+// Status determination
+export const getTokenStatus = (token: ZBancToken): 'Active' | 'Graduated' | 'Inactive' => {
+  if (token.graduated) return 'Graduated';
+  if (token.isActive) return 'Active';
+  return 'Inactive';
 };
 
 // Sorting
@@ -55,8 +96,8 @@ export const sortTokens = (tokens: TokenData[], sortConfig: SortConfig): TokenDa
   }
 
   return [...tokens].sort((a, b) => {
-    let aValue: number;
-    let bValue: number;
+    let aValue: number | string;
+    let bValue: number | string;
 
     switch (sortConfig.key) {
       case 'rank':
@@ -67,13 +108,17 @@ export const sortTokens = (tokens: TokenData[], sortConfig: SortConfig): TokenDa
         aValue = a.price;
         bValue = b.price;
         break;
-      case 'volume':
-        aValue = a.volume;
-        bValue = b.volume;
+      case 'totalSupply':
+        aValue = parseFloat(a.totalSupply);
+        bValue = parseFloat(b.totalSupply);
         break;
       case 'change24h':
         aValue = a.change24h;
         bValue = b.change24h;
+        break;
+      case 'status':
+        aValue = a.status;
+        bValue = b.status;
         break;
       default:
         return 0;
@@ -85,4 +130,24 @@ export const sortTokens = (tokens: TokenData[], sortConfig: SortConfig): TokenDa
       return aValue < bValue ? 1 : -1;
     }
   });
+};
+
+// Convert ZBanc API response to TokenData format
+export const convertZBancToTokenData = (zbancTokens: ZBancToken[]): TokenData[] => {
+  const convertedTokens = zbancTokens.map((token, index) => ({
+    id: token.address,
+    rank: index + 1,
+    name: token.name,
+    symbol: token.symbol,
+    pair: `${token.symbol}/${token.asset.symbol}`,
+    description: token.description || `ZBanc token - ${token.graduated ? 'Graduated' : 'Active'}`,
+    price: 0.001, // Mock price for now - will be replaced with real data later
+    totalSupply: token.totalSupply,
+    change24h: Math.random() * 20 - 10, // Mock change for now
+    status: getTokenStatus(token),
+    address: token.address,
+    iconUrl: token.iconUrl,
+  }));
+
+  return convertedTokens;
 };

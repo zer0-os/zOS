@@ -1,0 +1,118 @@
+@use '../../../../variables' as variables;
+
+.TokenSuccess {
+  --zero-green: #01f4cb;
+  --zero-green-300: #01c9a7;
+  --zero-green-900-72: rgba(2, 33, 26, 0.72);
+  --zero-green-200-24: rgba(1, 244, 203, 0.24);
+  --border-accent-strong: rgba(1, 244, 203, 0.36);
+  --bg-accent-dark-blue: #23252a;
+  --bg-hover: #151719;
+  --border-primary: rgba(97, 105, 117, 0.36);
+  --color-error: var(--color-error-11);
+
+  --text-primary: #f7f8f8;
+  --text-secondary: #9199a1;
+  --text-tertiary: #616975;
+  --text-accent: var(--zero-green);
+  --text-black: #000000;
+
+  --l-spacing: 15px;
+  --m-spacing: 12px;
+  --s-spacing: 9px;
+  --xs-spacing: 6px;
+
+  --corner-radius: 12px;
+
+  --icon-active: var(--zero-green);
+  --icon-default: var(--text-secondary);
+
+  width: 100%;
+  max-width: 750px;
+  flex-shrink: 1;
+  pointer-events: all;
+}
+
+.Container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.SuccessIcon {
+  color: var(--zero-green);
+  animation: successPulse 2s ease-in-out infinite;
+}
+
+@keyframes successPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.SuccessTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.SuccessSubtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.TokenInfo {
+  width: 100%;
+  background: var(--bg-accent-dark-blue);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--corner-radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.TokenInfoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.TokenInfoLabel {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.TokenInfoValue {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.Actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.ViewTokenButton {
+  flex: 1;
+}
+
+.BackButton {
+  flex: 1;
+}

@@ -11,18 +11,22 @@
 }
 
 .TokenColumn {
-  width: 40%;
+  width: 30%;
 }
 
 .PriceColumn {
-  width: 20%;
+  width: 15%;
 }
 
-.VolumeColumn {
+.TotalSupplyColumn {
   width: 20%;
 }
 
 .ChangeColumn {
+  width: 15%;
+}
+
+.StatusColumn {
   width: 20%;
 }
 
@@ -86,7 +90,7 @@
   @include glass-text-primary-color;
 }
 
-.Volume {
+.TotalSupply {
   font-size: 14px;
 
   @include glass-text-primary-color;
@@ -101,5 +105,33 @@
 
   &.Negative {
     color: var(--color-failure-11);
+  }
+}
+
+.Status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.Active {
+    background-color: rgba(1, 244, 203, 0.1);
+    color: var(--color-secondary-11);
+    border: 1px solid rgba(1, 244, 203, 0.2);
+  }
+
+  &.Graduated {
+    background-color: rgba(0, 123, 255, 0.1);
+    color: #9054f1;
+    border: 1px solid rgba(0, 123, 255, 0.2);
+  }
+
+  &.Inactive {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: var(--color-greyscale-10);
+    border: 1px solid rgba(108, 117, 125, 0.2);
   }
 }

@@ -20,3 +20,70 @@
   padding: 0;
   backdrop-filter: blur(32px);
 }
+
+.Header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(97, 105, 117, 0.2);
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-greyscale-11);
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-greyscale-10);
+  }
+}
+
+.Loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+}
+
+.Spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(1, 244, 203, 0.3);
+  border-top: 3px solid var(--color-secondary-11);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.Error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.ErrorTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-greyscale-11);
+}
+
+.ErrorMessage {
+  font-size: 14px;
+  color: var(--color-greyscale-10);
+  max-width: 400px;
+}

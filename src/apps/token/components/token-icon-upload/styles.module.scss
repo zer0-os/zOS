@@ -1,0 +1,157 @@
+@import '../../../../variables';
+@import '../../../../glass';
+
+.TokenIconUpload {
+  width: fit-content;
+}
+
+.UploadArea {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--border-primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover:not(.Disabled) {
+    border-color: var(--color-secondary-11);
+    background-color: rgba(1, 244, 203, 0.05);
+  }
+
+  &.DragActive {
+    border-color: var(--color-secondary-11);
+    background-color: rgba(1, 244, 203, 0.1);
+  }
+
+  &.Disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.FileInput {
+  display: none;
+}
+
+.PreviewContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.Overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 10px;
+
+  .PreviewContainer:hover & {
+    opacity: 1;
+  }
+
+  span {
+    color: white;
+    font-size: 11px;
+    font-weight: 500;
+  }
+}
+
+.Placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.PlaceholderText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.PlaceholderTitle {
+  font-size: 12px;
+  font-weight: 600;
+  @include glass-text-primary-color;
+}
+
+.PlaceholderSubtitle {
+  font-size: 10px;
+  @include glass-text-secondary-color;
+}
+
+.PlaceholderSize {
+  font-size: 9px;
+  @include glass-text-tertiary-color;
+}
+
+.Uploading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  text-align: center;
+  padding: 12px;
+  background: rgba(1, 244, 203, 0.1);
+  border: 1px solid rgba(1, 244, 203, 0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  @include glass-text-primary-color;
+}
+
+.Spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(1, 244, 203, 0.3);
+  border-top: 2px solid var(--color-secondary-11);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.Error {
+  margin-top: 12px;
+  padding: 12px;
+  text-align: center;
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--color-failure-11);
+}

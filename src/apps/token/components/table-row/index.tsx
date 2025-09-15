@@ -1,15 +1,22 @@
 import React from 'react';
-import { TokenData, formatPrice, formatVolume, formatChange } from '../utils';
+import { TokenData, formatPrice, formatTotalSupply, formatChange } from '../utils';
 
 import styles from './styles.module.scss';
 
 interface TableRowProps {
   token: TokenData;
+  onTokenClick?: (tokenAddress: string) => void;
 }
 
-export const TableRow = ({ token }: TableRowProps) => {
+export const TableRow = ({ token, onTokenClick }: TableRowProps) => {
+  const handleClick = () => {
+    if (onTokenClick) {
+      onTokenClick(token.address);
+    }
+  };
+
   return (
-    <tr className={styles.TokenRow}>
+    <tr className={styles.TokenRow} onClick={handleClick}>
       <td className={styles.TokenColumn}>
         <div className={styles.TokenInfo}>
           <div className={styles.TokenRank}>#{token.rank}</div>
@@ -27,13 +34,17 @@ export const TableRow = ({ token }: TableRowProps) => {
       <td className={styles.PriceColumn}>
         <div className={styles.Price}>{formatPrice(token.price)}</div>
       </td>
-      <td className={styles.VolumeColumn}>
-        <div className={styles.Volume}>{formatVolume(token.volume)}</div>
-      </td>
+
       <td className={styles.ChangeColumn}>
         <div className={`${styles.Change} ${token.change24h >= 0 ? styles.Positive : styles.Negative}`}>
           {formatChange(token.change24h)}
         </div>
+      </td>
+      <td className={styles.TotalSupplyColumn}>
+        <div className={styles.TotalSupply}>{formatTotalSupply(token.totalSupply)}</div>
+      </td>
+      <td className={styles.StatusColumn}>
+        <div className={`${styles.Status} ${styles[token.status]}`}>{token.status}</div>
       </td>
     </tr>
   );

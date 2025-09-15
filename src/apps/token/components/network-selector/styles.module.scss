@@ -1,0 +1,87 @@
+@use '../../../../variables' as variables;
+
+.NetworkSelector {
+  --zero-green: #01f4cb;
+  --zero-green-300: #01c9a7;
+  --zero-green-900-72: rgba(2, 33, 26, 0.72);
+  --zero-green-200-24: rgba(1, 244, 203, 0.24);
+  --border-accent-strong: rgba(1, 244, 203, 0.36);
+  --bg-accent-dark-blue: #23252a;
+  --bg-hover: #151719;
+  --border-primary: rgba(97, 105, 117, 0.36);
+  --color-error: var(--color-error-11);
+
+  --text-primary: #f7f8f8;
+  --text-secondary: #9199a1;
+  --text-tertiary: #616975;
+  --text-accent: var(--zero-green);
+  --text-black: #000000;
+
+  --l-spacing: 15px;
+  --m-spacing: 12px;
+  --s-spacing: 9px;
+  --xs-spacing: 6px;
+
+  --corner-radius: 12px;
+
+  --icon-active: var(--zero-green);
+  --icon-default: var(--text-secondary);
+
+  margin: 16px;
+}
+
+.NetworkSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.NetworkButtons {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.NetworkButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  background: rgba(1, 244, 203, 0);
+  color: var(--zero-green);
+  cursor: pointer;
+
+  &:hover {
+    background: #2f4040;
+  }
+
+  &.Active {
+    background: rgba(1, 244, 203, 0.15);
+    color: var(--zero-green);
+  }
+}
+
+.NetworkIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: #000000;
+  border: 1px solid #666666;
+  border-radius: 4px;
+}
+
+// TODO:  import actual icon
+.IconText {
+  font-size: 14px;
+  font-weight: 700;
+  color: #cccccc;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}

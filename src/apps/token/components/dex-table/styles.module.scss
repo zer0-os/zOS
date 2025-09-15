@@ -24,10 +24,9 @@
 
 .DexTable th {
   text-align: left;
-  padding: 16px 12px;
+  padding: 12px;
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 1px solid #686e7d3d;
   border-top: 1px solid #686e7d3d;
@@ -50,7 +49,7 @@
 }
 
 .DexTable td {
-  padding: 16px 12px;
+  padding: 14px 12px;
 
   &:last-child {
     border-right: none;

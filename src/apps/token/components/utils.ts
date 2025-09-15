@@ -30,12 +30,9 @@ export interface TokenData {
   rank: number;
   name: string;
   symbol: string;
-  pair: string;
-  description?: string;
   price: number;
-  totalSupply: string;
   change24h: number;
-  status: 'Active' | 'Graduated' | 'Inactive';
+  marketCap: number;
   address: string;
   iconUrl?: string;
 }
@@ -45,11 +42,24 @@ export interface SortConfig {
   direction: 'asc' | 'desc' | null;
 }
 
-export type SortKey = 'rank' | 'price' | 'totalSupply' | 'change24h' | 'status';
+export type SortKey = 'rank' | 'name' | 'price' | 'change24h' | 'marketCap';
 
 // Formatting
 export const formatPrice = (price: number): string => {
   return `$${price.toFixed(6)}`;
+};
+
+export const formatMarketCap = (marketCap: number): string => {
+  if (marketCap >= 1000000000) {
+    return `$${(marketCap / 1000000000).toFixed(1)}B`;
+  }
+  if (marketCap >= 1000000) {
+    return `$${(marketCap / 1000000).toFixed(1)}M`;
+  }
+  if (marketCap >= 1000) {
+    return `$${(marketCap / 1000).toFixed(1)}K`;
+  }
+  return `$${marketCap.toFixed(0)}`;
 };
 
 export const formatTotalSupply = (totalSupply: string, decimals: number = 18): string => {
@@ -69,13 +79,6 @@ export const formatTotalSupply = (totalSupply: string, decimals: number = 18): s
 export const formatChange = (change: number): string => {
   const sign = change >= 0 ? '+' : '';
   return `${sign}${change.toFixed(2)}%`;
-};
-
-// Status determination
-export const getTokenStatus = (token: ZBancToken): 'Active' | 'Graduated' | 'Inactive' => {
-  if (token.graduated) return 'Graduated';
-  if (token.isActive) return 'Active';
-  return 'Inactive';
 };
 
 // Sorting
@@ -104,21 +107,21 @@ export const sortTokens = (tokens: TokenData[], sortConfig: SortConfig): TokenDa
         aValue = a.rank;
         bValue = b.rank;
         break;
+      case 'name':
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+        break;
       case 'price':
         aValue = a.price;
         bValue = b.price;
-        break;
-      case 'totalSupply':
-        aValue = parseFloat(a.totalSupply);
-        bValue = parseFloat(b.totalSupply);
         break;
       case 'change24h':
         aValue = a.change24h;
         bValue = b.change24h;
         break;
-      case 'status':
-        aValue = a.status;
-        bValue = b.status;
+      case 'marketCap':
+        aValue = a.marketCap;
+        bValue = b.marketCap;
         break;
       default:
         return 0;
@@ -139,12 +142,9 @@ export const convertZBancToTokenData = (zbancTokens: ZBancToken[]): TokenData[] 
     rank: index + 1,
     name: token.name,
     symbol: token.symbol,
-    pair: `${token.symbol}/${token.asset.symbol}`,
-    description: token.description || `ZBanc token - ${token.graduated ? 'Graduated' : 'Active'}`,
     price: 0.001, // Mock price for now - will be replaced with real data later
-    totalSupply: token.totalSupply,
     change24h: Math.random() * 20 - 10, // Mock change for now
-    status: getTokenStatus(token),
+    marketCap: Math.random() * 1000000000, // Mock market cap for now
     address: token.address,
     iconUrl: token.iconUrl,
   }));

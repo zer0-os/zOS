@@ -1,24 +1,24 @@
 @import '../../../../variables';
 @import '../../../../glass';
 
-.TokenColumn {
-  width: 30%;
+.RankColumn {
+  width: 8%;
+}
+
+.NameColumn {
+  width: 40%;
 }
 
 .PriceColumn {
   width: 15%;
 }
 
-.TotalSupplyColumn {
-  width: 20%;
-}
-
 .ChangeColumn {
   width: 15%;
 }
 
-.StatusColumn {
-  width: 20%;
+.MarketCapColumn {
+  width: 22%;
 }
 
 .HeaderContent {

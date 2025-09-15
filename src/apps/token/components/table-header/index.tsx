@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  IconCoinsStacked1,
-  IconCurrencyDollarCircle,
-  IconDatabase1,
-  IconActivity,
-  IconChevronUp,
-  IconChevronDown,
-  IconFlag01,
-} from '@zero-tech/zui/icons';
+import { IconChevronUp, IconChevronDown } from '@zero-tech/zui/icons';
 import { SortConfig, SortKey } from '../utils';
 
 import styles from './styles.module.scss';
@@ -29,17 +21,25 @@ export const TableHeader = ({ sortConfig, onSort }: TableHeaderProps) => {
     <thead>
       <tr>
         <th
-          className={`${styles.TokenColumn} ${sortConfig.key === 'rank' ? styles.ActiveSort : ''}`}
+          className={`${styles.RankColumn} ${sortConfig.key === 'rank' ? styles.ActiveSort : ''}`}
           onClick={() => onSort('rank')}
           role='button'
           tabIndex={0}
         >
           <div className={styles.HeaderContent}>
-            <div className={styles.HeaderLeft}>
-              <span>Token</span>
-              <IconCoinsStacked1 size={16} />
-            </div>
+            <span>#</span>
             {renderSortIcon('rank')}
+          </div>
+        </th>
+        <th
+          className={`${styles.NameColumn} ${sortConfig.key === 'name' ? styles.ActiveSort : ''}`}
+          onClick={() => onSort('name')}
+          role='button'
+          tabIndex={0}
+        >
+          <div className={styles.HeaderContent}>
+            <span>Name</span>
+            {renderSortIcon('name')}
           </div>
         </th>
         <th
@@ -49,14 +49,10 @@ export const TableHeader = ({ sortConfig, onSort }: TableHeaderProps) => {
           tabIndex={0}
         >
           <div className={styles.HeaderContent}>
-            <div className={styles.HeaderLeft}>
-              <span>Price</span>
-              <IconCurrencyDollarCircle size={16} />
-            </div>
+            <span>Price</span>
             {renderSortIcon('price')}
           </div>
         </th>
-
         <th
           className={`${styles.ChangeColumn} ${sortConfig.key === 'change24h' ? styles.ActiveSort : ''}`}
           onClick={() => onSort('change24h')}
@@ -64,39 +60,19 @@ export const TableHeader = ({ sortConfig, onSort }: TableHeaderProps) => {
           tabIndex={0}
         >
           <div className={styles.HeaderContent}>
-            <div className={styles.HeaderLeft}>
-              <span>24hr</span>
-              <IconActivity size={16} />
-            </div>
+            <span>24h %</span>
             {renderSortIcon('change24h')}
           </div>
         </th>
         <th
-          className={`${styles.TotalSupplyColumn} ${sortConfig.key === 'totalSupply' ? styles.ActiveSort : ''}`}
-          onClick={() => onSort('totalSupply')}
+          className={`${styles.MarketCapColumn} ${sortConfig.key === 'marketCap' ? styles.ActiveSort : ''}`}
+          onClick={() => onSort('marketCap')}
           role='button'
           tabIndex={0}
         >
           <div className={styles.HeaderContent}>
-            <div className={styles.HeaderLeft}>
-              <span>Total Supply</span>
-              <IconDatabase1 size={14} />
-            </div>
-            {renderSortIcon('totalSupply')}
-          </div>
-        </th>
-        <th
-          className={`${styles.StatusColumn} ${sortConfig.key === 'status' ? styles.ActiveSort : ''}`}
-          onClick={() => onSort('status')}
-          role='button'
-          tabIndex={0}
-        >
-          <div className={styles.HeaderContent}>
-            <div className={styles.HeaderLeft}>
-              <span>Status</span>
-              <IconFlag01 size={16} />
-            </div>
-            {renderSortIcon('status')}
+            <span>Market Cap</span>
+            {renderSortIcon('marketCap')}
           </div>
         </th>
       </tr>

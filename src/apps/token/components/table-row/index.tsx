@@ -1,5 +1,5 @@
 import React from 'react';
-import { TokenData, formatPrice, formatTotalSupply, formatChange } from '../utils';
+import { TokenData, formatPrice, formatMarketCap, formatChange } from '../utils';
 
 import styles from './styles.module.scss';
 
@@ -17,34 +17,30 @@ export const TableRow = ({ token, onTokenClick }: TableRowProps) => {
 
   return (
     <tr className={styles.TokenRow} onClick={handleClick}>
-      <td className={styles.TokenColumn}>
+      <td className={styles.RankColumn}>
+        <div className={styles.Rank}>#{token.rank}</div>
+      </td>
+      <td className={styles.NameColumn}>
         <div className={styles.TokenInfo}>
-          <div className={styles.TokenRank}>#{token.rank}</div>
           <div className={styles.TokenIcon}>
             <div className={styles.TokenIconPlaceholder} />
           </div>
           <div className={styles.TokenDetails}>
-            <div className={styles.TokenName}>
-              {token.pair} - {token.name}
-            </div>
-            {token.description && <div className={styles.TokenDescription}>{token.description}</div>}
+            <div className={styles.TokenName}>{token.name}</div>
+            <div className={styles.TokenSymbol}>{token.symbol}</div>
           </div>
         </div>
       </td>
       <td className={styles.PriceColumn}>
         <div className={styles.Price}>{formatPrice(token.price)}</div>
       </td>
-
       <td className={styles.ChangeColumn}>
         <div className={`${styles.Change} ${token.change24h >= 0 ? styles.Positive : styles.Negative}`}>
           {formatChange(token.change24h)}
         </div>
       </td>
-      <td className={styles.TotalSupplyColumn}>
-        <div className={styles.TotalSupply}>{formatTotalSupply(token.totalSupply)}</div>
-      </td>
-      <td className={styles.StatusColumn}>
-        <div className={`${styles.Status} ${styles[token.status]}`}>{token.status}</div>
+      <td className={styles.MarketCapColumn}>
+        <div className={styles.MarketCap}>{formatMarketCap(token.marketCap)}</div>
       </td>
     </tr>
   );

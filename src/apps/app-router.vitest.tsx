@@ -68,6 +68,7 @@ describe(AppRouter, () => {
       '/profile',
       '/wallet',
       '/leaderboard',
+      '/token',
     ]);
   });
 

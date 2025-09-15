@@ -1,3 +1,5 @@
+@import '../../glass';
+
 .TokenAppContainer {
   pointer-events: all;
   width: 100%;
@@ -22,20 +24,18 @@
 }
 
 .Header {
-  padding: 20px 24px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
   border-bottom: 1px solid rgba(97, 105, 117, 0.2);
 
   h3 {
-    margin: 0 0 8px 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--color-greyscale-11);
-  }
+    @include glass-text-primary-color;
 
-  p {
     margin: 0;
-    font-size: 14px;
-    color: var(--color-greyscale-10);
+    font-size: 18px;
+    font-weight: 600;
   }
 }
 
@@ -86,4 +86,21 @@
   font-size: 14px;
   color: var(--color-greyscale-10);
   max-width: 400px;
+}
+
+.LaunchButton {
+  gap: 8px;
+  background: #181818;
+
+  &:hover {
+    background: #181818;
+  }
+
+  &:active {
+    background: #141414;
+  }
+}
+
+.LaunchButtonText {
+  margin-left: 4px;
 }

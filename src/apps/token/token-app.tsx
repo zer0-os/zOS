@@ -1,12 +1,13 @@
 import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import { Panel } from '../../components/layout/panel';
-import { Sidekick } from './components/sidekick';
 import { DexTable } from './components/dex-table';
 import { TokenLauncher } from './components/token-launcher';
 import { TokenDetail } from './components/token-detail';
 import { useZBancTokens } from './hooks/useZBancTokens';
 import { convertZBancToTokenData } from './components/utils';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
+import { IconCoinsStacked2 } from '@zero-tech/zui/icons';
 
 import styles from './token-app.module.scss';
 
@@ -72,9 +73,7 @@ export const TokenApp = () => {
           path='/token/zchain'
           component={() => (
             <Panel className={styles.TokenAppPanel}>
-              <div className={styles.Header}>
-                <p>ZBanc Tokens on Z Chain</p>
-              </div>
+              <Header handleLaunchToken={handleLaunchToken} />
               {renderTokenList()}
             </Panel>
           )}
@@ -86,7 +85,6 @@ export const TokenApp = () => {
 
   return (
     <div className={styles.TokenAppContainer}>
-      <Sidekick onLaunchToken={handleLaunchToken} />
       <div className={styles.Wrapper}>{renderMainContent()}</div>
     </div>
   );
@@ -95,4 +93,20 @@ export const TokenApp = () => {
 const Loading = () => {
   // Always redirect to Z Chain for ZBanc tokens
   return <Redirect to='/token/zchain' />;
+};
+
+const Header = ({ handleLaunchToken }: { handleLaunchToken: () => void }) => {
+  return (
+    <div className={styles.Header}>
+      <h3>DEX</h3>
+      <Button
+        variant={ButtonVariant.Primary}
+        onPress={handleLaunchToken}
+        startEnhancer={<IconCoinsStacked2 size={16} />}
+        className={styles.LaunchButton}
+      >
+        <div className={styles.LaunchButtonText}>Launch Token</div>
+      </Button>
+    </div>
+  );
 };

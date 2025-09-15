@@ -3,6 +3,7 @@ import { TokenData, SortConfig, handleSort, sortTokens } from '../utils';
 import { TableHeader } from '../table-header';
 import { TableRow } from '../table-row';
 import { EmptyState } from '../table-empty-state';
+import { NetworkSelector } from '../network-selector';
 
 import styles from './styles.module.scss';
 
@@ -32,6 +33,7 @@ export const DexTable = ({ tokens, onTokenClick }: DexTableProps) => {
 
   return (
     <div className={styles.DexTableContainer}>
+      <NetworkSelector />
       <table className={styles.DexTable}>
         <TableHeader sortConfig={sortConfig} onSort={handleSortClick} />
         <tbody>{renderTokenRows()}</tbody>

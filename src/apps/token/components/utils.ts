@@ -137,45 +137,6 @@ export const sortTokens = (tokens: TokenData[], sortConfig: SortConfig): TokenDa
 
 // Convert ZBanc API response to TokenData format
 export const convertZBancToTokenData = (zbancTokens: ZBancToken[]): TokenData[] => {
-  // If no real tokens, return mock data for visualization
-  if (!zbancTokens || zbancTokens.length === 0) {
-    return [
-      {
-        id: '0x1234567890123456789012345678901234567890',
-        rank: 1,
-        name: 'Nexora',
-        symbol: 'NXR',
-        price: 502.14,
-        change24h: 5.78,
-        marketCap: 765102301,
-        address: '0x1234567890123456789012345678901234567890',
-        iconUrl: undefined,
-      },
-      {
-        id: '0x2345678901234567890123456789012345678901',
-        rank: 2,
-        name: 'Aetherion',
-        symbol: 'ATH',
-        price: 312.55,
-        change24h: -5.2,
-        marketCap: 1203432543,
-        address: '0x2345678901234567890123456789012345678901',
-        iconUrl: undefined,
-      },
-      {
-        id: '0x3456789012345678901234567890123456789012',
-        rank: 3,
-        name: 'Nebryx',
-        symbol: 'NBX',
-        price: 794.79,
-        change24h: -8.1,
-        marketCap: 2134331999,
-        address: '0x3456789012345678901234567890123456789012',
-        iconUrl: undefined,
-      },
-    ];
-  }
-
   const convertedTokens = zbancTokens.map((token, index) => ({
     id: token.address,
     rank: index + 1,

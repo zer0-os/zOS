@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { TokenData, formatPrice, formatMarketCap, formatChange } from '../utils';
 
 import styles from './styles.module.scss';
@@ -41,6 +42,17 @@ export const TableRow = ({ token, onTokenClick }: TableRowProps) => {
       </td>
       <td className={styles.MarketCapColumn}>
         <div className={styles.MarketCap}>{formatMarketCap(token.marketCap)}</div>
+      </td>
+      <td className={styles.TradeColumn}>
+        <Button
+          variant={ButtonVariant.Primary}
+          onPress={() => {
+            // TODO: Implement trade functionality
+          }}
+          className={styles.TradeButton}
+        >
+          Trade
+        </Button>
       </td>
     </tr>
   );

@@ -1,9 +1,6 @@
 import styles from './token-icon.module.scss';
-import { ZChainIcon } from './icons/zchain';
+import { ZChainIcon, AvaxIcon, EthereumIcon, BaseIcon } from '../../../../components/chain-icons';
 import cn from 'classnames';
-import { AvaxIcon } from './icons/avax';
-import { EthereumIcon } from './icons/ethereum';
-import { BaseIcon } from './icons/base';
 
 const ICONS = {
   1417429182: <ZChainIcon />,

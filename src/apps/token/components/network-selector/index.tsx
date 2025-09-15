@@ -1,4 +1,5 @@
 import React from 'react';
+import { ZChainIcon } from '../../../../components/chain-icons';
 
 import styles from './styles.module.scss';
 
@@ -14,7 +15,7 @@ export const NetworkSelector = () => {
           {networks.map((network) => (
             <div key={network.id} className={`${styles.NetworkButton} ${styles.Active}`}>
               <div className={styles.NetworkIcon}>
-                <span className={styles.IconText}>Z</span>
+                <ZChainIcon />
               </div>
               {network.name}
             </div>

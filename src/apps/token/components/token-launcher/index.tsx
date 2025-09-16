@@ -50,7 +50,7 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
     setSuccessTokenAddress(null);
   };
 
-  if (submission.isSubmitting) {
+  if (submission.isSubmitting || submission.isApproving) {
     const title = submission.isApproving ? 'Approving transaction' : 'Creating your token';
     const subtitle = 'Just a moment...';
 

@@ -40,13 +40,7 @@ export const useTokenSubmission = ({
     clearErrors();
 
     try {
-      // First upload the icon
-      const uploadResult = await uploadIconMutation.mutateAsync(selectedIconFile);
-      if (!uploadResult.success) {
-        setIconError('Failed to upload icon');
-        return;
-      }
-
+      // First get approval
       const approvalResult = await approveToken.approve(
         userAddress,
         ZBANC_TOKEN_ADDRESS,
@@ -57,6 +51,13 @@ export const useTokenSubmission = ({
 
       if (!approvalResult.success) {
         setFormError((approvalResult as any).error || 'Approval failed');
+        return;
+      }
+
+      // Then upload the icon
+      const uploadResult = await uploadIconMutation.mutateAsync(selectedIconFile);
+      if (!uploadResult.success) {
+        setIconError('Failed to upload icon');
         return;
       }
 

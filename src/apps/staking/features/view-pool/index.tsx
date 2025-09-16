@@ -56,7 +56,11 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
   //   : 0;
   const pendingRewardsFormatted = userPendingRewards ? parseFloat(ethers.utils.formatUnits(userPendingRewards, 18)) : 0;
 
-  const { mutate: claimRewards, isPending: isClaimingRewards } = useClaimRewards(poolAddress, chainId);
+  const {
+    mutate: claimRewards,
+    isPending: isClaimingRewards,
+    error: claimRewardsError,
+  } = useClaimRewards(poolAddress, chainId);
 
   const hasClaimableRewards = userPendingRewards && pendingRewardsFormatted >= 0.01;
 
@@ -97,9 +101,11 @@ export const ViewPool = ({ poolName, poolAddress, chainId, poolIconImageUrl, onS
     <div className={styles.Container}>
       <PoolIcon poolName={poolName} chainId={chainId} imageUrl={poolIconImageUrl} />
 
-      <p>
+      <p className={styles.Description}>
         Stake your {stakingTokenInfo?.symbol} to earn {rewardsTokenInfo?.symbol} rewards.
       </p>
+
+      {claimRewardsError && <p className={styles.Error}>{claimRewardsError.message}</p>}
 
       <button
         disabled={isClaimingRewards || !hasClaimableRewards}

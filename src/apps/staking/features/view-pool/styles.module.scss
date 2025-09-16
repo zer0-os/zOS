@@ -8,12 +8,18 @@
     font-weight: 600;
     margin: 0;
   }
+}
 
-  p {
-    font-size: 14px;
-    margin: 0 0 9px 0;
-    color: var(--color-greyscale-11);
-  }
+.Description {
+  font-size: 14px;
+  margin: 0 0 9px 0;
+  color: var(--color-greyscale-11);
+}
+
+.Error {
+  font-size: 14px;
+  margin: 0 0 9px 0;
+  color: var(--color-failure-11);
 }
 
 .BalanceCards {

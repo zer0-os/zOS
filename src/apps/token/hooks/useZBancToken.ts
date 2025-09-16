@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { get } from '../../../lib/api/rest';
+import { config } from '../../../config';
 import { ZBancToken } from '../components/utils';
 
 interface ZBancTokenResponse {
@@ -15,7 +16,7 @@ export const useZBancToken = (tokenAddress: string) => {
         throw new Error('Token address is required');
       }
 
-      const response = await get(`/api/zbanc/token/${tokenAddress}?chainId=${process.env.REACT_APP_Z_CHAIN_ID}`);
+      const response = await get(`/api/zbanc/token/${tokenAddress}?chainId=${config.zChainId}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch ZBanc token');

@@ -4,9 +4,10 @@ import { FormData } from '../components/token-launcher/utils';
 import { useTokenApproval } from '../../../apps/staking/lib/useTokenApproval';
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { useSelector } from 'react-redux';
+import { config } from '../../../config';
 
-const ZBANC_TOKEN_ADDRESS = process.env.REACT_APP_ZBANC_RESERVE_TOKEN_ADDRESS;
-const ZBANC_SPENDER_ADDRESS = process.env.REACT_APP_ZBANC_FACTORY_ADDRESS;
+const ZBANC_TOKEN_ADDRESS = config.zbancReserveTokenAddress;
+const ZBANC_SPENDER_ADDRESS = config.zbancFactoryAddress;
 
 interface UseTokenSubmissionProps {
   formData: FormData;
@@ -51,7 +52,7 @@ export const useTokenSubmission = ({
         ZBANC_TOKEN_ADDRESS,
         ZBANC_SPENDER_ADDRESS,
         formData.initialBuyAmount,
-        Number(process.env.REACT_APP_Z_CHAIN_ID) ?? 1417429182
+        Number(config.zChainId)
       );
 
       if (!approvalResult.success) {

@@ -44,4 +44,7 @@ export const config = {
     43113: process.env.REACT_APP_AVAX_FUJI_INFURA_URL, // Avalanche Fuji testnet
   },
   znsMetadataApiUrl: process.env.REACT_APP_ZNS_METADATA_API_URL,
+  zbancReserveTokenAddress: process.env.REACT_APP_ZBANC_RESERVE_TOKEN_ADDRESS,
+  zbancFactoryAddress: process.env.REACT_APP_ZBANC_FACTORY_ADDRESS,
+  zChainId: process.env.REACT_APP_Z_CHAIN_ID,
 };

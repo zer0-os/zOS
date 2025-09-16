@@ -40,18 +40,20 @@ export const useTokenSubmission = ({
     clearErrors();
 
     try {
-      // First get approval
-      const approvalResult = await approveToken.approve(
-        userAddress,
-        ZBANC_TOKEN_ADDRESS,
-        ZBANC_SPENDER_ADDRESS,
-        formData.initialBuyAmount,
-        Number(config.zChainId)
-      );
+      // Get approval only if initial buy amount is greater than 0
+      if (parseFloat(formData.initialBuyAmount) > 0) {
+        const approvalResult = await approveToken.approve(
+          userAddress,
+          ZBANC_TOKEN_ADDRESS,
+          ZBANC_SPENDER_ADDRESS,
+          formData.initialBuyAmount,
+          Number(config.zChainId)
+        );
 
-      if (!approvalResult.success) {
-        setFormError((approvalResult as any).error || 'Approval failed');
-        return;
+        if (!approvalResult.success) {
+          setFormError((approvalResult as any).error || 'Approval failed');
+          return;
+        }
       }
 
       // Then upload the icon

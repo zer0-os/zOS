@@ -53,6 +53,7 @@ export const useTokenSubmission = ({
         formData.initialBuyAmount,
         Number(process.env.REACT_APP_Z_CHAIN_ID) ?? 1417429182
       );
+
       if (!approvalResult.success) {
         setFormError((approvalResult as any).error || 'Approval failed');
         return;
@@ -93,9 +94,11 @@ export const useTokenSubmission = ({
   };
 
   const isSubmitting = createTokenMutation.isPending || uploadIconMutation.isPending;
+  const isApproving = approveToken.isApproving;
 
   return {
     submit,
     isSubmitting,
+    isApproving,
   };
 };

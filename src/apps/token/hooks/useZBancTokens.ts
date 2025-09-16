@@ -11,7 +11,7 @@ export const useZBancTokens = () => {
   return useQuery<ZBancToken[]>({
     queryKey: ['zbanc-tokens'],
     queryFn: async () => {
-      const response = await get('/zbanc/tokens');
+      const response = await get(`/api/zbanc/tokens?chainId=${process.env.REACT_APP_Z_CHAIN_ID}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch ZBanc tokens');

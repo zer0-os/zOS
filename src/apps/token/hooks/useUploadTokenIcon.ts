@@ -38,7 +38,7 @@ export const useUploadTokenIcon = () => {
       const formData = new FormData();
       formData.append('icon', file);
 
-      const response = await post('/zbanc/upload-icon').attach('icon', file);
+      const response = await post('/api/zbanc/upload-icon').attach('icon', file);
 
       if (!response.ok) {
         const errorData = await response.json();

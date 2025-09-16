@@ -29,7 +29,10 @@ export const useCreateZBancToken = () => {
 
   return useMutation<CreateTokenResponse, CreateTokenError, CreateTokenData>({
     mutationFn: async (tokenData: CreateTokenData) => {
-      const response = await post('/zbanc/create').send(tokenData);
+      const response = await post('/api/zbanc/create').send({
+        ...tokenData,
+        chainId: process.env.REACT_APP_Z_CHAIN_ID,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();

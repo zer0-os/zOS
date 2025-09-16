@@ -1,6 +1,12 @@
 import { useCreateZBancToken } from './useCreateZBancToken';
 import { useUploadTokenIcon } from './useUploadTokenIcon';
 import { FormData } from '../components/token-launcher/utils';
+import { useTokenApproval } from '../../../apps/staking/lib/useTokenApproval';
+import { currentUserSelector } from '../../../store/authentication/selectors';
+import { useSelector } from 'react-redux';
+
+const ZBANC_TOKEN_ADDRESS = process.env.REACT_APP_ZBANC_RESERVE_TOKEN_ADDRESS;
+const ZBANC_SPENDER_ADDRESS = process.env.REACT_APP_ZBANC_FACTORY_ADDRESS;
 
 interface UseTokenSubmissionProps {
   formData: FormData;
@@ -19,6 +25,8 @@ export const useTokenSubmission = ({
   setIconError,
   clearErrors,
 }: UseTokenSubmissionProps) => {
+  const userAddress = useSelector(currentUserSelector)?.zeroWalletAddress;
+  const approveToken = useTokenApproval();
   const createTokenMutation = useCreateZBancToken();
   const uploadIconMutation = useUploadTokenIcon();
 
@@ -35,6 +43,18 @@ export const useTokenSubmission = ({
       const uploadResult = await uploadIconMutation.mutateAsync(selectedIconFile);
       if (!uploadResult.success) {
         setIconError('Failed to upload icon');
+        return;
+      }
+
+      const approvalResult = await approveToken.approve(
+        userAddress,
+        ZBANC_TOKEN_ADDRESS,
+        ZBANC_SPENDER_ADDRESS,
+        formData.initialBuyAmount,
+        Number(process.env.REACT_APP_Z_CHAIN_ID) ?? 1417429182
+      );
+      if (!approvalResult.success) {
+        setFormError((approvalResult as any).error || 'Approval failed');
         return;
       }
 

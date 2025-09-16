@@ -15,7 +15,7 @@ export const useZBancToken = (tokenAddress: string) => {
         throw new Error('Token address is required');
       }
 
-      const response = await get(`/zbanc/token/${tokenAddress}`);
+      const response = await get(`/api/zbanc/token/${tokenAddress}?chainId=${process.env.REACT_APP_Z_CHAIN_ID}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch ZBanc token');

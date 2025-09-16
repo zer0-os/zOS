@@ -52,7 +52,7 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
 
   if (submission.isSubmitting) {
     const title = submission.isApproving ? 'Approving transaction' : 'Creating your token';
-    const subtitle = submission.isApproving ? 'Please confirm the approval in your wallet' : 'Just a moment...';
+    const subtitle = 'Just a moment...';
 
     return (
       <PanelBody className={styles.TokenLauncher}>

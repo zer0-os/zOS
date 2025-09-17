@@ -40,13 +40,16 @@ export const useTokenSubmission = ({
     clearErrors();
 
     try {
+      // todo: get decimals from the token metadata
+      const initialBuyAmount = BigInt(Number(formData.initialBuyAmount) * 10 ** 18).toString();
+
       // Get approval only if initial buy amount is greater than 0
       if (parseFloat(formData.initialBuyAmount) > 0) {
         const approvalResult = await approveToken.approve(
           userAddress,
           ZBANC_TOKEN_ADDRESS,
           ZBANC_SPENDER_ADDRESS,
-          formData.initialBuyAmount,
+          initialBuyAmount,
           Number(config.zChainId)
         );
 
@@ -67,7 +70,7 @@ export const useTokenSubmission = ({
       const result = await createTokenMutation.mutateAsync({
         name: formData.name,
         symbol: formData.symbol,
-        initialBuyAmount: formData.initialBuyAmount,
+        initialBuyAmount,
         iconUrl: uploadResult.data.iconUrl,
         description: formData.description,
       });

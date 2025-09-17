@@ -40,7 +40,6 @@ export const useTokenSubmission = ({
     clearErrors();
 
     try {
-      // todo: get decimals from the token metadata
       const initialBuyAmount = BigInt(Number(formData.initialBuyAmount) * 10 ** 18).toString();
 
       // Get approval only if initial buy amount is greater than 0

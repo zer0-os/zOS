@@ -1,5 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { post } from '../../../lib/api/rest';
+import { get } from '../../../lib/api/rest';
+import axios from 'axios';
+
+interface TokenIconUploadInfo {
+  signedUrl: string;
+  key: string;
+}
 
 interface UploadTokenIconResponse {
   success: boolean;
@@ -18,7 +24,6 @@ export const useUploadTokenIcon = () => {
 
   return useMutation<UploadTokenIconResponse, UploadTokenIconError, File>({
     mutationFn: async (file: File) => {
-      // Validate file type
       const allowedTypes = [
         'image/jpeg',
         'image/png',
@@ -30,24 +35,47 @@ export const useUploadTokenIcon = () => {
         throw new Error('Please select a valid image file (JPG, PNG, GIF, WEBP)');
       }
 
-      // Validate file size (10MB limit)
+      // (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
         throw new Error('File size must be less than 10MB');
       }
 
-      const formData = new FormData();
-      formData.append('icon', file);
+      try {
+        // Get signed URL from backend
+        const response = await get<{ success: boolean; data: TokenIconUploadInfo }>(
+          '/api/zbanc/get-icon-upload-info',
+          undefined,
+          {
+            name: file.name,
+            type: file.type,
+          }
+        );
 
-      const response = await post('/api/zbanc/upload-icon').attach('icon', file);
+        if (!response.ok || !response.body?.success) {
+          throw new Error(response.body?.data?.message || 'Failed to get upload info');
+        }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        const error = new Error(errorData.message || 'Failed to upload icon') as Error & { code?: string };
-        error.code = errorData.error;
-        throw error;
+        const uploadInfo = response.body.data;
+
+        // Upload directly to S3 using signed URL
+        await axios.put(uploadInfo.signedUrl, file, {
+          timeout: 2 * 60 * 1000,
+          headers: {
+            'Content-Type': file.type,
+          },
+        });
+
+        // Return the key as the icon URL
+        return {
+          success: true,
+          data: {
+            iconUrl: uploadInfo.key,
+          },
+        };
+      } catch (error: any) {
+        console.error('Failed to upload token icon:', error);
+        throw new Error(error.response?.data?.message || error.message || 'Failed to upload icon');
       }
-
-      return response.body;
     },
     onSuccess: () => {
       // Invalidate any cached data that might include token icons

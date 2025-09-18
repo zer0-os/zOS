@@ -35,6 +35,10 @@ export const addVercelPreviewAuthHeader = (token: string) => {
   }
 };
 
+if (localStorage.getItem('token')) {
+  authHeader = { Authorization: `Bearer ${localStorage.getItem('token')}` };
+}
+
 export function get<T>(path: string, filter?: RequestFilter | string, query?: any) {
   let queryData;
   if (filter) {

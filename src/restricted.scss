@@ -14,6 +14,8 @@
   min-height: 100vh;
   min-height: 100dvh;
   padding: 120px 0 60px 0;
+  overflow-y: auto;
+  position: relative;
 
   &__logo-container {
     mix-blend-mode: screen;

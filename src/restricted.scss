@@ -11,7 +11,8 @@
   align-items: center;
   box-sizing: border-box;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   padding: 120px 0 60px 0;
 
   &__logo-container {

@@ -70,22 +70,20 @@
   &__button-text {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
 
     span {
       display: block;
       white-space: nowrap;
-      line-height: 12px;
 
       &:first-child {
         font-weight: 500;
         font-size: 8px;
+        line-height: 6px;
       }
 
       &:last-child {
         font-weight: 500;
-        font-size: 14px;
+        font-size: 16px;
       }
     }
   }

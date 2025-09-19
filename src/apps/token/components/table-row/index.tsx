@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
 import { TokenData, formatPrice, formatMarketCap, formatChange } from '../utils';
 
@@ -10,10 +10,30 @@ interface TableRowProps {
 }
 
 export const TableRow = ({ token, onTokenClick }: TableRowProps) => {
+  const [imageError, setImageError] = useState(false);
+
   const handleClick = () => {
     if (onTokenClick) {
       onTokenClick(token.address);
     }
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const renderTokenIcon = () => {
+    if (token.iconUrl && !imageError) {
+      return (
+        <img
+          src={token.iconUrl}
+          alt={`${token.name} icon`}
+          className={styles.TokenIconImage}
+          onError={handleImageError}
+        />
+      );
+    }
+    return <div className={styles.TokenIconPlaceholder}>{token.symbol.substring(0, 2).toUpperCase()}</div>;
   };
 
   return (
@@ -23,9 +43,7 @@ export const TableRow = ({ token, onTokenClick }: TableRowProps) => {
       </td>
       <td className={styles.NameColumn}>
         <div className={styles.TokenInfo}>
-          <div className={styles.TokenIcon}>
-            <div className={styles.TokenIconPlaceholder} />
-          </div>
+          <div className={styles.TokenIcon}>{renderTokenIcon()}</div>
           <div className={styles.TokenDetails}>
             <div className={styles.TokenName}>{token.name}</div>
             <div className={styles.TokenSymbol}>{token.symbol}</div>

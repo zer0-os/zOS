@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { post } from '../../../lib/api/rest';
+import { config } from '../../../config';
 
 interface CreateTokenData {
   name: string;
@@ -29,7 +30,10 @@ export const useCreateZBancToken = () => {
 
   return useMutation<CreateTokenResponse, CreateTokenError, CreateTokenData>({
     mutationFn: async (tokenData: CreateTokenData) => {
-      const response = await post('/zbanc/create').send(tokenData);
+      const response = await post('/api/zbanc/create').send({
+        ...tokenData,
+        chainId: config.zChainId,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();

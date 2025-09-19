@@ -40,7 +40,7 @@ export const FormInputs = ({
         </div>
 
         <div className={styles.InputGroup}>
-          <label className={styles.Label}>Initial Buy Amount (required)</label>
+          <label className={styles.Label}>Initial Buy Amount (required) - Default: 0</label>
           <Input
             value={formData.initialBuyAmount}
             onChange={onInputChange('initialBuyAmount')}

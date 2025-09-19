@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { get } from '../../../lib/api/rest';
+import { config } from '../../../config';
 import { ZBancToken } from '../components/utils';
 
 interface ZBancTokensResponse {
@@ -11,7 +12,7 @@ export const useZBancTokens = () => {
   return useQuery<ZBancToken[]>({
     queryKey: ['zbanc-tokens'],
     queryFn: async () => {
-      const response = await get('/zbanc/tokens');
+      const response = await get(`/api/zbanc/tokens?chainId=${config.zChainId}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch ZBanc tokens');

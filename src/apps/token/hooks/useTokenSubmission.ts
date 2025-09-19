@@ -1,6 +1,9 @@
 import { useCreateZBancToken } from './useCreateZBancToken';
 import { useUploadTokenIcon } from './useUploadTokenIcon';
+import { useNetworkSwitching } from './useNetworkSwitching';
 import { FormData } from '../components/token-launcher/utils';
+import { selectedWalletSelector } from '../../../store/wallet/selectors';
+import { useSelector } from 'react-redux';
 
 interface UseTokenSubmissionProps {
   formData: FormData;
@@ -19,6 +22,9 @@ export const useTokenSubmission = ({
   setIconError,
   clearErrors,
 }: UseTokenSubmissionProps) => {
+  const selectedWallet = useSelector(selectedWalletSelector);
+  const userAddress = selectedWallet.address;
+  const networkSwitching = useNetworkSwitching();
   const createTokenMutation = useCreateZBancToken();
   const uploadIconMutation = useUploadTokenIcon();
 
@@ -31,7 +37,19 @@ export const useTokenSubmission = ({
     clearErrors();
 
     try {
-      // First upload the icon
+      if (!userAddress) {
+        setFormError('Please connect your wallet to create a token');
+        return;
+      }
+
+      // First, ensure we're on the correct network
+      const networkSwitched = await networkSwitching.switchToTargetNetwork();
+      if (!networkSwitched) {
+        setFormError(networkSwitching.error || `Failed to switch to ${networkSwitching.getNetworkName()}`);
+        return;
+      }
+
+      // Then upload the icon
       const uploadResult = await uploadIconMutation.mutateAsync(selectedIconFile);
       if (!uploadResult.success) {
         setIconError('Failed to upload icon');
@@ -73,9 +91,11 @@ export const useTokenSubmission = ({
   };
 
   const isSubmitting = createTokenMutation.isPending || uploadIconMutation.isPending;
+  const isPreparing = networkSwitching.isSwitching; // Network switching preparation
 
   return {
     submit,
     isSubmitting,
+    isPreparing,
   };
 };

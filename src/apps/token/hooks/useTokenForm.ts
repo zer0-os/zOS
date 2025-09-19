@@ -4,7 +4,7 @@ import { FormData, validateFormData, isValidNumericInput, formatSymbolInput } fr
 const INITIAL_FORM_DATA: FormData = {
   name: '',
   symbol: '',
-  initialBuyAmount: '',
+  initialBuyAmount: '0',
   description: '',
   iconUrl: '',
 };

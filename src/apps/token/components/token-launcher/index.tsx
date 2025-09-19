@@ -50,9 +50,9 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
     setSuccessTokenAddress(null);
   };
 
-  if (submission.isSubmitting || submission.isApproving) {
-    const title = submission.isApproving ? 'Approving transaction' : 'Creating your token';
-    const subtitle = 'Just a moment...';
+  if (submission.isSubmitting || submission.isPreparing) {
+    const title = submission.isPreparing ? 'Switching network' : 'Creating your token';
+    const subtitle = submission.isPreparing ? 'Please confirm the network switch in your wallet' : 'Just a moment...';
 
     return (
       <PanelBody className={styles.TokenLauncher}>

@@ -1,13 +1,9 @@
 import { useCreateZBancToken } from './useCreateZBancToken';
 import { useUploadTokenIcon } from './useUploadTokenIcon';
+import { useNetworkSwitching } from './useNetworkSwitching';
 import { FormData } from '../components/token-launcher/utils';
-import { useTokenApproval } from '../../../apps/staking/lib/useTokenApproval';
-import { currentUserSelector } from '../../../store/authentication/selectors';
+import { selectedWalletSelector } from '../../../store/wallet/selectors';
 import { useSelector } from 'react-redux';
-import { config } from '../../../config';
-
-const ZBANC_TOKEN_ADDRESS = config.zbancReserveTokenAddress;
-const ZBANC_SPENDER_ADDRESS = config.zbancFactoryAddress;
 
 interface UseTokenSubmissionProps {
   formData: FormData;
@@ -26,8 +22,9 @@ export const useTokenSubmission = ({
   setIconError,
   clearErrors,
 }: UseTokenSubmissionProps) => {
-  const userAddress = useSelector(currentUserSelector)?.zeroWalletAddress;
-  const approveToken = useTokenApproval();
+  const selectedWallet = useSelector(selectedWalletSelector);
+  const userAddress = selectedWallet.address;
+  const networkSwitching = useNetworkSwitching();
   const createTokenMutation = useCreateZBancToken();
   const uploadIconMutation = useUploadTokenIcon();
 
@@ -40,22 +37,16 @@ export const useTokenSubmission = ({
     clearErrors();
 
     try {
-      const initialBuyAmount = BigInt(Number(formData.initialBuyAmount) * 10 ** 18).toString();
+      if (!userAddress) {
+        setFormError('Please connect your wallet to create a token');
+        return;
+      }
 
-      // Get approval only if initial buy amount is greater than 0
-      if (parseFloat(formData.initialBuyAmount) > 0) {
-        const approvalResult = await approveToken.approve(
-          userAddress,
-          ZBANC_TOKEN_ADDRESS,
-          ZBANC_SPENDER_ADDRESS,
-          initialBuyAmount,
-          Number(config.zChainId)
-        );
-
-        if (!approvalResult.success) {
-          setFormError((approvalResult as any).error || 'Approval failed');
-          return;
-        }
+      // First, ensure we're on the correct network
+      const networkSwitched = await networkSwitching.switchToTargetNetwork();
+      if (!networkSwitched) {
+        setFormError(networkSwitching.error || `Failed to switch to ${networkSwitching.getNetworkName()}`);
+        return;
       }
 
       // Then upload the icon
@@ -69,7 +60,7 @@ export const useTokenSubmission = ({
       const result = await createTokenMutation.mutateAsync({
         name: formData.name,
         symbol: formData.symbol,
-        initialBuyAmount,
+        initialBuyAmount: formData.initialBuyAmount,
         iconUrl: uploadResult.data.iconUrl,
         description: formData.description,
       });
@@ -100,11 +91,11 @@ export const useTokenSubmission = ({
   };
 
   const isSubmitting = createTokenMutation.isPending || uploadIconMutation.isPending;
-  const isApproving = approveToken.isApproving;
+  const isPreparing = networkSwitching.isSwitching; // Network switching preparation
 
   return {
     submit,
     isSubmitting,
-    isApproving,
+    isPreparing,
   };
 };

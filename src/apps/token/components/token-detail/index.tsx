@@ -67,13 +67,13 @@ export const TokenDetail = ({ tokenAddress, onBack }: TokenDetailProps) => {
               <h1 className={styles.TokenName}>{token.name}</h1>
               <div className={styles.TokenSymbol}>{token.symbol}</div>
             </div>
+            {token.description && <p className={styles.Description}>{token.description}</p>}
             <div className={styles.TokenAddress}>
               <span className={styles.AddressText}>{tokenAddress}</span>
               <button className={styles.CopyButton} onClick={handleCopyAddress}>
                 <IconCopy2 size={14} />
               </button>
             </div>
-            {token.description && <p className={styles.Description}>{token.description}</p>}
           </div>
           <div className={styles.TokenStatus}>
             <div className={`${styles.StatusBadge} ${styles[token.graduated ? 'Graduated' : 'Active']}`}>

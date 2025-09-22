@@ -11,5 +11,6 @@ export const useTransactionHistoryQuery = (address: string) => {
       const response = await get(`/api/wallet/${address}/transactions`);
       return response.body;
     },
+    staleTime: 1000 * 60 * 3,
   });
 };

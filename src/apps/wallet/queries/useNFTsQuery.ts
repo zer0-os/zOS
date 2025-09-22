@@ -11,5 +11,6 @@ export const useNFTsQuery = (address: string) => {
       const response = await get(`/api/wallet/${address}/nfts`);
       return response.body;
     },
+    staleTime: 1000 * 60 * 3,
   });
 };

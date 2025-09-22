@@ -19,6 +19,7 @@ export const useBalancesQuery = (address: string) => {
       await preloadImages(body?.tokens ?? []);
       return body;
     },
+    staleTime: 1000 * 45,
   });
 
   const tokens = result.data?.tokens.map((token: TokenBalance) => {

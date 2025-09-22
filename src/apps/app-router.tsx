@@ -15,6 +15,7 @@ import { featureFlags } from '../lib/feature-flags';
 import { useSelector } from 'react-redux';
 import { Provider as AuthenticationContextProvider } from '../components/authentication/context';
 import { AuraApp } from './aura';
+import { DexApp } from './dex';
 import { TokenApp } from './token';
 import { Container as SidekickContainer } from '../components/sidekick/components/container';
 import { Stage } from '../store/user-profile';
@@ -43,6 +44,7 @@ export const AppRouter = () => {
         <Route path='/explorer' component={ExplorerApp} />
         <Route path='/notifications' component={NotificationsApp} />
         {featureFlags.enableAuraZApp && <Route path='/aura' component={AuraApp} />}
+        {featureFlags.enableDex && <Route path='/dex' component={DexApp} />}
         {featureFlags.enableTokenZApp && <Route path='/token' component={TokenApp} />}
         <Route path='/profile' component={ProfileApp} />
         <Route path='/wallet' component={WalletApp} />

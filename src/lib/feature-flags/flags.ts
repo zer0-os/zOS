@@ -13,7 +13,8 @@ export type FeatureFlagKey =
   | 'enableMatrixDebug'
   | 'enableCreateTGCChannel'
   | 'enableStaking'
-  | 'enableUnstaking';
+  | 'enableUnstaking'
+  | 'enableDex';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

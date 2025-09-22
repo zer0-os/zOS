@@ -182,9 +182,9 @@ export class AppBar extends React.Component<Properties, State> {
             {featureFlags.enableDex && (
               <AppLink
                 Icon={IconCoinsSwap1}
-                isActive={isActive('dex')}
-                label='DEX'
-                to='/dex'
+                isActive={isActive('swap')}
+                label='Swap'
+                to='/swap'
                 onLinkClick={this.unhoverContainer}
               />
             )}

@@ -135,7 +135,6 @@ export const TradingForm = ({ tokenAddress, onBack }: TradingFormProps) => {
             isSubmitting={submission.isSubmitting}
             onInputChange={form.handleInputChange}
             onTradeTypeChange={form.handleTradeTypeChange}
-            onModeChange={form.handleModeChange}
             onCalculationStateChange={handleCalculationStateChange}
           />
 

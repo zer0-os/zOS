@@ -4,7 +4,7 @@ import { TradingFormData, validateTradingFormData, isValidNumericInput } from '.
 const INITIAL_FORM_DATA: TradingFormData = {
   amount: '',
   tradeType: 'buy',
-  mode: 'deposit',
+  mode: 'mint',
 };
 
 export const useTradingForm = () => {
@@ -32,7 +32,7 @@ export const useTradingForm = () => {
   };
 
   const handleTradeTypeChange = (tradeType: 'buy' | 'sell') => {
-    setFormData({ ...formData, tradeType, mode: 'deposit' });
+    setFormData({ ...formData, tradeType, mode: 'mint' });
     if (error) {
       setError(null);
     }

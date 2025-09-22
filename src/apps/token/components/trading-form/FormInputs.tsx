@@ -4,6 +4,7 @@ import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Butt
 import { TradingFormData } from './utils';
 import { ZBancToken } from '../utils';
 import { useAmountForDeposit, useAmountForMint, usePriceQuote } from '../../hooks/useZBancTrading';
+
 import styles from './styles.module.scss';
 
 interface FormInputsProps {
@@ -12,7 +13,6 @@ interface FormInputsProps {
   isSubmitting: boolean;
   onInputChange: (field: keyof TradingFormData) => (value: string) => void;
   onTradeTypeChange: (tradeType: 'buy' | 'sell') => void;
-  onModeChange: (mode: 'deposit' | 'mint') => void;
   onCalculationStateChange?: (isCalculating: boolean, hasError: boolean) => void;
 }
 
@@ -22,7 +22,6 @@ export const FormInputs = ({
   isSubmitting,
   onInputChange,
   onTradeTypeChange,
-  onModeChange,
   onCalculationStateChange,
 }: FormInputsProps) => {
   // Helper to check if we should fetch data
@@ -95,9 +94,6 @@ export const FormInputs = ({
     return `Enter the amount of ${token.symbol} tokens to sell`;
   };
 
-  const getDepositButtonLabel = () => `Deposit ${token.asset.symbol}`;
-  const getMintButtonLabel = () => `Mint ${token.symbol}`;
-
   return (
     <div className={styles.InputsSection}>
       <div className={styles.TradeTypeSelector}>
@@ -118,27 +114,6 @@ export const FormInputs = ({
           Sell
         </Button>
       </div>
-
-      {isBuyMode && (
-        <div className={styles.ModeSelector}>
-          <Button
-            variant={isDepositMode ? ButtonVariant.Primary : ButtonVariant.Secondary}
-            onPress={() => onModeChange('deposit')}
-            className={styles.ModeButton}
-            disabled={isSubmitting}
-          >
-            {getDepositButtonLabel()}
-          </Button>
-          <Button
-            variant={isMintMode ? ButtonVariant.Primary : ButtonVariant.Secondary}
-            onPress={() => onModeChange('mint')}
-            className={styles.ModeButton}
-            disabled={isSubmitting}
-          >
-            {getMintButtonLabel()}
-          </Button>
-        </div>
-      )}
 
       <div className={styles.InputGroup}>
         <label className={styles.Label}>Amount ({getAmountLabel()})</label>

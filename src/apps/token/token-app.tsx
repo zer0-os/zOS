@@ -4,6 +4,7 @@ import { Panel } from '../../components/layout/panel';
 import { DexTable } from './components/dex-table';
 import { TokenLauncher } from './components/token-launcher';
 import { TokenDetail } from './components/token-detail';
+import { TradingForm } from './components/trading-form';
 import { useZBancTokens } from './hooks/useZBancTokens';
 import { convertZBancToTokenData } from './components/utils';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
@@ -14,6 +15,8 @@ import styles from './token-app.module.scss';
 export const TokenApp = () => {
   const history = useHistory();
   const [showTokenLauncher, setShowTokenLauncher] = useState(false);
+  const [showTradingForm, setShowTradingForm] = useState(false);
+  const [tradingTokenAddress, setTradingTokenAddress] = useState<string | null>(null);
 
   const { data: zbancTokens, isLoading, error } = useZBancTokens();
 
@@ -23,6 +26,8 @@ export const TokenApp = () => {
 
   const handleBackToTokens = () => {
     setShowTokenLauncher(false);
+    setShowTradingForm(false);
+    setTradingTokenAddress(null);
   };
 
   const handleViewToken = (tokenAddress: string) => {
@@ -32,6 +37,12 @@ export const TokenApp = () => {
 
   const handleTokenClick = (tokenAddress: string) => {
     history.push(`/token/zchain/${tokenAddress}`);
+  };
+
+  const handleTradeClick = (tokenAddress: string) => {
+    setTradingTokenAddress(tokenAddress);
+    setShowTradingForm(true);
+    setShowTokenLauncher(false);
   };
 
   const renderTokenList = () => {
@@ -53,12 +64,22 @@ export const TokenApp = () => {
       );
     }
 
-    return <DexTable tokens={convertZBancToTokenData(zbancTokens || [])} onTokenClick={handleTokenClick} />;
+    return (
+      <DexTable
+        tokens={convertZBancToTokenData(zbancTokens || [])}
+        onTokenClick={handleTokenClick}
+        onTradeClick={handleTradeClick}
+      />
+    );
   };
 
   const renderMainContent = () => {
     if (showTokenLauncher) {
       return <TokenLauncher onBack={handleBackToTokens} onViewToken={handleViewToken} />;
+    }
+
+    if (showTradingForm && tradingTokenAddress) {
+      return <TradingForm tokenAddress={tradingTokenAddress} onBack={handleBackToTokens} />;
     }
 
     return (

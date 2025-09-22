@@ -10,9 +10,10 @@ import styles from './styles.module.scss';
 interface DexTableProps {
   tokens?: TokenData[];
   onTokenClick?: (tokenAddress: string) => void;
+  onTradeClick?: (tokenAddress: string) => void;
 }
 
-export const DexTable = ({ tokens, onTokenClick }: DexTableProps) => {
+export const DexTable = ({ tokens, onTokenClick, onTradeClick }: DexTableProps) => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: null });
 
   const handleSortClick = (key: string) => {
@@ -28,7 +29,9 @@ export const DexTable = ({ tokens, onTokenClick }: DexTableProps) => {
       return <EmptyState />;
     }
 
-    return sortedTokens.map((token) => <TableRow key={token.id} token={token} onTokenClick={onTokenClick} />);
+    return sortedTokens.map((token) => (
+      <TableRow key={token.id} token={token} onTokenClick={onTokenClick} onTradeClick={onTradeClick} />
+    ));
   };
 
   return (

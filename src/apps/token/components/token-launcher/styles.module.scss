@@ -225,6 +225,10 @@
 .PreviewValue {
   color: var(--text-primary);
   font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .SubmitButton {

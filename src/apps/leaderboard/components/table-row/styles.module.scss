@@ -10,19 +10,19 @@
 }
 
 .rankColumn {
-  width: 8%;
+  width: var(--col-rank);
 }
 
 .memberColumn {
-  width: 20%;
+  width: var(--col-member);
 }
 
 .invitedByColumn {
-  width: 20%;
+  width: var(--col-invited-by);
 }
 
 .badgesColumn {
-  width: 12%;
+  width: var(--col-badges);
   text-align: left;
 }
 
@@ -35,23 +35,23 @@
 }
 
 .referralsColumn {
-  width: 10%;
+  width: var(--col-referrals);
 }
 
 .proSubsColumn {
-  width: 10%;
+  width: var(--col-pro-subs);
 }
 
 .joinedColumn {
-  width: 12%;
+  width: var(--col-joined);
 }
 
 .meowColumn {
-  width: 12%;
+  width: var(--col-meow);
 }
 
 .codeColumn {
-  width: 8%;
+  width: var(--col-code);
 }
 
 // Text styles based on your specifications

@@ -10,7 +10,7 @@
     line-height: 16px;
     letter-spacing: 2%;
     text-align: right;
-    padding: 12px 8px;
+    padding: 12px;
     border: none;
     color: var(--text-tertiary);
 
@@ -27,43 +27,43 @@
 }
 
 .rankColumn {
-  width: 8%;
+  width: var(--col-rank);
 }
 
 .memberColumn {
-  width: 20%;
+  width: var(--col-member);
 }
 
 .invitedByColumn {
-  width: 20%;
+  width: var(--col-invited-by);
 }
 
 .badgesColumn {
-  width: 12%;
+  width: var(--col-badges);
   text-align: left;
 }
 
 .referralsColumn {
-  width: 10%;
+  width: var(--col-referrals);
   text-align: right;
 }
 
 .proSubsColumn {
-  width: 10%;
+  width: var(--col-pro-subs);
   text-align: right;
 }
 
 .joinedColumn {
-  width: 12%;
+  width: var(--col-joined);
   text-align: right;
 }
 
 .meowColumn {
-  width: 13%;
+  width: var(--col-meow);
   text-align: right;
 }
 
 .codeColumn {
-  width: 8%;
+  width: var(--col-code);
   text-align: right;
 }

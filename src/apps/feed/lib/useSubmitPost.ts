@@ -2,11 +2,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
-import { useThirdwebAccount } from '../../../store/thirdweb/account-manager';
 import { currentUserSelector, primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
 import { v4 as uuidv4 } from 'uuid';
 import { addQueuedPost, removeQueuedPost, updateQueuedPostStatus } from '../../../store/post-queue';
 import { QuotedPost } from '../components/feed/lib/types';
+import { post } from '../../../lib/api/rest';
 
 export interface SubmitPostParams {
   channelZid: string;
@@ -25,8 +25,6 @@ export const useSubmitPost = () => {
   const userWallets = useSelector(userWalletsSelector);
   const currentUser = useSelector(currentUserSelector);
 
-  const account = useThirdwebAccount();
-
   const {
     error,
     isPending,
@@ -39,7 +37,7 @@ export const useSubmitPost = () => {
       const { message, replyToId, channelZid, mediaId, quoteOf } = params;
       const formattedUserPrimaryZid = userPrimaryZid?.replace('0://', '');
 
-      const authorAddress = account?.address;
+      const authorAddress = currentUser?.zeroWalletAddress;
 
       if (!formattedUserPrimaryZid) {
         throw new Error('Please set a primary ZID in your profile');
@@ -70,7 +68,10 @@ export const useSubmitPost = () => {
       let signedPost;
 
       try {
-        signedPost = await account?.signMessage({ message: unsignedPost });
+        const response = await post(`/api/wallet/${authorAddress}/sign-message`).send({
+          message: unsignedPost,
+        });
+        signedPost = response.body.signedMessage;
       } catch (e) {
         console.error(e);
         throw new Error('Failed to sign post');

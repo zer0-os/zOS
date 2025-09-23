@@ -26,7 +26,6 @@ import { saga as accountManagement } from './account-management/saga';
 import { saga as posts } from './posts/saga';
 import { saga as notifications } from './notifications/saga';
 import { saga as reportUser } from './report-user/saga';
-import { saga as thirdweb } from './thirdweb/saga';
 import { saga as activeZApp } from './active-zapp/saga';
 import { saga as userFollows } from './user-follows/saga';
 import { saga as wallet } from './wallet/saga';
@@ -59,7 +58,6 @@ export function* rootSaga() {
     posts,
     notifications,
     reportUser,
-    thirdweb,
     activeZApp,
     userFollows,
     wallet,

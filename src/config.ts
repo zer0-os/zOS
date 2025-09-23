@@ -27,7 +27,6 @@ export const config = {
   googlePlayStorePath: process.env.REACT_APP_GOOGLE_PLAY_STORE_PATH,
   webAppDownloadPath: process.env.REACT_APP_WEB_APP_DOWNLOAD_PATH,
   telegramBotUserId: process.env.REACT_APP_TELEGRAM_BOT_USER_ID,
-  thirwebClientId: process.env.REACT_APP_THIRDWEB_CLIENT_ID,
   matrixHomeServerName: process.env.REACT_APP_MATRIX_HOME_SERVER_NAME,
   messageFileSize: { basicUser: 10485760, zeroProUser: 1073741824 },
   postMedia: {

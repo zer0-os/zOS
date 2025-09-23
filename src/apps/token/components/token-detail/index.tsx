@@ -114,18 +114,18 @@ export const TokenDetail = ({ tokenAddress, onBack }: TokenDetailProps) => {
           </div>
 
           <div className={styles.DetailSection}>
-            <h3 className={styles.SectionTitle}>Asset & Creator Information</h3>
+            <h3 className={styles.SectionTitle}>Reserve Asset & Creator Information</h3>
             <div className={styles.DetailList}>
               <div className={styles.DetailItem}>
                 <span className={styles.DetailLabel}>Reserve Asset:</span>
                 <span className={styles.DetailValue}>{token.asset.symbol}</span>
               </div>
               <div className={styles.DetailItem}>
-                <span className={styles.DetailLabel}>Asset Address:</span>
+                <span className={styles.DetailLabel}>Reserve Asset Address:</span>
                 <span className={styles.DetailValue}>{token.asset.address}</span>
               </div>
               <div className={styles.DetailItem}>
-                <span className={styles.DetailLabel}>Creator Address:</span>
+                <span className={styles.DetailLabel}>Token Creator Address:</span>
                 <span className={styles.DetailValue}>{token.creatorAddress}</span>
               </div>
             </div>

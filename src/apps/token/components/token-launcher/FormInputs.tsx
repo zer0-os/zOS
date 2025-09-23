@@ -63,14 +63,21 @@ export const FormInputs = ({
             placeholder='e.g., 1000'
             type='number'
           />
-          <div className={styles.HelperText}>Amount of MEOW to provide as initial liquidity</div>
-
-          {!balancesLoading && userAddress && (
-            <div className={styles.BalanceInfo}>
-              <span className={styles.BalanceLabel}>Your MEOW Balance:</span>
-              <span className={styles.BalanceAmount}>{meowAmount.toFixed(2)} MEOW</span>
-            </div>
-          )}
+          <div className={styles.HelperTextContainer}>
+            <div className={styles.HelperText}>Amount of MEOW to provide as initial liquidity</div>
+            {userAddress && (
+              <div className={styles.BalanceInfo}>
+                <span className={styles.BalanceLabel}>Your MEOW Balance:</span>
+                {balancesLoading ? (
+                  <div className={styles.BalanceLoading}>
+                    <div className={styles.Spinner} />
+                  </div>
+                ) : (
+                  <span className={styles.BalanceAmount}>{meowAmount.toFixed(2)} MEOW</span>
+                )}
+              </div>
+            )}
+          </div>
 
           {hasInsufficientBalance && (
             <div className={styles.BalanceError}>

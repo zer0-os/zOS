@@ -145,10 +145,18 @@
   color: var(--text-primary);
 }
 
+.HelperTextContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
 .HelperText {
   font-size: 11px;
   color: var(--text-tertiary);
   line-height: 1.2;
+  flex: 1;
 }
 
 .ErrorMessage {
@@ -287,24 +295,47 @@
 
 .BalanceInfo {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
-  padding: 8px 12px;
-  background: rgba(1, 244, 203, 0.1);
-  border: 1px solid rgba(1, 244, 203, 0.2);
-  border-radius: 6px;
-  font-size: 12px;
+  font-size: 10px;
+  gap: 4px;
 }
 
 .BalanceLabel {
-  color: var(--text-secondary);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.2;
   font-weight: 500;
 }
 
 .BalanceAmount {
-  color: var(--text-accent);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.2;
   font-weight: 600;
+}
+
+.BalanceLoading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.Spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(1, 244, 203, 0.3);
+  border-top: 2px solid var(--text-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .BalanceError {

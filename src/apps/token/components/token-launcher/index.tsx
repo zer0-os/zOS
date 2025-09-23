@@ -61,13 +61,7 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
     await submission.submit();
   };
 
-  const handleBackToForm = () => {
-    setShowSuccess(false);
-    setSuccessTokenAddress(null);
-  };
-
-  const isDisabled =
-    submission.isSubmitting || !form.isFormValid() || !!form.error || !!form.iconUploadError || hasInsufficientBalance;
+  const isDisabled = submission.isSubmitting || !form.isFormValid() || !!form.iconUploadError || hasInsufficientBalance;
 
   if (submission.isSubmitting || submission.isApproving) {
     const title = submission.isApproving ? 'Approving transaction' : 'Creating your token';
@@ -86,7 +80,7 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
         <TokenSuccess
           tokenAddress={successTokenAddress}
           onViewToken={() => onViewToken(successTokenAddress)}
-          onBackToTokens={handleBackToForm}
+          onBackToTokens={onBack}
         />
       </PanelBody>
     );

@@ -10,6 +10,7 @@ const transformUser = (user: UserFollowDetails): Omit<User, 'wallets'> & { walle
       id: user.userId,
       publicAddress: user.wallets.primaryWalletAddress,
       isThirdWeb: false,
+      walletType: 'external',
     },
   ];
 
@@ -18,6 +19,7 @@ const transformUser = (user: UserFollowDetails): Omit<User, 'wallets'> & { walle
       id: user.userId,
       publicAddress: user.wallets.thirdWebWalletAddress,
       isThirdWeb: true,
+      walletType: 'EIP4337',
     });
   }
 

@@ -24,6 +24,7 @@ interface Sender {
   primaryZID: string;
   displaySubHandle?: string;
   wallets?: Wallet[];
+  zeroWalletAddress?: string;
 }
 
 export enum MediaType {

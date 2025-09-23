@@ -17,7 +17,10 @@ export function* getLinkedThirdWebWallet() {
     return null;
   }
 
-  return currentUser.wallets.find((wallet): boolean => wallet?.isThirdWeb === true) || null;
+  return (
+    currentUser.wallets.find((wallet): boolean => wallet?.isThirdWeb === true && wallet.walletType === 'EIP4337') ||
+    null
+  );
 }
 
 export function* initThirWebWallet() {

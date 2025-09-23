@@ -9,6 +9,7 @@ export interface Wallet {
   isThirdWeb: boolean;
   isDefault?: boolean;
   canAuthenticate?: boolean;
+  walletType?: 'EIP4337' | 'external' | 'EOA';
 }
 
 interface ProfileSummary {

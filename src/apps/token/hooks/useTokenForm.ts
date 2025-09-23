@@ -78,7 +78,7 @@ export const useTokenForm = () => {
   };
 
   const isFormValid = () => {
-    return validateFormData(formData) === null && selectedIconFile !== null;
+    return validateFormData(formData, selectedIconFile) === null;
   };
 
   return {

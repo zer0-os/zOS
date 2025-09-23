@@ -91,7 +91,11 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
 
           {form.error && <div className={styles.ErrorMessage}>{form.error}</div>}
 
-          <Button onPress={handleSubmit} disabled={submission.isSubmitting} className={styles.SubmitButton}>
+          <Button
+            onPress={handleSubmit}
+            isDisabled={submission.isSubmitting || !form.isFormValid() || !!form.error || !!form.iconUploadError}
+            className={styles.SubmitButton}
+          >
             {submission.isSubmitting ? 'Creating Token...' : 'Launch Token'}
           </Button>
         </div>

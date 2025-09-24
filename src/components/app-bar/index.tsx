@@ -14,6 +14,7 @@ import {
   IconWallet,
   IconCoinsStacked2,
   IconTrophy1,
+  IconCoinsSwap1,
 } from '@zero-tech/zui/icons';
 import { MoreAppsModal } from './more-apps-modal';
 import { Link } from 'react-router-dom';
@@ -175,6 +176,15 @@ export class AppBar extends React.Component<Properties, State> {
                 isActive={isActive('token')}
                 label='Tokens'
                 to='/token'
+                onLinkClick={this.unhoverContainer}
+              />
+            )}
+            {featureFlags.enableDex && (
+              <AppLink
+                Icon={IconCoinsSwap1}
+                isActive={isActive('swap')}
+                label='Swap'
+                to='/swap'
                 onLinkClick={this.unhoverContainer}
               />
             )}

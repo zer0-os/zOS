@@ -3,6 +3,10 @@ import { Input } from '@zero-tech/zui/components/Input/Input';
 import { FormData, MAX_SYMBOL_LENGTH } from './utils';
 import { TokenIconUpload } from '../token-icon-upload';
 import { FeeStructure } from './FeeStructure';
+import { useBalancesQuery } from '../../../wallet/queries/useBalancesQuery';
+import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { useSelector } from 'react-redux';
+import { MEOW_TOKEN_ADDRESS } from '../../../wallet/constants';
 import styles from './styles.module.scss';
 
 interface FormInputsProps {
@@ -22,6 +26,18 @@ export const FormInputs = ({
   onInputChange,
   onIconFileSelected,
 }: FormInputsProps) => {
+  const user = useSelector(currentUserSelector);
+  const userAddress = user?.zeroWalletAddress;
+
+  const { data: balancesData, isLoading: balancesLoading } = useBalancesQuery(userAddress || '');
+
+  const meowBalance = balancesData?.tokens?.find(
+    (token) => token.tokenAddress.toLowerCase() === MEOW_TOKEN_ADDRESS.toLowerCase()
+  );
+
+  const meowAmount = meowBalance ? parseFloat(meowBalance.amount) : 0;
+  const initialBuyAmount = parseFloat(formData.initialBuyAmount) || 0;
+  const hasInsufficientBalance = initialBuyAmount > 0 && initialBuyAmount > meowAmount;
   return (
     <div className={styles.FormContent}>
       <div className={styles.InputsSection}>
@@ -40,14 +56,35 @@ export const FormInputs = ({
         </div>
 
         <div className={styles.InputGroup}>
-          <label className={styles.Label}>Initial Buy Amount (required)</label>
+          <label className={styles.Label}>Initial Buy Amount (required) - Default: 0</label>
           <Input
             value={formData.initialBuyAmount}
             onChange={onInputChange('initialBuyAmount')}
             placeholder='e.g., 1000'
             type='number'
           />
-          <div className={styles.HelperText}>Amount of MEOW to provide as initial liquidity</div>
+          <div className={styles.HelperTextContainer}>
+            <div className={styles.HelperText}>Amount of MEOW to provide as initial liquidity</div>
+            {userAddress && (
+              <div className={styles.BalanceInfo}>
+                <span className={styles.BalanceLabel}>Your MEOW Balance:</span>
+                {balancesLoading ? (
+                  <div className={styles.BalanceLoading}>
+                    <div className={styles.Spinner} />
+                  </div>
+                ) : (
+                  <span className={styles.BalanceAmount}>{meowAmount.toFixed(2)} MEOW</span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {hasInsufficientBalance && (
+            <div className={styles.BalanceError}>
+              Insufficient MEOW balance. You need {initialBuyAmount.toFixed(2)} MEOW but only have{' '}
+              {meowAmount.toFixed(2)} MEOW.
+            </div>
+          )}
         </div>
 
         <div className={styles.InputGroup}>

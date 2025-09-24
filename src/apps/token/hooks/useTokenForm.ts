@@ -4,7 +4,7 @@ import { FormData, validateFormData, isValidNumericInput, formatSymbolInput } fr
 const INITIAL_FORM_DATA: FormData = {
   name: '',
   symbol: '',
-  initialBuyAmount: '',
+  initialBuyAmount: '0',
   description: '',
   iconUrl: '',
 };
@@ -38,6 +38,25 @@ export const useTokenForm = () => {
   };
 
   const handleIconFileSelected = (file: File) => {
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      setIconUploadError('Please select a valid image file (JPG, PNG, GIF, WEBP)');
+      setSelectedIconFile(null);
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setIconUploadError('File size must be less than 10MB');
+      setSelectedIconFile(null);
+      return;
+    }
+
     setSelectedIconFile(file);
     setIconUploadError(null);
     if (error) {
@@ -59,7 +78,12 @@ export const useTokenForm = () => {
   };
 
   const isFormValid = () => {
-    return validateFormData(formData) === null && selectedIconFile !== null;
+    return validateFormData(formData, selectedIconFile) === null;
+  };
+
+  const hasInsufficientBalance = (balance: number) => {
+    const initialBuyAmount = parseFloat(formData.initialBuyAmount) || 0;
+    return initialBuyAmount > 0 && initialBuyAmount > balance;
   };
 
   return {
@@ -73,5 +97,6 @@ export const useTokenForm = () => {
     setFormError,
     setIconError,
     isFormValid,
+    hasInsufficientBalance,
   };
 };

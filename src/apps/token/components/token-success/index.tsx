@@ -42,7 +42,7 @@ export const TokenSuccess = ({ tokenAddress, onViewToken, onBackToTokens }: Toke
           <Button variant={ButtonVariant.Secondary} onPress={handleBackToTokens} className={styles.BackButton}>
             Back to Tokens
           </Button>
-          <Button variant={ButtonVariant.Primary} onPress={handleViewToken} className={styles.ViewTokenButton}>
+          <Button variant={ButtonVariant.Secondary} onPress={handleViewToken} className={styles.ViewTokenButton}>
             View Token
           </Button>
         </div>

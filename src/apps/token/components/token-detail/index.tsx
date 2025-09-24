@@ -1,7 +1,7 @@
 import React from 'react';
 import { PanelBody } from '../../../../components/layout/panel';
 import { Button, Variant as ButtonVariant } from '@zero-tech/zui/components/Button';
-import { IconArrowLeft, IconLink, IconCopy2 } from '@zero-tech/zui/icons';
+import { IconArrowLeft, IconCopy2 } from '@zero-tech/zui/icons';
 import { useZBancToken } from '../../hooks/useZBancToken';
 import { formatTotalSupply } from '../utils';
 
@@ -17,11 +17,6 @@ export const TokenDetail = ({ tokenAddress, onBack }: TokenDetailProps) => {
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(tokenAddress);
-  };
-
-  const handleViewOnExplorer = () => {
-    const explorerUrl = `https://explorer.zchain.tech/address/${tokenAddress}`;
-    window.open(explorerUrl, '_blank');
   };
 
   if (isLoading) {
@@ -68,15 +63,15 @@ export const TokenDetail = ({ tokenAddress, onBack }: TokenDetailProps) => {
             )}
           </div>
           <div className={styles.TokenInfo}>
-            <h1 className={styles.TokenName}>{token.name}</h1>
-            <div className={styles.TokenSymbol}>{token.symbol}</div>
+            <div className={styles.TokenNameRow}>
+              <h1 className={styles.TokenName}>{token.name}</h1>
+              <div className={styles.TokenSymbol}>{token.symbol}</div>
+            </div>
+            {token.description && <p className={styles.Description}>{token.description}</p>}
             <div className={styles.TokenAddress}>
               <span className={styles.AddressText}>{tokenAddress}</span>
               <button className={styles.CopyButton} onClick={handleCopyAddress}>
                 <IconCopy2 size={14} />
-              </button>
-              <button className={styles.ExplorerButton} onClick={handleViewOnExplorer}>
-                <IconLink size={14} />
               </button>
             </div>
           </div>
@@ -87,14 +82,7 @@ export const TokenDetail = ({ tokenAddress, onBack }: TokenDetailProps) => {
           </div>
         </div>
 
-        {token.description && (
-          <div className={styles.DescriptionSection}>
-            <h3 className={styles.SectionTitle}>Description</h3>
-            <p className={styles.Description}>{token.description}</p>
-          </div>
-        )}
-
-        <div className={styles.DetailsGrid}>
+        <div className={styles.DetailsContainer}>
           <div className={styles.DetailSection}>
             <h3 className={styles.SectionTitle}>Token Information</h3>
             <div className={styles.DetailList}>
@@ -126,54 +114,20 @@ export const TokenDetail = ({ tokenAddress, onBack }: TokenDetailProps) => {
           </div>
 
           <div className={styles.DetailSection}>
-            <h3 className={styles.SectionTitle}>Asset Information</h3>
+            <h3 className={styles.SectionTitle}>Reserve Asset & Creator Information</h3>
             <div className={styles.DetailList}>
               <div className={styles.DetailItem}>
                 <span className={styles.DetailLabel}>Reserve Asset:</span>
                 <span className={styles.DetailValue}>{token.asset.symbol}</span>
               </div>
               <div className={styles.DetailItem}>
-                <span className={styles.DetailLabel}>Asset Address:</span>
+                <span className={styles.DetailLabel}>Reserve Asset Address:</span>
                 <span className={styles.DetailValue}>{token.asset.address}</span>
               </div>
-            </div>
-          </div>
-
-          <div className={styles.DetailSection}>
-            <h3 className={styles.SectionTitle}>Fee Structure</h3>
-            <div className={styles.DetailList}>
               <div className={styles.DetailItem}>
-                <span className={styles.DetailLabel}>Vault Entry Fee:</span>
-                <span className={styles.DetailValue}>{(token.fees.vaultEntryFee / 10000).toFixed(2)}%</span>
-              </div>
-              <div className={styles.DetailItem}>
-                <span className={styles.DetailLabel}>Vault Exit Fee:</span>
-                <span className={styles.DetailValue}>{(token.fees.vaultExitFee / 10000).toFixed(2)}%</span>
-              </div>
-              <div className={styles.DetailItem}>
-                <span className={styles.DetailLabel}>Protocol Entry Fee:</span>
-                <span className={styles.DetailValue}>{(token.fees.protocolEntryFee / 10000).toFixed(2)}%</span>
-              </div>
-              <div className={styles.DetailItem}>
-                <span className={styles.DetailLabel}>Protocol Exit Fee:</span>
-                <span className={styles.DetailValue}>{(token.fees.protocolExitFee / 10000).toFixed(2)}%</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.DetailSection}>
-            <h3 className={styles.SectionTitle}>Creator Information</h3>
-            <div className={styles.DetailList}>
-              <div className={styles.DetailItem}>
-                <span className={styles.DetailLabel}>Creator Address:</span>
+                <span className={styles.DetailLabel}>Token Creator Address:</span>
                 <span className={styles.DetailValue}>{token.creatorAddress}</span>
               </div>
-              {token.creatorUserId && (
-                <div className={styles.DetailItem}>
-                  <span className={styles.DetailLabel}>Creator User ID:</span>
-                  <span className={styles.DetailValue}>{token.creatorUserId}</span>
-                </div>
-              )}
             </div>
           </div>
         </div>

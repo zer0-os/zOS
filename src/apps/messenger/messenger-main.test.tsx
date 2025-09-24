@@ -3,13 +3,6 @@ import { shallow } from 'enzyme';
 import { Container, Properties } from './messenger-main';
 import { Main } from './Main';
 
-jest.mock('../../lib/web3/thirdweb/client', () => ({
-  getThirdWebClient: jest.fn(),
-  getChain: jest.fn(() => ({
-    blockExplorers: [{ url: 'https://sepolia.etherscan.io' }],
-  })),
-}));
-
 describe('MessengerMain', () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps = {

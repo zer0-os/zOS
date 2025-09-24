@@ -28,18 +28,27 @@ export class Container extends React.Component {
             <ZeroLogo />
           </div>
           <div {...cn('text-container')}>
-            <p>Please download the ZERO app to get started with your invite.</p>
-            <p>
-              You can download ZERO from the
-              <a {...cn('link')} href={config.appleAppStorePath} target='_blank' rel='noopener noreferrer'>
-                {' Apple App Store '}
-              </a>
-              or
-              <a {...cn('link')} href={config.googlePlayStorePath} target='_blank' rel='noopener noreferrer'>
-                {' Google Play Store'}
-              </a>
-              . Once downloaded, simply enter your invite code to get started.
-            </p>
+            <p>Download the app and unlock your invite.</p>
+          </div>
+          <div {...cn('buttons-container')}>
+            <a {...cn('download-button')} href={config.appleAppStorePath} target='_blank' rel='noopener noreferrer'>
+              <div {...cn('button-content')}>
+                <div {...cn('apple-logo')} />
+                <div {...cn('button-text')}>
+                  <span>Download on the</span>
+                  <span>App Store</span>
+                </div>
+              </div>
+            </a>
+            <a {...cn('download-button')} href={config.googlePlayStorePath} target='_blank' rel='noopener noreferrer'>
+              <div {...cn('button-content')}>
+                <div {...cn('google-play-logo')} />
+                <div {...cn('button-text')}>
+                  <span>GET IT ON</span>
+                  <span>Google Play</span>
+                </div>
+              </div>
+            </a>
           </div>
         </div>
 

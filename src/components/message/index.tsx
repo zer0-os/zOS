@@ -436,16 +436,8 @@ export const Message: React.FC<Properties> = memo(
         {showSenderAvatar && (
           <div {...cn('left')}>
             <div {...cn('author-avatar')}>
-              <ProfileLinkNavigation
-                primaryZid={sender.primaryZID}
-                thirdWebAddress={sender.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress}
-              >
-                <ProfileCardHover
-                  userId={
-                    sender.primaryZID?.replace('0://', '') ??
-                    sender.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress
-                  }
-                >
+              <ProfileLinkNavigation primaryZid={sender.primaryZID} thirdWebAddress={sender.zeroWalletAddress}>
+                <ProfileCardHover userId={sender.primaryZID?.replace('0://', '') ?? sender.zeroWalletAddress}>
                   <MatrixAvatar size='medium' imageURL={sender.profileImage} tabIndex={-1} />
                 </ProfileCardHover>
               </ProfileLinkNavigation>

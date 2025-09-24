@@ -15,6 +15,8 @@ import styles from './styles.module.scss';
 const badgeComponents: Record<string, React.ComponentType> = {
   'World Builder': WorldBuilderBadge,
   'Blockchain 101': Blockchain101Badge,
+  Referral: DefaultBadge,
+  'Pro Subscriptions': DefaultBadge,
 };
 
 const BadgeIcon: React.FC<{ achievement: Achievement }> = ({ achievement }) => {
@@ -49,10 +51,12 @@ export const AchievementsPanel: React.FC = () => {
 
   // Add actual achievements
   for (let i = 0; i < achievements.length; i++) {
+    const achievement = achievements[i];
+    const isDefaultBadge = badgeComponents[achievement.name] === DefaultBadge;
     badgeSlots.push(
       <Tooltip
         key={`achievement-${i}`}
-        overlay={<AchievementTooltipContent achievement={achievements[i]} />}
+        overlay={<AchievementTooltipContent achievement={achievement} />}
         placement='top'
         overlayInnerStyle={{
           padding: 0,
@@ -60,8 +64,8 @@ export const AchievementsPanel: React.FC = () => {
           minHeight: 'unset',
         }}
       >
-        <div className={styles.Badge}>
-          <BadgeIcon achievement={achievements[i]} />
+        <div className={`${isDefaultBadge ? styles.DefaultBadge : styles.Badge}`}>
+          <BadgeIcon achievement={achievement} />
         </div>
       </Tooltip>
     );

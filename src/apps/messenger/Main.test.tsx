@@ -6,13 +6,6 @@ import { MessengerChat } from '../../components/messenger/chat';
 import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
 import { LoadingScreenContainer } from '../../components/loading-screen';
 
-jest.mock('../../lib/web3/thirdweb/client', () => ({
-  getThirdWebClient: jest.fn(),
-  getChain: jest.fn(() => ({
-    blockExplorers: [{ url: 'https://sepolia.etherscan.io' }],
-  })),
-}));
-
 describe(Main, () => {
   const subject = (props: Partial<Properties> = {}) => {
     const allProps: Properties = {

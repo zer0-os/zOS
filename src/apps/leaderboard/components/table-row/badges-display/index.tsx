@@ -16,6 +16,8 @@ interface BadgesDisplayProps {
 const badgeComponents: Record<string, React.ComponentType> = {
   'World Builder': WorldBuilderBadge,
   'Blockchain 101': Blockchain101Badge,
+  Referral: DefaultBadge,
+  'Pro Subscriptions': DefaultBadge,
 };
 
 const BadgeIcon: React.FC<{ badge: Badge }> = ({ badge }) => {

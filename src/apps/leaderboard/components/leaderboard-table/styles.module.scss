@@ -4,6 +4,17 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  /* Column width variables used by header and rows */
+  --col-rank: 5%;
+  --col-member: 21%;
+  --col-invited-by: 20%;
+  --col-badges: 21%;
+  --col-referrals: 7%;
+  --col-pro-subs: 6%;
+  --col-joined: 7%;
+  --col-meow: 9%;
+  --col-code: 4%;
 }
 
 .titleContainer {

@@ -2,47 +2,63 @@
 @import '../../../../glass';
 
 .TokenDetail {
+  --zero-green: #01f4cb;
+  --zero-green-300: #01c9a7;
+  --zero-green-900-72: rgba(2, 33, 26, 0.72);
+  --zero-green-200-24: rgba(1, 244, 203, 0.24);
+  --border-accent-strong: rgba(1, 244, 203, 0.36);
+  --bg-accent-dark-blue: rgba(167, 163, 163, 0.05);
+  --bg-hover: #151719;
+  --border-primary: rgba(97, 105, 117, 0.36);
+  --color-error: var(--color-failure-11);
+
+  --text-primary: #f7f8f8;
+  --text-secondary: #9199a1;
+  --text-tertiary: #616975;
+  --text-accent: var(--zero-green);
+  --text-black: #000000;
+
+  --l-spacing: 15px;
+  --m-spacing: 12px;
+  --s-spacing: 9px;
+  --xs-spacing: 6px;
+
+  --corner-radius: 12px;
+
+  --icon-active: var(--zero-green);
+  --icon-default: var(--text-secondary);
+
   width: 100%;
   height: 100%;
-  max-width: 1000px;
+  max-width: 750px;
   flex-shrink: 1;
   pointer-events: all;
+  border: 1px solid var(--border-primary);
 }
 
 .Container {
-  padding: 24px;
+  padding: 0 16px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .Header {
-  display: flex;
-  align-items: center;
+  text-align: center;
 }
 
 .BackButton {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  border-color: var(--border-primary);
-  @include glass-text-primary-color;
-
-  &:hover {
-    background: var(--bg-hover);
-    border-color: var(--color-secondary-11);
-  }
+  margin-bottom: 8px;
 }
 
 .TokenHeader {
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 24px;
+  padding: 16px;
   background: var(--bg-accent-dark-blue);
   border: 1px solid var(--border-primary);
-  border-radius: 12px;
+  border-radius: var(--corner-radius);
 }
 
 .TokenIcon {
@@ -78,10 +94,16 @@
   gap: 8px;
 }
 
+.TokenNameRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
 .TokenName {
-  font-size: 28px;
-  font-weight: 700;
   @include glass-text-primary-color;
+  font-size: 18px;
+  font-weight: 700;
   margin: 0;
 }
 
@@ -89,6 +111,7 @@
   font-size: 18px;
   font-weight: 600;
   @include glass-text-secondary-color;
+  margin-left: 8px;
 }
 
 .TokenAddress {
@@ -102,10 +125,13 @@
 .AddressText {
   @include glass-text-tertiary-color;
   word-break: break-all;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.CopyButton,
-.ExplorerButton {
+.CopyButton {
   background: none;
   border: none;
   color: var(--color-greyscale-10);
@@ -154,36 +180,37 @@
 }
 
 .SectionTitle {
+  @include glass-text-primary-color;
+
   font-size: 18px;
   font-weight: 600;
-  @include glass-text-primary-color;
   margin: 0 0 12px 0;
 }
 
 .Description {
-  font-size: 16px;
-  line-height: 1.6;
-  @include glass-text-secondary-color;
+  @include glass-text-tertiary-color;
+
+  font-size: 12px;
   margin: 0;
 }
 
-.DetailsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+.DetailsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .DetailSection {
-  padding: 20px;
+  padding: 16px;
   background: var(--bg-accent-dark-blue);
   border: 1px solid var(--border-primary);
-  border-radius: 12px;
+  border-radius: var(--corner-radius);
 }
 
 .DetailList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .DetailItem {
@@ -207,10 +234,13 @@
 .DetailValue {
   @include glass-text-primary-color;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   text-align: right;
   word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .Loading {

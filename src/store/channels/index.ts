@@ -26,6 +26,7 @@ export interface User {
     zeroPro?: boolean;
     wilderPro?: boolean;
   };
+  zeroWalletAddress?: string;
 }
 
 export enum MessagesFetchState {

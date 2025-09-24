@@ -1,6 +1,10 @@
 import { PanelBody } from '../../../../components/layout/panel';
 import { Button } from '@zero-tech/zui/components/Button';
 import { useState } from 'react';
+import { useBalancesQuery } from '../../../wallet/queries/useBalancesQuery';
+import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { useSelector } from 'react-redux';
+import { MEOW_TOKEN_ADDRESS } from '../../../wallet/constants';
 
 import styles from './styles.module.scss';
 import { validateFormData } from './utils';
@@ -23,6 +27,18 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
   const [successTokenAddress, setSuccessTokenAddress] = useState<string | null>(null);
 
   const form = useTokenForm();
+
+  // Get user's MEOW balance for validation
+  const user = useSelector(currentUserSelector);
+  const userAddress = user?.zeroWalletAddress;
+  const { data: balancesData } = useBalancesQuery(userAddress || '');
+
+  const meowBalance = balancesData?.tokens?.find(
+    (token) => token.tokenAddress.toLowerCase() === MEOW_TOKEN_ADDRESS.toLowerCase()
+  );
+  const meowAmount = meowBalance ? parseFloat(meowBalance.amount) : 0;
+  const hasInsufficientBalance = form.hasInsufficientBalance(meowAmount);
+
   const submission = useTokenSubmission({
     formData: form.formData,
     selectedIconFile: form.selectedIconFile,
@@ -45,10 +61,7 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
     await submission.submit();
   };
 
-  const handleBackToForm = () => {
-    setShowSuccess(false);
-    setSuccessTokenAddress(null);
-  };
+  const isDisabled = submission.isSubmitting || !form.isFormValid() || !!form.iconUploadError || hasInsufficientBalance;
 
   if (submission.isSubmitting || submission.isApproving) {
     const title = submission.isApproving ? 'Approving transaction' : 'Creating your token';
@@ -67,7 +80,7 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
         <TokenSuccess
           tokenAddress={successTokenAddress}
           onViewToken={() => onViewToken(successTokenAddress)}
-          onBackToTokens={handleBackToForm}
+          onBackToTokens={onBack}
         />
       </PanelBody>
     );
@@ -91,7 +104,7 @@ export const TokenLauncher = ({ onBack, onViewToken }: TokenLauncherProps) => {
 
           {form.error && <div className={styles.ErrorMessage}>{form.error}</div>}
 
-          <Button onPress={handleSubmit} disabled={submission.isSubmitting} className={styles.SubmitButton}>
+          <Button onPress={handleSubmit} isDisabled={isDisabled} className={styles.SubmitButton}>
             {submission.isSubmitting ? 'Creating Token...' : 'Launch Token'}
           </Button>
         </div>

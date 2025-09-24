@@ -24,13 +24,13 @@ export const useProfile = ({ id }: UseProfileParams) => {
      * Otherwise, fetch profile data from the API.
      */
     queryFn: async (): Promise<ProfileData> => {
-      const userThirdWebAddress = currentUser?.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress;
+      const userThirdWebAddress = currentUser?.zeroWalletAddress;
       if (
         // If no ID is passed in, i.e. the route is `/profile`.
         !id ||
         // If ID matches current user's primary ZID.
         id === currentUser?.primaryZID?.replace('0://', '') ||
-        // If ID matches current user's third web address.
+        // If ID matches current user's zero wallet address.
         id.toLowerCase() === userThirdWebAddress?.toLowerCase()
       ) {
         // For current user, always fetch fresh data

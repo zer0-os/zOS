@@ -2,7 +2,6 @@ import * as React from 'react';
 import { User } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
 import { displayName } from '../../lib/user';
-import { Wallet } from '../../store/authentication/types';
 
 import './styles.scss';
 import { MemberManagementMenuContainer } from '../messenger/group-management/member-management-menu/container';
@@ -29,14 +28,6 @@ interface State {
 export class CitizenListItem extends React.Component<Properties, State> {
   state: State = {
     isMenuOpen: false,
-  };
-
-  getThirdWebWalletAddress = () => {
-    const { wallets } = this.props.user;
-    if (!wallets?.length) return undefined;
-
-    const thirdWebWallet = wallets.find((wallet: Wallet) => wallet.isThirdWeb);
-    return thirdWebWallet?.publicAddress;
   };
 
   publishMemberClick = () => {
@@ -66,11 +57,11 @@ export class CitizenListItem extends React.Component<Properties, State> {
         <div {...cn('details')}>
           <ProfileLinkNavigation
             primaryZid={this.props.user.primaryZID}
-            thirdWebAddress={this.getThirdWebWalletAddress()}
+            thirdWebAddress={this.props.user.zeroWalletAddress}
           >
-            {this.props.user.primaryZID || this.getThirdWebWalletAddress() ? (
+            {this.props.user.primaryZID || this.props.user.zeroWalletAddress ? (
               <ProfileCardHover
-                userId={this.props.user.primaryZID?.replace('0://', '') ?? this.getThirdWebWalletAddress()}
+                userId={this.props.user.primaryZID?.replace('0://', '') ?? this.props.user.zeroWalletAddress}
               >
                 <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
               </ProfileCardHover>

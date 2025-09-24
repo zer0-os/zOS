@@ -32,6 +32,7 @@ vi.mock('@zero-tech/zui/icons', () => ({
   IconWallet: () => <div data-testid='icon-wallet' />,
   IconTrophy1: () => <div data-testid='icon-trophy' />,
   IconAura: () => <div data-testid='icon-aura' />,
+  IconCoinsSwap1: () => <div data-testid='icon-coins-swap' />,
 }));
 
 vi.mock('./more-apps-modal', () => ({

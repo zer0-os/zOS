@@ -21,7 +21,7 @@ export const useClaim = () => {
     mutationFn: async (): Promise<ClaimRewardsResponse> => {
       setShowModal(true);
 
-      const userThirdWebWalletAddress = currentUser?.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress;
+      const userThirdWebWalletAddress = currentUser?.zeroWalletAddress;
 
       if (!userThirdWebWalletAddress) {
         throw new Error('No thirdweb wallet found');

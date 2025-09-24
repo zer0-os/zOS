@@ -146,12 +146,9 @@
 }
 
 .Error {
-  margin-top: 12px;
-  padding: 12px;
+  margin-top: 8px;
   text-align: center;
-  background: rgba(255, 59, 48, 0.1);
-  border: 1px solid rgba(255, 59, 48, 0.2);
-  border-radius: 8px;
-  font-size: 12px;
+  font-size: 8px;
   color: var(--color-failure-11);
+  max-width: 120px;
 }

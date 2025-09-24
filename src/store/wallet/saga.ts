@@ -45,7 +45,7 @@ function* initializeWalletSaga() {
 
   while (true) {
     const action = yield take(setUser.type);
-    const address = action.payload.data?.wallets?.find((wallet) => wallet.isThirdWeb)?.publicAddress;
+    const address = action.payload.data?.zeroWalletAddress;
 
     if (address) {
       yield put(setSelectedWallet({ address, label: null }));

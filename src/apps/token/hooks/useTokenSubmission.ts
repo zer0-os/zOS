@@ -1,13 +1,6 @@
 import { useCreateZBancToken } from './useCreateZBancToken';
 import { useUploadTokenIcon } from './useUploadTokenIcon';
 import { FormData } from '../components/token-launcher/utils';
-import { useTokenApproval } from '../../../apps/staking/lib/useTokenApproval';
-import { currentUserSelector } from '../../../store/authentication/selectors';
-import { useSelector } from 'react-redux';
-import { config } from '../../../config';
-
-const ZBANC_TOKEN_ADDRESS = config.zbancReserveTokenAddress;
-const ZBANC_SPENDER_ADDRESS = config.zbancFactoryAddress;
 
 interface UseTokenSubmissionProps {
   formData: FormData;
@@ -26,8 +19,6 @@ export const useTokenSubmission = ({
   setIconError,
   clearErrors,
 }: UseTokenSubmissionProps) => {
-  const userAddress = useSelector(currentUserSelector)?.zeroWalletAddress;
-  const approveToken = useTokenApproval();
   const createTokenMutation = useCreateZBancToken();
   const uploadIconMutation = useUploadTokenIcon();
 
@@ -42,30 +33,14 @@ export const useTokenSubmission = ({
     try {
       const initialBuyAmount = BigInt(Number(formData.initialBuyAmount) * 10 ** 18).toString();
 
-      // Get approval only if initial buy amount is greater than 0
-      if (parseFloat(formData.initialBuyAmount) > 0) {
-        const approvalResult = await approveToken.approve(
-          userAddress,
-          ZBANC_TOKEN_ADDRESS,
-          ZBANC_SPENDER_ADDRESS,
-          initialBuyAmount,
-          Number(config.zChainId)
-        );
-
-        if (!approvalResult.success) {
-          setFormError((approvalResult as any).error || 'Approval failed');
-          return;
-        }
-      }
-
-      // Then upload the icon
+      // Upload the icon first
       const uploadResult = await uploadIconMutation.mutateAsync(selectedIconFile);
       if (!uploadResult.success) {
         setIconError('Failed to upload icon');
         return;
       }
 
-      // Then create the token with the uploaded icon URL
+      // Create the token with the uploaded icon URL
       const result = await createTokenMutation.mutateAsync({
         name: formData.name,
         symbol: formData.symbol,
@@ -100,11 +75,9 @@ export const useTokenSubmission = ({
   };
 
   const isSubmitting = createTokenMutation.isPending || uploadIconMutation.isPending;
-  const isApproving = approveToken.isApproving;
 
   return {
     submit,
     isSubmitting,
-    isApproving,
   };
 };

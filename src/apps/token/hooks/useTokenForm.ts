@@ -81,11 +81,6 @@ export const useTokenForm = () => {
     return validateFormData(formData, selectedIconFile) === null;
   };
 
-  const hasInsufficientBalance = (balance: number) => {
-    const initialBuyAmount = parseFloat(formData.initialBuyAmount) || 0;
-    return initialBuyAmount > 0 && initialBuyAmount > balance;
-  };
-
   return {
     formData,
     selectedIconFile,
@@ -97,6 +92,5 @@ export const useTokenForm = () => {
     setFormError,
     setIconError,
     isFormValid,
-    hasInsufficientBalance,
   };
 };

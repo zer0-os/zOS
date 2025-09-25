@@ -2,9 +2,12 @@ import { Badge } from '../../utils';
 import Tooltip from '../../../../../components/tooltip';
 
 // Import badge SVGs as React components
-import WorldBuilderBadge from './icons/world-builder.svg?react';
-import Blockchain101Badge from './icons/blockchain101.svg?react';
-import DefaultBadge from './icons/default.svg?react';
+import WorldBuilderBadge from '../../../../../assets/badges/world-builder.svg?react';
+import Blockchain101Badge from '../../../../../assets/badges/blockchain101.svg?react';
+import DefaultBadge from '../../../../../assets/badges/default.svg?react';
+import ReferralBadge from '../../../../../assets/badges/referral.svg?react';
+import ProSubscriptionsBadge from '../../../../../assets/badges/pro-subs.svg?react';
+import OGBadge from '../../../../../assets/badges/og.svg?react';
 
 import styles from './styles.module.scss';
 
@@ -16,8 +19,9 @@ interface BadgesDisplayProps {
 const badgeComponents: Record<string, React.ComponentType> = {
   'World Builder': WorldBuilderBadge,
   'Blockchain 101': Blockchain101Badge,
-  Referral: DefaultBadge,
-  'Pro Subscriptions': DefaultBadge,
+  Referral: ReferralBadge,
+  'Pro Subscriptions': ProSubscriptionsBadge,
+  OG: OGBadge,
 };
 
 const BadgeIcon: React.FC<{ badge: Badge }> = ({ badge }) => {
@@ -55,7 +59,6 @@ export const BadgesDisplay: React.FC<BadgesDisplayProps> = ({ badges }) => {
           overlay={<BadgeTooltipContent badge={badge} />}
           placement='top'
           overlayInnerStyle={{
-            background: 'transparent',
             padding: 0,
             boxShadow: 'none',
             minHeight: 'unset',

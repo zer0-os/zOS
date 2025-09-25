@@ -24,11 +24,12 @@
   padding: 16px;
   max-width: 280px;
   text-align: left;
-  background: rgba(24, 24, 28, 0.98);
-  border-radius: 8px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 0.5px solid #8a8a8a4d;
+  border-radius: 12px;
+
+  background: #1e1e1eb8;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }
 
 .tooltipHeader {
@@ -39,26 +40,34 @@
 }
 
 .tooltipTitle {
+  font-family: IBM Plex Sans;
   font-weight: 500;
   font-size: 14px;
-  color: #ffffff;
-  line-height: 1.2;
+  color: #e2e2e2;
+  line-height: 19px;
+  letter-spacing: 1.5%;
   flex: 1;
 }
 
 .tooltipDescription {
-  font-size: 12px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
   color: #ccc;
-  line-height: 1.4;
 }
 
 .tooltipEffect {
   font-size: 12px;
   color: #01f4cb;
   font-weight: 600;
-  background: rgba(1, 244, 203, 0.4);
-  border-radius: 4px;
-  padding: 2px 6px;
+  background: #01f4cb0f;
+  border-radius: 3px;
+  padding: 3px 6px;
+  gap: 6px;
   flex-shrink: 0;
   margin-left: 16px;
+  opacity: 1;
+  transform: rotate(0deg);
 }

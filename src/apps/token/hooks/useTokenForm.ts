@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FormData, validateFormData, isValidNumericInput, formatSymbolInput } from '../components/token-launcher/utils';
+import { FormData, validateFormData, formatSymbolInput } from '../components/token-launcher/utils';
 
 const INITIAL_FORM_DATA: FormData = {
   name: '',
@@ -18,13 +18,7 @@ export const useTokenForm = () => {
   const handleInputChange = (field: keyof FormData) => (value: string) => {
     let newFormData: FormData;
 
-    if (field === 'initialBuyAmount') {
-      if (isValidNumericInput(value)) {
-        newFormData = { ...formData, [field]: value };
-      } else {
-        return;
-      }
-    } else if (field === 'symbol') {
+    if (field === 'symbol') {
       newFormData = { ...formData, [field]: formatSymbolInput(value) };
     } else {
       newFormData = { ...formData, [field]: value };

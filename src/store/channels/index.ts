@@ -78,6 +78,7 @@ export interface Channel {
   otherMembersTyping: string[];
   labels?: string[];
   isSocialChannel?: boolean;
+  isEncrypted?: boolean;
   zid?: string;
 }
 
@@ -114,6 +115,7 @@ export const CHANNEL_DEFAULTS = {
   otherMembersTyping: [],
   labels: [],
   isSocialChannel: false,
+  isEncrypted: false,
   zid: null,
 };
 

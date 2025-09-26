@@ -148,7 +148,7 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
   const filteredConversations = useMemo(() => {
     if (!filter) {
       return conversations.filter((conversation: NormalizedChannel) => {
-        const render = !conversation.isSocialChannel && 'bumpStamp' in conversation;
+        const render = !conversation.isSocialChannel && 'bumpStamp' in conversation && conversation.isEncrypted;
         const labelMatch = getConversationsByLabel(tabLabelMap[selectedTab], conversation);
         return render && labelMatch;
       });
@@ -162,7 +162,9 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
     const directMatches = getDirectMatches(conversations, searchRegEx);
     const indirectMatches = getIndirectMatches(conversations, searchRegEx);
 
-    return [...directMatches, ...indirectMatches].filter((c) => !archivedConversationIds.includes(c.id));
+    return [...directMatches, ...indirectMatches].filter(
+      (c) => !archivedConversationIds.includes(c.id) && c.isEncrypted
+    );
   }, [
     conversations,
     filter,
@@ -243,7 +245,7 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
 
   const tabUnreadCount = useMemo(() => {
     return conversations
-      .filter((c) => !c.isSocialChannel && !c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+      .filter((c) => !c.isSocialChannel && !c.labels?.includes(DefaultRoomLabels.ARCHIVED) && c.isEncrypted)
       .reduce<Record<string, number>>(
         (acc, c) => {
           acc[Tab.All] += c.unreadCount.total;

@@ -27,6 +27,7 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { clearWallet } from '../wallet/saga';
 import { linkSelector, nextSelector } from '../login/selectors';
 import { oauth2Link } from '../../lib/oauth/oauth2Link';
+import { clearLastActiveFeedConversation } from '../../lib/last-feed-conversation';
 
 export function* nonceOrAuthorize(action) {
   const { signedWeb3Token } = action.payload;
@@ -174,6 +175,7 @@ export function* forceLogout() {
   yield call(clearLastActiveConversation);
   yield call(clearLastActiveTab);
   yield call(clearLastActiveFeed);
+  yield call(clearLastActiveFeedConversation);
   yield call(clearLastFeedFilter);
   yield call(clearRewards);
   yield call(clearWallet);

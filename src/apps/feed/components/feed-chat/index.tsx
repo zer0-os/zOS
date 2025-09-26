@@ -73,8 +73,11 @@ export class Container extends React.Component<Properties> {
 
   componentDidMount(): void {
     if (this.props.zid && !this.hasValidated) {
-      const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
-      this.props.validateFeedChat(roomAlias);
+      // Check if it's a Matrix room ID (starts with !) or a social channel zid
+      const roomId = this.props.zid.startsWith('!')
+        ? this.props.zid
+        : `${this.props.zid}:${config.matrixHomeServerName}`;
+      this.props.validateFeedChat(roomId);
       this.hasValidated = true;
     }
   }
@@ -83,8 +86,11 @@ export class Container extends React.Component<Properties> {
     if (this.props.zid !== prevProps.zid) {
       this.hasValidated = false; // Reset flag when zid changes
       if (this.props.zid && !this.hasValidated) {
-        const roomAlias = `${this.props.zid}:${config.matrixHomeServerName}`;
-        this.props.validateFeedChat(roomAlias);
+        // Check if it's a Matrix room ID (starts with !) or a social channel zid
+        const roomId = this.props.zid.startsWith('!')
+          ? this.props.zid
+          : `${this.props.zid}:${config.matrixHomeServerName}`;
+        this.props.validateFeedChat(roomId);
         this.hasValidated = true;
       }
     }

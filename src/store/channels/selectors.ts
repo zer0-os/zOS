@@ -83,3 +83,7 @@ export const makeGetChannelById = () => {
 export const socialChannelsSelector = createSelector([allDenormalizedChannelsSelector], (channels) =>
   channels.filter((channel) => channel.isSocialChannel && channel.zid)
 );
+
+export const unencryptedChannelsSelector = createSelector([allDenormalizedChannelsSelector], (channels) =>
+  channels.filter((channel) => !channel.isEncrypted && !channel.isSocialChannel && 'bumpStamp' in channel)
+);

@@ -122,6 +122,7 @@ export const CHANNEL_DEFAULTS = {
 export enum SagaActionTypes {
   UnreadCountUpdated = 'channels/saga/unreadCountUpdated',
   OpenConversation = 'channels/saga/openConversation',
+  OpenConversationInFeed = 'channels/saga/openConversationInFeed',
   OnReply = 'channels/saga/onReply',
   OnRemoveReply = 'channels/saga/onRemoveReply',
   UserTypingInRoom = 'channels/saga/userTypingInRoom',
@@ -130,6 +131,7 @@ export enum SagaActionTypes {
 }
 
 const openConversation = createAction<{ conversationId: string }>(SagaActionTypes.OpenConversation);
+const openConversationInFeed = createAction<{ conversationId: string }>(SagaActionTypes.OpenConversationInFeed);
 const unreadCountUpdated = createAction<UnreadCountUpdatedPayload>(SagaActionTypes.UnreadCountUpdated);
 const onReply = createAction<{ reply: ParentMessage }>(SagaActionTypes.OnReply);
 const onRemoveReply = createAction(SagaActionTypes.OnRemoveReply);
@@ -168,6 +170,7 @@ export {
   unreadCountUpdated,
   removeAll,
   openConversation,
+  openConversationInFeed,
   onReply,
   onRemoveReply,
   userTypingInRoom,

@@ -15,6 +15,7 @@ import { CreateChannelModal } from '../create-channel';
 import { TabList, Tab, TabData } from './components/tab-list';
 import { getLastActiveChannelsTab, setLastActiveChannelsTab } from '../../../../lib/last-channels-tab';
 import { FeedItem } from './components/feed-item';
+import { ConversationList } from './components/conversation-list';
 
 import styles from './styles.module.scss';
 
@@ -55,6 +56,8 @@ export const Sidekick = () => {
     selectedZId,
     usersChannels,
     allChannels,
+    currentUserId,
+    activeConversationId,
     search,
     setSearch,
     memberCounts,
@@ -91,9 +94,11 @@ export const Sidekick = () => {
     switch (selectedTab) {
       case Tab.Channels:
         return (
-          <div className={styles.EmptyState}>
-            <span>Channels coming soon</span>
-          </div>
+          <ConversationList
+            currentUserId={currentUserId}
+            activeConversationId={activeConversationId}
+            isCollapsed={false}
+          />
         );
       case Tab.Gated:
         return (

@@ -18,6 +18,7 @@ import Matrix from '../../lib/chat/matrix/matrix-client-instance';
 import { handleRoomDataEvents } from './event-type-handlers/handle-room-data-events';
 import { batchedUpdateLastMessage } from '../messages/saga';
 import { getUsersByUserIds } from '../users/saga';
+import { clearLastActiveFeedConversation } from '../../lib/last-feed-conversation';
 
 export function* fetchChannels() {
   // Get initial channels from Matrix store for faster initial load
@@ -115,6 +116,7 @@ function* currentUserLeftChannel(channelId: string) {
     // For social channels (including token-gated), we want to stay on the same page and show the join screen
     if (!isSocialChannel) {
       yield call(clearLastActiveConversation);
+      yield call(clearLastActiveFeedConversation);
       yield call(openFirstConversation);
     }
   }

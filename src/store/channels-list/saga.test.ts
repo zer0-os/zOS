@@ -7,6 +7,7 @@ import { StoreBuilder } from '../test/store';
 import { expectSaga } from '../../test/saga';
 import { openFirstConversation } from '../channels/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
+import { clearLastActiveFeedConversation } from '../../lib/last-feed-conversation';
 import { allChannelsSelector } from '../channels/selectors';
 
 describe('channels list saga', () => {
@@ -102,9 +103,11 @@ describe('channels list saga', () => {
         .provide([
           [matchers.call.fn(openFirstConversation), null],
           [matchers.call.fn(clearLastActiveConversation), null],
+          [matchers.call.fn(clearLastActiveFeedConversation), null],
         ])
         .withReducer(rootReducer, initialState)
         .call(clearLastActiveConversation)
+        .call(clearLastActiveFeedConversation)
         .call(openFirstConversation)
         .run();
     });

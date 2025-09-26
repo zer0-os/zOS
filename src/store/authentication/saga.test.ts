@@ -33,6 +33,7 @@ import { StoreBuilder } from '../test/store';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { closeUserProfile } from '../user-profile/saga';
 import { clearLastActiveConversation } from '../../lib/last-conversation';
+import { clearLastActiveFeedConversation } from '../../lib/last-feed-conversation';
 import { clearLastActiveTab } from '../../lib/last-tab';
 import { clearIndexedDBStorage } from '../../lib/storage/clear-idb';
 import { clearLastActiveFeed } from '../../lib/last-feed';
@@ -278,6 +279,10 @@ describe(forceLogout, () => {
 
   it('clears the last active conversation', async () => {
     await expectLogoutSaga().call(clearLastActiveConversation).call(terminate).run();
+  });
+
+  it('clears the last active feed conversation', async () => {
+    await expectLogoutSaga().call(clearLastActiveFeedConversation).call(terminate).run();
   });
 
   it('clears the last active tab', async () => {

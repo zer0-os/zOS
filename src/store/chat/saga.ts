@@ -20,7 +20,12 @@ import { receive } from '../users';
 import { chat, getRoomIdForAlias, isRoomMember } from '../../lib/chat';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getHistory } from '../../lib/browser';
-import { addRoomToSync, markConversationAsRead, openFirstConversation } from '../channels/saga';
+import {
+  addRoomToSync,
+  markConversationAsRead,
+  openFirstConversation,
+  openFirstFeedConversation,
+} from '../channels/saga';
 import { translateJoinRoomApiError, parseAlias, isAlias, extractDomainFromAlias } from './utils';
 import { joinRoom as apiJoinRoom } from './api';
 import { startPollingPosts } from '../posts/saga';
@@ -218,13 +223,18 @@ export function* performValidateActiveConversation(activeConversationId: string)
   const history = yield call(getHistory);
   const currentPath = history.location.pathname;
   const isMessengerApp = currentPath.startsWith('/conversation');
+  const isFeedApp = currentPath.startsWith('/feed');
 
   // Store the original path when validation starts
   const originalPath = currentPath;
 
   if (!activeConversationId) {
     yield put(clearJoinRoomErrorContent());
-    yield call(openFirstConversation);
+    if (isFeedApp) {
+      yield call(openFirstFeedConversation);
+    } else {
+      yield call(openFirstConversation);
+    }
     return;
   }
 
@@ -238,6 +248,12 @@ export function* performValidateActiveConversation(activeConversationId: string)
   if (conversation?.isSocialChannel && isMessengerApp) {
     // If it's a social channel and accessed from messenger app, open the last active conversation instead
     yield call(openFirstConversation);
+    return;
+  }
+
+  if (conversation?.isEncrypted && isFeedApp) {
+    // If it's an encrypted conversation and accessed from feed app, open the last active feed conversation instead
+    yield call(openFirstFeedConversation);
     return;
   }
 

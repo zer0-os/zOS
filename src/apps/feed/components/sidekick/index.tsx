@@ -15,10 +15,16 @@ import { CreateChannelModal } from '../create-channel';
 import { TabList, Tab, TabData } from './components/tab-list';
 import { getLastActiveChannelsTab, setLastActiveChannelsTab } from '../../../../lib/last-channels-tab';
 import { FeedItem } from './components/feed-item';
+import { ConversationList } from './components/conversation-list';
 
 import styles from './styles.module.scss';
 
 const tabsData: TabData[] = [
+  {
+    id: Tab.Channels,
+    label: 'Channels',
+    ariaLabel: 'Channels tab',
+  },
   {
     id: Tab.Gated,
     label: 'Gated',
@@ -40,7 +46,7 @@ export const Sidekick = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<Tab>(() => {
     const lastTab = getLastActiveChannelsTab();
-    return lastTab ? (lastTab as Tab) : Tab.Gated;
+    return lastTab ? (lastTab as Tab) : Tab.Channels;
   });
 
   const {
@@ -50,6 +56,8 @@ export const Sidekick = () => {
     selectedZId,
     usersChannels,
     allChannels,
+    currentUserId,
+    activeConversationId,
     search,
     setSearch,
     memberCounts,
@@ -84,6 +92,14 @@ export const Sidekick = () => {
 
   const renderContent = () => {
     switch (selectedTab) {
+      case Tab.Channels:
+        return (
+          <ConversationList
+            currentUserId={currentUserId}
+            activeConversationId={activeConversationId}
+            isCollapsed={false}
+          />
+        );
       case Tab.Gated:
         return (
           <ul className={styles.List}>

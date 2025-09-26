@@ -6,6 +6,9 @@ import { useProcessedOwnedZids } from './useProcessedOwnedZids';
 import { useChannelLists } from './useChannelLists';
 import { useTokenInfoBatch } from './useTokenInfoBatch';
 import { ChannelItem, TokenInfoResponse } from './types';
+import { unencryptedChannelsSelector } from '../../../../../store/channels/selectors';
+import { userIdSelector } from '../../../../../store/authentication/selectors';
+import { activeConversationIdSelector } from '../../../../../store/chat/selectors';
 
 interface UseSidekickReturn {
   isErrorZids: boolean;
@@ -15,6 +18,9 @@ interface UseSidekickReturn {
   selectedZId?: string;
   usersChannels?: ChannelItem[];
   allChannels?: ChannelItem[];
+  unencryptedChannels: any[];
+  currentUserId: string;
+  activeConversationId: string;
   search: string;
   memberCounts: { [zid: string]: number };
   setSearch: (search: string) => void;
@@ -52,6 +58,9 @@ export const useSidekick = (): UseSidekickReturn => {
   );
 
   const memberCounts = useSelector(selectSocialChannelsMemberCounts);
+  const unencryptedChannels = useSelector(unencryptedChannelsSelector);
+  const currentUserId = useSelector(userIdSelector);
+  const activeConversationId = useSelector(activeConversationIdSelector);
 
   // Fetch token info for all channels
   const { tokenInfoMap } = useTokenInfoBatch([
@@ -67,6 +76,9 @@ export const useSidekick = (): UseSidekickReturn => {
     selectedZId,
     usersChannels: filteredUserChannels,
     allChannels: filteredAllChannelsWithSearch,
+    unencryptedChannels,
+    currentUserId,
+    activeConversationId,
     search,
     setSearch,
     memberCounts,

@@ -12,7 +12,6 @@ import {
 import { mostRecentConversation } from '../channels/selectors';
 import { setActiveConversation } from '../chat/saga';
 import { ParentMessage, PowerLevels } from '../../lib/chat/types';
-import { rawSetActiveConversationId } from '../chat';
 import { resetConversationManagement } from '../group-management/saga';
 import { leadingDebounce } from '../utils';
 import { ChatMessageEvents, getChatMessageBus } from '../messages/messages';
@@ -22,6 +21,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import { getHistory } from '../../lib/browser';
 import { startPollingPosts } from '../posts/saga';
 import { setLastActiveConversation, getLastActiveConversation } from '../../lib/last-conversation';
+import { setLastActiveFeedConversation, getLastActiveFeedConversation } from '../../lib/last-feed-conversation';
+import { rawSetActiveConversationId } from '../chat';
 import { SlidingSyncManager } from '../../lib/chat/sliding-sync';
 import { extractUserIdFromMatrixId } from '../../lib/chat/matrix/utils';
 
@@ -75,6 +76,22 @@ export function* openFirstConversation() {
   }
 }
 
+export function* openFirstFeedConversation() {
+  const lastFeedConversationId = yield call(getLastActiveFeedConversation);
+
+  if (lastFeedConversationId) {
+    const conversation = yield select(channelSelector(lastFeedConversationId));
+    if (conversation && !conversation.isEncrypted) {
+      yield call(openConversationInFeed, lastFeedConversationId);
+      return;
+    }
+  }
+
+  // If no last feed conversation or it's encrypted, don't open anything
+  // The Feed app will show its default state
+  yield call(rawSetActiveConversationId, null);
+}
+
 export function* addRoomToSync(conversationId: string) {
   yield call(() => SlidingSyncManager.instance.addRoomToSync(conversationId));
 }
@@ -87,6 +104,23 @@ export function* openConversation(conversationId: string) {
   yield call(addRoomToSync, conversationId);
   yield call(setLastActiveConversation, conversationId);
   yield call(setActiveConversation, conversationId);
+  yield spawn(markConversationAsRead, conversationId);
+  yield call(resetConversationManagement);
+  yield call(startPollingPosts, conversationId);
+}
+
+export function* openConversationInFeed(conversationId: string) {
+  console.log('openConversationInFeed called with:', conversationId);
+
+  if (!conversationId) {
+    return;
+  }
+
+  yield call(addRoomToSync, conversationId);
+  yield call(setLastActiveFeedConversation, conversationId); // Use Feed-specific storage
+  console.log('openConversationInFeed - stored last active feed conversation:', conversationId);
+
+  // Don't call setActiveConversation to avoid navigation to /conversation/{id}
   yield spawn(markConversationAsRead, conversationId);
   yield call(resetConversationManagement);
   yield call(startPollingPosts, conversationId);
@@ -253,6 +287,9 @@ export function* saga() {
   yield leadingDebounce(4000, SagaActionTypes.UserTypingInRoom, publishUserTypingEvent);
 
   yield takeLatest(SagaActionTypes.OpenConversation, ({ payload }: any) => openConversation(payload.conversationId));
+  yield takeLatest(SagaActionTypes.OpenConversationInFeed, ({ payload }: any) =>
+    openConversationInFeed(payload.conversationId)
+  );
   yield takeLatest(SagaActionTypes.OnReply, ({ payload }: any) => onReply(payload.reply));
   yield takeLatest(SagaActionTypes.OnRemoveReply, onRemoveReply);
   yield takeLatest(SagaActionTypes.OnAddLabel, onAddLabel);

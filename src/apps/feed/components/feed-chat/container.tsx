@@ -6,9 +6,14 @@ import { Panel, PanelHeader, PanelBody, PanelTitle } from '../../../../component
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator/Spinner';
 import { ConversationActionsContainer } from '../../../../components/messenger/conversation-actions/container';
 import { LeaveTokenGatedChannelDialog } from '../leave-token-gated-channel-dialog';
+import { LeaveGroupDialogContainer } from '../../../../components/group-management/leave-group-dialog/container';
+import { LeaveGroupDialogStatus, setLeaveGroupStatus } from '../../../../store/group-management';
+import { leaveGroupDialogStatusSelector } from '../../../../store/group-management/selectors';
 import { useState } from 'react';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconLogOut } from '@zero-tech/zui/icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { channelSelector } from '../../../../store/channels/selectors';
 
 import styles from './styles.module.scss';
 
@@ -17,6 +22,15 @@ export const FeedChat = () => {
   const zid = route?.params?.zid;
   const { isMember, isLoading, channelData } = useChannelMembership(zid);
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  // Get channel data to check encryption status
+  const channel = useSelector(channelSelector(zid));
+  const isUnencryptedChannel = channel && !channel.isEncrypted;
+
+  // Get leave group dialog status from global state
+  const leaveGroupDialogStatus = useSelector(leaveGroupDialogStatusSelector);
+  const isLeaveGroupDialogOpen = leaveGroupDialogStatus !== LeaveGroupDialogStatus.CLOSED;
 
   if (!zid) {
     return null;
@@ -32,6 +46,12 @@ export const FeedChat = () => {
     : undefined;
 
   const renderContent = () => {
+    // For unencrypted channels, always show the chat container
+    if (isUnencryptedChannel) {
+      return <FeedChatContainer zid={zid} />;
+    }
+
+    // For social channels, check membership
     if (isLoading) {
       return (
         <div className={styles.Loading}>
@@ -53,8 +73,8 @@ export const FeedChat = () => {
   return (
     <Panel className={styles.Container}>
       <PanelHeader className={styles.PanelHeader}>
-        <PanelTitle className={styles.PanelTitle}>0://{zid}</PanelTitle>
-        {isMember && <ConversationActionsContainer />}
+        <PanelTitle className={styles.PanelTitle}>{isUnencryptedChannel ? channel?.name : `0://${zid}`}</PanelTitle>
+        {(isMember || isUnencryptedChannel) && <ConversationActionsContainer />}
         {isMember && tokenRequirements !== undefined && (
           <IconButton
             className={styles.IconButton}
@@ -67,6 +87,15 @@ export const FeedChat = () => {
       <PanelBody className={styles.Panel}>{renderContent()}</PanelBody>
 
       <LeaveTokenGatedChannelDialog zid={zid} isOpen={isLeaveDialogOpen} onClose={() => setIsLeaveDialogOpen(false)} />
+
+      {/* Leave Group Dialog for unencrypted conversations */}
+      {isUnencryptedChannel && isLeaveGroupDialogOpen && (
+        <LeaveGroupDialogContainer
+          groupName={channel?.name || 'Unencrypted Chat'}
+          onClose={() => dispatch(setLeaveGroupStatus(LeaveGroupDialogStatus.CLOSED))}
+          roomId={zid}
+        />
+      )}
     </Panel>
   );
 };

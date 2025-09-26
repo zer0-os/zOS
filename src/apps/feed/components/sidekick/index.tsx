@@ -20,6 +20,11 @@ import styles from './styles.module.scss';
 
 const tabsData: TabData[] = [
   {
+    id: Tab.Channels,
+    label: 'Channels',
+    ariaLabel: 'Channels tab',
+  },
+  {
     id: Tab.Gated,
     label: 'Gated',
     ariaLabel: 'Gated tab',
@@ -40,7 +45,7 @@ export const Sidekick = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<Tab>(() => {
     const lastTab = getLastActiveChannelsTab();
-    return lastTab ? (lastTab as Tab) : Tab.Gated;
+    return lastTab ? (lastTab as Tab) : Tab.Channels;
   });
 
   const {
@@ -84,6 +89,12 @@ export const Sidekick = () => {
 
   const renderContent = () => {
     switch (selectedTab) {
+      case Tab.Channels:
+        return (
+          <div className={styles.EmptyState}>
+            <span>Channels coming soon</span>
+          </div>
+        );
       case Tab.Gated:
         return (
           <ul className={styles.List}>

@@ -79,7 +79,7 @@ export const AchievementsPanel: React.FC = () => {
 
   // filter out achievements with effect 0
   const eligibleAchievements = achievements.filter((achievement) => {
-    return achievement.effect !== '0';
+    return achievement.effect !== '0x';
   });
 
   const displayedAchievements = eligibleAchievements.slice(0, MAX_BADGE_SLOTS_PER_ROW * MAX_BADGE_ROWS);

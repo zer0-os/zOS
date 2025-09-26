@@ -20,9 +20,9 @@ import styles from './styles.module.scss';
 
 const tabsData: TabData[] = [
   {
-    id: Tab.Channels,
-    label: 'Channels',
-    ariaLabel: 'Channels tab',
+    id: Tab.Gated,
+    label: 'Gated',
+    ariaLabel: 'Gated tab',
   },
   {
     id: Tab.Explore,
@@ -40,7 +40,7 @@ export const Sidekick = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<Tab>(() => {
     const lastTab = getLastActiveChannelsTab();
-    return lastTab ? (lastTab as Tab) : Tab.Channels;
+    return lastTab ? (lastTab as Tab) : Tab.Gated;
   });
 
   const {
@@ -84,7 +84,7 @@ export const Sidekick = () => {
 
   const renderContent = () => {
     switch (selectedTab) {
-      case Tab.Channels:
+      case Tab.Gated:
         return (
           <ul className={styles.List}>
             {isLoadingZids && <LoadingIndicator className={styles.LoadingIndicator} />}

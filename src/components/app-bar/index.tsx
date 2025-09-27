@@ -29,7 +29,6 @@ import { bemClassName } from '../../lib/bem';
 
 import './styles.scss';
 import styles from './styles.module.scss';
-import ExtraIconButton from './extra-icon-button/extraIconButton';
 
 const cn = bemClassName('app-bar');
 
@@ -195,19 +194,14 @@ export class AppBar extends React.Component<Properties, State> {
               to='/profile'
               onLinkClick={this.unhoverContainer}
             />
-            <div {...cn('link')} title='Other Apps'>
-              <span>Other Apps</span>
-            </div>
-          </LegacyPanel>
-          <div className={styles.Bottom}>
-            <ExtraIconButton
+            <AppLink
               Icon={IconWorld}
               isActive={isActive('explorer')}
               label='World Explorer'
               to='/explorer'
               onLinkClick={this.unhoverContainer}
             />
-            <ExtraIconButton
+            <AppLink
               Icon={IconTrophy1}
               isActive={isActive('leaderboard')}
               label='Leaderboard'
@@ -215,7 +209,7 @@ export class AppBar extends React.Component<Properties, State> {
               onLinkClick={this.unhoverContainer}
             />
             {featureFlags.enableAuraZApp && (
-              <ExtraIconButton
+              <AppLink
                 Icon={IconAura}
                 isActive={isActive('aura')}
                 label='Aura'
@@ -223,13 +217,9 @@ export class AppBar extends React.Component<Properties, State> {
                 onLinkClick={this.unhoverContainer}
               />
             )}
-            <ExtraIconButton
-              Icon={IconFourDots}
-              isActive={false}
-              label='Other Apps'
-              to='#'
-              onLinkClick={this.openModal}
-            />
+            <AppLink Icon={IconFourDots} isActive={false} label='Other Apps' to='#' onLinkClick={this.openModal} />
+          </LegacyPanel>
+          <div className={styles.Bottom}>
             <PostButton />
             <CurrentUser />
           </div>

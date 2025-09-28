@@ -67,7 +67,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@main
       - name: Build project
         run: REACT_APP_VERSION=${{steps.package-version.outputs.current-version}} npm run build
-      - run: npm install -g netlify-cli@15.0.0
+      - run: npm install -g netlify-cli@23.7.1
       - name: Deploy to netlify
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_NEW }}

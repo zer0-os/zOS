@@ -144,7 +144,7 @@ export const useSubmitPost = () => {
         sender: {
           userId: currentUser?.id,
           firstName: currentUser?.profileSummary?.firstName,
-          displaySubHandle: currentUser?.primaryZID,
+          displaySubHandle: currentUser?.primaryZID ? currentUser?.primaryZID : '',
           avatarUrl: currentUser?.profileSummary?.profileImage,
           primaryZid: authorIdentifier,
           publicAddress: currentUser?.primaryWalletAddress,

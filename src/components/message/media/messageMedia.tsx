@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AttachmentCards from '../../../platform-apps/channels/attachment-cards';
 import { Media, MediaType, MessageAttachment } from '../../../store/messages';
 import { usePlaceholderDimensions } from '../utils';
@@ -27,8 +27,18 @@ export const MessageMedia = ({
   openAttachmentPreview,
 }: MessageMediaProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [displayUrl, setDisplayUrl] = useState<string | null>(effectiveMediaUrl || null);
   const blurhash = media['xyz.amorgan.blurhash'];
   const { width, height } = usePlaceholderDimensions(media.width, media.height);
+
+  useEffect(() => {
+    if (!effectiveMediaUrl) {
+      return;
+    }
+
+    setIsImageLoaded(false);
+    setDisplayUrl(effectiveMediaUrl);
+  }, [effectiveMediaUrl]);
 
   const handleImageLoad = () => {
     setIsImageLoaded(true);
@@ -47,7 +57,7 @@ export const MessageMedia = ({
     </>
   );
 
-  if (!effectiveMediaUrl) {
+  if (!displayUrl) {
     return (
       <>
         {media?.mimetype?.includes('application') || media?.mimetype?.includes('audio') ? (
@@ -68,7 +78,7 @@ export const MessageMedia = ({
     return (
       <div {...cn('block-image')} onClick={() => onImageClick(media)}>
         <img
-          src={effectiveMediaUrl}
+          src={displayUrl}
           alt={media?.name}
           onLoad={handleImageLoad}
           style={!isImageLoaded ? { width, height } : {}}
@@ -79,12 +89,12 @@ export const MessageMedia = ({
     return (
       <div {...cn('block-video')}>
         <video controls>
-          <source src={effectiveMediaUrl} />
+          <source src={displayUrl} />
         </video>
       </div>
     );
   } else if (media?.type === MediaType.File) {
-    const attachment = { url: effectiveMediaUrl, name: media?.name, type: media?.type, mimetype: media?.mimetype };
+    const attachment = { url: displayUrl, name: media?.name, type: media?.type, mimetype: media?.mimetype };
     return (
       <div {...cn('attachment')} onClick={() => openAttachmentPreview(attachment)}>
         <AttachmentCards attachments={[attachment]} onAttachmentClicked={() => openAttachmentPreview(attachment)} />
@@ -94,7 +104,7 @@ export const MessageMedia = ({
     return (
       <div {...cn('block-audio')}>
         <audio controls controlsList='nodownload nofullscreen noplaybackrate'>
-          <source src={effectiveMediaUrl} type={media?.mimetype} />
+          <source src={displayUrl} type={media?.mimetype} />
         </audio>
       </div>
     );

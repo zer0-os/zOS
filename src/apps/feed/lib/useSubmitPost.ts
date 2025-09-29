@@ -37,22 +37,29 @@ export const useSubmitPost = () => {
       const { message, replyToId, channelZid, mediaId, quoteOf } = params;
       const formattedUserPrimaryZid = userPrimaryZid?.replace('0://', '');
 
-      const authorAddress = currentUser?.zeroWalletAddress;
+      // Use ZID if available, otherwise use any available wallet address as author identifier
+      const authorIdentifier =
+        formattedUserPrimaryZid || currentUser?.zeroWalletAddress || currentUser?.primaryWalletAddress;
 
-      if (!formattedUserPrimaryZid) {
-        throw new Error('Please set a primary ZID in your profile');
+      if (!authorIdentifier) {
+        throw new Error('Please connect a wallet or set a primary ZID');
       }
 
       if (!channelZid) {
         throw new Error('Channel ZID is invalid');
       }
 
-      if (!authorAddress) {
-        throw new Error('ZERO wallet is not connected');
+      // Check if user has any wallets
+      if (!userWallets || userWallets.length === 0) {
+        throw new Error('Please connect a wallet to post');
       }
 
-      if (!userWallets.find((w) => w.publicAddress.toLowerCase() === authorAddress.toLowerCase())) {
-        throw new Error('Wallet is not linked to your account');
+      // Use the first available wallet address for signing
+      const authorAddress =
+        currentUser?.zeroWalletAddress || currentUser?.primaryWalletAddress || userWallets[0]?.publicAddress;
+
+      if (!authorAddress) {
+        throw new Error('No wallet address available');
       }
 
       const createdAt = new Date().getTime();
@@ -61,7 +68,7 @@ export const useSubmitPost = () => {
         created_at: createdAt.toString(),
         text: message,
         wallet_address: authorAddress,
-        zid: formattedUserPrimaryZid,
+        zid: authorIdentifier,
       };
 
       const unsignedPost = JSON.stringify(payloadToSign);
@@ -82,7 +89,7 @@ export const useSubmitPost = () => {
       formData.append('text', message);
       formData.append('unsignedMessage', unsignedPost);
       formData.append('signedMessage', signedPost);
-      formData.append('zid', formattedUserPrimaryZid);
+      formData.append('zid', authorIdentifier);
       formData.append('walletAddress', authorAddress);
       if (quoteOf) {
         formData.append('quoteOf', quoteOf);
@@ -117,6 +124,7 @@ export const useSubmitPost = () => {
       }
 
       const formattedZid = currentUser?.primaryZID?.replace('0://', '');
+      const authorIdentifier = formattedZid || currentUser?.zeroWalletAddress || currentUser?.primaryWalletAddress;
 
       const optimisticId = uuidv4();
 
@@ -136,9 +144,9 @@ export const useSubmitPost = () => {
         sender: {
           userId: currentUser?.id,
           firstName: currentUser?.profileSummary?.firstName,
-          displaySubHandle: currentUser?.primaryZID,
+          displaySubHandle: currentUser?.primaryZID ? currentUser?.primaryZID : '',
           avatarUrl: currentUser?.profileSummary?.profileImage,
-          primaryZid: formattedZid,
+          primaryZid: authorIdentifier,
           publicAddress: currentUser?.primaryWalletAddress,
           isZeroProSubscriber: false,
         },

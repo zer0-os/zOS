@@ -23,6 +23,7 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat, getMessageEmojiReactions, getMessageReadReceipts, sendEmojiReactionEvent } from '../../lib/chat';
+import { getImageDimensions } from '../../lib/chat/matrix/media';
 import { mapMessageSenders } from './utils.matrix';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
@@ -243,7 +244,32 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector);
 
-  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
+  let enrichedFile = file;
+  if (
+    file &&
+    file.mediaType === MediaType.Image &&
+    file.nativeFile &&
+    (file.width === undefined || file.height === undefined)
+  ) {
+    try {
+      const { width, height } = yield call(getImageDimensions, file.nativeFile);
+      enrichedFile = { ...file, width, height };
+    } catch (_error) {
+      enrichedFile = {
+        ...file,
+        width: typeof file.width === 'number' ? file.width : 0,
+        height: typeof file.height === 'number' ? file.height : 0,
+      };
+    }
+  }
+
+  const temporaryMessage = createOptimisticMessageObject(
+    message,
+    currentUser,
+    parentMessage,
+    enrichedFile,
+    rootMessageId
+  );
 
   yield call(receiveChannel, { id: channelId, messages: [...existingMessages, temporaryMessage] });
 

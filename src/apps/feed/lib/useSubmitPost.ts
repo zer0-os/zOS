@@ -90,7 +90,9 @@ export const useSubmitPost = () => {
       formData.append('text', message);
       formData.append('unsignedMessage', unsignedPost);
       formData.append('signedMessage', signedPost);
-      formData.append('zid', formattedUserPrimaryZid);
+      if (formattedUserPrimaryZid) {
+        formData.append('zid', formattedUserPrimaryZid);
+      }
       formData.append('walletAddress', authorAddress);
       if (quoteOf) {
         formData.append('quoteOf', quoteOf);

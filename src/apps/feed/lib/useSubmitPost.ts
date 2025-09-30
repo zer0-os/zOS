@@ -37,11 +37,12 @@ export const useSubmitPost = () => {
       const { message, replyToId, channelZid, mediaId, quoteOf } = params;
       const formattedUserPrimaryZid = userPrimaryZid?.replace('0://', '');
 
-      // Use ZID if available, otherwise use any available wallet address as author identifier
-      const authorIdentifier =
-        formattedUserPrimaryZid || currentUser?.zeroWalletAddress || currentUser?.primaryWalletAddress;
-
-      if (!authorIdentifier) {
+      if (
+        !formattedUserPrimaryZid &&
+        !currentUser?.zeroWalletAddress &&
+        !currentUser?.primaryWalletAddress &&
+        (!currentUser?.wallets || currentUser.wallets.length === 0)
+      ) {
         throw new Error('Please connect a wallet or set a primary ZID');
       }
 
@@ -68,7 +69,7 @@ export const useSubmitPost = () => {
         created_at: createdAt.toString(),
         text: message,
         wallet_address: authorAddress,
-        zid: authorIdentifier,
+        zid: formattedUserPrimaryZid,
       };
 
       const unsignedPost = JSON.stringify(payloadToSign);
@@ -89,7 +90,9 @@ export const useSubmitPost = () => {
       formData.append('text', message);
       formData.append('unsignedMessage', unsignedPost);
       formData.append('signedMessage', signedPost);
-      formData.append('zid', authorIdentifier);
+      if (formattedUserPrimaryZid) {
+        formData.append('zid', formattedUserPrimaryZid);
+      }
       formData.append('walletAddress', authorAddress);
       if (quoteOf) {
         formData.append('quoteOf', quoteOf);
@@ -124,7 +127,6 @@ export const useSubmitPost = () => {
       }
 
       const formattedZid = currentUser?.primaryZID?.replace('0://', '');
-      const authorIdentifier = formattedZid || currentUser?.zeroWalletAddress || currentUser?.primaryWalletAddress;
 
       const optimisticId = uuidv4();
 
@@ -146,7 +148,7 @@ export const useSubmitPost = () => {
           firstName: currentUser?.profileSummary?.firstName,
           displaySubHandle: currentUser?.primaryZID ? currentUser?.primaryZID : '',
           avatarUrl: currentUser?.profileSummary?.profileImage,
-          primaryZid: authorIdentifier,
+          primaryZid: formattedZid,
           publicAddress: currentUser?.primaryWalletAddress,
           isZeroProSubscriber: false,
         },

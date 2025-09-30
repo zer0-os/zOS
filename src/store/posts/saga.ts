@@ -79,10 +79,12 @@ export function* sendPost(action) {
     const user = yield select(currentUserSelector);
     const userZid = user.primaryZID?.split('0://')?.[1];
 
-    // Use ZID if available, otherwise use any available wallet address as author identifier
-    const authorIdentifier = userZid || user.zeroWalletAddress || user.primaryWalletAddress;
-
-    if (!authorIdentifier) {
+    if (
+      !userZid &&
+      !user.zeroWalletAddress &&
+      !user.primaryWalletAddress &&
+      (!user.wallets || user.wallets.length === 0)
+    ) {
       throw new Error('Please connect a wallet or set a primary ZID');
     }
 
@@ -104,17 +106,23 @@ export function* sendPost(action) {
       walletClient = yield call(getWallet);
       connectedAddress = walletClient.account?.address;
     } catch (e) {
-      //
-      throw new Error('Please connect a wallet');
+      // If no EOA wallet is connected, we can still use Z wallet for posting
+      connectedAddress = null;
     }
 
-    // If the user does not have a connected address
-    if (!connectedAddress) {
-      throw new Error('Please connect a wallet');
+    // Use Z wallet address if available, otherwise use connected wallet
+    const authorAddress = user.zeroWalletAddress || user.primaryWalletAddress || connectedAddress;
+
+    // If the user does not have any wallet address
+    if (!authorAddress) {
+      throw new Error('No wallet address available');
     }
 
     // Verify the connected wallet is valid (either zeroWalletAddress, primaryWalletAddress, or in wallets array)
+    // Skip validation if using Z wallet (no EOA connection required)
+    const isUsingZWallet = authorAddress === user.zeroWalletAddress || authorAddress === user.primaryWalletAddress;
     const isValidWallet =
+      isUsingZWallet ||
       connectedAddress === user.zeroWalletAddress ||
       connectedAddress === user.primaryWalletAddress ||
       user.wallets.some((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase());
@@ -130,8 +138,8 @@ export function* sendPost(action) {
     const payloadToSign: SignedMessagePayload = {
       created_at: createdAt.toString(),
       text: message,
-      wallet_address: connectedAddress,
-      zid: authorIdentifier,
+      wallet_address: authorAddress,
+      zid: userZid,
     };
 
     let unsignedPost, signedPost;
@@ -148,8 +156,8 @@ export function* sendPost(action) {
     formData.append('text', message);
     formData.append('unsignedMessage', unsignedPost);
     formData.append('signedMessage', signedPost);
-    formData.append('zid', authorIdentifier);
-    formData.append('walletAddress', connectedAddress);
+    formData.append('zid', userZid);
+    formData.append('walletAddress', authorAddress);
     if (replyToId) {
       formData.append('replyTo', replyToId);
     }
@@ -184,7 +192,7 @@ export function* sendPost(action) {
               },
             },
             userId: user.id,
-            zid: authorIdentifier,
+            zid: userZid,
             mediaId: res.mediaId,
           }),
         ],

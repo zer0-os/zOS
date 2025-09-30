@@ -106,8 +106,8 @@ export function* sendPost(action) {
       walletClient = yield call(getWallet);
       connectedAddress = walletClient.account?.address;
     } catch (e) {
-      //
-      throw new Error('Please connect a wallet');
+      // If no EOA wallet is connected, we can still use Z wallet for posting
+      connectedAddress = null;
     }
 
     // Use Z wallet address if available, otherwise use connected wallet
@@ -119,7 +119,10 @@ export function* sendPost(action) {
     }
 
     // Verify the connected wallet is valid (either zeroWalletAddress, primaryWalletAddress, or in wallets array)
+    // Skip validation if using Z wallet (no EOA connection required)
+    const isUsingZWallet = authorAddress === user.zeroWalletAddress || authorAddress === user.primaryWalletAddress;
     const isValidWallet =
+      isUsingZWallet ||
       connectedAddress === user.zeroWalletAddress ||
       connectedAddress === user.primaryWalletAddress ||
       user.wallets.some((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase());

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { primaryZIDSelector, currentUserSelector } from '../../../store/authentication/selectors';
+import { primaryZIDSelector } from '../../../store/authentication/selectors';
 import { useSelector } from 'react-redux';
 
 import { PostModal } from './modal';
@@ -11,16 +11,9 @@ import styles from './styles.module.scss';
 
 export const PostButton = () => {
   const userZid = useSelector(primaryZIDSelector);
-  const currentUser = useSelector(currentUserSelector);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 
-  // Allow posting if user has either ZID or any wallet
-  if (
-    !userZid &&
-    !currentUser?.zeroWalletAddress &&
-    !currentUser?.primaryWalletAddress &&
-    (!currentUser?.wallets || currentUser.wallets.length === 0)
-  ) {
+  if (!userZid) {
     return null;
   }
 

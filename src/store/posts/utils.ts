@@ -89,12 +89,8 @@ export async function uploadPost(formData: FormData, worldZid: string) {
       .field('text', formData.get('text'))
       .field('unsignedMessage', formData.get('unsignedMessage'))
       .field('signedMessage', formData.get('signedMessage'))
+      .field('zid', formData.get('zid'))
       .field('walletAddress', formData.get('walletAddress'));
-
-    const zid = formData.get('zid');
-    if (zid) {
-      request = request.field('zid', zid);
-    }
 
     const replyTo = formData.get('replyTo');
     if (replyTo) {

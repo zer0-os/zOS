@@ -62,7 +62,7 @@ export function mapPostToMatrixMessage(post) {
     sender: {
       userId: post.userId,
       firstName: post.userProfileView?.firstName,
-      displaySubHandle: post.zid ? '0://' + post.zid : '',
+      displaySubHandle: '0://' + post.zid,
       avatarUrl: post.userProfileView?.profileImage,
       primaryZid: post.userProfileView?.primaryZid?.replace('0://', ''),
       publicAddress: post.userProfileView?.publicAddress,

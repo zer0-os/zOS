@@ -4,7 +4,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { Modal } from '@zero-tech/zui/components/Modal';
 import { PostInput } from '../../../apps/feed/components/post-input-hook';
-import { primaryZIDSelector, currentUserSelector } from '../../../store/authentication/selectors';
+import { primaryZIDSelector } from '../../../store/authentication/selectors';
 import { quotingPostSelector } from '../../../store/posts/selectors';
 
 import styles from './styles.module.scss';
@@ -24,14 +24,12 @@ export const PostModal = ({ open, onOpenChange }: PostModalProps) => {
 
 const Content = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) => {
   const primaryZID = useSelector(primaryZIDSelector);
-  const currentUser = useSelector(currentUserSelector);
   const quotingPost = useSelector(quotingPostSelector);
   const history = useHistory();
   const route = useRouteMatch<{ zid: string }>('/feed/:zid');
 
-  // Use current channel ZID if on a channel feed, otherwise use user's primary ZID or any wallet address
-  const channelZid =
-    route?.params?.zid || primaryZID || currentUser?.zeroWalletAddress || currentUser?.primaryWalletAddress;
+  // Use current channel ZID if on a channel feed, otherwise use user's primary ZID
+  const channelZid = route?.params?.zid || primaryZID;
 
   const containerRef = useRef<HTMLDivElement>(null);
 

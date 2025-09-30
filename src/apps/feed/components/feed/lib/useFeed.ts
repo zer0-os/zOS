@@ -7,7 +7,7 @@ import { get } from '../../../../../lib/api/rest';
 import { PAGE_SIZE } from '../../../lib/constants';
 import { mapPostToMatrixMessage } from '../../../../../store/posts/utils';
 import { useMeowPost } from '../../../lib/useMeowPost';
-import { primaryZIDSelector, userIdSelector, currentUserSelector } from '../../../../../store/authentication/selectors';
+import { primaryZIDSelector, userIdSelector } from '../../../../../store/authentication/selectors';
 import { useMeowBalance } from '../../../lib/useMeowBalance';
 import { searchMyNetworksByName } from '../../../../../platform-apps/channels/util/api';
 import { MemberNetworks } from '../../../../../store/users/types';
@@ -24,7 +24,6 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
   const currentUserId = useSelector(userIdSelector);
   const { meowBalance: userMeowBalance } = useMeowBalance();
   const primaryZID = useSelector(primaryZIDSelector);
-  const currentUser = useSelector(currentUserSelector);
   const [searchResults, setSearchResults] = useState<MemberNetworks[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -120,7 +119,7 @@ export const useFeed = ({ zid, userId, isLoading: isLoadingProp, following }: Us
   const isEmpty = data?.pages.every((page) => page.length === 0);
 
   return {
-    channelZid: zid ?? primaryZID ?? currentUser?.zeroWalletAddress ?? currentUser?.primaryWalletAddress,
+    channelZid: zid ?? primaryZID,
     fetchNextPage,
     hasLoadedMessages,
     hasNextPage,

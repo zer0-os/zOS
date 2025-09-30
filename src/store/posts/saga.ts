@@ -79,11 +79,9 @@ export function* sendPost(action) {
     const user = yield select(currentUserSelector);
     const userZid = user.primaryZID?.split('0://')?.[1];
 
-    // Use ZID if available, otherwise use any available wallet address as author identifier
-    const authorIdentifier = userZid || user.zeroWalletAddress || user.primaryWalletAddress;
-
-    if (!authorIdentifier) {
-      throw new Error('Please connect a wallet or set a primary ZID');
+    // If user does not have a primary ZID
+    if (!userZid || userZid.trim() === '') {
+      throw new Error('Please set a primary ZID in your profile');
     }
 
     const channelZid = channel?.name?.split('0://')[1];
@@ -113,13 +111,8 @@ export function* sendPost(action) {
       throw new Error('Please connect a wallet');
     }
 
-    // Verify the connected wallet is valid (either zeroWalletAddress, primaryWalletAddress, or in wallets array)
-    const isValidWallet =
-      connectedAddress === user.zeroWalletAddress ||
-      connectedAddress === user.primaryWalletAddress ||
-      user.wallets.some((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase());
-
-    if (!isValidWallet) {
+    // If the user is connected to a wallet which is not linked to their account
+    if (!user.wallets.find((w) => w.publicAddress.toLowerCase() === connectedAddress.toLowerCase())) {
       throw new Error('Wallet is not linked to your account');
     }
 
@@ -131,7 +124,7 @@ export function* sendPost(action) {
       created_at: createdAt.toString(),
       text: message,
       wallet_address: connectedAddress,
-      zid: authorIdentifier,
+      zid: userZid,
     };
 
     let unsignedPost, signedPost;
@@ -148,7 +141,7 @@ export function* sendPost(action) {
     formData.append('text', message);
     formData.append('unsignedMessage', unsignedPost);
     formData.append('signedMessage', signedPost);
-    formData.append('zid', authorIdentifier);
+    formData.append('zid', userZid);
     formData.append('walletAddress', connectedAddress);
     if (replyToId) {
       formData.append('replyTo', replyToId);
@@ -184,7 +177,7 @@ export function* sendPost(action) {
               },
             },
             userId: user.id,
-            zid: authorIdentifier,
+            zid: userZid,
             mediaId: res.mediaId,
           }),
         ],

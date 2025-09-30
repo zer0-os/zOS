@@ -62,9 +62,9 @@ export function mapPostToMatrixMessage(post) {
     sender: {
       userId: post.userId,
       firstName: post.userProfileView?.firstName,
-      displaySubHandle: '0://' + post.zid,
+      displaySubHandle: post.zid ? '0://' + post.zid : '',
       avatarUrl: post.userProfileView?.profileImage,
-      primaryZid: post.userProfileView?.primaryZid?.replace('0://', ''),
+      primaryZid: post.userProfileView?.primaryZid?.replace('0://', '') || null,
       publicAddress: post.userProfileView?.publicAddress,
       isZeroProSubscriber: post.userProfileView?.isZeroProSubscriber,
     },
@@ -89,8 +89,12 @@ export async function uploadPost(formData: FormData, worldZid: string) {
       .field('text', formData.get('text'))
       .field('unsignedMessage', formData.get('unsignedMessage'))
       .field('signedMessage', formData.get('signedMessage'))
-      .field('zid', formData.get('zid'))
       .field('walletAddress', formData.get('walletAddress'));
+
+    const zid = formData.get('zid');
+    if (zid) {
+      request = request.field('zid', zid);
+    }
 
     const replyTo = formData.get('replyTo');
     if (replyTo) {
@@ -118,6 +122,11 @@ export async function uploadPost(formData: FormData, worldZid: string) {
 }
 
 function stripZidPrefix(zid?: string) {
+  // If it's a wallet address (42 chars, starts with 0x, valid hex), return as-is
+  if (zid?.startsWith('0x') && zid.length === 42 && /^0x[a-fA-F0-9]{40}$/.test(zid)) {
+    return zid;
+  }
+  // Otherwise, strip the 0:// prefix if present
   return zid?.replace(/^0:\/\//, '');
 }
 

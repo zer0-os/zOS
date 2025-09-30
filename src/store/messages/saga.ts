@@ -150,7 +150,7 @@ export function* fetchMessages(action) {
     yield call(receiveChannel, {
       id: channelId,
       messages,
-      hasMore: messagesResponse.hasMore,
+      hasMore: messagesResponse.hasMore && messages.length > 0,
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
@@ -488,10 +488,35 @@ export function* batchedUpdateLastMessage(channelIds: string[]) {
 export function* syncMessages(channelId: string) {
   const chatClient = yield call(chat.get);
   const messages = yield call([chatClient, chatClient.syncChannelMessages], channelId);
-  if (messages) {
-    const messagesWithSenders = yield call(mapMessagesAndPreview, messages, channelId);
-    yield call(receiveChannel, { id: channelId, messages: messagesWithSenders });
+  if (!messages) {
+    return;
   }
+
+  const canonicalMessages: Message[] = yield call(mapMessagesAndPreview, messages, channelId);
+  const canonicalOptimisticIds = new Set(
+    canonicalMessages.filter((message) => Boolean(message.optimisticId)).map((message) => message.optimisticId)
+  );
+
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+  const denormalizedExistingMessages: (Message | MessageWithoutSender)[] = yield select((state) =>
+    denormalize(existingMessages, state)
+  );
+
+  const preservedOptimisticMessages = denormalizedExistingMessages
+    .filter((message): message is Message => message?.sendStatus === MessageSendStatus.IN_PROGRESS)
+    .filter((message) => {
+      if (message.optimisticId && canonicalOptimisticIds.has(message.optimisticId)) {
+        return false;
+      }
+
+      return true;
+    });
+
+  const mergedMessages = [...canonicalMessages, ...preservedOptimisticMessages].sort(
+    (firstMessage, secondMessage) => firstMessage.createdAt - secondMessage.createdAt
+  );
+
+  yield call(receiveChannel, { id: channelId, messages: mergedMessages });
 }
 
 export function* syncMessagesAction(action: SyncMessagesAction) {

@@ -23,6 +23,7 @@ import { takeEveryFromBus } from '../../lib/saga';
 import { Events as ChatEvents, getChatBus } from '../chat/bus';
 import { Uploadable, createUploadableFile } from './uploadable';
 import { chat, getMessageEmojiReactions, getMessageReadReceipts, sendEmojiReactionEvent } from '../../lib/chat';
+import { getImageDimensions } from '../../lib/chat/matrix/media';
 import { mapMessageSenders } from './utils.matrix';
 import { NotifiableEventType } from '../../lib/chat/matrix/types';
 import { ChatMessageEvents, getChatMessageBus } from './messages';
@@ -149,7 +150,7 @@ export function* fetchMessages(action) {
     yield call(receiveChannel, {
       id: channelId,
       messages,
-      hasMore: messagesResponse.hasMore,
+      hasMore: messagesResponse.hasMore && messages.length > 0,
       hasLoadedMessages: true,
       messagesFetchStatus: MessagesFetchState.SUCCESS,
     });
@@ -243,7 +244,32 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector);
 
-  const temporaryMessage = createOptimisticMessageObject(message, currentUser, parentMessage, file, rootMessageId);
+  let enrichedFile = file;
+  if (
+    file &&
+    file.mediaType === MediaType.Image &&
+    file.nativeFile &&
+    (file.width === undefined || file.height === undefined)
+  ) {
+    try {
+      const { width, height } = yield call(getImageDimensions, file.nativeFile);
+      enrichedFile = { ...file, width, height };
+    } catch (_error) {
+      enrichedFile = {
+        ...file,
+        width: typeof file.width === 'number' ? file.width : 0,
+        height: typeof file.height === 'number' ? file.height : 0,
+      };
+    }
+  }
+
+  const temporaryMessage = createOptimisticMessageObject(
+    message,
+    currentUser,
+    parentMessage,
+    enrichedFile,
+    rootMessageId
+  );
 
   yield call(receiveChannel, { id: channelId, messages: [...existingMessages, temporaryMessage] });
 
@@ -462,10 +488,35 @@ export function* batchedUpdateLastMessage(channelIds: string[]) {
 export function* syncMessages(channelId: string) {
   const chatClient = yield call(chat.get);
   const messages = yield call([chatClient, chatClient.syncChannelMessages], channelId);
-  if (messages) {
-    const messagesWithSenders = yield call(mapMessagesAndPreview, messages, channelId);
-    yield call(receiveChannel, { id: channelId, messages: messagesWithSenders });
+  if (!messages) {
+    return;
   }
+
+  const canonicalMessages: Message[] = yield call(mapMessagesAndPreview, messages, channelId);
+  const canonicalOptimisticIds = new Set(
+    canonicalMessages.filter((message) => Boolean(message.optimisticId)).map((message) => message.optimisticId)
+  );
+
+  const existingMessages = yield select(rawMessagesSelector(channelId));
+  const denormalizedExistingMessages: (Message | MessageWithoutSender)[] = yield select((state) =>
+    denormalize(existingMessages, state)
+  );
+
+  const preservedOptimisticMessages = denormalizedExistingMessages
+    .filter((message): message is Message => message?.sendStatus === MessageSendStatus.IN_PROGRESS)
+    .filter((message) => {
+      if (message.optimisticId && canonicalOptimisticIds.has(message.optimisticId)) {
+        return false;
+      }
+
+      return true;
+    });
+
+  const mergedMessages = [...canonicalMessages, ...preservedOptimisticMessages].sort(
+    (firstMessage, secondMessage) => firstMessage.createdAt - secondMessage.createdAt
+  );
+
+  yield call(receiveChannel, { id: channelId, messages: mergedMessages });
 }
 
 export function* syncMessagesAction(action: SyncMessagesAction) {

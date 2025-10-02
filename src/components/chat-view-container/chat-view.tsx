@@ -21,7 +21,6 @@ import {
 import { bemClassName } from '../../lib/bem';
 import { useDispatch, useSelector } from 'react-redux';
 import { useChannelSelector, useMessagesSelector, useUsersSelector } from '../../store/hooks';
-// compareDatesAsc no longer used; sorting now uses clientSortKey
 import { ChatMessage } from './chat-message';
 import { openLightbox } from '../../store/dialogs';
 import { AdminMessageContainer } from '../admin-message/container';

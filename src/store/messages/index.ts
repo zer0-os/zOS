@@ -83,6 +83,7 @@ export interface Message {
   isAdmin: boolean;
   createdAt: number;
   updatedAt: number;
+  clientSortKey?: number;
   sender: Sender;
   mentionedUsers: { id: string }[];
   hidePreview: boolean;

@@ -15,7 +15,7 @@ import { receive as receiveMessage } from './';
 import { ConversationStatus, MessagesFetchState, DefaultRoomLabels, User } from '../channels';
 import { markConversationAsRead, receiveChannel } from '../channels/saga';
 
-import { createOptimisticMessageObject } from './utils';
+import { createOptimisticMessageObject, compareMessagesByClientOrder } from './utils';
 import { ParentMessage } from '../../lib/chat/types';
 import { send as sendBrowserMessage, mapMessage } from '../../lib/browser';
 import { currentUserSelector } from './../authentication/selectors';
@@ -223,9 +223,28 @@ export function* publishMessageSent(channelId: string) {
 }
 
 export function* createOptimisticMessages(channelId, message, parentMessage, uploadableFiles?) {
+  // Determine a monotonic base sort key using the current max of existing messages
+  const existingMessageIds = yield select(rawMessagesSelector(channelId));
+  const existingMessages: (Message | MessageWithoutSender)[] = yield select((state) =>
+    denormalize(existingMessageIds, state)
+  );
+  const maxExistingKey = existingMessages.reduce((max, m: any) => {
+    const key = typeof m?.clientSortKey === 'number' ? m.clientSortKey : m?.createdAt || 0;
+    return key > max ? key : max;
+  }, 0);
+  let sortKeyCursor = Math.max(Date.now(), maxExistingKey);
+
   let optimisticRootMessage = null;
   if (message?.trim()) {
-    const { optimisticMessage } = yield call(createOptimisticMessage, channelId, message, parentMessage);
+    const { optimisticMessage } = yield call(
+      createOptimisticMessage,
+      channelId,
+      message,
+      parentMessage,
+      undefined,
+      undefined,
+      ++sortKeyCursor
+    );
     optimisticRootMessage = optimisticMessage;
   }
 
@@ -233,14 +252,22 @@ export function* createOptimisticMessages(channelId, message, parentMessage, upl
     const file = uploadableFiles[index].file;
     // only the first file should connect to the root message for now.
     const rootId = index === '0' ? optimisticRootMessage?.id : '';
-    const { optimisticMessage } = yield call(createOptimisticMessage, channelId, '', null, file, rootId);
+    const { optimisticMessage } = yield call(
+      createOptimisticMessage,
+      channelId,
+      '',
+      null,
+      file,
+      rootId,
+      ++sortKeyCursor
+    );
     uploadableFiles[index].optimisticMessage = optimisticMessage;
   }
 
   return { optimisticRootMessage, uploadableFiles };
 }
 
-export function* createOptimisticMessage(channelId, message, parentMessage, file?, rootMessageId?) {
+export function* createOptimisticMessage(channelId, message, parentMessage, file?, rootMessageId?, clientSortKey?) {
   const existingMessages = yield select(rawMessagesSelector(channelId));
   const currentUser = yield select(currentUserSelector);
 
@@ -263,13 +290,17 @@ export function* createOptimisticMessage(channelId, message, parentMessage, file
     }
   }
 
-  const temporaryMessage = createOptimisticMessageObject(
+  let temporaryMessage = createOptimisticMessageObject(
     message,
     currentUser,
     parentMessage,
     enrichedFile,
     rootMessageId
   );
+
+  if (typeof clientSortKey === 'number') {
+    temporaryMessage = { ...temporaryMessage, clientSortKey };
+  }
 
   yield call(receiveChannel, { id: channelId, messages: [...existingMessages, temporaryMessage] });
 
@@ -492,7 +523,7 @@ export function* syncMessages(channelId: string) {
     return;
   }
 
-  const canonicalMessages: Message[] = yield call(mapMessagesAndPreview, messages, channelId);
+  let canonicalMessages: Message[] = yield call(mapMessagesAndPreview, messages, channelId);
   const canonicalOptimisticIds = new Set(
     canonicalMessages.filter((message) => Boolean(message.optimisticId)).map((message) => message.optimisticId)
   );
@@ -501,6 +532,22 @@ export function* syncMessages(channelId: string) {
   const denormalizedExistingMessages: (Message | MessageWithoutSender)[] = yield select((state) =>
     denormalize(existingMessages, state)
   );
+
+  // Map optimisticId -> clientSortKey from existing state so canonical events inherit stable order
+  const clientKeyByOptimisticId = new Map<string, number>();
+  for (const m of denormalizedExistingMessages as any[]) {
+    if (m?.optimisticId && typeof m?.clientSortKey === 'number') {
+      clientKeyByOptimisticId.set(m.optimisticId, m.clientSortKey);
+    }
+  }
+
+  canonicalMessages = canonicalMessages.map((m: any) => {
+    if (m?.optimisticId && clientKeyByOptimisticId.has(m.optimisticId)) {
+      const clientSortKey = clientKeyByOptimisticId.get(m.optimisticId);
+      return { ...m, clientSortKey } as Message;
+    }
+    return m;
+  });
 
   const preservedOptimisticMessages = denormalizedExistingMessages
     .filter((message): message is Message => message?.sendStatus === MessageSendStatus.IN_PROGRESS)
@@ -512,9 +559,7 @@ export function* syncMessages(channelId: string) {
       return true;
     });
 
-  const mergedMessages = [...canonicalMessages, ...preservedOptimisticMessages].sort(
-    (firstMessage, secondMessage) => firstMessage.createdAt - secondMessage.createdAt
-  );
+  const mergedMessages = [...canonicalMessages, ...preservedOptimisticMessages].sort(compareMessagesByClientOrder);
 
   yield call(receiveChannel, { id: channelId, messages: mergedMessages });
 }
@@ -540,6 +585,19 @@ export function* receiveUpdateMessage(action) {
 
   const messageList = yield call(mapMessagesAndPreview, [message], channelId);
   message = messageList[0];
+
+  // Preserve clientSortKey to avoid reordering during partial updates
+  try {
+    const existingById = yield select(messageSelector(message.id));
+    if (existingById && typeof existingById?.clientSortKey === 'number') {
+      message = { ...message, clientSortKey: existingById.clientSortKey };
+    } else if (message.optimisticId) {
+      const existingByOptimistic = yield select(messageSelector(message.optimisticId));
+      if (existingByOptimistic && typeof existingByOptimistic?.clientSortKey === 'number') {
+        message = { ...message, clientSortKey: existingByOptimistic.clientSortKey };
+      }
+    }
+  } catch (_e) {}
 
   yield put(receiveMessage(message));
 }

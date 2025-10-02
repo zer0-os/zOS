@@ -81,7 +81,7 @@ export function mapMatrixMessage(matrixEvent: Partial<IEvent>): MessageWithoutSe
     isPost: false,
     sendStatus: MessageSendStatus.SUCCESS,
     isAdmin: false,
-    optimisticId: content.optimisticId,
+    optimisticId: content.optimisticId ?? (content as any)?.info?.optimisticId,
     mentionedUsers: [],
     hidePreview: false,
     media: null,
@@ -136,7 +136,7 @@ export function mapEventToPostMessage(matrixEvent: IEvent): MessageWithoutSender
     message: content.body,
     createdAt: origin_server_ts,
     updatedAt: 0,
-    optimisticId: content.optimisticId,
+    optimisticId: content.optimisticId ?? (content as any)?.info?.optimisticId,
     // Left as undefined since we need data from redux. This will be populated in a saga
     // as a post processing step
     sender: undefined,

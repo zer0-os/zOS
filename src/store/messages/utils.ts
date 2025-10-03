@@ -96,3 +96,22 @@ export function getFileType(file: File) {
 
   return FileType.Attachment;
 }
+
+type OrderableMessage = {
+  id: string;
+  createdAt: number;
+  clientSortKey?: number;
+};
+
+const getClientOrderKey = (message: OrderableMessage): number => {
+  return typeof message?.clientSortKey === 'number' ? message.clientSortKey : message.createdAt;
+};
+
+// Used to sort messages by clientSortKey, then createdAt, and then id
+export const compareMessagesByClientOrder = (a: OrderableMessage, b: OrderableMessage): number => {
+  const aKey = getClientOrderKey(a);
+  const bKey = getClientOrderKey(b);
+  if (aKey !== bKey) return aKey - bKey;
+  if (a.createdAt !== b.createdAt) return a.createdAt - b.createdAt;
+  return String(a.id).localeCompare(String(b.id));
+};

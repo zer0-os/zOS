@@ -7,6 +7,7 @@ import InvertedScroll from '../inverted-scroll';
 import { ConversationStatus, MessagesFetchState } from '../../store/channels';
 import { searchMentionableUsersForChannel } from '../../platform-apps/channels/util/api';
 import './styles.scss';
+import { compareMessagesByClientOrder } from '../../store/messages/utils';
 import { ChatSkeleton } from './chat-skeleton';
 import {
   createMessageGroups,
@@ -20,7 +21,6 @@ import {
 import { bemClassName } from '../../lib/bem';
 import { useDispatch, useSelector } from 'react-redux';
 import { useChannelSelector, useMessagesSelector, useUsersSelector } from '../../store/hooks';
-import { compareDatesAsc } from '../../lib/date';
 import { ChatMessage } from './chat-message';
 import { openLightbox } from '../../store/dialogs';
 import { AdminMessageContainer } from '../admin-message/container';
@@ -102,9 +102,7 @@ export const ChatView = React.forwardRef<InvertedScroll, Properties>(
     }, []);
 
     const sortMessages = useCallback((messagesToSort: MessageModel[]) => {
-      return [...messagesToSort].sort((a, b) =>
-        compareDatesAsc(new Date(a.createdAt).toISOString(), new Date(b.createdAt).toISOString())
-      );
+      return [...messagesToSort].sort(compareMessagesByClientOrder);
     }, []);
 
     const getOldestTimestamp = useCallback((messages: MessageModel[] = []): number => {

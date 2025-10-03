@@ -33,15 +33,6 @@ export function compareDatesDesc(a: string | number | Date, b: string | number |
   return -moment(a || BEGINNING_OF_TIME).diff(moment(b || BEGINNING_OF_TIME));
 }
 
-export function compareDatesAsc(a: string | number | Date, b: string | number | Date) {
-  const BEGINNING_OF_TIME = '1000-01-01';
-  return moment(a || BEGINNING_OF_TIME).diff(moment(b || BEGINNING_OF_TIME));
-}
-
-export function sortByCreatedAtAsc(a, b) {
-  return compareDatesAsc(a.createdAt, b.createdAt);
-}
-
 export function sortByCreatedAtDesc(a, b) {
   return compareDatesDesc(a.createdAt, b.createdAt);
 }

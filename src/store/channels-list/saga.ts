@@ -18,6 +18,7 @@ import Matrix from '../../lib/chat/matrix/matrix-client-instance';
 import { handleRoomDataEvents } from './event-type-handlers/handle-room-data-events';
 import { batchedUpdateLastMessage } from '../messages/saga';
 import { getUsersByUserIds } from '../users/saga';
+import { PresencePoller } from '../../lib/chat/presence-poller';
 
 export function* fetchChannels() {
   // Get initial channels from Matrix store for faster initial load
@@ -206,6 +207,20 @@ export function* roomGroupTypeChanged(id: string, type: string) {
   yield call(receiveChannel, { id, isSocialChannel: type === 'social' });
 }
 
+export function* setPresenceTargetsAfterRoomUpdate(channelId: string, members) {
+  const isDM = members.totalMembers === 2;
+  if (isDM) {
+    const otherMembersMatrixIds = members.otherMembers?.map((member) => member.matrixId) || [];
+    yield call(() => PresencePoller.addBaseTarget(otherMembersMatrixIds[0]));
+  }
+
+  const activeConversationId = yield select((state) => state.chat.activeConversationId);
+  if (activeConversationId === channelId) {
+    const otherMembersMatrixIds = members.otherMembers?.map((member) => member.matrixId) || [];
+    yield call(() => PresencePoller.setActiveRoomMembers(otherMembersMatrixIds));
+  }
+}
+
 const roomTimeouts = new Map<string, any>();
 function* processRoomUpdate(roomId: string) {
   const channel = yield select(channelSelector(roomId));
@@ -220,6 +235,8 @@ function* processRoomUpdate(roomId: string) {
       memberHistory: members.memberHistory,
       totalMembers: members.totalMembers,
     });
+
+    yield call(setPresenceTargetsAfterRoomUpdate, roomId, members);
   }
 }
 

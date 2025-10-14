@@ -27,13 +27,14 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
     profileImage,
     subhandle,
     isZeroProSubscriber,
+    presence,
   } = useProfileCard(userId);
 
   return (
     <div className={styles.Container} onClick={(e) => e.stopPropagation()}>
       <div className={styles.Header}>
         <div onClick={onClickAvatar} data-testid='profile-avatar'>
-          <MatrixAvatar className={styles.Avatar} imageURL={profileImage} size='regular' />
+          <MatrixAvatar className={styles.Avatar} imageURL={profileImage} size='regular' statusType={presence} />
         </div>
         {!isOwnProfile && !isLoading && (
           <div className={styles.Actions} data-testid='profile-actions'>

@@ -1,4 +1,5 @@
 import { User } from '../store/channels';
+import { isOlderThanMonths } from './date';
 
 export function displayName(user: User) {
   if (!user) {
@@ -21,4 +22,15 @@ export function getUserSubHandle(primaryZID: string, primaryWalletAddress: strin
   }
 
   return '';
+}
+
+export type PresenceStatusType = 'active' | 'offline' | undefined;
+
+export function getPresenceStatusType(user: User): PresenceStatusType {
+  const { isOnline, lastSeenAt } = user || ({} as any);
+  if (typeof isOnline !== 'boolean') return undefined;
+  try {
+    if (isOlderThanMonths(lastSeenAt, 2)) return undefined;
+  } catch {}
+  return isOnline ? 'active' : 'offline';
 }

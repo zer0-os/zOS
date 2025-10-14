@@ -7,6 +7,7 @@ import { MoreMenu } from './more-menu';
 import { MatrixAvatar } from '../../../matrix-avatar';
 
 import { IconBellOff1, IconZeroProVerified } from '@zero-tech/zui/icons';
+import { getPresenceStatusType } from '../../../../lib/user';
 
 import { bemClassName } from '../../../../lib/bem';
 import './conversation-item.scss';
@@ -150,6 +151,7 @@ export const ConversationItem = memo(
             tabIndex={-1}
             isRaised
             isGroup={!isOneOnOneConversation}
+            statusType={isOneOnOneConversation && user ? getPresenceStatusType(user) : undefined}
           />
           {renderMoreMenu()}
         </div>

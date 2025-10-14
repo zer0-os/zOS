@@ -1,7 +1,9 @@
 import { call, put, select, spawn, take, delay } from 'redux-saga/effects';
 import { schema, removeAll, receive } from '.';
-import { usersByMatrixIdsSelector, usersByUserIdsSelector } from './selectors';
+import { userByMatrixIdSelector, usersByMatrixIdsSelector, usersByUserIdsSelector } from './selectors';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
+import { Events as ChatEvents, getChatBus } from '../chat/bus';
+import { takeEveryFromBus } from '../../lib/saga';
 import { getZeroUsersQuery } from './queries/getZeroUsersQuery';
 import { queryClient } from '../../lib/web3/rainbowkit/provider';
 import { verifyMatrixProfileDisplayNameIsSynced as verifyMatrixProfileDisplayNameIsSyncedAPI } from '../../lib/chat';
@@ -32,6 +34,8 @@ function* listenForUserLogin() {
 
 export function* saga() {
   yield spawn(listenForUserLogin);
+  const chatBus = yield call(getChatBus);
+  yield takeEveryFromBus(chatBus, ChatEvents.UserPresenceChanged, userPresenceChangedAction);
 }
 
 /**
@@ -96,6 +100,17 @@ export function* getUserByMatrixId(matrixId: string) {
 
 let pendingMatrixIds = new Set<string>();
 let isProcessing = false;
+
+function* userPresenceChangedAction({
+  payload,
+}: {
+  payload: { matrixId: string; isOnline: boolean; lastSeenAt: string };
+}) {
+  const user = yield select(userByMatrixIdSelector, payload.matrixId);
+  if (!user) return;
+  yield put(receive({ userId: user.userId, isOnline: payload.isOnline, lastSeenAt: payload.lastSeenAt }));
+}
+
 /**
  * Batch processes matrix IDs by accumulating them and processing every 500ms
  * @param matrixId - matrix id to add to the batch

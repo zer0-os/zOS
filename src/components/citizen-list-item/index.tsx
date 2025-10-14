@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { User } from '../../store/channels';
 import { bemClassName } from '../../lib/bem';
-import { displayName } from '../../lib/user';
+import { displayName, getPresenceStatusType } from '../../lib/user';
 
 import './styles.scss';
 import { MemberManagementMenuContainer } from '../messenger/group-management/member-management-menu/container';
@@ -10,6 +10,7 @@ import { MatrixAvatar } from '../matrix-avatar';
 import { ProfileLinkNavigation } from '../profile-link-navigation';
 import { ProfileCardHover } from '../profile-card/hover';
 import { ZeroProBadge } from '../zero-pro-badge';
+
 const cn = bemClassName('citizen-list-item');
 
 export interface Properties {
@@ -63,10 +64,20 @@ export class CitizenListItem extends React.Component<Properties, State> {
               <ProfileCardHover
                 userId={this.props.user.primaryZID?.replace('0://', '') ?? this.props.user.zeroWalletAddress}
               >
-                <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
+                <MatrixAvatar
+                  size={'small'}
+                  imageURL={this.props.user.profileImage}
+                  tabIndex={-1}
+                  statusType={getPresenceStatusType(this.props.user)}
+                />
               </ProfileCardHover>
             ) : (
-              <MatrixAvatar size={'small'} imageURL={this.props.user.profileImage} tabIndex={-1} />
+              <MatrixAvatar
+                size={'small'}
+                imageURL={this.props.user.profileImage}
+                tabIndex={-1}
+                statusType={getPresenceStatusType(this.props.user)}
+              />
             )}
           </ProfileLinkNavigation>
           <div {...cn('text-container')}>

@@ -64,6 +64,8 @@ import { SlidingSyncManager } from './sliding-sync';
 import { ReactionEventContent, RoomMessageEventContent } from 'matrix-js-sdk/lib/types';
 import { RelationType } from 'matrix-js-sdk/lib/@types/event';
 import { MatrixInitializationError } from './matrix/errors';
+import { PresenceController } from './presence';
+import { PresencePoller } from './presence-poller';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
@@ -152,6 +154,8 @@ export class MatrixClient {
   async disconnect() {
     if (this.matrix) {
       try {
+        PresenceController.stop();
+        PresencePoller.stop();
         await this.matrix.logout(true);
         this.matrix.removeAllListeners();
         await this.matrix.store?.destroy();
@@ -1334,6 +1338,7 @@ export class MatrixClient {
   };
 
   private async initializeEventHandlers() {
+    this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
     this.matrix.on('event' as any, async ({ event }) => {
       this.debug('event: ', event);
       if (event.type === EventType.RoomEncryption) {
@@ -1356,6 +1361,16 @@ export class MatrixClient {
 
       if (event.type === EventType.Reaction) {
         this.publishReactionChange(event);
+      }
+
+      if (event.type === EventType.Presence) {
+        const content: any = event.content;
+
+        this.events.onUserPresenceChanged(
+          event.sender,
+          content?.presence === 'online',
+          content?.last_active_ago ? new Date(Date.now() - content.last_active_ago).toISOString() : ''
+        );
       }
 
       this.processMessageEvent(event);
@@ -1518,6 +1533,13 @@ export class MatrixClient {
       await this.matrix.startClient(startClientOpts);
       await this.waitForSync();
 
+      // Start presence controller to publish online/idle
+      PresenceController.start(this.matrix);
+      // Start lightweight presence poller; route updates through existing events API
+      PresencePoller.start(this.matrix, (matrixId, isOnline, lastSeenAt) => {
+        this.events.onUserPresenceChanged(matrixId, isOnline, lastSeenAt || '');
+      });
+
       /**
        * Temporary workaround to remove MatrixRTC from processing events.
        * There is a bug in the sdk that's not working properly with SlidingSync
@@ -1599,6 +1621,17 @@ export class MatrixClient {
       key: content[MatrixConstants.RELATES_TO].key,
     });
   }
+
+  private publishUserPresenceChange = (event: MatrixEvent) => {
+    if (event.getType() === EventType.Presence) {
+      const content = event.getContent() as any;
+      this.events.onUserPresenceChanged(
+        event.getSender(),
+        content?.presence === 'online',
+        content?.last_active_ago ? new Date(Date.now() - content.last_active_ago).toISOString() : ''
+      );
+    }
+  };
 
   private publishRoomMemberPowerLevelsChanged = (event: MatrixEvent, member: RoomMember) => {
     this.events.roomMemberPowerLevelChanged(member.roomId, member.userId, member.powerLevel);

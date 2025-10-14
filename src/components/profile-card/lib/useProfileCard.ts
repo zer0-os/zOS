@@ -4,13 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useFollow } from '../../../apps/profile/lib/useFollow';
 import { useOpenProfile } from '../../../apps/profile/lib/useOpenProfile';
 import { useProfile } from '../../../apps/profile/lib/useProfile';
-import { getUserSubHandle } from '../../../lib/user';
+import { getPresenceStatusType, getUserSubHandle } from '../../../lib/user';
 
 import { currentUserSelector } from '../../../store/authentication/selectors';
 import { allChannelsSelector } from '../../../store/channels/selectors';
 import { openConversation } from '../../../store/channels';
 import { createConversation } from '../../../store/create-conversation';
 import { isOneOnOne } from '../../../store/channels-list/utils';
+import { useUsersSelector } from '../../../store/hooks';
 
 export interface UseProfileCardReturn {
   followerCount?: string;
@@ -27,6 +28,7 @@ export interface UseProfileCardReturn {
   profileImage?: string;
   subhandle?: string;
   isZeroProSubscriber: boolean;
+  presence?: 'active' | 'offline';
 }
 
 export const useProfileCard = (userId: string): UseProfileCardReturn => {
@@ -36,6 +38,8 @@ export const useProfileCard = (userId: string): UseProfileCardReturn => {
   const { onOpenProfile } = useOpenProfile();
   const dispatch = useDispatch();
   const allChannels = useSelector(allChannelsSelector);
+  const users = useUsersSelector(data?.userId ? [data.userId] : []);
+  const user = users[0];
 
   const isOwnProfile = data?.userId === currentUser?.id;
 
@@ -81,5 +85,6 @@ export const useProfileCard = (userId: string): UseProfileCardReturn => {
     onClickFollow,
     profileImage: data?.profileImage,
     subhandle: data?.primaryZid ? `0://${data.primaryZid}` : getUserSubHandle(undefined, data?.publicAddress),
+    presence: getPresenceStatusType(user),
   };
 };

@@ -20,6 +20,7 @@ export interface RealtimeChatEvents {
   receiveUnreadCount: (channelId: string, unreadCount: { total: number; highlight: number }) => void;
   onUserJoinedChannel: (channelId: string) => void;
   onUserLeft: (channelId: string, userId: string) => void;
+  onUserPresenceChanged: (matrixId: string, isOnline: boolean, lastSeenAt: string) => void;
   onRoomNameChanged: (channelId: string, name: string) => void;
   onRoomAvatarChanged: (roomId: string, url: string) => void;
   onRoomGroupTypeChanged: (roomId: string, groupType: string) => void;

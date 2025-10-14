@@ -48,4 +48,5 @@ export const productionFlags: FeatureFlagDefinitions = {
       'd5c7b575-6daa-4859-8295-a92a3c9f8d29',
     ],
   },
+  enablePresence: { defaultValue: true },
 };

@@ -14,7 +14,8 @@ export type FeatureFlagKey =
   | 'enableCreateTGCChannel'
   | 'enableStaking'
   | 'enableUnstaking'
-  | 'enableDex';
+  | 'enableDex'
+  | 'enablePresence';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

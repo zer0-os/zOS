@@ -15,4 +15,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableStaking: { defaultValue: true },
   enableUnstaking: { defaultValue: true },
   enableDex: { defaultValue: true },
+  enablePresence: { defaultValue: true },
 };

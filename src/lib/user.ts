@@ -1,5 +1,6 @@
 import { User } from '../store/channels';
 import { isOlderThanMonths } from './date';
+import { featureFlags } from './feature-flags';
 
 export function displayName(user: User) {
   if (!user) {
@@ -27,6 +28,8 @@ export function getUserSubHandle(primaryZID: string, primaryWalletAddress: strin
 export type PresenceStatusType = 'active' | 'offline' | undefined;
 
 export function getPresenceStatusType(user: User): PresenceStatusType {
+  if (!featureFlags.enablePresence) return undefined;
+
   const { isOnline, lastSeenAt } = user || ({} as any);
   if (typeof isOnline !== 'boolean') return undefined;
   try {

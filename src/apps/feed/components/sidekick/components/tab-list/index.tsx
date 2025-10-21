@@ -2,9 +2,9 @@ import React, { useRef, useCallback, useEffect } from 'react';
 import styles from './styles.module.scss';
 
 export enum Tab {
-  Channels = 'channels',
+  Gated = 'gated',
   Explore = 'explore',
-  Airdrops = 'airdrops',
+  Channels = 'channels',
 }
 
 export interface TabData {

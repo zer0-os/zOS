@@ -248,6 +248,14 @@ export function* performValidateActiveConversation(activeConversationId: string)
   const originalPath = currentPath;
 
   if (!activeConversationId) {
+    const historyNow = yield call(getHistory);
+    // If the browser is already pointing at a concrete /conversation/:id route, treat that as source of truth.
+    if (/^\/conversation\/[^/]+/.test(historyNow.location.pathname)) {
+      // No Redux id yet, but URL already has one – let the corresponding
+      // messenger / channels app component fire the correct action.
+      return;
+    }
+
     yield put(clearJoinRoomErrorContent());
     yield call(openFirstConversation);
     return;
@@ -273,6 +281,13 @@ export function* performValidateActiveConversation(activeConversationId: string)
 
   const currentHistory = yield call(getHistory);
   const currentPathNow = currentHistory.location.pathname;
+  const expectedPath = `/conversation/${conversationId}`;
+
+  // If this conversation is unencrypted and validation started while the URL already pointed elsewhere,
+  // skip re-applying the state so we don't override the user's navigation.
+  if (conversation?.isEncrypted === false && originalPath !== expectedPath) {
+    return;
+  }
 
   // check if path has changed before setting active conversation
   if (currentPathNow === originalPath) {

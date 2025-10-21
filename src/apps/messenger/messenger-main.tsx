@@ -23,12 +23,19 @@ export class Container extends React.Component<Properties> {
   }
 
   componentDidMount(): void {
-    this.props.setActiveConversationId({ id: this.conversationId });
+    const id = this.conversationId;
+    // If there is a conversation id in the URL, validate that conversation.
+    // Otherwise trigger the default selection flow (openFirstConversation)
+    // by dispatching an empty id once on mount.
+    this.props.setActiveConversationId({ id: id ?? '' });
   }
 
   componentDidUpdate(prevProps: Properties): void {
     if (this.idChanged(prevProps)) {
-      this.props.setActiveConversationId({ id: this.conversationId });
+      const id = this.conversationId;
+      if (id) {
+        this.props.setActiveConversationId({ id });
+      }
     }
   }
 
@@ -41,7 +48,8 @@ export class Container extends React.Component<Properties> {
   }
 
   idFrom(props: Properties) {
-    return props.match?.params?.conversationId || '';
+    const id = props.match?.params?.conversationId;
+    return id || undefined;
   }
 
   render() {

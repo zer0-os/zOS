@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 
@@ -18,6 +18,7 @@ import { Panel, PanelHeader, PanelBody, PanelTitle } from '../../../../component
 import { ConversationActionsContainer } from '../../../../components/messenger/conversation-actions/container';
 
 import styles from '../feed-chat/styles.module.scss';
+import { useAutoFocus } from '../../../../lib/hooks/useAutoFocus';
 
 export const GroupChatContainer: React.FC<{ roomId: string }> = ({ roomId }) => {
   const dispatch = useDispatch();
@@ -26,7 +27,16 @@ export const GroupChatContainer: React.FC<{ roomId: string }> = ({ roomId }) => 
   const isJoiningConversation = useSelector(isJoiningConversationSelector);
   const channel = useSelector(channelSelector(activeConversationId));
 
+  const reply = useMemo(() => channel?.reply, [channel?.reply]);
+
   const chatViewContainerRef = useRef<any>(null);
+
+  // Ref to access the underlying textarea inside MessageInput so we can focus it when the active room changes
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useAutoFocus(messageInputRef, [activeConversationId]);
+  useAutoFocus(messageInputRef, [isJoiningConversation === false]);
+  useAutoFocus(messageInputRef, [reply]);
 
   useEffect(() => {
     if (roomId) {
@@ -108,10 +118,11 @@ export const GroupChatContainer: React.FC<{ roomId: string }> = ({ roomId }) => 
               <div className='direct-message-chat__footer'>
                 <div className={styles.FeedChatMessageInput}>
                   <MessageInput
+                    ref={messageInputRef}
                     id={activeConversationId}
                     onSubmit={handleSendMessage}
                     getUsersForMentions={searchMentionableUsers}
-                    reply={channel?.reply}
+                    reply={reply}
                     onRemoveReply={() => dispatch(onRemoveReply())}
                   />
                   {typingIndicators()}

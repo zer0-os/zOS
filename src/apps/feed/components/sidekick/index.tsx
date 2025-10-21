@@ -83,6 +83,16 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
     [conversations]
   );
 
+  // Apply search filter to unencrypted groups (Channels tab)
+  const filteredUnencryptedGroups = useMemo(() => {
+    const list = unencryptedGroups || [];
+    const query = search.toLowerCase();
+    if (!query.trim()) return list;
+    return list.filter(
+      (c) => (c.name ?? '').toLowerCase().includes(query) || (c.zid ?? '').toLowerCase().includes(query)
+    );
+  }, [unencryptedGroups, search]);
+
   const openConversationHandler = (conversationId: string) => {
     dispatch(openConversation({ conversationId }));
   };
@@ -137,8 +147,8 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
       case Tab.Channels:
         return (
           <div className={styles.ConversationList}>
-            {unencryptedGroups?.length === 0 && <div className={styles.EmptyState}>No channels found</div>}
-            {unencryptedGroups?.map((conversation) => (
+            {filteredUnencryptedGroups?.length === 0 && <div className={styles.EmptyState}>No channels found</div>}
+            {filteredUnencryptedGroups?.map((conversation) => (
               <ConversationItem
                 key={conversation.id}
                 conversation={conversation}

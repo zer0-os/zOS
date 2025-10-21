@@ -17,15 +17,9 @@ export interface LightboxProps {
   startingIndex?: number;
   hasActions?: boolean;
   onClose?: (e?: React.MouseEvent) => void;
-  provider: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fitWithinBox: (media: any) => any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getSource: (options: { src: string; options: any }) => string;
-  };
 }
 
-export const Lightbox = ({ items, startingIndex = 0, onClose, provider, hasActions = true }: LightboxProps) => {
+export const Lightbox = ({ items, startingIndex = 0, onClose, hasActions = true }: LightboxProps) => {
   const [index, setIndex] = useState(startingIndex);
   const [isCopied, setIsCopied] = useState(false);
   const currentItem = items[index];
@@ -113,10 +107,9 @@ export const Lightbox = ({ items, startingIndex = 0, onClose, provider, hasActio
     [items]
   );
 
-  const processedItems = items.map((media) => {
-    if (media.type === 'image') {
-      const options = provider.fitWithinBox(media);
-      return provider.getSource({ src: effectiveMediaUrl, options });
+  const processedItems = items.map((media, mediaIndex) => {
+    if (media.type === 'image' && mediaIndex === index) {
+      return effectiveMediaUrl || media.url;
     }
     return media.url;
   });

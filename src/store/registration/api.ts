@@ -1,6 +1,5 @@
-import * as Request from 'superagent';
 import { InviteCodeStatus } from '.';
-import { get, post } from '../../lib/api/rest';
+import { post } from '../../lib/api/rest';
 
 export async function validateInvite({ code }: { code: string }): Promise<string> {
   try {
@@ -118,33 +117,4 @@ export async function completeAccount({
     }
     throw error;
   }
-}
-
-// Note: mostly duplicated from the channel-list api. Find a common api file for this.
-interface ImageApiUploadResponse {
-  apiUrl: string;
-  query: string;
-}
-
-interface FileResult {
-  url: string;
-}
-
-// this is used to upload images to cloudinary
-export async function uploadImage(file: File): Promise<FileResult> {
-  const response = await get<ImageApiUploadResponse>('/upload/info');
-  const uploadInfo = response.body;
-
-  const uploadResponse = await Request.post(uploadInfo.apiUrl).attach('file', file).query(uploadInfo.query);
-
-  if (uploadResponse.status !== 200) {
-    throw new Error(
-      `Error uploading file [${uploadResponse.status}]: ${uploadResponse.data.error.message || 'No reason given'}`
-    );
-  }
-
-  const { body } = uploadResponse;
-
-  const url: string = body.secure_url || body.url;
-  return { url };
 }

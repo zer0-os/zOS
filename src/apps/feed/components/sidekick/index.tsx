@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useSidekick } from './lib/useSidekick';
 import { Input } from '@zero-tech/zui/components/Input/Input';
@@ -15,6 +15,14 @@ import { CreateChannelModal } from '../create-channel';
 import { TabList, Tab, TabData } from './components/tab-list';
 import { getLastActiveChannelsTab, setLastActiveChannelsTab } from '../../../../lib/last-channels-tab';
 import { FeedItem } from './components/feed-item';
+import { useDispatch, useSelector } from 'react-redux';
+import { allChannelsSelector } from '../../../../store/channels/selectors';
+import { DefaultRoomLabels, onAddLabel, onRemoveLabel, openConversation } from '../../../../store/channels';
+import { ConversationItem } from '../../../../components/messenger/list/conversation-item';
+import { userIdSelector } from '../../../../store/authentication/selectors';
+import { usersMapSelector } from '../../../../store/users/selectors';
+import { createSelector } from '@reduxjs/toolkit';
+import { activeConversationIdSelector } from '../../../../store/chat/selectors';
 
 import styles from './styles.module.scss';
 
@@ -25,22 +33,26 @@ const tabsData: TabData[] = [
     ariaLabel: 'Channels tab',
   },
   {
+    id: Tab.Gated,
+    label: 'Gated',
+    ariaLabel: 'Gated tab',
+  },
+  {
     id: Tab.Explore,
     label: 'Explore',
     ariaLabel: 'Explore tab',
   },
-  {
-    id: Tab.Airdrops,
-    label: 'Airdrops',
-    ariaLabel: 'Airdrops tab',
-  },
 ];
 
-export const Sidekick = () => {
+const selectGetUser = createSelector(usersMapSelector, (users: Record<string, any>) => (id: string) => users[id]);
+
+export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
+  const dispatch = useDispatch();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<Tab>(() => {
+    if (initialTab) return initialTab;
     const lastTab = getLastActiveChannelsTab();
-    return lastTab ? (lastTab as Tab) : Tab.Channels;
+    return (lastTab as Tab) || Tab.Channels;
   });
 
   const {
@@ -55,6 +67,33 @@ export const Sidekick = () => {
     memberCounts,
     tokenInfoMap,
   } = useSidekick();
+
+  const conversations = useSelector(allChannelsSelector);
+  const currentUserId = useSelector(userIdSelector);
+  const activeConversationId = useSelector(activeConversationIdSelector);
+  const getUser = useSelector(selectGetUser);
+
+  const unencryptedGroups = useMemo(
+    () =>
+      conversations
+        ?.filter(
+          (c) => !c.isSocialChannel && c.isEncrypted === false && !c.labels?.includes(DefaultRoomLabels.ARCHIVED)
+        )
+        .sort((a, b) => b.bumpStamp - a.bumpStamp),
+    [conversations]
+  );
+
+  const openConversationHandler = (conversationId: string) => {
+    dispatch(openConversation({ conversationId }));
+  };
+
+  const addLabelHandler = (roomId: string, label: string) => {
+    dispatch(onAddLabel({ roomId, label }));
+  };
+
+  const removeLabelHandler = (roomId: string, label: string) => {
+    dispatch(onRemoveLabel({ roomId, label }));
+  };
 
   const handleCreateChannel = () => {
     setIsCreateModalOpen(true);
@@ -84,7 +123,7 @@ export const Sidekick = () => {
 
   const renderContent = () => {
     switch (selectedTab) {
-      case Tab.Channels:
+      case Tab.Gated:
         return (
           <ul className={styles.List}>
             {isLoadingZids && <LoadingIndicator className={styles.LoadingIndicator} />}
@@ -94,6 +133,26 @@ export const Sidekick = () => {
             )}
             {renderFeedItems(usersChannels)}
           </ul>
+        );
+      case Tab.Channels:
+        return (
+          <div className={styles.ConversationList}>
+            {unencryptedGroups?.length === 0 && <div className={styles.EmptyState}>No channels found</div>}
+            {unencryptedGroups?.map((conversation) => (
+              <ConversationItem
+                key={conversation.id}
+                conversation={conversation}
+                filter=''
+                onClick={openConversationHandler}
+                currentUserId={currentUserId}
+                getUser={getUser}
+                activeConversationId={activeConversationId}
+                onAddLabel={addLabelHandler}
+                onRemoveLabel={removeLabelHandler}
+                isCollapsed={false}
+              />
+            ))}
+          </div>
         );
       case Tab.Explore:
         return (
@@ -105,12 +164,6 @@ export const Sidekick = () => {
             )}
             {renderFeedItems(allChannels)}
           </ul>
-        );
-      case Tab.Airdrops:
-        return (
-          <div className={styles.EmptyState}>
-            <span>Airdrops coming soon</span>
-          </div>
         );
       default:
         return null;

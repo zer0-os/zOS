@@ -83,3 +83,13 @@ export const makeGetChannelById = () => {
 export const socialChannelsSelector = createSelector([allDenormalizedChannelsSelector], (channels) =>
   channels.filter((channel) => channel.isSocialChannel && channel.zid)
 );
+
+// Map of channelId → NormalizedChannel for O(1) lookups, memoised across state changes
+export const channelMapSelector = createSelector([allChannelsSelector], (channels) => {
+  return new Map<string, NormalizedChannel>(channels.map((c) => [c.id, c]));
+});
+
+// Utility: true when a channel is encrypted (default) and not a social room
+export const isEncryptedNonSocial = (c?: NormalizedChannel | Channel | null): boolean => {
+  return !!c && !c.isSocialChannel && c.isEncrypted !== false;
+};

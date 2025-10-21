@@ -13,7 +13,10 @@ export const oauth2Link = async (provider: string, popup: boolean = true) => {
       url.searchParams.append('linkToken', linkToken);
       url.searchParams.append('returnUrl', returnUrl);
       if (popup) {
-        window.open(url.toString(), '_blank', 'width=800,height=900,popup');
+        const newWindow = window.open(url.toString(), '_blank', 'width=800,height=900,popup');
+        if (!newWindow) {
+          window.location.href = url.toString();
+        }
       } else {
         window.location.href = url.toString();
       }

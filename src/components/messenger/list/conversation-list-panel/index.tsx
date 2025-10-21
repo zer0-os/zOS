@@ -148,7 +148,8 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
   const filteredConversations = useMemo(() => {
     if (!filter) {
       return conversations.filter((conversation: NormalizedChannel) => {
-        const render = !conversation.isSocialChannel && 'bumpStamp' in conversation;
+        const render =
+          !conversation.isSocialChannel && (conversation.isEncrypted ?? true) && 'bumpStamp' in conversation;
         const labelMatch = getConversationsByLabel(tabLabelMap[selectedTab], conversation);
         return render && labelMatch;
       });

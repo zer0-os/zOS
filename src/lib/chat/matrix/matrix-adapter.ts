@@ -16,6 +16,7 @@ export class MatrixAdapter {
     const labels = Object.keys(room.tags || {});
     const [admins, mods] = Matrix.client.getRoomAdminsAndMods(room);
     const isSocialChannel = Matrix.client.getRoomGroupType(room) === 'social';
+    const isEncrypted = room?.hasEncryptionStateEvent?.() ?? false;
 
     const members = Matrix.client.getRoomMembers(room.roomId);
 
@@ -33,6 +34,7 @@ export class MatrixAdapter {
       moderatorIds: mods,
       labels,
       isSocialChannel,
+      isEncrypted,
       // this isn't the best way to get the zid as it relies on the name format, but it's a quick fix
       zid: isSocialChannel ? room.name?.split('://')[1] : null,
     };

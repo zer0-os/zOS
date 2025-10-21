@@ -35,6 +35,12 @@ vi.mock('./feed', () => ({
   },
 }));
 
+vi.mock('./conversation-router', () => ({
+  ConversationRouter: () => {
+    return <div data-testid='conversation-router' />;
+  },
+}));
+
 vi.mock('./profile', () => ({
   ProfileApp: () => {
     return <div data-testid='profile-app' />;
@@ -77,9 +83,9 @@ describe(AppRouter, () => {
     expect(screen.getByTestId('messenger-app')).toBeTruthy();
   });
 
-  it('should render MessengerMain component when route is /conversation/:conversationId', () => {
+  it('should render ConversationRouter when route is /conversation/:conversationId', () => {
     renderComponent('/conversation/123');
-    expect(screen.getByTestId('messenger-app')).toBeTruthy();
+    expect(screen.getByTestId('conversation-router')).toBeTruthy();
   });
 
   it('should redirect to / when route is invalid', () => {

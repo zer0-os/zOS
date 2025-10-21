@@ -6,6 +6,7 @@
 
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { MessengerApp } from './messenger';
+import { ConversationRouter } from './conversation-router';
 import { FeedApp } from './feed';
 import { ExplorerApp } from './explorer';
 import { NotificationsApp } from './notifications';
@@ -37,7 +38,7 @@ export const AppRouter = () => {
       <Sidekick />
 
       <Switch>
-        <Route path='/conversation/:conversationId' component={MessengerApp} />
+        <Route path='/conversation/:conversationId' component={ConversationRouter} />
         <Route path='/' exact component={MessengerApp} />
         <Route path='/home' component={HomeApp} />
         <Route path='/feed' component={FeedApp} />

@@ -1,4 +1,5 @@
 import { Switch, Route, Redirect, useRouteMatch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import { useOwnedZids } from '../../lib/hooks/useOwnedZids';
 import { parseWorldZid } from '../../lib/zid';
@@ -14,6 +15,8 @@ import { getLastActiveFeed } from '../../lib/last-feed';
 
 import styles from './styles.module.scss';
 import { MembersSidekick } from '../../components/sidekick/variants/members-sidekick';
+import { allChannelsSelector } from '../../store/channels/selectors';
+import { DefaultRoomLabels } from '../../store/channels';
 import { Panel } from '../../store/panels/constants';
 
 export const FeedApp = () => {
@@ -57,6 +60,7 @@ export const FeedApp = () => {
 };
 
 const Loading = () => {
+  const conversations = useSelector(allChannelsSelector);
   const { isLoading, zids } = useOwnedZids();
 
   if (isLoading) {
@@ -65,6 +69,16 @@ const Loading = () => {
         <IconSlashes /> Loading channels...
       </PanelBody>
     );
+  }
+
+  // Prefer opening the most recent unencrypted, non-social conversation in Channels app
+  const mostRecentUnencrypted = conversations
+    ?.filter((c) => !c.isSocialChannel && c.isEncrypted === false && !c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+    ?.sort((a, b) => b.bumpStamp - a.bumpStamp)
+    ?.at(0);
+
+  if (mostRecentUnencrypted) {
+    return <Redirect to={`/conversation/${mostRecentUnencrypted.id}`} />;
   }
 
   if (!zids?.length) {

@@ -144,8 +144,16 @@ function* addAdminUser() {
 
 // The selected conversation is managed via the URL
 export function* setActiveConversation(id: string) {
+  // Ignore empty or null IDs – nothing to route to.
+  if (!id) {
+    return;
+  }
+
   const history = yield call(getHistory);
-  history.push({ pathname: `/conversation/${id}` });
+  const expectedPath = `/conversation/${id}`;
+  if (history.location?.pathname !== expectedPath) {
+    history.push({ pathname: expectedPath });
+  }
 }
 
 export function* validateActiveConversation(conversationId: string) {

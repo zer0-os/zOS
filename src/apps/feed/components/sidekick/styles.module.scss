@@ -121,3 +121,10 @@
 .LoadingIndicator {
   margin-bottom: 10px;
 }
+
+.ConversationList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 16px 16px 16px;
+}

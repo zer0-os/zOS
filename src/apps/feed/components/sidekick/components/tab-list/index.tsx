@@ -3,7 +3,7 @@ import styles from './styles.module.scss';
 
 export enum Tab {
   Gated = 'gated',
-  Explore = 'explore',
+  Muted = 'muted',
   Channels = 'channels',
 }
 

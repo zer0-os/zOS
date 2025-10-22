@@ -28,6 +28,10 @@ export function monthsSince(theDate: string) {
   return Math.abs(moment(theDate).diff(Date.now(), 'months'));
 }
 
+export function minutesSince(theDate: string) {
+  return Math.abs(moment(theDate).diff(Date.now(), 'minutes'));
+}
+
 export function isOlderThanMonths(theDate?: string, months: number = 2) {
   if (!theDate) return false;
   return monthsSince(theDate) > months;

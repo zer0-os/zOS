@@ -12,16 +12,20 @@ export interface HeaderProps {
   end?: ReactNode;
   onClick?: () => void;
   title: ReactNode;
+  subtitle?: ReactNode;
 }
 
-export const Header = ({ className, end, onClick, title }: HeaderProps) => {
+export const Header = ({ className, end, onClick, subtitle, title }: HeaderProps) => {
   // If it's clickable, it should be a button
   const Details = onClick ? 'button' : 'div';
 
   return (
     <div className={classNames(styles.Header, className)}>
       <Details className={styles.Details} onClick={onClick}>
-        <PanelTitle>{title}</PanelTitle>
+        <div className={styles.TextContent}>
+          <PanelTitle>{title}</PanelTitle>
+          {subtitle && <div className={styles.Subtitle}>{subtitle}</div>}
+        </div>
       </Details>
       {end && <div className={styles.End}>{end}</div>}
     </div>

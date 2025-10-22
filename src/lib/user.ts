@@ -1,5 +1,5 @@
 import { User } from '../store/channels';
-import { isOlderThanMonths } from './date';
+import { isOlderThanMonths, minutesSince } from './date';
 import { featureFlags } from './feature-flags';
 
 export function displayName(user: User) {
@@ -25,15 +25,22 @@ export function getUserSubHandle(primaryZID: string, primaryWalletAddress: strin
   return '';
 }
 
-export type PresenceStatusType = 'active' | 'offline' | undefined;
+export type PresenceStatusType = 'active' | 'idle' | 'offline' | undefined;
 
 export function getPresenceStatusType(user: User): PresenceStatusType {
   if (!featureFlags.enablePresence) return undefined;
 
   const { isOnline, lastSeenAt } = user || ({} as any);
-  if (typeof isOnline !== 'boolean') return undefined;
-  try {
-    if (isOlderThanMonths(lastSeenAt, 2)) return undefined;
-  } catch {}
-  return isOnline ? 'active' : 'offline';
+  if (typeof isOnline !== 'boolean' || !lastSeenAt) return undefined;
+  if (isOlderThanMonths(lastSeenAt, 6)) return undefined;
+
+  if (isOnline) {
+    return 'active';
+  }
+
+  if (minutesSince(lastSeenAt) < 10) {
+    return 'idle';
+  }
+
+  return 'offline';
 }

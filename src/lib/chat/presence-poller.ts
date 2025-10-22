@@ -1,9 +1,11 @@
-import { MatrixClient as SDKMatrixClient } from 'matrix-js-sdk/lib/matrix';
+import { IStatusResponse, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk/lib/matrix';
 
 type PresenceInfo = { isOnline: boolean; lastSeenAt: string | null; ts: number };
 
 const POLL_INTERVAL_MS = 30 * 1000;
 const TTL_MS = 60 * 1000;
+// mark the user as online if they have been active within the last 2 minutes
+const RECENT_ACTIVITY_WINDOW_MS = 120 * 1000;
 const MAX_CONCURRENCY = 10;
 const MAX_TARGETS = 500; // cap to avoid large fanout
 
@@ -90,9 +92,10 @@ class PresencePollerImpl {
       await Promise.all(
         batch.map(async (matrixId) => {
           try {
-            const res: any = await (this.client as any).getPresence(matrixId);
-            const isOnline = res?.presence === 'online';
-            const lastSeenAt = res?.last_active_ago ? new Date(Date.now() - res.last_active_ago).toISOString() : null;
+            const res = await this.client.getPresence(matrixId);
+            const lastActiveAgo = typeof res?.last_active_ago === 'number' ? res.last_active_ago : null;
+            const lastSeenAt = lastActiveAgo !== null ? new Date(Date.now() - lastActiveAgo).toISOString() : null;
+            const isOnline = this.isOnline(res);
 
             const prev = this.cache.get(matrixId);
             this.cache.set(matrixId, { isOnline, lastSeenAt, ts: now });
@@ -103,6 +106,19 @@ class PresencePollerImpl {
         })
       );
     }
+  }
+
+  private isOnline(presence: IStatusResponse): boolean {
+    if (presence?.presence === 'online') {
+      return true;
+    }
+
+    const lastActiveAgo = typeof presence?.last_active_ago === 'number' ? presence.last_active_ago : null;
+    if (lastActiveAgo === null) {
+      return false;
+    }
+
+    return lastActiveAgo < RECENT_ACTIVITY_WINDOW_MS;
   }
 }
 

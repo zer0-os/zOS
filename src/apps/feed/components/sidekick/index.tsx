@@ -38,9 +38,9 @@ const tabsData: TabData[] = [
     ariaLabel: 'Gated tab',
   },
   {
-    id: Tab.Explore,
-    label: 'Explore',
-    ariaLabel: 'Explore tab',
+    id: Tab.Muted,
+    label: 'Muted',
+    ariaLabel: 'Muted tab',
   },
 ];
 
@@ -55,18 +55,8 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
     return (lastTab as Tab) || Tab.Channels;
   });
 
-  const {
-    isLoadingZids,
-    isErrorMine,
-    isErrorAll,
-    selectedZId,
-    usersChannels,
-    allChannels,
-    search,
-    setSearch,
-    memberCounts,
-    tokenInfoMap,
-  } = useSidekick();
+  const { isLoadingZids, isErrorMine, selectedZId, usersChannels, search, setSearch, memberCounts, tokenInfoMap } =
+    useSidekick();
 
   const conversations = useSelector(allChannelsSelector);
   const currentUserId = useSelector(userIdSelector);
@@ -77,8 +67,20 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
     () =>
       conversations
         ?.filter(
-          (c) => !c.isSocialChannel && c.isEncrypted === false && !c.labels?.includes(DefaultRoomLabels.ARCHIVED)
+          (c) =>
+            !c.isSocialChannel &&
+            c.isEncrypted === false &&
+            !c.labels?.includes(DefaultRoomLabels.ARCHIVED) &&
+            !c.labels?.includes(DefaultRoomLabels.MUTE)
         )
+        .sort((a, b) => b.bumpStamp - a.bumpStamp),
+    [conversations]
+  );
+
+  const mutedGroups = useMemo(
+    () =>
+      conversations
+        ?.filter((c) => c.labels?.includes(DefaultRoomLabels.MUTE))
         .sort((a, b) => b.bumpStamp - a.bumpStamp),
     [conversations]
   );
@@ -92,6 +94,15 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
       (c) => (c.name ?? '').toLowerCase().includes(query) || (c.zid ?? '').toLowerCase().includes(query)
     );
   }, [unencryptedGroups, search]);
+
+  const filteredMutedGroups = useMemo(() => {
+    const list = mutedGroups || [];
+    const query = search.toLowerCase();
+    if (!query.trim()) return list;
+    return list.filter(
+      (c) => (c.name ?? '').toLowerCase().includes(query) || (c.zid ?? '').toLowerCase().includes(query)
+    );
+  }, [mutedGroups, search]);
 
   const openConversationHandler = (conversationId: string) => {
     dispatch(openConversation({ conversationId }));
@@ -164,16 +175,25 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
             ))}
           </div>
         );
-      case Tab.Explore:
+      case Tab.Muted:
         return (
-          <ul className={styles.List}>
-            {isLoadingZids && <LoadingIndicator className={styles.LoadingIndicator} />}
-            {isErrorAll && <div className={styles.Error}>Error loading all channels</div>}
-            {!isLoadingZids && !isErrorAll && allChannels?.length === 0 && (
-              <div className={styles.EmptyState}>No channels found</div>
-            )}
-            {renderFeedItems(allChannels)}
-          </ul>
+          <div className={styles.ConversationList}>
+            {filteredMutedGroups?.length === 0 && <div className={styles.EmptyState}>No channels found</div>}
+            {filteredMutedGroups?.map((conversation) => (
+              <ConversationItem
+                key={conversation.id}
+                conversation={conversation}
+                filter=''
+                onClick={openConversationHandler}
+                currentUserId={currentUserId}
+                getUser={getUser}
+                activeConversationId={activeConversationId}
+                onAddLabel={addLabelHandler}
+                onRemoveLabel={removeLabelHandler}
+                isCollapsed={false}
+              />
+            ))}
+          </div>
         );
       default:
         return null;

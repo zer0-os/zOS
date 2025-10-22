@@ -149,21 +149,24 @@ export const ConversationListPanel: React.FC<Properties> = React.memo((props) =>
     if (!filter) {
       return conversations.filter((conversation: NormalizedChannel) => {
         const render =
-          !conversation.isSocialChannel && (conversation.isEncrypted ?? true) && 'bumpStamp' in conversation;
+          !conversation.isSocialChannel &&
+          (conversation.isEncrypted ?? true) &&
+          'bumpStamp' in conversation &&
+          !conversation.labels?.includes(DefaultRoomLabels.MUTE);
         const labelMatch = getConversationsByLabel(tabLabelMap[selectedTab], conversation);
         return render && labelMatch;
       });
     }
 
-    const archivedConversationIds = conversations
-      .filter((c) => c.labels?.includes(DefaultRoomLabels.ARCHIVED))
+    const archivedOrMutedConversationIds = conversations
+      .filter((c) => c.labels?.some((l) => l === DefaultRoomLabels.ARCHIVED || l === DefaultRoomLabels.MUTE))
       .map((c) => c.id);
 
     const searchRegEx = new RegExp(escapeRegExp(filter), 'i');
     const directMatches = getDirectMatches(conversations, searchRegEx);
     const indirectMatches = getIndirectMatches(conversations, searchRegEx);
 
-    return [...directMatches, ...indirectMatches].filter((c) => !archivedConversationIds.includes(c.id));
+    return [...directMatches, ...indirectMatches].filter((c) => !archivedOrMutedConversationIds.includes(c.id));
   }, [
     conversations,
     filter,

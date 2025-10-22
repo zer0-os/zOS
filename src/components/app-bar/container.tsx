@@ -13,6 +13,7 @@ import {
 import { activeConversationIdSelector } from '../../store/chat/selectors';
 import { hasActiveWalletSelector } from '../../store/wallet/selectors';
 import { activeZAppFeatureSelector } from '../../store/active-zapp/selectors';
+import { DefaultRoomLabels } from '../../store/channels';
 
 export const AppBar = () => {
   const {
@@ -47,12 +48,16 @@ const useAppBar = () => {
   const conversations = useSelector(allChannelsSelector);
   const conversationMap = useSelector(channelMapSelector);
 
-  const pickEncryptedId = (id?: string | null) =>
-    id && isEncryptedNonSocial(conversationMap.get(id)) ? id : undefined;
+  const isMuted = (conversation: any) => conversation?.labels?.includes(DefaultRoomLabels.MUTE);
+
+  const pickEncryptedId = (id?: string | null) => {
+    const conversation = id ? conversationMap.get(id) : undefined;
+    return id && isEncryptedNonSocial(conversation) && !isMuted(conversation) ? id : undefined;
+  };
 
   const firstEncryptedConversationId = useMemo(() => {
     for (const conversation of conversations ?? []) {
-      if (isEncryptedNonSocial(conversation)) {
+      if (isEncryptedNonSocial(conversation) && !isMuted(conversation)) {
         return conversation.id;
       }
     }
@@ -82,11 +87,8 @@ const useAppBar = () => {
 
   const activeApp = useMemo(() => {
     if (routeApp === 'conversation') {
-      if (routedConversation && !isEncryptedNonSocial(routedConversation)) {
-        // routed conversation is unencrypted → feed
-      }
       const unencryptedByRoute = routedConversation && !isEncryptedNonSocial(routedConversation);
-      if (unencryptedByRoute) {
+      if (unencryptedByRoute || isMuted(routedConversation)) {
         return 'feed';
       }
     }

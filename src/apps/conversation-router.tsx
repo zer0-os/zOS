@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { channelSelector } from '../store/channels/selectors';
 import { setActiveConversationId } from '../store/chat';
 import { RootState } from '../store/reducer';
+import { DefaultRoomLabels } from '../store/channels';
 
 import { MessengerApp } from './messenger';
 import { ChannelsGroupApp } from './feed/ChannelsGroupApp';
@@ -37,7 +38,7 @@ export const ConversationRouter: React.FC = () => {
     return <Redirect to={`/feed/${channel.zid}`} />;
   }
 
-  if (channel.isEncrypted === false) {
+  if (channel.isEncrypted === false || channel.labels?.includes(DefaultRoomLabels.MUTE)) {
     return <ChannelsGroupApp conversationId={conversationId} />;
   }
 

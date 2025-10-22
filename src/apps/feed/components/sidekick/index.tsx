@@ -226,7 +226,7 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
 
           <TabList selectedTab={selectedTab} onTabSelect={handleTabSelect} tabsData={tabsData} />
 
-          <SidekickScroll>{renderContent()}</SidekickScroll>
+          <SidekickScroll isScrollbarHidden={false}>{renderContent()}</SidekickScroll>
         </SidekickContent>
       </SidekickContentPortal>
     </>

@@ -24,6 +24,7 @@ export interface Properties {
   currentUserId: string;
   activeConversationId: string;
   isCollapsed: boolean;
+  hideMoreMenu?: boolean;
 
   getUser: GetUser;
   onClick: (conversationId: string) => void;
@@ -42,6 +43,7 @@ export const ConversationItem = memo(
     activeConversationId,
     isCollapsed,
     filter,
+    hideMoreMenu = false,
   }: Properties) => {
     const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
@@ -84,6 +86,10 @@ export const ConversationItem = memo(
     ]);
 
     const renderMoreMenu = () => {
+      if (hideMoreMenu) {
+        return null;
+      }
+
       const stopPropagation = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
       };
@@ -142,7 +148,7 @@ export const ConversationItem = memo(
         role='button'
         is-active={isActive.toString()}
         is-collapsed={isCollapsed ? '' : null}
-        onContextMenu={openContextMenu}
+        onContextMenu={hideMoreMenu ? undefined : openContextMenu}
       >
         <div {...cn('avatar-with-menu-container')}>
           <MatrixAvatar

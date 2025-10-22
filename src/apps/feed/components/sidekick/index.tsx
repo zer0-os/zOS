@@ -171,6 +171,7 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
                 onAddLabel={addLabelHandler}
                 onRemoveLabel={removeLabelHandler}
                 isCollapsed={false}
+                hideMoreMenu
               />
             ))}
           </div>
@@ -191,6 +192,7 @@ export const Sidekick = ({ initialTab }: { initialTab?: Tab } = {}) => {
                 onAddLabel={addLabelHandler}
                 onRemoveLabel={removeLabelHandler}
                 isCollapsed={false}
+                hideMoreMenu
               />
             ))}
           </div>

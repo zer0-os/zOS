@@ -28,7 +28,7 @@ export interface UseProfileCardReturn {
   profileImage?: string;
   subhandle?: string;
   isZeroProSubscriber: boolean;
-  presence?: 'active' | 'offline';
+  presence?: 'active' | 'idle' | 'offline';
 }
 
 export const useProfileCard = (userId: string): UseProfileCardReturn => {

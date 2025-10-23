@@ -59,26 +59,6 @@ describe('link-preview', () => {
     expect(wrapper.find('.link-preview__author-handle').text().trim()).toEqual('@BobCats');
   });
 
-  it('it does not include background option when not twitter preview', function () {
-    const url = 'http://example.com/thumbnail.jpg';
-
-    const wrapper = subject({
-      title: 'This is the best preview',
-      providerName: 'Google',
-      authorName: 'bob',
-      width: 325,
-      thumbnail: {
-        url,
-        width: 100,
-        height: 300,
-      },
-    });
-
-    const imageOptions: any = wrapper.find('.link-preview__banner-image').prop('options');
-
-    expect(imageOptions.background).toEqual(undefined);
-  });
-
   it('it renders thumbnail if provided', function () {
     const url = 'http://example.com/thumbnail.jpg';
 

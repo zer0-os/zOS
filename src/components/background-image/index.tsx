@@ -2,7 +2,6 @@ import { once } from 'lodash';
 import React from 'react';
 import classNames from 'classnames';
 import { loadImage } from '../../lib/load-image';
-import { ImageOptions } from '../../lib/cloudinary/types/image';
 import styles from './styles.module.css';
 
 export interface Properties {
@@ -10,7 +9,7 @@ export interface Properties {
   alwaysFadeIn?: boolean;
   fadeSpeed?: 'medium';
   className?: string;
-  options?: ImageOptions;
+  options?: any;
   onImageLoad?: () => void;
   children?: any;
   title?: string;
@@ -24,7 +23,6 @@ export interface Properties {
   style?: React.CSSProperties;
   local?: boolean;
 
-  provider: any;
   loadImage?: any;
 }
 
@@ -50,7 +48,7 @@ export class BackgroundImage extends React.Component<Properties> {
   }
 
   componentDidUpdate(nextProps: Properties) {
-    if (this.props.provider.getSourceUrl(this.props.source) !== this.props.provider.getSourceUrl(nextProps.source)) {
+    if (this.props.source !== nextProps.source) {
       this.transitionToNewImage(nextProps);
     }
 
@@ -139,12 +137,13 @@ export class BackgroundImage extends React.Component<Properties> {
   };
 
   downloadImage({ source, options, alwaysFadeIn }: Pick<Properties, 'source' | 'options' | 'alwaysFadeIn'>) {
+    void options;
     if (source.indexOf('blob:') >= 0 || this.props.local) {
       this.root._backgroundSrc = source;
       return this.onLoad(source, alwaysFadeIn);
     }
 
-    this.source = this.props.provider.getSource({ src: source, options });
+    this.source = source;
     this.root._backgroundSrc = this.source;
     if (this.source in cache || this.source.indexOf('data:') === 0) {
       alwaysFadeIn = alwaysFadeIn === undefined ? true : alwaysFadeIn;
@@ -187,7 +186,6 @@ export class BackgroundImage extends React.Component<Properties> {
     if (cacheImage) {
       this.setDimensions(cacheImage);
     }
-
     this.root.style.backgroundImage = `url("${encodeURI(source.replace('?dl=0', '?dl=1'))}")`;
     this.isIdle = true;
     this.setStyle();

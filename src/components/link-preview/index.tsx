@@ -2,7 +2,6 @@ import React from 'react';
 
 import classNames from 'classnames';
 import { LinkPreviewType } from '../../lib/link-preview';
-import { getProvider } from '../../lib/cloudinary/provider';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconLink1, IconXClose } from '@zero-tech/zui/icons';
 import { bemClassName } from '../../lib/bem';
@@ -101,20 +100,7 @@ export class LinkPreview extends React.Component<Properties> {
   }
 
   renderThumbnail(thumbnail) {
-    const options: any = {
-      width: this.width,
-      crop: 'fill',
-    };
-
-    return (
-      <BackgroundImage
-        {...cn('banner-image')}
-        source={thumbnail.url}
-        options={options}
-        provider={getProvider()}
-        autoHeight
-      />
-    );
+    return <BackgroundImage {...cn('banner-image')} source={thumbnail.url} autoHeight />;
   }
 
   render() {

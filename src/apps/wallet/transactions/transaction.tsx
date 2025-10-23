@@ -48,7 +48,7 @@ export const Transaction = ({ transaction }: TransactionProps) => {
           {transaction.tokenId && <div className={styles.tokenId}>#{transaction.tokenId}</div>}
           <div
             className={classNames(styles.tokenAmountUSD, {
-              [styles.positive]: isReceive,
+              [styles.positive]: isReceive && usdAmount !== '--',
             })}
           >
             {usdAmount === '--' ? usdAmount : isReceive ? `+${usdAmount}` : usdAmount}

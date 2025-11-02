@@ -48,6 +48,7 @@ export interface User {
     zeroPro?: boolean;
     wilderPro?: boolean;
   };
+  lastSeenAt?: string;
 }
 
 export interface AuthenticationState {

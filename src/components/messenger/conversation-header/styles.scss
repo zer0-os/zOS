@@ -6,4 +6,28 @@
   align-items: center;
 
   backdrop-filter: variables.$default-background-blur;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__text-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__title-text {
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__subtitle-text {
+    font-size: 10px;
+    opacity: 0.66;
+  }
 }

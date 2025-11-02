@@ -86,3 +86,14 @@
   align-items: center;
   justify-content: center;
 }
+
+.Avatar {
+  position: relative;
+
+  :global([class*='Status']) {
+    top: auto;
+    left: auto;
+    bottom: 1.5px;
+    right: 1.5px;
+  }
+}

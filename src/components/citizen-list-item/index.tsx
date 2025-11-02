@@ -10,6 +10,7 @@ import { MatrixAvatar } from '../matrix-avatar';
 import { ProfileLinkNavigation } from '../profile-link-navigation';
 import { ProfileCardHover } from '../profile-card/hover';
 import { ZeroProBadge } from '../zero-pro-badge';
+import { subHandleWithPresence } from '../messenger/list/utils/utils';
 
 const cn = bemClassName('citizen-list-item');
 
@@ -85,7 +86,7 @@ export class CitizenListItem extends React.Component<Properties, State> {
               <span {...cn('name')}>{displayName(this.props.user)}</span>
               {this.props.user?.subscriptions?.zeroPro && <ZeroProBadge size={16} />}
             </div>
-            <span {...cn('handle')}>{this.props.user.displaySubHandle}</span>
+            <span {...cn('handle')}>{subHandleWithPresence(this.props.user)}</span>
           </div>
         </div>
 

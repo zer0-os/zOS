@@ -1,4 +1,5 @@
 import { monthsSince, fromNow } from '../../../../lib/date';
+import { featureFlags } from '../../../../lib/feature-flags';
 import { User } from '../../../../store/channels';
 
 export function lastSeenText(user): string {
@@ -11,6 +12,25 @@ export function lastSeenText(user): string {
   }
 
   return fromNow(user.lastSeenAt);
+}
+
+export function subHandleWithPresence(user: User): string {
+  const subHandle = user?.displaySubHandle || '';
+  const presenceText = featureFlags.enablePresence ? (lastSeenText(user) || '').toLowerCase() : '';
+
+  if (subHandle && presenceText) {
+    return `${subHandle} | ${presenceText}`;
+  }
+
+  if (subHandle) {
+    return subHandle;
+  }
+
+  if (presenceText) {
+    return presenceText;
+  }
+
+  return '';
 }
 
 export function isUserAdmin(user: User, adminIds: string[]) {

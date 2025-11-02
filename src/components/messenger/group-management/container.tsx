@@ -73,6 +73,7 @@ export class Container extends React.Component<Properties> {
     const conversationModeratorIds = conversation?.moderatorIds;
     const isCurrentUserRoomAdmin = conversationAdminIds?.includes(currentUser?.matrixId) ?? false;
     const isCurrentUserRoomModerator = conversationModeratorIds?.includes(currentUser?.matrixId) ?? false;
+    const currentUserLastSeenAt = currentUser?.lastSeenAt || new Date().toISOString();
 
     return {
       activeConversationId,
@@ -89,11 +90,11 @@ export class Container extends React.Component<Properties> {
         lastName: currentUser?.profileSummary.lastName,
         profileImage: currentUser?.profileSummary.profileImage,
         matrixId: currentUser?.matrixId,
-        isOnline: currentUser?.isOnline || true,
+        isOnline: true,
         primaryZID: currentUser?.primaryZID,
         displaySubHandle: getUserSubHandle(currentUser?.primaryZID, currentUser?.primaryWalletAddress),
         profileId: currentUser?.profileId,
-        lastSeenAt: '',
+        lastSeenAt: currentUserLastSeenAt,
         subscriptions: currentUser?.subscriptions,
       } as User,
       otherMembers: conversation ? conversation.otherMembers : [],

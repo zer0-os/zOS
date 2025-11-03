@@ -41,12 +41,14 @@ export class ConversationHeader extends React.Component<Properties> {
       if (member) {
         return (
           <div {...cn('title')}>
-            <MatrixAvatar
-              size={'small'}
-              imageURL={member.profileImage}
-              tabIndex={-1}
-              statusType={getPresenceStatusType(member)}
-            />
+            <div {...cn('avatar-wrapper')}>
+              <MatrixAvatar
+                size={'small'}
+                imageURL={member.profileImage}
+                tabIndex={-1}
+                statusType={getPresenceStatusType(member)}
+              />
+            </div>
             <div {...cn('text-container')}>
               <span {...cn('title-text')}>{titleText}</span>
               <span {...cn('subtitle-text')}>{subHandleWithPresence(member)}</span>

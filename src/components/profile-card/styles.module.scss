@@ -90,6 +90,7 @@
 .Avatar {
   position: relative;
 
+  // TODO: move this to zUI Avatar component
   :global([class*='Status']) {
     top: auto;
     left: auto;

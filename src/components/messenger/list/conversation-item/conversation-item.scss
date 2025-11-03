@@ -188,6 +188,7 @@
     justify-content: center;
 
     // Target zUI Avatar status pill (class contains "Status")
+    // TODO: move this to zUI Avatar component
     [class*='Status'] {
       top: auto;
       left: auto;

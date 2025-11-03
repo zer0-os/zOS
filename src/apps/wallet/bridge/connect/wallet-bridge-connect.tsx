@@ -1,7 +1,7 @@
 import { useAccount, useDisconnect } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { getHistory } from '../../../../lib/browser';
-import { BridgeHeader } from '../components/bridge-header';
+import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { Button } from '../../components/button/button';
 import { truncateAddress } from '../../utils/address';
 

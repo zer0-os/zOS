@@ -18,6 +18,10 @@
   display: grid;
   gap: var(--l-spacing);
   grid-template-columns: 1fr 1fr;
+
+  &.enableBridge {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 
 .walletView {

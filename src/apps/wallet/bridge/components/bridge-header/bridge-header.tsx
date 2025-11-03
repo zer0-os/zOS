@@ -11,7 +11,7 @@ interface BridgeHeaderProps {
 
 export const BridgeHeader = ({ title, onBack, action }: BridgeHeaderProps) => {
   const back = () => {
-    onBack();
+    onBack?.();
   };
 
   return (

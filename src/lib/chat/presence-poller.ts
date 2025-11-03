@@ -2,7 +2,6 @@ import { IStatusResponse, MatrixClient as SDKMatrixClient } from 'matrix-js-sdk/
 
 type PresenceInfo = { isOnline: boolean; lastSeenAt: string | null; ts: number };
 
-const POLL_INTERVAL_MS = 30 * 1000;
 const TTL_MS = 60 * 1000;
 // mark the user as online if they have been active within the last 2 minutes
 const RECENT_ACTIVITY_WINDOW_MS = 120 * 1000;
@@ -12,11 +11,8 @@ const MAX_TARGETS = 500; // cap to avoid large fanout
 class PresencePollerImpl {
   private client: SDKMatrixClient | null = null;
   private onUpdate: ((matrixId: string, isOnline: boolean, lastSeenAt: string | null) => void) | null = null;
-  private intervalId: number | null = null;
   private cache = new Map<string, PresenceInfo>();
   private targets: string[] = [];
-  private baseTargets: string[] = [];
-  private activeTargets: string[] = [];
 
   start(
     client: SDKMatrixClient,
@@ -24,50 +20,28 @@ class PresencePollerImpl {
   ): void {
     this.client = client;
     this.onUpdate = onUpdate;
-    this.stop();
-    if (typeof window === 'undefined') return;
-    this.intervalId = window.setInterval(() => this.tick(), POLL_INTERVAL_MS);
-    this.combineTargets();
+    this.setTargets([]);
   }
 
   stop(): void {
-    if (this.intervalId) {
-      window.clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
     this.cache.clear();
     this.targets = [];
   }
 
-  private setTargets(matrixIds: string[]): void {
+  /**
+   * Sets the list of matrix IDs to poll for presence.
+   * Replaces the entire target list.
+   */
+  setTargets(matrixIds: string[]): void {
     const deduped = Array.from(new Set(matrixIds)).slice(0, MAX_TARGETS);
     this.targets = deduped;
   }
 
-  setBaseTargets(matrixIds: string[]): void {
-    this.baseTargets = Array.from(new Set(matrixIds));
-    this.combineTargets();
-    void this.fetchPresenceFor(matrixIds);
-  }
-
-  setActiveRoomMembers(matrixIds: string[]): void {
-    this.activeTargets = Array.from(new Set(matrixIds));
-    this.combineTargets();
-    void this.fetchPresenceFor(matrixIds);
-  }
-
-  addBaseTarget(matrixId: string): void {
-    if (this.baseTargets.includes(matrixId)) return;
-    this.baseTargets = Array.from(new Set([...this.baseTargets, matrixId]));
-    this.combineTargets();
-    void this.fetchPresenceFor([matrixId]);
-  }
-
-  private combineTargets(): void {
-    this.setTargets([...this.baseTargets, ...this.activeTargets]);
-  }
-
-  private async tick(): Promise<void> {
+  /**
+   * Fetches presence for new matrix IDs that aren't in cache or are stale.
+   * Called periodically (every 30s) to check for new/stale members.
+   */
+  async tick(): Promise<void> {
     if (!this.client || !this.onUpdate) return;
     if (typeof document !== 'undefined' && document.hidden) return;
 
@@ -81,6 +55,16 @@ class PresencePollerImpl {
     // limit concurrent requests
     const batch = stale.slice(0, MAX_CONCURRENCY);
     await this.fetchPresenceFor(batch);
+  }
+
+  /**
+   * Immediately fetches presence for specific matrix IDs, bypassing cache.
+   * Used when new members are added to eligible channels.
+   */
+  async fetchForNewMembers(matrixIds: string[]): Promise<void> {
+    if (!this.client || !this.onUpdate) return;
+    const ids = Array.from(new Set(matrixIds)).slice(0, MAX_TARGETS);
+    await this.fetchPresenceFor(ids);
   }
 
   private async fetchPresenceFor(matrixIds: string[]): Promise<void> {

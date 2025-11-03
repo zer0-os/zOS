@@ -1535,10 +1535,12 @@ export class MatrixClient {
 
       // Start presence controller to publish online/idle
       PresenceController.start(this.matrix);
-      // Start lightweight presence poller; route updates through existing events API
-      PresencePoller.start(this.matrix, (matrixId, isOnline, lastSeenAt) => {
-        this.events.onUserPresenceChanged(matrixId, isOnline, lastSeenAt || '');
-      });
+      // Start lightweight presence poller when the feature flag is enabled
+      if (featureFlags.enablePresence) {
+        PresencePoller.start(this.matrix, (matrixId, isOnline, lastSeenAt) => {
+          this.events.onUserPresenceChanged(matrixId, isOnline, lastSeenAt || '');
+        });
+      }
 
       /**
        * Temporary workaround to remove MatrixRTC from processing events.

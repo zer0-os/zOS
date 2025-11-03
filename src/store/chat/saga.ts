@@ -27,9 +27,7 @@ import { startPollingPosts } from '../posts/saga';
 import { allChannelsSelector, channelSelector } from '../channels/selectors';
 import { EventChannel } from 'redux-saga';
 import { MatrixInitializationError } from '../../lib/chat/matrix/errors';
-import { PresencePoller } from '../../lib/chat/presence-poller';
-import { isOneOnOne } from '../channels-list/utils';
-import { config } from '../../config';
+import { startPresencePollingAfterSetup, stopPresencePolling } from './saga.presence';
 
 function* initChat(userId: string, token: string) {
   const history = yield call(getHistory);
@@ -136,6 +134,7 @@ function* clearOnLogout() {
   yield put(rawSetActiveConversationId(null));
   yield put(setIsChatConnectionComplete(false));
   yield put(setIsConversationsLoaded(false));
+  yield call(stopPresencePolling);
 }
 
 function* addAdminUser() {
@@ -225,20 +224,6 @@ export function* setWhenUserJoinedRoom(conversationId: string) {
   yield put(rawSetActiveConversationId(conversationId));
 }
 
-let didSeedBaseTargets = false;
-export function* setPresenceTargets(conversation) {
-  if (!didSeedBaseTargets) {
-    didSeedBaseTargets = true;
-    const allChannels = yield select(allChannelsSelector);
-    const allMembersUserIds = allChannels.filter(isOneOnOne).flatMap((channel) => channel?.otherMembers || []);
-    const allMembersMatrixIds = allMembersUserIds.map((id) => `@${id}:${config.matrixHomeServerName}`);
-    yield call(() => PresencePoller.setBaseTargets(allMembersMatrixIds));
-  }
-
-  const otherMembersMatrixIds = conversation?.otherMembers?.map((member) => member.matrixId) || [];
-  yield call(() => PresencePoller.setActiveRoomMembers(otherMembersMatrixIds));
-}
-
 export function* performValidateActiveConversation(activeConversationId: string) {
   const history = yield call(getHistory);
   const currentPath = history.location.pathname;
@@ -281,7 +266,6 @@ export function* performValidateActiveConversation(activeConversationId: string)
     // Set up the conversation with necessary initialization steps
     yield call(addRoomToSync, conversationId);
     yield call(startPollingPosts, conversationId);
-    yield call(setPresenceTargets, conversation);
   }
 
   // Mark conversation as read, now that it has been set as active
@@ -307,4 +291,7 @@ export function* saga() {
   yield takeEveryFromBus(authBus, AuthEvents.UserLogin, addAdminUser);
 
   yield takeLatest(SagaActionTypes.CloseConversationErrorDialog, closeErrorDialog);
+
+  // Start presence polling after conversations are loaded
+  yield spawn(startPresencePollingAfterSetup);
 }

@@ -1,6 +1,7 @@
 import { Panel } from '../../components/layout/panel';
 import { Route, Switch } from 'react-router-dom';
 import { WalletSend } from './send/wallet-send';
+import { WalletBridge } from './bridge/wallet-bridge';
 
 import styles from './wallet-app.module.scss';
 import { WalletHome } from './home/wallet-home';
@@ -31,7 +32,7 @@ export const WalletApp = () => {
             </Route>
             {featureFlags.enableBridge && (
               <Route path={'/wallet/bridge'} exact>
-                {/* <WalletBridge /> */}
+                <WalletBridge />
               </Route>
             )}
             <Route path={'/wallet'}>

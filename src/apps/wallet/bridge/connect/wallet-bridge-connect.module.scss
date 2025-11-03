@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l-spacing);
+  flex: 1;
+  padding: 24px var(--l-spacing) 0 var(--l-spacing);
+}
+
+.connectWallet,
+.connectedWallet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--m-spacing);
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.icon {
+  color: var(--color-primary-6);
+}
+
+.connectWallet h3,
+.connectedWallet h3 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0%;
+}
+
+.connectWallet p,
+.connectedWallet p {
+  margin: 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: var(--text-secondary);
+}
+
+.walletAddress {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: 0%;
+  color: var(--text-primary);
+  background-color: var(--bg-accent-dark-blue);
+  padding: var(--s-spacing) var(--m-spacing);
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: var(--m-spacing);
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: var(--m-spacing);
+  width: 100%;
+}
+
+.buttonGroup button {
+  flex: 1;
+  max-width: 150px;
+}

@@ -18,7 +18,7 @@ import Matrix from '../../lib/chat/matrix/matrix-client-instance';
 import { handleRoomDataEvents } from './event-type-handlers/handle-room-data-events';
 import { batchedUpdateLastMessage } from '../messages/saga';
 import { getUsersByUserIds } from '../users/saga';
-import { PresencePoller } from '../../lib/chat/presence-poller';
+import { fetchPresenceForNewMembers, isEligibleForPresence } from '../chat/saga.presence';
 
 export function* fetchChannels() {
   // Get initial channels from Matrix store for faster initial load
@@ -207,17 +207,23 @@ export function* roomGroupTypeChanged(id: string, type: string) {
   yield call(receiveChannel, { id, isSocialChannel: type === 'social' });
 }
 
+/**
+ * Immediately fetches presence for new members when a channel becomes eligible.
+ * Called when:
+ * - A new DM is created
+ * - A group's member count changes and enters/exits the eligible range (<=15)
+ */
 export function* setPresenceTargetsAfterRoomUpdate(channelId: string, members) {
-  const isDM = members.totalMembers === 2;
-  if (isDM) {
-    const otherMembersMatrixIds = members.otherMembers?.map((member) => member.matrixId) || [];
-    yield call(() => PresencePoller.addBaseTarget(otherMembersMatrixIds[0]));
+  if (!isEligibleForPresence(members.totalMembers)) {
+    return;
   }
 
-  const activeConversationId = yield select((state) => state.chat.activeConversationId);
-  if (activeConversationId === channelId) {
-    const otherMembersMatrixIds = members.otherMembers?.map((member) => member.matrixId) || [];
-    yield call(() => PresencePoller.setActiveRoomMembers(otherMembersMatrixIds));
+  // Extract matrix IDs from otherMembers
+  const otherMembersMatrixIds = members.otherMembers?.map((member) => member.matrixId).filter(Boolean) || [];
+
+  if (otherMembersMatrixIds.length > 0) {
+    // Immediately fetch presence for these new members
+    yield call(fetchPresenceForNewMembers, otherMembersMatrixIds);
   }
 }
 

@@ -8,7 +8,7 @@ import { getAuthChannel, Events as AuthEvents } from '../authentication/channels
 const PRESENCE_POLL_INTERVAL_MS = 30 * 1000; // 30 seconds
 const MAX_GROUP_SIZE_FOR_PRESENCE = 15;
 
-const isEligibleForPresence = (totalMembers: number): boolean =>
+export const isEligibleForPresence = (totalMembers: number): boolean =>
   totalMembers === 2 || totalMembers <= MAX_GROUP_SIZE_FOR_PRESENCE;
 
 /**

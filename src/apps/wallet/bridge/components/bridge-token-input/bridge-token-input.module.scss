@@ -1,0 +1,135 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-spacing);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  border-top-right-radius: 14px;
+  border-top-left-radius: 14px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-accent-dark-blue);
+  padding: var(--s-spacing) 15px;
+  border-radius: 12px;
+}
+
+.label {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.chainNameLabel {
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.tokenSection {
+  padding: 12px var(--l-spacing);
+}
+
+.selectedToken,
+.selectTokenButton {
+  display: flex;
+  align-items: center;
+  gap: var(--s-spacing);
+  cursor: pointer;
+  padding: var(--s-spacing);
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.selectedToken:hover,
+.selectTokenButton:hover {
+  background-color: var(--bg-accent-dark-blue);
+}
+
+.tokenIcon {
+  width: 40px;
+  height: 40px;
+}
+
+.placeholderIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--bg-accent-dark-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tokenDetails {
+  flex: 1;
+}
+
+.tokenName {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.tokenSymbol {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.selectTokenText {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.chevron {
+  color: var(--text-secondary);
+  width: 16px;
+  height: 16px;
+}
+
+.inputSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-spacing);
+  padding: 0 var(--l-spacing);
+}
+
+.amountInput {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.balanceSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0 var(--l-spacing) 0;
+}
+
+.balanceLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.maxButtonContainer {
+  transform: scale(0.7);
+  transform-origin: center right;
+}
+
+.outputSection {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--l-spacing) var(--l-spacing) var(--l-spacing);
+}
+
+.amountDisplay {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}

@@ -1,0 +1,146 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--m-spacing);
+}
+
+.searchSection {
+  padding: var(--m-spacing) var(--l-spacing) 0 var(--l-spacing);
+}
+
+.searchInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  box-shadow: none;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary-6);
+    box-shadow: 0 0 0 2px rgba(1, 244, 203, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+}
+
+.tabs {
+  display: flex;
+  padding: 0 var(--l-spacing);
+  justify-content: space-between;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: var(--m-spacing) var(--l-spacing);
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--color-secondary-11);
+  }
+
+  &:hover {
+    color: var(--text-primary);
+  }
+}
+
+.chainFilter {
+  padding: 0;
+
+  > *:last-child {
+    > div {
+      min-width: 130px;
+    }
+  }
+}
+
+.tokenList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--l-spacing);
+}
+
+.tokenItem {
+  display: flex;
+  align-items: center;
+  gap: var(--l-spacing);
+  padding: var(--s-spacing) var(--l-spacing);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.tokenInfo {
+  overflow: hidden;
+  flex: 1;
+}
+
+.tokenName {
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tokenCount {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: var(--text-secondary);
+}
+
+.addTokenSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--l-spacing);
+  border-top: 1px solid var(--border-primary);
+}
+
+.tokenIcon {
+  width: 40px;
+  height: 40px;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--xl-spacing);
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+}

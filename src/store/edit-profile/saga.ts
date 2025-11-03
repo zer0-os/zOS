@@ -10,6 +10,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { currentUserSelector } from '../authentication/selectors';
 import { setUser } from '../authentication';
 import { uploadFile, editProfile as matrixEditProfile } from '../../lib/chat';
+import * as Sentry from '@sentry/react';
 
 export function* getLocalUrl(file) {
   if (!file) {
@@ -49,7 +50,7 @@ export function* editProfile(action) {
       return;
     }
   } catch (e) {
-    console.error(e);
+    Sentry.captureException(e);
     yield put(setErrors([ProfileDetailsErrors.UNKNOWN_ERROR]));
   }
 

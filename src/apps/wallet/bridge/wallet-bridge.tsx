@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
+import { BridgeParams } from './lib/utils';
 
 import { PanelBody } from '../../../components/layout/panel';
 import { WalletBridgeConnect } from './connect/wallet-bridge-connect';
+import { WalletBridgeAmount } from './amount/wallet-bridge-amount';
 
 import styles from './wallet-bridge.module.scss';
 
 export enum BridgeStage {
   Connect = 'connect',
+  Amount = 'amount',
 }
 
 export const WalletBridge = () => {
@@ -21,13 +24,22 @@ export const WalletBridge = () => {
     }
   }, [isConnected]);
 
-  const handleConnectNext = () => {
-    console.log('Connect stage completed');
+  const amountStage = () => {
+    setStage(BridgeStage.Amount);
+  };
+
+  const connectStage = () => {
+    setStage(BridgeStage.Connect);
+  };
+
+  const reviewStage = (params: BridgeParams) => {
+    console.log('to review stage', params);
   };
 
   return (
     <PanelBody className={styles.walletBridge}>
-      {stage === BridgeStage.Connect && <WalletBridgeConnect onNext={handleConnectNext} />}
+      {stage === BridgeStage.Connect && <WalletBridgeConnect onNext={amountStage} />}
+      {stage === BridgeStage.Amount && <WalletBridgeAmount onNext={reviewStage} onBack={connectStage} />}
     </PanelBody>
   );
 };

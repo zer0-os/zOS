@@ -4,6 +4,7 @@ import { allChannelsSelector } from '../channels/selectors';
 import { denormalize } from '../channels';
 import { ConversationEvents, getConversationsBus } from '../channels-list/channels';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
+import { featureFlags } from '../../lib/feature-flags';
 
 const PRESENCE_POLL_INTERVAL_MS = 30 * 1000; // 30 seconds
 const MAX_GROUP_SIZE_FOR_PRESENCE = 15;
@@ -80,6 +81,9 @@ function* waitForConversationsLoaded() {
  * Starts presence polling after conversations are loaded and members are available.
  */
 export function* startPresencePollingAfterSetup() {
+  if (!featureFlags.enablePresence) {
+    return;
+  }
   const conversationsLoaded = yield call(waitForConversationsLoaded);
   if (!conversationsLoaded) {
     return;

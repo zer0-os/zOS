@@ -10,10 +10,14 @@ interface BridgeHeaderProps {
 }
 
 export const BridgeHeader = ({ title, onBack, action }: BridgeHeaderProps) => {
+  const back = () => {
+    onBack();
+  };
+
   return (
     <div className={styles.header}>
       {onBack ? (
-        <IconButton Icon={IconChevronLeft} className={styles.backButton} onClick={() => onBack?.()} />
+        <IconButton Icon={IconChevronLeft} className={styles.backButton} onClick={back} />
       ) : (
         <span className={styles.headerSpacer} />
       )}

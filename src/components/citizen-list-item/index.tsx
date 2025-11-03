@@ -86,7 +86,7 @@ export class CitizenListItem extends React.Component<Properties, State> {
               <span {...cn('name')}>{displayName(this.props.user)}</span>
               {this.props.user?.subscriptions?.zeroPro && <ZeroProBadge size={16} />}
             </div>
-            <span {...cn('handle')}>{subHandleWithPresence(this.props.user)}</span>
+            <span {...cn('handle')}>{subHandleWithPresence(this.props.user, true)}</span>
           </div>
         </div>
 

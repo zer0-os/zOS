@@ -14,9 +14,17 @@ export function lastSeenText(user): string {
   return fromNow(user.lastSeenAt);
 }
 
-export function subHandleWithPresence(user: User): string {
-  const subHandle = user?.displaySubHandle || '';
+// Truncate long ZIDs to fit within UI
+export function truncateSubHandle(subHandle: string, maxLen = 14): string {
+  if (!subHandle) return '';
+  return subHandle.length > maxLen ? `${subHandle.slice(0, maxLen)}...` : subHandle;
+}
+
+export function subHandleWithPresence(user: User, truncate = false): string {
+  const rawSubHandle = user?.displaySubHandle || '';
   const presenceText = featureFlags.enablePresence ? (lastSeenText(user) || '').toLowerCase() : '';
+
+  const subHandle = truncate ? truncateSubHandle(rawSubHandle) : rawSubHandle;
 
   if (subHandle && presenceText) {
     return `${subHandle} | ${presenceText}`;

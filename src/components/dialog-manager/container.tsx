@@ -120,12 +120,6 @@ export class Container extends React.Component<Properties> {
   renderLightbox = (): JSX.Element => {
     return (
       <Lightbox
-        // since we are displaying images from a local blob url (instead of a cloudinary url),
-        // we need to provide a custom provider which just returns the src directly.
-        provider={{
-          fitWithinBox: () => {},
-          getSource: ({ src }) => src,
-        }}
         items={this.props.lightbox.media}
         startingIndex={this.props.lightbox.startingIndex}
         hasActions={this.props.lightbox.hasActions}

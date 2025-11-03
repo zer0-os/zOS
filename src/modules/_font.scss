@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
+
 $font-family: 'Inter Regular';
 
 @font-face {
   font-family: 'Inter Regular';
-  src: url(https://res.cloudinary.com/fact0ry/raw/upload/v1672127372/zero-assets/inter-regular.woff2) format('woff2');
+  src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrKp0V3Y1w6Wxhpw.woff2') format('woff2');
   font-style: normal;
   font-weight: 400;
 }

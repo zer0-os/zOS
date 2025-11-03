@@ -38,7 +38,7 @@ export const WalletHome = () => {
     <PanelBody className={styles.walletApp}>
       <div className={styles.header}>
         <ZeroCard displayName={userName} />
-        <div className={styles.actions}>
+        <div className={`${styles.actions}${featureFlags.enableBridge ? ` ${styles.enableBridge}` : ''}`}>
           <Button onClick={() => setOpenReceiveModal(true)} icon={<IconArrowDownLeft size={18} />} variant='secondary'>
             Receive
           </Button>

@@ -15,16 +15,16 @@ export function lastSeenText(user): string {
 }
 
 // Truncate long ZIDs to fit within UI
-export function truncateSubHandle(subHandle: string, maxLen = 18): string {
+export function truncateSubHandle(subHandle: string, maxLen = 14): string {
   if (!subHandle) return '';
   return subHandle.length > maxLen ? `${subHandle.slice(0, maxLen)}...` : subHandle;
 }
 
-export function subHandleWithPresence(user: User): string {
+export function subHandleWithPresence(user: User, truncate = false): string {
   const rawSubHandle = user?.displaySubHandle || '';
   const presenceText = featureFlags.enablePresence ? (lastSeenText(user) || '').toLowerCase() : '';
 
-  const subHandle = truncateSubHandle(rawSubHandle);
+  const subHandle = truncate ? truncateSubHandle(rawSubHandle) : rawSubHandle;
 
   if (subHandle && presenceText) {
     return `${subHandle} | ${presenceText}`;

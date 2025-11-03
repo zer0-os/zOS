@@ -57,36 +57,38 @@ export class CitizenListItem extends React.Component<Properties, State> {
         tabIndex={0}
       >
         <div {...cn('details')}>
-          <ProfileLinkNavigation
-            primaryZid={this.props.user.primaryZID}
-            thirdWebAddress={this.props.user.zeroWalletAddress}
-          >
-            {this.props.user.primaryZID || this.props.user.zeroWalletAddress ? (
-              <ProfileCardHover
-                userId={this.props.user.primaryZID?.replace('0://', '') ?? this.props.user.zeroWalletAddress}
-              >
+          <div {...cn('avatar-wrapper')}>
+            <ProfileLinkNavigation
+              primaryZid={this.props.user.primaryZID}
+              thirdWebAddress={this.props.user.zeroWalletAddress}
+            >
+              {this.props.user.primaryZID || this.props.user.zeroWalletAddress ? (
+                <ProfileCardHover
+                  userId={this.props.user.primaryZID?.replace('0://', '') ?? this.props.user.zeroWalletAddress}
+                >
+                  <MatrixAvatar
+                    size={'small'}
+                    imageURL={this.props.user.profileImage}
+                    tabIndex={-1}
+                    statusType={getPresenceStatusType(this.props.user)}
+                  />
+                </ProfileCardHover>
+              ) : (
                 <MatrixAvatar
                   size={'small'}
                   imageURL={this.props.user.profileImage}
                   tabIndex={-1}
                   statusType={getPresenceStatusType(this.props.user)}
                 />
-              </ProfileCardHover>
-            ) : (
-              <MatrixAvatar
-                size={'small'}
-                imageURL={this.props.user.profileImage}
-                tabIndex={-1}
-                statusType={getPresenceStatusType(this.props.user)}
-              />
-            )}
-          </ProfileLinkNavigation>
+              )}
+            </ProfileLinkNavigation>
+          </div>
           <div {...cn('text-container')}>
             <div {...cn('name-container')}>
               <span {...cn('name')}>{displayName(this.props.user)}</span>
               {this.props.user?.subscriptions?.zeroPro && <ZeroProBadge size={16} />}
             </div>
-            <span {...cn('handle')}>{subHandleWithPresence(this.props.user, true)}</span>
+            <span {...cn('handle')}>{subHandleWithPresence(this.props.user)}</span>
           </div>
         </div>
 

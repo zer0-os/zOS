@@ -1,4 +1,5 @@
-import { select, call, delay, spawn, take, race } from 'redux-saga/effects';
+import { select, call, delay, spawn, take, race, cancel } from 'redux-saga/effects';
+import type { Task } from 'redux-saga';
 import { PresencePoller } from '../../lib/chat/presence-poller';
 import { allChannelsSelector } from '../channels/selectors';
 import { denormalize } from '../channels';
@@ -8,6 +9,9 @@ import { featureFlags } from '../../lib/feature-flags';
 
 const PRESENCE_POLL_INTERVAL_MS = 30 * 1000; // 30 seconds
 const MAX_GROUP_SIZE_FOR_PRESENCE = 15;
+
+// Keep reference to the running polling task so we can cancel it on logout
+let pollingTask: Task | null = null;
 
 export const isEligibleForPresence = (totalMembers: number): boolean =>
   totalMembers === 2 || totalMembers <= MAX_GROUP_SIZE_FOR_PRESENCE;
@@ -93,7 +97,11 @@ export function* startPresencePollingAfterSetup() {
   yield delay(2000);
 
   yield call(updateAndPollPresence);
-  yield spawn(syncPresencePolling);
+
+  // Start polling loop once; guard against double-spawns on fast re-login
+  if (!pollingTask) {
+    pollingTask = yield spawn(syncPresencePolling);
+  }
 }
 
 /**
@@ -111,5 +119,10 @@ export function* fetchPresenceForNewMembers(matrixIds: string[]) {
  * Stops presence polling. Called on logout.
  */
 export function* stopPresencePolling() {
+  if (pollingTask) {
+    yield cancel(pollingTask);
+    pollingTask = null;
+  }
+
   yield call(() => PresencePoller.stop());
 }

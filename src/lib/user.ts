@@ -1,4 +1,4 @@
-import { User } from '../store/channels';
+import { User, NormalizedChannel } from '../store/channels';
 import { isOlderThanMonths, minutesSince } from './date';
 import { featureFlags } from './feature-flags';
 
@@ -43,4 +43,32 @@ export function getPresenceStatusType(user: User): PresenceStatusType {
   }
 
   return 'offline';
+}
+
+/*
+ * Get the presence status for a conversation.
+ * - Large groups are heuristically online
+ * - Small groups are derived from members presence statuses
+ */
+export function getPresenceStatusForConversation(
+  conversation: NormalizedChannel,
+  getUser: (id: string) => User | undefined
+): PresenceStatusType {
+  if (!featureFlags.enablePresence) return undefined;
+
+  const totalMembers = conversation.totalMembers ?? conversation.otherMembers.length + 1;
+
+  // Large group heuristic
+  if (totalMembers > 15) return 'active';
+
+  const memberStatuses = conversation.otherMembers.map((memberId) => {
+    const m = getUser(memberId);
+    return m ? getPresenceStatusType(m) : undefined;
+  });
+
+  if (memberStatuses.some((s) => s === 'active')) return 'active';
+  if (memberStatuses.some((s) => s === 'idle')) return 'idle';
+  if (memberStatuses.some((s) => s === 'offline')) return 'offline';
+
+  return undefined;
 }

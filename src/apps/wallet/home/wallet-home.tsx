@@ -1,4 +1,4 @@
-import { IconArrowDownLeft, IconArrowUpRight } from '@zero-tech/zui/icons';
+import { IconArrowDownLeft, IconArrowUpRight, IconArrowRight } from '@zero-tech/zui/icons';
 import { ZeroCard } from '../components/zero-card/zero-card';
 import { TokensList } from '../tokens/tokens-list';
 import { PanelBody } from '../../../components/layout/panel';
@@ -30,6 +30,10 @@ export const WalletHome = () => {
     history.push('/wallet/send');
   };
 
+  const handleBridge = () => {
+    history.push('/wallet/bridge');
+  };
+
   return (
     <PanelBody className={styles.walletApp}>
       <div className={styles.header}>
@@ -41,6 +45,11 @@ export const WalletHome = () => {
           <Button onClick={handleSend} icon={<IconArrowUpRight size={18} />} variant='secondary'>
             Send
           </Button>
+          {featureFlags.enableBridge && (
+            <Button onClick={handleBridge} icon={<IconArrowRight size={18} />} variant='secondary'>
+              Bridge
+            </Button>
+          )}
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { reset } from '../../store/wallet';
 import { errorSelector } from '../../store/wallet/selectors';
 import { WalletErrorView } from './error/wallet-error-view';
+import { featureFlags } from '../../lib/feature-flags';
 
 export const WalletApp = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,11 @@ export const WalletApp = () => {
             <Route path={'/wallet/send'} exact>
               <WalletSend />
             </Route>
+            {featureFlags.enableBridge && (
+              <Route path={'/wallet/bridge'} exact>
+                {/* <WalletBridge /> */}
+              </Route>
+            )}
             <Route path={'/wallet'}>
               <WalletHome />
             </Route>

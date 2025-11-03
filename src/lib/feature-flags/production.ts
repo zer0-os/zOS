@@ -49,4 +49,20 @@ export const productionFlags: FeatureFlagDefinitions = {
     ],
   },
   enablePresence: { defaultValue: true },
+  enableBridge: {
+    defaultValue: false,
+    allowedUserIds: [
+      'dca9d449-548b-4fc9-8411-aab7b48bffc0',
+      'f977959f-08db-4e09-b730-b5d7a6577481',
+      'bcdcdf9b-e278-43c5-ac34-07a21689ab01',
+      '2458fd9f-1a02-4c97-8166-a717cee8b51c',
+      'd48b604e-a297-4e88-baaa-e3f989b52f35',
+      'a8df265e-5e4c-46e9-a6e5-9da8684f96ac',
+      '93ee6c6e-cf5a-44ea-9f27-7f29c3cc221d',
+      '8bed44f1-7886-4607-ad33-0279c077ee41',
+      '2791334a-f48a-4aa3-88bf-26933c206d2f',
+      '6c346b38-a724-4375-b8b3-47ef2952ca03',
+      'd5c7b575-6daa-4859-8295-a92a3c9f8d29',
+    ],
+  },
 };

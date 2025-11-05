@@ -129,10 +129,25 @@ export const WalletBridgeAmount = ({ onNext, onBack }: WalletBridgeAmountProps) 
     if (!fromToken || !toToken || !amount) return;
 
     const bridgeParams: BridgeParams = {
-      tokenAddress: fromToken.tokenAddress!,
       amount,
       fromChainId: fromToken.chainId!,
       toChainId: toToken.chainId!,
+      fromWalletAddress: fromWalletAddress || undefined,
+      toWalletAddress: toWalletAddress || undefined,
+      fromToken: {
+        symbol: fromToken.symbol,
+        name: fromToken.name,
+        tokenAddress: fromToken.tokenAddress!,
+        logoUrl: fromToken.logoUrl,
+        decimals: fromToken.decimals,
+      },
+      toToken: {
+        symbol: toToken.symbol,
+        name: toToken.name,
+        tokenAddress: toToken.tokenAddress!,
+        logoUrl: toToken.logoUrl,
+        decimals: toToken.decimals,
+      },
     };
 
     onNext(bridgeParams);

@@ -1,8 +1,23 @@
 export interface BridgeParams {
-  tokenAddress: string;
   amount: string;
   fromChainId: number;
   toChainId: number;
+  fromWalletAddress?: string;
+  toWalletAddress?: string;
+  fromToken?: {
+    symbol: string;
+    name: string;
+    tokenAddress: string;
+    logoUrl?: string;
+    decimals?: number;
+  };
+  toToken?: {
+    symbol: string;
+    name: string;
+    tokenAddress: string;
+    logoUrl?: string;
+    decimals?: number;
+  };
 }
 
 export const CHAIN_ID_ETHEREUM = 1;

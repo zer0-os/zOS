@@ -2,7 +2,7 @@ import { Input, IconButton } from '@zero-tech/zui/components';
 import { Button } from '../../../components/button/button';
 import { TokenIcon } from '../../../components/token-icon/token-icon';
 import { IconChevronRight, IconLinkExternal1 } from '@zero-tech/zui/icons';
-import { CHAIN_NAMES, formatAmount, formatAddress, getExplorerAddressUrl, ZERO_ADDRESS } from '../../lib/utils';
+import { CHAIN_NAMES, formatAmount, formatAddress, openExplorerForAddress } from '../../lib/utils';
 
 import styles from './bridge-token-input.module.scss';
 
@@ -42,13 +42,7 @@ export const BridgeTokenInput = ({
   const chainName = selectedToken?.chainId ? CHAIN_NAMES[selectedToken.chainId] : null;
 
   const onExternalLink = () => {
-    if (!walletAddress || !selectedToken?.chainId || walletAddress === ZERO_ADDRESS) {
-      return;
-    }
-    const url = getExplorerAddressUrl(walletAddress, selectedToken.chainId);
-    if (url) {
-      window.open(url, '_blank');
-    }
+    openExplorerForAddress(walletAddress, selectedToken?.chainId);
   };
 
   return (

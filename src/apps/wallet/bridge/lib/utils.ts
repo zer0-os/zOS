@@ -168,6 +168,18 @@ export function getExplorerAddressUrl(address: string, chainId: number): string 
   return baseUrl ? `${baseUrl}${address}` : '';
 }
 
+export function openExplorerForAddress(address: string | undefined, chainId: number | undefined): boolean {
+  if (!address || !chainId || address === ZERO_ADDRESS) {
+    return false;
+  }
+  const url = getExplorerAddressUrl(address, chainId);
+  if (url) {
+    window.open(url, '_blank');
+    return true;
+  }
+  return false;
+}
+
 export function getWalletAddressForChain(
   chainId: number | undefined,
   eoaAddress: string | undefined,

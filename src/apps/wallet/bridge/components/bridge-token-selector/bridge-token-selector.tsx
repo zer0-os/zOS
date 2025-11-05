@@ -2,13 +2,20 @@ import { useMemo, useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useSelector } from 'react-redux';
 
-import { Input, SelectInput } from '@zero-tech/zui/components';
-import { IconSearchMd } from '@zero-tech/zui/icons';
+import { Input, SelectInput, IconButton } from '@zero-tech/zui/components';
+import { IconSearchMd, IconLinkExternal1 } from '@zero-tech/zui/icons';
 import { Button } from '../../../components/button/button';
 import { TokenIcon } from '../../../components/token-icon/token-icon';
 import { TokenBalance } from '../../../types';
 import { BridgeBottomSheet } from '../bridge-bottom-sheet/bridge-bottom-sheet';
-import { formatAmount, getWalletAddressForChain, getAvailableChainsForBridge } from '../../lib/utils';
+import {
+  formatAmount,
+  getWalletAddressForChain,
+  getAvailableChainsForBridge,
+  formatAddress,
+  openExplorerForAddress,
+  ZERO_ADDRESS,
+} from '../../lib/utils';
 import { useFetchTokenBalance } from '../../hooks/useFetchTokenBalance';
 import { useTokenSearch } from '../../hooks/useTokenSearch';
 import { currentUserSelector } from '../../../../../store/authentication/selectors';
@@ -102,6 +109,10 @@ export const BridgeTokenSelector = ({
     setSearchQuery('');
   };
 
+  const handleExternalLink = () => {
+    openExplorerForAddress(selectedChainWalletAddress, selectedChainId);
+  };
+
   const content = (
     <div className={styles.container}>
       <div className={styles.searchSection}>
@@ -120,6 +131,19 @@ export const BridgeTokenSelector = ({
       <div className={styles.tabs}>
         <button className={`${styles.tab} ${styles.active}`}>Tokens</button>
         <div className={styles.chainFilter}>
+          {selectedChainWalletAddress && (
+            <div className={styles.walletAddressContainer}>
+              <span className={styles.walletAddress}>{formatAddress(selectedChainWalletAddress)}</span>
+              {selectedChainId && selectedChainWalletAddress !== ZERO_ADDRESS && (
+                <IconButton
+                  Icon={IconLinkExternal1}
+                  onClick={handleExternalLink}
+                  aria-label='View on explorer'
+                  size={16}
+                />
+              )}
+            </div>
+          )}
           <SelectInput
             items={chainItems}
             label=''

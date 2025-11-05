@@ -66,12 +66,26 @@
 
 .chainFilter {
   padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-spacing);
 
   > *:last-child {
     > div {
       min-width: 130px;
     }
   }
+}
+
+.walletAddressContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.walletAddress {
+  font-size: 14px;
+  color: var(--text-primary);
 }
 
 .tokenList {

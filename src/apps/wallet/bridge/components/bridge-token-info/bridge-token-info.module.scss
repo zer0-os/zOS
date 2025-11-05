@@ -1,0 +1,39 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-spacing);
+  padding: var(--l-spacing);
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-primary);
+  margin-top: var(--m-spacing);
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--m-spacing);
+  font-size: 14px;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 140px;
+}
+
+.addressContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--s-spacing);
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.address {
+  color: var(--text-primary);
+  font-size: 13px;
+}

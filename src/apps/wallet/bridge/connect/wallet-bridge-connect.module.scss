@@ -13,7 +13,8 @@
 }
 
 .connectWallet,
-.connectedWallet {
+.connectedWallet,
+.unsupportedChain {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,6 +22,28 @@
   text-align: center;
   max-width: 400px;
   margin: 0 auto;
+}
+
+.unsupportedChain {
+  color: var(--color-failure-11);
+}
+
+.unsupportedChain h3 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: var(--color-failure-11);
+}
+
+.unsupportedChain p {
+  margin: 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: var(--text-secondary);
 }
 
 .icon {

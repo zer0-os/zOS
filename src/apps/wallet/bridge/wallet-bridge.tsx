@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import { BridgeParams } from './lib/utils';
+import { BridgeParams, isSupportedBridgeChain } from './lib/utils';
 
 import { PanelBody } from '../../../components/layout/panel';
 import { WalletBridgeConnect } from './connect/wallet-bridge-connect';
@@ -14,15 +14,15 @@ export enum BridgeStage {
 }
 
 export const WalletBridge = () => {
-  const { isConnected } = useAccount();
+  const { isConnected, chainId } = useAccount();
   const [stage, setStage] = useState<BridgeStage>(BridgeStage.Connect);
 
-  // Reset to connect stage if wallet gets disconnected
+  // Reset to connect stage if wallet gets disconnected or chain becomes unsupported
   useEffect(() => {
-    if (!isConnected) {
+    if (!isConnected || !isSupportedBridgeChain(chainId)) {
       setStage(BridgeStage.Connect);
     }
-  }, [isConnected]);
+  }, [isConnected, chainId]);
 
   const amountStage = () => {
     setStage(BridgeStage.Amount);

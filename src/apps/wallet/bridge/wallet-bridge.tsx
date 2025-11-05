@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
-import { BridgeParams, isSupportedBridgeChain } from './lib/utils';
+import { useSelector } from 'react-redux';
+import { BridgeParams, isSupportedBridgeChain, mapActivityToBridgeParams } from './lib/utils';
+import { currentUserSelector } from '../../../store/authentication/selectors';
 
 import { PanelBody } from '../../../components/layout/panel';
 import { WalletBridgeConnect } from './connect/wallet-bridge-connect';
@@ -9,6 +11,8 @@ import { WalletBridgeReview } from './review/wallet-bridge-review';
 import { WalletBridgeProcessing } from './processing/wallet-bridge-processing';
 import { WalletBridgeSuccess } from './success/wallet-bridge-success';
 import { WalletBridgeError } from './error/wallet-bridge-error';
+import { WalletBridgeActivity } from './activity/wallet-bridge-activity';
+import { BridgeStatusResponse } from '../queries/bridgeQueries';
 
 import styles from './wallet-bridge.module.scss';
 
@@ -19,10 +23,13 @@ export enum BridgeStage {
   Processing = 'processing',
   Success = 'success',
   Error = 'error',
+  Activity = 'activity',
 }
 
 export const WalletBridge = () => {
   const { isConnected, chainId } = useAccount();
+  const currentUser = useSelector(currentUserSelector);
+  const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const [stage, setStage] = useState<BridgeStage>(BridgeStage.Connect);
   const [bridgeParams, setBridgeParams] = useState<BridgeParams | null>(null);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
@@ -82,9 +89,25 @@ export const WalletBridge = () => {
     setStage(BridgeStage.Connect);
   };
 
+  const activityStage = () => {
+    setStage(BridgeStage.Activity);
+  };
+
+  const onActivityClick = (activity: BridgeStatusResponse) => {
+    const params = mapActivityToBridgeParams(activity, zeroWalletAddress);
+    setBridgeParams(params);
+    setTransactionHash(activity.transactionHash);
+
+    if (activity.status === 'failed') {
+      setStage(BridgeStage.Error);
+    } else {
+      setStage(BridgeStage.Processing);
+    }
+  };
+
   return (
     <PanelBody className={styles.walletBridge}>
-      {stage === BridgeStage.Connect && <WalletBridgeConnect onNext={amountStage} />}
+      {stage === BridgeStage.Connect && <WalletBridgeConnect onNext={amountStage} onViewActivity={activityStage} />}
       {stage === BridgeStage.Amount && <WalletBridgeAmount onNext={reviewStage} onBack={connectStage} />}
       {stage === BridgeStage.Review && bridgeParams && (
         <WalletBridgeReview bridgeParams={bridgeParams} onNext={processingStage} onBack={backToAmount} />
@@ -95,6 +118,7 @@ export const WalletBridge = () => {
           transactionHash={transactionHash}
           onSuccess={successStage}
           onError={errorStage}
+          onClose={resetBridge}
         />
       )}
       {stage === BridgeStage.Success && bridgeParams && transactionHash && (
@@ -102,6 +126,9 @@ export const WalletBridge = () => {
       )}
       {stage === BridgeStage.Error && bridgeParams && transactionHash && (
         <WalletBridgeError bridgeParams={bridgeParams} transactionHash={transactionHash} onClose={resetBridge} />
+      )}
+      {stage === BridgeStage.Activity && (
+        <WalletBridgeActivity onBack={connectStage} onActivityClick={onActivityClick} />
       )}
     </PanelBody>
   );

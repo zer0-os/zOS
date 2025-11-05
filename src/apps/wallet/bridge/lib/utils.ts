@@ -1,3 +1,5 @@
+import { utils } from 'ethers';
+
 export interface BridgeParams {
   amount: string;
   fromChainId: number;
@@ -48,6 +50,89 @@ export function getRpcUrl(chainId: number): string | undefined {
 
 // Zero address constant
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+export function formatBridgeAmount(amount: string, decimals: number = 18): string {
+  try {
+    return utils.formatUnits(amount, decimals);
+  } catch {
+    return amount;
+  }
+}
+
+export function getTokenInfo(tokenAddress: string, fromChainId: number): { symbol: string; decimals: number } {
+  if (tokenAddress === ZERO_ADDRESS) {
+    const isEthereumChain = fromChainId === CHAIN_ID_ETHEREUM || fromChainId === CHAIN_ID_SEPOLIA;
+    return {
+      symbol: isEthereumChain ? 'ETH' : 'Z',
+      decimals: 18,
+    };
+  }
+
+  return { symbol: 'Unknown', decimals: 18 };
+}
+
+export function getChainIdFromName(chainName: string): number {
+  const entry = Object.entries(CHAIN_NAMES).find(([_, name]) => name === chainName);
+  return entry ? parseInt(entry[0]) : 0;
+}
+
+export function getBridgeStatusLabel(status: string): string {
+  switch (status) {
+    case 'completed':
+      return 'Completed';
+    case 'processing':
+      return 'Processing';
+    case 'on-hold':
+      return 'On Hold';
+    case 'pending':
+      return 'Pending';
+    case 'failed':
+      return 'Failed';
+    default:
+      return status;
+  }
+}
+
+export interface BridgeActivityData {
+  fromChain: string;
+  toChain: string;
+  amount: string;
+  token: string;
+  tokenAddress: string;
+  destinationAddress: string;
+}
+
+export function mapActivityToBridgeParams(
+  activity: BridgeActivityData,
+  zeroWalletAddress: string | undefined
+): BridgeParams {
+  const fromChainId = getChainIdFromName(activity.fromChain);
+  const toChainId = getChainIdFromName(activity.toChain);
+
+  // Use standard 18 decimals (native tokens and most ERC20s)
+  const decimals = 18;
+  const formattedAmount = formatBridgeAmount(activity.amount, decimals);
+
+  return {
+    fromChainId,
+    toChainId,
+    amount: formattedAmount,
+    fromWalletAddress: zeroWalletAddress,
+    toWalletAddress: activity.destinationAddress,
+    fromToken: {
+      tokenAddress: activity.tokenAddress,
+      symbol: '',
+      name: '',
+      decimals,
+    },
+    toToken: {
+      tokenAddress: activity.tokenAddress,
+      symbol: '',
+      name: '',
+      decimals,
+    },
+  };
+}
 
 export function formatAmount(amount: string): string {
   if (!amount || amount === '0') {

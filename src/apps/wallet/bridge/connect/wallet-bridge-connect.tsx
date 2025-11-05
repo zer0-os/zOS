@@ -12,9 +12,10 @@ const history = getHistory();
 
 interface WalletBridgeConnectProps {
   onNext: () => void;
+  onViewActivity: () => void;
 }
 
-export const WalletBridgeConnect = ({ onNext }: WalletBridgeConnectProps) => {
+export const WalletBridgeConnect = ({ onNext, onViewActivity }: WalletBridgeConnectProps) => {
   const { isConnected, address, chainId } = useAccount();
   const { disconnect } = useDisconnect();
   const truncatedAddress = truncateAddress(address?.toLowerCase() ?? '');
@@ -86,6 +87,11 @@ export const WalletBridgeConnect = ({ onNext }: WalletBridgeConnectProps) => {
               </Button>
               <Button onClick={onConnect} variant='primary'>
                 Continue
+              </Button>
+            </div>
+            <div className={styles.activityButton}>
+              <Button onClick={onViewActivity} variant='secondary'>
+                Activity
               </Button>
             </div>
           </div>

@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { Button } from '../../components/button/button';
 import { IconButton } from '@zero-tech/zui/components';
-import { FormattedNumber } from '../../components/formatted-number/formatted-number';
 import { IconChevronRightDouble, IconLinkExternal1 } from '@zero-tech/zui/icons';
 import { truncateAddress } from '../../utils/address';
 import { TokenIcon } from '../../components/token-icon/token-icon';
@@ -93,9 +92,7 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
             <div className={styles.tokenName}>
               {bridgeParams.fromToken?.name || bridgeParams.fromToken?.symbol || 'Token'}
             </div>
-            <div className={styles.tokenAmount}>
-              <FormattedNumber value={bridgeParams.amount || '0'} />
-            </div>
+            <div className={styles.tokenAmount}>{bridgeParams.amount || '0'}</div>
             <div className={styles.chainName}>{fromChainName}</div>
             {fromWalletAddress && <div className={styles.walletAddress}>{formatAddress(fromWalletAddress)}</div>}
           </div>
@@ -114,9 +111,7 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
             <div className={styles.tokenName}>
               {bridgeParams.toToken?.name || bridgeParams.toToken?.symbol || 'Token'}
             </div>
-            <div className={styles.tokenAmount}>
-              <FormattedNumber value={bridgeParams.amount || '0'} />
-            </div>
+            <div className={styles.tokenAmount}>{bridgeParams.amount || '0'}</div>
             <div className={styles.chainName}>{toChainName}</div>
             {toWalletAddress && <div className={styles.walletAddress}>{formatAddress(toWalletAddress)}</div>}
           </div>

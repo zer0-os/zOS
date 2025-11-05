@@ -24,6 +24,7 @@ interface WalletBridgeProcessingProps {
   transactionHash: string;
   onSuccess: () => void;
   onError: () => void;
+  onClose: () => void;
 }
 
 const BRIDGE_NETWORK_IDS = {
@@ -36,6 +37,7 @@ export const WalletBridgeProcessing = ({
   transactionHash,
   onSuccess,
   onError,
+  onClose,
 }: WalletBridgeProcessingProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
@@ -106,18 +108,26 @@ export const WalletBridgeProcessing = ({
           <>
             <div className={styles.title}>Bridge is ready to finalize</div>
             <div className={styles.subtitle}>Complete the bridge by finalizing on Ethereum.</div>
-            {merkleProofLoading ? (
-              <div className={styles.subtitle}>Loading merkle proof...</div>
-            ) : merkleProof ? (
-              <Button onClick={onFinalize} disabled={isFinalizing}>
-                {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}
-              </Button>
-            ) : (
-              <div className={styles.subtitle}>Preparing finalization...</div>
-            )}
+            <div className={styles.buttonGroup}>
+              {merkleProofLoading ? (
+                <div className={styles.subtitle}>Loading merkle proof...</div>
+              ) : merkleProof ? (
+                <Button onClick={onFinalize} disabled={isFinalizing}>
+                  {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}
+                </Button>
+              ) : (
+                <div className={styles.subtitle}>Preparing finalization...</div>
+              )}
+            </div>
             {finalizeMutation.isError && (
               <div className={styles.errorText}>{finalizeMutation.error?.message || 'Finalization failed'}</div>
             )}
+            <div className={styles.infoText}>You can close this and check the status in Activity.</div>
+            <div className={styles.buttonGroup}>
+              <Button onClick={onClose} variant='secondary'>
+                Close
+              </Button>
+            </div>
           </>
         ) : (
           <>
@@ -125,11 +135,19 @@ export const WalletBridgeProcessing = ({
               {isFinalizing ? 'Finalizing bridge transaction' : 'Bridge transaction is being processed'}
             </div>
             <div className={styles.subtitle}>{isFinalizing ? 'Just a moment.' : 'This may take a few minutes.'}</div>
-            {isProcessing && transactionHash && (
-              <Button onClick={onViewTransaction} variant='secondary'>
-                View on Explorer
+            <div className={styles.buttonGroup}>
+              {isProcessing && transactionHash && (
+                <Button onClick={onViewTransaction} variant='secondary'>
+                  View on Explorer
+                </Button>
+              )}
+            </div>
+            <div className={styles.infoText}>You can close this and check the status in Activity.</div>
+            <div className={styles.buttonGroup}>
+              <Button onClick={onClose} variant='secondary'>
+                Close
               </Button>
-            )}
+            </div>
           </>
         )}
       </div>

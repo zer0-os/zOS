@@ -15,9 +15,16 @@
 .actions {
   margin-top: auto;
   margin-bottom: var(--l-spacing);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--l-spacing);
+  display: flex;
+  justify-content: center;
+  gap: var(--m-spacing);
+  flex-wrap: wrap;
+
+  button {
+    flex: 1;
+    max-width: 200px;
+    min-width: 150px;
+  }
 }
 
 .errorDetails {

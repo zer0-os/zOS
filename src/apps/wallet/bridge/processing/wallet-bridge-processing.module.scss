@@ -35,3 +35,24 @@
   text-align: center;
   margin-top: var(--s-spacing);
 }
+
+.infoText {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: var(--l-spacing);
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: var(--m-spacing);
+  width: 100%;
+  max-width: 500px;
+
+  button {
+    flex: 1;
+    max-width: 200px;
+  }
+}

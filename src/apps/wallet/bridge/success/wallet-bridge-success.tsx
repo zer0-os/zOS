@@ -4,7 +4,6 @@ import { IconXClose, IconChevronRightDouble, IconCheck } from '@zero-tech/zui/ic
 import { BridgeParams, CHAIN_NAMES, openExplorerForTransaction, formatAddress } from '../lib/utils';
 import { Button } from '../../components/button/button';
 import { TokenIcon } from '../../components/token-icon/token-icon';
-import { FormattedNumber } from '../../components/formatted-number/formatted-number';
 import { useSelector } from 'react-redux';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeStatus } from '../hooks/useBridgeStatus';
@@ -64,9 +63,7 @@ export const WalletBridgeSuccess = ({ bridgeParams, transactionHash, onClose }: 
             <div className={styles.tokenName}>
               {bridgeParams.fromToken?.name || bridgeParams.fromToken?.symbol || 'Token'}
             </div>
-            <div className={styles.tokenAmount}>
-              <FormattedNumber value={bridgeParams.amount || '0'} />
-            </div>
+            <div className={styles.tokenAmount}>{bridgeParams.amount || '0'}</div>
             <div className={styles.chainName}>{fromChainName}</div>
             {bridgeParams.fromWalletAddress && (
               <div className={styles.walletAddress}>{formatAddress(bridgeParams.fromWalletAddress)}</div>
@@ -87,9 +84,7 @@ export const WalletBridgeSuccess = ({ bridgeParams, transactionHash, onClose }: 
             <div className={styles.tokenName}>
               {bridgeParams.toToken?.name || bridgeParams.toToken?.symbol || 'Token'}
             </div>
-            <div className={styles.tokenAmount}>
-              <FormattedNumber value={bridgeParams.amount || '0'} />
-            </div>
+            <div className={styles.tokenAmount}>{bridgeParams.amount || '0'}</div>
             <div className={styles.chainName}>{toChainName}</div>
             {bridgeParams.toWalletAddress && (
               <div className={styles.walletAddress}>{formatAddress(bridgeParams.toWalletAddress)}</div>

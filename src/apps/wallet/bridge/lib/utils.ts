@@ -402,11 +402,16 @@ export function getBridgeValidationError(
   if (fromChainId === toChainId) return 'SAME_CHAIN';
   if (!tokenAddress) return 'NO_TOKEN_ADDRESS';
 
+  if (!amount || Number(amount) <= 0) return 'INVALID_AMOUNT';
+
   // Check if user has balance for the token
   const balance = tokenBalance ? Number(tokenBalance) : 0;
   if (balance <= 0) return 'INSUFFICIENT_BALANCE';
 
-  if (!amount || Number(amount) <= 0) return 'INVALID_AMOUNT';
+  // Check if amount exceeds balance
+  const amountNum = Number(amount);
+  if (amountNum > balance) return 'INSUFFICIENT_BALANCE';
+
   return null;
 }
 
@@ -423,7 +428,7 @@ export function getBridgeValidationErrorMessage(error: BridgeValidationError): s
     case 'NO_TOKEN_ADDRESS':
       return 'Token address is required';
     case 'INSUFFICIENT_BALANCE':
-      return 'You do not have a balance for the selected token';
+      return 'Insufficient balance for this transaction';
     default:
       return '';
   }

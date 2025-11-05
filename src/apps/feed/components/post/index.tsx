@@ -210,7 +210,7 @@ export const Post = ({
                     <StatusAction status={isPending ? 'pending' : 'failed'} optimisticId={messageId} />
                   </PreventPropagation>
                 )}
-                {channelZid && !isPending && !isFailed && !isWalletAddress(channelZid) && (
+                {channelZid && !isPending && !isFailed && (
                   <PreventPropagation>
                     <FeedAction channelZid={channelZid} />
                   </PreventPropagation>
@@ -299,9 +299,4 @@ const ProfileLink = ({
       <Link to={`/profile/${primaryZid ?? publicAddress}?${searchParams.toString()}`}>{children}</Link>
     </PreventPropagation>
   );
-};
-
-// Helper function to check if a string is a wallet address
-const isWalletAddress = (address: string): boolean => {
-  return address.startsWith('0x') && address.length === 42 && /^0x[a-fA-F0-9]{40}$/.test(address);
 };

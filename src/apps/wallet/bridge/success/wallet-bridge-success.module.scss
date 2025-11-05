@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  padding: 0 var(--l-spacing);
+  position: relative;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: var(--s-spacing);
+  text-align: center;
+  margin-top: 24px;
+}
+
+.transferDetails {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l-spacing);
+  border-radius: 12px;
+  width: 100%;
+  margin: auto;
+  padding: 24px 0;
+  border: 1px solid var(--border-primary);
+}
+
+.tokenInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-spacing);
+  overflow: hidden;
+  padding: 0 var(--s-spacing);
+  flex: 1;
+  min-width: 0;
+}
+
+.smallTokenIcon {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+}
+
+.tokenName {
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 600;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.tokenAmount {
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.chainName {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.walletAddress {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.tokenInfoSeparator {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--icon-active);
+}
+
+.footer {
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: var(--l-spacing);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--l-spacing);
+}
+
+.statusIcon {
+  border-radius: 50%;
+  border: 2px solid var(--zero-green);
+  padding: 4px;
+  color: var(--zero-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.statusText {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--zero-green);
+}

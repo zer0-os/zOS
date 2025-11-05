@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { SignedMessagePayload, uploadPost } from '../../../store/posts/utils';
-import { currentUserSelector, primaryZIDSelector, userWalletsSelector } from '../../../store/authentication/selectors';
+import { currentUserSelector, primaryZIDSelector } from '../../../store/authentication/selectors';
 import { v4 as uuidv4 } from 'uuid';
 import { addQueuedPost, removeQueuedPost, updateQueuedPostStatus } from '../../../store/post-queue';
 import { QuotedPost } from '../components/feed/lib/types';
@@ -22,7 +22,6 @@ export const useSubmitPost = () => {
   const dispatch = useDispatch();
 
   const userPrimaryZid = useSelector(primaryZIDSelector);
-  const userWallets = useSelector(userWalletsSelector);
   const currentUser = useSelector(currentUserSelector);
 
   const {
@@ -35,24 +34,12 @@ export const useSubmitPost = () => {
      */
     mutationFn: async (params: SubmitPostParams) => {
       const { message, replyToId, channelZid, mediaId, quoteOf } = params;
-      const formattedUserPrimaryZid = userPrimaryZid?.replace('0://', '');
+      const formattedUserPrimaryZid = userPrimaryZid?.replace('0://', '') || null;
 
       const authorAddress = currentUser?.zeroWalletAddress;
 
-      if (!formattedUserPrimaryZid) {
-        throw new Error('Please set a primary ZID in your profile');
-      }
-
-      if (!channelZid) {
-        throw new Error('Channel ZID is invalid');
-      }
-
       if (!authorAddress) {
-        throw new Error('ZERO wallet is not connected');
-      }
-
-      if (!userWallets.find((w) => w.publicAddress.toLowerCase() === authorAddress.toLowerCase())) {
-        throw new Error('Wallet is not linked to your account');
+        throw new Error('Zero wallet is not connected');
       }
 
       const createdAt = new Date().getTime();
@@ -61,7 +48,7 @@ export const useSubmitPost = () => {
         created_at: createdAt.toString(),
         text: message,
         wallet_address: authorAddress,
-        zid: formattedUserPrimaryZid,
+        zid: formattedUserPrimaryZid || authorAddress,
       };
 
       const unsignedPost = JSON.stringify(payloadToSign);
@@ -82,7 +69,10 @@ export const useSubmitPost = () => {
       formData.append('text', message);
       formData.append('unsignedMessage', unsignedPost);
       formData.append('signedMessage', signedPost);
-      formData.append('zid', formattedUserPrimaryZid);
+
+      if (formattedUserPrimaryZid) {
+        formData.append('zid', formattedUserPrimaryZid);
+      }
       formData.append('walletAddress', authorAddress);
       if (quoteOf) {
         formData.append('quoteOf', quoteOf);
@@ -116,7 +106,7 @@ export const useSubmitPost = () => {
         await queryClient.cancelQueries({ queryKey: ['posts', 'replies', { postId: replyToId }] });
       }
 
-      const formattedZid = currentUser?.primaryZID?.replace('0://', '');
+      const formattedZid = currentUser?.primaryZID?.replace('0://', '') || null;
 
       const optimisticId = uuidv4();
 
@@ -136,14 +126,14 @@ export const useSubmitPost = () => {
         sender: {
           userId: currentUser?.id,
           firstName: currentUser?.profileSummary?.firstName,
-          displaySubHandle: currentUser?.primaryZID,
+          displaySubHandle: currentUser?.primaryZID ? currentUser?.primaryZID : '',
           avatarUrl: currentUser?.profileSummary?.profileImage,
-          primaryZid: formattedZid,
+          primaryZid: formattedZid || currentUser?.zeroWalletAddress,
           publicAddress: currentUser?.primaryWalletAddress,
           isZeroProSubscriber: false,
         },
         numberOfReplies: 0,
-        channelZid: channelZid?.replace('0://', ''),
+        channelZid: stripZidPrefix(channelZid),
         arweaveId: uuidv4(),
         quoteOf: quotingPost?.id,
         quotedPost: quotingPost,
@@ -193,3 +183,13 @@ export const useSubmitPost = () => {
     isLoading: isPending,
   };
 };
+
+// Helper function to safely strip ZID prefix or handle wallet addresses
+function stripZidPrefix(zid?: string) {
+  // If it's a wallet address (42 chars, starts with 0x, valid hex), return as-is
+  if (zid?.startsWith('0x') && zid.length === 42 && /^0x[a-fA-F0-9]{40}$/.test(zid)) {
+    return zid;
+  }
+  // Otherwise, strip the 0:// prefix if present
+  return zid?.replace(/^0:\/\//, '');
+}

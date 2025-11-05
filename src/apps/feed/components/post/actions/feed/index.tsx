@@ -11,9 +11,10 @@ export interface FeedActionProps {
 export const FeedAction = ({ channelZid }: FeedActionProps) => {
   const { handleOnClick } = useFeedAction(channelZid);
 
+  const isWallet = channelZid.startsWith('0x') && channelZid.length === 42 && /^0x[a-fA-F0-9]{40}$/.test(channelZid);
   return (
-    <Action className={styles.Container} onClick={handleOnClick}>
-      <span>0://{channelZid}</span>
+    <Action className={styles.Container} onClick={isWallet ? undefined : handleOnClick}>
+      <span>{isWallet ? channelZid : `0://${channelZid}`}</span>
     </Action>
   );
 };

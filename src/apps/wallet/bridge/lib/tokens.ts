@@ -9,6 +9,12 @@ export interface CuratedToken {
   isNative?: boolean;
 }
 
+export const SUPPORTED_BRIDGE_TOKENS = ['WILD', 'mUSDC', 'USDC'];
+
+export function isSupportedBridgeToken(symbol: string): boolean {
+  return SUPPORTED_BRIDGE_TOKENS.includes(symbol);
+}
+
 export const CURATED_TOKENS: Partial<Record<number, CuratedToken[]>> = {
   [CHAIN_ID_ETHEREUM]: [
     {

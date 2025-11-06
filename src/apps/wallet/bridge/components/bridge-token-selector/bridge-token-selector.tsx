@@ -16,6 +16,7 @@ import {
   openExplorerForAddress,
   ZERO_ADDRESS,
 } from '../../lib/utils';
+import { isSupportedBridgeToken } from '../../lib/tokens';
 import { useFetchTokenBalance } from '../../hooks/useFetchTokenBalance';
 import { useTokenSearch } from '../../hooks/useTokenSearch';
 import { currentUserSelector } from '../../../../../store/authentication/selectors';
@@ -99,6 +100,17 @@ export const BridgeTokenSelector = ({
     walletAddress: selectedChainWalletAddress || undefined,
   });
 
+  const sortedTokens = useMemo(() => {
+    return [...filteredTokens].sort((a, b) => {
+      const aSupported = isSupportedBridgeToken(a.symbol);
+      const bSupported = isSupportedBridgeToken(b.symbol);
+
+      if (aSupported && !bSupported) return -1;
+      if (!aSupported && bSupported) return 1;
+      return 0;
+    });
+  }, [filteredTokens]);
+
   const selectToken = (token: TokenBalance) => {
     onTokenSelect?.(token);
     onClose?.();
@@ -126,6 +138,7 @@ export const BridgeTokenSelector = ({
             className={styles.input}
           />
         </div>
+        <div className={styles.searchHint}>Search by address to add a custom token</div>
       </div>
 
       <div className={styles.tabs}>
@@ -193,30 +206,35 @@ export const BridgeTokenSelector = ({
             {/* Show regular token list (for non-address searches or when token is already in list) */}
             {(!isAddressQuery || foundTokenInList) && (
               <>
-                {filteredTokens.length === 0 ? (
+                {sortedTokens.length === 0 ? (
                   <div className={styles.emptyState}>No tokens found</div>
                 ) : (
-                  filteredTokens.map((token) => (
-                    <div
-                      key={`${token.chainId}-${token.tokenAddress}`}
-                      className={styles.tokenItem}
-                      onClick={() => selectToken(token)}
-                    >
-                      <TokenIcon
-                        className={styles.tokenIcon}
-                        url={token.logo}
-                        name={token.name}
-                        chainId={token.chainId}
-                      />
+                  sortedTokens.map((token) => {
+                    const isSupported = isSupportedBridgeToken(token.symbol);
+                    return (
+                      <div
+                        key={`${token.chainId}-${token.tokenAddress}`}
+                        className={`${styles.tokenItem} ${!isSupported ? styles.tokenItemDisabled : ''}`}
+                        onClick={isSupported ? () => selectToken(token) : undefined}
+                      >
+                        <TokenIcon
+                          className={styles.tokenIcon}
+                          url={token.logo}
+                          name={token.name}
+                          chainId={token.chainId}
+                        />
 
-                      <div className={styles.tokenInfo}>
-                        <div className={styles.tokenName}>{token.name}</div>
-                        <div className={styles.tokenCount}>
-                          {formatAmount(token.amount)} <span>{token.symbol}</span>
+                        <div className={styles.tokenInfo}>
+                          <div className={styles.tokenName}>{token.name}</div>
+                          <div className={styles.tokenCount}>
+                            {formatAmount(token.amount)} <span>{token.symbol}</span>
+                          </div>
                         </div>
+
+                        {!isSupported && <div className={styles.notSupportedTag}>Not Supported</div>}
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </>
             )}

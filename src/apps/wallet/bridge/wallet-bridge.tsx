@@ -11,7 +11,6 @@ import { WalletBridgeReview } from './review/wallet-bridge-review';
 import { WalletBridgeProcessing } from './processing/wallet-bridge-processing';
 import { WalletBridgeSuccess } from './success/wallet-bridge-success';
 import { WalletBridgeError } from './error/wallet-bridge-error';
-import { WalletBridgeActivity } from './activity/wallet-bridge-activity';
 import { BridgeStatusResponse } from '../queries/bridgeQueries';
 
 import styles from './wallet-bridge.module.scss';
@@ -23,7 +22,6 @@ export enum BridgeStage {
   Processing = 'processing',
   Success = 'success',
   Error = 'error',
-  Activity = 'activity',
 }
 
 export const WalletBridge = () => {
@@ -89,10 +87,6 @@ export const WalletBridge = () => {
     setStage(BridgeStage.Connect);
   };
 
-  const activityStage = () => {
-    setStage(BridgeStage.Activity);
-  };
-
   const onActivityClick = (activity: BridgeStatusResponse) => {
     const params = mapActivityToBridgeParams(activity, zeroWalletAddress);
     setBridgeParams(params);
@@ -107,7 +101,7 @@ export const WalletBridge = () => {
 
   return (
     <PanelBody className={styles.walletBridge}>
-      {stage === BridgeStage.Connect && <WalletBridgeConnect onNext={amountStage} onViewActivity={activityStage} />}
+      {stage === BridgeStage.Connect && <WalletBridgeConnect onNext={amountStage} onActivityClick={onActivityClick} />}
       {stage === BridgeStage.Amount && <WalletBridgeAmount onNext={reviewStage} onBack={connectStage} />}
       {stage === BridgeStage.Review && bridgeParams && (
         <WalletBridgeReview bridgeParams={bridgeParams} onNext={processingStage} onBack={backToAmount} />
@@ -126,9 +120,6 @@ export const WalletBridge = () => {
       )}
       {stage === BridgeStage.Error && bridgeParams && transactionHash && (
         <WalletBridgeError bridgeParams={bridgeParams} transactionHash={transactionHash} onClose={resetBridge} />
-      )}
-      {stage === BridgeStage.Activity && (
-        <WalletBridgeActivity onBack={connectStage} onActivityClick={onActivityClick} />
       )}
     </PanelBody>
   );

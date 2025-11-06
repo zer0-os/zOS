@@ -5,6 +5,8 @@ import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { Button } from '../../components/button/button';
 import { truncateAddress } from '../../utils/address';
 import { isSupportedBridgeChain, CHAIN_ID_ETHEREUM, CHAIN_NAMES, getL2ChainForL1 } from '../lib/utils';
+import { BridgeStatusResponse } from '../../queries/bridgeQueries';
+import { BridgeWalletActivity } from '../components/bridge-wallet-activity/bridge-wallet-activity';
 
 import styles from './wallet-bridge-connect.module.scss';
 
@@ -12,10 +14,10 @@ const history = getHistory();
 
 interface WalletBridgeConnectProps {
   onNext: () => void;
-  onViewActivity: () => void;
+  onActivityClick: (activity: BridgeStatusResponse) => void;
 }
 
-export const WalletBridgeConnect = ({ onNext, onViewActivity }: WalletBridgeConnectProps) => {
+export const WalletBridgeConnect = ({ onNext, onActivityClick }: WalletBridgeConnectProps) => {
   const { isConnected, address, chainId } = useAccount();
   const { disconnect } = useDisconnect();
   const truncatedAddress = truncateAddress(address?.toLowerCase() ?? '');
@@ -89,11 +91,8 @@ export const WalletBridgeConnect = ({ onNext, onViewActivity }: WalletBridgeConn
                 Continue
               </Button>
             </div>
-            <div className={styles.activityButton}>
-              <Button onClick={onViewActivity} variant='secondary'>
-                Activity
-              </Button>
-            </div>
+
+            <BridgeWalletActivity onActivityClick={onActivityClick} />
           </div>
         )}
       </div>

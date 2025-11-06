@@ -1,21 +1,26 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.content {
+.activitySection {
+  width: 100%;
+  margin-top: var(--l-spacing);
   display: flex;
   flex-direction: column;
   gap: var(--m-spacing);
-  flex: 1;
-  padding-top: 24px;
-  overflow: hidden;
 }
 
-.tabs {
+.activityHeader {
   display: flex;
-  padding: 0 var(--l-spacing);
+  gap: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.activityTabs {
+  display: flex;
   gap: var(--m-spacing);
 }
 
@@ -23,8 +28,7 @@
 .tabActive {
   background: none;
   border: none;
-  padding: var(--m-spacing) var(--l-spacing);
-  margin-bottom: 8px;
+  padding: var(--s-spacing) var(--m-spacing);
   font-weight: 500;
   font-size: 14px;
   color: var(--text-secondary);
@@ -33,7 +37,7 @@
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: var(--s-spacing);
+  gap: var(--xs-spacing);
 
   &:hover {
     color: var(--text-primary);
@@ -59,18 +63,16 @@
   justify-content: center;
   text-align: center;
   color: var(--text-secondary);
-  font-weight: 400;
   font-size: 14px;
-  line-height: 19px;
-  padding: var(--xl-spacing);
+  padding: var(--l-spacing);
 }
 
 .activityList {
   display: flex;
   flex-direction: column;
   gap: var(--m-spacing);
+  max-height: 300px;
   overflow-y: auto;
-  padding: 0 var(--l-spacing);
 }
 
 .activityItem {
@@ -104,7 +106,7 @@
   }
 }
 
-.activityHeader {
+.activityItemHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -112,16 +114,15 @@
 }
 
 .activityTitle {
-  font-size: 16px;
-  line-height: 21px;
+  font-size: 14px;
   color: var(--text-primary);
+  font-weight: 500;
 }
 
 .activityStatus {
   font-weight: 500;
-  font-size: 12px;
-  line-height: 16px;
-  padding: 4px 8px;
+  font-size: 11px;
+  padding: 3px 6px;
   border-radius: 6px;
 }
 
@@ -144,13 +145,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 12px;
 }
 
 .activityAmount {
-  font-size: 14px;
-  line-height: 19px;
-  letter-spacing: 1.5%;
   color: var(--text-primary);
+  font-weight: 500;
 }
 
 .activityChainsWithLink {
@@ -160,7 +160,5 @@
 }
 
 .activityChains {
-  font-size: 12px;
-  line-height: 16px;
   color: var(--text-secondary);
 }

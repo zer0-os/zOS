@@ -1,7 +1,13 @@
 import { IconButton } from '@zero-tech/zui/components';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { IconXClose, IconChevronRightDouble, IconCheck } from '@zero-tech/zui/icons';
-import { BridgeParams, CHAIN_NAMES, openExplorerForTransaction, formatAddress } from '../lib/utils';
+import {
+  openExplorerForTransaction,
+  formatAddress,
+  getChainIdFromName,
+  getTokenInfo,
+  formatBridgeAmount,
+} from '../lib/utils';
 import { Button } from '../../components/button/button';
 import { TokenIcon } from '../../components/token-icon/token-icon';
 import { useSelector } from 'react-redux';
@@ -11,33 +17,38 @@ import { useBridgeStatus } from '../hooks/useBridgeStatus';
 import styles from './wallet-bridge-success.module.scss';
 
 interface WalletBridgeSuccessProps {
-  bridgeParams: BridgeParams;
   transactionHash: string;
+  fromChainId: number;
   onClose: () => void;
 }
 
-export const WalletBridgeSuccess = ({ bridgeParams, transactionHash, onClose }: WalletBridgeSuccessProps) => {
+export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: WalletBridgeSuccessProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
 
   const { data: status } = useBridgeStatus({
     zeroWalletAddress,
     transactionHash,
-    fromChainId: bridgeParams.fromChainId,
+    fromChainId,
     enabled: true,
     refetchInterval: false,
   });
 
-  const fromChainName = CHAIN_NAMES[bridgeParams.fromChainId] || 'Unknown';
-  const toChainName = CHAIN_NAMES[bridgeParams.toChainId] || 'Unknown';
+  const statusFromChainId = status ? getChainIdFromName(status.fromChain) : fromChainId;
+  const statusToChainId = status ? getChainIdFromName(status.toChain) : 0;
+  const tokenInfo = status ? getTokenInfo(status.tokenAddress, statusFromChainId) : null;
+  const formattedAmount = status && tokenInfo ? formatBridgeAmount(status.amount, tokenInfo.decimals) : '0';
+
+  const fromChainName = status?.fromChain || 'Unknown';
+  const toChainName = status?.toChain || 'Unknown';
 
   const onViewTransaction = () => {
-    openExplorerForTransaction(transactionHash, bridgeParams.fromChainId, status?.explorerUrl);
+    openExplorerForTransaction(transactionHash, statusFromChainId, status?.explorerUrl);
   };
 
   const onViewClaimTransaction = () => {
     if (status?.claimTxHash) {
-      openExplorerForTransaction(status.claimTxHash, bridgeParams.toChainId);
+      openExplorerForTransaction(status.claimTxHash, statusToChainId);
     }
   };
 
@@ -55,19 +66,15 @@ export const WalletBridgeSuccess = ({ bridgeParams, transactionHash, onClose }: 
         <div className={styles.transferDetails}>
           <div className={styles.tokenInfo}>
             <TokenIcon
-              url={bridgeParams.fromToken?.logoUrl}
-              name={bridgeParams.fromToken?.symbol || 'Token'}
-              chainId={bridgeParams.fromChainId}
+              url={tokenInfo?.logo}
+              name={tokenInfo?.symbol || 'Token'}
+              chainId={statusFromChainId}
               className={styles.smallTokenIcon}
             />
-            <div className={styles.tokenName}>
-              {bridgeParams.fromToken?.name || bridgeParams.fromToken?.symbol || 'Token'}
-            </div>
-            <div className={styles.tokenAmount}>{bridgeParams.amount || '0'}</div>
+            <div className={styles.tokenName}>{tokenInfo?.name || tokenInfo?.symbol || 'Token'}</div>
+            <div className={styles.tokenAmount}>{formattedAmount}</div>
             <div className={styles.chainName}>{fromChainName}</div>
-            {bridgeParams.fromWalletAddress && (
-              <div className={styles.walletAddress}>{formatAddress(bridgeParams.fromWalletAddress)}</div>
-            )}
+            {zeroWalletAddress && <div className={styles.walletAddress}>{formatAddress(zeroWalletAddress)}</div>}
           </div>
 
           <div className={styles.tokenInfoSeparator}>
@@ -76,18 +83,16 @@ export const WalletBridgeSuccess = ({ bridgeParams, transactionHash, onClose }: 
 
           <div className={styles.tokenInfo}>
             <TokenIcon
-              url={bridgeParams.toToken?.logoUrl}
-              name={bridgeParams.toToken?.symbol || 'Token'}
-              chainId={bridgeParams.toChainId}
+              url={tokenInfo?.logo}
+              name={tokenInfo?.symbol || 'Token'}
+              chainId={statusToChainId}
               className={styles.smallTokenIcon}
             />
-            <div className={styles.tokenName}>
-              {bridgeParams.toToken?.name || bridgeParams.toToken?.symbol || 'Token'}
-            </div>
-            <div className={styles.tokenAmount}>{bridgeParams.amount || '0'}</div>
+            <div className={styles.tokenName}>{tokenInfo?.name || tokenInfo?.symbol || 'Token'}</div>
+            <div className={styles.tokenAmount}>{formattedAmount}</div>
             <div className={styles.chainName}>{toChainName}</div>
-            {bridgeParams.toWalletAddress && (
-              <div className={styles.walletAddress}>{formatAddress(bridgeParams.toWalletAddress)}</div>
+            {status?.destinationAddress && (
+              <div className={styles.walletAddress}>{formatAddress(status.destinationAddress)}</div>
             )}
           </div>
         </div>

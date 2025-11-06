@@ -1,7 +1,7 @@
 import { IconButton } from '@zero-tech/zui/components';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { IconAlertCircle, IconXClose } from '@zero-tech/zui/icons';
-import { BridgeParams, openExplorerForTransaction } from '../lib/utils';
+import { openExplorerForTransaction } from '../lib/utils';
 import { Button } from '../../components/button/button';
 import { useSelector } from 'react-redux';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
@@ -10,25 +10,25 @@ import { useBridgeStatus } from '../hooks/useBridgeStatus';
 import styles from './wallet-bridge-error.module.scss';
 
 interface WalletBridgeErrorProps {
-  bridgeParams: BridgeParams;
   transactionHash: string;
+  fromChainId: number;
   onClose: () => void;
 }
 
-export const WalletBridgeError = ({ bridgeParams, transactionHash, onClose }: WalletBridgeErrorProps) => {
+export const WalletBridgeError = ({ transactionHash, fromChainId, onClose }: WalletBridgeErrorProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
 
   const { data: status } = useBridgeStatus({
     zeroWalletAddress,
     transactionHash,
-    fromChainId: bridgeParams.fromChainId,
+    fromChainId,
     enabled: true,
     refetchInterval: false,
   });
 
   const onViewTransaction = () => {
-    openExplorerForTransaction(transactionHash, bridgeParams.fromChainId, status?.explorerUrl);
+    openExplorerForTransaction(transactionHash, fromChainId, status?.explorerUrl);
   };
 
   return (

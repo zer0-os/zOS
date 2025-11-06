@@ -107,11 +107,19 @@ export const WalletBridge = () => {
           onClose={resetBridge}
         />
       )}
-      {stage === BridgeStage.Success && bridgeParams && transactionHash && (
-        <WalletBridgeSuccess bridgeParams={bridgeParams} transactionHash={transactionHash} onClose={resetBridge} />
+      {stage === BridgeStage.Success && transactionHash && bridgeParams && (
+        <WalletBridgeSuccess
+          transactionHash={transactionHash}
+          fromChainId={bridgeParams.fromChainId}
+          onClose={resetBridge}
+        />
       )}
-      {stage === BridgeStage.Error && bridgeParams && transactionHash && (
-        <WalletBridgeError bridgeParams={bridgeParams} transactionHash={transactionHash} onClose={resetBridge} />
+      {stage === BridgeStage.Error && transactionHash && bridgeParams && (
+        <WalletBridgeError
+          transactionHash={transactionHash}
+          fromChainId={bridgeParams.fromChainId}
+          onClose={resetBridge}
+        />
       )}
     </PanelBody>
   );

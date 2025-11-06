@@ -30,11 +30,26 @@ export const CHAIN_ID_ZEPHYR = 1417429182;
 export const L1_CHAIN_IDS = [CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA] as const;
 export const L2_CHAIN_IDS = [CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR] as const;
 
+// Chain names for UI display
 export const CHAIN_NAMES: Record<number, string> = {
   [CHAIN_ID_ETHEREUM]: 'Ethereum',
   [CHAIN_ID_SEPOLIA]: 'Sepolia',
   [CHAIN_ID_ZCHAIN]: 'Z Chain',
   [CHAIN_ID_ZEPHYR]: 'Zephyr',
+};
+
+// Reverse mapping with aliases to handle both frontend display names and backend API names
+const CHAIN_NAME_TO_ID: Record<string, number> = {
+  Ethereum: CHAIN_ID_ETHEREUM,
+
+  Sepolia: CHAIN_ID_SEPOLIA,
+  'Ethereum Sepolia': CHAIN_ID_SEPOLIA,
+
+  'Z Chain': CHAIN_ID_ZCHAIN,
+  'Z-Chain': CHAIN_ID_ZCHAIN,
+
+  Zephyr: CHAIN_ID_ZEPHYR,
+  'Z-Chain Zephyr': CHAIN_ID_ZEPHYR,
 };
 
 export const RPC_URLS: Record<number, string> = {
@@ -72,8 +87,7 @@ export function getTokenInfo(tokenAddress: string, fromChainId: number): { symbo
 }
 
 export function getChainIdFromName(chainName: string): number {
-  const entry = Object.entries(CHAIN_NAMES).find(([_, name]) => name === chainName);
-  return entry ? parseInt(entry[0]) : 0;
+  return CHAIN_NAME_TO_ID[chainName] ?? 0;
 }
 
 export function getBridgeStatusLabel(status: string): string {

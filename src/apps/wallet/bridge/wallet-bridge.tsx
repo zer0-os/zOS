@@ -73,14 +73,6 @@ export const WalletBridge = () => {
     setStage(BridgeStage.Amount);
   };
 
-  const successStage = () => {
-    setStage(BridgeStage.Success);
-  };
-
-  const errorStage = () => {
-    setStage(BridgeStage.Error);
-  };
-
   const resetBridge = () => {
     setBridgeParams(null);
     setTransactionHash(null);
@@ -88,6 +80,7 @@ export const WalletBridge = () => {
   };
 
   const onActivityClick = (activity: BridgeStatusResponse) => {
+    // improve for success stage
     const params = mapActivityToBridgeParams(activity, zeroWalletAddress);
     setBridgeParams(params);
     setTransactionHash(activity.transactionHash);
@@ -106,12 +99,10 @@ export const WalletBridge = () => {
       {stage === BridgeStage.Review && bridgeParams && (
         <WalletBridgeReview bridgeParams={bridgeParams} onNext={processingStage} onBack={backToAmount} />
       )}
-      {stage === BridgeStage.Processing && bridgeParams && transactionHash && (
+      {stage === BridgeStage.Processing && transactionHash && bridgeParams && (
         <WalletBridgeProcessing
-          bridgeParams={bridgeParams}
           transactionHash={transactionHash}
-          onSuccess={successStage}
-          onError={errorStage}
+          fromChainId={bridgeParams.fromChainId}
           onClose={resetBridge}
         />
       )}

@@ -4,7 +4,10 @@ import { useAccount } from 'wagmi';
 import { useBridgeActivity } from '../../hooks/useBridgeActivity';
 import { currentUserSelector } from '../../../../../store/authentication/selectors';
 import {
+  CHAIN_ID_ETHEREUM,
   CHAIN_ID_SEPOLIA,
+  CHAIN_ID_ZCHAIN,
+  CHAIN_ID_ZEPHYR,
   formatBridgeAmount,
   getBridgeStatusLabel,
   getChainIdFromName,
@@ -29,15 +32,41 @@ export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityPr
   const { chainId } = useAccount();
   const [filter, setFilter] = useState<FilterType>('all');
 
-  const fromChainId = chainId || CHAIN_ID_SEPOLIA;
+  const isMainnet = chainId === CHAIN_ID_ETHEREUM || chainId === CHAIN_ID_ZCHAIN;
+  const l1ChainId = isMainnet ? CHAIN_ID_ETHEREUM : CHAIN_ID_SEPOLIA;
+  const l2ChainId = isMainnet ? CHAIN_ID_ZCHAIN : CHAIN_ID_ZEPHYR;
 
-  const { data, isLoading, error } = useBridgeActivity({
+  // Fetch L1 activities (Ethereum or Sepolia)
+  const {
+    data: l1Data,
+    isLoading: l1Loading,
+    error: l1Error,
+  } = useBridgeActivity({
     zeroWalletAddress,
-    fromChainId,
+    fromChainId: l1ChainId,
     enabled: true,
   });
 
-  const activities = data?.deposits || [];
+  // Fetch L2 activities (Z-Chain or Zephyr)
+  const {
+    data: l2Data,
+    isLoading: l2Loading,
+    error: l2Error,
+  } = useBridgeActivity({
+    zeroWalletAddress,
+    fromChainId: l2ChainId,
+    enabled: true,
+  });
+
+  // Merge and sort activities by block number (most recent first)
+  const allActivities = [
+    ...(l1Data?.deposits || []),
+    ...(l2Data?.deposits || []),
+  ].sort((a, b) => parseInt(b.blockNumber) - parseInt(a.blockNumber));
+
+  const isLoading = l1Loading || l2Loading;
+  const error = l1Error || l2Error;
+  const activities = allActivities;
 
   const getFormattedAmount = (activity: BridgeStatusResponse): string => {
     const fromChainId = getChainIdFromName(activity.fromChain);

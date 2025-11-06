@@ -151,14 +151,20 @@
 .activityAmount {
   color: var(--text-primary);
   font-weight: 500;
-}
-
-.activityChainsWithLink {
   display: flex;
   align-items: center;
   gap: var(--xs-spacing);
 }
 
+.tokenIcon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
 .activityChains {
+  display: flex;
+  align-items: center;
+  gap: var(--xs-spacing);
   color: var(--text-secondary);
 }

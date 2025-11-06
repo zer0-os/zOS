@@ -1,4 +1,5 @@
 import { utils } from 'ethers';
+import { CURATED_TOKENS } from './tokens';
 
 export interface BridgeParams {
   amount: string;
@@ -74,16 +75,31 @@ export function formatBridgeAmount(amount: string, decimals: number = 18): strin
   }
 }
 
-export function getTokenInfo(tokenAddress: string, fromChainId: number): { symbol: string; decimals: number } {
-  if (tokenAddress === ZERO_ADDRESS) {
-    const isEthereumChain = fromChainId === CHAIN_ID_ETHEREUM || fromChainId === CHAIN_ID_SEPOLIA;
+export interface BridgeTokenInfo {
+  symbol: string;
+  name: string;
+  decimals: number;
+  logo?: string;
+}
+
+export function getTokenInfo(tokenAddress: string, chainId: number): BridgeTokenInfo {
+  const curatedTokens = CURATED_TOKENS[chainId] || [];
+  const found = curatedTokens.find((t) => t.tokenAddress.toLowerCase() === tokenAddress.toLowerCase());
+
+  if (found) {
     return {
-      symbol: isEthereumChain ? 'ETH' : 'Z',
-      decimals: 18,
+      symbol: found.symbol,
+      name: found.name,
+      decimals: found.decimals,
+      logo: found.logo,
     };
   }
 
-  return { symbol: 'Unknown', decimals: 18 };
+  return {
+    symbol: 'Unknown',
+    name: 'Unknown Token',
+    decimals: 18,
+  };
 }
 
 export function getChainIdFromName(chainName: string): number {
@@ -97,7 +113,7 @@ export function getBridgeStatusLabel(status: string): string {
     case 'processing':
       return 'Processing';
     case 'on-hold':
-      return 'On Hold';
+      return 'Ready to Finalize';
     case 'pending':
       return 'Pending';
     case 'failed':

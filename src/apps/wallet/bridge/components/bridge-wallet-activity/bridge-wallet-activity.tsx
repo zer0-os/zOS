@@ -3,20 +3,10 @@ import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { useBridgeActivity } from '../../hooks/useBridgeActivity';
 import { currentUserSelector } from '../../../../../store/authentication/selectors';
-import {
-  CHAIN_ID_ETHEREUM,
-  CHAIN_ID_SEPOLIA,
-  CHAIN_ID_ZCHAIN,
-  CHAIN_ID_ZEPHYR,
-  formatBridgeAmount,
-  getBridgeStatusLabel,
-  getChainIdFromName,
-  getTokenInfo,
-  openExplorerForTransaction,
-} from '../../lib/utils';
+import { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR } from '../../lib/utils';
 import { BridgeStatusResponse } from '../../../queries/bridgeQueries';
-import { IconButton } from '@zero-tech/zui/components';
-import { IconLinkExternal1, IconClockRewind } from '@zero-tech/zui/icons';
+import { IconClockRewind } from '@zero-tech/zui/icons';
+import { ActivityItem } from './activity-item';
 
 import styles from './bridge-wallet-activity.module.scss';
 
@@ -68,24 +58,6 @@ export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityPr
   const error = l1Error || l2Error;
   const activities = allActivities;
 
-  const getFormattedAmount = (activity: BridgeStatusResponse): string => {
-    const fromChainId = getChainIdFromName(activity.fromChain);
-    const tokenInfo = getTokenInfo(activity.tokenAddress, fromChainId);
-    return formatBridgeAmount(activity.amount, tokenInfo.decimals);
-  };
-
-  const getTokenSymbol = (activity: BridgeStatusResponse): string => {
-    const fromChainId = getChainIdFromName(activity.fromChain);
-    const tokenInfo = getTokenInfo(activity.tokenAddress, fromChainId);
-    return tokenInfo.symbol !== 'Unknown' ? tokenInfo.symbol : '';
-  };
-
-  const handleExplorerClick = (e: React.MouseEvent, activity: BridgeStatusResponse) => {
-    e.stopPropagation();
-    const fromChainId = getChainIdFromName(activity.fromChain);
-    openExplorerForTransaction(activity.transactionHash, fromChainId, activity.explorerUrl);
-  };
-
   const filteredActivities =
     filter === 'pending'
       ? activities.filter((a) => a.status === 'pending' || a.status === 'processing' || a.status === 'on-hold')
@@ -108,10 +80,6 @@ export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityPr
       default:
         return '';
     }
-  };
-
-  const isActivityClickable = (status: string): boolean => {
-    return status === 'pending' || status === 'processing' || status === 'on-hold' || status === 'failed';
   };
 
   return (
@@ -140,35 +108,14 @@ export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityPr
         </div>
       ) : (
         <div className={styles.activityList}>
-          {filteredActivities.map((activity) => {
-            const isClickable = isActivityClickable(activity.status);
-            return (
-              <button
-                key={activity.transactionHash}
-                className={`${styles.activityItem} ${!isClickable ? styles.activityItemDisabled : ''}`}
-                onClick={isClickable ? () => onActivityClick(activity) : undefined}
-                disabled={!isClickable}
-              >
-                <div className={styles.activityItemHeader}>
-                  <div className={styles.activityTitle}>Bridge to {activity.toChain}</div>
-                  <div className={`${styles.activityStatus} ${getStatusClassName(activity.status)}`}>
-                    {getBridgeStatusLabel(activity.status)}
-                  </div>
-                </div>
-                <div className={styles.activityDetails}>
-                  <div className={styles.activityAmount}>
-                    {getFormattedAmount(activity)} {getTokenSymbol(activity)}
-                  </div>
-                  <div className={styles.activityChainsWithLink}>
-                    <div className={styles.activityChains}>
-                      {activity.fromChain} → {activity.toChain}
-                    </div>
-                    <IconButton Icon={IconLinkExternal1} onClick={(e) => handleExplorerClick(e, activity)} size={22} />
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+          {filteredActivities.map((activity) => (
+            <ActivityItem
+              key={activity.transactionHash}
+              activity={activity}
+              onActivityClick={onActivityClick}
+              getStatusClassName={getStatusClassName}
+            />
+          ))}
         </div>
       )}
     </div>

@@ -25,13 +25,6 @@ export const CURATED_TOKENS: Partial<Record<number, CuratedToken[]>> = {
       decimals: 18,
       logo: '/tokens/wild.png',
     },
-    {
-      tokenAddress: '0x0eC78ED49C2D27b315D462d43B5BAB94d2C79bf8',
-      symbol: 'MEOW',
-      name: 'MEOW',
-      decimals: 18,
-      logo: '/tokens/meow.png',
-    },
   ],
   [CHAIN_ID_ZCHAIN]: [
     {

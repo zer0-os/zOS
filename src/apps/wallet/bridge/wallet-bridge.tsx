@@ -80,13 +80,14 @@ export const WalletBridge = () => {
   };
 
   const onActivityClick = (activity: BridgeStatusResponse) => {
-    // improve for success stage
     const params = mapActivityToBridgeParams(activity, zeroWalletAddress);
     setBridgeParams(params);
     setTransactionHash(activity.transactionHash);
 
     if (activity.status === 'failed') {
       setStage(BridgeStage.Error);
+    } else if (activity.status === 'completed') {
+      setStage(BridgeStage.Success);
     } else {
       setStage(BridgeStage.Processing);
     }

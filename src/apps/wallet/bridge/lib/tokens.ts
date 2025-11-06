@@ -57,6 +57,12 @@ export const CURATED_TOKENS: Partial<Record<number, CuratedToken[]>> = {
       decimals: 18,
       isNative: true,
     },
+    {
+      tokenAddress: '0xAED26A7997802e13288f2fF1278fD618C92D1659',
+      symbol: 'mUSDC',
+      name: 'Mock USDC',
+      decimals: 18,
+    },
   ],
   [CHAIN_ID_ZEPHYR]: [
     {
@@ -65,6 +71,12 @@ export const CURATED_TOKENS: Partial<Record<number, CuratedToken[]>> = {
       name: 'Z',
       decimals: 18,
       isNative: true,
+    },
+    {
+      tokenAddress: '0xE70D44453583485155Cb80a8d122A7d52c4e11a5',
+      symbol: 'mUSDC',
+      name: 'Mock USDC',
+      decimals: 18,
     },
   ],
 };

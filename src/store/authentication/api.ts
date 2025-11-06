@@ -1,6 +1,27 @@
-import { AuthorizationResponse, User } from './types';
+import { AuthorizationResponse, User, ChallengeResponse } from './types';
 import { addVercelPreviewAuthHeader, del, get, post } from '../../lib/api/rest';
 import * as Sentry from '@sentry/react';
+
+export async function getChallenge(address: string, domain: string): Promise<ChallengeResponse> {
+  try {
+    const response = await get('/api/v2/authentication/challenge', undefined, { address, domain });
+    return response.body;
+  } catch (error: any) {
+    Sentry.captureException(error);
+    throw error;
+  }
+}
+
+export async function authorizeSIWE(message: string, signature: string): Promise<AuthorizationResponse> {
+  try {
+    const response = await post('/api/v2/authentication/authorize').send({ message, signature });
+    addVercelPreviewAuthHeader(response.body.accessToken);
+    return response.body;
+  } catch (error: any) {
+    Sentry.captureException(error);
+    throw error;
+  }
+}
 
 export async function nonceOrAuthorize(signedWeb3Token: string): Promise<AuthorizationResponse> {
   const response = await post('/authentication/nonceOrAuthorize').set('Authorization', `Web3 ${signedWeb3Token}`);

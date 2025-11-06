@@ -1,8 +1,11 @@
 import { expectSaga } from '../../test/saga';
 
 import { emailLogin, redirectToRoot, validateEmailLogin, web3Login } from './saga';
-import { getSignedToken } from '../web3/saga';
-import { nonceOrAuthorize, authenticateByEmail } from '../authentication/saga';
+import { authenticateByEmail, completeUserLogin } from '../authentication/saga';
+import { getChallenge, authorizeSIWE } from '../authentication/api';
+import { signSIWEMessage } from '../../lib/web3';
+import { getWagmiConfig } from '../../lib/web3/wagmi-config';
+import { getWalletClient } from '@wagmi/core';
 
 import { call } from 'redux-saga/effects';
 
@@ -101,42 +104,65 @@ describe(validateEmailLogin, () => {
 });
 
 describe(web3Login, () => {
-  it('redirects to root when web3 login successful', async () => {
-    const connectorId = 'metamask';
-    const signedToken = 'signed-token';
+  const mockWagmiConfig = {} as any;
+  const mockWalletClient = {
+    account: { address: '0x123' as `0x${string}` },
+  } as any;
+  const mockChallenge = { message: 'test message', nonce: 'test-nonce' };
+  const mockSignature = '0xsignature' as `0x${string}`;
 
-    await subject(web3Login, { payload: connectorId })
+  it('redirects to root when web3 login successful', async () => {
+    await subject(web3Login)
       .provide([
-        [call(getSignedToken), { success: true, token: signedToken }],
-        [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: undefined }],
+        [call(getWagmiConfig), mockWagmiConfig],
+        [call(getWalletClient, mockWagmiConfig), mockWalletClient],
+        [call(getChallenge, '0x123', 'localhost'), mockChallenge],
+        [call(signSIWEMessage, mockWalletClient, '0x123', mockChallenge.message), mockSignature],
+        [call(authorizeSIWE, mockChallenge.message, mockSignature), { accessToken: 'token' }],
+        [call(completeUserLogin), undefined],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .call(redirectToRoot)
       .run();
   });
 
-  it('sets error state if message signing fails', async () => {
-    const connectorId = 'metamask';
-    const error = 'some error';
-
-    const { storeState } = await subject(web3Login, { payload: connectorId })
+  it('sets error state if wallet client is not available', async () => {
+    const { storeState } = await subject(web3Login)
       .provide([
-        [call(getSignedToken), { success: false, error }],
+        [call(getWagmiConfig), mockWagmiConfig],
+        [call(getWalletClient, mockWagmiConfig), null],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(storeState.login.errors).toEqual([error]);
+    expect(storeState.login.errors).toEqual([Web3LoginErrors.UNKNOWN_ERROR]);
   });
 
-  it('sets error state if nonceOrAuthorize returns nonce', async () => {
-    const connectorId = 'metamask';
-    const signedToken = 'signed-token';
-
-    const { storeState } = await subject(web3Login, { payload: connectorId })
+  it('sets error state if message signing fails', async () => {
+    const { storeState } = await subject(web3Login)
       .provide([
-        [call(getSignedToken), { success: true, token: signedToken }],
-        [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: '123' }],
+        [call(getWagmiConfig), mockWagmiConfig],
+        [call(getWalletClient, mockWagmiConfig), mockWalletClient],
+        [call(getChallenge, '0x123', 'localhost'), mockChallenge],
+        [
+          call(signSIWEMessage, mockWalletClient, '0x123', mockChallenge.message),
+          throwError(new Error('Signing failed')),
+        ],
+      ])
+      .withReducer(rootReducer, new StoreBuilder().build())
+      .run();
+
+    expect(storeState.login.errors).toEqual([Web3LoginErrors.UNKNOWN_ERROR]);
+  });
+
+  it('sets error state if authorizeSIWE returns no accessToken', async () => {
+    const { storeState } = await subject(web3Login)
+      .provide([
+        [call(getWagmiConfig), mockWagmiConfig],
+        [call(getWalletClient, mockWagmiConfig), mockWalletClient],
+        [call(getChallenge, '0x123', 'localhost'), mockChallenge],
+        [call(signSIWEMessage, mockWalletClient, '0x123', mockChallenge.message), mockSignature],
+        [call(authorizeSIWE, mockChallenge.message, mockSignature), {}],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
@@ -144,34 +170,48 @@ describe(web3Login, () => {
     expect(storeState.login.errors).toEqual([Web3LoginErrors.PROFILE_NOT_FOUND]);
   });
 
-  it('sets error state if nonceOrAuthorize API call throws an exception', async () => {
-    const connectorId = 'metamask';
-    const signedToken = 'signed-token';
+  it('sets error state if authorizeSIWE throws PUBLIC_ADDRESS_NOT_FOUND', async () => {
+    const error = new Error('Not found') as any;
+    error.response = { body: { code: 'PUBLIC_ADDRESS_NOT_FOUND' } };
 
-    const { storeState } = await subject(web3Login, { payload: connectorId })
+    const { storeState } = await subject(web3Login)
       .provide([
-        [call(getSignedToken), { success: true, token: signedToken }],
-        [
-          call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }),
-          throwError(new Error('API call failed')),
-        ],
+        [call(getWagmiConfig), mockWagmiConfig],
+        [call(getWalletClient, mockWagmiConfig), mockWalletClient],
+        [call(getChallenge, '0x123', 'localhost'), mockChallenge],
+        [call(signSIWEMessage, mockWalletClient, '0x123', mockChallenge.message), mockSignature],
+        [call(authorizeSIWE, mockChallenge.message, mockSignature), throwError(error)],
       ])
       .withReducer(rootReducer, new StoreBuilder().build())
       .run();
 
-    expect(storeState.login.errors).toEqual([EmailLoginErrors.UNKNOWN_ERROR]);
+    expect(storeState.login.errors).toEqual([Web3LoginErrors.PROFILE_NOT_FOUND]);
+  });
+
+  it('sets error state if API call throws an exception', async () => {
+    const { storeState } = await subject(web3Login)
+      .provide([
+        [call(getWagmiConfig), mockWagmiConfig],
+        [call(getWalletClient, mockWagmiConfig), mockWalletClient],
+        [call(getChallenge, '0x123', 'localhost'), throwError(new Error('API call failed'))],
+      ])
+      .withReducer(rootReducer, new StoreBuilder().build())
+      .run();
+
+    expect(storeState.login.errors).toEqual([Web3LoginErrors.UNKNOWN_ERROR]);
   });
 
   it('clears errors on success', async () => {
-    const connectorId = 'metamask';
-    const signedToken = 'signed-token';
     const state = new StoreBuilder().withOtherState({ login: { ...initialState, errors: ['existing_error'] } });
 
-    const { storeState } = await subject(web3Login, { payload: connectorId })
+    const { storeState } = await subject(web3Login)
       .provide([
-        [call(getSignedToken), { success: true, token: signedToken }],
-        [call(nonceOrAuthorize, { payload: { signedWeb3Token: signedToken } }), { nonce: null }],
-        [call(redirectToRoot), undefined],
+        [call(getWagmiConfig), mockWagmiConfig],
+        [call(getWalletClient, mockWagmiConfig), mockWalletClient],
+        [call(getChallenge, '0x123', 'localhost'), mockChallenge],
+        [call(signSIWEMessage, mockWalletClient, '0x123', mockChallenge.message), mockSignature],
+        [call(authorizeSIWE, mockChallenge.message, mockSignature), { accessToken: 'token' }],
+        [call(completeUserLogin), undefined],
       ])
       .withReducer(rootReducer, state.build())
       .run();

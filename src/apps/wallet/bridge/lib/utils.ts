@@ -1,5 +1,10 @@
 import { utils } from 'ethers';
 import { CURATED_TOKENS } from './tokens';
+import { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR, ZERO_ADDRESS } from './constants';
+
+// Re-export constants for backward compatibility
+// TODO: Update imports across codebase to import directly from './constants' instead of './utils'
+export { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR, ZERO_ADDRESS };
 
 export interface BridgeParams {
   amount: string;
@@ -22,11 +27,6 @@ export interface BridgeParams {
     decimals?: number;
   };
 }
-
-export const CHAIN_ID_ETHEREUM = 1;
-export const CHAIN_ID_SEPOLIA = 11155111;
-export const CHAIN_ID_ZCHAIN = 9369;
-export const CHAIN_ID_ZEPHYR = 1417429182;
 
 export const L1_CHAIN_IDS = [CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA] as const;
 export const L2_CHAIN_IDS = [CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR] as const;
@@ -63,9 +63,6 @@ export const RPC_URLS: Record<number, string> = {
 export function getRpcUrl(chainId: number): string | undefined {
   return RPC_URLS[chainId];
 }
-
-// Zero address constant
-export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export function formatBridgeAmount(amount: string, decimals: number = 18): string {
   try {

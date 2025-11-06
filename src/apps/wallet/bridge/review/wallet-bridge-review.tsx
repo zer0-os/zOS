@@ -34,6 +34,10 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
   });
 
   const onSubmit = async () => {
+    // if from z wallet needs to use api
+    // if from eoa wallet needs to use browser wallet
+
+    // z wallet needs to approve token being bridged
     if (!bridgeParams.fromToken?.tokenAddress) {
       setError('Token address is required');
       return;
@@ -54,6 +58,12 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
   const fromWalletAddress = bridgeParams.fromWalletAddress;
   const toWalletAddress = bridgeParams.toWalletAddress;
 
+  // Determine wallet types based on chain
+  const isFromZeroWallet = fromWalletAddress === zeroWalletAddress;
+  const isToZeroWallet = toWalletAddress === zeroWalletAddress;
+  const fromWalletType = isFromZeroWallet ? 'Zero Wallet' : 'EOA Wallet';
+  const toWalletType = isToZeroWallet ? 'Zero Wallet' : 'EOA Wallet';
+
   const handleDestinationLink = () => {
     openExplorerForAddress(toWalletAddress, bridgeParams.toChainId);
   };
@@ -66,11 +76,11 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
         <div className={styles.confirmRecipient}>
           <div className={styles.confirmRecipientTitle}>Confirm bridge transaction</div>
           <div className={styles.recipientName}>
-            Bridge tokens from {fromChainName} to {toChainName}
+            {fromChainName} ({fromWalletType}) to {toChainName} ({toWalletType})
           </div>
           {toWalletAddress && (
             <div className={styles.recipientAddress}>
-              <span>Destination: {truncateAddress(toWalletAddress)}</span>
+              <span>Receiving Wallet: {truncateAddress(toWalletAddress)}</span>
               <IconButton
                 Icon={IconLinkExternal1}
                 onClick={handleDestinationLink}
@@ -131,7 +141,7 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
             <span>{fromWalletAddress ? truncateAddress(fromWalletAddress) : '—'}</span>
           </div>
           <div className={styles.networkItem}>
-            <span>To Wallet</span>
+            <span>Receiving Wallet</span>
             <span>{toWalletAddress ? truncateAddress(toWalletAddress) : '—'}</span>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { ZERO_ADDRESS, CHAIN_ID_ETHEREUM, CHAIN_ID_ZCHAIN, CHAIN_ID_SEPOLIA, CHAIN_ID_ZEPHYR } from './utils';
+import { ZERO_ADDRESS, CHAIN_ID_ETHEREUM, CHAIN_ID_ZCHAIN, CHAIN_ID_SEPOLIA, CHAIN_ID_ZEPHYR } from './constants';
 
 export interface CuratedToken {
   tokenAddress: string;

@@ -12,10 +12,11 @@ import {
   getWalletAddressForChain,
   getBridgeValidationError,
   getBridgeValidationErrorMessage,
+  getDestinationChainId,
 } from '../lib/utils';
 import { TokenBalance } from '../../types';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
-import { useFetchCounterpartToken } from '../hooks/useFetchCounterpartToken';
+import { CURATED_TOKENS } from '../lib/tokens';
 
 import styles from './wallet-bridge-amount.module.scss';
 
@@ -45,19 +46,32 @@ export const WalletBridgeAmount = ({ onNext, onBack }: WalletBridgeAmountProps) 
   const [showTokenSelector, setShowTokenSelector] = useState(false);
   const [showValidationError, setShowValidationError] = useState(false);
 
-  // Auto-fetch counterpart token when fromToken is selected
-  // TODO: refactor to get to token from bridge
-  const { data: counterpartToken } = useFetchCounterpartToken(
-    fromToken ? { chainId: fromToken.chainId, tokenAddress: fromToken.tokenAddress!, symbol: fromToken.symbol } : null
-  );
+  const counterpartToken = useMemo(() => {
+    if (!fromToken) return null;
+
+    const toChainId = getDestinationChainId(fromToken.chainId);
+    const curatedTokens = CURATED_TOKENS[toChainId] || [];
+
+    const counterpart = curatedTokens.find((token) => token.symbol === fromToken.symbol);
+
+    if (counterpart) {
+      return {
+        chainId: toChainId,
+        tokenAddress: counterpart.tokenAddress,
+        decimals: counterpart.decimals,
+      };
+    }
+
+    return null;
+  }, [fromToken]);
 
   useEffect(() => {
     if (counterpartToken && fromToken) {
       setToToken({
-        symbol: counterpartToken.symbol,
-        name: counterpartToken.name,
+        symbol: fromToken.symbol,
+        name: fromToken.name,
         chainId: counterpartToken.chainId,
-        logoUrl: counterpartToken.logoUrl,
+        logoUrl: fromToken.logoUrl,
         tokenAddress: counterpartToken.tokenAddress,
         decimals: counterpartToken.decimals,
       });

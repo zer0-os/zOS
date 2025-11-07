@@ -63,7 +63,7 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
   const { data: merkleProof, isLoading: merkleProofLoading } = useBridgeMerkleProof({
     zeroWalletAddress,
     depositCount: status?.depositCount,
-    netId: getNetIdFromChainId(statusToChainId),
+    netId: getNetIdFromChainId(statusFromChainId),
     fromChainId: statusFromChainId,
     enabled: needsMerkleProof,
   });

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { BRIDGE_ABI, getBridgeContractAddress, getBridgeNetworkId } from '../lib/bridge-contracts';
 import { ZERO_ADDRESS } from '../lib/constants';
+import { normalizeWalletError } from '../lib/utils';
 
 interface BridgeFromEOAParams {
   fromChainId: number;
@@ -34,8 +35,20 @@ export function useBridgeFromEOA({ onSuccess, onError }: UseBridgeFromEOAParams 
         throw new Error('No wallet detected. Please install MetaMask or another web3 wallet.');
       }
 
+      if (!eoaAddress) {
+        throw new Error('EOA address is required');
+      }
+
       const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = ethersProvider.getSigner();
+      const connectedAddress = await signer.getAddress();
+
+      // Verify the connected address matches the eoaAddress parameter
+      if (connectedAddress.toLowerCase() !== eoaAddress.toLowerCase()) {
+        throw new Error(
+          `Connected wallet address (${connectedAddress}) does not match expected address (${eoaAddress})`
+        );
+      }
 
       const bridgeContract = getBridgeContractAddress(fromChainId);
       const destinationNetworkId = getBridgeNetworkId(toChainId);
@@ -48,31 +61,40 @@ export function useBridgeFromEOA({ onSuccess, onError }: UseBridgeFromEOAParams 
         throw new Error(`Destination network ID not found for chain ${toChainId}`);
       }
 
+      // Validate amount
+      if (!amount || amount === '0' || parseFloat(amount) <= 0) {
+        throw new Error('Invalid amount');
+      }
+
       const amountInWei = ethers.utils.parseUnits(amount, decimals);
       const isNative = tokenAddress.toLowerCase() === ZERO_ADDRESS.toLowerCase();
+
+      // Checksum all addresses
+      const checksummedBridgeContract = ethers.utils.getAddress(bridgeContract);
+      const checksummedDestinationAddress = ethers.utils.getAddress(destinationAddress);
+      const checksummedTokenAddress = isNative ? ZERO_ADDRESS : ethers.utils.getAddress(tokenAddress);
 
       if (!isNative) {
         setCurrentStep('approving');
 
-        const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
-
-        const allowance: ethers.BigNumber = await tokenContract.allowance(eoaAddress, bridgeContract);
+        const tokenContract = new ethers.Contract(checksummedTokenAddress, ERC20_ABI, signer);
+        const allowance: ethers.BigNumber = await tokenContract.allowance(connectedAddress, checksummedBridgeContract);
 
         if (allowance.lt(amountInWei)) {
-          const approveTx = await tokenContract.approve(bridgeContract, amountInWei);
+          const approveTx = await tokenContract.approve(checksummedBridgeContract, amountInWei);
           await approveTx.wait();
         }
       }
 
       setCurrentStep('bridging');
 
-      const bridgeContractInstance = new ethers.Contract(bridgeContract, BRIDGE_ABI, signer);
+      const bridgeContractInstance = new ethers.Contract(checksummedBridgeContract, BRIDGE_ABI, signer);
 
       const bridgeTx = await bridgeContractInstance.bridgeAsset(
         destinationNetworkId,
-        destinationAddress,
+        checksummedDestinationAddress,
         amountInWei,
-        tokenAddress,
+        checksummedTokenAddress,
         true,
         '0x',
         {
@@ -80,7 +102,11 @@ export function useBridgeFromEOA({ onSuccess, onError }: UseBridgeFromEOAParams 
         }
       );
 
-      await bridgeTx.wait();
+      const receipt = await bridgeTx.wait();
+
+      if (receipt.status === 0) {
+        throw new Error('Bridge transaction failed on-chain');
+      }
 
       setCurrentStep('idle');
       onSuccess?.(bridgeTx.hash);
@@ -88,8 +114,9 @@ export function useBridgeFromEOA({ onSuccess, onError }: UseBridgeFromEOAParams 
       return bridgeTx.hash;
     } catch (error) {
       setCurrentStep('idle');
-      onError?.(error as Error);
-      throw error;
+      const normalizedError = normalizeWalletError(error);
+      onError?.(normalizedError);
+      throw normalizedError;
     }
   };
 

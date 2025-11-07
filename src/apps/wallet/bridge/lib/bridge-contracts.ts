@@ -1,8 +1,10 @@
 import { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR } from './constants';
 
 export const BRIDGE_CONTRACTS: Record<number, `0x${string}`> = {
-  [CHAIN_ID_ETHEREUM]: '0xFE797cb13f7884FB9f0aE26fEB2a06ed8efccbe7',
-  [CHAIN_ID_SEPOLIA]: '0xF5d98890fdCefd216AD98DBA3106B8332A3D4b11',
+  // Ethereum mainnet uses the same bridge contract as Z-Chain (L2 contract on L1)
+  [CHAIN_ID_ETHEREUM]: '0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe',
+  // Sepolia uses the same bridge contract as Zephyr (L2 contract on L1)
+  [CHAIN_ID_SEPOLIA]: '0x528e26b25a34a4A5d0dbDa1d57D318153d2ED582',
   [CHAIN_ID_ZCHAIN]: '0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe',
   [CHAIN_ID_ZEPHYR]: '0x528e26b25a34a4A5d0dbDa1d57D318153d2ED582',
 };

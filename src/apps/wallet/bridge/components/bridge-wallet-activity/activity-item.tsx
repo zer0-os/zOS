@@ -9,6 +9,7 @@ import {
   getChainIdFromName,
   getTokenInfo,
   openExplorerForTransaction,
+  CHAIN_NAMES,
 } from '../../lib/utils';
 
 import styles from './bridge-wallet-activity.module.scss';
@@ -22,7 +23,8 @@ interface ActivityItemProps {
 export const ActivityItem = ({ activity, onActivityClick, getStatusClassName }: ActivityItemProps) => {
   const fromChainId = getChainIdFromName(activity.fromChain);
   const toChainId = getChainIdFromName(activity.toChain);
-  const tokenInfo = getTokenInfo(activity.tokenAddress, fromChainId);
+
+  const tokenInfo = getTokenInfo(activity.tokenAddress, toChainId) || getTokenInfo(activity.tokenAddress, fromChainId);
   const formattedAmount = formatBridgeAmount(activity.amount, tokenInfo.decimals);
 
   const handleFromChainExplorerClick = (e: React.MouseEvent) => {
@@ -64,9 +66,9 @@ export const ActivityItem = ({ activity, onActivityClick, getStatusClassName }: 
         <div className={styles.activityChains}>
           <div className={styles.chainRow}>
             <IconButton Icon={IconLinkExternal1} onClick={handleFromChainExplorerClick} size={18} />
-            <span>{activity.fromChain}</span>
+            <span>{fromChainId ? CHAIN_NAMES[fromChainId] : activity.fromChain}</span>
             <IconChevronRight size={16} />
-            <span>{activity.toChain}</span>
+            <span>{toChainId ? CHAIN_NAMES[toChainId] : activity.toChain}</span>
             {activity.claimTxHash && (
               <IconButton Icon={IconLinkExternal1} onClick={handleToChainExplorerClick} size={18} />
             )}

@@ -3,13 +3,7 @@ import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { useBridgeActivity } from '../../hooks/useBridgeActivity';
 import { currentUserSelector } from '../../../../../store/authentication/selectors';
-import {
-  CHAIN_ID_ETHEREUM,
-  CHAIN_ID_SEPOLIA,
-  CHAIN_ID_ZCHAIN,
-  CHAIN_ID_ZEPHYR,
-  getWalletAddressForChain,
-} from '../../lib/utils';
+import { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR } from '../../lib/utils';
 import { BridgeStatusResponse } from '../../../queries/bridgeQueries';
 import { ActivityItem } from './activity-item';
 
@@ -24,35 +18,31 @@ type FilterType = 'all' | 'pending' | 'completed';
 export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
-  const { address: eoaAddress, chainId } = useAccount();
+  const { chainId } = useAccount();
   const [filter, setFilter] = useState<FilterType>('all');
 
   const isMainnet = chainId === CHAIN_ID_ETHEREUM || chainId === CHAIN_ID_ZCHAIN;
   const l1ChainId = isMainnet ? CHAIN_ID_ETHEREUM : CHAIN_ID_SEPOLIA;
   const l2ChainId = isMainnet ? CHAIN_ID_ZCHAIN : CHAIN_ID_ZEPHYR;
 
-  // Get the correct wallet address for each chain
-  const l1WalletAddress = getWalletAddressForChain(l1ChainId, eoaAddress, zeroWalletAddress);
-  const l2WalletAddress = getWalletAddressForChain(l2ChainId, eoaAddress, zeroWalletAddress);
-
-  // Fetch L1 activities (Ethereum or Sepolia) - use EOA address
+  // Fetch L1 activities (Ethereum or Sepolia)
   const {
     data: l1Data,
     isLoading: l1Loading,
     error: l1Error,
   } = useBridgeActivity({
-    address: l1WalletAddress,
+    zeroWalletAddress,
     fromChainId: l1ChainId,
     enabled: true,
   });
 
-  // Fetch L2 activities (Z-Chain or Zephyr) - use Zero Wallet address
+  // Fetch L2 activities (Z-Chain or Zephyr)
   const {
     data: l2Data,
     isLoading: l2Loading,
     error: l2Error,
   } = useBridgeActivity({
-    address: l2WalletAddress,
+    zeroWalletAddress,
     fromChainId: l2ChainId,
     enabled: true,
   });

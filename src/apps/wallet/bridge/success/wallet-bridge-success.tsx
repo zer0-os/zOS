@@ -1,17 +1,19 @@
 import { IconButton } from '@zero-tech/zui/components';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
-import { IconXClose, IconChevronRightDouble, IconCheck } from '@zero-tech/zui/icons';
+import { IconXClose, IconChevronRightDouble, IconCheck, IconClockRewind } from '@zero-tech/zui/icons';
 import {
   openExplorerForTransaction,
   formatAddress,
   getChainIdFromName,
   getTokenInfo,
   formatBridgeAmount,
+  getWalletAddressForChain,
 } from '../lib/utils';
 import { Button } from '../../components/button/button';
 import { TokenIcon } from '../../components/token-icon/token-icon';
 import { FormattedNumber } from '../../components/formatted-number/formatted-number';
 import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeStatus } from '../hooks/useBridgeStatus';
 
@@ -26,6 +28,7 @@ interface WalletBridgeSuccessProps {
 export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: WalletBridgeSuccessProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
+  const { address: eoaAddress } = useAccount();
 
   const { data: status } = useBridgeStatus({
     zeroWalletAddress,
@@ -42,6 +45,9 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
 
   const fromChainName = status?.fromChain || 'Unknown';
   const toChainName = status?.toChain || 'Unknown';
+
+  const fromWalletAddress = getWalletAddressForChain(statusFromChainId, eoaAddress, zeroWalletAddress);
+  const toWalletAddress = status?.destinationAddress;
 
   const onViewTransaction = () => {
     openExplorerForTransaction(transactionHash, statusFromChainId, status?.explorerUrl);
@@ -77,7 +83,7 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
               <FormattedNumber value={formattedAmount} />
             </div>
             <div className={styles.chainName}>{fromChainName}</div>
-            {zeroWalletAddress && <div className={styles.walletAddress}>{formatAddress(zeroWalletAddress)}</div>}
+            {fromWalletAddress && <div className={styles.walletAddress}>{formatAddress(fromWalletAddress)}</div>}
           </div>
 
           <div className={styles.tokenInfoSeparator}>
@@ -96,15 +102,12 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
               <FormattedNumber value={formattedAmount} />
             </div>
             <div className={styles.chainName}>{toChainName}</div>
-            {status?.destinationAddress && (
-              <div className={styles.walletAddress}>{formatAddress(status.destinationAddress)}</div>
-            )}
+            {toWalletAddress && <div className={styles.walletAddress}>{formatAddress(toWalletAddress)}</div>}
           </div>
         </div>
 
         <div className={styles.footer}>
           <div className={styles.actions}>
-            <Button onClick={onClose}>Close</Button>
             {status?.explorerUrl && (
               <Button onClick={onViewTransaction} variant='secondary'>
                 View Transaction
@@ -115,6 +118,9 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
                 View Claim
               </Button>
             )}
+            <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+              Activity
+            </Button>
           </div>
         </div>
       </div>

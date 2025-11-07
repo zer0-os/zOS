@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { bridgeTokenRequest, BridgeTokenPayload } from '../../queries/bridgeQueries';
+import { normalizeWalletError } from '../lib/utils';
 
 interface UseBridgeTokenParams {
   zeroWalletAddress: string | undefined;
@@ -31,8 +32,14 @@ export function useBridgeToken({ zeroWalletAddress, onSuccess, onError }: UseBri
         toChainId: params.toChainId,
       };
 
-      const response = await bridgeTokenRequest(zeroWalletAddress, payload);
-      return response.transactionHash;
+      try {
+        const response = await bridgeTokenRequest(zeroWalletAddress, payload);
+        return response.transactionHash;
+      } catch (error) {
+        const normalizedError = normalizeWalletError(error);
+        onError?.(normalizedError);
+        throw normalizedError;
+      }
     },
     onSuccess,
     onError,

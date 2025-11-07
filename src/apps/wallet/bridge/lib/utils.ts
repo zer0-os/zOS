@@ -460,3 +460,41 @@ export function getBridgeValidationErrorMessage(error: BridgeValidationError): s
       return '';
   }
 }
+
+export function normalizeWalletError(error: unknown): Error {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorCode = (error as any)?.code;
+  const errorReason = (error as any)?.reason;
+
+  if (
+    errorMessage.includes('execution reverted') ||
+    errorMessage.includes('transaction may fail') ||
+    errorMessage.includes('transaction failed') ||
+    errorMessage.includes('cannot estimate gas') ||
+    errorMessage.includes('UNPREDICTABLE_GAS_LIMIT') ||
+    errorMessage.includes('CALL_EXCEPTION') ||
+    errorCode === 3 || // Execution reverted
+    errorCode === 'CALL_EXCEPTION' ||
+    errorReason === 'execution reverted'
+  ) {
+    return new Error('Transaction failed. Please check your wallet and try again.');
+  }
+
+  if (errorMessage.includes('user rejected') || errorMessage.includes('User denied') || errorCode === 4001) {
+    return new Error('Transaction was cancelled.');
+  }
+
+  if (errorMessage.includes('insufficient funds') || errorMessage.includes('insufficient balance')) {
+    return new Error('Insufficient funds for this transaction.');
+  }
+
+  if (errorMessage.includes('network') || errorMessage.includes('connection') || errorCode === 'NETWORK_ERROR') {
+    return new Error('Network error. Please check your connection and try again.');
+  }
+
+  if (errorMessage.includes('wallet') || errorMessage.includes('MetaMask') || errorMessage.includes('RPC')) {
+    return new Error('Wallet error. Please try again.');
+  }
+
+  return error instanceof Error ? error : new Error(String(error));
+}

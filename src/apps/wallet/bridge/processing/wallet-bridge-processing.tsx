@@ -108,9 +108,16 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
               {merkleProofLoading ? (
                 <div className={styles.subtitle}>Loading merkle proof...</div>
               ) : merkleProof ? (
-                <Button onClick={onFinalize} disabled={isFinalizing}>
-                  {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}
-                </Button>
+                <>
+                  <Button onClick={onFinalize} disabled={isFinalizing}>
+                    {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}
+                  </Button>
+                  {transactionHash && (
+                    <Button onClick={onViewTransaction} variant='secondary'>
+                      View on Explorer
+                    </Button>
+                  )}
+                </>
               ) : (
                 <div className={styles.subtitle}>Preparing finalization...</div>
               )}
@@ -120,9 +127,8 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
             )}
             <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
             <div className={styles.buttonGroup}>
-              <Button onClick={onClose} variant='secondary'>
-                <IconClockRewind size={16} />
-                <span>Activity</span>
+              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+                Activity
               </Button>
             </div>
           </>
@@ -145,9 +151,8 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
             </div>
             <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
             <div className={styles.buttonGroup}>
-              <Button onClick={onClose} variant='secondary'>
-                <IconClockRewind size={16} />
-                <span>Activity</span>
+              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+                Activity
               </Button>
             </div>
           </>

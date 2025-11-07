@@ -38,7 +38,19 @@ export const ActivityItem = ({ activity, onActivityClick, getStatusClassName }: 
   };
 
   return (
-    <button key={activity.transactionHash} className={styles.activityItem} onClick={() => onActivityClick(activity)}>
+    <div
+      key={activity.transactionHash}
+      className={styles.activityItem}
+      onClick={() => onActivityClick(activity)}
+      role='button'
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onActivityClick(activity);
+        }
+      }}
+    >
       <div className={styles.activityDetails}>
         <TokenIcon className={styles.tokenIcon} url={tokenInfo.logo} name={tokenInfo.name} chainId={fromChainId} />
         <div className={styles.activityInfo}>
@@ -61,6 +73,6 @@ export const ActivityItem = ({ activity, onActivityClick, getStatusClassName }: 
           </div>
         </div>
       </div>
-    </button>
+    </div>
   );
 };

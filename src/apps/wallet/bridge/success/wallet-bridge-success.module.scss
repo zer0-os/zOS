@@ -101,12 +101,15 @@
   display: flex;
   justify-content: center;
   gap: var(--m-spacing);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 
   button {
-    flex: 1;
-    max-width: 200px;
-    min-width: 150px;
+    flex: 0 1 auto;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xs-spacing);
   }
 }
 

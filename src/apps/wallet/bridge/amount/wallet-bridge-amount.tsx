@@ -203,7 +203,9 @@ export const WalletBridgeAmount = ({ onNext, onBack }: WalletBridgeAmountProps) 
       </div>
 
       <div className={styles.buttonContainer}>
-        <Button onClick={onSubmitAmount}>{!fromToken ? 'Select Tokens to Continue' : 'Continue'}</Button>
+        <Button onClick={onSubmitAmount} variant='secondary'>
+          {!fromToken ? 'Select Tokens to Continue' : 'Continue'}
+        </Button>
         {showValidationError && errorMessage && <div className={styles.errorText}>{errorMessage}</div>}
       </div>
 

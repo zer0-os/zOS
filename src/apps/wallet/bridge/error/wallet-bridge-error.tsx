@@ -1,6 +1,6 @@
 import { IconButton } from '@zero-tech/zui/components';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
-import { IconAlertCircle, IconXClose } from '@zero-tech/zui/icons';
+import { IconAlertCircle, IconXClose, IconClockRewind } from '@zero-tech/zui/icons';
 import { openExplorerForTransaction } from '../lib/utils';
 import { Button } from '../../components/button/button';
 import { useSelector } from 'react-redux';
@@ -47,13 +47,18 @@ export const WalletBridgeError = ({ transactionHash, fromChainId, onClose }: Wal
           </div>
         </div>
 
-        <div className={styles.actions}>
-          <Button onClick={onClose}>Close</Button>
+        <div className={styles.buttonGroup}>
           {status?.explorerUrl && (
             <Button onClick={onViewTransaction} variant='secondary'>
               View Transaction
             </Button>
           )}
+        </div>
+        <div className={styles.infoText}>Back to activity list</div>
+        <div className={styles.buttonGroup}>
+          <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+            Activity
+          </Button>
         </div>
       </div>
     </div>

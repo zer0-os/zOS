@@ -67,12 +67,14 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
     const isFromZeroWallet = bridgeParams.fromWalletAddress === zeroWalletAddress;
 
     if (isFromEOA) {
+      // When bridging from EOA to L2, use the Zero Wallet address as destination
+      // The bridge will send funds to the Zero Wallet address on the destination chain
       await eoaBridgeMutation.bridgeFromEOA({
         fromChainId: bridgeParams.fromChainId,
         toChainId: bridgeParams.toChainId,
         tokenAddress: bridgeParams.fromToken.tokenAddress,
         amount: bridgeParams.amount,
-        destinationAddress: bridgeParams.toWalletAddress || '',
+        destinationAddress: zeroWalletAddress || '',
         decimals: bridgeParams.fromToken.decimals || 18,
         eoaAddress: eoaAddress || '',
       });
@@ -191,7 +193,7 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
         <div className={styles.confirmButtonText}>Once made, your transaction is irreversible.</div>
         <div className={styles.confirmButtonWrapper}>
           <div className={styles.buttonContainer}>
-            <Button onClick={onSubmit} disabled={isSubmitting}>
+            <Button onClick={onSubmit} disabled={isSubmitting} variant='secondary'>
               {getButtonText()}
             </Button>
             {error && <div className={styles.errorText}>{error}</div>}

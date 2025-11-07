@@ -40,6 +40,8 @@
   flex-direction: column;
   gap: 6px;
   padding: var(--l-spacing);
+  width: fit-content;
+  align-self: center;
 }
 
 .errorText {

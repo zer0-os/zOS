@@ -33,3 +33,14 @@ export async function personalSignToken(walletClient: WalletClient, currentAddre
     message: config.web3AuthenticationMessage,
   });
 }
+
+export async function signSIWEMessage(
+  walletClient: WalletClient,
+  address: `0x${string}`,
+  message: string
+): Promise<`0x${string}`> {
+  return await walletClient.signMessage({
+    account: address,
+    message,
+  });
+}

@@ -28,8 +28,6 @@ jobs:
     environment: development
     env:
       REACT_APP_INFURA_URL: ${{secrets.INFURA_URL}}
-      REACT_APP_CLOUDINARY_PREFIX: ${{secrets.CLOUDINARY_PREFIX}}
-      REACT_APP_CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
       REACT_APP_ETH_CHAIN: ${{secrets.ETH_CHAIN}}
       REACT_APP_ZERO_API_URL: ${{secrets.ZERO_API_URL_NEW}}
       REACT_APP_SENTRY_DSN: ${{secrets.SENTRY_DSN}}

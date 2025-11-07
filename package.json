@@ -1,6 +1,6 @@
 {
   "name": "ZERO",
-  "version": "1.448.6",
+  "version": "1.450.0",
   "private": true,
   "main": "./public/electron.js",
   "engines": {
@@ -41,7 +41,6 @@
     "blurhash": "^2.0.5",
     "buffer": "^6.0.3",
     "classnames": "^2.3.1",
-    "cloudinary-core": "^2.13.1",
     "emoji-mart": "^3.0.1",
     "es6-promise-debounce": "^1.0.1",
     "ethers": "^5.5.2",

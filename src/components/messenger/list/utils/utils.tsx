@@ -2,6 +2,28 @@ import { monthsSince, fromNow } from '../../../../lib/date';
 import { featureFlags } from '../../../../lib/feature-flags';
 import { User } from '../../../../store/channels';
 
+function abbreviatePresence(text: string): string {
+  // keep non-relative strings as is (e.g., 'online', '')
+  if (!text || text === 'online') return text;
+
+  const match = text.match(/^(\d+|an?|a)\s+(second|minute|hour|day|month|year)s?\s+ago$/i);
+  if (!match) return text; // unrecognised pattern
+
+  let [, numRaw, unit] = match;
+  const num = numRaw === 'a' || numRaw === 'an' ? '1' : numRaw;
+  const abbrMap: Record<string, string> = {
+    second: 's',
+    minute: 'm',
+    hour: 'h',
+    day: 'd',
+    month: 'mo',
+    year: 'y',
+  };
+
+  const suffix = abbrMap[unit.toLowerCase()];
+  return `${num}${suffix} ago`;
+}
+
 export function lastSeenText(user): string {
   if (user.isOnline) {
     return 'Online';
@@ -15,14 +37,15 @@ export function lastSeenText(user): string {
 }
 
 // Truncate long ZIDs to fit within UI
-export function truncateSubHandle(subHandle: string, maxLen = 14): string {
+export function truncateSubHandle(subHandle: string, maxLen = 18): string {
   if (!subHandle) return '';
   return subHandle.length > maxLen ? `${subHandle.slice(0, maxLen)}...` : subHandle;
 }
 
 export function subHandleWithPresence(user: User, truncate = false): string {
   const rawSubHandle = user?.displaySubHandle || '';
-  const presenceText = featureFlags.enablePresence ? (lastSeenText(user) || '').toLowerCase() : '';
+  const presenceRaw = featureFlags.enablePresence ? (lastSeenText(user) || '').toLowerCase() : '';
+  const presenceText = abbreviatePresence(presenceRaw);
 
   const subHandle = truncate ? truncateSubHandle(rawSubHandle) : rawSubHandle;
 

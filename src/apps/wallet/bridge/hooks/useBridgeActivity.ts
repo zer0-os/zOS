@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { bridgeActivityRequest } from '../../queries/bridgeQueries';
 
 interface UseBridgeActivityParams {
-  zeroWalletAddress: string | undefined;
+  address: string | undefined;
   fromChainId?: number;
   limit?: number;
   offset?: number;
@@ -10,7 +10,7 @@ interface UseBridgeActivityParams {
 }
 
 export function useBridgeActivity({
-  zeroWalletAddress,
+  address,
   fromChainId,
   limit = 25,
   offset = 0,
@@ -19,16 +19,16 @@ export function useBridgeActivity({
   return useQuery({
     queryKey: [
       'bridge-activity',
-      zeroWalletAddress,
+      address,
       fromChainId,
       limit,
       offset,
     ],
     queryFn: async () => {
-      if (!zeroWalletAddress) return { deposits: [], totalCount: 0 };
-      return bridgeActivityRequest(zeroWalletAddress, { fromChainId, limit, offset });
+      if (!address) return { deposits: [], totalCount: 0 };
+      return bridgeActivityRequest(address, { fromChainId, limit, offset });
     },
-    enabled: enabled && !!zeroWalletAddress,
+    enabled: enabled && !!address,
     staleTime: 1000 * 30, // 30 seconds
   });
 }

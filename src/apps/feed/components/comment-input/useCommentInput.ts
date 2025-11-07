@@ -2,13 +2,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { SagaActionTypes } from '../../../../store/posts';
 import { useSubmitPost } from '../../lib/useSubmitPost';
-import { userProfileImageSelector } from '../../../../store/authentication/selectors';
+import { userProfileImageSelector, currentUserSelector } from '../../../../store/authentication/selectors';
 import { activeConversationIdSelector } from '../../../../store/chat/selectors';
 
 export const useCommentInput = (postId: string, channelZid?: string) => {
   const dispatch = useDispatch();
 
   const userProfileImageUrl = useSelector(userProfileImageSelector);
+  const currentUser = useSelector(currentUserSelector);
 
   const channelId = useSelector(activeConversationIdSelector);
 
@@ -19,7 +20,9 @@ export const useCommentInput = (postId: string, channelZid?: string) => {
   };
 
   const onSubmitFeed = (value: string, mediaId?: string) => {
-    handleOnSubmitPost({ message: value, mediaId, channelZid, replyToId: postId });
+    // Use channelZid if provided, otherwise fallback to Z wallet
+    const fallbackChannelZid = channelZid || currentUser?.zeroWalletAddress;
+    handleOnSubmitPost({ message: value, mediaId, channelZid: fallbackChannelZid, replyToId: postId });
   };
 
   return {

@@ -1,3 +1,8 @@
+export interface ChallengeResponse {
+  message: string;
+  nonce: string;
+}
+
 export interface AuthorizationResponse {
   accessToken?: string;
   nonceToken?: string;

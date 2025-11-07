@@ -1,10 +1,10 @@
 import { createBrowserHistory, createHashHistory, History } from 'history';
-import { getProvider } from '../../lib/cloudinary/provider';
 import { Message } from '../../store/messages';
 import { isElectron } from '../../utils';
 import { nativeWindow } from '@todesktop/client-core';
 
 const DEFAULT_HEADING = 'Chat message received';
+const NOTIFICATION_ICON = '/logo192.png';
 
 export const send = (options: { body; heading; tag }) => {
   const { body, heading, tag } = options;
@@ -14,7 +14,7 @@ export const send = (options: { body; heading; tag }) => {
     // from triggering so we disable it on Electron
     tag: !isElectron() ? tag : undefined,
     body,
-    icon: getProvider().getSource({ src: '', local: false, options: {} }),
+    icon: NOTIFICATION_ICON,
   });
 
   // add click event to show window on desktop

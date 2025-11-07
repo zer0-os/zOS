@@ -2,6 +2,7 @@ import { BridgeStatusResponse } from '../../../queries/bridgeQueries';
 import { IconButton } from '@zero-tech/zui/components';
 import { IconChevronRight, IconLinkExternal1 } from '@zero-tech/zui/icons';
 import { TokenIcon } from '../../../components/token-icon/token-icon';
+import { FormattedNumber } from '../../../components/formatted-number/formatted-number';
 import {
   formatBridgeAmount,
   getBridgeStatusLabel,
@@ -48,7 +49,7 @@ export const ActivityItem = ({ activity, onActivityClick, getStatusClassName }: 
         <div className={styles.activityAmount}>
           <TokenIcon className={styles.tokenIcon} url={tokenInfo.logo} name={tokenInfo.symbol} />
           <span>
-            {formattedAmount} {tokenInfo.symbol}
+            <FormattedNumber value={formattedAmount} /> {tokenInfo.symbol}
           </span>
         </div>
         <div className={styles.activityChains}>

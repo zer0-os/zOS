@@ -6,10 +6,10 @@ import { Input, SelectInput, IconButton } from '@zero-tech/zui/components';
 import { IconSearchMd, IconLinkExternal1 } from '@zero-tech/zui/icons';
 import { Button } from '../../../components/button/button';
 import { TokenIcon } from '../../../components/token-icon/token-icon';
+import { FormattedNumber } from '../../../components/formatted-number/formatted-number';
 import { TokenBalance } from '../../../types';
 import { BridgeBottomSheet } from '../bridge-bottom-sheet/bridge-bottom-sheet';
 import {
-  formatAmount,
   getWalletAddressForChain,
   getAvailableChainsForBridge,
   formatAddress,
@@ -227,7 +227,7 @@ export const BridgeTokenSelector = ({
                         <div className={styles.tokenInfo}>
                           <div className={styles.tokenName}>{token.name}</div>
                           <div className={styles.tokenCount}>
-                            {formatAmount(token.amount)} <span>{token.symbol}</span>
+                            <FormattedNumber value={token.amount} /> <span>{token.symbol}</span>
                           </div>
                         </div>
 

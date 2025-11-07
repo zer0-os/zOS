@@ -10,6 +10,7 @@ import {
 } from '../lib/utils';
 import { Button } from '../../components/button/button';
 import { TokenIcon } from '../../components/token-icon/token-icon';
+import { FormattedNumber } from '../../components/formatted-number/formatted-number';
 import { useSelector } from 'react-redux';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeStatus } from '../hooks/useBridgeStatus';
@@ -72,7 +73,9 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
               className={styles.smallTokenIcon}
             />
             <div className={styles.tokenName}>{tokenInfo?.name || tokenInfo?.symbol || 'Token'}</div>
-            <div className={styles.tokenAmount}>{formattedAmount}</div>
+            <div className={styles.tokenAmount}>
+              <FormattedNumber value={formattedAmount} />
+            </div>
             <div className={styles.chainName}>{fromChainName}</div>
             {zeroWalletAddress && <div className={styles.walletAddress}>{formatAddress(zeroWalletAddress)}</div>}
           </div>
@@ -89,7 +92,9 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
               className={styles.smallTokenIcon}
             />
             <div className={styles.tokenName}>{tokenInfo?.name || tokenInfo?.symbol || 'Token'}</div>
-            <div className={styles.tokenAmount}>{formattedAmount}</div>
+            <div className={styles.tokenAmount}>
+              <FormattedNumber value={formattedAmount} />
+            </div>
             <div className={styles.chainName}>{toChainName}</div>
             {status?.destinationAddress && (
               <div className={styles.walletAddress}>{formatAddress(status.destinationAddress)}</div>

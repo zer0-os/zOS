@@ -1,8 +1,9 @@
 import { Input, IconButton } from '@zero-tech/zui/components';
 import { Button } from '../../../components/button/button';
 import { TokenIcon } from '../../../components/token-icon/token-icon';
+import { FormattedNumber } from '../../../components/formatted-number/formatted-number';
 import { IconChevronRight, IconLinkExternal1 } from '@zero-tech/zui/icons';
-import { CHAIN_NAMES, formatAmount, formatAddress, openExplorerForAddress } from '../../lib/utils';
+import { CHAIN_NAMES, formatAddress, openExplorerForAddress } from '../../lib/utils';
 
 import styles from './bridge-token-input.module.scss';
 
@@ -109,7 +110,7 @@ export const BridgeTokenInput = ({
                 'Loading...'
               ) : selectedToken?.balance ? (
                 <>
-                  {formatAmount(selectedToken.balance)} {selectedToken.symbol}
+                  <FormattedNumber value={selectedToken.balance} /> {selectedToken.symbol}
                 </>
               ) : (
                 '0.0'
@@ -129,7 +130,7 @@ export const BridgeTokenInput = ({
       {!isFrom && selectedToken && (
         <div className={styles.outputSection}>
           <div className={styles.amountDisplay}>
-            {formatAmount(amount)} <span className={styles.tokenSymbol}>{selectedToken.symbol}</span>
+            <FormattedNumber value={amount || '0'} /> <span className={styles.tokenSymbol}>{selectedToken.symbol}</span>
           </div>
         </div>
       )}

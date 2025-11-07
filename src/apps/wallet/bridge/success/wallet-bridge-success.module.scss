@@ -63,7 +63,7 @@
 }
 
 .tokenAmount {
-  font-size: 18px;
+  font-size: 12px;
   color: var(--text-primary);
   font-weight: 600;
 }
@@ -98,9 +98,19 @@
 }
 
 .actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--l-spacing);
+  display: flex;
+  justify-content: center;
+  gap: var(--m-spacing);
+  flex-wrap: nowrap;
+
+  button {
+    flex: 0 1 auto;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xs-spacing);
+  }
 }
 
 .statusIcon {

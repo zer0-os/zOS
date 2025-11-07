@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { Button } from '../../components/button/button';
 import { IconButton } from '@zero-tech/zui/components';
-import { FormattedNumber } from '../../components/formatted-number/formatted-number';
 import { IconChevronRightDouble, IconLinkExternal1 } from '@zero-tech/zui/icons';
 import { truncateAddress } from '../../utils/address';
 import { TokenIcon } from '../../components/token-icon/token-icon';
+import { FormattedNumber } from '../../components/formatted-number/formatted-number';
 import { BridgeParams, CHAIN_NAMES, openExplorerForAddress, formatAddress } from '../lib/utils';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeToken } from '../hooks/useBridgeToken';
+import { useBridgeFromEOA } from '../hooks/useBridgeFromEOA';
 
 import styles from './wallet-bridge-review.module.scss';
 
@@ -22,6 +24,7 @@ interface WalletBridgeReviewProps {
 export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridgeReviewProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
+  const { address: eoaAddress } = useAccount();
   const [error, setError] = useState<string | null>(null);
 
   const bridgeMutation = useBridgeToken({
@@ -34,6 +37,24 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
     },
   });
 
+  const eoaBridgeMutation = useBridgeFromEOA({
+    onSuccess: (transactionHash) => {
+      onNext(transactionHash);
+    },
+    onError: (err: Error) => {
+      setError(err.message || 'Failed to initiate bridge');
+    },
+  });
+
+  const getButtonText = () => {
+    if (eoaBridgeMutation.isApproving) return 'Approving Token...';
+    if (eoaBridgeMutation.isBridging) return 'Bridging...';
+    if (bridgeMutation.isPending) return 'Processing...';
+    return 'Confirm Bridge';
+  };
+
+  const isSubmitting = bridgeMutation.isPending || eoaBridgeMutation.isPending;
+
   const onSubmit = async () => {
     if (!bridgeParams.fromToken?.tokenAddress) {
       setError('Token address is required');
@@ -41,19 +62,44 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
     }
 
     setError(null);
-    bridgeMutation.mutate({
-      tokenAddress: bridgeParams.fromToken.tokenAddress,
-      amount: bridgeParams.amount,
-      to: bridgeParams.toWalletAddress || '',
-      fromChainId: bridgeParams.fromChainId,
-      toChainId: bridgeParams.toChainId,
-    });
+
+    const isFromEOA = bridgeParams.fromWalletAddress === eoaAddress;
+    const isFromZeroWallet = bridgeParams.fromWalletAddress === zeroWalletAddress;
+
+    if (isFromEOA) {
+      // When bridging from EOA to L2, use the Zero Wallet address as destination
+      // The bridge will send funds to the Zero Wallet address on the destination chain
+      await eoaBridgeMutation.bridgeFromEOA({
+        fromChainId: bridgeParams.fromChainId,
+        toChainId: bridgeParams.toChainId,
+        tokenAddress: bridgeParams.fromToken.tokenAddress,
+        amount: bridgeParams.amount,
+        destinationAddress: zeroWalletAddress || '',
+        decimals: bridgeParams.fromToken.decimals || 18,
+        eoaAddress: eoaAddress || '',
+      });
+    } else if (isFromZeroWallet) {
+      bridgeMutation.mutate({
+        tokenAddress: bridgeParams.fromToken.tokenAddress,
+        amount: bridgeParams.amount,
+        to: bridgeParams.toWalletAddress || '',
+        fromChainId: bridgeParams.fromChainId,
+        toChainId: bridgeParams.toChainId,
+      });
+    } else {
+      setError('Invalid wallet configuration');
+    }
   };
 
   const fromChainName = CHAIN_NAMES[bridgeParams.fromChainId] || 'Unknown';
   const toChainName = CHAIN_NAMES[bridgeParams.toChainId] || 'Unknown';
   const fromWalletAddress = bridgeParams.fromWalletAddress;
   const toWalletAddress = bridgeParams.toWalletAddress;
+
+  const isFromZeroWallet = fromWalletAddress === zeroWalletAddress;
+  const isToZeroWallet = toWalletAddress === zeroWalletAddress;
+  const fromWalletType = isFromZeroWallet ? 'Zero Wallet' : 'EOA Wallet';
+  const toWalletType = isToZeroWallet ? 'Zero Wallet' : 'EOA Wallet';
 
   const handleDestinationLink = () => {
     openExplorerForAddress(toWalletAddress, bridgeParams.toChainId);
@@ -67,11 +113,11 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
         <div className={styles.confirmRecipient}>
           <div className={styles.confirmRecipientTitle}>Confirm bridge transaction</div>
           <div className={styles.recipientName}>
-            Bridge tokens from {fromChainName} to {toChainName}
+            {fromChainName} ({fromWalletType}) to {toChainName} ({toWalletType})
           </div>
           {toWalletAddress && (
             <div className={styles.recipientAddress}>
-              <span>Destination: {truncateAddress(toWalletAddress)}</span>
+              <span>Receiving Wallet: {truncateAddress(toWalletAddress)}</span>
               <IconButton
                 Icon={IconLinkExternal1}
                 onClick={handleDestinationLink}
@@ -136,7 +182,7 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
             <span>{fromWalletAddress ? truncateAddress(fromWalletAddress) : '—'}</span>
           </div>
           <div className={styles.networkItem}>
-            <span>To Wallet</span>
+            <span>Receiving Wallet</span>
             <span>{toWalletAddress ? truncateAddress(toWalletAddress) : '—'}</span>
           </div>
         </div>
@@ -147,8 +193,8 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
         <div className={styles.confirmButtonText}>Once made, your transaction is irreversible.</div>
         <div className={styles.confirmButtonWrapper}>
           <div className={styles.buttonContainer}>
-            <Button onClick={onSubmit} disabled={bridgeMutation.isPending}>
-              {bridgeMutation.isPending ? 'Processing...' : 'Confirm Bridge'}
+            <Button onClick={onSubmit} disabled={isSubmitting} variant='secondary'>
+              {getButtonText()}
             </Button>
             {error && <div className={styles.errorText}>{error}</div>}
           </div>

@@ -1,13 +1,12 @@
-import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import {
-  BridgeParams,
   CHAIN_ID_ZCHAIN,
   CHAIN_ID_ZEPHYR,
   CHAIN_ID_ETHEREUM,
   CHAIN_ID_SEPOLIA,
   openExplorerForTransaction,
+  getChainIdFromName,
 } from '../lib/utils';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeStatus } from '../hooks/useBridgeStatus';
@@ -16,85 +15,84 @@ import { useFinalizeBridge } from '../hooks/useFinalizeBridge';
 import { TransactionLoadingSpinner } from '../../send/components/transaction-loading-spinner';
 import { useAccount } from 'wagmi';
 import { Button } from '../../components/button/button';
+import { IconClockRewind } from '@zero-tech/zui/icons';
 
 import styles from './wallet-bridge-processing.module.scss';
 
 interface WalletBridgeProcessingProps {
-  bridgeParams: BridgeParams;
   transactionHash: string;
-  onSuccess: () => void;
-  onError: () => void;
+  fromChainId: number;
+  onClose: () => void;
 }
 
-const BRIDGE_NETWORK_IDS = {
-  ETHEREUM: 0,
-  Z_CHAIN: 14,
+// Bridge network IDs used by the bridge API
+const BRIDGE_NETWORK_IDS: Record<number, number> = {
+  [CHAIN_ID_ETHEREUM]: 0,
+  [CHAIN_ID_SEPOLIA]: 0,
+  [CHAIN_ID_ZCHAIN]: 14,
+  [CHAIN_ID_ZEPHYR]: 25,
 };
 
-export const WalletBridgeProcessing = ({
-  bridgeParams,
-  transactionHash,
-  onSuccess,
-  onError,
-}: WalletBridgeProcessingProps) => {
+// Get the bridge network ID for a given chain ID
+function getNetIdFromChainId(chainId: number): number {
+  return BRIDGE_NETWORK_IDS[chainId] ?? 0;
+}
+
+export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }: WalletBridgeProcessingProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const { address: eoaAddress } = useAccount();
 
-  const isZChainToEthereum =
-    (bridgeParams.fromChainId === CHAIN_ID_ZCHAIN || bridgeParams.fromChainId === CHAIN_ID_ZEPHYR) &&
-    (bridgeParams.toChainId === CHAIN_ID_ETHEREUM || bridgeParams.toChainId === CHAIN_ID_SEPOLIA);
-
   const { data: status } = useBridgeStatus({
     zeroWalletAddress,
     transactionHash,
-    fromChainId: bridgeParams.fromChainId,
+    fromChainId,
     enabled: true,
-    // polls every 5s until completed/failed
+    refetchInterval: false,
   });
+
+  // Derive chain IDs from status data (single source of truth)
+  const statusFromChainId = status ? getChainIdFromName(status.fromChain) : fromChainId;
+  const statusToChainId = status ? getChainIdFromName(status.toChain) : 0;
+
+  const isZChainToEthereum =
+    (statusFromChainId === CHAIN_ID_ZCHAIN || statusFromChainId === CHAIN_ID_ZEPHYR) &&
+    (statusToChainId === CHAIN_ID_ETHEREUM || statusToChainId === CHAIN_ID_SEPOLIA);
 
   const needsMerkleProof = isZChainToEthereum && status?.readyForClaim && !status?.claimTxHash;
   const { data: merkleProof, isLoading: merkleProofLoading } = useBridgeMerkleProof({
     zeroWalletAddress,
     depositCount: status?.depositCount,
-    netId: BRIDGE_NETWORK_IDS.ETHEREUM,
-    fromChainId: bridgeParams.fromChainId,
+    netId: getNetIdFromChainId(statusToChainId),
+    fromChainId: statusFromChainId,
     enabled: needsMerkleProof,
   });
 
   const finalizeMutation = useFinalizeBridge({
     eoaAddress,
     onSuccess: () => {
-      // Status will update via polling
+      // Finalization complete - user can check activity list for updated status
     },
   });
-
-  // Handle status changes
-  useEffect(() => {
-    if (status?.status === 'completed') {
-      onSuccess();
-    } else if (status?.status === 'failed') {
-      onError();
-    }
-  }, [status?.status, onSuccess, onError]);
 
   const onFinalize = () => {
     if (!status || !merkleProof) return;
     finalizeMutation.mutate({
       status,
       merkleProof,
-      toChainId: bridgeParams.toChainId,
+      toChainId: statusToChainId,
     });
   };
 
   const onViewTransaction = () => {
-    openExplorerForTransaction(transactionHash, bridgeParams.fromChainId, status?.explorerUrl);
+    openExplorerForTransaction(transactionHash, statusFromChainId, status?.explorerUrl);
   };
 
   const isProcessing = status?.status === 'processing';
   const isReadyForClaim = status?.status === 'on-hold' && status?.readyForClaim;
   const isFinalizing = finalizeMutation.isPending;
-  const showFinalizeContent = isReadyForClaim && isZChainToEthereum;
+  const finalizationStarted = finalizeMutation.isSuccess || isFinalizing;
+  const showFinalizeContent = isReadyForClaim && isZChainToEthereum && !finalizationStarted;
 
   return (
     <div className={styles.container}>
@@ -106,30 +104,57 @@ export const WalletBridgeProcessing = ({
           <>
             <div className={styles.title}>Bridge is ready to finalize</div>
             <div className={styles.subtitle}>Complete the bridge by finalizing on Ethereum.</div>
-            {merkleProofLoading ? (
-              <div className={styles.subtitle}>Loading merkle proof...</div>
-            ) : merkleProof ? (
-              <Button onClick={onFinalize} disabled={isFinalizing}>
-                {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}
-              </Button>
-            ) : (
-              <div className={styles.subtitle}>Preparing finalization...</div>
-            )}
+            <div className={styles.buttonGroup}>
+              {merkleProofLoading ? (
+                <div className={styles.subtitle}>Loading merkle proof...</div>
+              ) : merkleProof ? (
+                <>
+                  <Button onClick={onFinalize} disabled={isFinalizing}>
+                    {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}
+                  </Button>
+                  {transactionHash && (
+                    <Button onClick={onViewTransaction} variant='secondary'>
+                      View on Explorer
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <div className={styles.subtitle}>Preparing finalization...</div>
+              )}
+            </div>
             {finalizeMutation.isError && (
               <div className={styles.errorText}>{finalizeMutation.error?.message || 'Finalization failed'}</div>
             )}
+            <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
+            <div className={styles.buttonGroup}>
+              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+                Activity
+              </Button>
+            </div>
           </>
         ) : (
           <>
             <div className={styles.title}>
-              {isFinalizing ? 'Finalizing bridge transaction' : 'Bridge transaction is being processed'}
+              {finalizationStarted ? 'Finalization started' : 'Bridge transaction is being processed'}
             </div>
-            <div className={styles.subtitle}>{isFinalizing ? 'Just a moment.' : 'This may take a few minutes.'}</div>
-            {isProcessing && transactionHash && (
-              <Button onClick={onViewTransaction} variant='secondary'>
-                View on Explorer
+            <div className={styles.subtitle}>
+              {finalizationStarted
+                ? 'Check your activity list for the latest status.'
+                : 'This may take a few minutes, up to 30 minutes.'}
+            </div>
+            <div className={styles.buttonGroup}>
+              {isProcessing && transactionHash && !finalizationStarted && (
+                <Button onClick={onViewTransaction} variant='secondary'>
+                  View on Explorer
+                </Button>
+              )}
+            </div>
+            <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
+            <div className={styles.buttonGroup}>
+              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+                Activity
               </Button>
-            )}
+            </div>
           </>
         )}
       </div>

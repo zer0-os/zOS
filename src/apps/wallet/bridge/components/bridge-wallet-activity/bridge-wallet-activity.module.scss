@@ -1,0 +1,150 @@
+.activitySection {
+  width: 100%;
+  margin-top: var(--l-spacing);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-spacing);
+}
+
+.activityHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activityHeader {
+  display: flex;
+  gap: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.activityTabs {
+  display: flex;
+  gap: var(--s-spacing);
+}
+
+.tab,
+.tabActive {
+  background: none;
+  border: none;
+  padding: var(--xs-spacing) var(--s-spacing);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--xs-spacing);
+
+  &:hover {
+    color: var(--text-primary);
+  }
+}
+
+.tabActive {
+  color: var(--text-primary);
+  border-bottom-color: var(--color-secondary-11);
+}
+
+.tabCount {
+  font-size: 12px;
+  background-color: var(--bg-accent-dark-blue);
+  padding: 2px 8px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: var(--l-spacing);
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.activityItem {
+  padding: var(--s-spacing) var(--l-spacing);
+  cursor: pointer;
+  text-align: left;
+  background: transparent;
+  border: none;
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+}
+
+.activityStatus {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.statusCompleted {
+  color: var(--color-secondary-11);
+}
+
+.statusPending {
+  color: var(--color-warning-11);
+}
+
+.statusFailed {
+  color: var(--color-failure-11);
+}
+
+.activityDetails {
+  display: flex;
+  align-items: center;
+  gap: var(--l-spacing);
+}
+
+.activityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.activityAmount {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tokenIcon {
+  width: 48px;
+  height: 48px;
+}
+
+.activityChains {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.chainRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}

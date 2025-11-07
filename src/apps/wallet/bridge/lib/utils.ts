@@ -1,3 +1,11 @@
+import { utils } from 'ethers';
+import { CURATED_TOKENS } from './tokens';
+import { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR, ZERO_ADDRESS } from './constants';
+
+// Re-export constants for backward compatibility
+// TODO: Update imports across codebase to import directly from './constants' instead of './utils'
+export { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR, ZERO_ADDRESS };
+
 export interface BridgeParams {
   amount: string;
   fromChainId: number;
@@ -20,19 +28,29 @@ export interface BridgeParams {
   };
 }
 
-export const CHAIN_ID_ETHEREUM = 1;
-export const CHAIN_ID_SEPOLIA = 11155111;
-export const CHAIN_ID_ZCHAIN = 9369;
-export const CHAIN_ID_ZEPHYR = 1417429182;
-
 export const L1_CHAIN_IDS = [CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA] as const;
 export const L2_CHAIN_IDS = [CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR] as const;
 
+// Chain names for UI display
 export const CHAIN_NAMES: Record<number, string> = {
   [CHAIN_ID_ETHEREUM]: 'Ethereum',
   [CHAIN_ID_SEPOLIA]: 'Sepolia',
   [CHAIN_ID_ZCHAIN]: 'Z Chain',
   [CHAIN_ID_ZEPHYR]: 'Zephyr',
+};
+
+// Reverse mapping with aliases to handle both frontend display names and backend API names
+const CHAIN_NAME_TO_ID: Record<string, number> = {
+  Ethereum: CHAIN_ID_ETHEREUM,
+
+  Sepolia: CHAIN_ID_SEPOLIA,
+  'Ethereum Sepolia': CHAIN_ID_SEPOLIA,
+
+  'Z Chain': CHAIN_ID_ZCHAIN,
+  'Z-Chain': CHAIN_ID_ZCHAIN,
+
+  Zephyr: CHAIN_ID_ZEPHYR,
+  'Z-Chain Zephyr': CHAIN_ID_ZEPHYR,
 };
 
 export const RPC_URLS: Record<number, string> = {
@@ -46,8 +64,102 @@ export function getRpcUrl(chainId: number): string | undefined {
   return RPC_URLS[chainId];
 }
 
-// Zero address constant
-export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+export function formatBridgeAmount(amount: string, decimals: number = 18): string {
+  try {
+    return utils.formatUnits(amount, decimals);
+  } catch {
+    return amount;
+  }
+}
+
+export interface BridgeTokenInfo {
+  symbol: string;
+  name: string;
+  decimals: number;
+  logo?: string;
+}
+
+export function getTokenInfo(tokenAddress: string, chainId: number): BridgeTokenInfo {
+  const curatedTokens = CURATED_TOKENS[chainId] || [];
+  const found = curatedTokens.find((t) => t.tokenAddress.toLowerCase() === tokenAddress.toLowerCase());
+
+  if (found) {
+    return {
+      symbol: found.symbol,
+      name: found.name,
+      decimals: found.decimals,
+      logo: found.logo,
+    };
+  }
+
+  return {
+    symbol: 'Unknown',
+    name: 'Unknown Token',
+    decimals: 18,
+  };
+}
+
+export function getChainIdFromName(chainName: string): number {
+  return CHAIN_NAME_TO_ID[chainName] ?? 0;
+}
+
+export function getBridgeStatusLabel(status: string): string {
+  switch (status) {
+    case 'completed':
+      return 'Completed';
+    case 'processing':
+      return 'Processing';
+    case 'on-hold':
+      return 'Ready to Finalize';
+    case 'pending':
+      return 'Pending';
+    case 'failed':
+      return 'Failed';
+    default:
+      return status;
+  }
+}
+
+export interface BridgeActivityData {
+  fromChain: string;
+  toChain: string;
+  amount: string;
+  token: string;
+  tokenAddress: string;
+  destinationAddress: string;
+}
+
+export function mapActivityToBridgeParams(
+  activity: BridgeActivityData,
+  zeroWalletAddress: string | undefined
+): BridgeParams {
+  const fromChainId = getChainIdFromName(activity.fromChain);
+  const toChainId = getChainIdFromName(activity.toChain);
+
+  // Use standard 18 decimals (native tokens and most ERC20s)
+  const decimals = 18;
+  const formattedAmount = formatBridgeAmount(activity.amount, decimals);
+
+  return {
+    fromChainId,
+    toChainId,
+    amount: formattedAmount,
+    fromWalletAddress: zeroWalletAddress,
+    toWalletAddress: activity.destinationAddress,
+    fromToken: {
+      tokenAddress: activity.tokenAddress,
+      symbol: '',
+      name: '',
+      decimals,
+    },
+    toToken: {
+      tokenAddress: activity.tokenAddress,
+      symbol: '',
+      name: '',
+      decimals,
+    },
+  };
+}
 
 export function formatAmount(amount: string): string {
   if (!amount || amount === '0') {
@@ -317,11 +429,16 @@ export function getBridgeValidationError(
   if (fromChainId === toChainId) return 'SAME_CHAIN';
   if (!tokenAddress) return 'NO_TOKEN_ADDRESS';
 
+  if (!amount || Number(amount) <= 0) return 'INVALID_AMOUNT';
+
   // Check if user has balance for the token
   const balance = tokenBalance ? Number(tokenBalance) : 0;
   if (balance <= 0) return 'INSUFFICIENT_BALANCE';
 
-  if (!amount || Number(amount) <= 0) return 'INVALID_AMOUNT';
+  // Check if amount exceeds balance
+  const amountNum = Number(amount);
+  if (amountNum > balance) return 'INSUFFICIENT_BALANCE';
+
   return null;
 }
 
@@ -338,8 +455,46 @@ export function getBridgeValidationErrorMessage(error: BridgeValidationError): s
     case 'NO_TOKEN_ADDRESS':
       return 'Token address is required';
     case 'INSUFFICIENT_BALANCE':
-      return 'You do not have a balance for the selected token';
+      return 'Insufficient balance for this transaction';
     default:
       return '';
   }
+}
+
+export function normalizeWalletError(error: unknown): Error {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorCode = (error as any)?.code;
+  const errorReason = (error as any)?.reason;
+
+  if (
+    errorMessage.includes('execution reverted') ||
+    errorMessage.includes('transaction may fail') ||
+    errorMessage.includes('transaction failed') ||
+    errorMessage.includes('cannot estimate gas') ||
+    errorMessage.includes('UNPREDICTABLE_GAS_LIMIT') ||
+    errorMessage.includes('CALL_EXCEPTION') ||
+    errorCode === 3 || // Execution reverted
+    errorCode === 'CALL_EXCEPTION' ||
+    errorReason === 'execution reverted'
+  ) {
+    return new Error('Transaction failed. Please check your wallet and try again.');
+  }
+
+  if (errorMessage.includes('user rejected') || errorMessage.includes('User denied') || errorCode === 4001) {
+    return new Error('Transaction was cancelled.');
+  }
+
+  if (errorMessage.includes('insufficient funds') || errorMessage.includes('insufficient balance')) {
+    return new Error('Insufficient funds for this transaction.');
+  }
+
+  if (errorMessage.includes('network') || errorMessage.includes('connection') || errorCode === 'NETWORK_ERROR') {
+    return new Error('Network error. Please check your connection and try again.');
+  }
+
+  if (errorMessage.includes('wallet') || errorMessage.includes('MetaMask') || errorMessage.includes('RPC')) {
+    return new Error('Wallet error. Please try again.');
+  }
+
+  return error instanceof Error ? error : new Error(String(error));
 }

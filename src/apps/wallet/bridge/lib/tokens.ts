@@ -1,4 +1,4 @@
-import { ZERO_ADDRESS, CHAIN_ID_ETHEREUM, CHAIN_ID_ZCHAIN, CHAIN_ID_SEPOLIA, CHAIN_ID_ZEPHYR } from './utils';
+import { ZERO_ADDRESS, CHAIN_ID_ETHEREUM, CHAIN_ID_ZCHAIN, CHAIN_ID_SEPOLIA, CHAIN_ID_ZEPHYR } from './constants';
 
 export interface CuratedToken {
   tokenAddress: string;
@@ -7,6 +7,12 @@ export interface CuratedToken {
   decimals: number;
   logo?: string;
   isNative?: boolean;
+}
+
+export const SUPPORTED_BRIDGE_TOKENS = ['WILD', 'mUSDC', 'USDC'];
+
+export function isSupportedBridgeToken(symbol: string): boolean {
+  return SUPPORTED_BRIDGE_TOKENS.includes(symbol);
 }
 
 export const CURATED_TOKENS: Partial<Record<number, CuratedToken[]>> = {
@@ -24,13 +30,6 @@ export const CURATED_TOKENS: Partial<Record<number, CuratedToken[]>> = {
       name: 'Wilder',
       decimals: 18,
       logo: '/tokens/wild.png',
-    },
-    {
-      tokenAddress: '0x0eC78ED49C2D27b315D462d43B5BAB94d2C79bf8',
-      symbol: 'MEOW',
-      name: 'MEOW',
-      decimals: 18,
-      logo: '/tokens/meow.png',
     },
   ],
   [CHAIN_ID_ZCHAIN]: [
@@ -57,6 +56,12 @@ export const CURATED_TOKENS: Partial<Record<number, CuratedToken[]>> = {
       decimals: 18,
       isNative: true,
     },
+    {
+      tokenAddress: '0xAED26A7997802e13288f2fF1278fD618C92D1659',
+      symbol: 'mUSDC',
+      name: 'Mock USDC',
+      decimals: 18,
+    },
   ],
   [CHAIN_ID_ZEPHYR]: [
     {
@@ -65,6 +70,12 @@ export const CURATED_TOKENS: Partial<Record<number, CuratedToken[]>> = {
       name: 'Z',
       decimals: 18,
       isNative: true,
+    },
+    {
+      tokenAddress: '0xE70D44453583485155Cb80a8d122A7d52c4e11a5',
+      symbol: 'mUSDC',
+      name: 'Mock USDC',
+      decimals: 18,
     },
   ],
 };

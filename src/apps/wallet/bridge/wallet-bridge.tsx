@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
-import { BridgeParams, isSupportedBridgeChain } from './lib/utils';
+import { useSelector } from 'react-redux';
+import { BridgeParams, isSupportedBridgeChain, mapActivityToBridgeParams } from './lib/utils';
+import { currentUserSelector } from '../../../store/authentication/selectors';
 
 import { PanelBody } from '../../../components/layout/panel';
 import { WalletBridgeConnect } from './connect/wallet-bridge-connect';
@@ -9,6 +11,7 @@ import { WalletBridgeReview } from './review/wallet-bridge-review';
 import { WalletBridgeProcessing } from './processing/wallet-bridge-processing';
 import { WalletBridgeSuccess } from './success/wallet-bridge-success';
 import { WalletBridgeError } from './error/wallet-bridge-error';
+import { BridgeStatusResponse } from '../queries/bridgeQueries';
 
 import styles from './wallet-bridge.module.scss';
 
@@ -23,6 +26,8 @@ export enum BridgeStage {
 
 export const WalletBridge = () => {
   const { isConnected, chainId } = useAccount();
+  const currentUser = useSelector(currentUserSelector);
+  const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const [stage, setStage] = useState<BridgeStage>(BridgeStage.Connect);
   const [bridgeParams, setBridgeParams] = useState<BridgeParams | null>(null);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
@@ -68,40 +73,53 @@ export const WalletBridge = () => {
     setStage(BridgeStage.Amount);
   };
 
-  const successStage = () => {
-    setStage(BridgeStage.Success);
-  };
-
-  const errorStage = () => {
-    setStage(BridgeStage.Error);
-  };
-
   const resetBridge = () => {
     setBridgeParams(null);
     setTransactionHash(null);
     setStage(BridgeStage.Connect);
   };
 
+  const onActivityClick = (activity: BridgeStatusResponse) => {
+    const params = mapActivityToBridgeParams(activity, zeroWalletAddress);
+    setBridgeParams(params);
+    setTransactionHash(activity.transactionHash);
+
+    if (activity.status === 'failed') {
+      setStage(BridgeStage.Error);
+    } else if (activity.status === 'completed') {
+      setStage(BridgeStage.Success);
+    } else {
+      setStage(BridgeStage.Processing);
+    }
+  };
+
   return (
     <PanelBody className={styles.walletBridge}>
-      {stage === BridgeStage.Connect && <WalletBridgeConnect onNext={amountStage} />}
+      {stage === BridgeStage.Connect && <WalletBridgeConnect onNext={amountStage} onActivityClick={onActivityClick} />}
       {stage === BridgeStage.Amount && <WalletBridgeAmount onNext={reviewStage} onBack={connectStage} />}
       {stage === BridgeStage.Review && bridgeParams && (
         <WalletBridgeReview bridgeParams={bridgeParams} onNext={processingStage} onBack={backToAmount} />
       )}
-      {stage === BridgeStage.Processing && bridgeParams && transactionHash && (
+      {stage === BridgeStage.Processing && transactionHash && bridgeParams && (
         <WalletBridgeProcessing
-          bridgeParams={bridgeParams}
           transactionHash={transactionHash}
-          onSuccess={successStage}
-          onError={errorStage}
+          fromChainId={bridgeParams.fromChainId}
+          onClose={resetBridge}
         />
       )}
-      {stage === BridgeStage.Success && bridgeParams && transactionHash && (
-        <WalletBridgeSuccess bridgeParams={bridgeParams} transactionHash={transactionHash} onClose={resetBridge} />
+      {stage === BridgeStage.Success && transactionHash && bridgeParams && (
+        <WalletBridgeSuccess
+          transactionHash={transactionHash}
+          fromChainId={bridgeParams.fromChainId}
+          onClose={resetBridge}
+        />
       )}
-      {stage === BridgeStage.Error && bridgeParams && transactionHash && (
-        <WalletBridgeError bridgeParams={bridgeParams} transactionHash={transactionHash} onClose={resetBridge} />
+      {stage === BridgeStage.Error && transactionHash && bridgeParams && (
+        <WalletBridgeError
+          transactionHash={transactionHash}
+          fromChainId={bridgeParams.fromChainId}
+          onClose={resetBridge}
+        />
       )}
     </PanelBody>
   );

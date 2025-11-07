@@ -114,3 +114,34 @@ export const finalizeBridgeRequest = async (
   const response = await post(`/api/wallet/${address}/transactions/finalize-bridge`).send(payload);
   return response.body as FinalizeBridgeResponse;
 };
+
+export interface BridgeActivityResponse {
+  deposits: BridgeStatusResponse[];
+  totalCount: number;
+}
+
+export const bridgeActivityRequest = async (
+  address: string,
+  params?: {
+    fromChainId?: number;
+    limit?: number;
+    offset?: number;
+  }
+): Promise<BridgeActivityResponse> => {
+  const queryParams: Record<string, string> = {};
+  if (params?.fromChainId !== undefined) {
+    queryParams.fromChainId = params.fromChainId.toString();
+  }
+  if (params?.limit !== undefined) {
+    queryParams.limit = params.limit.toString();
+  }
+  if (params?.offset !== undefined) {
+    queryParams.offset = params.offset.toString();
+  }
+
+  const queryString = new URLSearchParams(queryParams).toString();
+  const path = `/api/wallet/${address}/bridge-activity${queryString ? `?${queryString}` : ''}`;
+
+  const response = await get<BridgeActivityResponse>(path);
+  return response.body as BridgeActivityResponse;
+};

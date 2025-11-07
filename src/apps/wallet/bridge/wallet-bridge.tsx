@@ -30,7 +30,7 @@ export const WalletBridge = () => {
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const [stage, setStage] = useState<BridgeStage>(BridgeStage.Connect);
   const [bridgeParams, setBridgeParams] = useState<BridgeParams | null>(null);
-  const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [depositCount, setDepositCount] = useState<number | undefined>(undefined);
   const previousChainIdRef = useRef<number | undefined>(chainId);
 
   // Reset to connect stage if wallet gets disconnected, changes or chain becomes unsupported
@@ -64,8 +64,7 @@ export const WalletBridge = () => {
     setStage(BridgeStage.Review);
   };
 
-  const processingStage = (txHash: string) => {
-    setTransactionHash(txHash);
+  const processingStage = (_txHash: string) => {
     setStage(BridgeStage.Processing);
   };
 
@@ -75,14 +74,14 @@ export const WalletBridge = () => {
 
   const resetBridge = () => {
     setBridgeParams(null);
-    setTransactionHash(null);
+    setDepositCount(undefined);
     setStage(BridgeStage.Connect);
   };
 
   const onActivityClick = (activity: BridgeStatusResponse) => {
     const params = mapActivityToBridgeParams(activity, zeroWalletAddress);
     setBridgeParams(params);
-    setTransactionHash(activity.transactionHash);
+    setDepositCount(activity.depositCount);
 
     if (activity.status === 'failed') {
       setStage(BridgeStage.Error);
@@ -100,26 +99,18 @@ export const WalletBridge = () => {
       {stage === BridgeStage.Review && bridgeParams && (
         <WalletBridgeReview bridgeParams={bridgeParams} onNext={processingStage} onBack={backToAmount} />
       )}
-      {stage === BridgeStage.Processing && transactionHash && bridgeParams && (
+      {stage === BridgeStage.Processing && bridgeParams && (
         <WalletBridgeProcessing
-          transactionHash={transactionHash}
+          depositCount={depositCount}
           fromChainId={bridgeParams.fromChainId}
           onClose={resetBridge}
         />
       )}
-      {stage === BridgeStage.Success && transactionHash && bridgeParams && (
-        <WalletBridgeSuccess
-          transactionHash={transactionHash}
-          fromChainId={bridgeParams.fromChainId}
-          onClose={resetBridge}
-        />
+      {stage === BridgeStage.Success && bridgeParams && (
+        <WalletBridgeSuccess depositCount={depositCount} fromChainId={bridgeParams.fromChainId} onClose={resetBridge} />
       )}
-      {stage === BridgeStage.Error && transactionHash && bridgeParams && (
-        <WalletBridgeError
-          transactionHash={transactionHash}
-          fromChainId={bridgeParams.fromChainId}
-          onClose={resetBridge}
-        />
+      {stage === BridgeStage.Error && bridgeParams && (
+        <WalletBridgeError depositCount={depositCount} fromChainId={bridgeParams.fromChainId} onClose={resetBridge} />
       )}
     </PanelBody>
   );

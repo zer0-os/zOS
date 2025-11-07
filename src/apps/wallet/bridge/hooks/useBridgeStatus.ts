@@ -1,9 +1,9 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { bridgeStatusRequest } from '../../queries/bridgeQueries';
 
 interface UseBridgeStatusParams {
   zeroWalletAddress: string | undefined;
-  transactionHash: string | null;
+  depositCount: number | undefined;
   fromChainId: number;
   enabled?: boolean;
   refetchInterval?: number | false | ((query: any) => number | false);
@@ -11,34 +11,23 @@ interface UseBridgeStatusParams {
 
 export function useBridgeStatus({
   zeroWalletAddress,
-  transactionHash,
+  depositCount,
   fromChainId,
   enabled = true,
   refetchInterval,
 }: UseBridgeStatusParams) {
-  const queryClient = useQueryClient();
-
   return useQuery({
     queryKey: [
       'bridge-status',
       zeroWalletAddress,
-      transactionHash,
+      depositCount,
       fromChainId,
     ],
     queryFn: async () => {
-      if (!zeroWalletAddress || !transactionHash) return null;
-      // Get depositCount from previous query result if available
-      const previousStatus = queryClient.getQueryData<{
-        depositCount?: number;
-      }>([
-        'bridge-status',
-        zeroWalletAddress,
-        transactionHash,
-        fromChainId,
-      ]);
-      return bridgeStatusRequest(zeroWalletAddress, transactionHash, fromChainId, previousStatus?.depositCount);
+      if (!zeroWalletAddress || depositCount === undefined) return null;
+      return bridgeStatusRequest(zeroWalletAddress, depositCount, fromChainId);
     },
-    enabled: enabled && !!zeroWalletAddress && !!transactionHash,
+    enabled: enabled && !!zeroWalletAddress && depositCount !== undefined,
     refetchInterval:
       refetchInterval !== undefined
         ? refetchInterval

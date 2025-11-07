@@ -20,7 +20,7 @@ import { IconClockRewind } from '@zero-tech/zui/icons';
 import styles from './wallet-bridge-processing.module.scss';
 
 interface WalletBridgeProcessingProps {
-  transactionHash: string;
+  depositCount: number | undefined;
   fromChainId: number;
   onClose: () => void;
 }
@@ -38,14 +38,14 @@ function getNetIdFromChainId(chainId: number): number {
   return BRIDGE_NETWORK_IDS[chainId] ?? 0;
 }
 
-export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }: WalletBridgeProcessingProps) => {
+export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: WalletBridgeProcessingProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const { address: eoaAddress } = useAccount();
 
-  const { data: status } = useBridgeStatus({
+  const { data: status, isLoading: isLoadingStatus } = useBridgeStatus({
     zeroWalletAddress,
-    transactionHash,
+    depositCount,
     fromChainId,
     enabled: true,
     refetchInterval: false,
@@ -85,7 +85,9 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
   };
 
   const onViewTransaction = () => {
-    openExplorerForTransaction(transactionHash, statusFromChainId, status?.explorerUrl);
+    if (status?.transactionHash) {
+      openExplorerForTransaction(status.transactionHash, statusFromChainId, status?.explorerUrl);
+    }
   };
 
   const isProcessing = status?.status === 'processing';
@@ -93,6 +95,18 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
   const isFinalizing = finalizeMutation.isPending;
   const finalizationStarted = finalizeMutation.isSuccess || isFinalizing;
   const showFinalizeContent = isReadyForClaim && isZChainToEthereum && !finalizationStarted;
+
+  if (isLoadingStatus) {
+    return (
+      <div className={styles.container}>
+        <BridgeHeader title='Bridge' />
+        <div className={styles.content}>
+          <TransactionLoadingSpinner />
+          <div className={styles.title}>Loading bridge status...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -112,7 +126,7 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
                   <Button onClick={onFinalize} disabled={isFinalizing}>
                     {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}
                   </Button>
-                  {transactionHash && (
+                  {status?.transactionHash && (
                     <Button onClick={onViewTransaction} variant='secondary'>
                       View on Explorer
                     </Button>
@@ -143,7 +157,7 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
                 : 'This may take a few minutes, up to 30 minutes.'}
             </div>
             <div className={styles.buttonGroup}>
-              {isProcessing && transactionHash && !finalizationStarted && (
+              {isProcessing && status?.transactionHash && !finalizationStarted && (
                 <Button onClick={onViewTransaction} variant='secondary'>
                   View on Explorer
                 </Button>

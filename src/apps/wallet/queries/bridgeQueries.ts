@@ -66,20 +66,18 @@ export const bridgeTokenRequest = async (
 
 export const bridgeStatusRequest = async (
   address: string,
-  transactionHash: string,
-  fromChainId?: number,
-  depositCount?: number
+  depositCount: number,
+  fromChainId?: number
 ): Promise<BridgeStatusResponse> => {
-  const params: Record<string, string> = {};
-  if (depositCount !== undefined) {
-    params.depositCount = depositCount.toString();
-  }
+  const params: Record<string, string> = {
+    depositCount: depositCount.toString(),
+  };
   if (fromChainId !== undefined) {
     params.fromChainId = fromChainId.toString();
   }
 
   const queryString = new URLSearchParams(params).toString();
-  const path = `/api/wallet/${address}/bridge-status/${transactionHash}${queryString ? `?${queryString}` : ''}`;
+  const path = `/api/wallet/${address}/bridge-status/${depositCount}${queryString ? `?${queryString}` : ''}`;
 
   const response = await get<BridgeStatusResponse>(path);
   return response.body as BridgeStatusResponse;

@@ -1,10 +1,21 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useAccount } from 'wagmi';
+import { useSelector } from 'react-redux';
+import { IconChevronDown } from '@zero-tech/zui/icons';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { Button } from '../../components/button/button';
 import { BridgeTokenInput } from '../components/bridge-token-input/bridge-token-input';
 import { BridgeTokenSelector } from '../components/bridge-token-selector/bridge-token-selector';
-import { BridgeParams, isBridgeValid } from '../lib/utils';
+import { BridgeTokenInfo } from '../components/bridge-token-info/bridge-token-info';
+import {
+  BridgeParams,
+  getWalletAddressForChain,
+  getBridgeValidationError,
+  getBridgeValidationErrorMessage,
+} from '../lib/utils';
 import { TokenBalance } from '../../types';
+import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { useFetchCounterpartToken } from '../hooks/useFetchCounterpartToken';
 
 import styles from './wallet-bridge-amount.module.scss';
 
@@ -24,16 +35,56 @@ interface SelectedToken {
 }
 
 export const WalletBridgeAmount = ({ onNext, onBack }: WalletBridgeAmountProps) => {
+  const { address: eoaAddress } = useAccount();
+  const currentUser = useSelector(currentUserSelector);
+  const zeroWalletAddress = currentUser?.zeroWalletAddress;
+
   const [amount, setAmount] = useState('');
   const [fromToken, setFromToken] = useState<SelectedToken | null>(null);
   const [toToken, setToToken] = useState<SelectedToken | null>(null);
   const [showTokenSelector, setShowTokenSelector] = useState(false);
-  const [selectingFor, setSelectingFor] = useState<'from' | 'to'>('from');
+  const [showValidationError, setShowValidationError] = useState(false);
 
-  const disabled = !isBridgeValid(fromToken?.chainId, toToken?.chainId, amount, fromToken?.tokenAddress);
+  // Auto-fetch counterpart token when fromToken is selected
+  // TODO: refactor to get to token from bridge
+  const { data: counterpartToken } = useFetchCounterpartToken(
+    fromToken ? { chainId: fromToken.chainId, tokenAddress: fromToken.tokenAddress!, symbol: fromToken.symbol } : null
+  );
+
+  useEffect(() => {
+    if (counterpartToken && fromToken) {
+      setToToken({
+        symbol: counterpartToken.symbol,
+        name: counterpartToken.name,
+        chainId: counterpartToken.chainId,
+        logoUrl: counterpartToken.logoUrl,
+        tokenAddress: counterpartToken.tokenAddress,
+        decimals: counterpartToken.decimals,
+      });
+    }
+  }, [counterpartToken, fromToken]);
+
+  const fromWalletAddress = useMemo(
+    () => getWalletAddressForChain(fromToken?.chainId, eoaAddress, zeroWalletAddress),
+    [fromToken?.chainId, eoaAddress, zeroWalletAddress]
+  );
+  const toWalletAddress = useMemo(
+    () => getWalletAddressForChain(toToken?.chainId, eoaAddress, zeroWalletAddress),
+    [toToken?.chainId, eoaAddress, zeroWalletAddress]
+  );
+
+  const validationError = getBridgeValidationError(
+    fromToken?.chainId,
+    toToken?.chainId,
+    amount,
+    fromToken?.tokenAddress,
+    fromToken?.balance
+  );
+  const errorMessage = validationError ? getBridgeValidationErrorMessage(validationError) : '';
 
   const onAmountChange = (newAmount: string) => {
     setAmount(newAmount);
+    setShowValidationError(false);
   };
 
   const onMaxClick = () => {
@@ -42,8 +93,7 @@ export const WalletBridgeAmount = ({ onNext, onBack }: WalletBridgeAmountProps) 
     }
   };
 
-  const onOpenSelector = (type: 'from' | 'to') => {
-    setSelectingFor(type);
+  const onOpenFromSelector = () => {
     setShowTokenSelector(true);
   };
 
@@ -58,11 +108,11 @@ export const WalletBridgeAmount = ({ onNext, onBack }: WalletBridgeAmountProps) 
       decimals: token.decimals,
     };
 
-    if (selectingFor === 'from') {
-      setFromToken(selectedToken);
-    } else {
-      setToToken(selectedToken);
-    }
+    setFromToken(selectedToken);
+    setAmount('');
+    setToToken(null);
+    setShowValidationError(false);
+
     setShowTokenSelector(false);
   };
 
@@ -70,20 +120,34 @@ export const WalletBridgeAmount = ({ onNext, onBack }: WalletBridgeAmountProps) 
     setShowTokenSelector(false);
   };
 
-  const onSwapTokens = () => {
-    setFromToken(toToken);
-    setToToken(fromToken);
-    setAmount('');
-  };
-
   const onSubmitAmount = () => {
+    if (validationError) {
+      setShowValidationError(true);
+      return;
+    }
+
     if (!fromToken || !toToken || !amount) return;
 
     const bridgeParams: BridgeParams = {
-      tokenAddress: fromToken.tokenAddress!,
       amount,
       fromChainId: fromToken.chainId!,
       toChainId: toToken.chainId!,
+      fromWalletAddress: fromWalletAddress || undefined,
+      toWalletAddress: toWalletAddress || undefined,
+      fromToken: {
+        symbol: fromToken.symbol,
+        name: fromToken.name,
+        tokenAddress: fromToken.tokenAddress!,
+        logoUrl: fromToken.logoUrl,
+        decimals: fromToken.decimals,
+      },
+      toToken: {
+        symbol: toToken.symbol,
+        name: toToken.name,
+        tokenAddress: toToken.tokenAddress!,
+        logoUrl: toToken.logoUrl,
+        decimals: toToken.decimals,
+      },
     };
 
     onNext(bridgeParams);
@@ -100,25 +164,33 @@ export const WalletBridgeAmount = ({ onNext, onBack }: WalletBridgeAmountProps) 
           amount={amount}
           onAmountChange={onAmountChange}
           onMaxClick={onMaxClick}
-          onOpenSelector={() => onOpenSelector('from')}
+          onOpenSelector={onOpenFromSelector}
+          walletAddress={fromWalletAddress}
         />
 
-        <div className={styles.swapIcon}>
-          <div className={styles.swapIconInner} onClick={onSwapTokens}>
-            ⇅
-          </div>
+        <div className={styles.chevronIcon}>
+          <IconChevronDown size={20} />
         </div>
 
-        <BridgeTokenInput
-          type='to'
-          selectedToken={toToken}
-          onOpenSelector={() => onOpenSelector('to')}
-          amount={amount}
-        />
+        <BridgeTokenInput type='to' selectedToken={toToken} amount={amount} walletAddress={toWalletAddress} />
 
-        <Button onClick={onSubmitAmount} disabled={disabled}>
-          {!fromToken || !toToken ? 'Select Tokens to Continue' : 'Continue'}
-        </Button>
+        {fromToken && toToken && (
+          <BridgeTokenInfo
+            fromToken={{
+              chainId: fromToken.chainId,
+              tokenAddress: fromToken.tokenAddress,
+            }}
+            toToken={{
+              chainId: toToken.chainId,
+              tokenAddress: toToken.tokenAddress,
+            }}
+          />
+        )}
+
+        <div className={styles.buttonContainer}>
+          <Button onClick={onSubmitAmount}>{!fromToken ? 'Select Tokens to Continue' : 'Continue'}</Button>
+          {showValidationError && errorMessage && <div className={styles.errorText}>{errorMessage}</div>}
+        </div>
       </div>
 
       <BridgeTokenSelector isOpen={showTokenSelector} onClose={onCloseTokenSelector} onTokenSelect={onTokenSelect} />

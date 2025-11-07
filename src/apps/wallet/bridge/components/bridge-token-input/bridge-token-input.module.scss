@@ -17,9 +17,26 @@
   border-radius: 12px;
 }
 
+.labelContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--s-spacing);
+}
+
 .label {
   font-size: 15px;
   color: var(--text-secondary);
+}
+
+.walletAddressContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.walletAddress {
+  font-size: 13px;
+  color: var(--text-primary);
 }
 
 .chainNameLabel {
@@ -36,14 +53,18 @@
   display: flex;
   align-items: center;
   gap: var(--s-spacing);
-  cursor: pointer;
   padding: var(--s-spacing);
   border-radius: 8px;
   transition: background-color 0.2s ease;
 }
 
-.selectedToken:hover,
-.selectTokenButton:hover {
+.selectedToken.clickable,
+.selectTokenButton.clickable {
+  cursor: pointer;
+}
+
+.selectedToken.clickable:hover,
+.selectTokenButton.clickable:hover {
   background-color: var(--bg-accent-dark-blue);
 }
 
@@ -132,4 +153,16 @@
   font-size: 24px;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.loadingText {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.placeholderText {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-secondary);
 }

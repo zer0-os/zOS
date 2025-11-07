@@ -1,9 +1,8 @@
-import { Input } from '@zero-tech/zui/components';
+import { Input, IconButton } from '@zero-tech/zui/components';
 import { Button } from '../../../components/button/button';
-import { FormattedNumber } from '../../../components/formatted-number/formatted-number';
 import { TokenIcon } from '../../../components/token-icon/token-icon';
-import { IconChevronRight } from '@zero-tech/zui/icons';
-import { CHAIN_NAMES } from '../../lib/utils';
+import { IconChevronRight, IconLinkExternal1 } from '@zero-tech/zui/icons';
+import { CHAIN_NAMES, formatAmount, formatAddress, openExplorerForAddress } from '../../lib/utils';
 
 import styles from './bridge-token-input.module.scss';
 
@@ -21,8 +20,9 @@ interface BridgeTokenInputProps {
   amount?: string;
   isLoading?: boolean;
   autoFocus?: boolean;
+  walletAddress?: string;
 
-  onOpenSelector: () => void;
+  onOpenSelector?: () => void;
   onMaxClick?: () => void;
   onAmountChange?: (amount: string) => void;
 }
@@ -33,6 +33,7 @@ export const BridgeTokenInput = ({
   amount = '',
   isLoading = false,
   autoFocus = false,
+  walletAddress,
   onOpenSelector,
   onMaxClick,
   onAmountChange,
@@ -40,16 +41,33 @@ export const BridgeTokenInput = ({
   const isFrom = type === 'from';
   const chainName = selectedToken?.chainId ? CHAIN_NAMES[selectedToken.chainId] : null;
 
+  const onExternalLink = () => {
+    openExplorerForAddress(walletAddress, selectedToken?.chainId);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <span className={styles.label}>{isFrom ? 'From' : 'To'}</span>
+        <div className={styles.labelContainer}>
+          <span className={styles.label}>{isFrom ? 'From' : 'To'}</span>
+          {walletAddress && (
+            <div className={styles.walletAddressContainer}>
+              <span className={styles.walletAddress}>{formatAddress(walletAddress)}</span>
+              {selectedToken?.chainId && walletAddress && (
+                <IconButton Icon={IconLinkExternal1} onClick={onExternalLink} aria-label='View on explorer' size={16} />
+              )}
+            </div>
+          )}
+        </div>
         {chainName && <span className={styles.chainNameLabel}>{chainName}</span>}
       </div>
 
       <div className={styles.tokenSection}>
         {selectedToken ? (
-          <div className={styles.selectedToken} onClick={onOpenSelector}>
+          <div
+            className={`${styles.selectedToken} ${isFrom && onOpenSelector ? styles.clickable : ''}`}
+            {...(isFrom && onOpenSelector && { onClick: onOpenSelector })}
+          >
             <TokenIcon
               className={styles.tokenIcon}
               url={selectedToken?.logoUrl}
@@ -60,13 +78,16 @@ export const BridgeTokenInput = ({
               <div className={styles.tokenName}>{selectedToken.symbol}</div>
               <div className={styles.tokenSymbol}>{selectedToken.name}</div>
             </div>
-            <IconChevronRight className={styles.chevron} />
+            {onOpenSelector && <IconChevronRight className={styles.chevron} />}
           </div>
         ) : (
-          <div className={styles.selectTokenButton} onClick={onOpenSelector}>
+          <div
+            className={`${styles.selectTokenButton} ${isFrom && onOpenSelector ? styles.clickable : ''}`}
+            {...(isFrom && onOpenSelector && { onClick: onOpenSelector })}
+          >
             <div className={styles.placeholderIcon} />
             <div className={styles.selectTokenText}>Select Token</div>
-            <IconChevronRight className={styles.chevron} />
+            {isFrom && onOpenSelector && <IconChevronRight className={styles.chevron} />}
           </div>
         )}
       </div>
@@ -88,10 +109,10 @@ export const BridgeTokenInput = ({
                 'Loading...'
               ) : selectedToken?.balance ? (
                 <>
-                  <FormattedNumber value={selectedToken.balance} /> {selectedToken.symbol}
+                  {formatAmount(selectedToken.balance)} {selectedToken.symbol}
                 </>
               ) : (
-                '0'
+                '0.0'
               )}
             </span>
             {onMaxClick && selectedToken?.balance && (
@@ -108,7 +129,7 @@ export const BridgeTokenInput = ({
       {!isFrom && selectedToken && (
         <div className={styles.outputSection}>
           <div className={styles.amountDisplay}>
-            <FormattedNumber value={amount} /> <span className={styles.tokenSymbol}>{selectedToken.symbol}</span>
+            {formatAmount(amount)} <span className={styles.tokenSymbol}>{selectedToken.symbol}</span>
           </div>
         </div>
       )}

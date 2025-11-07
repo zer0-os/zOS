@@ -1,0 +1,160 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l-spacing);
+  flex: 1;
+  padding: 0 var(--l-spacing);
+}
+
+.confirmRecipient {
+  text-align: center;
+  padding: var(--l-spacing);
+}
+
+.confirmRecipientTitle {
+  font-family: IBM Plex Sans;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  margin-bottom: var(--s-spacing);
+}
+
+.recipientName {
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: 0%;
+  margin-bottom: var(--xs-spacing);
+}
+
+.recipientAddress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: var(--text-secondary);
+}
+
+.transferDetails {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--m-spacing);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+}
+
+.tokenInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-spacing);
+}
+
+.tokenIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.tokenName {
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0%;
+  color: var(--text-primary);
+}
+
+.tokenAmount {
+  font-family: IBM Plex Sans;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: var(--text-primary);
+}
+
+.tokenInfoSeparator {
+  color: var(--text-secondary);
+}
+
+.networkInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-spacing);
+  padding: var(--m-spacing);
+  background-color: var(--bg-accent-dark-blue);
+  border-radius: 12px;
+}
+
+.networkItem {
+  display: flex;
+  justify-content: space-between;
+  font-family: IBM Plex Sans;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+}
+
+.networkItem span:first-child {
+  color: var(--text-secondary);
+}
+
+.networkItem span:last-child {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.confirmButton {
+  padding: var(--l-spacing);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.confirmButtonText {
+  font-family: IBM Plex Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 1.5%;
+  color: var(--text-secondary);
+  margin-bottom: var(--xs-spacing);
+}
+
+.confirmButtonWrapper {
+  margin-top: 16px;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.errorText {
+  color: var(--color-failure-11);
+  font-size: 14px;
+  text-align: center;
+}

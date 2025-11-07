@@ -8,37 +8,17 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 22px;
   flex: 1;
   padding: 0 var(--l-spacing);
 }
 
-.swapIcon {
+.chevronIcon {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: calc(-1 * var(--s-spacing)) 0;
-  z-index: 1;
-}
-
-.swapIconInner {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: var(--bg-primary);
-  border: 2px solid var(--border-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
   color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.swapIconInner:hover {
-  background-color: var(--bg-accent-dark-blue);
-  color: var(--text-primary);
 }
 
 .tokenSelectorContent {
@@ -52,4 +32,16 @@
   margin: 0;
   color: var(--text-secondary);
   font-size: 14px;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.errorText {
+  color: var(--color-failure-11);
+  font-size: 14px;
+  text-align: center;
 }

@@ -66,12 +66,26 @@
 
 .chainFilter {
   padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-spacing);
 
   > *:last-child {
     > div {
       min-width: 130px;
     }
   }
+}
+
+.walletAddressContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.walletAddress {
+  font-size: 14px;
+  color: var(--text-primary);
 }
 
 .tokenList {
@@ -120,14 +134,6 @@
   line-height: 19px;
   letter-spacing: 1.5%;
   color: var(--text-secondary);
-}
-
-.addTokenSection {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--l-spacing);
-  border-top: 1px solid var(--border-primary);
 }
 
 .tokenIcon {

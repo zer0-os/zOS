@@ -195,6 +195,39 @@ export function openExplorerForAddress(address: string | undefined, chainId: num
   return false;
 }
 
+export function getExplorerTransactionUrl(transactionHash: string, chainId: number): string {
+  const explorerUrls: Record<number, string> = {
+    [CHAIN_ID_ETHEREUM]: 'https://etherscan.io/tx/',
+    [CHAIN_ID_SEPOLIA]: 'https://sepolia.etherscan.io/tx/',
+    [CHAIN_ID_ZCHAIN]: 'https://zscan.live/tx/',
+    [CHAIN_ID_ZEPHYR]: 'https://zephyr-blockscout.eu-north-2.gateway.fm/tx/',
+  };
+  const baseUrl = explorerUrls[chainId] || '';
+  return baseUrl ? `${baseUrl}${transactionHash}` : '';
+}
+
+export function openExplorerForTransaction(
+  transactionHash: string | undefined,
+  chainId: number | undefined,
+  explorerUrl?: string | null
+): boolean {
+  // If API provides a full explorer URL, use it directly
+  if (explorerUrl) {
+    window.open(explorerUrl, '_blank');
+    return true;
+  }
+
+  if (!transactionHash || !chainId) {
+    return false;
+  }
+  const url = getExplorerTransactionUrl(transactionHash, chainId);
+  if (url) {
+    window.open(url, '_blank');
+    return true;
+  }
+  return false;
+}
+
 export function getWalletAddressForChain(
   chainId: number | undefined,
   eoaAddress: string | undefined,

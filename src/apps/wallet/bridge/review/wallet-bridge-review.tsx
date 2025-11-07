@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { Button } from '../../components/button/button';
 import { IconButton } from '@zero-tech/zui/components';
@@ -6,22 +7,47 @@ import { FormattedNumber } from '../../components/formatted-number/formatted-num
 import { IconChevronRightDouble, IconLinkExternal1 } from '@zero-tech/zui/icons';
 import { truncateAddress } from '../../utils/address';
 import { TokenIcon } from '../../components/token-icon/token-icon';
-import { BridgeParams, CHAIN_NAMES, openExplorerForAddress } from '../lib/utils';
+import { BridgeParams, CHAIN_NAMES, openExplorerForAddress, formatAddress } from '../lib/utils';
+import { currentUserSelector } from '../../../../store/authentication/selectors';
+import { useBridgeToken } from '../hooks/useBridgeToken';
 
 import styles from './wallet-bridge-review.module.scss';
 
 interface WalletBridgeReviewProps {
   bridgeParams: BridgeParams;
-  onNext: () => void;
+  onNext: (transactionHash: string) => void;
   onBack: () => void;
 }
 
-export const WalletBridgeReview = ({ bridgeParams, onNext: _onNext, onBack }: WalletBridgeReviewProps) => {
+export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridgeReviewProps) => {
+  const currentUser = useSelector(currentUserSelector);
+  const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const [error, setError] = useState<string | null>(null);
 
-  const handleConfirm = async () => {
+  const bridgeMutation = useBridgeToken({
+    zeroWalletAddress,
+    onSuccess: (transactionHash) => {
+      onNext(transactionHash);
+    },
+    onError: (err: any) => {
+      setError(err.message || 'Failed to initiate bridge');
+    },
+  });
+
+  const onSubmit = async () => {
+    if (!bridgeParams.fromToken?.tokenAddress) {
+      setError('Token address is required');
+      return;
+    }
+
     setError(null);
-    console.log('confirming bridge');
+    bridgeMutation.mutate({
+      tokenAddress: bridgeParams.fromToken.tokenAddress,
+      amount: bridgeParams.amount,
+      to: bridgeParams.toWalletAddress || '',
+      fromChainId: bridgeParams.fromChainId,
+      toChainId: bridgeParams.toChainId,
+    });
   };
 
   const fromChainName = CHAIN_NAMES[bridgeParams.fromChainId] || 'Unknown';
@@ -62,7 +88,7 @@ export const WalletBridgeReview = ({ bridgeParams, onNext: _onNext, onBack }: Wa
               url={bridgeParams.fromToken?.logoUrl}
               name={bridgeParams.fromToken?.symbol || 'Token'}
               chainId={bridgeParams.fromChainId}
-              className={styles.tokenIcon}
+              className={styles.smallTokenIcon}
             />
             <div className={styles.tokenName}>
               {bridgeParams.fromToken?.name || bridgeParams.fromToken?.symbol || 'Token'}
@@ -70,6 +96,8 @@ export const WalletBridgeReview = ({ bridgeParams, onNext: _onNext, onBack }: Wa
             <div className={styles.tokenAmount}>
               <FormattedNumber value={bridgeParams.amount || '0'} />
             </div>
+            <div className={styles.chainName}>{fromChainName}</div>
+            {fromWalletAddress && <div className={styles.walletAddress}>{formatAddress(fromWalletAddress)}</div>}
           </div>
 
           <div className={styles.tokenInfoSeparator}>
@@ -81,7 +109,7 @@ export const WalletBridgeReview = ({ bridgeParams, onNext: _onNext, onBack }: Wa
               url={bridgeParams.toToken?.logoUrl}
               name={bridgeParams.toToken?.symbol || 'Token'}
               chainId={bridgeParams.toChainId}
-              className={styles.tokenIcon}
+              className={styles.smallTokenIcon}
             />
             <div className={styles.tokenName}>
               {bridgeParams.toToken?.name || bridgeParams.toToken?.symbol || 'Token'}
@@ -89,6 +117,8 @@ export const WalletBridgeReview = ({ bridgeParams, onNext: _onNext, onBack }: Wa
             <div className={styles.tokenAmount}>
               <FormattedNumber value={bridgeParams.amount || '0'} />
             </div>
+            <div className={styles.chainName}>{toChainName}</div>
+            {toWalletAddress && <div className={styles.walletAddress}>{formatAddress(toWalletAddress)}</div>}
           </div>
         </div>
 
@@ -117,7 +147,9 @@ export const WalletBridgeReview = ({ bridgeParams, onNext: _onNext, onBack }: Wa
         <div className={styles.confirmButtonText}>Once made, your transaction is irreversible.</div>
         <div className={styles.confirmButtonWrapper}>
           <div className={styles.buttonContainer}>
-            <Button onClick={handleConfirm}>Confirm Bridge</Button>
+            <Button onClick={onSubmit} disabled={bridgeMutation.isPending}>
+              {bridgeMutation.isPending ? 'Processing...' : 'Confirm Bridge'}
+            </Button>
             {error && <div className={styles.errorText}>{error}</div>}
           </div>
         </div>

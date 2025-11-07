@@ -3,7 +3,13 @@
   margin-top: var(--l-spacing);
   display: flex;
   flex-direction: column;
-  gap: var(--m-spacing);
+  gap: var(--s-spacing);
+}
+
+.activityHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .activityHeader {
@@ -12,25 +18,20 @@
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
 }
 
 .activityTabs {
   display: flex;
-  gap: var(--m-spacing);
+  gap: var(--s-spacing);
 }
 
 .tab,
 .tabActive {
   background: none;
   border: none;
-  padding: var(--s-spacing) var(--m-spacing);
+  padding: var(--xs-spacing) var(--s-spacing);
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-secondary);
   cursor: pointer;
   border-bottom: 2px solid transparent;
@@ -70,101 +71,81 @@
 .activityList {
   display: flex;
   flex-direction: column;
-  gap: var(--m-spacing);
   max-height: 300px;
   overflow-y: auto;
+  padding: 2px;
 }
 
 .activityItem {
-  background-color: var(--bg-accent-dark-blue);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: var(--m-spacing);
+  padding: var(--s-spacing) var(--l-spacing);
   cursor: pointer;
-  transition: all 0.2s;
   text-align: left;
+  background: transparent;
+  border: none;
+  width: 100%;
 
   &:hover {
-    transform: scale(0.99);
+    background: var(--bg-hover);
   }
-
-  &:active {
-    transform: scale(0.99);
-  }
-}
-
-.activityItemDisabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-
-  &:hover {
-    transform: none;
-  }
-
-  &:active {
-    transform: none;
-  }
-}
-
-.activityItemHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--s-spacing);
-}
-
-.activityTitle {
-  font-size: 14px;
-  color: var(--text-primary);
-  font-weight: 500;
 }
 
 .activityStatus {
   font-weight: 500;
-  font-size: 11px;
-  padding: 3px 6px;
-  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text-secondary);
 }
 
 .statusCompleted {
-  background-color: rgba(var(--color-success-11-rgb), 0.1);
-  color: var(--color-success-11);
+  color: var(--color-secondary-11);
 }
 
 .statusPending {
-  background-color: rgba(var(--color-warning-11-rgb), 0.1);
   color: var(--color-warning-11);
 }
 
 .statusFailed {
-  background-color: rgba(var(--color-failure-11-rgb), 0.1);
   color: var(--color-failure-11);
 }
 
 .activityDetails {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  gap: var(--l-spacing);
+}
+
+.activityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
 }
 
 .activityAmount {
   color: var(--text-primary);
   font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: var(--xs-spacing);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tokenIcon {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+  width: 48px;
+  height: 48px;
 }
 
 .activityChains {
   display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.chainRow {
+  display: flex;
   align-items: center;
-  gap: var(--xs-spacing);
+  gap: 4px;
   color: var(--text-secondary);
+  font-size: 12px;
 }

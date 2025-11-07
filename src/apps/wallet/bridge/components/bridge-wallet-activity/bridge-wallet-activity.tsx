@@ -5,7 +5,6 @@ import { useBridgeActivity } from '../../hooks/useBridgeActivity';
 import { currentUserSelector } from '../../../../../store/authentication/selectors';
 import { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR } from '../../lib/utils';
 import { BridgeStatusResponse } from '../../../queries/bridgeQueries';
-import { IconClockRewind } from '@zero-tech/zui/icons';
 import { ActivityItem } from './activity-item';
 
 import styles from './bridge-wallet-activity.module.scss';
@@ -14,7 +13,7 @@ interface BridgeWalletActivityProps {
   onActivityClick: (activity: BridgeStatusResponse) => void;
 }
 
-type FilterType = 'all' | 'pending';
+type FilterType = 'all' | 'pending' | 'completed';
 
 export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityProps) => {
   const currentUser = useSelector(currentUserSelector);
@@ -61,11 +60,15 @@ export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityPr
   const filteredActivities =
     filter === 'pending'
       ? activities.filter((a) => a.status === 'pending' || a.status === 'processing' || a.status === 'on-hold')
+      : filter === 'completed'
+      ? activities.filter((a) => a.status === 'completed')
       : activities;
 
   const pendingCount = activities.filter(
     (a) => a.status === 'pending' || a.status === 'processing' || a.status === 'on-hold'
   ).length;
+
+  const completedCount = activities.filter((a) => a.status === 'completed').length;
 
   const getStatusClassName = (status: string) => {
     switch (status) {
@@ -84,18 +87,25 @@ export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityPr
 
   return (
     <div className={styles.activitySection}>
-      <div className={styles.activityHeader}>
-        <IconClockRewind />
-        <span>Activity</span>
-      </div>
+      <div className={styles.activityHeaderRow}>
+        <div className={styles.activityHeader}>
+          <span>Activity</span>
+        </div>
 
-      <div className={styles.activityTabs}>
-        <button className={filter === 'all' ? styles.tabActive : styles.tab} onClick={() => setFilter('all')}>
-          All <span className={styles.tabCount}>{activities.length}</span>
-        </button>
-        <button className={filter === 'pending' ? styles.tabActive : styles.tab} onClick={() => setFilter('pending')}>
-          Pending <span className={styles.tabCount}>{pendingCount}</span>
-        </button>
+        <div className={styles.activityTabs}>
+          <button className={filter === 'all' ? styles.tabActive : styles.tab} onClick={() => setFilter('all')}>
+            All <span className={styles.tabCount}>{activities.length}</span>
+          </button>
+          <button className={filter === 'pending' ? styles.tabActive : styles.tab} onClick={() => setFilter('pending')}>
+            Pending <span className={styles.tabCount}>{pendingCount}</span>
+          </button>
+          <button
+            className={filter === 'completed' ? styles.tabActive : styles.tab}
+            onClick={() => setFilter('completed')}
+          >
+            Completed <span className={styles.tabCount}>{completedCount}</span>
+          </button>
+        </div>
       </div>
 
       {error ? (
@@ -104,7 +114,11 @@ export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityPr
         <div className={styles.emptyState}>Loading...</div>
       ) : filteredActivities.length === 0 ? (
         <div className={styles.emptyState}>
-          {filter === 'pending' ? 'No pending activity' : 'No bridge activity yet'}
+          {filter === 'pending'
+            ? 'No pending activity'
+            : filter === 'completed'
+            ? 'No completed activity'
+            : 'No bridge activity yet'}
         </div>
       ) : (
         <div className={styles.activityList}>

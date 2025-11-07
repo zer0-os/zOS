@@ -39,27 +39,26 @@ export const ActivityItem = ({ activity, onActivityClick, getStatusClassName }: 
 
   return (
     <button key={activity.transactionHash} className={styles.activityItem} onClick={() => onActivityClick(activity)}>
-      <div className={styles.activityItemHeader}>
-        <div className={styles.activityTitle}>Bridge to {activity.toChain}</div>
-        <div className={`${styles.activityStatus} ${getStatusClassName(activity.status)}`}>
-          {getBridgeStatusLabel(activity.status)}
-        </div>
-      </div>
       <div className={styles.activityDetails}>
-        <div className={styles.activityAmount}>
-          <TokenIcon className={styles.tokenIcon} url={tokenInfo.logo} name={tokenInfo.symbol} />
-          <span>
+        <TokenIcon className={styles.tokenIcon} url={tokenInfo.logo} name={tokenInfo.name} chainId={fromChainId} />
+        <div className={styles.activityInfo}>
+          <div className={`${styles.activityStatus} ${getStatusClassName(activity.status)}`}>
+            {getBridgeStatusLabel(activity.status)}
+          </div>
+          <div className={styles.activityAmount}>
             <FormattedNumber value={formattedAmount} /> {tokenInfo.symbol}
-          </span>
+          </div>
         </div>
         <div className={styles.activityChains}>
-          <IconButton Icon={IconLinkExternal1} onClick={handleFromChainExplorerClick} size={22} />
-          {activity.fromChain}
-          <IconChevronRight size={16} />
-          {activity.toChain}
-          {activity.claimTxHash && (
-            <IconButton Icon={IconLinkExternal1} onClick={handleToChainExplorerClick} size={22} />
-          )}
+          <div className={styles.chainRow}>
+            <IconButton Icon={IconLinkExternal1} onClick={handleFromChainExplorerClick} size={18} />
+            <span>{activity.fromChain}</span>
+            <IconChevronRight size={16} />
+            <span>{activity.toChain}</span>
+            {activity.claimTxHash && (
+              <IconButton Icon={IconLinkExternal1} onClick={handleToChainExplorerClick} size={18} />
+            )}
+          </div>
         </div>
       </div>
     </button>

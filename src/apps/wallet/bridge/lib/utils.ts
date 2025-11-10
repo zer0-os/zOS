@@ -514,3 +514,55 @@ export function normalizeWalletError(error: unknown): Error {
 
   return error instanceof Error ? error : new Error(String(error));
 }
+
+/**
+ * Merges two sorted lists of bridge activities by interleaving based on relative recency.
+ * Since globalIndex values are in different ranges per chain, we can't directly compare them.
+ * Instead, we use a merge algorithm that compares items based on their relative position
+ * in each sorted list. Since the API returns items sorted by recency, position is a reliable indicator.
+ *
+ * @param l1Deposits - Sorted list of bridge activities from L1 chain (most recent first)
+ * @param l2Deposits - Sorted list of bridge activities from L2 chain (most recent first)
+ * @returns Merged and interleaved list of activities sorted by relative recency
+ */
+export function mergeBridgeActivities<T>(l1Deposits: T[], l2Deposits: T[]): T[] {
+  const merged: T[] = [];
+  let l1Index = 0;
+  let l2Index = 0;
+
+  // Helper to calculate a "recency score" for an item based on its position
+  // Items earlier in the list (lower index) are more recent
+  // Position is the primary indicator since the API returns items sorted by recency
+  const getRecencyScore = (position: number, listLength: number): number => {
+    if (listLength <= 1) return 1;
+    const normalizedPosition = position / (listLength - 1);
+    return 1 - normalizedPosition;
+  };
+
+  // Merge the two sorted lists
+  while (l1Index < l1Deposits.length || l2Index < l2Deposits.length) {
+    if (l1Index >= l1Deposits.length) {
+      merged.push(...l2Deposits.slice(l2Index));
+      break;
+    }
+    if (l2Index >= l2Deposits.length) {
+      merged.push(...l1Deposits.slice(l1Index));
+      break;
+    }
+
+    // Compare recency scores based on position in each sorted list
+    // Since both lists are sorted by recency, position is the best indicator
+    const l1Score = getRecencyScore(l1Index, l1Deposits.length);
+    const l2Score = getRecencyScore(l2Index, l2Deposits.length);
+
+    if (l1Score >= l2Score) {
+      merged.push(l1Deposits[l1Index]);
+      l1Index++;
+    } else {
+      merged.push(l2Deposits[l2Index]);
+      l2Index++;
+    }
+  }
+
+  return merged;
+}

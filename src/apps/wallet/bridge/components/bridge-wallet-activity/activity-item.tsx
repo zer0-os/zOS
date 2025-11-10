@@ -24,7 +24,21 @@ export const ActivityItem = ({ activity, onActivityClick, getStatusClassName }: 
   const fromChainId = getChainIdFromName(activity.fromChain);
   const toChainId = getChainIdFromName(activity.toChain);
 
-  const tokenInfo = getTokenInfo(activity.tokenAddress, toChainId) || getTokenInfo(activity.tokenAddress, fromChainId);
+  // Get token info from curated tokens, trying both chains
+  // Try fromChainId first since that's where the token originated
+  let tokenInfo = fromChainId ? getTokenInfo(activity.tokenAddress, fromChainId) : null;
+  if (!tokenInfo || tokenInfo.symbol === 'Unknown') {
+    tokenInfo = toChainId ? getTokenInfo(activity.tokenAddress, toChainId) : null;
+  }
+
+  // Fallback if both lookups failed
+  if (!tokenInfo || tokenInfo.symbol === 'Unknown') {
+    tokenInfo = {
+      symbol: 'Unknown',
+      name: 'Unknown Token',
+      decimals: 18,
+    };
+  }
   const formattedAmount = formatBridgeAmount(activity.amount, tokenInfo.decimals);
 
   const handleFromChainExplorerClick = (e: React.MouseEvent) => {

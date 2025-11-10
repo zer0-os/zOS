@@ -8,6 +8,7 @@ import {
   getTokenInfo,
   formatBridgeAmount,
   getWalletAddressForChain,
+  CHAIN_NAMES,
 } from '../lib/utils';
 import { Button } from '../../components/button/button';
 import { TokenIcon } from '../../components/token-icon/token-icon';
@@ -16,23 +17,24 @@ import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeStatus } from '../hooks/useBridgeStatus';
+import { TransactionLoadingSpinner } from '../../send/components/transaction-loading-spinner';
 
 import styles from './wallet-bridge-success.module.scss';
 
 interface WalletBridgeSuccessProps {
-  transactionHash: string;
+  depositCount: number | undefined;
   fromChainId: number;
   onClose: () => void;
 }
 
-export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: WalletBridgeSuccessProps) => {
+export const WalletBridgeSuccess = ({ depositCount, fromChainId, onClose }: WalletBridgeSuccessProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const { address: eoaAddress } = useAccount();
 
-  const { data: status } = useBridgeStatus({
+  const { data: status, isLoading: isLoadingStatus } = useBridgeStatus({
     zeroWalletAddress,
-    transactionHash,
+    depositCount,
     fromChainId,
     enabled: true,
     refetchInterval: false,
@@ -40,17 +42,34 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
 
   const statusFromChainId = status ? getChainIdFromName(status.fromChain) : fromChainId;
   const statusToChainId = status ? getChainIdFromName(status.toChain) : 0;
-  const tokenInfo = status ? getTokenInfo(status.tokenAddress, statusFromChainId) : null;
+
+  // Get token info from curated tokens, trying both chains
+  // Try fromChainId first since that's where the token originated
+  let tokenInfo = status && statusFromChainId ? getTokenInfo(status.tokenAddress, statusFromChainId) : null;
+  if (!tokenInfo || tokenInfo.symbol === 'Unknown') {
+    tokenInfo = status && statusToChainId ? getTokenInfo(status.tokenAddress, statusToChainId) : null;
+  }
+
+  if (!tokenInfo || tokenInfo.symbol === 'Unknown') {
+    tokenInfo = {
+      symbol: 'Unknown',
+      name: 'Unknown Token',
+      decimals: 18,
+    };
+  }
+
   const formattedAmount = status && tokenInfo ? formatBridgeAmount(status.amount, tokenInfo.decimals) : '0';
 
-  const fromChainName = status?.fromChain || 'Unknown';
-  const toChainName = status?.toChain || 'Unknown';
+  const fromChainName = statusFromChainId ? CHAIN_NAMES[statusFromChainId] : status?.fromChain || 'Unknown';
+  const toChainName = statusToChainId ? CHAIN_NAMES[statusToChainId] : status?.toChain || 'Unknown';
 
   const fromWalletAddress = getWalletAddressForChain(statusFromChainId, eoaAddress, zeroWalletAddress);
   const toWalletAddress = status?.destinationAddress;
 
   const onViewTransaction = () => {
-    openExplorerForTransaction(transactionHash, statusFromChainId, status?.explorerUrl);
+    if (status?.transactionHash) {
+      openExplorerForTransaction(status.transactionHash, statusFromChainId, status?.explorerUrl);
+    }
   };
 
   const onViewClaimTransaction = () => {
@@ -58,6 +77,18 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
       openExplorerForTransaction(status.claimTxHash, statusToChainId);
     }
   };
+
+  if (isLoadingStatus) {
+    return (
+      <div className={styles.container}>
+        <BridgeHeader title='Bridge Complete' action={<IconButton Icon={IconXClose} onClick={onClose} />} />
+        <div className={styles.content}>
+          <TransactionLoadingSpinner />
+          <div className={styles.title}>Loading bridge status...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -118,7 +149,7 @@ export const WalletBridgeSuccess = ({ transactionHash, fromChainId, onClose }: W
                 View Claim
               </Button>
             )}
-            <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+            <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>
               Activity
             </Button>
           </div>

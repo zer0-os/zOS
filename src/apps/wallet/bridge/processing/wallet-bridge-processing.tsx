@@ -12,15 +12,17 @@ import { currentUserSelector } from '../../../../store/authentication/selectors'
 import { useBridgeStatus } from '../hooks/useBridgeStatus';
 import { useBridgeMerkleProof } from '../hooks/useBridgeMerkleProof';
 import { useFinalizeBridge } from '../hooks/useFinalizeBridge';
+import { useFinalizeBridgeFromEOA } from '../hooks/useFinalizeBridgeFromEOA';
 import { TransactionLoadingSpinner } from '../../send/components/transaction-loading-spinner';
 import { useAccount } from 'wagmi';
 import { Button } from '../../components/button/button';
-import { IconClockRewind } from '@zero-tech/zui/icons';
+import { IconClockRewind, IconXClose } from '@zero-tech/zui/icons';
+import { IconButton } from '@zero-tech/zui/components';
 
 import styles from './wallet-bridge-processing.module.scss';
 
 interface WalletBridgeProcessingProps {
-  transactionHash: string;
+  depositCount: number | undefined;
   fromChainId: number;
   onClose: () => void;
 }
@@ -38,14 +40,14 @@ function getNetIdFromChainId(chainId: number): number {
   return BRIDGE_NETWORK_IDS[chainId] ?? 0;
 }
 
-export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }: WalletBridgeProcessingProps) => {
+export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: WalletBridgeProcessingProps) => {
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const { address: eoaAddress } = useAccount();
 
-  const { data: status } = useBridgeStatus({
+  const { data: status, isLoading: isLoadingStatus } = useBridgeStatus({
     zeroWalletAddress,
-    transactionHash,
+    depositCount,
     fromChainId,
     enabled: true,
     refetchInterval: false,
@@ -63,9 +65,19 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
   const { data: merkleProof, isLoading: merkleProofLoading } = useBridgeMerkleProof({
     zeroWalletAddress,
     depositCount: status?.depositCount,
-    netId: getNetIdFromChainId(statusToChainId),
+    netId: getNetIdFromChainId(statusFromChainId),
     fromChainId: statusFromChainId,
     enabled: needsMerkleProof,
+  });
+
+  // Use EOA hook for L2->L1 bridges, API hook for other cases
+  const finalizeFromEOA = useFinalizeBridgeFromEOA({
+    onSuccess: () => {
+      // Finalization complete - user can check activity list for updated status
+    },
+    onError: (error) => {
+      console.error('Finalization error:', error);
+    },
   });
 
   const finalizeMutation = useFinalizeBridge({
@@ -75,28 +87,63 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
     },
   });
 
-  const onFinalize = () => {
+  const onFinalize = async () => {
     if (!status || !merkleProof) return;
-    finalizeMutation.mutate({
-      status,
-      merkleProof,
-      toChainId: statusToChainId,
-    });
+
+    // For L2->L1 bridges, use EOA wallet interaction
+    if (isZChainToEthereum && eoaAddress) {
+      try {
+        await finalizeFromEOA.finalizeBridgeFromEOA({
+          status,
+          merkleProof,
+          toChainId: statusToChainId,
+          fromChainId: statusFromChainId,
+          eoaAddress,
+        });
+      } catch (error) {
+        // Error is already handled by the hook's onError callback
+        console.error('Failed to finalize bridge from EOA:', error);
+      }
+    } else {
+      // For other cases, use API-based finalization
+      finalizeMutation.mutate({
+        status,
+        merkleProof,
+        toChainId: statusToChainId,
+      });
+    }
   };
 
   const onViewTransaction = () => {
-    openExplorerForTransaction(transactionHash, statusFromChainId, status?.explorerUrl);
+    if (status?.transactionHash) {
+      openExplorerForTransaction(status.transactionHash, statusFromChainId, status?.explorerUrl);
+    }
   };
 
   const isProcessing = status?.status === 'processing';
   const isReadyForClaim = status?.status === 'on-hold' && status?.readyForClaim;
-  const isFinalizing = finalizeMutation.isPending;
-  const finalizationStarted = finalizeMutation.isSuccess || isFinalizing;
+  const isFinalizing = isZChainToEthereum ? finalizeFromEOA.isFinalizing : finalizeMutation.isPending;
+  const finalizationStarted = isZChainToEthereum
+    ? finalizeFromEOA.isPending || finalizeFromEOA.isFinalizing
+    : finalizeMutation.isSuccess || finalizeMutation.isPending;
+  const finalizeError = isZChainToEthereum ? finalizeFromEOA.error : finalizeMutation.error;
   const showFinalizeContent = isReadyForClaim && isZChainToEthereum && !finalizationStarted;
+
+  if (isLoadingStatus) {
+    return (
+      <div className={styles.container}>
+        <BridgeHeader title='Bridge' action={<IconButton Icon={IconXClose} onClick={onClose} />} />
+        <div className={styles.content}>
+          <TransactionLoadingSpinner />
+          <div className={styles.title}>Loading bridge status...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
-      <BridgeHeader title='Bridge' />
+      <BridgeHeader title='Bridge' action={<IconButton Icon={IconXClose} onClick={onClose} />} />
       <div className={styles.content}>
         <TransactionLoadingSpinner />
 
@@ -112,7 +159,7 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
                   <Button onClick={onFinalize} disabled={isFinalizing}>
                     {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}
                   </Button>
-                  {transactionHash && (
+                  {status?.transactionHash && (
                     <Button onClick={onViewTransaction} variant='secondary'>
                       View on Explorer
                     </Button>
@@ -122,12 +169,10 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
                 <div className={styles.subtitle}>Preparing finalization...</div>
               )}
             </div>
-            {finalizeMutation.isError && (
-              <div className={styles.errorText}>{finalizeMutation.error?.message || 'Finalization failed'}</div>
-            )}
+            {finalizeError && <div className={styles.errorText}>{finalizeError?.message || 'Finalization failed'}</div>}
             <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
             <div className={styles.buttonGroup}>
-              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>
                 Activity
               </Button>
             </div>
@@ -143,7 +188,7 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
                 : 'This may take a few minutes, up to 30 minutes.'}
             </div>
             <div className={styles.buttonGroup}>
-              {isProcessing && transactionHash && !finalizationStarted && (
+              {isProcessing && status?.transactionHash && !finalizationStarted && (
                 <Button onClick={onViewTransaction} variant='secondary'>
                   View on Explorer
                 </Button>
@@ -151,7 +196,7 @@ export const WalletBridgeProcessing = ({ transactionHash, fromChainId, onClose }
             </div>
             <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
             <div className={styles.buttonGroup}>
-              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>
                 Activity
               </Button>
             </div>

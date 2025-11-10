@@ -100,7 +100,23 @@ export function getTokenInfo(tokenAddress: string, chainId: number): BridgeToken
 }
 
 export function getChainIdFromName(chainName: string): number {
-  return CHAIN_NAME_TO_ID[chainName] ?? 0;
+  // Try exact match first
+  if (CHAIN_NAME_TO_ID[chainName]) {
+    return CHAIN_NAME_TO_ID[chainName];
+  }
+  // Try trimmed and case-insensitive match
+  const normalized = chainName.trim();
+  if (CHAIN_NAME_TO_ID[normalized]) {
+    return CHAIN_NAME_TO_ID[normalized];
+  }
+  // Try case-insensitive lookup
+  const lowerName = normalized.toLowerCase();
+  for (const [key, value] of Object.entries(CHAIN_NAME_TO_ID)) {
+    if (key.toLowerCase() === lowerName) {
+      return value;
+    }
+  }
+  return 0;
 }
 
 export function getBridgeStatusLabel(status: string): string {

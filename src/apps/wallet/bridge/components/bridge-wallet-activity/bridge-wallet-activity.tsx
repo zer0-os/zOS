@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { useBridgeActivity } from '../../hooks/useBridgeActivity';
@@ -9,6 +9,7 @@ import {
   CHAIN_ID_ZCHAIN,
   CHAIN_ID_ZEPHYR,
   getWalletAddressForChain,
+  mergeBridgeActivities,
 } from '../../lib/utils';
 import { BridgeStatusResponse } from '../../../queries/bridgeQueries';
 import { ActivityItem } from './activity-item';
@@ -57,11 +58,13 @@ export const BridgeWalletActivity = ({ onActivityClick }: BridgeWalletActivityPr
     enabled: true,
   });
 
-  // Merge and sort activities by block number (most recent first)
-  const allActivities = [
-    ...(l1Data?.deposits || []),
-    ...(l2Data?.deposits || []),
-  ].sort((a, b) => parseInt(b.blockNumber) - parseInt(a.blockNumber));
+  // Memoize the merge operation to avoid recalculating on unrelated re-renders
+  // useMemo will recalculate whenever l1Data?.deposits or l2Data?.deposits changes,
+  // so new activities will appear automatically when data updates
+  const allActivities = useMemo(
+    () => mergeBridgeActivities(l1Data?.deposits || [], l2Data?.deposits || []),
+    [l1Data?.deposits, l2Data?.deposits]
+  );
 
   const isLoading = l1Loading || l2Loading;
   const error = l1Error || l2Error;

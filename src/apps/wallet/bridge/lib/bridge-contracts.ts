@@ -24,6 +24,25 @@ export const BRIDGE_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
+  {
+    inputs: [
+      { name: 'smtProofLocalExitRoot', type: 'bytes32[32]' },
+      { name: 'smtProofRollupExitRoot', type: 'bytes32[32]' },
+      { name: 'globalIndex', type: 'uint256' },
+      { name: 'mainnetExitRoot', type: 'bytes32' },
+      { name: 'rollupExitRoot', type: 'bytes32' },
+      { name: 'originNetwork', type: 'uint32' },
+      { name: 'originTokenAddress', type: 'address' },
+      { name: 'destinationNetwork', type: 'uint32' },
+      { name: 'destinationAddress', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+      { name: 'metadata', type: 'bytes' },
+    ],
+    name: 'claimAsset',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ] as const;
 
 export const BRIDGE_NETWORK_IDS: Record<number, number> = {

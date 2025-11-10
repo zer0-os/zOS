@@ -4,6 +4,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--s-spacing);
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 16px;
 }
 
 .activityHeaderRow {
@@ -71,7 +74,8 @@
 .activityList {
   display: flex;
   flex-direction: column;
-  max-height: 300px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 2px;
 }

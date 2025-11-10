@@ -15,7 +15,8 @@ import { useFinalizeBridge } from '../hooks/useFinalizeBridge';
 import { TransactionLoadingSpinner } from '../../send/components/transaction-loading-spinner';
 import { useAccount } from 'wagmi';
 import { Button } from '../../components/button/button';
-import { IconClockRewind } from '@zero-tech/zui/icons';
+import { IconClockRewind, IconXClose } from '@zero-tech/zui/icons';
+import { IconButton } from '@zero-tech/zui/components';
 
 import styles from './wallet-bridge-processing.module.scss';
 
@@ -99,7 +100,7 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
   if (isLoadingStatus) {
     return (
       <div className={styles.container}>
-        <BridgeHeader title='Bridge' />
+        <BridgeHeader title='Bridge' action={<IconButton Icon={IconXClose} onClick={onClose} />} />
         <div className={styles.content}>
           <TransactionLoadingSpinner />
           <div className={styles.title}>Loading bridge status...</div>
@@ -110,7 +111,7 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
 
   return (
     <div className={styles.container}>
-      <BridgeHeader title='Bridge' />
+      <BridgeHeader title='Bridge' action={<IconButton Icon={IconXClose} onClick={onClose} />} />
       <div className={styles.content}>
         <TransactionLoadingSpinner />
 
@@ -141,7 +142,7 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
             )}
             <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
             <div className={styles.buttonGroup}>
-              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>
                 Activity
               </Button>
             </div>
@@ -165,7 +166,7 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
             </div>
             <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
             <div className={styles.buttonGroup}>
-              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+              <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>
                 Activity
               </Button>
             </div>

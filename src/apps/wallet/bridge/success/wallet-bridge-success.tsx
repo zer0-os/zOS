@@ -1,4 +1,4 @@
-import { IconButton, Skeleton } from '@zero-tech/zui/components';
+import { IconButton } from '@zero-tech/zui/components';
 import { BridgeHeader } from '../components/bridge-header/bridge-header';
 import { IconXClose, IconChevronRightDouble, IconCheck, IconClockRewind } from '@zero-tech/zui/icons';
 import {
@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeStatus } from '../hooks/useBridgeStatus';
+import { TransactionLoadingSpinner } from '../../send/components/transaction-loading-spinner';
 
 import styles from './wallet-bridge-success.module.scss';
 
@@ -42,9 +43,20 @@ export const WalletBridgeSuccess = ({ depositCount, fromChainId, onClose }: Wall
   const statusFromChainId = status ? getChainIdFromName(status.fromChain) : fromChainId;
   const statusToChainId = status ? getChainIdFromName(status.toChain) : 0;
 
-  const tokenInfo = status
-    ? getTokenInfo(status.tokenAddress, statusToChainId) || getTokenInfo(status.tokenAddress, statusFromChainId)
-    : null;
+  // Get token info from curated tokens, trying both chains
+  // Try fromChainId first since that's where the token originated
+  let tokenInfo = status && statusFromChainId ? getTokenInfo(status.tokenAddress, statusFromChainId) : null;
+  if (!tokenInfo || tokenInfo.symbol === 'Unknown') {
+    tokenInfo = status && statusToChainId ? getTokenInfo(status.tokenAddress, statusToChainId) : null;
+  }
+
+  if (!tokenInfo || tokenInfo.symbol === 'Unknown') {
+    tokenInfo = {
+      symbol: 'Unknown',
+      name: 'Unknown Token',
+      decimals: 18,
+    };
+  }
 
   const formattedAmount = status && tokenInfo ? formatBridgeAmount(status.amount, tokenInfo.decimals) : '0';
 
@@ -71,37 +83,8 @@ export const WalletBridgeSuccess = ({ depositCount, fromChainId, onClose }: Wall
       <div className={styles.container}>
         <BridgeHeader title='Bridge Complete' action={<IconButton Icon={IconXClose} onClick={onClose} />} />
         <div className={styles.content}>
-          <div className={styles.status}>
-            <Skeleton className={styles.statusIcon} style={{ width: 24, height: 24, borderRadius: '50%' }} />
-            <Skeleton style={{ width: 200, height: 20 }} />
-          </div>
-
-          <div className={styles.transferDetails}>
-            <div className={styles.tokenInfo}>
-              <Skeleton className={styles.smallTokenIcon} style={{ width: 40, height: 40, borderRadius: '50%' }} />
-              <Skeleton style={{ width: 100, height: 18 }} />
-              <Skeleton style={{ width: 80, height: 12 }} />
-              <Skeleton style={{ width: 60, height: 14 }} />
-            </div>
-
-            <div className={styles.tokenInfoSeparator}>
-              <IconChevronRightDouble />
-            </div>
-
-            <div className={styles.tokenInfo}>
-              <Skeleton className={styles.smallTokenIcon} style={{ width: 40, height: 40, borderRadius: '50%' }} />
-              <Skeleton style={{ width: 100, height: 18 }} />
-              <Skeleton style={{ width: 80, height: 12 }} />
-              <Skeleton style={{ width: 60, height: 14 }} />
-            </div>
-          </div>
-
-          <div className={styles.footer}>
-            <div className={styles.actions}>
-              <Skeleton style={{ width: 120, height: 36 }} />
-              <Skeleton style={{ width: 120, height: 36 }} />
-            </div>
-          </div>
+          <TransactionLoadingSpinner />
+          <div className={styles.title}>Loading bridge status...</div>
         </div>
       </div>
     );
@@ -166,7 +149,7 @@ export const WalletBridgeSuccess = ({ depositCount, fromChainId, onClose }: Wall
                 View Claim
               </Button>
             )}
-            <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+            <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>
               Activity
             </Button>
           </div>

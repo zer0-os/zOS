@@ -52,7 +52,7 @@ export const WalletBridgeError = ({ depositCount, fromChainId, onClose }: Wallet
           </div>
           <div className={styles.infoText}>Back to activity list</div>
           <div className={styles.buttonGroup}>
-            <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+            <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>
               Activity
             </Button>
           </div>
@@ -86,7 +86,7 @@ export const WalletBridgeError = ({ depositCount, fromChainId, onClose }: Wallet
         </div>
         <div className={styles.infoText}>Back to activity list</div>
         <div className={styles.buttonGroup}>
-          <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={20} />}>
+          <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>
             Activity
           </Button>
         </div>

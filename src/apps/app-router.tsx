@@ -25,6 +25,7 @@ import { isAuthenticatedSelector } from '../store/authentication/selectors';
 import { userProfileStageSelector } from '../store/user-profile/selectors';
 import { WalletApp } from './wallet';
 import { LeaderboardApp } from './leaderboard';
+import { MarketplaceApp } from './marketplace';
 
 import styles from './app-router.module.css';
 
@@ -50,6 +51,7 @@ export const AppRouter = () => {
         <Route path='/profile' component={ProfileApp} />
         <Route path='/wallet' component={WalletApp} />
         <Route path='/leaderboard' component={LeaderboardApp} />
+        {featureFlags.enableMarketplace && <Route path='/marketplace' component={MarketplaceApp} />}
         <Route component={redirectToRoot} />
       </Switch>
     </AuthenticationContextProvider>
@@ -63,6 +65,7 @@ export const HIDE_SIDEKICK_PATHS = [
   '/wallet',
   '/leaderboard',
   '/token',
+  '/marketplace',
 ];
 
 /**

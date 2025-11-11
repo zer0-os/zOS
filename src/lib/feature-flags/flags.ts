@@ -16,7 +16,8 @@ export type FeatureFlagKey =
   | 'enableUnstaking'
   | 'enableDex'
   | 'enablePresence'
-  | 'enableBridge';
+  | 'enableBridge'
+  | 'enableMarketplace';
 
 export interface FeatureFlagConfig {
   defaultValue: boolean;

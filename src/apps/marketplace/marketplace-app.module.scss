@@ -1,0 +1,20 @@
+@use '../../variables' as variables;
+
+.marketplaceContainer {
+  pointer-events: all;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: variables.$page-padding-vertical variables.$default-gap variables.$page-padding-vertical 0;
+
+  @media (min-width: 2561px) {
+    padding: variables.$page-padding-vertical 0;
+  }
+}
+
+.marketplacePanel {
+  width: 100%;
+  max-width: 1300px;
+  flex-shrink: 1;
+  pointer-events: all;
+}

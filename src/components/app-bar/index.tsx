@@ -170,7 +170,7 @@ export class AppBar extends React.Component<Properties, State> {
                 onLinkClick={this.unhoverContainer}
               />
             )}
-            {hasActiveWallet && (
+            {hasActiveWallet && featureFlags.enableMarketplace && (
               <AppLink
                 Icon={IconShoppingBag2}
                 isActive={isActive('marketplace')}

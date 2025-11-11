@@ -75,6 +75,7 @@ describe(AppRouter, () => {
       '/wallet',
       '/leaderboard',
       '/token',
+      '/marketplace',
     ]);
   });
 

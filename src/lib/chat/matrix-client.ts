@@ -186,8 +186,6 @@ export class MatrixClient {
    * Public reconnect method. Attempts a fast retry;
    */
   reconnect(): void {
-    console.log('reconnecting....');
-
     if (!this.matrix) return;
 
     if (this.matrix.retryImmediately?.()) return;

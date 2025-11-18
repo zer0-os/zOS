@@ -66,6 +66,7 @@ import { RelationType } from 'matrix-js-sdk/lib/@types/event';
 import { MatrixInitializationError } from './matrix/errors';
 import { PresenceController } from './presence';
 import { PresencePoller } from './presence-poller';
+import { SyncState } from 'matrix-js-sdk/lib/sync';
 
 export const USER_TYPING_TIMEOUT = 5000; // 5s
 
@@ -77,6 +78,12 @@ export class MatrixClient {
 
   private accessToken: string;
   userId: string;
+
+  private lastSyncToken: string | null = null;
+  private lastSyncTokenUpdatedAt: number | null = null;
+  // used to detect how long before we need to resync
+  private readonly SYNC_STALL_THRESHOLD_MS = 5 * 60_000; // 5 min
+  private reconnectPending = false;
 
   private connectionResolver: () => void;
   connectionAwaiter: Promise<void>;
@@ -175,7 +182,20 @@ export class MatrixClient {
     this.sessionStorage.clear();
   }
 
-  reconnect: () => void;
+  /**
+   * Public reconnect method. Attempts a fast retry;
+   */
+  reconnect(): void {
+    console.log('reconnecting....');
+
+    if (!this.matrix) return;
+
+    if (this.matrix.retryImmediately?.()) return;
+
+    // as a safety-net, if retryImmediately() returned false, we can show
+    // “connection failed – please refresh” rather than trying to restart
+    // the MatrixClient in-place.
+  }
 
   async isRoomMember(userId: string, roomId: string) {
     if (!userId || !roomId) {
@@ -1339,10 +1359,13 @@ export class MatrixClient {
 
   private async initializeEventHandlers() {
     this.matrix.on(ClientEvent.Event, this.publishUserPresenceChange);
+
+    this.matrix.on(ClientEvent.Sync, this.syncStallMonitor);
+
     this.matrix.on('event' as any, async ({ event }) => {
       this.debug('event: ', event);
       if (event.type === EventType.RoomEncryption) {
-        this.debug('encryped message: ', event);
+        this.debug('encrypted message: ', event);
       }
       if (event.type === EventType.RoomMember) {
         await this.publishMembershipChange(event);
@@ -1798,6 +1821,29 @@ export class MatrixClient {
   private async doesUserHaveCrossSigning() {
     return await this.cryptoApi?.userHasCrossSigningKeys(this.userId, true);
   }
+
+  // Monitors Sliding Sync heart-beat. If the nextSyncToken hasn't advanced for
+  // SYNC_STALL_THRESHOLD_MS it forces a reconnect. Runs on every ClientEvent.Sync.
+  private syncStallMonitor = (_state: SyncState, _prev: SyncState | null, data?: any): void => {
+    const now = Date.now();
+    const nextToken = data?.nextSyncToken;
+
+    // 1. Check if we've been stalled too long
+    if (this.lastSyncTokenUpdatedAt && !this.reconnectPending) {
+      const stalledMs = now - this.lastSyncTokenUpdatedAt;
+      if (stalledMs > this.SYNC_STALL_THRESHOLD_MS) {
+        this.reconnectPending = true;
+        this.reconnect();
+      }
+    }
+
+    // 2. If token advanced, update our "last seen alive" timestamp
+    if (nextToken && nextToken !== this.lastSyncToken) {
+      this.lastSyncToken = nextToken;
+      this.lastSyncTokenUpdatedAt = now;
+      this.reconnectPending = false;
+    }
+  };
 
   /*
    * DEBUGGING

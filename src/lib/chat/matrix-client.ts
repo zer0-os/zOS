@@ -192,7 +192,7 @@ export class MatrixClient {
 
     // as a safety-net, if retryImmediately() returned false, we can show
     // “connection failed – please refresh” rather than trying to restart
-    // the MatrixClient in-place.
+    // the MatrixClient in-place
   }
 
   async isRoomMember(userId: string, roomId: string) {

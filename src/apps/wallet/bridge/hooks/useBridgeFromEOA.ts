@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { BRIDGE_ABI, getBridgeContractAddress, getBridgeNetworkId } from '../lib/bridge-contracts';
 import { ZERO_ADDRESS } from '../lib/constants';
-import { normalizeWalletError } from '../lib/utils';
+import { normalizeWalletError, getEthersProviderFromWagmi } from '../lib/utils';
 
 interface BridgeFromEOAParams {
   fromChainId: number;
@@ -31,15 +31,11 @@ export function useBridgeFromEOA({ onSuccess, onError }: UseBridgeFromEOAParams 
     try {
       const { fromChainId, toChainId, tokenAddress, amount, destinationAddress, decimals, eoaAddress } = params;
 
-      if (typeof window === 'undefined' || !window.ethereum) {
-        throw new Error('No wallet detected. Please install MetaMask or another web3 wallet.');
-      }
-
       if (!eoaAddress) {
         throw new Error('EOA address is required');
       }
 
-      const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
+      const ethersProvider = await getEthersProviderFromWagmi(fromChainId);
       const signer = ethersProvider.getSigner();
       const connectedAddress = await signer.getAddress();
 

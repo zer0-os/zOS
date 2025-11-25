@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { BRIDGE_ABI, getBridgeContractAddress, getBridgeNetworkId } from '../lib/bridge-contracts';
 import { BridgeStatusResponse, BridgeMerkleProofData } from '../../queries/bridgeQueries';
-import { normalizeWalletError } from '../lib/utils';
+import { normalizeWalletError, getEthersProviderFromWagmi } from '../lib/utils';
 
 interface FinalizeBridgeFromEOAParams {
   status: BridgeStatusResponse;
@@ -30,15 +30,11 @@ export function useFinalizeBridgeFromEOA({ onSuccess, onError }: UseFinalizeBrid
     try {
       const { status, merkleProof, toChainId, fromChainId, eoaAddress } = params;
 
-      if (typeof window === 'undefined' || !window.ethereum) {
-        throw new Error('No wallet detected. Please install MetaMask or another web3 wallet.');
-      }
-
       if (!eoaAddress) {
         throw new Error('EOA address is required');
       }
 
-      const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
+      const ethersProvider = await getEthersProviderFromWagmi(toChainId);
       const signer = ethersProvider.getSigner();
       const connectedAddress = await signer.getAddress();
       const network = await ethersProvider.getNetwork();

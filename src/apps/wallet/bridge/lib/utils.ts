@@ -1,4 +1,6 @@
-import { utils } from 'ethers';
+import { utils, providers } from 'ethers';
+import { getAccount } from '@wagmi/core';
+import { getWagmiConfig } from '../../../../lib/web3/wagmi-config';
 import { CURATED_TOKENS } from './tokens';
 import { CHAIN_ID_ETHEREUM, CHAIN_ID_SEPOLIA, CHAIN_ID_ZCHAIN, CHAIN_ID_ZEPHYR, ZERO_ADDRESS } from './constants';
 
@@ -475,6 +477,48 @@ export function getBridgeValidationErrorMessage(error: BridgeValidationError): s
     default:
       return '';
   }
+}
+
+/**
+ * Gets an ethers Web3Provider from the connected Wagmi wallet.
+ * Works in both browser and Electron environments.
+ *
+ * @param chainId - The chain ID to get the provider for
+ * @returns An ethers Web3Provider instance
+ * @throws Error if wallet is not connected or provider cannot be obtained
+ */
+export async function getEthersProviderFromWagmi(chainId: number): Promise<providers.Web3Provider> {
+  const wagmiConfig = getWagmiConfig();
+  const account = getAccount(wagmiConfig);
+
+  if (!account.isConnected || !account.address) {
+    throw new Error('No wallet detected. Please connect your wallet.');
+  }
+
+  const connector = account.connector;
+  if (!connector) {
+    throw new Error('Wallet connector not found.');
+  }
+
+  // Try multiple methods to get the provider for compatibility
+  let provider: any;
+  if (typeof window !== 'undefined' && window.ethereum) {
+    provider = window.ethereum;
+  } else if (typeof connector.getProvider === 'function') {
+    provider = await connector.getProvider({ chainId });
+  } else if ((connector as any).provider) {
+    provider = (connector as any).provider;
+  } else if ((connector as any).transport?.value?.provider) {
+    provider = (connector as any).transport.value.provider;
+  } else if ((connector as any).transport?.provider) {
+    provider = (connector as any).transport.provider;
+  }
+
+  if (!provider) {
+    throw new Error('Unable to get wallet provider. Please ensure your wallet is connected and try again.');
+  }
+
+  return new providers.Web3Provider(provider);
 }
 
 export function normalizeWalletError(error: unknown): Error {

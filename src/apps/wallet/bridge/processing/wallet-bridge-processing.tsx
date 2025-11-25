@@ -186,6 +186,9 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
                 ? 'Check your activity list for the latest status.'
                 : 'This may take a few minutes, up to 30 minutes.'}
             </div>
+            {finalizationStarted && isZChainToEthereum && (
+              <div className={styles.infoText}>Please check your EOA wallet for submission.</div>
+            )}
             <div className={styles.buttonGroup}>
               {isProcessing && status?.transactionHash && !finalizationStarted && (
                 <Button onClick={onViewTransaction} variant='secondary'>

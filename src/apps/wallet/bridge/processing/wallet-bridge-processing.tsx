@@ -128,14 +128,15 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
     : finalizeMutation.isSuccess || finalizeMutation.isPending;
   const finalizeError = isZChainToEthereum ? finalizeFromEOA.error : finalizeMutation.error;
   const showFinalizeContent = isReadyForClaim && isZChainToEthereum && !finalizationStarted;
+  const isLoading = isLoadingStatus || (needsMerkleProof && merkleProofLoading);
 
-  if (isLoadingStatus) {
+  if (isLoading) {
     return (
       <div className={styles.container}>
         <BridgeHeader title='Bridge' action={<IconButton Icon={IconXClose} onClick={onClose} />} />
         <div className={styles.content}>
           <TransactionLoadingSpinner />
-          <div className={styles.title}>Loading bridge status...</div>
+          <div className={styles.title}>{isLoadingStatus ? 'Loading bridge status...' : 'Loading merkle proof...'}</div>
         </div>
       </div>
     );
@@ -152,9 +153,7 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
             <div className={styles.title}>Bridge is ready to finalize</div>
             <div className={styles.subtitle}>Complete the bridge by finalizing on Ethereum.</div>
             <div className={styles.buttonGroup}>
-              {merkleProofLoading ? (
-                <div className={styles.subtitle}>Loading merkle proof...</div>
-              ) : merkleProof ? (
+              {merkleProof ? (
                 <>
                   <Button onClick={onFinalize} disabled={isFinalizing}>
                     {isFinalizing ? 'Finalizing...' : 'Finalize Bridge'}

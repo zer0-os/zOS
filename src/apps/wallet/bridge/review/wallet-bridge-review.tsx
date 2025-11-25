@@ -8,7 +8,7 @@ import { IconChevronRightDouble, IconLinkExternal1 } from '@zero-tech/zui/icons'
 import { truncateAddress } from '../../utils/address';
 import { TokenIcon } from '../../components/token-icon/token-icon';
 import { FormattedNumber } from '../../components/formatted-number/formatted-number';
-import { BridgeParams, CHAIN_NAMES, openExplorerForAddress, formatAddress } from '../lib/utils';
+import { BridgeParams, CHAIN_NAMES, openExplorerForAddress, formatAddress, isL2Chain } from '../lib/utils';
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeToken } from '../hooks/useBridgeToken';
 import { useBridgeFromEOA } from '../hooks/useBridgeFromEOA';
@@ -101,6 +101,9 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
   const fromWalletType = isFromZeroWallet ? 'Zero Wallet' : 'EOA Wallet';
   const toWalletType = isToZeroWallet ? 'Zero Wallet' : 'EOA Wallet';
 
+  // Check if bridging from EOA to Z wallet (L1 to L2)
+  const isEoaToZWallet = bridgeParams.fromWalletAddress === eoaAddress && isL2Chain(bridgeParams.toChainId);
+
   const handleDestinationLink = () => {
     openExplorerForAddress(toWalletAddress, bridgeParams.toChainId);
   };
@@ -191,6 +194,7 @@ export const WalletBridgeReview = ({ bridgeParams, onNext, onBack }: WalletBridg
       <div className={styles.confirmButton}>
         <div className={styles.confirmButtonText}>Review the above before confirming.</div>
         <div className={styles.confirmButtonText}>Once made, your transaction is irreversible.</div>
+        {isEoaToZWallet && <div className={styles.confirmButtonText}>Please check your EOA wallet for submission.</div>}
         <div className={styles.confirmButtonWrapper}>
           <div className={styles.buttonContainer}>
             <Button onClick={onSubmit} disabled={isSubmitting} variant='secondary'>

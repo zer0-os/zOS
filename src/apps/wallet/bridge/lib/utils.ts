@@ -501,11 +501,29 @@ export async function getEthersProviderFromWagmi(chainId: number): Promise<provi
   }
 
   // Try multiple methods to get the provider for compatibility
+  // IMPORTANT: Don't pass chainId to getProvider() initially as it triggers chain switching
+  // which fails in Electron/WalletConnect. Get provider first, then check/switch chain if needed.
   let provider: any;
   if (typeof window !== 'undefined' && window.ethereum) {
     provider = window.ethereum;
   } else if (typeof connector.getProvider === 'function') {
-    provider = await connector.getProvider({ chainId });
+    // Try to get provider without chainId first to avoid triggering chain switch
+    try {
+      provider = await connector.getProvider();
+    } catch (error) {
+      // If getProvider() without args fails, try accessing provider directly
+      // This avoids WalletConnect chain switching issues in Electron
+      if ((connector as any).provider) {
+        provider = (connector as any).provider;
+      } else if ((connector as any).transport?.value?.provider) {
+        provider = (connector as any).transport.value.provider;
+      } else if ((connector as any).transport?.provider) {
+        provider = (connector as any).transport.provider;
+      } else {
+        // Last resort: try with chainId (may trigger chain switch)
+        provider = await connector.getProvider({ chainId });
+      }
+    }
   } else if ((connector as any).provider) {
     provider = (connector as any).provider;
   } else if ((connector as any).transport?.value?.provider) {
@@ -518,7 +536,47 @@ export async function getEthersProviderFromWagmi(chainId: number): Promise<provi
     throw new Error('Unable to get wallet provider. Please ensure your wallet is connected and try again.');
   }
 
-  return new providers.Web3Provider(provider);
+  const ethersProvider = new providers.Web3Provider(provider);
+  const network = await ethersProvider.getNetwork();
+
+  // Only switch chain if user is not on the correct chain
+  if (network.chainId !== chainId) {
+    // Check if connector supports switchChain
+    if (typeof connector.switchChain === 'function') {
+      try {
+        await connector.switchChain({ chainId });
+        // After switching, get the network again to verify
+        const newNetwork = await ethersProvider.getNetwork();
+        if (newNetwork.chainId !== chainId) {
+          throw new Error(
+            `Please switch to the correct network. Expected chain ID ${chainId}, but connected to ${newNetwork.chainId}`
+          );
+        }
+      } catch (switchError: any) {
+        // If switchChain fails, provide a helpful error message
+        if (
+          switchError?.message?.includes('not configured') ||
+          switchError?.message?.includes('Chain not configured')
+        ) {
+          throw new Error(
+            `Chain ${chainId} is not configured in your wallet. Please add it manually or switch to chain ${chainId} in your wallet app.`
+          );
+        }
+        throw new Error(
+          `Please switch to the correct network. Expected chain ID ${chainId}, but connected to ${
+            network.chainId
+          }. Error: ${switchError?.message || switchError}`
+        );
+      }
+    } else {
+      // Connector doesn't support switchChain, user needs to switch manually
+      throw new Error(
+        `Please switch to the correct network. Expected chain ID ${chainId}, but connected to ${network.chainId}`
+      );
+    }
+  }
+
+  return ethersProvider;
 }
 
 export function normalizeWalletError(error: unknown): Error {

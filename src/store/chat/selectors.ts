@@ -14,3 +14,5 @@ export const isSecondaryConversationDataLoadedSelector = (state: RootState): boo
   state.chat.isSecondaryConversationDataLoaded;
 
 export const isJoiningConversationSelector = (state: RootState): boolean => state.chat.isJoiningConversation;
+
+export const isSyncingSelector = (state: RootState): boolean => state.chat.isSyncing;

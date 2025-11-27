@@ -35,6 +35,7 @@ export interface RealtimeChatEvents {
   receiveRoomData: (roomId: string, roomData: MSC3575RoomData) => void;
   tokenRefreshLogout: () => void;
   updateOptimisticMessage: (message: IEvent, roomId: string) => void;
+  onSyncStatusChanged: (isSyncing: boolean) => void;
 }
 
 export class Chat {

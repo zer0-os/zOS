@@ -28,6 +28,7 @@ export enum Events {
   RoomLabelChange = 'chat/channel/roomLabelChange',
   MessageEmojiReactionChange = 'chat/message/messageEmojiReactionChange',
   RoomData = 'chat/channel/roomData',
+  SyncStatusChanged = 'chat/syncStatusChanged',
 }
 
 let theBus: MulticastChannel<unknown>;
@@ -110,6 +111,8 @@ export function createChatConnection(userId: string, chatAccessToken: string, ch
     const tokenRefreshLogout = () => emit({ type: Events.InvalidToken });
     const updateOptimisticMessage = (messageEvent: IEvent, roomId: string) =>
       emit({ type: Events.OptimisticMessageUpdated, payload: { message: mapMatrixMessage(messageEvent), roomId } });
+    const onSyncStatusChanged = (isSyncing: boolean) =>
+      emit({ type: Events.SyncStatusChanged, payload: { isSyncing } });
 
     chatClient.initChat({
       receiveNewMessage,
@@ -133,6 +136,7 @@ export function createChatConnection(userId: string, chatAccessToken: string, ch
       receiveRoomData,
       tokenRefreshLogout,
       updateOptimisticMessage,
+      onSyncStatusChanged,
     });
 
     connectionPromise = chatClient.connect(userId, chatAccessToken);

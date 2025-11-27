@@ -1,44 +1,142 @@
+@import '../../../../variables';
+@import '../../../../glass';
+
 .nftTile {
   display: flex;
   flex-direction: column;
-  gap: var(--l-spacing);
   border-radius: 16px;
   background: #111213;
-  padding: 8px;
+  border: 1px solid var(--border-primary);
   width: 100%;
   height: 100%;
   overflow: hidden;
   box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    @include glass-state-hover-color;
+  }
 }
 
 .nftImage {
   flex: 1;
   min-height: 0;
   aspect-ratio: 1/1;
+  width: 100%;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 16px 16px 0 0;
   }
 }
 
 .nftInfo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  padding: 12px;
 }
 
 .nftName {
   font-size: 14px;
   font-weight: 600;
+  @include glass-text-primary-color;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nftCollection {
+  font-size: 12px;
+  @include glass-text-secondary-color;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nftIdContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.nftId {
+  font-size: 12px;
+  @include glass-text-tertiary-color;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.copyButton {
+  color: #01f4cb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &.copied {
+    color: #01f4cb;
+    transform: scale(1.1);
+  }
+}
+
+.externalLinkButton {
+  color: #01f4cb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .nftImageFallback {
-  display: grid;
-  place-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
   height: 100%;
-  border-radius: 8px;
+  border-radius: 16px 16px 0 0;
+  background: #34383c33;
+}
+
+.icon {
+  @include glass-text-primary-color;
+}
+
+.collectionLabel {
+  font-size: 12px;
+  font-weight: 600;
+  @include glass-text-primary-color;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  padding: 0 8px;
 }

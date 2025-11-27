@@ -10,6 +10,7 @@ import {
   setIsChatConnectionComplete,
   setIsConversationsLoaded,
   setLoadingConversationProgress,
+  setIsSyncing,
 } from '.';
 import { Events as ChatEvents, createChatConnection, getChatBus } from './bus';
 import { getAuthChannel, Events as AuthEvents } from '../authentication/channels';
@@ -277,6 +278,14 @@ export function* closeErrorDialog() {
   yield call(openFirstConversation);
 }
 
+export function* setSyncStatus(action) {
+  if (action.payload?.isSyncing) {
+    yield put(setIsSyncing(true));
+    yield delay(3500);
+    yield put(setIsSyncing(false));
+  }
+}
+
 export function* saga() {
   yield spawn(connectOnLogin);
 
@@ -294,4 +303,6 @@ export function* saga() {
 
   // Start presence polling after conversations are loaded
   yield spawn(startPresencePollingAfterSetup);
+
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.SyncStatusChanged, setSyncStatus);
 }

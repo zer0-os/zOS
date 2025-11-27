@@ -9,6 +9,7 @@ import { isOneOnOne as isOneOnOneUtil } from '../../store/channels-list/utils';
 import { useChannelSelector } from '../../store/hooks';
 import { currentUserSelector } from '../../store/authentication/selectors';
 import { backupExistsSelector } from '../../store/matrix/selectors';
+import { isSyncingSelector } from '../../store/chat/selectors';
 import InvertedScroll from '../inverted-scroll';
 import { usePrevious } from '../../lib/hooks/usePrevious';
 import { isMemberPanelOpenSelector } from '../../store/panels/selectors';
@@ -26,6 +27,7 @@ export const ChatViewContainer = forwardRef<InvertedScroll, PublicProperties>((p
   const user = useSelector(currentUserSelector);
   const isSecondarySidekickOpen = useSelector(isMemberPanelOpenSelector);
   const backupExists = useSelector(backupExistsSelector);
+  const isSyncing = useSelector(isSyncingSelector);
 
   const channel = useChannelSelector(channelId);
 
@@ -105,6 +107,7 @@ export const ChatViewContainer = forwardRef<InvertedScroll, PublicProperties>((p
         isOneOnOne={isOneOnOne}
         isSecondarySidekickOpen={isSecondarySidekickOpen}
         onHiddenMessageInfoClick={handleHiddenMessageInfoClick}
+        isSyncing={isSyncing}
       />
     </>
   );

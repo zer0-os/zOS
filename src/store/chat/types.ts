@@ -13,4 +13,5 @@ export interface ChatState {
   isConversationsLoaded: boolean;
   isSecondaryConversationDataLoaded: boolean;
   loadingConversationProgress: number;
+  isSyncing: boolean;
 }

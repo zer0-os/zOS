@@ -183,16 +183,18 @@ export class MatrixClient {
   }
 
   /**
-   * Public reconnect method. Attempts a fast retry;
+   * Public reconnect method. Triggers Sliding Sync to resend and flushes message queues.
    */
   reconnect(): void {
     if (!this.matrix) return;
 
-    if (this.matrix.retryImmediately?.()) return;
+    // Force Sliding Sync to abort current request and start fresh
+    SlidingSyncManager.instance.slidingSync?.resend();
 
-    // as a safety-net, if retryImmediately() returned false, we can show
-    // “connection failed – please refresh” rather than trying to restart
-    // the MatrixClient in-place
+    this.events.onSyncStatusChanged(true);
+
+    // Flush any queued to-device messages (e.g., encryption keys)
+    this.matrix.retryImmediately?.();
   }
 
   async isRoomMember(userId: string, roomId: string) {
@@ -1839,7 +1841,10 @@ export class MatrixClient {
     if (nextToken && nextToken !== this.lastSyncToken) {
       this.lastSyncToken = nextToken;
       this.lastSyncTokenUpdatedAt = now;
-      this.reconnectPending = false;
+      if (this.reconnectPending) {
+        this.reconnectPending = false;
+        this.events.onSyncStatusChanged(false);
+      }
     }
   };
 

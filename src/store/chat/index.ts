@@ -9,6 +9,7 @@ const initialState: ChatState = {
   isConversationsLoaded: false,
   isSecondaryConversationDataLoaded: false,
   loadingConversationProgress: 0,
+  isSyncing: false,
 };
 
 export enum SagaActionTypes {
@@ -53,6 +54,9 @@ const slice = createSlice({
     ) => {
       state.isSecondaryConversationDataLoaded = action.payload;
     },
+    setIsSyncing: (state, action: PayloadAction<ChatState['isSyncing']>) => {
+      state.isSyncing = action.payload;
+    },
   },
 });
 
@@ -65,6 +69,7 @@ export const {
   setIsConversationsLoaded,
   setIsSecondaryConversationDataLoaded,
   setLoadingConversationProgress,
+  setIsSyncing,
 } = slice.actions;
 export const { reducer } = slice;
 export { closeConversationErrorDialog };

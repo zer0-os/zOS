@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Waypoint } from '../waypoint';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import classNames from 'classnames';
 import moment from 'moment';
 import { Message as MessageModel, MediaType, AdminMessageType, Media } from '../../store/messages';
@@ -46,6 +47,7 @@ export interface Properties {
   onHiddenMessageInfoClick: () => void;
   onFetchMore: (timestamp: number) => void;
   onReload: () => void;
+  isSyncing?: boolean;
 }
 
 export const ChatView = React.forwardRef<InvertedScroll, Properties>(
@@ -60,6 +62,7 @@ export const ChatView = React.forwardRef<InvertedScroll, Properties>(
       onHiddenMessageInfoClick,
       onFetchMore,
       onReload,
+      isSyncing,
     },
     ref
   ) => {
@@ -263,6 +266,11 @@ export const ChatView = React.forwardRef<InvertedScroll, Properties>(
               </span>
             </div>
           )}
+
+          <div {...componentCn('syncing-message', isSyncing && 'visible')}>
+            <Spinner />
+            &nbsp;Resyncing...
+          </div>
 
           {conversationErrorMessage && <div {...componentCn('error')}>{conversationErrorMessage}</div>}
         </InvertedScroll>

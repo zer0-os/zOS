@@ -16,6 +16,33 @@
     font-weight: 400;
   }
 
+  &__syncing-message {
+    position: absolute;
+    bottom: 72px;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    color: theme.$color-greyscale-11;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 400;
+
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    pointer-events: none;
+
+    &--visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+  }
+
   &__try-reload {
     cursor: pointer;
   }

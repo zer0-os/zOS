@@ -8,4 +8,5 @@ export const mockChatState: ChatState = {
   isChatConnectionComplete: false,
   isConversationsLoaded: false,
   loadingConversationProgress: 0,
+  isSyncing: false,
 };

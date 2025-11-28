@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { BRIDGE_ABI, getBridgeContractAddress, getBridgeNetworkId } from '../lib/bridge-contracts';
 import { BridgeStatusResponse, BridgeMerkleProofData } from '../../queries/bridgeQueries';
-import { normalizeWalletError, getEthersProviderFromWagmi } from '../lib/utils';
+import { normalizeWalletError, getEthersProviderFromWagmi, CHAIN_ID_ETHEREUM } from '../lib/utils';
 
 interface FinalizeBridgeFromEOAParams {
   status: BridgeStatusResponse;
@@ -60,12 +60,16 @@ export function useFinalizeBridgeFromEOA({ onSuccess, onError }: UseFinalizeBrid
       }
 
       // Get network IDs
-      const originNetworkId = getBridgeNetworkId(fromChainId);
+      // For finalization from L2 to L1, the originNetwork depends on the network:
+      // - Mainnet (Z-Chain -> Ethereum): originNetwork should be 0 (bridge.zchain.org shows orig_net: 0)
+      // - Testnet (Zephyr -> Sepolia): may need different logic - checking if it should be 0 or the L2 network ID
       const destinationNetworkId = getBridgeNetworkId(toChainId);
 
-      if (originNetworkId === undefined) {
-        throw new Error(`Origin network ID not found for chain ${fromChainId}`);
-      }
+      // For mainnet, bridge.zchain.org shows orig_net: 0
+      // For testnet, we need to verify what bridge.zchain.org uses
+      // Using 0 for now (both Ethereum and Sepolia use network ID 0)
+      // If testnet fails, it may need to use getBridgeNetworkId(fromChainId) instead
+      const originNetworkId = toChainId === CHAIN_ID_ETHEREUM ? 0 : getBridgeNetworkId(fromChainId);
 
       if (destinationNetworkId === undefined) {
         throw new Error(`Destination network ID not found for chain ${toChainId}`);

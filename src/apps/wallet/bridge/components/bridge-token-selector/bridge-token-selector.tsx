@@ -17,6 +17,7 @@ import {
   ZERO_ADDRESS,
 } from '../../lib/utils';
 import { isSupportedBridgeToken } from '../../lib/tokens';
+import { isCustomToken } from '../../lib/custom-token-storage';
 import { useFetchTokenBalance } from '../../hooks/useFetchTokenBalance';
 import { useTokenSearch } from '../../hooks/useTokenSearch';
 import { currentUserSelector } from '../../../../../store/authentication/selectors';
@@ -102,8 +103,17 @@ export const BridgeTokenSelector = ({
 
   const sortedTokens = useMemo(() => {
     return [...filteredTokens].sort((a, b) => {
-      const aSupported = isSupportedBridgeToken(a.symbol);
-      const bSupported = isSupportedBridgeToken(b.symbol);
+      // Custom tokens are never supported, so check that first
+      const aIsCustom = isCustomToken(a.chainId, a.tokenAddress);
+      const bIsCustom = isCustomToken(b.chainId, b.tokenAddress);
+
+      // If one is custom and the other isn't, custom tokens go to the bottom
+      if (aIsCustom && !bIsCustom) return 1;
+      if (!aIsCustom && bIsCustom) return -1;
+
+      // If both are custom or both are not custom, sort by supported status
+      const aSupported = !aIsCustom && isSupportedBridgeToken(a.symbol);
+      const bSupported = !bIsCustom && isSupportedBridgeToken(b.symbol);
 
       if (aSupported && !bSupported) return -1;
       if (!aSupported && bSupported) return 1;
@@ -210,7 +220,9 @@ export const BridgeTokenSelector = ({
                   <div className={styles.emptyState}>No tokens found</div>
                 ) : (
                   sortedTokens.map((token) => {
-                    const isSupported = isSupportedBridgeToken(token.symbol);
+                    // Custom tokens are never supported, regardless of their symbol
+                    const isCustom = isCustomToken(token.chainId, token.tokenAddress);
+                    const isSupported = !isCustom && isSupportedBridgeToken(token.symbol);
                     return (
                       <div
                         key={`${token.chainId}-${token.tokenAddress}`}

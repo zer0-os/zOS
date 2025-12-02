@@ -38,3 +38,9 @@ export function removeCustomToken(chainId: number, tokenAddress: string): void {
   );
   localStorage.setItem(CUSTOM_TOKENS_KEY, JSON.stringify(filtered));
 }
+
+export function isCustomToken(chainId: number | undefined, tokenAddress: string): boolean {
+  if (!chainId) return false;
+  const customTokens = getCustomTokensForChain(chainId);
+  return customTokens.some((token) => token.tokenAddress.toLowerCase() === tokenAddress.toLowerCase());
+}

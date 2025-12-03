@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { IconPackageMinus, IconCopy2, IconCheck, IconLinkExternal1, IconChevronLeft } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
+import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { PanelBody } from '../../../../components/layout/panel';
 import { useNFTsQuery } from '../../queries/useNFTsQuery';
 import { useSelector } from 'react-redux';
@@ -15,6 +16,8 @@ export const NFTDetail = () => {
   const selectedWallet = useSelector(selectedWalletSelector);
   const { data } = useNFTsQuery(selectedWallet.address);
   const [isCopied, setIsCopied] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Find the NFT from the list
   const nft = data?.nfts.find(
@@ -49,6 +52,24 @@ export const NFTDetail = () => {
     }
   }, [isCopied]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !nft?.animationUrl) {
+      setIsVideoReady(false);
+      return;
+    }
+
+    if (video.readyState >= 3) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+      setIsVideoReady(true);
+    }
+  }, [nft?.animationUrl]);
+
+  const handleVideoCanPlay = () => {
+    setIsVideoReady(true);
+  };
+
   if (!nft) {
     return (
       <PanelBody className={styles.container}>
@@ -76,7 +97,27 @@ export const NFTDetail = () => {
 
       <div className={styles.content}>
         <div className={styles.imageContainer}>
-          {nft.imageUrl ? (
+          {nft.animationUrl ? (
+            <>
+              {!isVideoReady && (
+                <div className={styles.videoLoading}>
+                  <Spinner />
+                </div>
+              )}
+              <video
+                ref={videoRef}
+                src={nft.animationUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload='auto'
+                className={styles.image}
+                style={{ opacity: isVideoReady ? 1 : 0 }}
+                onCanPlay={handleVideoCanPlay}
+              />
+            </>
+          ) : nft.imageUrl ? (
             <img src={nft.imageUrl} alt={nftName} className={styles.image} />
           ) : (
             <div className={styles.imageFallback}>

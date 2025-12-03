@@ -7,9 +7,10 @@ import styles from './styles.module.scss';
 interface TableRowProps {
   token: TokenData;
   onTokenClick?: (tokenAddress: string) => void;
+  onTradeClick?: (tokenAddress: string) => void;
 }
 
-export const TableRow = ({ token, onTokenClick }: TableRowProps) => {
+export const TableRow = ({ token, onTokenClick, onTradeClick }: TableRowProps) => {
   const [imageError, setImageError] = useState(false);
 
   const handleClick = () => {
@@ -20,6 +21,12 @@ export const TableRow = ({ token, onTokenClick }: TableRowProps) => {
 
   const handleImageError = () => {
     setImageError(true);
+  };
+
+  const handleTradeClick = () => {
+    if (onTradeClick) {
+      onTradeClick(token.address);
+    }
   };
 
   const renderTokenIcon = () => {
@@ -62,13 +69,7 @@ export const TableRow = ({ token, onTokenClick }: TableRowProps) => {
         <div className={styles.MarketCap}>{formatMarketCap(token.marketCap)}</div>
       </td>
       <td className={styles.TradeColumn}>
-        <Button
-          variant={ButtonVariant.Primary}
-          onPress={() => {
-            // TODO: Implement trade functionality
-          }}
-          className={styles.TradeButton}
-        >
+        <Button variant={ButtonVariant.Primary} onPress={handleTradeClick} className={styles.TradeButton}>
           Trade
         </Button>
       </td>

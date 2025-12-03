@@ -170,6 +170,10 @@ export function* validateActiveConversation(conversationId: string) {
   }
 }
 
+function* setChatConnectionComplete() {
+  yield put(setIsChatConnectionComplete(true));
+}
+
 export function* joinRoom(roomIdOrAlias: string) {
   const { success, response } = yield call(apiJoinRoom, roomIdOrAlias);
 
@@ -288,6 +292,7 @@ export function* setSyncStatus(action) {
 
 export function* saga() {
   yield spawn(connectOnLogin);
+  yield takeEveryFromBus(yield call(getChatBus), ChatEvents.ChatConnectionComplete, setChatConnectionComplete);
 
   yield takeLatest(SagaActionTypes.setActiveConversationId, ({ payload }: any) =>
     validateActiveConversation(payload.id)

@@ -165,6 +165,16 @@ export class MatrixClient {
         PresencePoller.stop();
         await this.matrix.logout(true);
         this.matrix.removeAllListeners();
+
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('online', this.onOnline);
+          document.removeEventListener('visibilitychange', this.onVisibilityChange);
+          if (this.checkConnectionInterval) {
+            clearInterval(this.checkConnectionInterval);
+            this.checkConnectionInterval = null;
+          }
+        }
+
         await this.matrix.store?.destroy();
         // This can't be awaited because it's not properly implemented in the sdk.
         // If there is an active connection to the db then it will hang indefinitely.
@@ -1435,6 +1445,13 @@ export class MatrixClient {
     Object.keys(RoomMemberEvent).forEach((key) => {
       this.matrix.on(RoomMemberEvent[key], this.debugEvent(`RoomMemberEvent.${key}`));
     });
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', this.onOnline);
+      document.addEventListener('visibilitychange', this.onVisibilityChange);
+      // Check for stall every 5s to handle cases where the sync loop is paused/stuck
+      this.checkConnectionInterval = setInterval(this.checkStallState, 5000);
+    }
   }
 
   private debug(...args) {
@@ -1822,11 +1839,10 @@ export class MatrixClient {
     return await this.cryptoApi?.userHasCrossSigningKeys(this.userId, true);
   }
 
-  // Monitors Sliding Sync heart-beat. If the nextSyncToken hasn't advanced for
-  // SYNC_STALL_THRESHOLD_MS it forces a reconnect. Runs on every ClientEvent.Sync.
-  private syncStallMonitor = (_state: SyncState, _prev: SyncState | null, data?: any): void => {
+  private checkConnectionInterval: ReturnType<typeof setInterval> | null = null;
+
+  private checkStallState = () => {
     const now = Date.now();
-    const nextToken = data?.nextSyncToken;
 
     // 1. Check if we've been stalled too long
     if (this.lastSyncTokenUpdatedAt && !this.reconnectPending) {
@@ -1836,6 +1852,15 @@ export class MatrixClient {
         this.reconnect();
       }
     }
+  };
+
+  // Monitors Sliding Sync heart-beat. If the nextSyncToken hasn't advanced for
+  // SYNC_STALL_THRESHOLD_MS it forces a reconnect. Runs on every ClientEvent.Sync.
+  private syncStallMonitor = (_state: SyncState, _prev: SyncState | null, data?: any): void => {
+    this.checkStallState();
+
+    const now = Date.now();
+    const nextToken = data?.nextSyncToken;
 
     // 2. If token advanced, update our "last seen alive" timestamp
     if (nextToken && nextToken !== this.lastSyncToken) {
@@ -1845,6 +1870,16 @@ export class MatrixClient {
         this.reconnectPending = false;
         this.events.onSyncStatusChanged(false);
       }
+    }
+  };
+
+  private onOnline = () => {
+    this.reconnect();
+  };
+
+  private onVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      this.checkStallState();
     }
   };
 

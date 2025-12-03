@@ -87,6 +87,25 @@
   transition: opacity 0.3s ease-in-out;
 }
 
+.imagePlaceholder {
+  opacity: 1;
+}
+
+.imagePlaceholderHidden {
+  opacity: 0;
+}
+
+.video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+.videoReady {
+  opacity: 1;
+}
+
 .imageFallback {
   display: flex;
   flex-direction: column;

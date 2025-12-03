@@ -99,6 +99,15 @@ export const NFTDetail = () => {
         <div className={styles.imageContainer}>
           {nft.animationUrl ? (
             <>
+              {nft.imageUrl && (
+                <img
+                  src={nft.imageUrl}
+                  alt={nftName}
+                  className={`${styles.image} ${styles.imagePlaceholder} ${
+                    isVideoReady ? styles.imagePlaceholderHidden : ''
+                  }`}
+                />
+              )}
               {!isVideoReady && (
                 <div className={styles.videoLoading}>
                   <Spinner />
@@ -112,8 +121,7 @@ export const NFTDetail = () => {
                 muted
                 playsInline
                 preload='auto'
-                className={styles.image}
-                style={{ opacity: isVideoReady ? 1 : 0 }}
+                className={`${styles.image} ${styles.video} ${isVideoReady ? styles.videoReady : ''}`}
                 onCanPlay={handleVideoCanPlay}
               />
             </>

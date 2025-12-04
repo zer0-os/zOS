@@ -1,6 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { IconPackageMinus, IconCopy2, IconCheck, IconLinkExternal1, IconChevronLeft } from '@zero-tech/zui/icons';
+import {
+  IconPackageMinus,
+  IconCopy2,
+  IconCheck,
+  IconLinkExternal1,
+  IconChevronLeft,
+  IconVolumeMax,
+  IconVolumeX,
+  IconPlay,
+} from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
 import { Spinner } from '@zero-tech/zui/components/LoadingIndicator';
 import { PanelBody } from '../../../../components/layout/panel';
@@ -17,7 +26,10 @@ export const NFTDetail = () => {
   const { data } = useNFTsQuery(selectedWallet.address);
   const [isCopied, setIsCopied] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const currentNftIdRef = useRef<string | null>(null);
 
   // Find the NFT from the list
   const nft = data?.nfts.find(
@@ -52,22 +64,67 @@ export const NFTDetail = () => {
     }
   }, [isCopied]);
 
+  // Reset video ready state when NFT actually changes
+  useEffect(() => {
+    if (nft?.id && nft.id !== currentNftIdRef.current) {
+      currentNftIdRef.current = nft.id;
+      setIsVideoReady(false);
+
+      // Check if video is already cached when NFT changes
+      const video = videoRef.current;
+      if (video && nft.animationUrl && video.readyState >= 3) {
+        // Video is already cached, mark as ready immediately
+        setIsVideoReady(true);
+      }
+    }
+  }, [nft?.id, nft?.animationUrl]);
+
+  // Handle autoplay - try to play, mute if autoplay fails
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !nft?.animationUrl) {
-      setIsVideoReady(false);
-      return;
+    if (video && nft?.animationUrl && isVideoReady) {
+      video
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(() => {
+          // Autoplay failed, mute and try again
+          video.muted = true;
+          setIsMuted(true);
+          video
+            .play()
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch(() => {});
+        });
     }
+  }, [isVideoReady, nft?.animationUrl]);
 
-    if (video.readyState >= 3) {
-      video.currentTime = 0;
-      video.play().catch(() => {});
-      setIsVideoReady(true);
+  const handleToggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (video) {
+      video.muted = !video.muted;
+      setIsMuted(video.muted);
     }
-  }, [nft?.animationUrl]);
+  };
 
-  const handleVideoCanPlay = () => {
-    setIsVideoReady(true);
+  const handleTogglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (video) {
+      if (video.paused) {
+        video
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch(() => {});
+      } else {
+        video.pause();
+        setIsPlaying(false);
+      }
+    }
   };
 
   if (!nft) {
@@ -118,12 +175,44 @@ export const NFTDetail = () => {
                 src={nft.animationUrl}
                 autoPlay
                 loop
-                muted
                 playsInline
                 preload='auto'
                 className={`${styles.image} ${styles.video} ${isVideoReady ? styles.videoReady : ''}`}
-                onCanPlay={handleVideoCanPlay}
+                onCanPlay={() => {
+                  setIsVideoReady(true);
+                  const video = videoRef.current;
+                  if (video) {
+                    setIsMuted(video.muted);
+                    setIsPlaying(!video.paused);
+                  }
+                }}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
               />
+              {isVideoReady && (
+                <>
+                  <button
+                    className={styles.playPauseButton}
+                    onClick={handleTogglePlay}
+                    aria-label={isPlaying ? 'Pause video' : 'Play video'}
+                  >
+                    {isPlaying ? (
+                      <svg viewBox='0 0 24 24' fill='currentColor' width={20} height={20}>
+                        <path d='M6 4h4v16H6V4zm8 0h4v16h-4V4z' />
+                      </svg>
+                    ) : (
+                      <IconPlay size={20} />
+                    )}
+                  </button>
+                  <button
+                    className={styles.volumeButton}
+                    onClick={handleToggleMute}
+                    aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+                  >
+                    {isMuted ? <IconVolumeX size={20} /> : <IconVolumeMax size={20} />}
+                  </button>
+                </>
+              )}
             </>
           ) : nft.imageUrl ? (
             <img src={nft.imageUrl} alt={nftName} className={styles.image} />

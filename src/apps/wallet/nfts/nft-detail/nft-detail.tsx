@@ -17,6 +17,7 @@ import { useNFTsQuery } from '../../queries/useNFTsQuery';
 import { useSelector } from 'react-redux';
 import { selectedWalletSelector } from '../../../../store/wallet/selectors';
 import { getNFTExplorerUrl } from '../utils';
+import { NFTBadge } from '../nft-badge';
 import styles from './nft-detail.module.scss';
 
 export const NFTDetail = () => {
@@ -154,6 +155,8 @@ export const NFTDetail = () => {
 
       <div className={styles.content}>
         <div className={styles.imageContainer}>
+          {nft.quantity && nft.quantity > 1 && <NFTBadge type='quantity' value={nft.quantity} />}
+          {nft.tokenType && <NFTBadge type='tokenType' value={nft.tokenType} />}
           {nft.animationUrl ? (
             <>
               {nft.imageUrl && (

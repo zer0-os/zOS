@@ -4,6 +4,7 @@ import { IconPackageMinus, IconCopy2, IconCheck, IconLinkExternal1 } from '@zero
 import { IconButton } from '@zero-tech/zui/components';
 import { NFT } from '../../types';
 import { getNFTExplorerUrl, truncateText } from '../utils';
+import { NFTBadge } from '../nft-badge';
 import styles from './nft-tile.module.scss';
 
 interface NFTTileProps {
@@ -46,6 +47,8 @@ export const NFTTile = ({ nft }: NFTTileProps) => {
   return (
     <div className={styles.nftTile} onClick={handleTileClick}>
       <div className={styles.nftImage}>
+        {nft.quantity && nft.quantity > 1 && <NFTBadge type='quantity' value={nft.quantity} />}
+        {nft.tokenType && <NFTBadge type='tokenType' value={nft.tokenType} />}
         {nft.imageUrl ? (
           <img src={nft.imageUrl} alt={nftName} />
         ) : (

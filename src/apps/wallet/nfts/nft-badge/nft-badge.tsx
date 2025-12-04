@@ -6,7 +6,7 @@ interface NFTBadgeProps {
 }
 
 export const NFTBadge = ({ type, value }: NFTBadgeProps) => {
-  const displayValue = type === 'quantity' ? `QTY x${value}` : value;
+  const displayValue = type === 'quantity' ? `Qty x${value}` : value;
 
   return <div className={`${styles.badge} ${styles[type]}`}>{displayValue}</div>;
 };

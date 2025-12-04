@@ -48,6 +48,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--s-spacing);
+
+  // Hide scrollbar
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE and Edge
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome, Safari, Opera
+  }
 }
 
 .details {
@@ -213,15 +221,9 @@
 }
 
 .description {
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.4;
   @include glass-text-secondary-color;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
   margin-top: calc(var(--s-spacing) * -1);
 }
 

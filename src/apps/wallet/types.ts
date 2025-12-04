@@ -17,6 +17,8 @@ export interface NFT {
   id: string;
   imageUrl: string | null;
   isUnique: boolean | null;
+  tokenType?: 'ERC-721' | 'ERC-1155' | 'ERC-404';
+  quantity?: number;
   metadata: {
     attributes: {
       traitType: string;

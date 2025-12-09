@@ -4,6 +4,7 @@
   gap: var(--l-spacing);
   padding: var(--s-spacing) var(--l-spacing);
   cursor: pointer;
+  position: relative;
 
   &:hover {
     background: var(--bg-hover);
@@ -48,4 +49,28 @@
 
 .positive {
   color: var(--color-secondary-11);
+}
+
+.externalLinkContainer {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: var(--xs-spacing);
+}
+
+.externalLinkButton {
+  color: #01f4cb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
 }

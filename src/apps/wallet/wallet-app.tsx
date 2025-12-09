@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import { WalletSend } from './send/wallet-send';
 import { WalletBridge } from './bridge/wallet-bridge';
 import { NFTDetail } from './nfts/nft-detail/nft-detail';
+import { TransactionDetail } from './transactions/transaction-detail/transaction-detail';
 
 import styles from './wallet-app.module.scss';
 import { WalletHome } from './home/wallet-home';
@@ -38,6 +39,9 @@ export const WalletApp = () => {
             )}
             <Route path={'/wallet/nfts/:collectionAddress/:tokenId'} exact>
               <NFTDetail />
+            </Route>
+            <Route path={'/wallet/transactions/:transactionHash'} exact>
+              <TransactionDetail />
             </Route>
             <Route path={'/wallet'}>
               <WalletHome />

@@ -1,4 +1,7 @@
 import classNames from 'classnames';
+import { useHistory } from 'react-router-dom';
+import { IconButton } from '@zero-tech/zui/components';
+import { IconLinkExternal1 } from '@zero-tech/zui/icons';
 import { FormattedNumber } from '../components/formatted-number/formatted-number';
 import { TokenIcon } from '../components/token-icon/token-icon';
 import { Transaction as TransactionType } from '../types';
@@ -11,6 +14,7 @@ interface TransactionProps {
 }
 
 export const Transaction = ({ transaction }: TransactionProps) => {
+  const history = useHistory();
   const isReceive = transaction.action === 'receive';
   const usdAmount =
     transaction.token.amount && transaction.token.price
@@ -18,7 +22,15 @@ export const Transaction = ({ transaction }: TransactionProps) => {
       : '--';
 
   const handleClick = () => {
-    window.open(transaction.explorerUrl, '_blank');
+    // Use hash + action for a cleaner URL
+    // This uniquely identifies the transaction when there are multiple with the same hash
+    const uniqueId = `${transaction.hash}-${transaction.action}`;
+    history.push(`/wallet/transactions/${encodeURIComponent(uniqueId)}`);
+  };
+
+  const handleExternalLink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(transaction.explorerUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -61,6 +73,16 @@ export const Transaction = ({ transaction }: TransactionProps) => {
           <div className={styles.positive}>Mint</div>
         </div>
       )}
+
+      <div className={styles.externalLinkContainer}>
+        <IconButton
+          onClick={handleExternalLink}
+          Icon={IconLinkExternal1}
+          aria-label='View on explorer'
+          size={16}
+          className={styles.externalLinkButton}
+        />
+      </div>
     </div>
   );
 };

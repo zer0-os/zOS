@@ -41,7 +41,7 @@ export interface Transaction {
   timestamp: string;
   tokenId: string | null;
   explorerUrl: string;
-  type: 'token_transfer' | 'token_minting';
+  type: 'token_transfer' | 'token_minting' | 'token_burning';
 }
 
 export interface GetTokenBalancesResponse {

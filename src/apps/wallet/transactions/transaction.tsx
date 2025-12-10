@@ -57,17 +57,15 @@ export const Transaction = ({ transaction }: TransactionProps) => {
       </div>
 
       <div className={styles.tokenAmount}>
-        {transaction.amount && (
-          <div
-            className={classNames({
-              [styles.positive]: isReceive,
-              [styles.negative]: !isReceive,
-            })}
-          >
-            {isReceive ? '+' : '-'}
-            <FormattedNumber value={transaction.amount} />
-          </div>
-        )}
+        <div
+          className={classNames({
+            [styles.positive]: isReceive,
+            [styles.negative]: !isReceive,
+          })}
+        >
+          {isReceive ? '+' : '-'}
+          <FormattedNumber value={transaction.amount || '1'} />
+        </div>
         <div className={styles.transactionType}>{getTransactionTypeLabel(transaction)}</div>
       </div>
 

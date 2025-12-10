@@ -1,0 +1,290 @@
+@import '../../../../variables';
+@import '../../../../glass';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--l-spacing);
+  flex-shrink: 0;
+}
+
+.headerLabel {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  text-align: center;
+  @include glass-text-primary-color;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--s-spacing);
+  margin-right: 12px;
+}
+
+.headerSpacer {
+  width: 24px;
+}
+
+.backButton {
+  color: var(--text-primary);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l-spacing);
+  flex: 1;
+  padding: 0 var(--l-spacing);
+  position: relative;
+}
+
+.tokenInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-spacing);
+  overflow: hidden;
+  padding: 0;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.tokenIcon {
+  width: 64px;
+  height: 64px;
+  font-size: 28px;
+}
+
+.nftIcon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.tokenSymbol {
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 400;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.tokenName {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.tokenAmount {
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+}
+
+.tokenIdContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--xs-spacing);
+}
+
+.tokenId {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.usdAmount {
+  font-size: 14px;
+  color: var(--text-secondary);
+
+  &.positive {
+    color: var(--color-secondary-11);
+  }
+}
+
+.transferDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l-spacing);
+  border-radius: 12px;
+  margin: 18px auto;
+  width: 85%;
+  padding: var(--l-spacing);
+  border: 1px solid var(--border-primary);
+  background: rgba(52, 56, 60, 0.1);
+}
+
+.transferSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l-spacing);
+  padding: 24px 0;
+}
+
+.addressInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--xs-spacing);
+  flex: 1;
+  min-width: 0;
+}
+
+.addressLabel {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.5px;
+  font-weight: 400;
+}
+
+.addressContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--s-spacing);
+  justify-content: center;
+}
+
+.address {
+  font-size: 16px;
+  color: var(--text-primary);
+  font-family: monospace;
+  font-weight: 400;
+}
+
+.tokenInfoSeparator {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--icon-active);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-spacing);
+  width: 100%;
+  padding-top: var(--l-spacing);
+  border-top: 1px solid var(--border-primary);
+}
+
+.footer {
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: var(--l-spacing);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--m-spacing);
+  flex-wrap: nowrap;
+
+  button {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xs-spacing);
+  }
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-spacing);
+}
+
+.detailLabel {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.detailValue {
+  font-size: 14px;
+  color: var(--text-primary);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.detailValueContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.copyButton {
+  color: #01f4cb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &.copied {
+    color: #01f4cb;
+    transform: scale(1.1);
+  }
+}
+
+.notFound {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--l-spacing);
+  @include glass-text-secondary-color;
+  font-size: 14px;
+  flex: 1;
+}

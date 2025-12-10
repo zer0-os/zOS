@@ -756,15 +756,28 @@ export class MatrixClient {
   }
 
   async uploadFile(file: File): Promise<string> {
-    await this.waitForConnection();
+    try {
+      await this.waitForConnection();
 
-    const response = await this.matrix.uploadContent(file, {
-      name: file.name,
-      type: file.type,
-      includeFilename: false,
-    });
+      const response = await this.matrix.uploadContent(file, {
+        name: file.name,
+        type: file.type,
+        includeFilename: false,
+      });
 
-    return response.content_uri;
+      return response.content_uri;
+    } catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          context: 'matrix-file-upload-error',
+          userId: this.userId,
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+        },
+      });
+      throw error;
+    }
   }
 
   // if the file is uploaded to the homeserver, then we need bearer token to download it mxc://zero-synapse-development.zer0.io/MZLtdcZkyZfqzvAkzvpHQuce

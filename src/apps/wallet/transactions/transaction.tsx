@@ -5,8 +5,8 @@ import { IconLinkExternal1 } from '@zero-tech/zui/icons';
 import { FormattedNumber } from '../components/formatted-number/formatted-number';
 import { TokenIcon } from '../components/token-icon/token-icon';
 import { Transaction as TransactionType } from '../types';
-import { truncateAddress } from '../utils/address';
-import { formatDollars } from '../utils/format-numbers';
+import { truncateAddress, truncateTokenId } from '../utils/address';
+import { getTransactionTypeLabel } from './utils';
 import styles from './transaction.module.scss';
 
 interface TransactionProps {
@@ -16,10 +16,6 @@ interface TransactionProps {
 export const Transaction = ({ transaction }: TransactionProps) => {
   const history = useHistory();
   const isReceive = transaction.action === 'receive';
-  const usdAmount =
-    transaction.token.amount && transaction.token.price
-      ? formatDollars(Number(transaction.token.amount) * transaction.token.price)
-      : '--';
 
   const handleClick = () => {
     // Use hash + action for a cleaner URL
@@ -51,28 +47,29 @@ export const Transaction = ({ transaction }: TransactionProps) => {
         </div>
         <div className={styles.tokenCount}>
           <span className={styles.tokenSymbol}>{transaction.token.symbol}</span>
+          {transaction.tokenId && (
+            <span className={styles.tokenId} title={transaction.tokenId}>
+              {' '}
+              #{truncateTokenId(transaction.tokenId, 20)}
+            </span>
+          )}
         </div>
       </div>
 
-      {transaction.type === 'token_transfer' ? (
-        <div className={styles.tokenAmount}>
-          {transaction.amount && <FormattedNumber value={transaction.amount} />}
-          {transaction.tokenId && <div className={styles.tokenId}>#{transaction.tokenId}</div>}
+      <div className={styles.tokenAmount}>
+        {transaction.amount && (
           <div
-            className={classNames(styles.tokenAmountUSD, {
-              [styles.positive]: isReceive && usdAmount !== '--',
+            className={classNames({
+              [styles.positive]: isReceive,
+              [styles.negative]: !isReceive,
             })}
           >
-            {usdAmount === '--' ? usdAmount : isReceive ? `+${usdAmount}` : usdAmount}
+            {isReceive ? '+' : '-'}
+            <FormattedNumber value={transaction.amount} />
           </div>
-        </div>
-      ) : (
-        <div className={styles.tokenAmount}>
-          {transaction.amount && <FormattedNumber value={transaction.amount} />}
-          {transaction.tokenId && <div className={styles.tokenId}>#{transaction.tokenId}</div>}
-          <div className={styles.positive}>Mint</div>
-        </div>
-      )}
+        )}
+        <div className={styles.transactionType}>{getTransactionTypeLabel(transaction)}</div>
+      </div>
 
       <div className={styles.externalLinkContainer}>
         <IconButton

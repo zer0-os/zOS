@@ -13,6 +13,16 @@
 
 .transactionInfo {
   overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.tokenCount {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .receivedFrom {
@@ -29,11 +39,26 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 0;
 }
 
 .tokenSymbol {
   text-transform: uppercase;
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.tokenId {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  text-transform: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .tokenAmountUSD {
@@ -41,14 +66,19 @@
   color: var(--text-secondary);
 }
 
-.tokenId {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px;
+.positive {
+  font-size: 18px;
+  color: var(--color-secondary-11);
 }
 
-.positive {
-  color: var(--color-secondary-11);
+.negative {
+  font-size: 18px;
+  color: var(--color-failure-11);
+}
+
+.transactionType {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .externalLinkContainer {

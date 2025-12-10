@@ -21,7 +21,7 @@ export const TransactionsList = () => {
           {isPending && skeletons.map((_, index) => <TransactionSkeleton key={index} />)}
 
           {transactions.map((transaction) => (
-            <Transaction key={transaction.hash} transaction={transaction} />
+            <Transaction key={`${transaction.hash}-${transaction.action}`} transaction={transaction} />
           ))}
         </div>
       )}

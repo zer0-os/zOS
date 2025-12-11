@@ -1,6 +1,6 @@
 import { apiUrl, post } from '../api/rest';
 
-export const oauth2Link = async (provider: string, popup: boolean = true) => {
+export const oauth2Link = async (provider: string, popup: boolean = true, confirm: boolean = false) => {
   try {
     const response = await post<any>('/api/oauth/generate-link-token');
     const returnUrl = window.location.origin + '/oauth/link/callback';
@@ -12,6 +12,9 @@ export const oauth2Link = async (provider: string, popup: boolean = true) => {
       const url = new URL(apiUrl(`/api/oauth/link/${provider}/initiate`));
       url.searchParams.append('linkToken', linkToken);
       url.searchParams.append('returnUrl', returnUrl);
+      if (confirm) {
+        url.searchParams.append('confirm', 'true');
+      }
       if (popup) {
         const newWindow = window.open(url.toString(), '_blank', 'width=800,height=900,popup');
         if (!newWindow) {

@@ -20,3 +20,81 @@
 .errorButton {
   margin-top: 16px;
 }
+
+.warningTitle {
+  margin: 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.warningContent {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+
+  > p:first-child {
+    margin: 16px 0;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+}
+
+.instructionsSection {
+  margin: 20px 0;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.instructionsTitle {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.instructionsList {
+  margin: 12px 0;
+  padding-left: 24px;
+  line-height: 1.8;
+  font-size: 13px;
+
+  li {
+    margin: 6px 0;
+  }
+}
+
+.instructionsNote {
+  margin-top: 12px;
+  font-size: 13px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.confirmationNote {
+  margin-top: 20px;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  color: theme.$color-failure-11;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  line-height: 1.5;
+}
+
+.errorContainer {
+  margin-top: 16px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}

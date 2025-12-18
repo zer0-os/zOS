@@ -11,13 +11,13 @@ import {
 import { currentUserSelector } from '../../../../store/authentication/selectors';
 import { useBridgeStatus } from '../hooks/useBridgeStatus';
 import { useBridgeMerkleProof } from '../hooks/useBridgeMerkleProof';
-import { useFinalizeBridge } from '../hooks/useFinalizeBridge';
 import { useFinalizeBridgeFromEOA } from '../hooks/useFinalizeBridgeFromEOA';
 import { TransactionLoadingSpinner } from '../../send/components/transaction-loading-spinner';
 import { useAccount } from 'wagmi';
 import { Button } from '../../components/button/button';
 import { IconClockRewind, IconXClose } from '@zero-tech/zui/icons';
 import { IconButton } from '@zero-tech/zui/components';
+import { useState } from 'react';
 
 import styles from './wallet-bridge-processing.module.scss';
 
@@ -44,6 +44,7 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
   const currentUser = useSelector(currentUserSelector);
   const zeroWalletAddress = currentUser?.zeroWalletAddress;
   const { address: eoaAddress } = useAccount();
+  const [localFinalizeError, setLocalFinalizeError] = useState<string | null>(null);
 
   const { data: status, isLoading: isLoadingStatus } = useBridgeStatus({
     zeroWalletAddress,
@@ -80,37 +81,29 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
     },
   });
 
-  const finalizeMutation = useFinalizeBridge({
-    eoaAddress,
-    onSuccess: () => {
-      // Finalization complete - user can check activity list for updated status
-    },
-  });
-
   const onFinalize = async () => {
     if (!status || !merkleProof) return;
 
-    // For L2->L1 bridges, use EOA wallet interaction
-    if (isZChainToEthereum && eoaAddress) {
-      try {
-        await finalizeFromEOA.finalizeBridgeFromEOA({
-          status,
-          merkleProof,
-          toChainId: statusToChainId,
-          fromChainId: statusFromChainId,
-          eoaAddress,
-        });
-      } catch (error) {
-        // Error is already handled by the hook's onError callback
-        console.error('Failed to finalize bridge from EOA:', error);
-      }
-    } else {
-      // For other cases, use API-based finalization
-      finalizeMutation.mutate({
+    // Finalization (claim) is only applicable for L2->L1 bridges; do not fall back to API.
+    if (!isZChainToEthereum) return;
+
+    setLocalFinalizeError(null);
+    if (!eoaAddress) {
+      setLocalFinalizeError('Please connect your EOA wallet to finalize this bridge.');
+      return;
+    }
+
+    try {
+      await finalizeFromEOA.finalizeBridgeFromEOA({
         status,
         merkleProof,
         toChainId: statusToChainId,
+        fromChainId: statusFromChainId,
+        eoaAddress,
       });
+    } catch (error) {
+      // Error is already handled by the hook's onError callback
+      console.error('Failed to finalize bridge from EOA:', error);
     }
   };
 
@@ -122,11 +115,9 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
 
   const isProcessing = status?.status === 'processing';
   const isReadyForClaim = status?.status === 'on-hold' && status?.readyForClaim;
-  const isFinalizing = isZChainToEthereum ? finalizeFromEOA.isFinalizing : finalizeMutation.isPending;
-  const finalizationStarted = isZChainToEthereum
-    ? finalizeFromEOA.isPending || finalizeFromEOA.isFinalizing
-    : finalizeMutation.isSuccess || finalizeMutation.isPending;
-  const finalizeError = isZChainToEthereum ? finalizeFromEOA.error : finalizeMutation.error;
+  const isFinalizing = finalizeFromEOA.isFinalizing;
+  const finalizationStarted = finalizeFromEOA.isPending || finalizeFromEOA.isFinalizing;
+  const finalizeError = finalizeFromEOA.error;
   const showFinalizeContent = isReadyForClaim && isZChainToEthereum && !finalizationStarted;
   const isLoading = isLoadingStatus || (needsMerkleProof && merkleProofLoading);
 
@@ -168,7 +159,11 @@ export const WalletBridgeProcessing = ({ depositCount, fromChainId, onClose }: W
                 <div className={styles.subtitle}>Preparing finalization...</div>
               )}
             </div>
-            {finalizeError && <div className={styles.errorText}>{finalizeError?.message || 'Finalization failed'}</div>}
+            {(localFinalizeError || finalizeError) && (
+              <div className={styles.errorText}>
+                {localFinalizeError || finalizeError?.message || 'Finalization failed'}
+              </div>
+            )}
             <div className={styles.infoText}>Track the progress of this bridge in your activity list.</div>
             <div className={styles.buttonGroup}>
               <Button onClick={onClose} variant='secondary' icon={<IconClockRewind size={18} />}>

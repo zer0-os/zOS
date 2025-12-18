@@ -39,13 +39,6 @@ export function useBridgeFromEOA({ onSuccess, onError }: UseBridgeFromEOAParams 
       const signer = ethersProvider.getSigner(eoaAddress);
       const connectedAddress = eoaAddress;
 
-      // Verify the connected address matches the eoaAddress parameter
-      if (connectedAddress.toLowerCase() !== eoaAddress.toLowerCase()) {
-        throw new Error(
-          `Connected wallet address (${connectedAddress}) does not match expected address (${eoaAddress})`
-        );
-      }
-
       const bridgeContract = getBridgeContractAddress(fromChainId);
       const destinationNetworkId = getBridgeNetworkId(toChainId);
 

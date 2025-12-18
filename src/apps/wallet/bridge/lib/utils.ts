@@ -500,12 +500,22 @@ export async function getEthersProviderFromWagmi(chainId: number): Promise<provi
     throw new Error('Wallet connector not found.');
   }
 
+  const isInjectedConnector = (() => {
+    const id = (connector as any)?.id;
+    const name = String((connector as any)?.name ?? '').toLowerCase();
+    // RainbowKit/Wagmi commonly uses id/name like "injected" for MetaMask/Brave/etc.
+    return id === 'injected' || name.includes('injected') || name.includes('metamask');
+  })();
+
   // Try multiple methods to get the provider for compatibility
   // IMPORTANT: Don't pass chainId to getProvider() initially as it triggers chain switching
   // which fails in Electron/WalletConnect. Get provider first, then check/switch chain if needed.
   let provider: any;
-  if (typeof window !== 'undefined' && window.ethereum) {
-    provider = window.ethereum;
+  // Prefer the connector's provider unless we're explicitly using an injected connector.
+  // In Electron it’s possible to have a `window.ethereum` shim/extension present that has *no accounts*,
+  // which causes ethers v5 to throw `unknown account #0` when calling getSigner().getAddress().
+  if (isInjectedConnector && typeof window !== 'undefined' && (window as any).ethereum) {
+    provider = (window as any).ethereum;
   } else if (typeof connector.getProvider === 'function') {
     // Try to get provider without chainId first to avoid triggering chain switch
     try {
@@ -536,7 +546,8 @@ export async function getEthersProviderFromWagmi(chainId: number): Promise<provi
     throw new Error('Unable to get wallet provider. Please ensure your wallet is connected and try again.');
   }
 
-  const ethersProvider = new providers.Web3Provider(provider);
+  // Use "any" to avoid ethers caching the network and failing after a chain switch.
+  const ethersProvider = new providers.Web3Provider(provider, 'any');
   const network = await ethersProvider.getNetwork();
 
   // Only switch chain if user is not on the correct chain
@@ -576,11 +587,56 @@ export async function getEthersProviderFromWagmi(chainId: number): Promise<provi
     }
   }
 
+  // Ensure we actually have wallet accounts accessible to ethers.
+  // This is critical in Electron + WalletConnect where wagmi can be "connected" (rehydrated)
+  // but `eth_accounts` returns [] until an explicit request is made.
+  const listAccountsSafe = async (): Promise<string[]> => {
+    try {
+      return await ethersProvider.listAccounts();
+    } catch {
+      return [];
+    }
+  };
+
+  let accounts = await listAccountsSafe();
+  if (!accounts.length) {
+    try {
+      // Trigger wallet to expose accounts (no-op if already authorized)
+      await ethersProvider.send('eth_requestAccounts', []);
+    } catch {
+      // ignore; we’ll validate accounts below and raise a user-friendly error
+    }
+    accounts = await listAccountsSafe();
+  }
+
+  if (!accounts.length) {
+    throw new Error('Wallet is connected, but no accounts are available. Please reconnect your wallet and try again.');
+  }
+
   return ethersProvider;
 }
 
 export function normalizeWalletError(error: unknown): Error {
-  const errorMessage = error instanceof Error ? error.message : String(error);
+  const safeStringify = (value: unknown): string => {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  };
+
+  const extractMessage = (err: unknown): string => {
+    if (!err) return 'Unknown error';
+    if (typeof err === 'string') return err;
+    if (err instanceof Error) return err.message;
+    if (typeof err === 'object') {
+      const e: any = err;
+      return e?.shortMessage || e?.reason || e?.message || e?.error?.message || e?.data?.message || safeStringify(err);
+    }
+    return String(err);
+  };
+
+  const errorMessage = extractMessage(error);
   const errorCode = (error as any)?.code;
   const errorReason = (error as any)?.reason;
 

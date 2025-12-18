@@ -36,15 +36,8 @@ export function useBridgeFromEOA({ onSuccess, onError }: UseBridgeFromEOAParams 
       }
 
       const ethersProvider = await getEthersProviderFromWagmi(fromChainId);
-      const signer = ethersProvider.getSigner();
-      const connectedAddress = await signer.getAddress();
-
-      // Verify the connected address matches the eoaAddress parameter
-      if (connectedAddress.toLowerCase() !== eoaAddress.toLowerCase()) {
-        throw new Error(
-          `Connected wallet address (${connectedAddress}) does not match expected address (${eoaAddress})`
-        );
-      }
+      const signer = ethersProvider.getSigner(eoaAddress);
+      const connectedAddress = eoaAddress;
 
       const bridgeContract = getBridgeContractAddress(fromChainId);
       const destinationNetworkId = getBridgeNetworkId(toChainId);

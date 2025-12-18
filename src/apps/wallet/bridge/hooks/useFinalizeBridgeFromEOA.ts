@@ -35,16 +35,7 @@ export function useFinalizeBridgeFromEOA({ onSuccess, onError }: UseFinalizeBrid
       }
 
       const ethersProvider = await getEthersProviderFromWagmi(toChainId);
-      const signer = ethersProvider.getSigner();
-      const connectedAddress = await signer.getAddress();
       const network = await ethersProvider.getNetwork();
-
-      // Verify the connected address matches the eoaAddress parameter
-      if (connectedAddress.toLowerCase() !== eoaAddress.toLowerCase()) {
-        throw new Error(
-          `Connected wallet address (${connectedAddress}) does not match expected address (${eoaAddress})`
-        );
-      }
 
       // Verify the user is on the correct chain (destination chain/L1)
       if (network.chainId !== toChainId) {
@@ -52,6 +43,10 @@ export function useFinalizeBridgeFromEOA({ onSuccess, onError }: UseFinalizeBrid
           `Please switch to the correct network. Expected chain ID ${toChainId}, but connected to ${network.chainId}`
         );
       }
+
+      // Use the wagmi-provided address as the signer address (avoids ethers v5 "unknown account #0"
+      // surfacing when the provider is rehydrated but accounts haven't been requested yet).
+      const signer = ethersProvider.getSigner(eoaAddress);
 
       // Get the bridge contract address on the destination chain (L1)
       const bridgeContractAddress = getBridgeContractAddress(toChainId);

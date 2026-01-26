@@ -24,7 +24,7 @@ export const NFTDetail = () => {
   const { collectionAddress, tokenId } = useParams<{ collectionAddress: string; tokenId: string }>();
   const history = useHistory();
   const selectedWallet = useSelector(selectedWalletSelector);
-  const { data } = useNFTsQuery(selectedWallet.address);
+  const { nfts } = useNFTsQuery(selectedWallet.address);
   const [isCopied, setIsCopied] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -33,7 +33,7 @@ export const NFTDetail = () => {
   const currentNftIdRef = useRef<string | null>(null);
 
   // Find the NFT from the list
-  const nft = data?.nfts.find(
+  const nft = nfts.find(
     (n) => n.collectionAddress.toLowerCase() === collectionAddress.toLowerCase() && n.id === tokenId
   );
 

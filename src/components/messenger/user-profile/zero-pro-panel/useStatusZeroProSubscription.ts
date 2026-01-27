@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { get } from '../../../../lib/api/rest';
+import { billingGet } from '../../../../lib/api/rest';
 
 interface Subscription {
+  type: string;
   status: string;
-  type: 'ZERO' | 'WILDER';
-  stripeSubscriptionId: string;
-  currentPeriodEnd?: Date;
+  isActive: boolean;
+  currentPeriodEnd: string | null;
+  subscribedAt: string | null;
+  cancelledAt: string | null;
 }
 
 interface ZeroProStatusResponse {
@@ -16,7 +18,7 @@ export function useStatusZeroProSubscription() {
   return useQuery<ZeroProStatusResponse, Error>({
     queryKey: ['zero-pro-status'],
     queryFn: async () => {
-      const response = await get('/subscription/status?type=ZERO');
+      const response = await billingGet('/subscriptions/me?type=ZERO');
 
       if (!response.ok) {
         throw new Error(response.body?.message || 'Failed to fetch subscription status');

@@ -43,14 +43,6 @@ if (localStorage.getItem('token')) {
   authHeader = { Authorization: `Bearer ${localStorage.getItem('token')}` };
 }
 
-// const t =
-//   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImpGTlhNbkZqR3JTb0RhZm5MUUJvaG9DTmFsV2NGY1RqbktFYmtSeldGQkh5WUpGaWtkTE1IUCJ9.eyJpYXQiOjE3NTc0NTgzMTMsImV4cCI6MTc4OTAxNTkxMywiaXNzIjoiaHR0cHM6Ly96b3NhcGkuemVyby50ZWNoIiwic3ViIjoiYXV0aDB8NjYzMjNhZGQyMTY3Zjg0NzEwNWYyNmI1IiwiYXVkIjpbImh0dHBzOi8vem9zYXBpLnplcm8udGVjaCJdLCJpZCI6IjkzZWU2YzZlLWNmNWEtNDRlYS05ZjI3LTdmMjljM2NjMjIxZCIsImh0dHA6Ly9mYWN0MHJ5LmNvbS9lbWFpbCI6InJhdGlrQHplcm8udGVjaCIsImF6cCI6Imh0dHBzOi8vem9zYXBpLnplcm8udGVjaCJ9.jga0HeFeRTaTm6_w8tobhql2QHEJcz2KjJGpc8jF5N4';
-// if (t) {
-//   authHeader = {
-//     Authorization: `Bearer ${t}`,
-//   };
-// }
-
 export function get<T>(path: string, filter?: RequestFilter | string, query?: any) {
   let queryData;
   if (filter) {

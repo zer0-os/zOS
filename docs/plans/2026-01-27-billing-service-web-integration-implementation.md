@@ -1,7 +1,5 @@
 # Billing Service Web Integration Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
-
 **Goal:** Update the zos web app to call the billing microservice directly for subscription operations instead of going through zos-api.
 
 **Architecture:** Add billing service URL configuration and API helper functions, then update 4 subscription hooks to use the new billing service endpoints with adapted response types.

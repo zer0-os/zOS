@@ -1,5 +1,5 @@
 import React from 'react';
-import { get } from '../../../../lib/api/rest';
+import { billingGet } from '../../../../lib/api/rest';
 
 export function usePollZeroProStatus(
   shouldPoll: boolean,
@@ -15,15 +15,17 @@ export function usePollZeroProStatus(
     let start = Date.now();
     async function poll() {
       while (isMounted) {
-        const response = await get('/subscription/status?type=ZERO');
+        const response = await billingGet('/subscriptions/me?type=ZERO');
         const data = response.body;
-        const status = data.subscription?.status ?? data.status;
-        if (status === 'active') {
+        const isActive = data.subscription?.isActive ?? false;
+        const status = data.subscription?.status;
+
+        if (isActive) {
           onActive();
           return;
         }
 
-        if (status === 'cancelled') {
+        if (status === 'cancelled' || status === 'canceled') {
           onCancelled();
           return;
         }

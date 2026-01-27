@@ -1,7 +1,7 @@
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useMutation } from '@tanstack/react-query';
 import { BillingDetails } from './useZeroPro';
-import { post } from '../../../../lib/api/rest';
+import { billingPost } from '../../../../lib/api/rest';
 
 export function useActivateZeroProSubscription(billingDetails: BillingDetails | null) {
   const stripe = useStripe();
@@ -42,8 +42,8 @@ export function useActivateZeroProSubscription(billingDetails: BillingDetails | 
         throw new Error(pmError?.message || 'Failed to create payment method.');
       }
 
-      // Call backend using post utility
-      const response = await post('/subscription/zero-pro').send({
+      // Call backend using billingPost utility
+      const response = await billingPost('/subscriptions/zero-pro').send({
         billingDetails: {
           email: billingDetails.email,
           name: billingDetails.name,

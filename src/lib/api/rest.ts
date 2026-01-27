@@ -18,6 +18,10 @@ export function apiUrl(path: string): string {
   ].join('');
 }
 
+export function billingApiUrl(path: string): string {
+  return [config.BILLING_SERVICE_URL, path].join('');
+}
+
 /**
  * The zOS code now passes an 'x-app-platform' header to ensure that the
  * access_token cookie is unique for the scope of zos user.
@@ -72,4 +76,17 @@ export function patch<T>(path: string) {
 
 export function del<T>(path: string) {
   return Request.delete<T>(apiUrl(path)).set(authHeader).set(platformHeader).withCredentials();
+}
+
+// Billing service API functions
+export function billingGet<T>(path: string) {
+  return Request.get<T>(billingApiUrl(path)).set(authHeader).withCredentials();
+}
+
+export function billingPost<T>(path: string) {
+  return Request.post<T>(billingApiUrl(path)).set(authHeader).withCredentials();
+}
+
+export function billingDelete<T>(path: string) {
+  return Request.delete<T>(billingApiUrl(path)).set(authHeader).withCredentials();
 }

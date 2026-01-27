@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { post } from '../../../../lib/api/rest';
+import { billingDelete } from '../../../../lib/api/rest';
 
 export function useCancelZeroProSubscription() {
   const {
@@ -9,7 +9,7 @@ export function useCancelZeroProSubscription() {
   } = useMutation({
     mutationFn: async () => {
       try {
-        const response = await post('/subscription/cancel');
+        const response = await billingDelete('/subscriptions/zero-pro');
 
         if (!response.ok) {
           throw new Error(response.body?.message || 'Failed to cancel subscription');

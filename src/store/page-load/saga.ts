@@ -1,5 +1,5 @@
 import { call, put, select, spawn, take } from 'redux-saga/effects';
-import { setEntryPath, setIsComplete, setShowAndroidDownload } from '.';
+import { setEntryPath, setIsComplete, setIsZWalletReferrer, setShowAndroidDownload } from '.';
 import { getHistory, getNavigator } from '../../lib/browser';
 import { getCurrentUser } from '../authentication/saga';
 import { Events as AuthEvents, getAuthChannel } from '../authentication/channels';
@@ -33,8 +33,12 @@ export function* saga() {
   const history = yield call(getHistory);
   const navigator = yield call(getNavigator);
   const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
+  const isZWalletReferrer = getAllowMobileWeb();
 
-  if (isMobileDevice && !getAllowMobileWeb()) {
+  // Store referrer check result for use by login page
+  yield put(setIsZWalletReferrer(isZWalletReferrer));
+
+  if (isMobileDevice && !isZWalletReferrer) {
     history.replace({ pathname: '/restricted' });
     yield put(setIsComplete(true));
     return;

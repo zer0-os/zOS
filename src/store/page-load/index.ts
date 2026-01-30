@@ -3,12 +3,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export type PageloadState = {
   isComplete: boolean;
   entryPath: string;
+  isZWalletReferrer: boolean;
 };
 
 export const initialState = {
   isComplete: false,
   showAndroidDownload: false,
   entryPath: '',
+  isZWalletReferrer: false,
 };
 
 const slice = createSlice({
@@ -24,8 +26,11 @@ const slice = createSlice({
     setEntryPath: (state, action: PayloadAction<PageloadState['entryPath']>) => {
       state.entryPath = action.payload;
     },
+    setIsZWalletReferrer: (state, action: PayloadAction<boolean>) => {
+      state.isZWalletReferrer = action.payload;
+    },
   },
 });
 
-export const { setIsComplete, setShowAndroidDownload, setEntryPath } = slice.actions;
+export const { setIsComplete, setShowAndroidDownload, setEntryPath, setIsZWalletReferrer } = slice.actions;
 export const { reducer } = slice;

@@ -20,6 +20,7 @@ const cn = bemClassName('login-main');
 interface LoginComponentProperties {
   isLoggingIn: boolean;
   stage: LoginStage;
+  isEmailOnlyMode: boolean;
   handleSelectionChange: (selectedOption: LoginStage) => void;
 }
 
@@ -40,6 +41,11 @@ export class LoginComponent extends React.Component<LoginComponentProperties> {
   }
 
   renderToggleGroup(isLoggingIn: boolean, stage: LoginStage) {
+    // Hide toggle group in email-only mode (e.g., z-wallet referrer)
+    if (this.props.isEmailOnlyMode) {
+      return null;
+    }
+
     const activeStage = stage === LoginStage.EmailLogin ? LoginStage.OTPLogin : stage;
     const options: { key: LoginStage; label: string }[] = [
       { key: LoginStage.Web3Login, label: 'Web3' },

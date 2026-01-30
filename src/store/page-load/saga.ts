@@ -17,7 +17,7 @@ const popupPaths = [
 ];
 
 // Allow mobile web login when coming from z-wallet auth flow
-const MOBILE_WEB_ALLOWED_REFERRERS = ['zosapi.zero.tech'];
+const MOBILE_WEB_ALLOWED_REFERRERS = ['z-wallet.zero.tech'];
 
 const getAllowMobileWeb = (): boolean => {
   try {

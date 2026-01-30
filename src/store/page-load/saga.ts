@@ -16,12 +16,25 @@ const popupPaths = [
   '/oauth/link/callback',
 ];
 
+// Allow mobile web login when coming from z-wallet auth flow
+const MOBILE_WEB_ALLOWED_REFERRERS = ['zosapi.zero.tech'];
+
+const getAllowMobileWeb = (): boolean => {
+  try {
+    if (!document.referrer) return false;
+    const referrerHost = new URL(document.referrer).host;
+    return MOBILE_WEB_ALLOWED_REFERRERS.includes(referrerHost);
+  } catch {
+    return false;
+  }
+};
+
 export function* saga() {
   const history = yield call(getHistory);
   const navigator = yield call(getNavigator);
   const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
 
-  if (isMobileDevice) {
+  if (isMobileDevice && !getAllowMobileWeb()) {
     history.replace({ pathname: '/restricted' });
     yield put(setIsComplete(true));
     return;

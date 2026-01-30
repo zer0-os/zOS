@@ -35,8 +35,9 @@ export function* saga() {
   const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
   const isZWalletReferrer = getAllowMobileWeb();
 
-  // Store referrer check result for use by login page
-  yield put(setIsZWalletReferrer(isZWalletReferrer));
+  // Store flag for login page: only show email-only mode on mobile from z-wallet
+  // (web3/social logins are flaky on mobile but work fine on desktop)
+  yield put(setIsZWalletReferrer(isMobileDevice && isZWalletReferrer));
 
   if (isMobileDevice && !isZWalletReferrer) {
     history.replace({ pathname: '/restricted' });

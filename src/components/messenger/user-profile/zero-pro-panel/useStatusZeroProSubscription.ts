@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { get } from '../../../../lib/api/rest';
+import { get } from '../../../../lib/api/billing';
 
 interface Subscription {
   status: string;

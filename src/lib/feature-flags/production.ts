@@ -50,4 +50,5 @@ export const productionFlags: FeatureFlagDefinitions = {
   },
   enablePresence: { defaultValue: true },
   enableBridge: { defaultValue: true },
+  enableBillingService: { defaultValue: false },
 };

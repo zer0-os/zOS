@@ -42,4 +42,5 @@ export const config = {
   zbancReserveTokenAddress: process.env.REACT_APP_ZBANC_RESERVE_TOKEN_ADDRESS,
   zbancFactoryAddress: process.env.REACT_APP_ZBANC_FACTORY_ADDRESS,
   zChainId: process.env.REACT_APP_Z_CHAIN_ID,
+  billingServiceUrl: process.env.REACT_APP_BILLING_SERVICE_URL,
 };

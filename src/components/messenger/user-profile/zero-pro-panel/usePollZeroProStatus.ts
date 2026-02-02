@@ -1,5 +1,5 @@
 import React from 'react';
-import { get } from '../../../../lib/api/rest';
+import { get } from '../../../../lib/api/billing';
 
 export function usePollZeroProStatus(
   shouldPoll: boolean,

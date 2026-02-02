@@ -228,11 +228,11 @@ export class MatrixClient {
     const room = this.matrix.getRoom(roomId);
     if (room) {
       const otherMembers = this.getOtherMembersFromRoom(room)
-        .map((m) => this.matrix.getUser(m.userId))
+        .map((m) => this.getUserOrFallbackFromMember(m))
         .filter(Boolean);
       const memberHistory = room
         .getMembers()
-        .map((m) => this.matrix.getUser(m.userId))
+        .map((m) => this.getUserOrFallbackFromMember(m))
         .filter(Boolean);
       return {
         otherMembers,
@@ -242,6 +242,36 @@ export class MatrixClient {
         totalMembers: room.getMembers().length,
       };
     }
+  }
+
+  /**
+   * Gets a User object from a RoomMember. Falls back to creating a User-like object
+   * from RoomMember data if the global User is not yet available in the Matrix SDK.
+   * This ensures members are available immediately after sliding sync, even before
+   * the full user data has been synced.
+   * @param member - The RoomMember to get user data from
+   * @returns User object or User-like object with data from RoomMember
+   */
+  private getUserOrFallbackFromMember(member: RoomMember): User | null {
+    // Try to get the full User object from the SDK (preferred, has more data)
+    const user = this.matrix.getUser(member.userId);
+    if (user) {
+      return user;
+    }
+
+    // Fallback: Create a User-like object from RoomMember data
+    // RoomMember has the essential data from m.room.member state events
+    // This ensures we have member data even before the global User is synced
+    return {
+      userId: member.userId,
+      displayName: member.name,
+      avatarUrl: member.getMxcAvatarUrl() || undefined,
+      // These fields are not available from RoomMember but are optional
+      lastActiveAgo: undefined,
+      lastPresenceTs: undefined,
+      currentlyActive: undefined,
+      presenceStatusMsg: undefined,
+    } as User;
   }
 
   /**

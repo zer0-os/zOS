@@ -55,6 +55,7 @@ jobs:
       REACT_APP_ZBANC_RESERVE_TOKEN_ADDRESS: ${{vars.ZBANC_RESERVE_TOKEN_ADDRESS}}
       REACT_APP_ZBANC_FACTORY_ADDRESS: ${{vars.ZBANC_FACTORY_ADDRESS}}
       REACT_APP_Z_CHAIN_ID: ${{vars.Z_CHAIN_ID}}
+      REACT_APP_BILLING_SERVICE_URL: ${{vars.BILLING_SERVICE_URL}}
     steps:
       - uses: actions/checkout@v4
       - name: Common Setup

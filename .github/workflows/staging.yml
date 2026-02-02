@@ -37,6 +37,7 @@ jobs:
       REACT_APP_POLY_INFURA_URL: ${{secrets.POLY_INFURA_URL}}
       REACT_APP_AVAX_INFURA_URL: ${{secrets.AVAX_INFURA_URL}}
       REACT_APP_ZNS_METADATA_API_URL: ${{secrets.ZNS_METADATA_API_URL}}
+      REACT_APP_BILLING_SERVICE_URL: ${{vars.BILLING_SERVICE_URL}}
     steps:
       - uses: actions/checkout@v4
       - name: Common Setup

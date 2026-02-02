@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { post } from '../../../../lib/api/rest';
+import { post } from '../../../../lib/api/billing';
 
 export function useCancelZeroProSubscription() {
   const {

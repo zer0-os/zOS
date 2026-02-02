@@ -27,6 +27,7 @@ export class FeatureFlags implements FeatureFlagValues {
   declare enableDex: boolean;
   declare enablePresence: boolean;
   declare enableBridge: boolean;
+  declare enableBillingService: boolean;
 
   constructor() {
     this.config = process.env.NODE_ENV === 'production' ? productionFlags : developmentFlags;

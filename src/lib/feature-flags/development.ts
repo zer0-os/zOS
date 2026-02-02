@@ -17,4 +17,5 @@ export const developmentFlags: FeatureFlagDefinitions = {
   enableDex: { defaultValue: true },
   enablePresence: { defaultValue: true },
   enableBridge: { defaultValue: true },
+  enableBillingService: { defaultValue: true },
 };

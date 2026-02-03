@@ -43,7 +43,7 @@ export function useActivateZeroProSubscription(billingDetails: BillingDetails | 
       }
 
       // Call backend using post utility
-      const response = await post('/subscription/zero-pro').send({
+      const response = await post('/subscription/zero-pro', {
         billingDetails: {
           email: billingDetails.email,
           name: billingDetails.name,

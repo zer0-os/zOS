@@ -45,21 +45,60 @@ if (typeof localStorage !== 'undefined' && localStorage.getItem('token')) {
   authHeader = { Authorization: `Bearer ${localStorage.getItem('token')}` };
 }
 
+let billingTokenCache: { token: string; expiresAt: number } | null = null;
+
+async function getBillingAuthHeader(): Promise<Record<string, string>> {
+  if (authHeader.Authorization) {
+    return authHeader;
+  }
+
+  if (!featureFlags.enableBillingService || !config.billingServiceUrl) {
+    return authHeader;
+  }
+
+  if (billingTokenCache && Date.now() < billingTokenCache.expiresAt) {
+    return { Authorization: `Bearer ${billingTokenCache.token}` };
+  }
+
+  const response = await Request.get(`${config.ZERO_API_URL}/accounts/billingToken`)
+    .set(platformHeader)
+    .withCredentials();
+
+  if (!response.ok || !response.body?.token) {
+    throw new Error(response.body?.message || 'Failed to fetch billing token');
+  }
+
+  const expiresInSeconds = response.body.expiresIn ?? 0;
+  const refreshBufferMs = 30_000;
+  billingTokenCache = {
+    token: response.body.token,
+    expiresAt: Date.now() + expiresInSeconds * 1000 - refreshBufferMs,
+  };
+
+  return { Authorization: `Bearer ${billingTokenCache.token}` };
+}
+
 /**
  * Make a GET request to the billing service or zos-api.
  */
-export function get<T>(path: string, query?: Record<string, any>) {
-  const request = Request.get<T>(getBillingUrl(path)).set(authHeader).set(platformHeader).withCredentials();
+export async function get<T>(path: string, query?: Record<string, any>) {
+  const billingAuthHeader = await getBillingAuthHeader();
+  const request = Request.get<T>(getBillingUrl(path)).set(billingAuthHeader).set(platformHeader).withCredentials();
 
   if (query) {
     request.query(query);
   }
-  return request;
+  return await request;
 }
 
 /**
  * Make a POST request to the billing service or zos-api.
  */
-export function post<T>(path: string) {
-  return Request.post<T>(getBillingUrl(path)).set(authHeader).set(platformHeader).withCredentials();
+export async function post<T>(path: string, body?: Record<string, any>) {
+  const billingAuthHeader = await getBillingAuthHeader();
+  const request = Request.post<T>(getBillingUrl(path)).set(billingAuthHeader).set(platformHeader).withCredentials();
+  if (body) {
+    request.send(body);
+  }
+  return await request;
 }

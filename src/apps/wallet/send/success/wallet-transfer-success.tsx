@@ -11,6 +11,7 @@ import {
   recipientSelector,
   selectedWalletSelector,
   tokenSelector,
+  nftSelector,
   txReceiptSelector,
 } from '../../../../store/wallet/selectors';
 import { FormattedNumber } from '../../components/formatted-number/formatted-number';
@@ -31,6 +32,9 @@ export const WalletTransferSuccess = () => {
   const currentUser = useSelector(currentUserSelector);
   const selectedWallet = useSelector(selectedWalletSelector);
   const txReceipt = useSelector(txReceiptSelector);
+  const nft = useSelector(nftSelector);
+
+  const isNftTransfer = nft !== null;
 
   const handleClose = () => {
     dispatch(reset());
@@ -42,25 +46,40 @@ export const WalletTransferSuccess = () => {
   };
 
   const dollarAmount = useMemo(() => {
-    if (!token.price) return '--';
+    if (!token?.price) return '--';
     return formatDollars(Number(amount) * Number(token.price));
-  }, [token.price, amount]);
+  }, [token?.price, amount]);
 
   return (
     <div className={styles.container}>
       <SendHeader title='Sent' action={<IconButton Icon={IconXClose} onClick={handleClose} />} />
       <div className={styles.content}>
-        <div className={styles.tokenHero}>
-          <div className={styles.tokenIconContainer}>
-            <div className={styles.tokenIconBackground} />
-            <div className={styles.tokenIconHighlight} />
-            <TokenIcon className={styles.tokenIcon} url={token.logo} name={token.name} chainId={token.chainId} />
+        {isNftTransfer ? (
+          <div className={styles.nftHero}>
+            <div className={styles.nftSuccessImageContainer}>
+              <div className={styles.nftSuccessGlow} />
+              {nft.imageUrl ? (
+                <img src={nft.imageUrl} alt={nft.metadata?.name || 'NFT'} className={styles.nftSuccessImage} />
+              ) : (
+                <div className={styles.nftSuccessImagePlaceholder} />
+              )}
+            </div>
+            <div className={styles.nftSuccessName}>{nft.metadata?.name || 'NFT'}</div>
+            <div className={styles.nftSuccessCollection}>{nft.collectionName}</div>
           </div>
-          <div className={styles.dollarAmount}>{dollarAmount}</div>
-          <div className={styles.amount}>
-            <FormattedNumber value={amount} /> <span className={styles.tokenSymbol}>{token.symbol}</span>
+        ) : (
+          <div className={styles.tokenHero}>
+            <div className={styles.tokenIconContainer}>
+              <div className={styles.tokenIconBackground} />
+              <div className={styles.tokenIconHighlight} />
+              <TokenIcon className={styles.tokenIcon} url={token?.logo} name={token?.name} chainId={token?.chainId} />
+            </div>
+            <div className={styles.dollarAmount}>{dollarAmount}</div>
+            <div className={styles.amount}>
+              <FormattedNumber value={amount} /> <span className={styles.tokenSymbol}>{token?.symbol}</span>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className={styles.transferDetails}>
           <div className={styles.recipientInfo}>

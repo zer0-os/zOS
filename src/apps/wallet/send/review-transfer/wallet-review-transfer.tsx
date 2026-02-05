@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { previousStage, transferToken } from '../../../../store/wallet';
+import { previousStage, transferToken, transferNft } from '../../../../store/wallet';
 import styles from './wallet-review-transfer.module.scss';
 import { SendHeader } from '../components/send-header';
-import { amountSelector, recipientSelector, tokenSelector } from '../../../../store/wallet/selectors';
+import { amountSelector, recipientSelector, tokenSelector, nftSelector } from '../../../../store/wallet/selectors';
 import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { TokenIcon } from '../../components/token-icon/token-icon';
 import { FormattedNumber } from '../../components/formatted-number/formatted-number';
@@ -14,13 +14,20 @@ export const WalletReviewTransfer = () => {
   const recipient = useSelector(recipientSelector);
   const token = useSelector(tokenSelector);
   const amount = useSelector(amountSelector);
+  const nft = useSelector(nftSelector);
+
+  const isNftTransfer = nft !== null;
 
   const handleBack = () => {
     dispatch(previousStage());
   };
 
   const handleConfirm = () => {
-    dispatch(transferToken());
+    if (isNftTransfer) {
+      dispatch(transferNft());
+    } else {
+      dispatch(transferToken());
+    }
   };
 
   return (
@@ -35,27 +42,44 @@ export const WalletReviewTransfer = () => {
           <div className={styles.recipientAddress}>{recipient?.publicAddress}</div>
         </div>
 
-        <div className={styles.transferDetails}>
-          <div className={styles.tokenInfo}>
-            <TokenIcon url={token.logo} name={token.name} chainId={token.chainId} />
-            <div className={styles.tokenName}>{token.name}</div>
-            <div className={styles.tokenAmount}>
-              <FormattedNumber value={amount} />
+        {isNftTransfer ? (
+          <div className={styles.nftTransferDetails}>
+            <div className={styles.nftPreview}>
+              {nft.imageUrl ? (
+                <img src={nft.imageUrl} alt={nft.metadata?.name || 'NFT'} className={styles.nftImage} />
+              ) : (
+                <div className={styles.nftImagePlaceholder} />
+              )}
+            </div>
+            <div className={styles.nftInfo}>
+              <div className={styles.nftName}>{nft.metadata?.name || 'Unnamed NFT'}</div>
+              <div className={styles.nftCollection}>{nft.collectionName}</div>
+              <div className={styles.nftTokenId}>Token ID: {nft.id}</div>
             </div>
           </div>
+        ) : (
+          <div className={styles.transferDetails}>
+            <div className={styles.tokenInfo}>
+              <TokenIcon url={token?.logo} name={token?.name} chainId={token?.chainId} />
+              <div className={styles.tokenName}>{token?.name}</div>
+              <div className={styles.tokenAmount}>
+                <FormattedNumber value={amount} />
+              </div>
+            </div>
 
-          <div className={styles.tokenInfoSeparator}>
-            <IconChevronRightDouble />
-          </div>
+            <div className={styles.tokenInfoSeparator}>
+              <IconChevronRightDouble />
+            </div>
 
-          <div className={styles.tokenInfo}>
-            <TokenIcon url={token.logo} name={token.name} chainId={token.chainId} />
-            <div className={styles.tokenName}>{token.name}</div>
-            <div className={styles.tokenAmount}>
-              <FormattedNumber value={amount} />
+            <div className={styles.tokenInfo}>
+              <TokenIcon url={token?.logo} name={token?.name} chainId={token?.chainId} />
+              <div className={styles.tokenName}>{token?.name}</div>
+              <div className={styles.tokenAmount}>
+                <FormattedNumber value={amount} />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className={styles.confirmButton}>

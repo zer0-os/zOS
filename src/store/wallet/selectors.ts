@@ -4,6 +4,7 @@ export const walletSelector = (state: RootState) => state.wallet;
 export const recipientSelector = (state: RootState) => state.wallet.recipient;
 export const sendStageSelector = (state: RootState) => state.wallet.sendStage;
 export const tokenSelector = (state: RootState) => state.wallet.token;
+export const nftSelector = (state: RootState) => state.wallet.nft;
 export const amountSelector = (state: RootState) => state.wallet.amount;
 export const selectedWalletSelector = (state: RootState) => state.wallet.selectedWallet;
 export const txReceiptSelector = (state: RootState) => state.wallet.txReceipt;

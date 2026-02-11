@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
-import { Recipient, TokenBalance } from '../../apps/wallet/types';
+import { NFT, Recipient, TokenBalance } from '../../apps/wallet/types';
 import { TxReceiptResponse } from '../../apps/wallet/queries/txReceiptQueryOptions';
 
 export enum SendStage {
@@ -17,6 +17,7 @@ export enum SagaActionTypes {
   NextStage = 'wallet/saga/nextStage',
   PreviousStage = 'wallet/saga/previousStage',
   TransferToken = 'wallet/saga/transferToken',
+  TransferNft = 'wallet/saga/transferNft',
 }
 
 export type WalletState = {
@@ -27,6 +28,7 @@ export type WalletState = {
   recipient: Recipient | null;
   sendStage: SendStage;
   token: TokenBalance | null;
+  nft: NFT | null;
   amount: string | null;
   txReceipt: TxReceiptResponse | null;
   error: boolean;
@@ -41,6 +43,7 @@ const initialState: WalletState = {
   recipient: null,
   sendStage: SendStage.Search,
   token: null,
+  nft: null,
   amount: null,
   txReceipt: null,
   error: false,
@@ -57,10 +60,13 @@ const slice = createSlice({
     setRecipient: (state, action: PayloadAction<Recipient>) => {
       state.recipient = action.payload;
     },
-    setToken: (state, action: PayloadAction<TokenBalance>) => {
+    setToken: (state, action: PayloadAction<TokenBalance | null>) => {
       state.token = action.payload;
     },
-    setAmount: (state, action: PayloadAction<string>) => {
+    setNft: (state, action: PayloadAction<NFT | null>) => {
+      state.nft = action.payload;
+    },
+    setAmount: (state, action: PayloadAction<string | null>) => {
       state.amount = action.payload;
     },
     setSendStage: (state, action: PayloadAction<SendStage>) => {
@@ -79,6 +85,7 @@ const slice = createSlice({
       state.recipient = initialState.recipient;
       state.sendStage = initialState.sendStage;
       state.token = initialState.token;
+      state.nft = initialState.nft;
       state.amount = initialState.amount;
       state.txReceipt = initialState.txReceipt;
       state.error = initialState.error;
@@ -89,11 +96,13 @@ const slice = createSlice({
 export const nextStage = createAction(SagaActionTypes.NextStage);
 export const previousStage = createAction(SagaActionTypes.PreviousStage);
 export const transferToken = createAction(SagaActionTypes.TransferToken);
+export const transferNft = createAction(SagaActionTypes.TransferNft);
 
 export const {
   setSelectedWallet,
   setRecipient,
   setToken,
+  setNft,
   setAmount,
   setSendStage,
   setTxReceipt,

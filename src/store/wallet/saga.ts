@@ -120,8 +120,11 @@ function* handleNext() {
     }
     case SendStage.Token: {
       const token = yield select(tokenSelector);
-      if (nft) {
-        // NFT selected - skip Amount, go straight to Confirm
+      if (nft && nft.tokenType === 'ERC-1155') {
+        // ERC-1155 NFT - go to Amount for quantity input
+        yield put(setSendStage(SendStage.Amount));
+      } else if (nft) {
+        // ERC-721 NFT - skip Amount, go straight to Confirm
         yield put(setSendStage(SendStage.Confirm));
       } else if (token) {
         // Token selected - go to Amount
@@ -145,8 +148,12 @@ function* handlePrevious() {
 
   switch (stage) {
     case SendStage.Confirm:
-      if (nft) {
-        // NFT flow - go back to Token selection (skip Amount)
+      if (nft && nft.tokenType === 'ERC-1155') {
+        // ERC-1155 NFT flow - go back to Amount (quantity input)
+        yield put(setAmount(null));
+        yield put(setSendStage(SendStage.Amount));
+      } else if (nft) {
+        // ERC-721 NFT flow - go back to Token selection (skip Amount)
         yield put(setNft(null));
         yield put(setSendStage(SendStage.Token));
       } else {
@@ -156,6 +163,11 @@ function* handlePrevious() {
       }
       break;
     case SendStage.Amount:
+      if (nft) {
+        // ERC-1155 NFT flow - go back to Token selection
+        yield put(setNft(null));
+        yield put(setAmount(null));
+      }
       yield put(setToken(null));
       yield put(setSendStage(SendStage.Token));
       break;
@@ -179,12 +191,20 @@ function* handleTransferNft() {
       const recipient: Recipient = yield select(recipientSelector);
       const selectedWallet: string | undefined = yield select(selectedWalletAddressSelector);
       const nft: NFT = yield select(nftSelector);
+      const amount: string | null = yield select(amountSelector);
 
       if (recipient && nft && selectedWallet) {
         yield put(setSendStage(SendStage.Processing));
 
         const result: TransferNFTResponse = yield call(() =>
-          transferNFTRequest(selectedWallet, recipient.publicAddress, nft.id, nft.collectionAddress)
+          transferNFTRequest(
+            selectedWallet,
+            recipient.publicAddress,
+            nft.id,
+            nft.collectionAddress,
+            amount,
+            nft.tokenType
+          )
         );
 
         if (result.transactionHash) {

@@ -60,6 +60,7 @@ export const WalletReviewTransfer = () => {
               <div className={styles.nftName}>{nft.metadata?.name || 'Unnamed NFT'}</div>
               <div className={styles.nftCollection}>{nft.collectionName}</div>
               <div className={styles.nftTokenId}>Token ID: {nft.id}</div>
+              {amount && <div className={styles.nftQuantity}>Quantity: {amount}</div>}
             </div>
           </div>
         ) : (

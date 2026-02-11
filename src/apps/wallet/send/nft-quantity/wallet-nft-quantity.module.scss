@@ -1,0 +1,89 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l-spacing);
+  flex: 1;
+  padding: 0 var(--l-spacing);
+}
+
+.nftPreview {
+  display: flex;
+  align-items: center;
+  gap: var(--l-spacing);
+  padding: var(--l-spacing);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+}
+
+.nftImage {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.nftImagePlaceholder {
+  width: 64px;
+  height: 64px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.nftDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.nftName {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nftCollection {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.quantityInput {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quantityLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.maxButton {
+  background: none;
+  border: none;
+  color: var(--zero-green);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

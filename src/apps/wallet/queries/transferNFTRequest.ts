@@ -8,13 +8,19 @@ export const transferNFTRequest = async (
   address: string,
   to: string,
   tokenId: string,
-  nftAddress: string
+  nftAddress: string,
+  amount?: string | null,
+  tokenType?: string
 ): Promise<TransferNFTResponse> => {
-  const response = await post(`/api/wallet/${address}/transactions/transfer-nft`).send({
-    to,
-    tokenId,
-    nftAddress,
-  });
+  const body: Record<string, string> = { to, tokenId, nftAddress };
+  if (amount) {
+    body.amount = amount;
+  }
+  if (tokenType) {
+    body.tokenType = tokenType;
+  }
+
+  const response = await post(`/api/wallet/${address}/transactions/transfer-nft`).send(body);
 
   return response.body as TransferNFTResponse;
 };

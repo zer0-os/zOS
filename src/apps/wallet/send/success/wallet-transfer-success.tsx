@@ -68,6 +68,7 @@ export const WalletTransferSuccess = () => {
             </div>
             <div className={styles.nftSuccessName}>{nft.metadata?.name || 'NFT'}</div>
             <div className={styles.nftSuccessCollection}>{nft.collectionName}</div>
+            {amount && <div className={styles.nftSuccessQuantity}>Quantity: {amount}</div>}
           </div>
         ) : (
           <div className={styles.tokenHero}>

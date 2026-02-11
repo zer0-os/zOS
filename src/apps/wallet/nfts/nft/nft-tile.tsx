@@ -9,16 +9,21 @@ import styles from './nft-tile.module.scss';
 
 interface NFTTileProps {
   nft: NFT;
+  onClick?: (nft: NFT) => void;
 }
 
-export const NFTTile = ({ nft }: NFTTileProps) => {
+export const NFTTile = ({ nft, onClick }: NFTTileProps) => {
   const history = useHistory();
   const [isCopied, setIsCopied] = useState(false);
   const nftId = nft.id;
   const nftName = nft.metadata?.name ?? 'Unnamed Token';
 
   const handleTileClick = () => {
-    history.push(`/wallet/nfts/${encodeURIComponent(nft.collectionAddress)}/${encodeURIComponent(nftId)}`);
+    if (onClick) {
+      onClick(nft);
+    } else {
+      history.push(`/wallet/nfts/${encodeURIComponent(nft.collectionAddress)}/${encodeURIComponent(nftId)}`);
+    }
   };
 
   const handleCopyId = (e: React.MouseEvent) => {

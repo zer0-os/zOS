@@ -1,15 +1,18 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { nextStage, previousStage, setToken, setNft } from '../../../../store/wallet';
 import { SendHeader } from '../components/send-header';
-import { Input } from '@zero-tech/zui/components';
+import { Input, Skeleton } from '@zero-tech/zui/components';
 import { IconSearchMd } from '@zero-tech/zui/icons';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useBalancesQuery } from '../../queries/useBalancesQuery';
 import { useNFTsQuery } from '../../queries/useNFTsQuery';
 import { Token } from '../../tokens/token';
+import { NFTTile } from '../../nfts/nft/nft-tile';
 import { NFT, TokenBalance } from '../../types';
 import { recipientSelector, selectedWalletSelector } from '../../../../store/wallet/selectors';
 import { truncateAddress } from '../../utils/address';
+import { WalletEmptyState } from '../../components/empty-state/wallet-empty-state';
+import { Waypoint } from '../../../leaderboard/components/waypoint';
 import cn from 'classnames';
 
 import styles from './wallet-token-select.module.scss';
@@ -26,7 +29,13 @@ export const WalletTokenSelect = () => {
   const hasName = recipient?.name !== null;
 
   const { data } = useBalancesQuery(selectedWallet.address);
-  const { nfts, isLoading: isLoadingNfts } = useNFTsQuery(selectedWallet.address);
+  const {
+    nfts,
+    isLoading: isLoadingNfts,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useNFTsQuery(selectedWallet.address);
 
   const filteredTokens = data?.tokens?.filter((asset) => asset.name.toLowerCase().includes(assetQuery.toLowerCase()));
 
@@ -35,6 +44,12 @@ export const WalletTokenSelect = () => {
       nft.metadata?.name?.toLowerCase().includes(assetQuery.toLowerCase()) ||
       nft.collectionName?.toLowerCase().includes(assetQuery.toLowerCase())
   );
+
+  const handleLoadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleTokenClick = (token: TokenBalance) => {
     dispatch(setNft(null));
@@ -102,20 +117,15 @@ export const WalletTokenSelect = () => {
           {activeTab === 'nfts' && (
             <div className={styles.resultsHeader}>
               <div className={styles.resultsHeaderLabel}>NFTs</div>
-              {isLoadingNfts ? (
-                <div className={styles.emptyState}>Loading NFTs...</div>
-              ) : (
-                <div className={styles.nftGrid}>
-                  {filteredNfts?.map((nft) => (
-                    <NFTSelectItem
-                      key={`${nft.collectionAddress}-${nft.id}`}
-                      nft={nft}
-                      onClick={() => handleNftClick(nft)}
-                    />
-                  ))}
-                </div>
-              )}
-              {!isLoadingNfts && filteredNfts?.length === 0 && <div className={styles.emptyState}>No NFTs found</div>}
+              <div className={styles.nftGrid}>
+                {filteredNfts?.map((nft) => (
+                  <NFTTile key={`${nft.collectionAddress}-${nft.id}`} nft={nft} onClick={handleNftClick} />
+                ))}
+                {(isLoadingNfts || isFetchingNextPage) &&
+                  Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className={styles.nftSkeleton} />)}
+              </div>
+              {hasNextPage && !isFetchingNextPage && <Waypoint onEnter={handleLoadMore} />}
+              {!isLoadingNfts && filteredNfts?.length === 0 && <WalletEmptyState title='No NFTs' />}
             </div>
           )}
         </div>
@@ -137,26 +147,5 @@ export const WalletTokenSelect = () => {
         )}
       </div>
     </div>
-  );
-};
-
-interface NFTSelectItemProps {
-  nft: NFT;
-  onClick: () => void;
-}
-
-const NFTSelectItem = ({ nft, onClick }: NFTSelectItemProps) => {
-  return (
-    <button className={styles.nftSelectItem} onClick={onClick}>
-      {nft.imageUrl ? (
-        <img src={nft.imageUrl} alt={nft.metadata?.name || 'NFT'} className={styles.nftImage} />
-      ) : (
-        <div className={styles.nftImagePlaceholder} />
-      )}
-      <div className={styles.nftInfo}>
-        <div className={styles.nftName}>{nft.metadata?.name || 'Unnamed'}</div>
-        <div className={styles.nftCollection}>{nft.collectionName}</div>
-      </div>
-    </button>
   );
 };

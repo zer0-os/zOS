@@ -1,7 +1,7 @@
 import { IconButton } from '@zero-tech/zui/components';
 import { SendHeader } from '../components/send-header';
 import styles from './wallet-transfer-success.module.scss';
-import { IconCheck, IconChevronRightDouble, IconXClose } from '@zero-tech/zui/icons';
+import { IconCheck, IconChevronRightDouble, IconXClose, IconPackageMinus } from '@zero-tech/zui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { reset } from '../../../../store/wallet';
 import { getHistory } from '../../../../lib/browser';
@@ -61,7 +61,9 @@ export const WalletTransferSuccess = () => {
               {nft.imageUrl ? (
                 <img src={nft.imageUrl} alt={nft.metadata?.name || 'NFT'} className={styles.nftSuccessImage} />
               ) : (
-                <div className={styles.nftSuccessImagePlaceholder} />
+                <div className={styles.nftSuccessImagePlaceholder}>
+                  <IconPackageMinus size={48} />
+                </div>
               )}
             </div>
             <div className={styles.nftSuccessName}>{nft.metadata?.name || 'NFT'}</div>

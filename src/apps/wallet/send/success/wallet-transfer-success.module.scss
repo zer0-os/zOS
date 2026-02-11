@@ -199,6 +199,9 @@
   height: 120px;
   background: var(--bg-secondary);
   border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
 }
 
 .nftSuccessName {

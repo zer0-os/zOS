@@ -35,6 +35,7 @@ import {
   TransferNativeAssetResponse,
 } from '../../apps/wallet/queries/transferNativeAssetRequest';
 import { isWalletAPIError } from './utils';
+import { config } from '../../config';
 
 /**
  * Loads the user's ThirdWeb wallet address into the store once the user has been fetched from the API
@@ -189,7 +190,7 @@ function* handleTransferNft() {
         if (result.transactionHash) {
           yield put(setSendStage(SendStage.Broadcasting));
           const receipt: TxReceiptResponse = yield call(() =>
-            queryClient.fetchQuery(txReceiptQueryOptions(result.transactionHash))
+            queryClient.fetchQuery(txReceiptQueryOptions(result.transactionHash, Number(config.zChainId)))
           );
           yield put(setTxReceipt(receipt));
           if (receipt.status === 'confirmed') {

@@ -7,7 +7,8 @@ import { MatrixAvatar } from '../../../../components/matrix-avatar';
 import { TokenIcon } from '../../components/token-icon/token-icon';
 import { FormattedNumber } from '../../components/formatted-number/formatted-number';
 import { Button } from '../../components/button/button';
-import { IconChevronRightDouble } from '@zero-tech/zui/icons';
+import { IconChevronRightDouble, IconPackageMinus } from '@zero-tech/zui/icons';
+import { truncateAddress } from '../../utils/address';
 
 export const WalletReviewTransfer = () => {
   const dispatch = useDispatch();
@@ -39,7 +40,9 @@ export const WalletReviewTransfer = () => {
           <div className={styles.confirmRecipientTitle}>Confirm transaction with</div>
           <MatrixAvatar className={styles.recipientAvatar} imageURL={recipient?.profileImage} size='regular' />
           <div className={styles.recipientName}>{recipient?.primaryZid || recipient?.name}</div>
-          <div className={styles.recipientAddress}>{recipient?.publicAddress}</div>
+          <div className={styles.recipientAddress}>
+            {recipient?.publicAddress ? truncateAddress(recipient.publicAddress) : ''}
+          </div>
         </div>
 
         {isNftTransfer ? (
@@ -48,7 +51,9 @@ export const WalletReviewTransfer = () => {
               {nft.imageUrl ? (
                 <img src={nft.imageUrl} alt={nft.metadata?.name || 'NFT'} className={styles.nftImage} />
               ) : (
-                <div className={styles.nftImagePlaceholder} />
+                <div className={styles.nftImagePlaceholder}>
+                  <IconPackageMinus size={48} />
+                </div>
               )}
             </div>
             <div className={styles.nftInfo}>

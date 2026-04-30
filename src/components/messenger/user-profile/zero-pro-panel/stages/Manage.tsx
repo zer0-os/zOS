@@ -39,7 +39,7 @@ export const Manage: React.FC<Props> = ({ onNext, onClose, formattedEndDate }) =
             <div className={styles.PanelItem}>
               <div className={styles.PanelItemText}>
                 <div className={styles.PanelItemTitle}>Current Plan</div>
-                <div className={styles.PanelItemSubtitle}>ZERO Pro - $10/month</div>
+                <div className={styles.PanelItemSubtitle}>ZERO Pro</div>
               </div>
             </div>
 

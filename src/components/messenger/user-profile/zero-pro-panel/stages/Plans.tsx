@@ -6,8 +6,8 @@ import styles from './styles.module.scss';
 
 const plan = {
   title: 'Monthly plan',
-  subtitle: '$120 per year, billed monthly',
-  price: '$10 / month',
+  subtitle: '$240 per year, billed monthly',
+  price: '$20 / month',
 };
 
 interface Props {

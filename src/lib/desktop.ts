@@ -38,6 +38,8 @@ const handleContextMenu = async (ev: any) => {
 
 const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+type WindowOpenRule = Parameters<typeof webContents.setWindowOpenRules>[0]['rules'][number];
+
 // Build a regex matching the explorer on any subdomain of its root domain. The
 // embedded explorer (config.znsExplorerUrl, e.g. explorer.zos.zero.tech) and
 // the public one the claim flow links out to (e.g. explorer.zero.tech) share a
@@ -57,27 +59,68 @@ const explorerUrlPattern = (rawUrl: string): string | undefined => {
   }
 };
 
-// ToDesktop treats same-domain URLs as internal and opens them in a new in-app
-// window. The ZNS explorer is on the same domain, so its "open in browser"
-// links (e.g. the domain-claim flow) would open in-app — where the user has no
-// browser wallet extension. Route the explorer's URLs to the system browser
-// instead. Other links keep ToDesktop's default handling (no fallback rule).
-const openExplorerInSystemBrowser = async () => {
-  if (!config.znsExplorerUrl) {
-    return;
+// Build a regex matching any subdomain of a URL's registrable (root) domain,
+// over http or https. Used to keep the app's own family of hosts (app, api, …)
+// opening in-app, the way ToDesktop's default does.
+const sameRootDomainPattern = (rawUrl: string): string | undefined => {
+  try {
+    const labels = new URL(rawUrl).hostname.split('.');
+    if (labels.length < 2) {
+      return undefined;
+    }
+    const root = escapeRegExp(labels.slice(-2).join('.'));
+    return `https?://(?:[a-z0-9-]+\\.)*${root}`;
+  } catch {
+    return undefined;
   }
-  const pattern = explorerUrlPattern(config.znsExplorerUrl);
-  if (!pattern) {
-    return;
+};
+
+// ToDesktop's default new-window handling is domain-aware: same-domain URLs open
+// in a new in-app window, external URLs open in the system browser. Calling
+// setWindowOpenRules REPLACES that default entirely, so we must re-express it —
+// otherwise any window.open that doesn't match a rule (external chat links,
+// block-explorer links, the OAuth popup, attachment downloads) is left with no
+// handler and silently does nothing.
+//
+// Rules are evaluated in order (first match wins); `fallback` handles anything
+// unmatched:
+//   1. Explorer family -> system browser. Its claim flow needs a real browser
+//      wallet extension that an in-app window lacks. Must precede the
+//      same-domain rule below, since the explorer is itself same-domain.
+//   2. about:blank      -> in-app. The attachment download opens a blank window
+//      and then navigates it, so it must keep the in-app window handle.
+//   3. App's own domain -> in-app. Preserves same-domain popups such as the
+//      OAuth link flow, which postMessages back to window.opener.
+//   fallback (external) -> system browser. Restores the default for chat links,
+//      block-explorer links, arweave, etc.
+const registerWindowOpenRules = async () => {
+  const rules: WindowOpenRule[] = [];
+
+  const explorerPattern = config.znsExplorerUrl ? explorerUrlPattern(config.znsExplorerUrl) : undefined;
+  if (explorerPattern) {
+    rules.push({ regex: explorerPattern, options: { action: 'openInBrowser' } });
   }
+
+  rules.push({ regex: '^about:blank', options: { action: 'allow' } });
+
+  const seen = new Set<string>();
+  for (const source of [config.ZERO_API_URL, window.location.origin]) {
+    const pattern = source ? sameRootDomainPattern(source) : undefined;
+    if (pattern && !seen.has(pattern)) {
+      seen.add(pattern);
+      rules.push({ regex: pattern, options: { action: 'allow' } });
+    }
+  }
+
   try {
     const ref = await nativeWindow.getWebContents();
     await webContents.setWindowOpenRules({
       ref,
-      rules: [{ regex: pattern, options: { action: 'openInBrowser' } }],
+      rules,
+      fallback: { action: 'openInBrowser' },
     });
   } catch (error) {
-    console.error('Failed to set explorer window-open rule', error);
+    console.error('Failed to set window-open rules', error);
   }
 };
 
@@ -89,5 +132,5 @@ export const desktopInit = () => {
   console.log('Electron version:', platform.electron.getElectronVersion());
 
   webContents.on('context-menu', handleContextMenu);
-  void openExplorerInSystemBrowser();
+  void registerWindowOpenRules();
 };

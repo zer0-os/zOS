@@ -59,17 +59,19 @@ const explorerUrlPattern = (rawUrl: string): string | undefined => {
   }
 };
 
-// Build a regex matching any subdomain of a URL's registrable (root) domain,
-// over http or https. Used to keep the app's own family of hosts (app, api, …)
-// opening in-app, the way ToDesktop's default does.
-const sameRootDomainPattern = (rawUrl: string): string | undefined => {
+// Build a regex matching one exact host (optionally with its port), over http or
+// https. We deliberately match the exact host rather than the registrable
+// domain: the explorer (explorer.zero.tech) shares a registrable domain with
+// the app and API, so a domain-wide rule would also capture the explorer and
+// keep it in-app — the opposite of what we want.
+const exactHostPattern = (rawUrl: string): string | undefined => {
   try {
-    const labels = new URL(rawUrl).hostname.split('.');
-    if (labels.length < 2) {
+    const { host } = new URL(rawUrl);
+    if (!host) {
       return undefined;
     }
-    const root = escapeRegExp(labels.slice(-2).join('.'));
-    return `https?://(?:[a-z0-9-]+\\.)*${root}`;
+    // Anchor on a host boundary so e.g. `zero.tech` doesn't match `zero.tech.evil.com`.
+    return `^https?://${escapeRegExp(host)}(?:[:/?#]|$)`;
   } catch {
     return undefined;
   }
@@ -82,17 +84,19 @@ const sameRootDomainPattern = (rawUrl: string): string | undefined => {
 // block-explorer links, the OAuth popup, attachment downloads) is left with no
 // handler and silently does nothing.
 //
-// Rules are evaluated in order (first match wins); `fallback` handles anything
-// unmatched:
-//   1. Explorer family -> system browser. Its claim flow needs a real browser
-//      wallet extension that an in-app window lacks. Must precede the
-//      same-domain rule below, since the explorer is itself same-domain.
-//   2. about:blank      -> in-app. The attachment download opens a blank window
-//      and then navigates it, so it must keep the in-app window handle.
-//   3. App's own domain -> in-app. Preserves same-domain popups such as the
-//      OAuth link flow, which postMessages back to window.opener.
-//   fallback (external) -> system browser. Restores the default for chat links,
-//      block-explorer links, arweave, etc.
+// Only the specific things that genuinely need an in-app window get an `allow`
+// rule; everything else (the explorer, external chat/block-explorer/arweave
+// links, …) falls through to the `openInBrowser` fallback and opens in the
+// system browser:
+//   - Explorer family -> system browser (explicit rule + fallback). Its claim
+//     flow needs a real browser wallet extension an in-app window lacks.
+//   - about:blank     -> in-app. The attachment download opens a blank window
+//     and then navigates it, so it must keep the in-app window handle.
+//   - API host        -> in-app. The OAuth link popup opens the API host and
+//     postMessages back to window.opener, which only works in-app.
+//   - App's own host  -> in-app. Preserves genuinely same-origin popups.
+// The allow rules match EXACT hosts, not the registrable domain, so the
+// explorer's same-root-domain URL is never captured by them.
 const registerWindowOpenRules = async () => {
   const rules: WindowOpenRule[] = [];
 
@@ -105,7 +109,7 @@ const registerWindowOpenRules = async () => {
 
   const seen = new Set<string>();
   for (const source of [config.ZERO_API_URL, window.location.origin]) {
-    const pattern = source ? sameRootDomainPattern(source) : undefined;
+    const pattern = source ? exactHostPattern(source) : undefined;
     if (pattern && !seen.has(pattern)) {
       seen.add(pattern);
       rules.push({ regex: pattern, options: { action: 'allow' } });

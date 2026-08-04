@@ -56,8 +56,10 @@ const CHAIN_NAME_TO_ID: Record<string, number> = {
 };
 
 export const RPC_URLS: Record<number, string> = {
-  [CHAIN_ID_ETHEREUM]: 'https://rpc.eu-central-1.gateway.fm/v4/ethereum/non-archival/mainnet',
-  [CHAIN_ID_SEPOLIA]: 'https://rpc.eu-central-1.gateway.fm/v4/ethereum/non-archival/sepolia',
+  // Gateway.fm discontinued its free public Ethereum RPC (2026-07-30), so these
+  // point at publicnode's free public endpoints. Reads only (balance lookups).
+  [CHAIN_ID_ETHEREUM]: 'https://ethereum-rpc.publicnode.com',
+  [CHAIN_ID_SEPOLIA]: 'https://ethereum-sepolia-rpc.publicnode.com',
   [CHAIN_ID_ZCHAIN]: 'https://rpc.zchain.org',
   [CHAIN_ID_ZEPHYR]: 'https://zephyr-rpc.eu-north-2.gateway.fm/',
 };

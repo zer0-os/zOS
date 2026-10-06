@@ -102,6 +102,7 @@ export function useBridgeFromEOA({ onSuccess, onError }: UseBridgeFromEOAParams 
 
       return bridgeTx.hash;
     } catch (error) {
+      console.error('Failed to bridge from EOA:', error);
       setCurrentStep('idle');
       const normalizedError = normalizeWalletError(error);
       onError?.(normalizedError);

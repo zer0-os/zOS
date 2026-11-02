@@ -664,6 +664,20 @@ export function normalizeWalletError(error: unknown): Error {
     return new Error('Insufficient funds for this transaction.');
   }
 
+  // Wallet-side submission failure (e.g. the relay returns a 500 / internal error).
+  // Reverts are already handled above, so a -32603 / fetch-500 here is a submit failure,
+  // most commonly the wallet's Smart Transactions relay.
+  if (
+    errorCode === -32603 ||
+    errorMessage.includes('Fetch error') ||
+    errorMessage.includes('Internal Server Error') ||
+    errorMessage.includes('statusCode')
+  ) {
+    return new Error(
+      "Your wallet couldn't submit the transaction. If Smart Transactions is enabled, disable it in your wallet settings."
+    );
+  }
+
   if (errorMessage.includes('network') || errorMessage.includes('connection') || errorCode === 'NETWORK_ERROR') {
     return new Error('Network error. Please check your connection and try again.');
   }

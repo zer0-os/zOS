@@ -4,7 +4,7 @@
   "private": true,
   "main": "./public/electron.js",
   "engines": {
-    "node": "^20.11.0",
+    "node": "22.x",
     "npm": "^10.2.4"
   },
   "dependencies": {
